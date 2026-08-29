@@ -1,9 +1,9 @@
-/**
+﻿/**
  * Direct Supabase persistence and query service for SmartBetBot MVP.
  */
 
 import { createClient } from "@supabase/supabase-js";
-import { apiFootball } from "./api-football";
+import { apiFootball, TOP_5_LEAGUE_IDS } from "./api-football";
 import { evaluateFixturePrediction, MarketOpportunity } from "./prediction-engine";
 
 function getAdminClient() {
@@ -21,7 +21,7 @@ function getAdminClient() {
 /**
  * Synchronize active leagues and teams from API-Football into Supabase
  */
-export async function syncLeaguesAndTeams(leagueIds: number[] = [39, 140]) {
+export async function syncLeaguesAndTeams(leagueIds: number[] = TOP_5_LEAGUE_IDS) {
   const supabase = getAdminClient();
   const leagues = await apiFootball.getLeagues(leagueIds);
 
@@ -112,7 +112,7 @@ export async function syncLeaguesAndTeams(leagueIds: number[] = [39, 140]) {
 /**
  * Synchronize upcoming fixtures for active leagues
  */
-export async function syncUpcomingFixtures(leagueIds: number[] = [39, 140], lookaheadDays: number = 7) {
+export async function syncUpcomingFixtures(leagueIds: number[] = TOP_5_LEAGUE_IDS, lookaheadDays: number = 7) {
   const supabase = getAdminClient();
   const leagues = await apiFootball.getLeagues(leagueIds);
 
@@ -224,7 +224,7 @@ export async function generatePredictionsForUpcoming(): Promise<MarketOpportunit
     .gte("kickoff_at", now)
     .lte("kickoff_at", maxDate)
     .order("kickoff_at", { ascending: true })
-    .limit(20);
+    .limit(30);
 
   const fixtures = data as unknown as DBFixtureRow[] | null;
 
