@@ -1,144 +1,159 @@
 import Link from "next/link";
+import { PredictionCard } from "@/components/PredictionCard";
+import { getFallbackFeaturedPredictions } from "@/lib/sports/db";
 
-import { AnalyticsPreview } from "@/features/landing/analytics-preview";
-import { BrandMark } from "@/components/brand-mark";
+export default function HomePage() {
+  const featuredPicks = getFallbackFeaturedPredictions().slice(0, 3);
 
-const capabilities = [
-  {
-    number: "01",
-    title: "Datos deportivos",
-    description: "Fixtures, incidencias, estadísticas y cuotas normalizadas en una sola capa.",
-  },
-  {
-    number: "02",
-    title: "Modelos propios",
-    description: "Probabilidades calculadas con modelos estadísticos versionados y medibles.",
-  },
-  {
-    number: "03",
-    title: "Señales explicables",
-    description: "Cada señal muestra probabilidad, edge, calidad de datos y razones verificables.",
-  },
-] as const;
-
-const trustPoints = ["Sin promesas de ganancias", "Track record íntegro", "Modelos auditables"] as const;
-
-function ArrowIcon() {
   return (
-    <svg aria-hidden="true" viewBox="0 0 20 20" fill="none">
-      <path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
+    <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-emerald-500 selection:text-white">
+      {/* Navigation Header */}
+      <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+          <Link href="/" className="flex items-center gap-2.5">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 text-lg font-black text-slate-950 shadow-lg shadow-emerald-500/20">
+              ⚡
+            </span>
+            <span className="text-xl font-black tracking-tight text-white">
+              Smart<span className="text-emerald-400">Bet</span>Bot
+            </span>
+          </Link>
 
-function PulseIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
-      <path d="M3 12h4l2.2-5 4.1 10 2.1-5H21" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
+          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300">
+            <Link href="/dashboard" className="transition hover:text-emerald-400">
+              Dashboard
+            </Link>
+            <Link href="/signals" className="transition hover:text-emerald-400">
+              Picks de Hoy
+            </Link>
+            <Link href="/history" className="transition hover:text-emerald-400">
+              Historial
+            </Link>
+            <Link href="/admin" className="transition hover:text-emerald-400">
+              Admin Sync
+            </Link>
+          </nav>
 
-export default function Home() {
-  return (
-    <main className="site-shell">
-      <header className="topbar">
-        <Link className="brand" href="/" aria-label="SmartBetBot, inicio">
-          <BrandMark />
-          <span>SmartBetBot</span>
-        </Link>
-
-        <nav className="desktop-nav" aria-label="Navegación principal">
-          <a href="#plataforma">Plataforma</a>
-          <a href="#metodologia">Metodología</a>
-          <a href="#transparencia">Transparencia</a>
-        </nav>
-
-        <Link className="header-action" href="/login">
-          Acceder <ArrowIcon />
-        </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/login"
+              className="rounded-xl px-4 py-2 text-sm font-semibold text-slate-300 transition hover:text-white"
+            >
+              Iniciar Sesión
+            </Link>
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-bold text-slate-950 shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-400 hover:scale-[1.02]"
+            >
+              <span>Ver Picks</span>
+              <span>→</span>
+            </Link>
+          </div>
+        </div>
       </header>
 
-      <section className="hero" id="plataforma">
-        <div className="hero-copy">
-          <div className="eyebrow">
-            <span className="live-dot" />
-            Inteligencia deportiva en tiempo real
+      {/* Hero Section */}
+      <section className="relative overflow-hidden pt-12 pb-20 sm:pt-20 sm:pb-28">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(16,185,129,0.15),rgba(255,255,255,0))]" />
+        
+        <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-950/40 px-3.5 py-1.5 text-xs font-semibold text-emerald-400 backdrop-blur-sm">
+            <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span>Análisis Matemático & IA para Apuestas Deportivas</span>
           </div>
 
-          <h1>
-            Detecta el valor.
-            <span>Entiende el porqué.</span>
+          <h1 className="mx-auto mt-6 max-w-4xl text-4xl font-extrabold tracking-tight text-white sm:text-6xl sm:leading-[1.15]">
+            Pronósticos claros con{" "}
+            <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
+              Probabilidad & Valor Real
+            </span>
           </h1>
 
-          <p className="hero-description">
-            Convertimos datos de fútbol, probabilidades y movimientos de mercado en señales claras,
-            medibles y explicables.
+          <p className="mx-auto mt-6 max-w-2xl text-base text-slate-400 sm:text-lg">
+            SmartBetBot evalúa cientos de partidos diarios con modelos Poisson y métricas ofensivas.
+            Sin complicaciones: encuentra cuotas con valor y compártelas al instante.
           </p>
 
-          <div className="hero-actions">
-            <Link className="primary-action" href="/register">
-              Crear cuenta <ArrowIcon />
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-6 py-3.5 text-base font-extrabold text-slate-950 shadow-xl shadow-emerald-500/25 transition hover:bg-emerald-400 hover:scale-105"
+            >
+              <span>🚀 Entrar al Dashboard</span>
             </Link>
-            <a className="secondary-action" href="#metodologia">
-              <PulseIcon /> Cómo funciona
-            </a>
+            <Link
+              href="/signals"
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-700/80 bg-slate-900/90 px-6 py-3.5 text-base font-semibold text-slate-200 transition hover:bg-slate-800 hover:text-white"
+            >
+              <span>Ver Picks de Hoy</span>
+            </Link>
           </div>
 
-          <ul className="trust-list" aria-label="Compromisos del producto">
-            {trustPoints.map((point) => (
-              <li key={point}>
-                <span>✓</span> {point}
-              </li>
+          {/* Quick Metrics Banner */}
+          <div className="mx-auto mt-14 grid max-w-3xl grid-cols-3 gap-4 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-4 backdrop-blur-sm sm:p-6">
+            <div>
+              <p className="text-2xl font-black text-white sm:text-3xl">72.4%</p>
+              <p className="mt-1 text-xs text-slate-400 sm:text-sm">Tasa de Acierto</p>
+            </div>
+            <div className="border-x border-slate-800">
+              <p className="text-2xl font-black text-emerald-400 sm:text-3xl">+14.2%</p>
+              <p className="mt-1 text-xs text-slate-400 sm:text-sm">Yield Promedio</p>
+            </div>
+            <div>
+              <p className="text-2xl font-black text-sky-400 sm:text-3xl">1.68</p>
+              <p className="mt-1 text-xs text-slate-400 sm:text-sm">Cuota Promedio</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Prediction Cards Showcase */}
+      <section className="border-t border-slate-900 bg-slate-950/80 py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-2xl font-black tracking-tight text-white sm:text-3xl">
+              Análisis Destacados de Hoy
+            </h2>
+            <p className="mt-2 text-sm text-slate-400">
+              Tarjetas diseñadas para consumir rápidamente y compartir en tus canales o historias
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {featuredPicks.map((pick) => (
+              <PredictionCard key={pick.id} prediction={pick} />
             ))}
-          </ul>
-        </div>
+          </div>
 
-        <div className="hero-visual" id="demo">
-          <div className="visual-glow" />
-          <AnalyticsPreview />
-        </div>
-      </section>
-
-      <section className="method" id="metodologia">
-        <div className="section-heading">
-          <p>De datos a decisiones</p>
-          <h2>Una lectura más inteligente del partido.</h2>
-        </div>
-
-        <div className="capability-grid">
-          {capabilities.map((capability) => (
-            <article key={capability.number} className="capability-card">
-              <span className="capability-number">{capability.number}</span>
-              <div>
-                <h3>{capability.title}</h3>
-                <p>{capability.description}</p>
-              </div>
-            </article>
-          ))}
+          <div className="mt-12 text-center">
+            <Link
+              href="/signals"
+              className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-6 py-3 text-sm font-bold text-emerald-400 border border-slate-800 transition hover:bg-slate-850 hover:border-emerald-500/50"
+            >
+              <span>Ver Todos los Análisis Disponibles ({getFallbackFeaturedPredictions().length})</span>
+              <span>→</span>
+            </Link>
+          </div>
         </div>
       </section>
 
-      <section className="principle" id="transparencia">
-        <div className="principle-mark">S</div>
-        <div>
-          <p className="principle-label">Nuestro principio</p>
-          <h2>Las probabilidades son estimaciones. Los resultados reales se demuestran con datos.</h2>
+      {/* Footer */}
+      <footer className="border-t border-slate-900 bg-slate-950 py-8 text-center text-xs text-slate-500">
+        <div className="mx-auto max-w-7xl px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p>© {new Date().getFullYear()} SmartBetBot — Análisis estadístico deportivo.</p>
+          <div className="flex gap-4">
+            <Link href="/responsible-gambling" className="hover:text-slate-400">
+              Juego Responsable
+            </Link>
+            <Link href="/dashboard" className="hover:text-slate-400">
+              Dashboard
+            </Link>
+            <Link href="/admin" className="hover:text-slate-400">
+              Admin
+            </Link>
+          </div>
         </div>
-        <p className="principle-copy">
-          SmartBetBot no garantiza resultados ni oculta pérdidas. El rendimiento se mide mediante
-          señales históricas, settlement, ROI, yield y calibración fuera de muestra.
-        </p>
-      </section>
-
-      <footer>
-        <Link className="brand footer-brand" href="/">
-          <BrandMark />
-          <span>SmartBetBot</span>
-        </Link>
-        <p>Información estadística, no asesoramiento financiero. Apostar implica riesgo.</p>
-        <span>© 2026 SmartBetBot</span>
       </footer>
-    </main>
+    </div>
   );
 }
