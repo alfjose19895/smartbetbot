@@ -16,10 +16,11 @@ export async function GET() {
       live,
       upcoming,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to fetch fixtures";
     console.error("[API /api/fixtures/today] Error:", error);
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to fetch fixtures" },
+      { success: false, error: message },
       { status: 500 }
     );
   }

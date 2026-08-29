@@ -99,9 +99,7 @@ async def bootstrap(
                 league, current_season, teams_resp.items
             )
             total_teams += len(teams_resp.items)
-            print(
-                f"  Teams: {len(teams_resp.items)} fetched, {teams_written} DB records written."
-            )
+            print(f"  Teams: {len(teams_resp.items)} fetched, {teams_written} DB records written.")
 
             print(f"[3/3] Syncing Upcoming Fixtures (lookahead: {lookahead_days}d)...")
             from_d = now.date()

@@ -13,10 +13,11 @@ export async function POST() {
       count: predictions.length,
       predictions,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Error al generar predicciones";
     console.error("[API /api/admin/sync/predictions] Error:", error);
     return NextResponse.json(
-      { success: false, error: error.message || "Error al generar predicciones" },
+      { success: false, error: message },
       { status: 500 }
     );
   }

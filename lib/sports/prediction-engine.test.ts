@@ -1,4 +1,4 @@
-﻿import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vitest";
 import { evaluateFixturePrediction } from "./prediction-engine";
 
 describe("Prediction Engine (TypeScript MVP)", () => {

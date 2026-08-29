@@ -43,8 +43,7 @@ async def backfill(
         fixtures_resp = await runtime.provider.list_fixtures(query)
         fetch_time = round(monotonic() - start, 2)
         print(
-            f"Fetched {len(fixtures_resp.items)} fixtures ({fetch_time}s). "
-            "Writing to database..."
+            f"Fetched {len(fixtures_resp.items)} fixtures ({fetch_time}s). Writing to database..."
         )
 
         written = await runtime.repository.upsert_fixtures(fixtures_resp.items)

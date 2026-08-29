@@ -93,9 +93,7 @@ async def check_api_football(settings: Settings) -> tuple[bool, str]:
         provider = build_sports_data_provider(settings)
         try:
             start = monotonic()
-            response = await provider.list_leagues(
-                LeagueQuery(external_id="39", current_only=True)
-            )
+            response = await provider.list_leagues(LeagueQuery(external_id="39", current_only=True))
             latency_ms = round((monotonic() - start) * 1000, 1)
             quota_rem = response.metadata.quota_remaining
             quota_lim = response.metadata.quota_limit

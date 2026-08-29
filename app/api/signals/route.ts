@@ -33,10 +33,11 @@ export async function GET(request: NextRequest) {
       count: predictions.length,
       signals: predictions,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to load signals";
     console.error("[API /api/signals] Error:", error);
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to load signals" },
+      { success: false, error: message },
       { status: 500 }
     );
   }

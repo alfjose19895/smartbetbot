@@ -5,10 +5,9 @@ import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 
 interface PredictionCardProps {
   prediction: MarketOpportunity;
-  onShare?: (prediction: MarketOpportunity) => void;
 }
 
-export function PredictionCard({ prediction, onShare }: PredictionCardProps) {
+export function PredictionCard({ prediction }: PredictionCardProps) {
   const [copied, setCopied] = useState(false);
   const [showStoryModal, setShowStoryModal] = useState(false);
 

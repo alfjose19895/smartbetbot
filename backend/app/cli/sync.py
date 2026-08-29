@@ -113,9 +113,7 @@ async def sync_prematch(settings: Settings, target_leagues: tuple[str, ...]) -> 
     runtime = await build_worker_runtime(settings, WorkerName.PREMATCH)
     try:
         service = PrematchIngestionService(runtime.provider, runtime.repository)
-        report = await service.run_once(
-            PrematchIngestionPolicy(league_external_ids=target_leagues)
-        )
+        report = await service.run_once(PrematchIngestionPolicy(league_external_ids=target_leagues))
         print(
             f"Prematch cycle complete: {report.fixtures_written} fixtures written, "
             f"{report.records_written} records written."
@@ -156,9 +154,7 @@ def main() -> None:
     args = parser.parse_args()
 
     settings = get_settings()
-    league_tuple = tuple(
-        item.strip() for item in args.leagues.split(",") if item.strip()
-    )
+    league_tuple = tuple(item.strip() for item in args.leagues.split(",") if item.strip())
 
     if args.target == "leagues":
         asyncio.run(sync_leagues(settings, league_tuple))

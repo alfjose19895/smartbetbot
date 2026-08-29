@@ -16,10 +16,11 @@ export async function POST(request: NextRequest) {
       message: `Sincronización de partidos completada: ${result.fixturesSaved} partidos actualizados.`,
       result,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Error al sincronizar partidos";
     console.error("[API /api/admin/sync/fixtures] Error:", error);
     return NextResponse.json(
-      { success: false, error: error.message || "Error al sincronizar partidos" },
+      { success: false, error: message },
       { status: 500 }
     );
   }

@@ -15,10 +15,11 @@ export async function POST(request: NextRequest) {
       message: `Sincronización completada: ${result.leaguesSaved} ligas y ${result.teamsSaved} equipos actualizados.`,
       result,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Error al sincronizar ligas";
     console.error("[API /api/admin/sync/leagues] Error:", error);
     return NextResponse.json(
-      { success: false, error: error.message || "Error al sincronizar ligas" },
+      { success: false, error: message },
       { status: 500 }
     );
   }

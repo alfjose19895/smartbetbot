@@ -30,8 +30,9 @@ export default function AdminPage() {
       } else {
         addLog(`✗ Error: ${data.error}`);
       }
-    } catch (err: any) {
-      addLog(`✗ Error de conexión: ${err.message}`);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Error desconocido";
+      addLog(`✗ Error de conexión: ${message}`);
     } finally {
       setLoadingAction(null);
     }
@@ -52,8 +53,9 @@ export default function AdminPage() {
       } else {
         addLog(`✗ Error: ${data.error}`);
       }
-    } catch (err: any) {
-      addLog(`✗ Error de conexión: ${err.message}`);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Error desconocido";
+      addLog(`✗ Error de conexión: ${message}`);
     } finally {
       setLoadingAction(null);
     }
@@ -70,8 +72,9 @@ export default function AdminPage() {
       } else {
         addLog(`✗ Error: ${data.error}`);
       }
-    } catch (err: any) {
-      addLog(`✗ Error de conexión: ${err.message}`);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Error desconocido";
+      addLog(`✗ Error de conexión: ${message}`);
     } finally {
       setLoadingAction(null);
     }
@@ -180,7 +183,7 @@ export default function AdminPage() {
 
         {/* Live Terminal Log */}
         <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-950 p-5 shadow-xl">
-          <div className="flex items-center justify-between border-b border-slate-850 pb-3">
+          <div className="flex items-center justify-between border-b border-slate-855 pb-3">
             <div className="flex items-center gap-2">
               <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse" />
               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300">

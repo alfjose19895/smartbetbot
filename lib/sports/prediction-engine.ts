@@ -136,21 +136,17 @@ export function evaluateFixturePrediction(params: {
 
   // Calculate market probabilities
   let pHome = 0;
-  let pDraw = 0;
   let pAway = 0;
   let pOver25 = 0;
-  let pUnder25 = 0;
   let pBttsYes = 0;
 
   for (let h = 0; h <= maxGoals; h++) {
     for (let a = 0; a <= maxGoals; a++) {
       const p = scoreMatrix[h][a];
       if (h > a) pHome += p;
-      else if (h === a) pDraw += p;
-      else pAway += p;
+      else if (h < a) pAway += p;
 
       if (h + a > 2.5) pOver25 += p;
-      else pUnder25 += p;
 
       if (h > 0 && a > 0) pBttsYes += p;
     }

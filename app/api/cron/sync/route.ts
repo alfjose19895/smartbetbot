@@ -21,10 +21,11 @@ export async function GET(request: NextRequest) {
       fixturesSaved: fixturesResult.fixturesSaved,
       predictionsGenerated: predictions.length,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Cron sync error";
     console.error("[CRON /api/cron/sync] Error:", error);
     return NextResponse.json(
-      { success: false, error: error.message || "Cron sync error" },
+      { success: false, error: message },
       { status: 500 }
     );
   }

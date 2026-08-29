@@ -14,26 +14,36 @@ export default function DashboardPage() {
   const [syncing, setSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState("");
 
-  const loadSignals = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch("/api/signals");
-      const data = await res.json();
-      if (data.success && data.signals && data.signals.length > 0) {
-        setPredictions(data.signals);
-      } else {
-        setPredictions(getFallbackFeaturedPredictions());
-      }
-    } catch (err) {
-      console.warn("Using fallback predictions:", err);
-      setPredictions(getFallbackFeaturedPredictions());
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    loadSignals();
+    let isMounted = true;
+
+    async function fetchPredictions() {
+      try {
+        const res = await fetch("/api/signals");
+        const data = await res.json();
+        if (isMounted) {
+          if (data.success && data.signals && data.signals.length > 0) {
+            setPredictions(data.signals);
+          } else {
+            setPredictions(getFallbackFeaturedPredictions());
+          }
+        }
+      } catch {
+        if (isMounted) {
+          setPredictions(getFallbackFeaturedPredictions());
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void fetchPredictions();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleSyncPredictions = async () => {
@@ -44,11 +54,15 @@ export default function DashboardPage() {
       const data = await res.json();
       if (data.success) {
         setSyncMessage(`✓ ${data.message || "Pronósticos actualizados"}`);
-        await loadSignals();
+        const freshRes = await fetch("/api/signals");
+        const freshData = await freshRes.json();
+        if (freshData.success && freshData.signals) {
+          setPredictions(freshData.signals);
+        }
       } else {
         setSyncMessage("✓ Pronósticos actualizados con datos recientes");
       }
-    } catch (err) {
+    } catch {
       setSyncMessage("✓ Pronósticos listos");
     } finally {
       setSyncing(false);

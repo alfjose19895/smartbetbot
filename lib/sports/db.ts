@@ -3,7 +3,7 @@
  */
 
 import { createClient } from "@supabase/supabase-js";
-import { apiFootball, ApiFootballFixture } from "./api-football";
+import { apiFootball } from "./api-football";
 import { evaluateFixturePrediction, MarketOpportunity } from "./prediction-engine";
 
 function getAdminClient() {
@@ -117,6 +117,9 @@ export async function syncUpcomingFixtures(leagueIds: number[] = [39, 140], look
   const leagues = await apiFootball.getLeagues(leagueIds);
 
   let fixturesSaved = 0;
+  const now = new Date();
+  const from = now.toISOString().split("T")[0];
+  const to = new Date(now.getTime() + lookaheadDays * 86400000).toISOString().split("T")[0];
 
   for (const league of leagues) {
     const { data: dbLeague } = await supabase
@@ -135,7 +138,7 @@ export async function syncUpcomingFixtures(leagueIds: number[] = [39, 140], look
       .eq("season_year", league.season)
       .single();
 
-    const fixtures = await apiFootball.getFixtures(league.id, league.season);
+    const fixtures = await apiFootball.getFixtures(league.id, league.season, from, to);
 
     for (const f of fixtures) {
       // Find or upsert home and away teams
@@ -187,6 +190,16 @@ export async function syncUpcomingFixtures(leagueIds: number[] = [39, 140], look
   return { fixturesSaved };
 }
 
+interface DBFixtureRow {
+  id: string;
+  provider_id: number;
+  kickoff_at: string;
+  status: string;
+  home_team: { name: string; logo_url: string | null } | null;
+  away_team: { name: string; logo_url: string | null } | null;
+  league: { name: string; logo_url: string | null } | null;
+}
+
 /**
  * Generate predictions for upcoming fixtures and return opportunities
  */
@@ -197,7 +210,7 @@ export async function generatePredictionsForUpcoming(): Promise<MarketOpportunit
   const now = new Date().toISOString();
   const maxDate = new Date(Date.now() + 7 * 86400000).toISOString();
 
-  const { data: fixtures, error } = await supabase
+  const { data, error } = await supabase
     .from("fixtures")
     .select(`
       id,
@@ -213,6 +226,8 @@ export async function generatePredictionsForUpcoming(): Promise<MarketOpportunit
     .order("kickoff_at", { ascending: true })
     .limit(20);
 
+  const fixtures = data as unknown as DBFixtureRow[] | null;
+
   if (error || !fixtures || fixtures.length === 0) {
     // If DB is empty, generate baseline featured predictions for top matches
     return getFallbackFeaturedPredictions();
@@ -221,12 +236,12 @@ export async function generatePredictionsForUpcoming(): Promise<MarketOpportunit
   const allOpportunities: MarketOpportunity[] = [];
 
   for (const item of fixtures) {
-    const homeName = (item.home_team as any)?.name || "Local";
-    const awayName = (item.away_team as any)?.name || "Visitante";
-    const homeLogo = (item.home_team as any)?.logo_url;
-    const awayLogo = (item.away_team as any)?.logo_url;
-    const leagueName = (item.league as any)?.name || "Liga Principal";
-    const leagueLogo = (item.league as any)?.logo_url;
+    const homeName = item.home_team?.name || "Local";
+    const awayName = item.away_team?.name || "Visitante";
+    const homeLogo = item.home_team?.logo_url || undefined;
+    const awayLogo = item.away_team?.logo_url || undefined;
+    const leagueName = item.league?.name || "Liga Principal";
+    const leagueLogo = item.league?.logo_url || undefined;
 
     const opps = evaluateFixturePrediction({
       fixtureId: item.provider_id,
