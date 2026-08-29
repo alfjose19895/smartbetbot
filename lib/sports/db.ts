@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Direct Supabase persistence and query service for SmartBetBot MVP.
  */
 
@@ -63,7 +63,7 @@ export async function syncLeaguesAndTeams(leagueIds: number[] = TOP_5_LEAGUE_IDS
           sport_id: sportId,
           country_id: countryId,
           provider: "api_football",
-          provider_id: league.id,
+          provider_id: String(league.id),
           name: league.name,
           league_type: league.type.toLowerCase() === "cup" ? "cup" : "league",
           logo_url: league.logo,
@@ -94,7 +94,7 @@ export async function syncLeaguesAndTeams(leagueIds: number[] = TOP_5_LEAGUE_IDS
           {
             country_id: countryId,
             provider: "api_football",
-            provider_id: team.id,
+            provider_id: String(team.id),
             name: team.name,
             code: team.code,
             logo_url: team.logo,
@@ -122,62 +122,128 @@ export async function syncUpcomingFixtures(leagueIds: number[] = TOP_5_LEAGUE_ID
   const to = new Date(now.getTime() + lookaheadDays * 86400000).toISOString().split("T")[0];
 
   for (const league of leagues) {
+    let dbLeagueId: string | null = null;
+
     const { data: dbLeague } = await supabase
       .from("leagues")
       .select("id")
       .eq("provider", "api_football")
-      .eq("provider_id", league.id)
+      .eq("provider_id", String(league.id))
       .single();
 
-    if (!dbLeague) continue;
+    if (dbLeague) {
+      dbLeagueId = dbLeague.id;
+    } else {
+      const { data: createdLeague } = await supabase
+        .from("leagues")
+        .upsert(
+          {
+            sport_id: 1,
+            provider: "api_football",
+            provider_id: String(league.id),
+            name: league.name,
+            league_type: league.type.toLowerCase() === "cup" ? "cup" : "league",
+            logo_url: league.logo,
+            is_active: true,
+          },
+          { onConflict: "provider,provider_id" }
+        )
+        .select("id")
+        .single();
+      if (createdLeague) dbLeagueId = createdLeague.id;
+    }
 
+    if (!dbLeagueId) continue;
+
+    // Get or create season
+    let dbSeasonId: string | null = null;
     const { data: dbSeason } = await supabase
       .from("seasons")
       .select("id")
-      .eq("league_id", dbLeague.id)
+      .eq("league_id", dbLeagueId)
       .eq("season_year", league.season)
       .single();
+
+    if (dbSeason) {
+      dbSeasonId = dbSeason.id;
+    } else {
+      const { data: createdSeason } = await supabase
+        .from("seasons")
+        .upsert(
+          {
+            league_id: dbLeagueId,
+            season_year: league.season,
+            is_current: true,
+          },
+          { onConflict: "league_id,season_year" }
+        )
+        .select("id")
+        .single();
+      if (createdSeason) dbSeasonId = createdSeason.id;
+    }
 
     const fixtures = await apiFootball.getFixtures(league.id, league.season, from, to);
 
     for (const f of fixtures) {
-      // Find or upsert home and away teams
+      if (!f.fixture || !f.teams) continue;
+
+      // Upsert home and away teams
       const { data: homeTeam } = await supabase
         .from("teams")
+        .upsert(
+          {
+            provider: "api_football",
+            provider_id: String(f.teams.home.id),
+            name: f.teams.home.name,
+            logo_url: f.teams.home.logo,
+          },
+          { onConflict: "provider,provider_id" }
+        )
         .select("id")
-        .eq("provider", "api_football")
-        .eq("provider_id", f.teams.home.id)
         .single();
 
       const { data: awayTeam } = await supabase
         .from("teams")
+        .upsert(
+          {
+            provider: "api_football",
+            provider_id: String(f.teams.away.id),
+            name: f.teams.away.name,
+            logo_url: f.teams.away.logo,
+          },
+          { onConflict: "provider,provider_id" }
+        )
         .select("id")
-        .eq("provider", "api_football")
-        .eq("provider_id", f.teams.away.id)
         .single();
 
       if (homeTeam && awayTeam) {
         let status = "scheduled";
-        if (["1H", "2H", "HT", "ET", "P"].includes(f.status.short)) status = "live";
-        else if (["FT", "AET", "PEN"].includes(f.status.short)) status = "finished";
-        else if (["PST"].includes(f.status.short)) status = "postponed";
-        else if (["CANC"].includes(f.status.short)) status = "cancelled";
+        const shortStatus = f.fixture.status?.short || "NS";
+        if (["1H", "2H", "HT", "ET", "P"].includes(shortStatus)) status = "live";
+        else if (["FT", "AET", "PEN"].includes(shortStatus)) status = "finished";
+        else if (["PST"].includes(shortStatus)) status = "postponed";
+        else if (["CANC"].includes(shortStatus)) status = "cancelled";
 
         await supabase.from("fixtures").upsert(
           {
-            league_id: dbLeague.id,
-            season_id: dbSeason?.id || null,
+            league_id: dbLeagueId,
+            season_id: dbSeasonId,
             home_team_id: homeTeam.id,
             away_team_id: awayTeam.id,
             provider: "api_football",
-            provider_id: f.id,
-            kickoff_at: f.date,
+            provider_id: String(f.fixture.id),
+            kickoff_at: f.fixture.date,
             status,
-            provider_status: f.status.short,
-            home_score: f.goals.home,
-            away_score: f.goals.away,
-            round: f.league.round,
-            referee: f.referee,
+            provider_status: shortStatus,
+            home_score: f.goals?.home || null,
+            away_score: f.goals?.away || null,
+            round: f.league?.round || null,
+            referee: f.fixture.referee,
+            raw_payload: {
+              home_team: { name: f.teams.home.name, logo_url: f.teams.home.logo },
+              away_team: { name: f.teams.away.name, logo_url: f.teams.away.logo },
+              league: { name: league.name, logo_url: league.logo },
+            },
             has_odds: true,
           },
           { onConflict: "provider,provider_id" }
@@ -190,14 +256,19 @@ export async function syncUpcomingFixtures(leagueIds: number[] = TOP_5_LEAGUE_ID
   return { fixturesSaved };
 }
 
-interface DBFixtureRow {
+interface RawFixtureRow {
   id: string;
-  provider_id: number;
+  provider_id: string;
   kickoff_at: string;
   status: string;
-  home_team: { name: string; logo_url: string | null } | null;
-  away_team: { name: string; logo_url: string | null } | null;
-  league: { name: string; logo_url: string | null } | null;
+  raw_payload: {
+    home_team?: { name?: string; logo_url?: string };
+    away_team?: { name?: string; logo_url?: string };
+    league?: { name?: string; logo_url?: string };
+  } | null;
+  home_team?: { name: string; logo_url: string | null } | null;
+  away_team?: { name: string; logo_url: string | null } | null;
+  league?: { name: string; logo_url: string | null } | null;
 }
 
 /**
@@ -206,17 +277,18 @@ interface DBFixtureRow {
 export async function generatePredictionsForUpcoming(): Promise<MarketOpportunity[]> {
   const supabase = getAdminClient();
 
-  // Query upcoming fixtures from DB
   const now = new Date().toISOString();
-  const maxDate = new Date(Date.now() + 7 * 86400000).toISOString();
+  const maxDate = new Date(Date.now() + 14 * 86400000).toISOString();
 
-  const { data, error } = await supabase
+  // 1. First query fixtures from Supabase
+  const { data } = await supabase
     .from("fixtures")
     .select(`
       id,
       provider_id,
       kickoff_at,
       status,
+      raw_payload,
       home_team:teams!fixtures_home_team_id_fkey(name, logo_url),
       away_team:teams!fixtures_away_team_id_fkey(name, logo_url),
       league:leagues!fixtures_league_id_fkey(name, logo_url)
@@ -226,44 +298,66 @@ export async function generatePredictionsForUpcoming(): Promise<MarketOpportunit
     .order("kickoff_at", { ascending: true })
     .limit(30);
 
-  const fixtures = data as unknown as DBFixtureRow[] | null;
-
-  if (error || !fixtures || fixtures.length === 0) {
-    // If DB is empty, generate baseline featured predictions for top matches
-    return getFallbackFeaturedPredictions();
-  }
+  const fixtures = data as unknown as RawFixtureRow[] | null;
 
   const allOpportunities: MarketOpportunity[] = [];
 
-  for (const item of fixtures) {
-    const homeName = item.home_team?.name || "Local";
-    const awayName = item.away_team?.name || "Visitante";
-    const homeLogo = item.home_team?.logo_url || undefined;
-    const awayLogo = item.away_team?.logo_url || undefined;
-    const leagueName = item.league?.name || "Liga Principal";
-    const leagueLogo = item.league?.logo_url || undefined;
+  if (fixtures && fixtures.length > 0) {
+    for (const item of fixtures) {
+      const homeName = item.home_team?.name || item.raw_payload?.home_team?.name || "Local";
+      const awayName = item.away_team?.name || item.raw_payload?.away_team?.name || "Visitante";
+      const homeLogo = item.home_team?.logo_url || item.raw_payload?.home_team?.logo_url || undefined;
+      const awayLogo = item.away_team?.logo_url || item.raw_payload?.away_team?.logo_url || undefined;
+      const leagueName = item.league?.name || item.raw_payload?.league?.name || "Liga Principal";
+      const leagueLogo = item.league?.logo_url || item.raw_payload?.league?.logo_url || undefined;
 
-    const opps = evaluateFixturePrediction({
-      fixtureId: item.provider_id,
-      homeTeam: homeName,
-      awayTeam: awayName,
-      homeLogo,
-      awayLogo,
-      league: leagueName,
-      leagueLogo,
-      kickoff: item.kickoff_at,
-    });
+      const opps = evaluateFixturePrediction({
+        fixtureId: item.provider_id,
+        homeTeam: homeName,
+        awayTeam: awayName,
+        homeLogo,
+        awayLogo,
+        league: leagueName,
+        leagueLogo,
+        kickoff: item.kickoff_at,
+      });
 
-    if (opps.length > 0) {
-      allOpportunities.push(opps[0]);
+      if (opps.length > 0) {
+        allOpportunities.push(opps[0]);
+      }
     }
   }
 
+  // 2. If DB has few fixtures, fetch directly from API-Football for top leagues
+  if (allOpportunities.length < 3) {
+    try {
+      const directFixtures = await apiFootball.getFixtures(39, 2026);
+      for (const item of directFixtures.slice(0, 10)) {
+        const opps = evaluateFixturePrediction({
+          fixtureId: item.fixture.id,
+          homeTeam: item.teams.home.name,
+          awayTeam: item.teams.away.name,
+          homeLogo: item.teams.home.logo,
+          awayLogo: item.teams.away.logo,
+          league: item.league.name,
+          leagueLogo: item.league.logo,
+          kickoff: item.fixture.date,
+        });
+        if (opps.length > 0) {
+          allOpportunities.push(opps[0]);
+        }
+      }
+    } catch (err) {
+      console.warn("Direct API-Football fetch fallback:", err);
+    }
+  }
+
+  // 3. If still empty, return fallback featured cards
   return allOpportunities.length > 0 ? allOpportunities : getFallbackFeaturedPredictions();
 }
 
 /**
- * Fallback featured predictions matching the reference visual cards when API quota is exhausted
+ * Fallback featured predictions matching the reference visual cards
  */
 export function getFallbackFeaturedPredictions(): MarketOpportunity[] {
   const now = new Date();

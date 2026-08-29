@@ -73,16 +73,18 @@ export interface ApiFootballTeam {
   country: string;
 }
 
-export interface ApiFootballFixture {
-  id: number;
-  referee: string | null;
-  timezone: string;
-  date: string;
-  timestamp: number;
-  status: {
-    long: string;
-    short: string;
-    elapsed: number | null;
+export interface ApiFootballFixtureItem {
+  fixture: {
+    id: number;
+    referee: string | null;
+    timezone: string;
+    date: string;
+    timestamp: number;
+    status: {
+      long: string;
+      short: string;
+      elapsed: number | null;
+    };
   };
   league: {
     id: number;
@@ -168,7 +170,7 @@ export class ApiFootballClient {
           "x-apisports-key": this.apiKey,
           "x-rapidapi-key": this.apiKey,
         },
-        next: { revalidate: 300 }, // 5 min Next.js cache
+        next: { revalidate: 300 }, // 5 min cache
       });
 
       if (!response.ok) {
@@ -234,34 +236,42 @@ export class ApiFootballClient {
   }
 
   /**
-   * Fetch upcoming and today's fixtures for a league
+   * Fetch upcoming and next fixtures for a league
    */
   async getFixtures(
     leagueId: number,
     season: number,
     fromDate?: string,
     toDate?: string
-  ): Promise<ApiFootballFixture[]> {
+  ): Promise<ApiFootballFixtureItem[]> {
     const now = new Date();
     const from = fromDate || now.toISOString().split("T")[0];
     const to =
       toDate || new Date(now.getTime() + 14 * 86400000).toISOString().split("T")[0];
 
-    const data = await this.request<ApiFootballFixture>("fixtures", {
+    // Query both date range and next fixtures
+    const data = await this.request<ApiFootballFixtureItem>("fixtures", {
       league: leagueId,
       season,
       from,
       to,
     });
 
-    return data;
+    if (data && data.length > 0) return data;
+
+    // Fallback: query next 10 fixtures for this league
+    return this.request<ApiFootballFixtureItem>("fixtures", {
+      league: leagueId,
+      season,
+      next: 10,
+    });
   }
 
   /**
    * Fetch live in-play fixtures
    */
-  async getLiveFixtures(): Promise<ApiFootballFixture[]> {
-    return this.request<ApiFootballFixture>("fixtures", { live: "all" });
+  async getLiveFixtures(): Promise<ApiFootballFixtureItem[]> {
+    return this.request<ApiFootballFixtureItem>("fixtures", { live: "all" });
   }
 
   /**

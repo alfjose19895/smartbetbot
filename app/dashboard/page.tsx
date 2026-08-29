@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
@@ -15,52 +15,48 @@ export default function DashboardPage() {
   const [syncMessage, setSyncMessage] = useState("");
 
   useEffect(() => {
-    let isMounted = true;
+    let ignore = false;
 
-    async function fetchPredictions() {
-      try {
-        const res = await fetch("/api/signals");
-        const data = await res.json();
-        if (isMounted) {
+    fetch(`/api/signals?t=${Date.now()}`, { cache: "no-store" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!ignore) {
           if (data.success && data.signals && data.signals.length > 0) {
             setPredictions(data.signals);
           } else {
             setPredictions(getFallbackFeaturedPredictions());
           }
-        }
-      } catch {
-        if (isMounted) {
-          setPredictions(getFallbackFeaturedPredictions());
-        }
-      } finally {
-        if (isMounted) {
           setLoading(false);
         }
-      }
-    }
-
-    void fetchPredictions();
+      })
+      .catch(() => {
+        if (!ignore) {
+          setPredictions(getFallbackFeaturedPredictions());
+          setLoading(false);
+        }
+      });
 
     return () => {
-      isMounted = false;
+      ignore = true;
     };
   }, []);
 
   const handleSyncPredictions = async () => {
     try {
       setSyncing(true);
-      setSyncMessage("Analizando fixtures con modelo Poisson...");
+      setSyncMessage("Analizando fixtures con modelo Poisson y API-Football...");
       const res = await fetch("/api/admin/sync/predictions", { method: "POST" });
       const data = await res.json();
-      if (data.success) {
+      if (data.success && data.predictions && data.predictions.length > 0) {
+        setPredictions(data.predictions);
         setSyncMessage(`✓ ${data.message || "Pronósticos actualizados"}`);
-        const freshRes = await fetch("/api/signals");
+      } else {
+        const freshRes = await fetch(`/api/signals?t=${Date.now()}`, { cache: "no-store" });
         const freshData = await freshRes.json();
         if (freshData.success && freshData.signals) {
           setPredictions(freshData.signals);
         }
-      } else {
-        setSyncMessage("✓ Pronósticos actualizados con datos recientes");
+        setSyncMessage("✓ Pronósticos actualizados");
       }
     } catch {
       setSyncMessage("✓ Pronósticos listos");
@@ -114,7 +110,7 @@ export default function DashboardPage() {
             className="inline-flex items-center gap-1.5 rounded-xl bg-slate-850 px-3 py-1.5 text-xs font-bold text-slate-200 border border-slate-700 hover:bg-slate-800 transition shadow-sm"
           >
             <span>{syncing ? "🔄" : "⚡"}</span>
-            <span className="hidden sm:inline">{syncing ? "Analizando..." : "Actualizar"}</span>
+            <span className="hidden sm:inline">{syncing ? "Analizando..." : "Actualizar Picks"}</span>
           </button>
         </div>
       </header>
