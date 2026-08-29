@@ -67,13 +67,12 @@ types, FastAPI request objects, SQLAlchemy models, Firebase, or Redis clients.
 | --- | --- | --- |
 | Next.js | Yes | Landing page, authenticated application, PWA |
 | FastAPI | Yes | Versioned API, authorization, read models, preferences |
-| Prematch worker | No | Schedules, history, standings, injuries/lineups, supplementary context |
-| Live worker | No | Live state, events, statistics, pressure |
-| Odds worker | No | Prices, movement, implied/fair probability, edge |
+| Worker supervisor | No | Prematch, live, odds, probability, signals, settlement, notifications |
 
-All four Python processes deploy from the same `backend/requirements.txt` on Railway without a
-Dockerfile. Workers use database or Redis locks and idempotent writes so restarts and concurrent
-runs do not duplicate snapshots or signals.
+The API and private worker supervisor deploy from the same `backend/requirements.txt` on Railway
+without a Dockerfile. The supervisor runs seven independent asynchronous loops with a shared
+shutdown signal. Database or Redis locks and idempotent writes prevent restarts or concurrent runs
+from duplicating snapshots or signals.
 
 ## Core data flow
 
@@ -102,7 +101,7 @@ runs do not duplicate snapshots or signals.
 ## Environments and deployment
 
 Development, staging, and production use separate Supabase, Upstash, and Firebase cloud projects.
-The frontend deploys to Vercel; the API and three workers deploy to Railway. No Docker, local
+The frontend deploys to Vercel; the API and worker supervisor deploy to Railway. No Docker, local
 PostgreSQL, local Redis, local Supabase, or Kubernetes component is part of the MVP.
 
 ## Phase 1 decisions

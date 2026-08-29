@@ -22,7 +22,11 @@ from app.workers.runtime import (
 )
 
 
-async def run(*, run_once: bool | None = None) -> None:
+async def run(
+    *,
+    run_once: bool | None = None,
+    stop_event: asyncio.Event | None = None,
+) -> None:
     settings = Settings()
     configure_logging(settings.log_level)
     credentials = (
@@ -91,8 +95,9 @@ async def run(*, run_once: bool | None = None) -> None:
                 target_limit=settings.notification_target_limit,
             ).run_once()
 
-    stop_event = asyncio.Event()
-    install_shutdown_handlers(stop_event)
+    if stop_event is None:
+        stop_event = asyncio.Event()
+        install_shutdown_handlers(stop_event)
     try:
         await run_worker_loop(
             cycle=lambda: run_recorded_cycle(

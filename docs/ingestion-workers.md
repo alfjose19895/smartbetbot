@@ -97,5 +97,6 @@ pnpm worker:live --once
 pnpm worker:odds --once
 ```
 
-Long-running Railway start commands are the same commands without `--once`. Deploy each command as
-a separate private service from the same repository and backend environment variables.
+The individual commands remain useful for local diagnosis. In Railway, deploy one private service
+with `python -m app.workers.combined`; it supervises every ingestion and downstream worker loop
+using the same backend environment variables.

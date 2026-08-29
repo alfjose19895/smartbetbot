@@ -23,17 +23,12 @@ for `main`. Railway uses persistent environments with environment-scoped shared 
 | --- | --- | --- | --- |
 | Vercel | `smartbetbot-web` | Yes | Managed Next.js build/start |
 | Railway | `smartbetbot-api` | Yes | `uvicorn app.main:app --host 0.0.0.0 --port $PORT --no-server-header` |
-| Railway | `smartbetbot-prematch-worker` | No | `python -m app.workers.prematch` |
-| Railway | `smartbetbot-live-worker` | No | `python -m app.workers.live` |
-| Railway | `smartbetbot-odds-worker` | No | `python -m app.workers.odds` |
-| Railway | `smartbetbot-probability-worker` | No | `python -m app.workers.probability` |
-| Railway | `smartbetbot-signal-worker` | No | `python -m app.workers.signals` |
-| Railway | `smartbetbot-settlement-worker` | No | `python -m app.workers.settlement` |
-| Railway | `smartbetbot-notification-worker` | No | `python -m app.workers.notifications` |
+| Railway | `smartbetbot-workers` | No | `python -m app.workers.combined` |
 
-Use one replica per worker initially. PostgreSQL uniqueness and Upstash owner-safe locks remain the
-last defenses against duplicate runs. Only the API receives a Railway public domain. Configure its
-healthcheck as `/health/ready` and allow enough drain time for graceful shutdown.
+The private worker service supervises the prematch, live, odds, probability, signals, settlement,
+and notification loops in one container. Use one replica initially. Each loop retains its own
+PostgreSQL records and Upstash owner-safe lock. Only the API receives a Railway public domain.
+Configure its healthcheck as `/health/ready` and allow enough drain time for graceful shutdown.
 `ALLOWED_HOSTS` must include the API origin hostname plus any Railway-generated public/private
 hostname used by health probes; a scoped pattern such as `*.up.railway.app` is supported.
 
@@ -45,8 +40,8 @@ hostname used by health probes; a scoped pattern such as `*.up.railway.app` is s
 4. Run the database dry-run against the target and review every migration.
 5. Apply migrations once, then run database lint and verification.
 6. Deploy the API and verify `/health` and `/health/ready`.
-7. Deploy workers paused or with strategies disabled, then start them in this order: prematch,
-   probability, live, odds, signals, settlement, notifications.
+7. Deploy `smartbetbot-workers` with strategies initially disabled, verify that all seven loops
+   report startup, then enable the intended strategies.
 8. Deploy the frontend only after the API origin is ready.
 9. Run `deployment-smoke.yml` or the local read-only smoke command.
 10. Complete the manual signup/login, ingestion, odds, signal, settlement, and push checklist.

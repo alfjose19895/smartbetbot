@@ -19,6 +19,7 @@
     "db:push:dry": "bash scripts/db-push.sh --dry-run",
     "db:verify": "cd backend && .venv/bin/python scripts/verify_database.py",
     "provider:verify": "cd backend && .venv/bin/python -m scripts.verify_api_football",
+    "worker:all": "cd backend && .venv/bin/python -m app.workers.combined",
     "worker:prematch": "cd backend && .venv/bin/python -m app.workers.prematch",
     "worker:live": "cd backend && .venv/bin/python -m app.workers.live",
     "worker:odds": "cd backend && .venv/bin/python -m app.workers.odds",

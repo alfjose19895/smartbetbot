@@ -90,12 +90,17 @@ async def _run_prematch_cycle(runtime: WorkerRuntime) -> IngestionReport:
         return _merge_reports(report, await odds_service.ingest_prematch(targets))
 
 
-async def run(*, run_once: bool | None = None) -> None:
+async def run(
+    *,
+    run_once: bool | None = None,
+    stop_event: asyncio.Event | None = None,
+) -> None:
     settings = Settings()
     configure_logging(settings.log_level)
     runtime = await build_worker_runtime(settings, WorkerName.PREMATCH)
-    stop_event = asyncio.Event()
-    install_shutdown_handlers(stop_event)
+    if stop_event is None:
+        stop_event = asyncio.Event()
+        install_shutdown_handlers(stop_event)
     try:
         await run_worker_loop(
             cycle=lambda: run_recorded_cycle(

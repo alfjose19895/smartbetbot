@@ -10,7 +10,7 @@ Create these resources manually:
 - Supabase project `smartbetbot-staging`, with Auth email flows and staging redirect URLs.
 - Upstash database `smartbetbot-staging`, near the Railway region.
 - Firebase project/Web App `SmartBetBot Staging`, its VAPID key, and a server service account.
-- Railway `staging` environment with the eight backend services listed in
+- Railway `staging` environment with the two backend services listed in
   [deployment.md](deployment.md), each using Root Directory `/backend`.
 - Vercel Preview or Custom Environment scoped to branch `develop` and a stable staging URL.
 - GitHub environment `staging`, restricted to `develop` for the manual deployment smoke job.
