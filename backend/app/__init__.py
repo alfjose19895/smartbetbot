@@ -1,0 +1,1 @@
+"""SmartBetBot backend application."""

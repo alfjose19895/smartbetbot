@@ -1,0 +1,2 @@
+# CI/release tooling only; never install this file in a Railway runtime image.
+pip-audit==2.10.1
