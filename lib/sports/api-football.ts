@@ -240,30 +240,25 @@ export class ApiFootballClient {
    */
   async getFixtures(
     leagueId: number,
-    season: number,
+    season?: number,
     fromDate?: string,
-    toDate?: string
+    toDate?: string,
+    nextCount: number = 8
   ): Promise<ApiFootballFixtureItem[]> {
-    const now = new Date();
-    const from = fromDate || now.toISOString().split("T")[0];
-    const to =
-      toDate || new Date(now.getTime() + 14 * 86400000).toISOString().split("T")[0];
+    if (fromDate && toDate && season) {
+      const data = await this.request<ApiFootballFixtureItem>("fixtures", {
+        league: leagueId,
+        season,
+        from: fromDate,
+        to: toDate,
+      });
+      if (data && data.length > 0) return data;
+    }
 
-    // Query both date range and next fixtures
-    const data = await this.request<ApiFootballFixtureItem>("fixtures", {
-      league: leagueId,
-      season,
-      from,
-      to,
-    });
-
-    if (data && data.length > 0) return data;
-
-    // Fallback: query next 10 fixtures for this league
+    // Default to fetching next fixtures for this league
     return this.request<ApiFootballFixtureItem>("fixtures", {
       league: leagueId,
-      season,
-      next: 10,
+      next: nextCount,
     });
   }
 

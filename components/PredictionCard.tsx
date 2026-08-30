@@ -7,15 +7,50 @@ interface PredictionCardProps {
   prediction: MarketOpportunity;
 }
 
+function formatKickoffDate(dateString: string): string {
+  try {
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) return "Próximamente";
+
+    const today = new Date();
+    const isToday =
+      d.getDate() === today.getDate() &&
+      d.getMonth() === today.getMonth() &&
+      d.getFullYear() === today.getFullYear();
+
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    const isTomorrow =
+      d.getDate() === tomorrow.getDate() &&
+      d.getMonth() === tomorrow.getMonth() &&
+      d.getFullYear() === tomorrow.getFullYear();
+
+    const hours = String(d.getHours()).padStart(2, "0");
+    const minutes = String(d.getMinutes()).padStart(2, "0");
+    const timeStr = `${hours}:${minutes}`;
+
+    if (isToday) return `Hoy, ${timeStr}`;
+    if (isTomorrow) return `Mañana, ${timeStr}`;
+
+    const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+    return `${d.getDate()} ${months[d.getMonth()]}, ${timeStr}`;
+  } catch {
+    return "Próximamente";
+  }
+}
+
 export function PredictionCard({ prediction }: PredictionCardProps) {
   const [copied, setCopied] = useState(false);
   const [showStoryModal, setShowStoryModal] = useState(false);
+
+  const formattedDate = formatKickoffDate(prediction.kickoff);
 
   const handleCopy = () => {
     const text = `📊 *Análisis SmartBetBot*
 
 ⚽ *Partido:* ${prediction.match}
 🏆 *Liga:* ${prediction.league}
+📅 *Fecha:* ${formattedDate}
 🎯 *Mercado:* ${prediction.market}
 💰 *Cuota:* ${prediction.odds.toFixed(2)}
 📈 *Probabilidad:* ${prediction.probability}%
@@ -40,11 +75,16 @@ ${prediction.explanation}
             <span className="text-lg">📊</span>
             <h3 className="text-base font-bold tracking-tight text-white">Análisis SmartBetBot</h3>
           </div>
-          {prediction.league && (
-            <span className="rounded-full bg-slate-800/80 px-2.5 py-0.5 text-xs font-medium text-slate-300 border border-slate-700/50">
-              {prediction.league}
+          <div className="flex items-center gap-1.5">
+            <span className="rounded-full bg-emerald-950/80 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400 border border-emerald-800/50">
+              📅 {formattedDate}
             </span>
-          )}
+            {prediction.league && (
+              <span className="rounded-full bg-slate-800/80 px-2.5 py-0.5 text-xs font-medium text-slate-300 border border-slate-700/50">
+                {prediction.league}
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Match & Market Section */}
@@ -140,7 +180,7 @@ ${prediction.explanation}
               <h4 className="mt-2 text-xl font-extrabold tracking-tight text-white">
                 Análisis SmartBetBot
               </h4>
-              <p className="text-xs text-slate-400">{prediction.league}</p>
+              <p className="text-xs text-slate-400">{prediction.league} • {formattedDate}</p>
             </div>
 
             <div className="mt-6 rounded-2xl bg-slate-900/90 p-4 border border-slate-800">
