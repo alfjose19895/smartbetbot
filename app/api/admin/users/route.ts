@@ -81,7 +81,7 @@ export async function GET() {
             roleObj?.slug ||
             profile?.role ||
             meta.role ||
-            (userEmail.includes("admin") || userEmail.includes("alfredo") ? "admin" : "bettor");
+            "bettor";
 
           const isAdm = rawRole === "admin";
           const roleId = roleObj?.id || profile?.role_id || (isAdm ? 1 : 2);

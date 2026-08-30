@@ -29,20 +29,15 @@ export async function getVerifiedIdentity(): Promise<VerifiedIdentity | null> {
     let role: "admin" | "user" = "user";
     let roleId: number = 2; // bettor default
     let roleName = "Apostador";
-    const userEmail = (user.email || "").toLowerCase();
 
-    // Admin email heuristic / metadata check
-    if (
-      userEmail.includes("admin") ||
-      userEmail.includes("alfredo") ||
-      metadata?.role === "admin" ||
-      user.app_metadata?.role === "admin"
-    ) {
+    // 1. Check explicit metadata if configured
+    if (metadata?.role === "admin" || user.app_metadata?.role === "admin") {
       role = "admin";
       roleId = 1;
       roleName = "Administrador";
     }
 
+    // 2. Authoritative profile & roles database query
     try {
       const { data: profile } = await supabase
         .from("profiles")
@@ -65,7 +60,7 @@ export async function getVerifiedIdentity(): Promise<VerifiedIdentity | null> {
           role = "admin";
           roleId = rObj?.id || 1;
           roleName = rObj?.name || "Administrador";
-        } else if (slug) {
+        } else {
           role = "user";
           roleId = rObj?.id || profile.role_id || 2;
           roleName = rObj?.name || "Apostador";
