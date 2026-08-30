@@ -9,6 +9,8 @@ interface UserItem {
   email: string;
   fullName: string;
   role: "admin" | "user";
+  roleId?: number;
+  roleName?: string;
   status: "approved" | "pending";
   createdAt: string;
 }
@@ -419,11 +421,11 @@ export default function AdminControlPage() {
                           <td className="px-4 py-3">
                             {u.role === "admin" ? (
                               <span className="inline-flex items-center gap-1 rounded-lg bg-purple-50 px-2.5 py-1 text-xs font-bold text-purple-700 border border-purple-200 dark:bg-purple-950/80 dark:text-purple-300 dark:border-purple-800">
-                                👑 Administrador
+                                👑 {u.roleName || "Administrador"} (ID: {u.roleId || 1})
                               </span>
                             ) : (
                               <span className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700 border border-blue-200 dark:bg-blue-950/80 dark:text-blue-300 dark:border-blue-800">
-                                🎯 Apostador
+                                🎯 {u.roleName || "Apostador"} (ID: {u.roleId || 2})
                               </span>
                             )}
                           </td>

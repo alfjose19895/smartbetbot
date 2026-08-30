@@ -1,4 +1,4 @@
-﻿import { isSupabaseConfigured } from "@/lib/env";
+import { isSupabaseConfigured } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 
 export type VerifiedIdentity = {
@@ -6,6 +6,8 @@ export type VerifiedIdentity = {
   email: string | null;
   fullName: string | null;
   role: "admin" | "user";
+  roleId?: number;
+  roleName?: string;
   isApproved: boolean;
 };
 
@@ -23,9 +25,11 @@ export async function getVerifiedIdentity(): Promise<VerifiedIdentity | null> {
         : null;
 
     let role: "admin" | "user" = "user";
+    let roleId: number = 2; // bettor default
+    let roleName = "Apostador";
     const userEmail = (user.email || "").toLowerCase();
 
-    // Specific admin emails or user metadata
+    // Admin email heuristic / metadata check
     if (
       userEmail.includes("admin") ||
       userEmail.includes("alfredo") ||
@@ -33,19 +37,40 @@ export async function getVerifiedIdentity(): Promise<VerifiedIdentity | null> {
       user.app_metadata?.role === "admin"
     ) {
       role = "admin";
+      roleId = 1;
+      roleName = "Administrador";
     }
 
     try {
       const { data: profile } = await supabase
         .from("profiles")
-        .select("role")
+        .select(`
+          role,
+          role_id,
+          roles (
+            id,
+            slug,
+            name
+          )
+        `)
         .eq("id", user.id)
         .single();
-      if (profile?.role === "admin") {
-        role = "admin";
+
+      if (profile) {
+        const rObj = Array.isArray(profile.roles) ? profile.roles[0] : profile.roles;
+        const slug = rObj?.slug || profile.role;
+        if (slug === "admin") {
+          role = "admin";
+          roleId = rObj?.id || 1;
+          roleName = rObj?.name || "Administrador";
+        } else if (slug) {
+          role = "user";
+          roleId = rObj?.id || profile.role_id || 2;
+          roleName = rObj?.name || "Apostador";
+        }
       }
     } catch {
-      // Fallback
+      // Fallback to metadata
     }
 
     const isApproved = metadata?.status !== "pending";
@@ -55,6 +80,8 @@ export async function getVerifiedIdentity(): Promise<VerifiedIdentity | null> {
       email: user.email || null,
       fullName: metadata && typeof metadata.full_name === "string" ? metadata.full_name : null,
       role,
+      roleId,
+      roleName,
       isApproved,
     };
   } catch {
