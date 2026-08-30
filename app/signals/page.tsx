@@ -6,7 +6,7 @@ import Link from "next/link";
 import { PredictionCard } from "@/components/PredictionCard";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
-import { MultiSelectDropdown } from "@/components/MultiSelectDropdown";
+import { MultiSelectDropdown, DropdownOption } from "@/components/MultiSelectDropdown";
 
 export default function SignalsPage() {
   const [signals, setSignals] = useState<MarketOpportunity[]>([]);
@@ -34,8 +34,22 @@ export default function SignalsPage() {
     fetchSignals();
   }, []);
 
-  const availableLeagueNames = Array.from(new Set([...signals.map((s) => s.league).filter(Boolean), ...SUPPORTED_LEAGUES.map((l) => l.name)]));
-  const leagues = ["all", ...availableLeagueNames];
+  const leagueDropdownOptions: DropdownOption[] = SUPPORTED_LEAGUES.map((l) => ({
+    value: l.name,
+    label: `${l.name} (${l.country})`,
+    group: l.country,
+    badge: l.tier ? `Div ${l.tier}` : undefined,
+  }));
+
+  signals.forEach((s) => {
+    if (s.league && !leagueDropdownOptions.some((opt) => opt.value === s.league)) {
+      leagueDropdownOptions.push({
+        value: s.league,
+        label: s.league,
+        group: "Otras Ligas",
+      });
+    }
+  });
 
   // Precise Local Calendar Day Filtering
   const now = new Date();
@@ -145,9 +159,9 @@ export default function SignalsPage() {
           </div>
 
           <MultiSelectDropdown
-            label="Ligas"
+            label="Ligas por País"
             icon="🏆"
-            options={availableLeagueNames}
+            options={leagueDropdownOptions}
             selected={selectedLeagues}
             onChange={setSelectedLeagues}
             placeholderAll="Todas las Ligas"

@@ -61,19 +61,19 @@ export function Navbar({ onSync, syncing, userRole, userEmail }: NavbarProps) {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white/90 backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-950/90">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-3.5 py-3 sm:px-6 sm:py-4 lg:px-8 gap-3 sm:gap-6">
+    <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white/95 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/95">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
         {/* Brand */}
-        <Link href="/" className="flex items-center gap-2.5 shrink-0 mr-auto sm:mr-0">
+        <Link href="/" className="flex items-center gap-2.5 shrink-0">
           <span className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 text-base sm:text-lg font-black text-slate-950 shadow-md shadow-emerald-500/20">
             🎯
           </span>
           <div className="flex flex-col">
             <span className="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-white leading-none">
-              Smart<span className="text-emerald-500 dark:text-emerald-400">Bet</span>Bot
+              Smart<span className="text-emerald-600 dark:text-emerald-400">Bet</span>Bot
             </span>
             {currentRole && (
-              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">
+              <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mt-0.5">
                 {currentRole === "admin" ? `👑 ${t("navAdminRole")}` : `🎯 ${t("navBettor")}`}
               </span>
             )}
@@ -90,8 +90,8 @@ export function Navbar({ onSync, syncing, userRole, userEmail }: NavbarProps) {
                 href={link.href}
                 className={`transition-colors ${
                   isActive
-                    ? "text-emerald-600 dark:text-emerald-400 font-bold border-b-2 border-emerald-500 pb-0.5"
-                    : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
+                    ? "text-emerald-700 dark:text-emerald-400 font-bold border-b-2 border-emerald-500 pb-0.5"
+                    : "text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
                 }`}
               >
                 {link.label}
@@ -100,25 +100,29 @@ export function Navbar({ onSync, syncing, userRole, userEmail }: NavbarProps) {
           })}
         </nav>
 
-        {/* Action Controls, Language Toggle, Theme Switcher & Logout */}
-        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-          {/* Quick Language Switcher */}
+        {/* Controls */}
+        <div className="flex items-center gap-2 sm:gap-2.5">
+          {/* Desktop Language Switcher */}
           <button
             onClick={toggleLanguage}
-            className="flex items-center gap-1 rounded-xl border border-slate-300 bg-white px-2 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 cursor-pointer"
+            className="hidden md:flex items-center gap-1 rounded-xl border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 cursor-pointer"
             title={language === "es" ? "Switch to English" : "Cambiar a Español"}
           >
             <span>{language === "es" ? "🇪🇸" : "🇺🇸"}</span>
             <span className="text-[11px] font-extrabold uppercase">{language}</span>
           </button>
 
-          <ThemeToggle />
+          {/* Desktop Theme Switcher */}
+          <div className="hidden md:flex">
+            <ThemeToggle />
+          </div>
 
+          {/* Update / Sync Button (visible on mobile and desktop) */}
           {onSync && (
             <button
               onClick={onSync}
               disabled={syncing}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-3 py-1.5 text-xs font-bold text-emerald-700 hover:bg-emerald-500 hover:text-slate-950 transition-all shadow-sm active:scale-95 dark:border-emerald-500/30 dark:bg-emerald-950/60 dark:text-emerald-400 dark:hover:bg-emerald-500 dark:hover:text-slate-950 cursor-pointer shrink-0"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-50 px-3 py-1.5 text-xs font-extrabold text-emerald-800 hover:bg-emerald-500 hover:text-slate-950 transition-all shadow-sm active:scale-95 dark:border-emerald-500/30 dark:bg-emerald-950/60 dark:text-emerald-400 dark:hover:bg-emerald-500 dark:hover:text-slate-950 cursor-pointer shrink-0"
               title="Actualizar pronósticos en vivo"
             >
               <span className={syncing ? "animate-spin" : ""}>🔄</span>
@@ -130,37 +134,39 @@ export function Navbar({ onSync, syncing, userRole, userEmail }: NavbarProps) {
           <button
             onClick={handleLogout}
             disabled={loggingOut}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50/80 px-2.5 py-1.5 text-xs font-bold text-red-700 transition hover:bg-red-100 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-900/60 cursor-pointer"
+            className="hidden md:inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-2.5 py-1.5 text-xs font-bold text-red-700 transition hover:bg-red-100 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-900/60 cursor-pointer"
             title="Cerrar sesión"
           >
             <span className="text-sm font-bold">⎋</span>
-            <span className="hidden sm:inline">{loggingOut ? "..." : t("navLogout")}</span>
+            <span>{loggingOut ? "..." : t("navLogout")}</span>
           </button>
 
           {/* Mobile Hamburger Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Abrir menú de navegación"
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-300 bg-slate-100 text-slate-700 md:hidden dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 shrink-0 cursor-pointer"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-300 bg-slate-100 text-slate-800 md:hidden dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 shrink-0 cursor-pointer"
           >
             {mobileMenuOpen ? "✕" : "☰"}
           </button>
         </div>
       </div>
 
-      {/* Mobile Slide-down Navigation Panel */}
+      {/* Mobile Slide-down Navigation Panel (Contains links, ThemeToggle, Language, and Logout) */}
       {mobileMenuOpen && (
-        <div className="border-t border-slate-200 bg-white/95 px-4 py-3 shadow-xl backdrop-blur-xl md:hidden dark:border-slate-800 dark:bg-slate-950/95">
+        <div className="border-t border-slate-200 bg-white/98 px-4 py-4 shadow-2xl backdrop-blur-xl md:hidden dark:border-slate-800 dark:bg-slate-950/98">
           {currentEmail && (
-            <div className="mb-3 flex items-center justify-between border-b border-slate-100 pb-2 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
+            <div className="mb-3 flex items-center justify-between border-b border-slate-200 pb-2.5 text-xs text-slate-600 dark:border-slate-800 dark:text-slate-400">
               <div>
-                Conectado como: <span className="font-bold text-slate-800 dark:text-slate-200">{currentEmail}</span>
+                Usuario: <span className="font-bold text-slate-900 dark:text-white">{currentEmail}</span>
               </div>
-              <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-extrabold text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
+              <span className="rounded-md bg-emerald-100 px-2 py-0.5 text-[10px] font-extrabold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400">
                 {currentRole === "admin" ? t("navAdminRole") : t("navBettor")}
               </span>
             </div>
           )}
+
+          {/* Navigation Links Grid */}
           <nav className="grid grid-cols-2 gap-2">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
@@ -169,10 +175,10 @@ export function Navbar({ onSync, syncing, userRole, userEmail }: NavbarProps) {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-2 rounded-xl p-2.5 text-xs font-bold transition ${
+                  className={`flex items-center gap-2 rounded-xl p-3 text-xs font-bold transition ${
                     isActive
-                      ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/30 dark:bg-emerald-950/50 dark:text-emerald-400"
-                      : "bg-slate-50 text-slate-700 hover:bg-slate-100 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-850"
+                      ? "bg-emerald-50 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-500/30"
+                      : "bg-slate-50 text-slate-800 hover:bg-slate-100 border border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800 dark:hover:bg-slate-850"
                   }`}
                 >
                   <span className="text-base">{link.icon}</span>
@@ -182,18 +188,29 @@ export function Navbar({ onSync, syncing, userRole, userEmail }: NavbarProps) {
             })}
           </nav>
 
-          <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-800">
+          {/* Mobile Theme, Language & Logout Controls */}
+          <div className="mt-4 grid grid-cols-2 gap-2 border-t border-slate-200 pt-3 dark:border-slate-800">
+            {/* Theme Toggle Button */}
+            <div className="flex items-center justify-between rounded-xl bg-slate-50 p-2 border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Tema:</span>
+              <ThemeToggle />
+            </div>
+
+            {/* Language Toggle Button */}
             <button
               onClick={toggleLanguage}
-              className="flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+              className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-800 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 cursor-pointer"
             >
-              <span>{language === "es" ? "🇪🇸 Idioma: Español" : "🇺🇸 Language: English"}</span>
+              <span>{language === "es" ? "🇪🇸 Español" : "🇺🇸 English"}</span>
             </button>
+          </div>
 
+          {/* Full-width Mobile Logout Button */}
+          <div className="mt-2.5">
             <button
               onClick={handleLogout}
               disabled={loggingOut}
-              className="flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-bold text-red-700 dark:border-red-900 dark:bg-red-950/60 dark:text-red-300"
+              className="w-full flex items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 py-2.5 text-xs font-bold text-red-700 dark:border-red-900 dark:bg-red-950/60 dark:text-red-300 cursor-pointer"
             >
               <span className="text-sm font-bold">⎋</span>
               <span>{t("navLogout")}</span>

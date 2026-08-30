@@ -172,7 +172,7 @@ ${prediction.explanation}
             <span>{conf.label}</span>
           </span>
 
-          <span className="text-[11px] font-extrabold text-slate-500 dark:text-slate-400">
+          <span className="text-[11px] font-extrabold text-slate-600 dark:text-slate-400 font-bold">
             IA Score: <span className="text-slate-900 dark:text-white">{prediction.smartScore}/100</span>
           </span>
         </div>
@@ -180,14 +180,14 @@ ${prediction.explanation}
         {/* Match & Market Section */}
         <div className="mt-4 grid grid-cols-2 gap-4">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t("matchLabel")}</span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 font-bold">{t("matchLabel")}</span>
             <p className="mt-1 text-sm font-bold text-slate-900 dark:text-white leading-snug">
               {prediction.match}
             </p>
           </div>
           <div className="text-right">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t("marketLabel")}</span>
-            <p className="mt-1 text-sm font-bold text-emerald-600 dark:text-emerald-400 leading-snug">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 font-bold">{t("marketLabel")}</span>
+            <p className="mt-1 text-sm font-bold text-emerald-700 dark:text-emerald-400 font-black leading-snug">
               {prediction.market}
             </p>
           </div>
@@ -196,14 +196,14 @@ ${prediction.explanation}
         {/* Odds & Probability Metrics */}
         <div className="mt-4 grid grid-cols-2 gap-4 rounded-2xl bg-slate-50 p-3.5 border border-slate-200/80 dark:bg-slate-950/60 dark:border-slate-800/50">
           <div>
-            <span className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">{t("oddsLabel")}</span>
-            <p className="mt-0.5 text-2xl font-extrabold tracking-tight text-sky-600 dark:text-sky-400">
+            <span className="text-xs font-medium uppercase tracking-wider text-slate-600 dark:text-slate-400 font-bold">{t("oddsLabel")}</span>
+            <p className="mt-0.5 text-2xl font-extrabold tracking-tight text-sky-700 dark:text-sky-400 font-black">
               {prediction.odds.toFixed(2)}
             </p>
           </div>
           <div className="text-right">
-            <span className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">{t("probLabel")}</span>
-            <p className="mt-0.5 text-2xl font-extrabold tracking-tight text-emerald-600 dark:text-emerald-400">
+            <span className="text-xs font-medium uppercase tracking-wider text-slate-600 dark:text-slate-400 font-bold">{t("probLabel")}</span>
+            <p className="mt-0.5 text-2xl font-extrabold tracking-tight text-emerald-700 dark:text-emerald-400 font-black">
               {prediction.probability.toFixed(1)}%
             </p>
           </div>
@@ -215,7 +215,7 @@ ${prediction.explanation}
             <span>☕</span>
             <span>{t("aiExplanation")}</span>
           </div>
-          <p className="mt-2 text-xs leading-relaxed text-slate-700 font-normal dark:text-slate-300">
+          <p className="mt-2 text-xs leading-relaxed text-slate-800 font-medium dark:text-slate-200">
             {prediction.explanation}
           </p>
         </div>
@@ -223,10 +223,10 @@ ${prediction.explanation}
         {/* Action Buttons Footer */}
         <div className="mt-5 flex items-center justify-between gap-2 pt-2 border-t border-slate-100 dark:border-slate-800/40">
           <div className="flex items-center gap-1.5">
-            <span className="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-400 dark:border-emerald-800/40">
+            <span className="inline-flex items-center rounded-md bg-emerald-100 px-2 py-0.5 text-[11px] font-extrabold text-emerald-900 border border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-400 dark:border-emerald-800/40">
               +{prediction.edge}% Edge
             </span>
-            <span className="inline-flex items-center rounded-md bg-sky-50 px-2 py-0.5 text-[11px] font-semibold text-sky-700 border border-sky-200 dark:bg-sky-950/60 dark:text-sky-300 dark:border-sky-800/40">
+            <span className="inline-flex items-center rounded-md bg-sky-100 px-2 py-0.5 text-[11px] font-extrabold text-sky-900 border border-sky-300 dark:bg-sky-950/60 dark:text-sky-300 dark:border-sky-800/40">
               Score: {prediction.smartScore}/100
             </span>
           </div>
