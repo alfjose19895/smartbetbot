@@ -12,8 +12,17 @@ function formatKickoffDate(dateString: string): string {
     const d = new Date(dateString);
     if (isNaN(d.getTime())) return "Próximamente";
 
-    const now = new Date();
+    const days = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+    const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 
+    const dayName = days[d.getDay()];
+    const dayNum = d.getDate();
+    const monthName = months[d.getMonth()];
+    const hours = String(d.getHours()).padStart(2, "0");
+    const minutes = String(d.getMinutes()).padStart(2, "0");
+    const timeStr = `${hours}:${minutes}`;
+
+    const now = new Date();
     const isToday =
       d.getFullYear() === now.getFullYear() &&
       d.getMonth() === now.getMonth() &&
@@ -26,15 +35,14 @@ function formatKickoffDate(dateString: string): string {
       d.getMonth() === tomorrow.getMonth() &&
       d.getDate() === tomorrow.getDate();
 
-    const hours = String(d.getHours()).padStart(2, "0");
-    const minutes = String(d.getMinutes()).padStart(2, "0");
-    const timeStr = `${hours}:${minutes}`;
+    if (isToday) {
+      return `Hoy (${dayNum} ${monthName}) • ${timeStr}`;
+    }
+    if (isTomorrow) {
+      return `Mañana (${dayNum} ${monthName}) • ${timeStr}`;
+    }
 
-    if (isToday) return `Hoy, ${timeStr}`;
-    if (isTomorrow) return `Mañana, ${timeStr}`;
-
-    const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-    return `${d.getDate()} ${months[d.getMonth()]}, ${timeStr}`;
+    return `${dayName} ${dayNum} ${monthName} • ${timeStr}`;
   } catch {
     return "Próximamente";
   }
@@ -77,11 +85,11 @@ ${prediction.explanation}
             <h3 className="text-base font-bold tracking-tight text-white">Análisis SmartBetBot</h3>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="rounded-full bg-emerald-950/80 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400 border border-emerald-800/50">
+            <span className="rounded-full bg-emerald-950/90 px-2.5 py-1 text-[11px] font-bold text-emerald-400 border border-emerald-700/60">
               📅 {formattedDate}
             </span>
             {prediction.league && (
-              <span className="rounded-full bg-slate-800/80 px-2.5 py-0.5 text-xs font-medium text-slate-300 border border-slate-700/50">
+              <span className="rounded-full bg-slate-800/80 px-2.5 py-1 text-xs font-medium text-slate-300 border border-slate-700/50">
                 {prediction.league}
               </span>
             )}
