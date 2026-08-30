@@ -8,11 +8,13 @@ import { logoutAction } from "@/features/auth/actions";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface NavbarProps {
+  onSync?: () => Promise<void>;
+  syncing?: boolean;
   userRole?: "admin" | "user" | null;
   userEmail?: string | null;
 }
 
-export function Navbar({ userRole, userEmail }: NavbarProps = {}) {
+export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarProps = {}) {
   const pathname = usePathname();
   const { language, setLanguage, t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -20,6 +22,27 @@ export function Navbar({ userRole, userEmail }: NavbarProps = {}) {
 
   const [currentRole, setCurrentRole] = useState<"admin" | "user" | null>(userRole || null);
   const [currentEmail, setCurrentEmail] = useState<string | null>(userEmail || null);
+  const [syncingInternal, setSyncingInternal] = useState(false);
+
+  const handleAdminSync = async () => {
+    if (onSync) {
+      await onSync();
+    } else {
+      try {
+        setSyncingInternal(true);
+        await fetch("/api/admin/sync/predictions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({}),
+        });
+        window.location.reload();
+      } catch (err) {
+        console.error("Admin sync error:", err);
+      } finally {
+        setSyncingInternal(false);
+      }
+    }
+  };
 
   useEffect(() => {
     fetch("/api/auth/me")
@@ -114,6 +137,19 @@ export function Navbar({ userRole, userEmail }: NavbarProps = {}) {
           <div className="hidden md:flex">
             <ThemeToggle />
           </div>
+
+          {/* Admin-Only Sync / Refresh Button */}
+          {currentRole === "admin" && (
+            <button
+              onClick={handleAdminSync}
+              disabled={syncing || syncingInternal}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-50 px-3 py-1.5 text-xs font-extrabold text-emerald-800 hover:bg-emerald-500 hover:text-slate-950 transition-all shadow-sm active:scale-95 dark:border-emerald-500/30 dark:bg-emerald-950/60 dark:text-emerald-400 dark:hover:bg-emerald-500 dark:hover:text-slate-950 cursor-pointer shrink-0"
+              title="Actualizar pronósticos en vivo (Exclusivo Administradores)"
+            >
+              <span className={(syncing || syncingInternal) ? "animate-spin" : ""}>🔄</span>
+              <span className="hidden sm:inline">{(syncing || syncingInternal) ? t("navSyncing") : t("navSync")}</span>
+            </button>
+          )}
 
 
 
