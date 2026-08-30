@@ -1,6 +1,6 @@
 /**
  * Direct API-Football client for Next.js (Vercel Serverless / Server Actions).
- * Provides typed, cached, rate-limited access to fixtures, leagues, teams, and odds.
+ * Provides typed, in-memory cached, rate-limited access to fixtures, leagues, teams, and odds.
  */
 
 export interface SupportedLeague {
@@ -134,6 +134,10 @@ export interface ApiFootballOdds {
 const DEFAULT_BASE_URL = "https://v3.football.api-sports.io";
 const DEFAULT_API_KEY = "01de09ba37a81c948be7aebcaf154c61";
 
+// In-memory cache for Serverless runtime (prevents burning through API rate limits)
+const cacheStore = new Map<string, { data: unknown; timestamp: number }>();
+const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
+
 export class ApiFootballClient {
   private apiKey: string;
   private baseUrl: string;
@@ -158,6 +162,12 @@ export class ApiFootballClient {
       }
     }
 
+    const cacheKey = `${endpoint}?${searchParams.toString()}`;
+    const cached = cacheStore.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+      return cached.data as T[];
+    }
+
     const url = `${this.baseUrl}/${endpoint.replace(/^\//, "")}?${searchParams.toString()}`;
 
     try {
@@ -166,7 +176,6 @@ export class ApiFootballClient {
           "x-apisports-key": this.apiKey,
           "x-rapidapi-key": this.apiKey,
         },
-        next: { revalidate: 300 }, // 5 min cache
       });
 
       if (!response.ok) {
@@ -176,10 +185,14 @@ export class ApiFootballClient {
 
       const data = await response.json();
       if (data.errors && Object.keys(data.errors).length > 0 && !Array.isArray(data.errors)) {
-        console.error("[ApiFootball] API returned errors:", data.errors);
+        console.warn("[ApiFootball] API message:", data.errors);
       }
 
-      return (data.response as T[]) || [];
+      const result = (data.response as T[]) || [];
+      if (result.length > 0) {
+        cacheStore.set(cacheKey, { data: result, timestamp: Date.now() });
+      }
+      return result;
     } catch (err) {
       console.error(`[ApiFootball] Request exception for ${endpoint}:`, err);
       return [];
@@ -189,7 +202,7 @@ export class ApiFootballClient {
   /**
    * Fetch active leagues by ID list
    */
-  async getLeagues(leagueIds: number[] = ALL_LEAGUE_IDS): Promise<ApiFootballLeague[]> {
+  async getLeagues(leagueIds: number[] = TOP_5_LEAGUE_IDS): Promise<ApiFootballLeague[]> {
     const results: ApiFootballLeague[] = [];
     for (const id of leagueIds) {
       const data = await this.request<{
@@ -239,7 +252,7 @@ export class ApiFootballClient {
     season?: number,
     fromDate?: string,
     toDate?: string,
-    nextCount: number = 8
+    nextCount: number = 6
   ): Promise<ApiFootballFixtureItem[]> {
     if (fromDate && toDate && season) {
       const data = await this.request<ApiFootballFixtureItem>("fixtures", {

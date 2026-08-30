@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { evaluateFixturePrediction } from "./prediction-engine";
+import { generatePredictionsForUpcoming } from "./db";
 
 describe("Prediction Engine (TypeScript MVP)", () => {
   it("calculates realistic match probabilities and detects positive edge", () => {
@@ -19,12 +20,20 @@ describe("Prediction Engine (TypeScript MVP)", () => {
     });
 
     expect(opps.length).toBeGreaterThan(0);
-
     const topPick = opps[0];
     expect(topPick.match).toBe("Liverpool vs Nottingham Forest");
     expect(topPick.probability).toBeGreaterThan(50);
     expect(topPick.odds).toBeGreaterThan(1.0);
     expect(topPick.explanation).toBeTruthy();
     expect(topPick.smartScore).toBeGreaterThanOrEqual(70);
+  });
+
+  it("generates predictions from live multi-league queries", async () => {
+    const predictions = await generatePredictionsForUpcoming();
+    console.log("TEST GENERATED PREDICTIONS COUNT:", predictions.length);
+    if (predictions.length > 0) {
+      console.log("Sample prediction:", predictions[0]);
+    }
+    expect(predictions.length).toBeGreaterThan(0);
   });
 });
