@@ -1,6 +1,6 @@
 "use client";
 
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { Navbar } from "@/components/Navbar";
 import React from "react";
 import Link from "next/link";
 
@@ -147,36 +147,9 @@ export default function HistoryPage() {
   const netProfit = HISTORY_DATA.reduce((acc, p) => acc + p.profit, 0).toFixed(2);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100">
+    <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100 overflow-x-hidden">
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-950/80">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 text-base font-black text-slate-950">
-              ⚡
-            </span>
-            <span className="text-lg font-black tracking-tight text-slate-900 dark:text-white">
-              Smart<span className="text-emerald-500 dark:text-emerald-400">Bet</span>Bot
-            </span>
-          </Link>
-
-          <nav className="flex items-center gap-4 text-xs font-semibold sm:gap-6 sm:text-sm">
-            <ThemeToggle />
-            <Link href="/dashboard" className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition">
-              Dashboard
-            </Link>
-            <Link href="/signals" className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition">
-              Picks
-            </Link>
-            <Link href="/history" className="text-emerald-600 dark:text-emerald-400 font-bold">
-              Historial
-            </Link>
-            <Link href="/admin" className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition">
-              Admin
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <Navbar />
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div>

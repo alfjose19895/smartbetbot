@@ -1,6 +1,6 @@
 "use client";
 
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { Navbar } from "@/components/Navbar";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { PredictionCard } from "@/components/PredictionCard";
@@ -96,45 +96,9 @@ export default function DashboardPage() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100">
+    <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100 overflow-x-hidden">
       {/* Top Navbar */}
-      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-950/80">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 text-base font-black text-slate-950">
-              ⚡
-            </span>
-            <span className="text-lg font-black tracking-tight text-slate-900 dark:text-white">
-              Smart<span className="text-emerald-500 dark:text-emerald-400">Bet</span>Bot
-            </span>
-          </Link>
-
-          <nav className="flex items-center gap-4 text-xs font-semibold sm:gap-6 sm:text-sm">
-            <ThemeToggle />
-            <Link href="/dashboard" className="text-emerald-600 dark:text-emerald-400 font-bold">
-              Dashboard
-            </Link>
-            <Link href="/signals" className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition">
-              Picks
-            </Link>
-            <Link href="/history" className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition">
-              Historial
-            </Link>
-            <Link href="/admin" className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition">
-              Admin
-            </Link>
-          </nav>
-
-          <button
-            onClick={handleSyncPredictions}
-            disabled={syncing}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-white px-3 py-1.5 text-xs font-bold text-slate-800 border border-slate-300 hover:bg-slate-100 dark:bg-slate-850 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-800 transition shadow-sm"
-          >
-            <span>{syncing ? "🔄" : "⚡"}</span>
-            <span className="hidden sm:inline">{syncing ? "Analizando..." : "Actualizar Picks"}</span>
-          </button>
-        </div>
-      </header>
+      <Navbar onSync={handleSyncPredictions} syncing={syncing} />
 
       {/* Main Content */}
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
