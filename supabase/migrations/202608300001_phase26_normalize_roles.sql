@@ -1,4 +1,4 @@
-﻿-- SmartBetBot Phase 26: Database Normalization - Roles Table and Profile Relationship
+-- SmartBetBot Phase 26: Database Normalization - Roles Table and Profile Relationship
 
 -- 1. Create normalized roles catalog table
 create table if not exists public.roles (
