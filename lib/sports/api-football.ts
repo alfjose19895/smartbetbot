@@ -350,6 +350,10 @@ export class ApiFootballClient {
   /**
    * Fetch upcoming and next fixtures for a league
    */
+  async getUpcomingFixtures(leagueId: number, nextCount: number = 6): Promise<ApiFootballFixtureItem[]> {
+    return this.getFixtures(leagueId, undefined, undefined, undefined, nextCount);
+  }
+
   async getFixtures(
     leagueId: number,
     season?: number,

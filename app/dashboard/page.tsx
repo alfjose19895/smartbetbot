@@ -133,9 +133,15 @@ export default function DashboardPage() {
   const tomorrowCount = predictions.filter((p) => getLocalDateStr(p.kickoff) === tomorrowStr).length;
 
   const filteredPredictions = predictions.filter((p) => {
-    // League multi-select filter
-    if (selectedLeagues.length > 0 && !selectedLeagues.includes(p.league)) {
-      return false;
+    // League and Country multi-select filter with alias matching
+    if (selectedLeagues.length > 0) {
+      const normLeague = (p.league || "").toLowerCase().trim();
+      const normCountry = (p.country || "").toLowerCase().trim();
+      const matched = selectedLeagues.some((sel) => {
+        const s = sel.toLowerCase().trim();
+        return normLeague.includes(s) || s.includes(normLeague) || normCountry === s || normCountry.includes(s);
+      });
+      if (!matched) return false;
     }
 
     // Confidence multi-select filter

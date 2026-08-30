@@ -77,7 +77,15 @@ export default function SignalsPage() {
 
   const filteredSignals = signals.filter((s) => {
     if (s.probability < minProbability) return false;
-    if (selectedLeagues.length > 0 && !selectedLeagues.includes(s.league)) return false;
+    if (selectedLeagues.length > 0) {
+      const normLeague = (s.league || "").toLowerCase().trim();
+      const normCountry = (s.country || "").toLowerCase().trim();
+      const matched = selectedLeagues.some((sel) => {
+        const selLower = sel.toLowerCase().trim();
+        return normLeague.includes(selLower) || selLower.includes(normLeague) || normCountry === selLower || normCountry.includes(selLower);
+      });
+      if (!matched) return false;
+    }
 
     const matchDateStr = getLocalDateStr(s.kickoff);
     const matchTimeMs = new Date(s.kickoff).getTime();
