@@ -117,7 +117,9 @@ export async function registerAction(
         data: { full_name: parsed.data.fullName },
       },
     });
-    if (error) return { status: "error", message: getAuthErrorMessage(error) };
+    if (error) {
+      return { status: "error", message: getAuthErrorMessage(error) };
+    }
 
     if (data?.session) {
       revalidatePath("/", "layout");
@@ -125,7 +127,11 @@ export async function registerAction(
     }
   } catch (err: any) {
     if (err?.digest?.includes("NEXT_REDIRECT")) throw err;
-    return unexpectedState();
+    console.error("[registerAction error]:", err);
+    return {
+      status: "error",
+      message: err?.message ? getAuthErrorMessage(err) : "No pudimos contactar el servicio de autenticación. Inténtalo nuevamente.",
+    };
   }
 
   return {

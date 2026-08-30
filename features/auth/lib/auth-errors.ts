@@ -22,5 +22,13 @@ export function getAuthErrorMessage(error: SupabaseErrorLike): string {
     return ERROR_MESSAGES[error.code];
   }
 
+  const raw = (error?.message || "").toLowerCase();
+  if (raw.includes("already registered") || raw.includes("already exists")) {
+    return "Ya existe una cuenta con este correo. Por favor inicia sesión o recupera tu contraseña.";
+  }
+  if (raw.includes("weak password") || raw.includes("password should be at least")) {
+    return "La contraseña no cumple los requisitos de seguridad.";
+  }
+
   return "No pudimos completar la solicitud. Inténtalo nuevamente.";
 }
