@@ -8,13 +8,11 @@ import { logoutAction } from "@/features/auth/actions";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface NavbarProps {
-  onSync?: () => Promise<void>;
-  syncing?: boolean;
   userRole?: "admin" | "user" | null;
   userEmail?: string | null;
 }
 
-export function Navbar({ onSync, syncing, userRole, userEmail }: NavbarProps) {
+export function Navbar({ userRole, userEmail }: NavbarProps = {}) {
   const pathname = usePathname();
   const { language, setLanguage, t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -117,18 +115,7 @@ export function Navbar({ onSync, syncing, userRole, userEmail }: NavbarProps) {
             <ThemeToggle />
           </div>
 
-          {/* Update / Sync Button (strictly restricted to admin users only) */}
-          {onSync && currentRole === "admin" && (
-            <button
-              onClick={onSync}
-              disabled={syncing}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-50 px-3 py-1.5 text-xs font-extrabold text-emerald-800 hover:bg-emerald-500 hover:text-slate-950 transition-all shadow-sm active:scale-95 dark:border-emerald-500/30 dark:bg-emerald-950/60 dark:text-emerald-400 dark:hover:bg-emerald-500 dark:hover:text-slate-950 cursor-pointer shrink-0"
-              title="Actualizar pronósticos en vivo"
-            >
-              <span className={syncing ? "animate-spin" : ""}>🔄</span>
-              <span className="hidden sm:inline">{syncing ? t("navSyncing") : t("navSync")}</span>
-            </button>
-          )}
+
 
           {/* Desktop Logout Button */}
           <button

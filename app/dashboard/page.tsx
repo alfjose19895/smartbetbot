@@ -179,7 +179,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100 overflow-x-hidden">
       {/* Header */}
-      <Navbar onSync={handleSyncPredictions} syncing={syncing} />
+      <Navbar />
 
       <main className="mx-auto max-w-7xl px-3.5 py-6 sm:px-6 sm:py-8 lg:px-8">
         {/* Sync feedback notification */}
