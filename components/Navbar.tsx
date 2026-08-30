@@ -37,6 +37,7 @@ export function Navbar({ onSync, syncing, userRole, userEmail }: NavbarProps) {
     { href: "/dashboard", label: "Dashboard", icon: "📊", adminOnly: false },
     { href: "/signals", label: "Picks", icon: "🔥", adminOnly: false },
     { href: "/history", label: "Historial", icon: "📜", adminOnly: false },
+    { href: "/settings", label: "Mi Perfil", icon: "👤", adminOnly: false },
     ...(currentRole === "admin"
       ? [{ href: "/admin", label: "Admin", icon: "⚙️", adminOnly: true }]
       : []),
