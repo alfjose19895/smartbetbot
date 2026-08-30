@@ -8,74 +8,152 @@ export interface SupportedLeague {
   name: string;
   country: string;
   category: "top_europe" | "cups" | "other_europe" | "americas" | "asia_africa" | "second_divisions";
+  tier?: number;
 }
 
 export const SUPPORTED_LEAGUES: SupportedLeague[] = [
-  // European Cups & International
+  // Top 5 European Leagues - Tier 1
+  { id: 39, name: "Premier League", country: "Inglaterra", category: "top_europe", tier: 1 },
+  { id: 140, name: "La Liga", country: "España", category: "top_europe", tier: 1 },
+  { id: 135, name: "Serie A", country: "Italia", category: "top_europe", tier: 1 },
+  { id: 78, name: "Bundesliga", country: "Alemania", category: "top_europe", tier: 1 },
+  { id: 61, name: "Ligue 1", country: "Francia", category: "top_europe", tier: 1 },
+
+  // European 2nd & 3rd Divisions (Inglaterra, España, Italia, Alemania, Francia)
+  { id: 40, name: "Championship (2da Div)", country: "Inglaterra", category: "second_divisions", tier: 2 },
+  { id: 41, name: "League One (3ra Div)", country: "Inglaterra", category: "second_divisions", tier: 3 },
+  { id: 42, name: "League Two (4ta Div)", country: "Inglaterra", category: "second_divisions", tier: 4 },
+  { id: 45, name: "FA Cup", country: "Inglaterra", category: "cups" },
+  { id: 48, name: "EFL Cup (Carabao Cup)", country: "Inglaterra", category: "cups" },
+
+  { id: 141, name: "La Liga 2 (Segunda División)", country: "España", category: "second_divisions", tier: 2 },
+  { id: 142, name: "Primera Federación (3ra Div)", country: "España", category: "second_divisions", tier: 3 },
+  { id: 143, name: "Copa del Rey", country: "España", category: "cups" },
+
+  { id: 136, name: "Serie B", country: "Italia", category: "second_divisions", tier: 2 },
+  { id: 137, name: "Serie C (3ra Div)", country: "Italia", category: "second_divisions", tier: 3 },
+  { id: 138, name: "Coppa Italia", country: "Italia", category: "cups" },
+
+  { id: 79, name: "2. Bundesliga", country: "Alemania", category: "second_divisions", tier: 2 },
+  { id: 80, name: "3. Liga", country: "Alemania", category: "second_divisions", tier: 3 },
+  { id: 81, name: "DFB Pokal", country: "Alemania", category: "cups" },
+
+  { id: 62, name: "Ligue 2", country: "Francia", category: "second_divisions", tier: 2 },
+  { id: 63, name: "National 1 (3ra Div)", country: "Francia", category: "second_divisions", tier: 3 },
+  { id: 66, name: "Coupe de France", country: "Francia", category: "cups" },
+
+  // Portugal (1ra, 2da, 3ra)
+  { id: 94, name: "Primeira Liga", country: "Portugal", category: "other_europe", tier: 1 },
+  { id: 95, name: "Liga Portugal 2", country: "Portugal", category: "second_divisions", tier: 2 },
+  { id: 804, name: "Liga 3", country: "Portugal", category: "second_divisions", tier: 3 },
+  { id: 96, name: "Taça de Portugal", country: "Portugal", category: "cups" },
+
+  // Países Bajos (1ra, 2da)
+  { id: 88, name: "Eredivisie", country: "Países Bajos", category: "other_europe", tier: 1 },
+  { id: 89, name: "Eerste Divisie (2da Div)", country: "Países Bajos", category: "second_divisions", tier: 2 },
+  { id: 90, name: "KNVB Beker", country: "Países Bajos", category: "cups" },
+
+  // Bélgica (1ra, 2da, 3ra)
+  { id: 144, name: "Pro League", country: "Bélgica", category: "other_europe", tier: 1 },
+  { id: 145, name: "Challenger Pro League (2da Div)", country: "Bélgica", category: "second_divisions", tier: 2 },
+  { id: 146, name: "National 1 (3ra Div)", country: "Bélgica", category: "second_divisions", tier: 3 },
+  { id: 147, name: "Belgian Cup", country: "Bélgica", category: "cups" },
+
+  // Escocia (1ra, 2da, 3ra)
+  { id: 179, name: "Premiership", country: "Escocia", category: "other_europe", tier: 1 },
+  { id: 180, name: "Championship (2da Div)", country: "Escocia", category: "second_divisions", tier: 2 },
+  { id: 181, name: "League One (3ra Div)", country: "Escocia", category: "second_divisions", tier: 3 },
+  { id: 182, name: "Scottish Cup", country: "Escocia", category: "cups" },
+
+  // Turquía (1ra, 2da, 3ra)
+  { id: 203, name: "Süper Lig", country: "Turquía", category: "other_europe", tier: 1 },
+  { id: 204, name: "1. Lig (2da Div)", country: "Turquía", category: "second_divisions", tier: 2 },
+  { id: 205, name: "2. Lig (3ra Div)", country: "Turquía", category: "second_divisions", tier: 3 },
+
+  // Grecia (1ra, 2da)
+  { id: 197, name: "Super League 1", country: "Grecia", category: "other_europe", tier: 1 },
+  { id: 198, name: "Super League 2 (2da Div)", country: "Grecia", category: "second_divisions", tier: 2 },
+
+  // Austria (1ra, 2da, 3ra)
+  { id: 218, name: "Austrian Bundesliga", country: "Austria", category: "other_europe", tier: 1 },
+  { id: 219, name: "2. Liga", country: "Austria", category: "second_divisions", tier: 2 },
+  { id: 220, name: "Regionalliga (3ra Div)", country: "Austria", category: "second_divisions", tier: 3 },
+
+  // Suiza (1ra, 2da, 3ra)
+  { id: 207, name: "Super League", country: "Suiza", category: "other_europe", tier: 1 },
+  { id: 208, name: "Challenge League (2da Div)", country: "Suiza", category: "second_divisions", tier: 2 },
+  { id: 209, name: "Promotion League (3ra Div)", country: "Suiza", category: "second_divisions", tier: 3 },
+
+  // Dinamarca (1ra, 2da, 3ra)
+  { id: 119, name: "Superliga", country: "Dinamarca", category: "other_europe", tier: 1 },
+  { id: 120, name: "1. Division (2da Div)", country: "Dinamarca", category: "second_divisions", tier: 2 },
+  { id: 121, name: "2. Division (3ra Div)", country: "Dinamarca", category: "second_divisions", tier: 3 },
+
+  // Suecia (1ra, 2da, 3ra)
+  { id: 113, name: "Allsvenskan", country: "Suecia", category: "other_europe", tier: 1 },
+  { id: 114, name: "Superettan (2da Div)", country: "Suecia", category: "second_divisions", tier: 2 },
+  { id: 115, name: "Ettan (3ra Div)", country: "Suecia", category: "second_divisions", tier: 3 },
+
+  // Noruega (1ra, 2da, 3ra)
+  { id: 103, name: "Eliteserien", country: "Noruega", category: "other_europe", tier: 1 },
+  { id: 104, name: "1. Division (2da Div)", country: "Noruega", category: "second_divisions", tier: 2 },
+  { id: 105, name: "2. Division (3ra Div)", country: "Noruega", category: "second_divisions", tier: 3 },
+
+  // Polonia (1ra, 2da, 3ra)
+  { id: 106, name: "Ekstraklasa", country: "Polonia", category: "other_europe", tier: 1 },
+  { id: 107, name: "I Liga (2da Div)", country: "Polonia", category: "second_divisions", tier: 2 },
+  { id: 108, name: "II Liga (3ra Div)", country: "Polonia", category: "second_divisions", tier: 3 },
+
+  // República Checa (1ra, 2da)
+  { id: 345, name: "Czech First League", country: "República Checa", category: "other_europe", tier: 1 },
+  { id: 346, name: "FNL (2da Div)", country: "República Checa", category: "second_divisions", tier: 2 },
+
+  // Croacia (1ra, 2da)
+  { id: 210, name: "HNL", country: "Croacia", category: "other_europe", tier: 1 },
+  { id: 211, name: "1. NL (2da Div)", country: "Croacia", category: "second_divisions", tier: 2 },
+
+  // UEFA & Continental Cups
   { id: 2, name: "UEFA Champions League", country: "Europa", category: "cups" },
   { id: 3, name: "UEFA Europa League", country: "Europa", category: "cups" },
   { id: 848, name: "UEFA Conference League", country: "Europa", category: "cups" },
   { id: 531, name: "UEFA Super Cup", country: "Europa", category: "cups" },
-  { id: 4, name: "UEFA Nations League", country: "Europa", category: "cups" },
+  { id: 5, name: "UEFA Nations League", country: "Europa", category: "cups" },
   { id: 1, name: "World Cup", country: "Mundial", category: "cups" },
 
-  // Top 5 Europe
-  { id: 39, name: "Premier League", country: "Inglaterra", category: "top_europe" },
-  { id: 140, name: "La Liga", country: "España", category: "top_europe" },
-  { id: 135, name: "Serie A", country: "Italia", category: "top_europe" },
-  { id: 78, name: "Bundesliga", country: "Alemania", category: "top_europe" },
-  { id: 61, name: "Ligue 1", country: "Francia", category: "top_europe" },
-
-  // Other Major European Leagues
-  { id: 94, name: "Primeira Liga", country: "Portugal", category: "other_europe" },
-  { id: 88, name: "Eredivisie", country: "Países Bajos", category: "other_europe" },
-  { id: 203, name: "Süper Lig", country: "Turquía", category: "other_europe" },
-  { id: 179, name: "Premiership", country: "Escocia", category: "other_europe" },
-  { id: 144, name: "Pro League", country: "Bélgica", category: "other_europe" },
-  { id: 207, name: "Super League", country: "Suiza", category: "other_europe" },
-  { id: 218, name: "Bundesliga", country: "Austria", category: "other_europe" },
-  { id: 197, name: "Super League", country: "Grecia", category: "other_europe" },
-  { id: 119, name: "Superliga", country: "Dinamarca", category: "other_europe" },
-  { id: 103, name: "Eliteserien", country: "Noruega", category: "other_europe" },
-  { id: 113, name: "Allsvenskan", country: "Suecia", category: "other_europe" },
-  { id: 106, name: "Ekstraklasa", country: "Polonia", category: "other_europe" },
-
-  // Second Divisions
-  { id: 40, name: "Championship", country: "Inglaterra", category: "second_divisions" },
-  { id: 141, name: "La Liga 2", country: "España", category: "second_divisions" },
-  { id: 79, name: "2. Bundesliga", country: "Alemania", category: "second_divisions" },
-  { id: 136, name: "Serie B", country: "Italia", category: "second_divisions" },
-  { id: 62, name: "Ligue 2", country: "Francia", category: "second_divisions" },
-
-  // Americas
+  // Américas (1ra y 2da División)
+  { id: 71, name: "Brasileirão Série A", country: "Brasil", category: "americas", tier: 1 },
+  { id: 72, name: "Brasileirão Série B", country: "Brasil", category: "second_divisions", tier: 2 },
+  { id: 128, name: "Liga Profesional Argentina", country: "Argentina", category: "americas", tier: 1 },
+  { id: 129, name: "Primera Nacional (2da Div)", country: "Argentina", category: "second_divisions", tier: 2 },
   { id: 13, name: "Copa Libertadores", country: "Sudamérica", category: "cups" },
   { id: 11, name: "Copa Sudamericana", country: "Sudamérica", category: "cups" },
-  { id: 71, name: "Brasileirão Série A", country: "Brasil", category: "americas" },
-  { id: 72, name: "Brasileirão Série B", country: "Brasil", category: "americas" },
-  { id: 128, name: "Liga Profesional", country: "Argentina", category: "americas" },
-  { id: 262, name: "Liga MX", country: "México", category: "americas" },
-  { id: 253, name: "Major League Soccer (MLS)", country: "Estados Unidos", category: "americas" },
-  { id: 239, name: "Primera A", country: "Colombia", category: "americas" },
-  { id: 265, name: "Primera División", country: "Chile", category: "americas" },
-  { id: 281, name: "Liga 1", country: "Perú", category: "americas" },
-  { id: 242, name: "Liga Pro", country: "Ecuador", category: "americas" },
-  { id: 271, name: "Primera División", country: "Uruguay", category: "americas" },
-  { id: 250, name: "Primera División", country: "Paraguay", category: "americas" },
+  { id: 262, name: "Liga MX", country: "México", category: "americas", tier: 1 },
+  { id: 263, name: "Liga de Expansión MX", country: "México", category: "second_divisions", tier: 2 },
+  { id: 253, name: "Major League Soccer (MLS)", country: "Estados Unidos", category: "americas", tier: 1 },
+  { id: 254, name: "USL Championship", country: "Estados Unidos", category: "second_divisions", tier: 2 },
+  { id: 239, name: "Primera A", country: "Colombia", category: "americas", tier: 1 },
+  { id: 240, name: "Primera B", country: "Colombia", category: "second_divisions", tier: 2 },
+  { id: 242, name: "Liga Pro", country: "Ecuador", category: "americas", tier: 1 },
+  { id: 281, name: "Liga 1", country: "Perú", category: "americas", tier: 1 },
+  { id: 265, name: "Primera División", country: "Chile", category: "americas", tier: 1 },
+  { id: 271, name: "Primera División", country: "Uruguay", category: "americas", tier: 1 },
+  { id: 250, name: "Primera División", country: "Paraguay", category: "americas", tier: 1 },
 
   // Asia, Middle East & Africa
-  { id: 307, name: "Saudi Pro League", country: "Arabia Saudita", category: "asia_africa" },
-  { id: 98, name: "J1 League", country: "Japón", category: "asia_africa" },
-  { id: 292, name: "K League 1", country: "Corea del Sur", category: "asia_africa" },
-  { id: 188, name: "A-League", country: "Australia", category: "asia_africa" },
-  { id: 301, name: "Stars League", country: "Qatar", category: "asia_africa" },
-  { id: 233, name: "Premier League", country: "Egipto", category: "asia_africa" },
-  { id: 288, name: "Premier Division", country: "Sudáfrica", category: "asia_africa" },
+  { id: 307, name: "Saudi Pro League", country: "Arabia Saudita", category: "asia_africa", tier: 1 },
+  { id: 98, name: "J1 League", country: "Japón", category: "asia_africa", tier: 1 },
+  { id: 99, name: "J2 League", country: "Japón", category: "second_divisions", tier: 2 },
+  { id: 292, name: "K League 1", country: "Corea del Sur", category: "asia_africa", tier: 1 },
+  { id: 188, name: "A-League", country: "Australia", category: "asia_africa", tier: 1 },
+  { id: 301, name: "Stars League", country: "Qatar", category: "asia_africa", tier: 1 },
+  { id: 233, name: "Premier League", country: "Egipto", category: "asia_africa", tier: 1 },
+  { id: 288, name: "Premier Division", country: "Sudáfrica", category: "asia_africa", tier: 1 },
 ];
 
 export const ALL_LEAGUE_IDS = SUPPORTED_LEAGUES.map((l) => l.id);
 export const TOP_5_LEAGUE_IDS = [39, 140, 135, 78, 61];
-export const CUPS_LEAGUE_IDS = [2, 3, 848, 13, 11, 531, 4];
-export const AMERICAS_LEAGUE_IDS = [71, 128, 262, 253, 239, 265, 281, 242, 271, 250];
+export const CUPS_LEAGUE_IDS = [2, 3, 848, 5, 13, 11, 45, 48, 143, 138, 81, 66, 96, 90, 147, 182];
+export const AMERICAS_LEAGUE_IDS = [71, 72, 128, 129, 262, 263, 253, 254, 239, 240, 242, 281, 265, 271, 250];
 
 export interface ApiFootballLeague {
   id: number;
