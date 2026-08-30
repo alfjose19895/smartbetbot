@@ -117,13 +117,21 @@ export default function HistoryPage() {
     // Result filter
     if (filterResult !== "ALL" && item.result !== filterResult) return false;
 
-    // League multi-select filter
-    if (selectedLeagues.length > 0 && !selectedLeagues.includes(item.league)) return false;
+    // League & Country multi-select filter with alias matching
+    if (selectedLeagues.length > 0) {
+      const normLeague = (item.league || "").toLowerCase().trim();
+      const normCountry = ((item as any).country || "").toLowerCase().trim();
+      const matched = selectedLeagues.some((sel) => {
+        const s = sel.toLowerCase().trim();
+        return normLeague.includes(s) || s.includes(normLeague) || normCountry === s || normCountry.includes(s);
+      });
+      if (!matched) return false;
+    }
 
     // Market multi-select filter
     if (selectedMarkets.length > 0 && !selectedMarkets.includes(item.market)) return false;
 
-    // Date filter
+    // Date filter matching exact real kickoff date
     const itemDateStr = item.kickoff ? getLocalDateStr(item.kickoff) : "";
     const itemTimeMs = item.kickoff ? new Date(item.kickoff).getTime() : 0;
 
