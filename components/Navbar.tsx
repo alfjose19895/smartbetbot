@@ -101,7 +101,7 @@ export function Navbar({ onSync, syncing, userRole, userEmail }: NavbarProps) {
             <button
               onClick={onSync}
               disabled={syncing}
-              className="inline-flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1.5 text-xs font-bold text-slate-800 border border-slate-300 hover:bg-slate-200 dark:bg-slate-850 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-800 transition shrink-0"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-3 py-1.5 text-xs font-bold text-emerald-700 hover:bg-emerald-500 hover:text-slate-950 transition-all shadow-sm active:scale-95 dark:border-emerald-500/30 dark:bg-emerald-950/60 dark:text-emerald-400 dark:hover:bg-emerald-500 dark:hover:text-slate-950 cursor-pointer shrink-0"
               title="Actualizar pronósticos en vivo"
             >
               <span>{syncing ? "🔄" : "⚡"}</span>

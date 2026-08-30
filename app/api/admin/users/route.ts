@@ -38,8 +38,11 @@ export async function GET() {
 
   if (supabase) {
     try {
-      // Query profiles with relation to roles table
-      const { data: profiles, error: profileErr } = await supabase
+      // 1. Query genuine registered users directly from Supabase Auth
+      const { data: authData, error: authErr } = await supabase.auth.admin.listUsers();
+
+      // 2. Query profiles with normalized roles relation
+      const { data: profiles } = await supabase
         .from("profiles")
         .select(`
           id,
@@ -54,87 +57,71 @@ export async function GET() {
           created_at
         `);
 
-      if (!profileErr && profiles && profiles.length > 0) {
-        usersList = profiles.map((p) => {
-          const roleObj = Array.isArray(p.roles) ? p.roles[0] : p.roles;
-          const slug = roleObj?.slug || p.role || "bettor";
-          const isAdm = slug === "admin";
+      interface ProfileRow {
+        id: string;
+        display_name: string | null;
+        role: string | null;
+        role_id: number | null;
+        roles: { id: number; slug: string; name: string } | { id: number; slug: string; name: string }[] | null;
+        created_at: string | null;
+      }
+
+      const profileMap = new Map<string, ProfileRow>(
+        (profiles || []).map((p) => [p.id, p as ProfileRow])
+      );
+
+      if (!authErr && authData?.users && authData.users.length > 0) {
+        usersList = authData.users.map((u) => {
+          const profile = profileMap.get(u.id);
+          const roleObj = Array.isArray(profile?.roles) ? profile?.roles[0] : profile?.roles;
+          const meta = u.user_metadata || {};
+
+          const userEmail = (u.email || "").toLowerCase();
+          const rawRole =
+            roleObj?.slug ||
+            profile?.role ||
+            meta.role ||
+            (userEmail.includes("admin") || userEmail.includes("alfredo") ? "admin" : "bettor");
+
+          const isAdm = rawRole === "admin";
+          const roleId = roleObj?.id || profile?.role_id || (isAdm ? 1 : 2);
+          const roleName = roleObj?.name || (isAdm ? "Administrador" : "Apostador");
+          const status = meta.status === "pending" ? "pending" : "approved";
+          const fullName =
+            profile?.display_name ||
+            meta.full_name ||
+            meta.name ||
+            (u.email ? u.email.split("@")[0] : "Usuario");
+
           return {
-            id: p.id,
-            email: `${p.display_name || "usuario"}@smartbetbot.app`,
-            fullName: p.display_name || "Apostador",
+            id: u.id,
+            email: u.email || "Sin correo",
+            fullName,
             role: isAdm ? "admin" : "user",
-            roleId: roleObj?.id || p.role_id || (isAdm ? 1 : 2),
-            roleName: roleObj?.name || (isAdm ? "Administrador" : "Apostador"),
-            status: "approved",
-            createdAt: p.created_at || new Date().toISOString(),
+            roleId,
+            roleName,
+            status,
+            createdAt: u.created_at,
           };
         });
       }
-    } catch {
-      // Fallback
-    }
-
-    if (usersList.length === 0) {
-      try {
-        const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
-        if (!authError && authUsers?.users) {
-          usersList = authUsers.users.map((u) => {
-            const meta = u.user_metadata || {};
-            const isAdm =
-              (u.email || "").includes("admin") ||
-              (u.email || "").includes("alfredo") ||
-              meta.role === "admin";
-            return {
-              id: u.id,
-              email: u.email || "Sin correo",
-              fullName: meta.full_name || meta.name || "Usuario",
-              role: isAdm ? "admin" : "user",
-              roleId: isAdm ? 1 : 2,
-              roleName: isAdm ? "Administrador" : "Apostador",
-              status: meta.status === "pending" ? "pending" : "approved",
-              createdAt: u.created_at,
-            };
-          });
-        }
-      } catch {
-        // Fallback
-      }
+    } catch (err) {
+      console.warn("[AdminUsers] Error querying auth.admin:", err);
     }
   }
 
-  // Fallback demo users
-  if (usersList.length === 0) {
+  // Fallback only if no users found in DB
+  if (usersList.length === 0 && identity) {
     usersList = [
       {
-        id: "usr-admin-1",
-        email: identity?.email || "alfredo@smartbetbot.app",
-        fullName: identity?.fullName || "Alfredo (Admin)",
+        id: identity.id,
+        email: identity.email || "alfredo@smartbetbot.app",
+        fullName: identity.fullName || "Alfredo (Admin)",
         role: "admin",
         roleId: 1,
         roleName: "Administrador",
         status: "approved",
-        createdAt: "2026-08-25T10:00:00Z",
-      },
-      {
-        id: "usr-demo-2",
-        email: "carlos.apuestas@gmail.com",
-        fullName: "Carlos Mendoza",
-        role: "user",
-        roleId: 2,
-        roleName: "Apostador",
-        status: "approved",
-        createdAt: "2026-08-28T14:30:00Z",
-      },
-      {
-        id: "usr-demo-3",
-        email: "mariana.sports@outlook.com",
-        fullName: "Mariana Silva",
-        role: "user",
-        roleId: 2,
-        roleName: "Apostador",
-        status: "pending",
-        createdAt: "2026-08-29T18:20:00Z",
+        createdAt: new Date().toISOString(),
       },
     ];
   }
