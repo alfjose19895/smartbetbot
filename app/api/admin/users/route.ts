@@ -137,13 +137,21 @@ export async function POST(request: Request) {
 
     if (action === "updateStatus" && status) {
       const isPaused = status === "paused";
-      // Update metadata and ban status to block access immediately
+      const isApproved = status === "approved";
+      
       await supabase.auth.admin.updateUserById(userId, {
         user_metadata: { status },
         ban_duration: isPaused ? "876000h" : "none",
       });
 
-      return NextResponse.json({ success: true, message: `Usuario ${isPaused ? "pausado" : "aprobado"} con éxito` });
+      return NextResponse.json({
+        success: true,
+        message: isApproved
+          ? "Usuario aprobado con éxito. Ahora tiene acceso total al sistema."
+          : isPaused
+          ? "Usuario pausado con éxito."
+          : "Estado de usuario actualizado.",
+      });
     }
 
     if (action === "updateRole" && role) {

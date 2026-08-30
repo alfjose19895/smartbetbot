@@ -35,6 +35,7 @@ export default function AdminControlPage() {
   const [editStatus, setEditStatus] = useState<"approved" | "paused">("approved");
   const [savingEdit, setSavingEdit] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [userFilter, setUserFilter] = useState<"all" | "pending" | "approved" | "paused">("all");
 
   const addLog = (msg: string) => {
     setLogs((prev) => [`[${new Date().toLocaleTimeString()}] ${msg}`, ...prev.slice(0, 49)]);
@@ -73,6 +74,17 @@ export default function AdminControlPage() {
       fetchUsers();
     }
   }, [activeTab]);
+
+  const pendingUsers = users.filter((u) => u.status === "pending");
+  const pendingUsersCount = pendingUsers.length;
+  const approvedUsersCount = users.filter((u) => u.status === "approved").length;
+  const pausedUsersCount = users.filter((u) => u.status === "paused").length;
+  const filteredUsers = users.filter((u) => {
+    if (userFilter === "pending") return u.status === "pending";
+    if (userFilter === "approved") return u.status === "approved";
+    if (userFilter === "paused") return u.status === "paused";
+    return true;
+  });
 
   const openEditModal = (user: UserItem) => {
     setEditingUser(user);
@@ -506,7 +518,7 @@ export default function AdminControlPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-slate-700 dark:divide-slate-800/60 dark:text-slate-300">
-                      {users.map((u) => (
+                      {filteredUsers.map((u) => (
                         <tr key={u.id} className="hover:bg-slate-50 transition dark:hover:bg-slate-850/60">
                           <td className="px-4 py-3">
                             <div className="font-bold text-slate-900 dark:text-white">{u.fullName}</div>

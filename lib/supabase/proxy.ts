@@ -1,4 +1,4 @@
-﻿import { createServerClient } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
 import { safeRedirectPath } from "@/features/auth/lib/redirects";
@@ -75,11 +75,17 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
     (user?.user_metadata && typeof user.user_metadata === "object" && (user.user_metadata as Record<string, unknown>).status === "paused")
   );
 
-  if ((!hasVerifiedIdentity || isPaused) && isProtectedRoute) {
+  const isPending = Boolean(
+    user?.user_metadata && typeof user.user_metadata === "object" && (user.user_metadata as Record<string, unknown>).status === "pending"
+  );
+
+  if ((!hasVerifiedIdentity || isPaused || isPending) && isProtectedRoute) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = "/login";
     loginUrl.search = "";
-    if (isPaused) {
+    if (isPending) {
+      loginUrl.searchParams.set("error", "account_pending");
+    } else if (isPaused) {
       loginUrl.searchParams.set("error", "account_paused");
     } else {
       loginUrl.searchParams.set("next", safeRedirectPath(`${pathname}${request.nextUrl.search}`));
@@ -90,7 +96,7 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
     return response;
   }
 
-  if (hasVerifiedIdentity && isAuthEntryRoute) {
+  if (hasVerifiedIdentity && !isPaused && !isPending && isAuthEntryRoute) {
     const dashboardUrl = request.nextUrl.clone();
     dashboardUrl.pathname = "/dashboard";
     dashboardUrl.search = "";
