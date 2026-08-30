@@ -10,7 +10,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { MultiSelectDropdown, DropdownOption } from "@/components/MultiSelectDropdown";
 
 export default function DashboardPage() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const [predictions, setPredictions] = useState<MarketOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
@@ -19,6 +19,7 @@ export default function DashboardPage() {
   // Filters
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
+  const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<"all" | "today" | "tomorrow" | "week">("all");
 
   const loadSignals = async () => {
@@ -96,6 +97,13 @@ export default function DashboardPage() {
     new Set([...coreMarkets, ...predictions.map((p) => p.market).filter(Boolean)])
   );
 
+  const confidenceDropdownOptions: DropdownOption[] = [
+    { value: "muy_alta", label: language === "en" ? "⭐⭐⭐ Very High (≥75%)" : "⭐⭐⭐ Muy Alta (≥75%)" },
+    { value: "alta", label: language === "en" ? "⭐⭐ High (65% - 74%)" : "⭐⭐ Alta (65% - 74%)" },
+    { value: "media", label: language === "en" ? "⭐ Medium (55% - 64%)" : "⭐ Media (55% - 64%)" },
+    { value: "baja", label: language === "en" ? "Low / Moderate (<55%)" : "Moderada / Baja (<55%)" },
+  ];
+
   const marketDropdownOptions: DropdownOption[] = availableMarketNames.map((m) => ({
     value: m,
     label: m,
@@ -128,6 +136,18 @@ export default function DashboardPage() {
     // League multi-select filter
     if (selectedLeagues.length > 0 && !selectedLeagues.includes(p.league)) {
       return false;
+    }
+
+    // Confidence multi-select filter
+    if (selectedConfidence.length > 0) {
+      let level = "baja";
+      if (p.probability >= 75 || p.confidence === "Muy Alta") level = "muy_alta";
+      else if (p.probability >= 65 || p.confidence === "Alta") level = "alta";
+      else if (p.probability >= 55 || p.confidence === "Moderada") level = "media";
+
+      if (!selectedConfidence.includes(level)) {
+        return false;
+      }
     }
 
     // Market multi-select filter (Exact match)
@@ -276,6 +296,15 @@ export default function DashboardPage() {
               selected={selectedLeagues}
               onChange={setSelectedLeagues}
               placeholderAll={t("allLeagues")}
+            />
+
+            <MultiSelectDropdown
+              label={language === "en" ? "Confidence" : "Confianza"}
+              icon="⭐"
+              options={confidenceDropdownOptions}
+              selected={selectedConfidence}
+              onChange={setSelectedConfidence}
+              placeholderAll={language === "en" ? "All Confidence Levels" : "Todas las Confianzas"}
             />
 
             <MultiSelectDropdown

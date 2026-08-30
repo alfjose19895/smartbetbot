@@ -12,6 +12,8 @@ export default function SignalsPage() {
   const [signals, setSignals] = useState<MarketOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
+  const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
+  const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
   const [minProbability, setMinProbability] = useState<number>(60);
   const [selectedDate, setSelectedDate] = useState<"all" | "today" | "tomorrow" | "week">("all");
 
