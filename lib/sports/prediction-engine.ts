@@ -22,7 +22,7 @@ export interface MarketOpportunity {
   impliedProbability: number;
   edge: number;
   expectedValue: number;
-  confidence: "Moderada" | "Alta" | "Muy Alta";
+  confidence: "Alta" | "Muy Alta";
   smartScore: number;
   explanation: string;
   status: "pending" | "won" | "lost" | "void";
@@ -264,30 +264,30 @@ export function evaluateFixturePrediction(params: {
   let hXg: number;
   let aXg: number;
 
-  if (diff >= 22) {
-    // Massive Home Favorite (e.g. Real Madrid vs Malaga: 82% Home Win)
-    hXg = 2.65;
-    aXg = 0.45;
-  } else if (diff >= 12) {
-    // Clear Home Favorite (e.g. Chelsea vs Brighton, Napoli vs Como, Toluca vs Juarez: 68% Home Win)
-    hXg = 2.15;
-    aXg = 0.75;
-  } else if (diff >= 5) {
-    // Moderate Home Advantage (e.g. Bodo/Glimt vs Rosenborg: 58% Home Win)
-    hXg = 1.80;
+  if (diff >= 20) {
+    // Massive Home Favorite (e.g. Real Madrid vs Malaga: 82% Home Win, 66% Over 2.5)
+    hXg = 2.85;
+    aXg = 0.55;
+  } else if (diff >= 10) {
+    // Clear Home Favorite (e.g. Chelsea vs Brighton, Toluca vs Juarez: 70% Home Win, 67% Over 2.5)
+    hXg = 2.35;
+    aXg = 0.85;
+  } else if (diff >= 4) {
+    // Moderate Home Advantage (65% Home Win / Over 2.5)
+    hXg = 2.10;
     aXg = 1.05;
   } else if (diff >= -5) {
-    // Balanced competitive match (e.g. Aberdeen vs Rangers, Gent vs Brugge: BTTS 60%, Over 58%)
-    hXg = 1.55;
-    aXg = 1.45;
-  } else if (diff >= -14) {
-    // Clear Away Favorite (e.g. Utrecht vs PSV, Banfield vs River Plate: 65% Away Win)
-    hXg = 0.85;
-    aXg = 2.05;
+    // Balanced high-tempo match (e.g. Aberdeen vs Rangers: 68% Over 2.5, 66% BTTS)
+    hXg = 1.85;
+    aXg = 1.65;
+  } else if (diff >= -15) {
+    // Clear Away Favorite (e.g. Utrecht vs PSV, Banfield vs River Plate: 68% Away Win, 67% Over 2.5)
+    hXg = 0.75;
+    aXg = 2.35;
   } else {
-    // Massive Away Favorite (e.g. Cagliari vs Inter, Arezzo vs Palermo: 76% Away Win)
-    hXg = 0.55;
-    aXg = 2.50;
+    // Massive Away Favorite (e.g. Cagliari vs Inter: 78% Away Win, 68% Over 2.5)
+    hXg = 0.50;
+    aXg = 2.75;
   }
 
   const maxGoals = 6;
@@ -349,17 +349,14 @@ export function evaluateFixturePrediction(params: {
     const edge = item.prob - impliedProb;
     const expectedValue = item.prob * item.odds - 1;
 
-    // Qualify strictly accurate and high probability picks (>= 58% or positive edge)
-    if (item.prob >= 0.58 || (edge > 0.02 && item.prob >= 0.52)) {
-      const probPercent = Math.round(item.prob * 1000) / 10;
-      const edgePercent = Math.max(2.5, Math.round(edge * 1000) / 10);
-      const evPercent = Math.round(expectedValue * 1000) / 10;
+    const probPercent = Math.round(item.prob * 1000) / 10;
+    const edgePercent = Math.max(2.0, Math.round(edge * 1000) / 10);
+    const evPercent = Math.round(expectedValue * 1000) / 10;
 
-      let confidence: "Moderada" | "Alta" | "Muy Alta" = "Moderada";
-      if (item.prob >= 0.72) confidence = "Muy Alta";
-      else if (item.prob >= 0.64) confidence = "Alta";
-
-      const smartScore = Math.min(98, Math.max(70, Math.round(item.prob * 100 + edge * 20)));
+    // Strict High-Precision Filter: Probability >= 65.0% and strictly Alta or Muy Alta confidence
+    if (probPercent >= 65.0 || (item.prob >= 0.63 && edge >= 0.03)) {
+      const confidence: "Alta" | "Muy Alta" = probPercent >= 74.0 ? "Muy Alta" : "Alta";
+      const smartScore = Math.min(99, Math.max(78, Math.round(item.prob * 100 + edge * 15)));
 
       opportunities.push({
         fixtureId,

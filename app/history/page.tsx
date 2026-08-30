@@ -1,12 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { useLanguage } from "@/context/LanguageContext";
+import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
+import { MultiSelectDropdown, DropdownOption } from "@/components/MultiSelectDropdown";
 
 interface HistoricalItem {
   id: string;
   date: string;
+  kickoff: string;
   match: string;
   homeTeam: string;
   awayTeam: string;
@@ -20,221 +23,127 @@ interface HistoricalItem {
   odds: number;
   probability: number;
   result: "WON" | "LOST" | "VOID";
-  profit: number; // in units
+  profit: number;
   explanation?: string;
 }
 
-const HISTORY_DATA: HistoricalItem[] = [
-  {
-    id: "h-1557383",
-    date: "29 Ago 2026",
-    match: "Liverpool vs Nottingham Forest",
-    homeTeam: "Liverpool",
-    awayTeam: "Nottingham Forest",
-    homeLogo: "https://media.api-sports.io/football/teams/40.png",
-    awayLogo: "https://media.api-sports.io/football/teams/65.png",
-    score: "2 - 2",
-    league: "Premier League",
-    leagueLogo: "https://media.api-sports.io/football/leagues/39.png",
-    market: "Over 2.5 Goles",
-    selection: "Over 2.5",
-    odds: 1.54,
-    probability: 72.0,
-    result: "WON",
-    profit: +0.54,
-    explanation: "Duelo de alto ritmo en Anfield con 4 goles totales, superando la línea de 2.5 con amplio margen.",
-  },
-  {
-    id: "h-1570362",
-    date: "29 Ago 2026",
-    match: "Sevilla vs Atletico Madrid",
-    homeTeam: "Sevilla",
-    awayTeam: "Atletico Madrid",
-    homeLogo: "https://media.api-sports.io/football/teams/536.png",
-    awayLogo: "https://media.api-sports.io/football/teams/530.png",
-    score: "1 - 3",
-    league: "La Liga",
-    leagueLogo: "https://media.api-sports.io/football/leagues/140.png",
-    market: "Over 2.5 Goles",
-    selection: "Over 2.5",
-    odds: 1.68,
-    probability: 67.5,
-    result: "WON",
-    profit: +0.68,
-    explanation: "Efectividad ofensiva del Atlético en el Sánchez-Pizjuán con 4 goles anotados en el encuentro.",
-  },
-  {
-    id: "h-1575142",
-    date: "29 Ago 2026",
-    match: "Borussia Dortmund vs Hamburger SV",
-    homeTeam: "Borussia Dortmund",
-    awayTeam: "Hamburger SV",
-    homeLogo: "https://media.api-sports.io/football/teams/165.png",
-    awayLogo: "https://media.api-sports.io/football/teams/179.png",
-    score: "2 - 0",
-    league: "Bundesliga",
-    leagueLogo: "https://media.api-sports.io/football/leagues/78.png",
-    market: "Gana Local",
-    selection: "1",
-    odds: 1.45,
-    probability: 74.0,
-    result: "WON",
-    profit: +0.45,
-    explanation: "Dominio absoluto del Dortmund en el Signal Iduna Park con portería a cero y control del partido.",
-  },
-  {
-    id: "h-1550101",
-    date: "29 Ago 2026",
-    match: "Juventus vs Parma",
-    homeTeam: "Juventus",
-    awayTeam: "Parma",
-    homeLogo: "https://media.api-sports.io/football/teams/496.png",
-    awayLogo: "https://media.api-sports.io/football/teams/523.png",
-    score: "2 - 0",
-    league: "Serie A",
-    leagueLogo: "https://media.api-sports.io/football/leagues/135.png",
-    market: "Gana Local",
-    selection: "1",
-    odds: 1.52,
-    probability: 71.0,
-    result: "WON",
-    profit: +0.52,
-    explanation: "Solidez táctica y superioridad técnica de la Juventus para sumar los 3 puntos en Turín.",
-  },
-  {
-    id: "h-1557381",
-    date: "28 Ago 2026",
-    match: "Crystal Palace vs Manchester City",
-    homeTeam: "Crystal Palace",
-    awayTeam: "Manchester City",
-    homeLogo: "https://media.api-sports.io/football/teams/52.png",
-    awayLogo: "https://media.api-sports.io/football/teams/50.png",
-    score: "1 - 4",
-    league: "Premier League",
-    leagueLogo: "https://media.api-sports.io/football/leagues/39.png",
-    market: "Gana Visitante",
-    selection: "2",
-    odds: 1.40,
-    probability: 78.0,
-    result: "WON",
-    profit: +0.40,
-    explanation: "Goleada contundente del Manchester City en Selhurst Park con alta efectividad de Erling Haaland.",
-  },
-  {
-    id: "h-1570361",
-    date: "29 Ago 2026",
-    match: "Real Sociedad vs Espanyol",
-    homeTeam: "Real Sociedad",
-    awayTeam: "Espanyol",
-    homeLogo: "https://media.api-sports.io/football/teams/548.png",
-    awayLogo: "https://media.api-sports.io/football/teams/540.png",
-    score: "2 - 1",
-    league: "La Liga",
-    leagueLogo: "https://media.api-sports.io/football/leagues/140.png",
-    market: "Gana Local",
-    selection: "1",
-    odds: 1.60,
-    probability: 66.0,
-    result: "WON",
-    profit: +0.60,
-    explanation: "Victoria trabajada de la Real Sociedad en el Reale Arena con ventaja en volumen de remates.",
-  },
-  {
-    id: "h-1550097",
-    date: "28 Ago 2026",
-    match: "AC Milan vs Venezia",
-    homeTeam: "AC Milan",
-    awayTeam: "Venezia",
-    homeLogo: "https://media.api-sports.io/football/teams/489.png",
-    awayLogo: "https://media.api-sports.io/football/teams/517.png",
-    score: "2 - 0",
-    league: "Serie A",
-    leagueLogo: "https://media.api-sports.io/football/leagues/135.png",
-    market: "Gana Local",
-    selection: "1",
-    odds: 1.35,
-    probability: 80.0,
-    result: "WON",
-    profit: +0.35,
-    explanation: "Triunfo cómodo del Milan en San Siro cumpliendo con la proyección del modelo estadístico.",
-  },
-  {
-    id: "h-1575148",
-    date: "29 Ago 2026",
-    match: "Union Berlin vs Eintracht Frankfurt",
-    homeTeam: "Union Berlin",
-    awayTeam: "Eintracht Frankfurt",
-    homeLogo: "https://media.api-sports.io/football/teams/182.png",
-    awayLogo: "https://media.api-sports.io/football/teams/169.png",
-    score: "3 - 3",
-    league: "Bundesliga",
-    leagueLogo: "https://media.api-sports.io/football/leagues/78.png",
-    market: "Ambos Marcan (BTTS)",
-    selection: "Yes",
-    odds: 1.72,
-    probability: 65.0,
-    result: "WON",
-    profit: +0.72,
-    explanation: "Festival de goles en el Stadion An der Alten Försterei con acierto temprano del mercado BTTS.",
-  },
-  {
-    id: "h-1557386",
-    date: "29 Ago 2026",
-    match: "Tottenham vs Newcastle",
-    homeTeam: "Tottenham",
-    awayTeam: "Newcastle",
-    homeLogo: "https://media.api-sports.io/football/teams/47.png",
-    awayLogo: "https://media.api-sports.io/football/teams/34.png",
-    score: "0 - 2",
-    league: "Premier League",
-    leagueLogo: "https://media.api-sports.io/football/leagues/39.png",
-    market: "Over 2.5 Goles",
-    selection: "Over 2.5",
-    odds: 1.65,
-    probability: 68.0,
-    result: "LOST",
-    profit: -1.00,
-    explanation: "Newcastle neutralizó las transiciones de Tottenham; el encuentro culminó con 2 goles en total.",
-  },
-  {
-    id: "h-1575147",
-    date: "29 Ago 2026",
-    match: "RB Leipzig vs Borussia Mönchengladbach",
-    homeTeam: "RB Leipzig",
-    awayTeam: "Borussia Mönchengladbach",
-    homeLogo: "https://media.api-sports.io/football/teams/173.png",
-    awayLogo: "https://media.api-sports.io/football/teams/163.png",
-    score: "3 - 0",
-    league: "Bundesliga",
-    leagueLogo: "https://media.api-sports.io/football/leagues/78.png",
-    market: "Gana Local",
-    selection: "1",
-    odds: 1.55,
-    probability: 70.0,
-    result: "WON",
-    profit: +0.55,
-    explanation: "Leipzig impuso intensidad y ritmo vertical en el Red Bull Arena logrando victoria contundente.",
-  },
-];
-
 export default function HistoryPage() {
   const { language, t } = useLanguage();
+  const [historyItems, setHistoryItems] = useState<HistoricalItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
   const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
   const [filterResult, setFilterResult] = useState<"ALL" | "WON" | "LOST">("ALL");
-  const [selectedLeague, setSelectedLeague] = useState<string>("all");
+  const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
+  const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
+  const [selectedDate, setSelectedDate] = useState<"all" | "today" | "yesterday" | "week" | "month">("all");
 
-  const leagues = ["all", ...Array.from(new Set(HISTORY_DATA.map((h) => h.league)))];
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch("/api/history");
+        const data = await res.json();
+        if (data.history) {
+          setHistoryItems(data.history);
+        }
+      } catch (err) {
+        console.error("Error fetching history:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const filteredHistory = HISTORY_DATA.filter((item) => {
+    fetchHistory();
+  }, []);
+
+  // Build classified league options grouped by Country
+  const leagueDropdownOptions: DropdownOption[] = SUPPORTED_LEAGUES.map((l) => ({
+    value: l.name,
+    label: `${l.name} (${l.country})`,
+    group: l.country,
+    badge: l.tier ? `Div ${l.tier}` : undefined,
+  }));
+
+  // Append any additional leagues from history items
+  historyItems.forEach((h) => {
+    if (h.league && !leagueDropdownOptions.some((opt) => opt.value === h.league)) {
+      leagueDropdownOptions.push({
+        value: h.league,
+        label: h.league,
+        group: "Otras Ligas",
+      });
+    }
+  });
+
+  // Core 5 markets options
+  const coreMarkets = [
+    "Gana Local",
+    "Gana Visitante",
+    "Ambos Marcan (BTTS)",
+    "Over 2.5 Goles",
+    "Under 2.5 Goles",
+  ];
+
+  const availableMarkets = Array.from(
+    new Set([...coreMarkets, ...historyItems.map((h) => h.market).filter(Boolean)])
+  );
+
+  const marketDropdownOptions: DropdownOption[] = availableMarkets.map((m) => ({
+    value: m,
+    label: m,
+  }));
+
+  // Date filtering helpers
+  const getLocalDateStr = (d: Date | string) => {
+    const dateObj = typeof d === "string" ? new Date(d) : d;
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const day = String(dateObj.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const now = new Date();
+  const todayStr = getLocalDateStr(now);
+
+  const yesterdayObj = new Date(now);
+  yesterdayObj.setDate(yesterdayObj.getDate() - 1);
+  const yesterdayStr = getLocalDateStr(yesterdayObj);
+
+  const sevenDaysAgoMs = now.getTime() - 7 * 86400000;
+  const thirtyDaysAgoMs = now.getTime() - 30 * 86400000;
+
+  const filteredHistory = historyItems.filter((item) => {
+    // Result filter
     if (filterResult !== "ALL" && item.result !== filterResult) return false;
-    if (selectedLeague !== "all" && item.league !== selectedLeague) return false;
+
+    // League multi-select filter
+    if (selectedLeagues.length > 0 && !selectedLeagues.includes(item.league)) return false;
+
+    // Market multi-select filter
+    if (selectedMarkets.length > 0 && !selectedMarkets.includes(item.market)) return false;
+
+    // Date filter
+    const itemDateStr = item.kickoff ? getLocalDateStr(item.kickoff) : "";
+    const itemTimeMs = item.kickoff ? new Date(item.kickoff).getTime() : 0;
+
+    if (selectedDate === "today") {
+      if (itemDateStr !== todayStr) return false;
+    } else if (selectedDate === "yesterday") {
+      if (itemDateStr !== yesterdayStr) return false;
+    } else if (selectedDate === "week") {
+      if (itemTimeMs < sevenDaysAgoMs) return false;
+    } else if (selectedDate === "month") {
+      if (itemTimeMs < thirtyDaysAgoMs) return false;
+    }
+
     return true;
   });
 
-  const totalPicks = HISTORY_DATA.length;
-  const wonPicks = HISTORY_DATA.filter((p) => p.result === "WON").length;
-  const winRate = Math.round((wonPicks / totalPicks) * 100);
-  const netProfit = HISTORY_DATA.reduce((acc, p) => acc + p.profit, 0).toFixed(2);
+  const totalPicks = filteredHistory.length;
+  const wonPicks = filteredHistory.filter((p) => p.result === "WON").length;
+  const winRate = totalPicks > 0 ? Math.round((wonPicks / totalPicks) * 100) : 0;
+  const netProfit = filteredHistory.reduce((acc, p) => acc + p.profit, 0).toFixed(2);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100 overflow-x-hidden">
@@ -252,7 +161,7 @@ export default function HistoryPage() {
               {t("historyTitle")}
             </h1>
             <p className="mt-1 text-xs text-slate-600 sm:text-sm dark:text-slate-400">
-              {t("historySubtitle")}
+              {t("historySubtitle")} • Partidos finalizados y en progreso de todas las ligas.
             </p>
           </div>
 
@@ -289,77 +198,150 @@ export default function HistoryPage() {
             <p className="text-[10px] sm:text-xs text-slate-500 font-medium dark:text-slate-400">{t("historyEvaluated")}</p>
             <p className="mt-1 text-lg sm:text-2xl font-black text-slate-900 dark:text-white">{totalPicks}</p>
           </div>
-          <div className="border-x border-slate-200 dark:border-slate-800">
+          <div>
             <p className="text-[10px] sm:text-xs text-slate-500 font-medium dark:text-slate-400">{t("historyWinRate")}</p>
             <p className="mt-1 text-lg sm:text-2xl font-black text-emerald-600 dark:text-emerald-400">{winRate}%</p>
           </div>
           <div>
-            <p className="text-[10px] sm:text-xs text-slate-500 font-medium dark:text-slate-400">{t("historyProfit")}</p>
-            <p className="mt-1 text-lg sm:text-2xl font-black text-sky-600 dark:text-sky-400">+{netProfit} U</p>
+            <p className="text-[10px] sm:text-xs text-slate-500 font-medium dark:text-slate-400">{t("historyYield")}</p>
+            <p
+              className={`mt-1 text-lg sm:text-2xl font-black ${
+                Number(netProfit) >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-500"
+              }`}
+            >
+              {Number(netProfit) >= 0 ? `+${netProfit}` : netProfit} U
+            </p>
           </div>
         </div>
 
-        {/* Filters Bar */}
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 mr-1">{t("filterResult")}</span>
+        {/* Filters Toolbar */}
+        <div className="mt-6 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800/80 dark:bg-slate-900/80">
+          {/* Result Buttons */}
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-xs font-bold text-slate-600 mr-1 dark:text-slate-400">
+              Resultado:
+            </span>
             <button
               onClick={() => setFilterResult("ALL")}
-              className={`rounded-xl px-2.5 py-1 text-xs font-bold transition cursor-pointer ${
+              className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
                 filterResult === "ALL"
                   ? "bg-slate-900 text-white dark:bg-white dark:text-slate-950"
                   : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
               }`}
             >
-              {t("filterAll")} ({HISTORY_DATA.length})
+              Todos ({historyItems.length})
             </button>
             <button
               onClick={() => setFilterResult("WON")}
-              className={`rounded-xl px-2.5 py-1 text-xs font-bold transition cursor-pointer ${
+              className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
                 filterResult === "WON"
-                  ? "bg-emerald-500 text-slate-950 shadow-sm"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+                  ? "bg-emerald-600 text-white dark:bg-emerald-500 dark:text-slate-950 font-black"
+                  : "bg-emerald-50 text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
               }`}
             >
-              {t("filterWon")} ({wonPicks})
+              ✓ Ganadas ({historyItems.filter((h) => h.result === "WON").length})
             </button>
             <button
               onClick={() => setFilterResult("LOST")}
-              className={`rounded-xl px-2.5 py-1 text-xs font-bold transition cursor-pointer ${
+              className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
                 filterResult === "LOST"
-                  ? "bg-red-500 text-white shadow-sm"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+                  ? "bg-red-600 text-white dark:bg-red-500 dark:text-white font-black"
+                  : "bg-red-50 text-red-800 hover:bg-red-100 dark:bg-red-950/60 dark:text-red-300 border border-red-200 dark:border-red-800"
               }`}
             >
-              {t("filterLost")} ({totalPicks - wonPicks})
+              ✗ Perdidas ({historyItems.filter((h) => h.result === "LOST").length})
             </button>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Liga:</span>
-            <select
-              value={selectedLeague}
-              onChange={(e) => setSelectedLeague(e.target.value)}
-              className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200"
+          {/* Date Filter */}
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-xs font-bold text-slate-600 mr-1 dark:text-slate-400">
+              Fecha:
+            </span>
+            <button
+              onClick={() => setSelectedDate("all")}
+              className={`rounded-xl px-2.5 py-1.5 text-xs font-bold transition cursor-pointer ${
+                selectedDate === "all"
+                  ? "bg-emerald-600 text-white dark:bg-emerald-500 dark:text-slate-950"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+              }`}
             >
-              {leagues.map((l) => (
-                <option key={l} value={l}>
-                  {l === "all" ? "Todas las Ligas" : l}
-                </option>
-              ))}
-            </select>
+              Histórico Total
+            </button>
+            <button
+              onClick={() => setSelectedDate("yesterday")}
+              className={`rounded-xl px-2.5 py-1.5 text-xs font-bold transition cursor-pointer ${
+                selectedDate === "yesterday"
+                  ? "bg-emerald-600 text-white dark:bg-emerald-500 dark:text-slate-950"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+              }`}
+            >
+              Ayer
+            </button>
+            <button
+              onClick={() => setSelectedDate("week")}
+              className={`rounded-xl px-2.5 py-1.5 text-xs font-bold transition cursor-pointer ${
+                selectedDate === "week"
+                  ? "bg-emerald-600 text-white dark:bg-emerald-500 dark:text-slate-950"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+              }`}
+            >
+              Últimos 7 Días
+            </button>
+          </div>
+
+          {/* Multi-Select Dropdowns for All Leagues and Markets */}
+          <div className="flex flex-wrap items-center gap-2.5">
+            <MultiSelectDropdown
+              label="Ligas por País"
+              icon="🏆"
+              options={leagueDropdownOptions}
+              selected={selectedLeagues}
+              onChange={setSelectedLeagues}
+              placeholderAll="Todas las Ligas"
+            />
+
+            <MultiSelectDropdown
+              label="Mercados"
+              icon="🎯"
+              options={marketDropdownOptions}
+              selected={selectedMarkets}
+              onChange={setSelectedMarkets}
+              placeholderAll="Todos los Mercados"
+            />
           </div>
         </div>
 
-        {/* VIEW 1: CARDS GRID */}
-        {viewMode === "cards" && (
-          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Loading State */}
+        {loading && (
+          <div className="py-20 text-center text-slate-600">
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-emerald-600 border-t-transparent dark:border-emerald-500" />
+            <p className="mt-3 text-sm font-semibold">Cargando pronósticos finalizados...</p>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!loading && filteredHistory.length === 0 && (
+          <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-12 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900/40">
+            <span className="text-4xl">🔍</span>
+            <h3 className="mt-3 text-lg font-bold text-slate-900 dark:text-white">
+              No se encontraron pronósticos con los filtros seleccionados
+            </h3>
+            <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
+              Prueba seleccionando &apos;Todos&apos; en los filtros de liga, mercado o resultado.
+            </p>
+          </div>
+        )}
+
+        {/* VIEW 1: CARDS */}
+        {!loading && viewMode === "cards" && filteredHistory.length > 0 && (
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-start">
             {filteredHistory.map((item) => {
               const isWon = item.result === "WON";
               return (
                 <div
                   key={item.id}
-                  className={`relative flex flex-col justify-between rounded-3xl border p-5 sm:p-6 shadow-sm transition-all hover:shadow-md ${
+                  className={`flex flex-col justify-between rounded-3xl border p-5 shadow-sm transition hover:shadow-md ${
                     isWon
                       ? "border-emerald-200 bg-white dark:border-emerald-900/40 dark:bg-slate-900/90"
                       : "border-red-200 bg-white dark:border-red-900/40 dark:bg-slate-900/90"
@@ -439,7 +421,7 @@ export default function HistoryPage() {
         )}
 
         {/* VIEW 2: COMPACT TABLE */}
-        {viewMode === "table" && (
+        {!loading && viewMode === "table" && filteredHistory.length > 0 && (
           <div className="mt-6 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg dark:border-slate-800 dark:bg-slate-900/80">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs sm:text-sm">
