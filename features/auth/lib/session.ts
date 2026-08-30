@@ -9,6 +9,8 @@ export type VerifiedIdentity = {
   roleId?: number;
   roleName?: string;
   isApproved: boolean;
+  isPending: boolean;
+  isPaused: boolean;
 };
 
 export async function getVerifiedIdentity(): Promise<VerifiedIdentity | null> {
@@ -73,7 +75,9 @@ export async function getVerifiedIdentity(): Promise<VerifiedIdentity | null> {
       // Fallback to metadata
     }
 
-    const isApproved = metadata?.status !== "pending";
+    const isPending = metadata?.status === "pending";
+    const isPaused = Boolean(user.banned_until || metadata?.status === "paused");
+    const isApproved = !isPending && !isPaused;
 
     return {
       id: user.id,
@@ -83,6 +87,8 @@ export async function getVerifiedIdentity(): Promise<VerifiedIdentity | null> {
       roleId,
       roleName,
       isApproved,
+      isPending,
+      isPaused,
     };
   } catch {
     return null;

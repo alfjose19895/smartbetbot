@@ -71,15 +71,23 @@ function FormStatus({ state }: { state: AuthActionState }) {
   );
 }
 
-export function LoginForm({ nextPath, notice }: { nextPath: string; notice?: string }) {
+export function LoginForm({ nextPath, notice, errorNotice }: { nextPath: string; notice?: string; errorNotice?: string }) {
   const [state, action] = useActionState(loginAction, INITIAL_AUTH_STATE);
   const [showPassword, setShowPassword] = useState(false);
 
   return (
     <form action={action} className="space-y-4" noValidate>
       {notice ? (
-        <div className="mb-4 rounded-xl bg-emerald-950/80 border border-emerald-700 p-3 text-xs font-bold text-emerald-300">
+        <div className="mb-4 rounded-xl bg-emerald-950/80 border border-emerald-700 p-3.5 text-xs font-bold text-emerald-300">
           <p>✓ {notice}</p>
+        </div>
+      ) : null}
+      {errorNotice && state.status === "idle" ? (
+        <div className="mb-4 rounded-2xl bg-amber-950/80 border-2 border-amber-600/80 p-4 text-xs font-bold text-amber-200 shadow-lg">
+          <div className="flex items-start gap-2.5">
+            <span className="text-base">⚠️</span>
+            <p className="leading-relaxed">{errorNotice}</p>
+          </div>
         </div>
       ) : null}
       <FormStatus state={state} />
