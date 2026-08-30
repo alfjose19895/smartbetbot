@@ -1,11 +1,12 @@
 import { ThemeToggle } from "@/components/ThemeToggle";
 import Link from "next/link";
 import { PredictionCard } from "@/components/PredictionCard";
-import { getFallbackFeaturedPredictions } from "@/lib/sports/db";
+import { generatePredictionsForUpcoming } from "@/lib/sports/db";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 
-export default function HomePage() {
-  const featuredPicks: MarketOpportunity[] = getFallbackFeaturedPredictions().slice(0, 3);
+export default async function HomePage() {
+  const allPicks = await generatePredictionsForUpcoming();
+  const featuredPicks: MarketOpportunity[] = allPicks.slice(0, 3);
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-emerald-500 selection:text-white">

@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * Statistical Baseline Prediction & AI Explanation Engine in TypeScript.
  * Deterministic Poisson & Elo probability calculations, Smart Edge, and natural language explanations.
