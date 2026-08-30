@@ -1,50 +1,55 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { PredictionCard } from "@/components/PredictionCard";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
-import { getFallbackFeaturedPredictions } from "@/lib/sports/db";
 
 export default function SignalsPage() {
   const [signals, setSignals] = useState<MarketOpportunity[]>([]);
+  const [historySignals, setHistorySignals] = useState<MarketOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedDate, setSelectedDate] = useState<"all" | "today" | "tomorrow" | "week">("all");
+
+  // Filters
+  const [search, setSearch] = useState("");
   const [selectedLeague, setSelectedLeague] = useState("all");
   const [selectedMarket, setSelectedMarket] = useState("all");
-  const [minProbability, setMinProbability] = useState(60);
-  const [search, setSearch] = useState("");
+  const [minProbability, setMinProbability] = useState<number>(60);
+  const [selectedDate, setSelectedDate] = useState<"all" | "today" | "tomorrow" | "week" | "history">("all");
 
   useEffect(() => {
-    let ignore = false;
-    fetch(`/api/signals?t=${Date.now()}`, { cache: "no-store" })
-      .then((res) => res.json())
-      .then((data) => {
-        if (!ignore) {
-          if (data.success && data.signals && data.signals.length > 0) {
-            setSignals(data.signals);
-          } else {
-            setSignals(getFallbackFeaturedPredictions());
-          }
-          setLoading(false);
+    async function fetchSignals() {
+      try {
+        setLoading(true);
+        const res = await fetch("/api/signals");
+        const json = await res.json();
+        if (json.signals) {
+          setSignals(json.signals);
         }
-      })
-      .catch(() => {
-        if (!ignore) {
-          setSignals(getFallbackFeaturedPredictions());
-          setLoading(false);
+        if (json.history) {
+          setHistorySignals(json.history);
         }
-      });
-
-    return () => {
-      ignore = true;
-    };
+      } catch (err) {
+        console.error("Failed to load signals:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchSignals();
   }, []);
 
-  const leagues = ["all", ...Array.from(new Set(signals.map((s) => s.league)))];
-  const markets = ["all", "Gana Local", "Over 2.5 Goles", "Ambos Marcan (BTTS)", "Gana Visitante"];
+  const activeBaseList = selectedDate === "history" ? historySignals : signals;
 
-  const filtered = signals.filter((item) => {
+  const leagues = ["all", ...Array.from(new Set(activeBaseList.map((s) => s.league).filter(Boolean)))];
+  const markets = ["all", ...Array.from(new Set(activeBaseList.map((s) => s.market).filter(Boolean)))];
+
+  // Precise Local Calendar Day Filtering
+  const now = new Date();
+  const todayDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const tomorrowDay = todayDay + 86400000;
+  const weekEndDay = todayDay + 7 * 86400000;
+
+  const filtered = activeBaseList.filter((item) => {
     const matchesSearch =
       search === "" ||
       item.match.toLowerCase().includes(search.toLowerCase()) ||
@@ -55,30 +60,18 @@ export default function SignalsPage() {
     const matchesProb = item.probability >= minProbability;
 
     let matchesDate = true;
-    if (selectedDate !== "all") {
+    if (selectedDate === "today") {
       const d = new Date(item.kickoff);
-      const today = new Date();
-      const tomorrow = new Date(today.getTime() + 86400000);
-
-      const isToday =
-        (d.getFullYear() === today.getFullYear() &&
-          d.getMonth() === today.getMonth() &&
-          d.getDate() === today.getDate()) ||
-        (d.getUTCFullYear() === today.getUTCFullYear() &&
-          d.getUTCMonth() === today.getUTCMonth() &&
-          d.getUTCDate() === today.getUTCDate());
-
-      const isTomorrow =
-        (d.getFullYear() === tomorrow.getFullYear() &&
-          d.getMonth() === tomorrow.getMonth() &&
-          d.getDate() === tomorrow.getDate()) ||
-        (d.getUTCFullYear() === tomorrow.getUTCFullYear() &&
-          d.getUTCMonth() === tomorrow.getUTCMonth() &&
-          d.getUTCDate() === tomorrow.getUTCDate());
-
-      if (selectedDate === "today") matchesDate = isToday;
-      else if (selectedDate === "tomorrow") matchesDate = isTomorrow;
-      else if (selectedDate === "week") matchesDate = d.getTime() <= today.getTime() + 7 * 86400000;
+      const matchDay = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+      matchesDate = matchDay === todayDay;
+    } else if (selectedDate === "tomorrow") {
+      const d = new Date(item.kickoff);
+      const matchDay = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+      matchesDate = matchDay === tomorrowDay;
+    } else if (selectedDate === "week") {
+      const d = new Date(item.kickoff);
+      const matchDay = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+      matchesDate = matchDay >= todayDay && matchDay <= weekEndDay;
     }
 
     return matchesSearch && matchesLeague && matchesMarket && matchesProb && matchesDate;
@@ -120,56 +113,88 @@ export default function SignalsPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-black tracking-tight text-white sm:text-3xl">
-              Picks & Señales Estadísticas
+              {selectedDate === "history" ? "Histórico de Señales" : "Picks & Señales Estadísticas"}
             </h1>
             <p className="mt-1 text-xs text-slate-400 sm:text-sm">
-              Filtrado dinámico por fecha, cuota, probabilidad estimada y ligas principales
+              {selectedDate === "history"
+                ? "Registro auditable de aciertos y resultados de predicciones anteriores"
+                : "Filtrado dinámico por fecha, cuota, probabilidad estimada y ligas principales"}
             </p>
           </div>
         </div>
 
         {/* Date Filter Tabs */}
         <div className="mt-6 flex flex-wrap gap-2 rounded-2xl border border-slate-800/80 bg-slate-900/80 p-2.5">
-          <span className="self-center text-xs font-bold text-slate-400 mr-2 ml-1">Fecha:</span>
+          <span className="self-center text-xs font-bold text-slate-400 mr-2 ml-1">Vista:</span>
           <button
-            onClick={() => setSelectedDate("all")}
+            onClick={() => {
+              setSelectedDate("all");
+              setSelectedLeague("all");
+              setSelectedMarket("all");
+            }}
             className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
               selectedDate === "all"
-                ? "bg-emerald-500 text-slate-950 font-bold shadow-md"
+                ? "bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20"
                 : "bg-slate-950/60 text-slate-300 hover:bg-slate-800 border border-slate-800"
             }`}
           >
-            🌟 Todos los Días ({signals.length})
+            🌟 Todos los Picks ({signals.length})
           </button>
           <button
-            onClick={() => setSelectedDate("today")}
+            onClick={() => {
+              setSelectedDate("today");
+              setSelectedLeague("all");
+              setSelectedMarket("all");
+            }}
             className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
               selectedDate === "today"
-                ? "bg-emerald-500 text-slate-950 font-bold shadow-md"
+                ? "bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20"
                 : "bg-slate-950/60 text-slate-300 hover:bg-slate-800 border border-slate-800"
             }`}
           >
             📅 Hoy
           </button>
           <button
-            onClick={() => setSelectedDate("tomorrow")}
+            onClick={() => {
+              setSelectedDate("tomorrow");
+              setSelectedLeague("all");
+              setSelectedMarket("all");
+            }}
             className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
               selectedDate === "tomorrow"
-                ? "bg-emerald-500 text-slate-950 font-bold shadow-md"
+                ? "bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20"
                 : "bg-slate-950/60 text-slate-300 hover:bg-slate-800 border border-slate-800"
             }`}
           >
             🔥 Mañana
           </button>
           <button
-            onClick={() => setSelectedDate("week")}
+            onClick={() => {
+              setSelectedDate("week");
+              setSelectedLeague("all");
+              setSelectedMarket("all");
+            }}
             className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
               selectedDate === "week"
-                ? "bg-emerald-500 text-slate-950 font-bold shadow-md"
+                ? "bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20"
                 : "bg-slate-950/60 text-slate-300 hover:bg-slate-800 border border-slate-800"
             }`}
           >
             🗓️ Esta Semana
+          </button>
+          <button
+            onClick={() => {
+              setSelectedDate("history");
+              setSelectedLeague("all");
+              setSelectedMarket("all");
+            }}
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
+              selectedDate === "history"
+                ? "bg-sky-500 text-slate-950 font-bold shadow-md shadow-sky-500/20"
+                : "bg-slate-950/60 text-slate-300 hover:bg-slate-800 border border-slate-800"
+            }`}
+          >
+            📜 Histórico / Jugados ({historySignals.length})
           </button>
         </div>
 

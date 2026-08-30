@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
@@ -12,18 +12,26 @@ function formatKickoffDate(dateString: string): string {
     const d = new Date(dateString);
     if (isNaN(d.getTime())) return "Próximamente";
 
-    const today = new Date();
-    const isToday =
-      d.getDate() === today.getDate() &&
-      d.getMonth() === today.getMonth() &&
-      d.getFullYear() === today.getFullYear();
+    const now = new Date();
 
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
+    const isToday =
+      d.getFullYear() === now.getFullYear() &&
+      d.getMonth() === now.getMonth() &&
+      d.getDate() === now.getDate();
+
+    const tomorrow = new Date(now);
+    tomorrow.setDate(now.getDate() + 1);
     const isTomorrow =
-      d.getDate() === tomorrow.getDate() &&
+      d.getFullYear() === tomorrow.getFullYear() &&
       d.getMonth() === tomorrow.getMonth() &&
-      d.getFullYear() === tomorrow.getFullYear();
+      d.getDate() === tomorrow.getDate();
+
+    const yesterday = new Date(now);
+    yesterday.setDate(now.getDate() - 1);
+    const isYesterday =
+      d.getFullYear() === yesterday.getFullYear() &&
+      d.getMonth() === yesterday.getMonth() &&
+      d.getDate() === yesterday.getDate();
 
     const hours = String(d.getHours()).padStart(2, "0");
     const minutes = String(d.getMinutes()).padStart(2, "0");
@@ -31,6 +39,7 @@ function formatKickoffDate(dateString: string): string {
 
     if (isToday) return `Hoy, ${timeStr}`;
     if (isTomorrow) return `Mañana, ${timeStr}`;
+    if (isYesterday) return `Ayer, ${timeStr}`;
 
     const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
     return `${d.getDate()} ${months[d.getMonth()]}, ${timeStr}`;
@@ -66,6 +75,9 @@ ${prediction.explanation}
     setTimeout(() => setCopied(false), 2500);
   };
 
+  const isWon = prediction.status === "won";
+  const isLost = prediction.status === "lost";
+
   return (
     <>
       <div className="relative flex flex-col justify-between rounded-2xl bg-gradient-to-b from-slate-900/95 via-slate-900/90 to-slate-950/95 p-6 text-slate-100 shadow-xl border border-slate-800/80 backdrop-blur-sm transition-all duration-200 hover:border-slate-700/90 hover:shadow-2xl hover:shadow-cyan-950/20">
@@ -76,9 +88,19 @@ ${prediction.explanation}
             <h3 className="text-base font-bold tracking-tight text-white">Análisis SmartBetBot</h3>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="rounded-full bg-emerald-950/80 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400 border border-emerald-800/50">
-              📅 {formattedDate}
-            </span>
+            {isWon ? (
+              <span className="rounded-full bg-emerald-950 px-2.5 py-0.5 text-[11px] font-bold text-emerald-400 border border-emerald-600">
+                ✅ ACERTADO
+              </span>
+            ) : isLost ? (
+              <span className="rounded-full bg-red-950 px-2.5 py-0.5 text-[11px] font-bold text-red-400 border border-red-600">
+                ❌ NO SE DIO
+              </span>
+            ) : (
+              <span className="rounded-full bg-emerald-950/80 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400 border border-emerald-800/50">
+                📅 {formattedDate}
+              </span>
+            )}
             {prediction.league && (
               <span className="rounded-full bg-slate-800/80 px-2.5 py-0.5 text-xs font-medium text-slate-300 border border-slate-700/50">
                 {prediction.league}
@@ -175,7 +197,7 @@ ${prediction.explanation}
             {/* Story Card Container */}
             <div className="mt-2 text-center">
               <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-950/80 px-3 py-1 text-xs font-bold text-emerald-400 border border-emerald-700/50">
-                <span>🔥 PICK DEL DÍA</span>
+                <span>🔥 PICK SMARTBETBOT</span>
               </div>
               <h4 className="mt-2 text-xl font-extrabold tracking-tight text-white">
                 Análisis SmartBetBot
