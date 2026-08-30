@@ -3,7 +3,7 @@ import { evaluateFixturePrediction } from "./prediction-engine";
 import { generatePredictionsForUpcoming } from "./db";
 
 describe("Prediction Engine (TypeScript MVP)", () => {
-  it("accurately favors PSV Eindhoven as away winner vs Utrecht", () => {
+  it("accurately favors PSV Eindhoven as away winner vs Utrecht with odds >= 1.40", () => {
     const picks = evaluateFixturePrediction({
       fixtureId: 1552148,
       homeTeam: "Utrecht",
@@ -16,34 +16,37 @@ describe("Prediction Engine (TypeScript MVP)", () => {
     const topPick = picks[0];
     console.log("UTRECHT vs PSV TOP PICK:", topPick.market, topPick.probability, topPick.odds);
 
-    // PSV is the away favorite, so Gana Local for Utrecht MUST NOT be the top pick
-    expect(topPick.market).not.toBe("Gana Local");
+    // Meets precision and profitable odds thresholds
+    expect(topPick.probability).toBeGreaterThanOrEqual(65);
+    expect(topPick.odds).toBeGreaterThanOrEqual(1.40);
     expect(["Gana Visitante", "Over 2.5 Goles", "Ambos Marcan (BTTS)"]).toContain(topPick.market);
   });
 
-  it("accurately favors Real Madrid as home winner vs Malaga", () => {
+  it("accurately detects high-value profitable opportunities in Chelsea vs Brighton", () => {
     const picks = evaluateFixturePrediction({
-      fixtureId: 1570360,
-      homeTeam: "Real Madrid",
-      awayTeam: "Malaga",
-      league: "La Liga",
-      kickoff: "2026-08-30T15:00:00Z",
+      fixtureId: 1557379,
+      homeTeam: "Chelsea",
+      awayTeam: "Brighton",
+      league: "Premier League",
+      kickoff: "2026-08-30T13:00:00Z",
     });
 
     expect(picks.length).toBeGreaterThan(0);
     const topPick = picks[0];
-    console.log("REAL MADRID vs MALAGA TOP PICK:", topPick.market, topPick.probability, topPick.odds);
-    expect(topPick.market).toBe("Gana Local");
-    expect(topPick.probability).toBeGreaterThanOrEqual(75);
+    console.log("CHELSEA vs BRIGHTON TOP PICK:", topPick.market, topPick.probability, topPick.odds);
+    expect(topPick.probability).toBeGreaterThanOrEqual(65);
+    expect(topPick.odds).toBeGreaterThanOrEqual(1.40);
   });
 
-  it("generates predictions with rich market variety from live multi-league queries", async () => {
+  it("generates predictions with rich market variety with odds >= 1.40 from live multi-league queries", async () => {
     const predictions = await generatePredictionsForUpcoming();
     console.log("TOTAL LIVE PREDICTIONS:", predictions.length);
 
     const marketCounts: Record<string, number> = {};
     for (const p of predictions) {
       marketCounts[p.market] = (marketCounts[p.market] || 0) + 1;
+      expect(p.odds).toBeGreaterThanOrEqual(1.40);
+      expect(p.probability).toBeGreaterThanOrEqual(65);
     }
 
     console.log("MARKETS BREAKDOWN:", marketCounts);

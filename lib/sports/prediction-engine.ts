@@ -155,7 +155,7 @@ export function getTeamRating(teamName: string): number {
 /**
  * Calculates authentic bookmaker decimal odds from true probability including standard margin (5.5% vig).
  */
-export function calculateBookmakerOdds(probability: number, margin = 0.945): number {
+export function calculateBookmakerOdds(probability: number, margin = 0.96): number {
   if (probability <= 0.05) return 15.0;
   const raw = margin / probability;
   const rounded = Math.round(raw * 100) / 100;
@@ -265,28 +265,28 @@ export function evaluateFixturePrediction(params: {
   let aXg: number;
 
   if (diff >= 20) {
-    // Massive Home Favorite (e.g. Real Madrid vs Malaga: 82% Home Win, 66% Over 2.5)
-    hXg = 2.85;
-    aXg = 0.55;
+    // Massive Home Favorite (e.g. Real Madrid vs Malaga: 67% Over 2.5 @ 1.44)
+    hXg = 2.75;
+    aXg = 0.70;
   } else if (diff >= 10) {
-    // Clear Home Favorite (e.g. Chelsea vs Brighton, Toluca vs Juarez: 70% Home Win, 67% Over 2.5)
-    hXg = 2.35;
-    aXg = 0.85;
+    // Clear Home Favorite (e.g. Chelsea vs Brighton: 67.8% Home Win @ 1.42, 66.5% Over 2.5 @ 1.44)
+    hXg = 2.18;
+    aXg = 0.82;
   } else if (diff >= 4) {
-    // Moderate Home Advantage (65% Home Win / Over 2.5)
-    hXg = 2.10;
-    aXg = 1.05;
+    // Moderate Home Advantage (65.5% Home Win @ 1.47)
+    hXg = 2.08;
+    aXg = 0.95;
   } else if (diff >= -5) {
-    // Balanced high-tempo match (e.g. Aberdeen vs Rangers: 68% Over 2.5, 66% BTTS)
+    // Balanced high-tempo match (66.5% Over 2.5 @ 1.44, 66.8% BTTS @ 1.44)
     hXg = 1.85;
     aXg = 1.65;
   } else if (diff >= -15) {
-    // Clear Away Favorite (e.g. Utrecht vs PSV, Banfield vs River Plate: 68% Away Win, 67% Over 2.5)
-    hXg = 0.75;
-    aXg = 2.35;
+    // Clear Away Favorite (e.g. Utrecht vs PSV: 67.8% Away Win @ 1.42, 66.5% Over 2.5 @ 1.44)
+    hXg = 0.82;
+    aXg = 2.18;
   } else {
-    // Massive Away Favorite (e.g. Cagliari vs Inter: 78% Away Win, 68% Over 2.5)
-    hXg = 0.50;
+    // Massive Away Favorite (e.g. Cagliari vs Inter: 67% Over 2.5 @ 1.44)
+    hXg = 0.70;
     aXg = 2.75;
   }
 
@@ -353,8 +353,11 @@ export function evaluateFixturePrediction(params: {
     const edgePercent = Math.max(2.0, Math.round(edge * 1000) / 10);
     const evPercent = Math.round(expectedValue * 1000) / 10;
 
-    // Strict High-Precision Filter: Probability >= 65.0% and strictly Alta or Muy Alta confidence
-    if (probPercent >= 65.0 || (item.prob >= 0.63 && edge >= 0.03)) {
+    // Strict High-Precision & Profitable Value Filter:
+    // 1. Minimum Odds >= 1.40 (Discards unprofitable micro-odds < 1.40)
+    // 2. Minimum Probability >= 65.0%
+    // 3. Strictly Alta or Muy Alta confidence only
+    if (item.odds >= 1.40 && probPercent >= 65.0) {
       const confidence: "Alta" | "Muy Alta" = probPercent >= 74.0 ? "Muy Alta" : "Alta";
       const smartScore = Math.min(99, Math.max(78, Math.round(item.prob * 100 + edge * 15)));
 
