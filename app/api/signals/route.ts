@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import { generatePredictionsForUpcoming, getHistoricalPredictions } from "@/lib/sports/db";
+﻿import { NextRequest, NextResponse } from "next/server";
+import { generatePredictionsForUpcoming } from "@/lib/sports/db";
 
 export const dynamic = "force-dynamic";
 
@@ -9,11 +9,8 @@ export async function GET(request: NextRequest) {
     const leagueFilter = searchParams.get("league");
     const marketFilter = searchParams.get("market");
     const minProb = parseFloat(searchParams.get("minProb") || "0");
-    const historyOnly = searchParams.get("history") === "true" || searchParams.get("type") === "history";
 
-    let predictions = historyOnly
-      ? getHistoricalPredictions()
-      : await generatePredictionsForUpcoming();
+    let predictions = await generatePredictionsForUpcoming();
 
     if (leagueFilter) {
       predictions = predictions.filter((p) =>
@@ -31,13 +28,10 @@ export async function GET(request: NextRequest) {
       predictions = predictions.filter((p) => p.probability >= minProb);
     }
 
-    const historyItems = getHistoricalPredictions();
-
     return NextResponse.json({
       success: true,
       count: predictions.length,
       signals: predictions,
-      history: historyItems,
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Failed to load signals";

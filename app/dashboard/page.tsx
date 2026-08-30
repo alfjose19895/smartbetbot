@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
@@ -7,7 +7,6 @@ import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 
 export default function DashboardPage() {
   const [predictions, setPredictions] = useState<MarketOpportunity[]>([]);
-  const [historyPredictions, setHistoryPredictions] = useState<MarketOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
@@ -15,7 +14,7 @@ export default function DashboardPage() {
   // Filters
   const [selectedLeague, setSelectedLeague] = useState<string>("all");
   const [selectedMarket, setSelectedMarket] = useState<string>("all");
-  const [selectedDate, setSelectedDate] = useState<"all" | "today" | "tomorrow" | "week" | "history">("all");
+  const [selectedDate, setSelectedDate] = useState<"all" | "today" | "tomorrow" | "week">("all");
 
   const loadSignals = async () => {
     try {
@@ -24,9 +23,6 @@ export default function DashboardPage() {
       const json = await res.json();
       if (json.signals) {
         setPredictions(json.signals);
-      }
-      if (json.history) {
-        setHistoryPredictions(json.history);
       }
     } catch (err) {
       console.error("Error loading signals:", err);
@@ -59,12 +55,9 @@ export default function DashboardPage() {
     }
   };
 
-  // Base list depending on active tab (upcoming vs historical)
-  const activeBaseList = selectedDate === "history" ? historyPredictions : predictions;
-
   // Extract unique active leagues and markets
-  const leagues = ["all", ...Array.from(new Set(activeBaseList.map((p) => p.league).filter(Boolean)))];
-  const markets = ["all", ...Array.from(new Set(activeBaseList.map((p) => p.market).filter(Boolean)))];
+  const leagues = ["all", ...Array.from(new Set(predictions.map((p) => p.league).filter(Boolean)))];
+  const markets = ["all", ...Array.from(new Set(predictions.map((p) => p.market).filter(Boolean)))];
 
   // Precise Local Calendar Day Filtering
   const now = new Date();
@@ -72,7 +65,7 @@ export default function DashboardPage() {
   const tomorrowDay = todayDay + 86400000;
   const weekEndDay = todayDay + 7 * 86400000;
 
-  const filteredPredictions = activeBaseList.filter((p) => {
+  const filteredPredictions = predictions.filter((p) => {
     // 1. Date filter
     if (selectedDate === "today") {
       const d = new Date(p.kickoff);
@@ -154,20 +147,16 @@ export default function DashboardPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-black tracking-tight text-white sm:text-3xl">
-              {selectedDate === "history" ? "Histórico de Pronósticos" : "Análisis del Día & Mañana"}
+              Análisis del Día & Mañana
             </h1>
             <p className="mt-1 text-xs text-slate-400 sm:text-sm">
-              {selectedDate === "history"
-                ? "Picks resueltos y resultados con registro de rendimiento"
-                : "Oportunidades estadísticas validadas con cálculo de probabilidad y cuota de valor"}
+              Oportunidades estadísticas validadas con cálculo de probabilidad y cuota de valor
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             <div className="rounded-xl bg-slate-900/80 px-3 py-2 border border-slate-800 text-center">
-              <span className="text-[10px] uppercase text-slate-400 block font-medium">
-                {selectedDate === "history" ? "Picks Resueltos" : "Picks Activos"}
-              </span>
+              <span className="text-[10px] uppercase text-slate-400 block font-medium">Picks Activos</span>
               <span className="text-base font-extrabold text-white">{filteredPredictions.length}</span>
             </div>
             <div className="rounded-xl bg-slate-900/80 px-3 py-2 border border-slate-800 text-center">
@@ -193,7 +182,7 @@ export default function DashboardPage() {
 
         {/* Date Filter Tabs */}
         <div className="mt-6 flex flex-wrap gap-2 rounded-2xl border border-slate-800/80 bg-slate-900/80 p-2.5">
-          <span className="self-center text-xs font-bold text-slate-400 mr-2 ml-1">Vista:</span>
+          <span className="self-center text-xs font-bold text-slate-400 mr-2 ml-1">Fecha:</span>
           <button
             onClick={() => {
               setSelectedDate("all");
@@ -206,7 +195,7 @@ export default function DashboardPage() {
                 : "bg-slate-950/60 text-slate-300 hover:bg-slate-800 border border-slate-800"
             }`}
           >
-            🌟 Todos los Picks ({predictions.length})
+            🌟 Todos los Días ({predictions.length})
           </button>
           <button
             onClick={() => {
@@ -250,20 +239,6 @@ export default function DashboardPage() {
           >
             🗓️ Esta Semana
           </button>
-          <button
-            onClick={() => {
-              setSelectedDate("history");
-              setSelectedLeague("all");
-              setSelectedMarket("all");
-            }}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
-              selectedDate === "history"
-                ? "bg-sky-500 text-slate-950 font-bold shadow-md shadow-sky-500/20"
-                : "bg-slate-950/60 text-slate-300 hover:bg-slate-800 border border-slate-800"
-            }`}
-          >
-            📜 Histórico / Jugados ({historyPredictions.length})
-          </button>
         </div>
 
         {/* League Filters */}
@@ -306,11 +281,11 @@ export default function DashboardPage() {
         {loading ? (
           <div className="mt-16 text-center text-slate-400">
             <span className="inline-block animate-spin text-3xl">⏳</span>
-            <p className="mt-3 text-sm">Cargando pronósticos...</p>
+            <p className="mt-3 text-sm">Cargando pronósticos de hoy y mañana...</p>
           </div>
         ) : filteredPredictions.length === 0 ? (
           <div className="mt-16 rounded-2xl bg-slate-900/40 p-12 text-center border border-slate-800">
-            <p className="text-base text-slate-400">No hay picks que coincidan con estos filtros.</p>
+            <p className="text-base text-slate-400">No hay picks que coincidan con estos filtros de fecha/liga.</p>
             <button
               onClick={() => {
                 setSelectedDate("all");
