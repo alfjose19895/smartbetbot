@@ -1,4 +1,4 @@
-import { createServerClient } from "@supabase/ssr";
+﻿import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
 import { safeRedirectPath } from "@/features/auth/lib/redirects";
@@ -66,9 +66,9 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
     },
   });
 
-  // Keep this call immediately after client creation: it verifies and refreshes the JWT.
-  const { data, error } = await supabase.auth.getClaims();
-  const hasVerifiedIdentity = Boolean(data?.claims?.sub) && !error;
+  // Keep this call immediately after client creation: it verifies and refreshes the user token.
+  const { data: { user }, error } = await supabase.auth.getUser();
+  const hasVerifiedIdentity = Boolean(user?.id) && !error;
 
   if (!hasVerifiedIdentity && isProtectedRoute) {
     const loginUrl = request.nextUrl.clone();
