@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { PredictionCard } from "@/components/PredictionCard";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
+import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
 
 export default function DashboardPage() {
   const [predictions, setPredictions] = useState<MarketOpportunity[]>([]);
@@ -57,7 +58,8 @@ export default function DashboardPage() {
   };
 
   // Extract unique active leagues and markets
-  const leagues = ["all", ...Array.from(new Set(predictions.map((p) => p.league).filter(Boolean)))];
+  const availableLeagueNames = Array.from(new Set([...predictions.map((p) => p.league).filter(Boolean), ...SUPPORTED_LEAGUES.map((l) => l.name)]));
+  const leagues = ["all", ...availableLeagueNames];
   const markets = ["all", ...Array.from(new Set(predictions.map((p) => p.market).filter(Boolean)))];
 
   // Precise Local Calendar Day Filtering

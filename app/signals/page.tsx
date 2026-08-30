@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { PredictionCard } from "@/components/PredictionCard";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
+import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
 
 export default function SignalsPage() {
   const [signals, setSignals] = useState<MarketOpportunity[]>([]);
@@ -32,7 +33,8 @@ export default function SignalsPage() {
     fetchSignals();
   }, []);
 
-  const leagues = ["all", ...Array.from(new Set(signals.map((s) => s.league).filter(Boolean)))];
+  const availableLeagueNames = Array.from(new Set([...signals.map((s) => s.league).filter(Boolean), ...SUPPORTED_LEAGUES.map((l) => l.name)]));
+  const leagues = ["all", ...availableLeagueNames];
 
   // Precise Local Calendar Day Filtering
   const now = new Date();
