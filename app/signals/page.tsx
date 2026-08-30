@@ -51,28 +51,41 @@ export default function SignalsPage() {
     }
   });
 
-  // Precise Local Calendar Day Filtering
+  // Local calendar date helper (YYYY-MM-DD in local time)
+  const getLocalDateStr = (d: Date | string) => {
+    const dateObj = typeof d === "string" ? new Date(d) : d;
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const day = String(dateObj.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
   const now = new Date();
-  const todayDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-  const tomorrowDay = todayDay + 86400000;
-  const weekEndDay = todayDay + 7 * 86400000;
+  const todayStr = getLocalDateStr(now);
+
+  const tomorrowObj = new Date(now);
+  tomorrowObj.setDate(tomorrowObj.getDate() + 1);
+  const tomorrowStr = getLocalDateStr(tomorrowObj);
+
+  const todayStartMs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const weekEndMs = todayStartMs + 7 * 86400000;
+
+  const todayCount = signals.filter((s) => getLocalDateStr(s.kickoff) === todayStr).length;
+  const tomorrowCount = signals.filter((s) => getLocalDateStr(s.kickoff) === tomorrowStr).length;
 
   const filteredSignals = signals.filter((s) => {
     if (s.probability < minProbability) return false;
     if (selectedLeagues.length > 0 && !selectedLeagues.includes(s.league)) return false;
 
+    const matchDateStr = getLocalDateStr(s.kickoff);
+    const matchTimeMs = new Date(s.kickoff).getTime();
+
     if (selectedDate === "today") {
-      const d = new Date(s.kickoff);
-      const matchDay = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-      if (matchDay !== todayDay) return false;
+      if (matchDateStr !== todayStr) return false;
     } else if (selectedDate === "tomorrow") {
-      const d = new Date(s.kickoff);
-      const matchDay = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-      if (matchDay !== tomorrowDay) return false;
+      if (matchDateStr !== tomorrowStr) return false;
     } else if (selectedDate === "week") {
-      const d = new Date(s.kickoff);
-      const matchDay = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-      if (matchDay < todayDay || matchDay > weekEndDay) return false;
+      if (matchTimeMs < todayStartMs || matchTimeMs > weekEndMs) return false;
     }
 
     return true;
@@ -114,7 +127,7 @@ export default function SignalsPage() {
                 : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 dark:bg-slate-950/60 dark:text-slate-300 dark:hover:bg-slate-800 dark:border-slate-800"
             }`}
           >
-            📅 Hoy
+            📅 Hoy ({todayCount})
           </button>
           <button
             onClick={() => setSelectedDate("tomorrow")}
@@ -124,7 +137,7 @@ export default function SignalsPage() {
                 : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 dark:bg-slate-950/60 dark:text-slate-300 dark:hover:bg-slate-800 dark:border-slate-800"
             }`}
           >
-            🔥 Mañana
+            🔥 Mañana ({tomorrowCount})
           </button>
           <button
             onClick={() => setSelectedDate("week")}
@@ -183,7 +196,7 @@ export default function SignalsPage() {
             </p>
           </div>
         ) : (
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
             {filteredSignals.map((signal) => (
               <PredictionCard key={signal.id || signal.fixtureId} prediction={signal} />
             ))}

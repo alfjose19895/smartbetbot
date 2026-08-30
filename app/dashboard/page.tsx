@@ -43,7 +43,7 @@ export default function DashboardPage() {
   const handleSyncPredictions = async () => {
     try {
       setSyncing(true);
-      setSyncMessage("⚡ Consultando cuotas en vivo de casas de apuestas...");
+      setSyncMessage("⚡ Consultando partidos y cuotas en vivo de la API de Football...");
       const res = await fetch("/api/admin/sync/predictions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -51,7 +51,7 @@ export default function DashboardPage() {
       });
       const data = await res.json();
       if (data.success) {
-        setSyncMessage(`✓ ¡Listo! ${data.count} pronósticos actualizados.`);
+        setSyncMessage(`✓ ¡Listo! ${data.count} pronósticos actualizados desde la API.`);
         await loadSignals();
       } else {
         setSyncMessage(`✗ Error: ${data.error || "No se pudo sincronizar"}`);
@@ -83,20 +83,46 @@ export default function DashboardPage() {
     }
   });
 
+  // Core 5 markets options
+  const coreMarkets = [
+    "Gana Local",
+    "Gana Visitante",
+    "Ambos Marcan (BTTS)",
+    "Over 2.5 Goles",
+    "Under 2.5 Goles",
+  ];
+
   const availableMarketNames = Array.from(
-    new Set(predictions.map((p) => p.market).filter(Boolean))
-  ).sort();
+    new Set([...coreMarkets, ...predictions.map((p) => p.market).filter(Boolean)])
+  );
 
   const marketDropdownOptions: DropdownOption[] = availableMarketNames.map((m) => ({
     value: m,
     label: m,
   }));
 
-  // Precise Local Calendar Day Filtering
+  // Local calendar date helper (YYYY-MM-DD in local time)
+  const getLocalDateStr = (d: Date | string) => {
+    const dateObj = typeof d === "string" ? new Date(d) : d;
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const day = String(dateObj.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
   const now = new Date();
-  const todayDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-  const tomorrowDay = todayDay + 86400000;
-  const weekEndDay = todayDay + 7 * 86400000;
+  const todayStr = getLocalDateStr(now);
+
+  const tomorrowObj = new Date(now);
+  tomorrowObj.setDate(tomorrowObj.getDate() + 1);
+  const tomorrowStr = getLocalDateStr(tomorrowObj);
+
+  const todayStartMs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const weekEndMs = todayStartMs + 7 * 86400000;
+
+  // Calculate counts per date tab
+  const todayCount = predictions.filter((p) => getLocalDateStr(p.kickoff) === todayStr).length;
+  const tomorrowCount = predictions.filter((p) => getLocalDateStr(p.kickoff) === tomorrowStr).length;
 
   const filteredPredictions = predictions.filter((p) => {
     // League multi-select filter
@@ -104,24 +130,21 @@ export default function DashboardPage() {
       return false;
     }
 
-    // Market multi-select filter
+    // Market multi-select filter (Exact match)
     if (selectedMarkets.length > 0 && !selectedMarkets.includes(p.market)) {
       return false;
     }
 
-    // Date filter
+    // Date filter using local date comparison
+    const matchDateStr = getLocalDateStr(p.kickoff);
+    const matchTimeMs = new Date(p.kickoff).getTime();
+
     if (selectedDate === "today") {
-      const d = new Date(p.kickoff);
-      const matchDay = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-      if (matchDay !== todayDay) return false;
+      if (matchDateStr !== todayStr) return false;
     } else if (selectedDate === "tomorrow") {
-      const d = new Date(p.kickoff);
-      const matchDay = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-      if (matchDay !== tomorrowDay) return false;
+      if (matchDateStr !== tomorrowStr) return false;
     } else if (selectedDate === "week") {
-      const d = new Date(p.kickoff);
-      const matchDay = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-      if (matchDay < todayDay || matchDay > weekEndDay) return false;
+      if (matchTimeMs < todayStartMs || matchTimeMs > weekEndMs) return false;
     }
 
     return true;
@@ -220,7 +243,7 @@ export default function DashboardPage() {
                   : "bg-slate-100 text-slate-800 hover:bg-slate-200 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
               }`}
             >
-              {t("filterTimeToday")}
+              📅 {t("filterTimeToday")} ({todayCount})
             </button>
             <button
               onClick={() => setSelectedDate("tomorrow")}
@@ -230,7 +253,7 @@ export default function DashboardPage() {
                   : "bg-slate-100 text-slate-800 hover:bg-slate-200 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
               }`}
             >
-              {t("filterTimeTomorrow")}
+              🔥 {t("filterTimeTomorrow")} ({tomorrowCount})
             </button>
             <button
               onClick={() => setSelectedDate("week")}
@@ -240,7 +263,7 @@ export default function DashboardPage() {
                   : "bg-slate-100 text-slate-800 hover:bg-slate-200 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
               }`}
             >
-              {t("filterTimeWeek")}
+              🗓️ {t("filterTimeWeek")}
             </button>
           </div>
 
@@ -266,7 +289,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Grid of Prediction Cards */}
+        {/* Grid of Prediction Cards (items-start prevents vertical distortion) */}
         {loading ? (
           <div className="py-20 text-center text-slate-600">
             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-emerald-600 border-t-transparent dark:border-emerald-500" />
@@ -279,13 +302,15 @@ export default function DashboardPage() {
               {t("noPicksFound")}
             </h3>
             <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
-              {t("noPicksHint")}
+              {selectedDate === "today" && todayCount === 0
+                ? "No hay partidos programados para hoy en las ligas activas. Prueba seleccionando 'Mañana' o 'Todos los Días'."
+                : t("noPicksHint")}
             </p>
           </div>
         ) : (
-          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
             {filteredPredictions.map((pred) => (
-              <PredictionCard key={pred.id || pred.fixtureId} prediction={pred} />
+              <PredictionCard key={pred.id || `${pred.fixtureId}-${pred.market}`} prediction={pred} />
             ))}
           </div>
         )}

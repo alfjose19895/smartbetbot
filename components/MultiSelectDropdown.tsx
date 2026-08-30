@@ -143,7 +143,7 @@ export function MultiSelectDropdown({
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={`Buscar por país o ${label.toLowerCase()}...`}
+              placeholder={`Buscar ${label.toLowerCase()}...`}
               className="w-full rounded-lg border border-slate-300 bg-slate-50 px-2.5 py-1.5 text-xs text-slate-900 outline-none focus:border-emerald-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
             />
           </div>
@@ -163,22 +163,22 @@ export function MultiSelectDropdown({
                         <button
                           type="button"
                           onClick={() => toggleGroup(group)}
-                          className="text-[9px] text-emerald-700 dark:text-emerald-400 hover:underline cursor-pointer lowercase"
+                          className="text-[9px] text-emerald-700 dark:text-emerald-400 hover:underline cursor-pointer lowercase font-bold"
                         >
                           seleccionar país
                         </button>
                       </div>
                     )}
                     {groupItems.map((opt) => {
-                      const checked = selected.includes(opt.value);
+                      const isChecked = selected.includes(opt.value);
                       return (
-                        <label
+                        <div
                           key={opt.value}
                           onClick={() => toggleOption(opt.value)}
-                          className={`flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-semibold cursor-pointer transition ${
-                            checked
-                              ? "bg-emerald-50 text-emerald-900 font-bold border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/60"
-                              : "text-slate-800 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                          className={`flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-semibold cursor-pointer transition select-none ${
+                            isChecked
+                              ? "bg-emerald-50 text-emerald-900 font-bold border border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-700"
+                              : "text-slate-800 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 border border-transparent"
                           }`}
                         >
                           <div className="flex items-center gap-1.5 truncate pr-2">
@@ -189,13 +189,24 @@ export function MultiSelectDropdown({
                               </span>
                             )}
                           </div>
-                          <input
-                            type="checkbox"
-                            checked={checked}
-                            onChange={() => {}}
-                            className="h-3.5 w-3.5 rounded border-slate-300 text-emerald-600 accent-emerald-600 focus:ring-0 cursor-pointer"
-                          />
-                        </label>
+                          <div
+                            className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border transition ${
+                              isChecked
+                                ? "border-emerald-600 bg-emerald-600 text-white"
+                                : "border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-800"
+                            }`}
+                          >
+                            {isChecked && (
+                              <svg className="h-3 w-3 fill-current" viewBox="0 0 20 20">
+                                <path
+                                  fillRule="evenodd"
+                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            )}
+                          </div>
+                        </div>
                       );
                     })}
                   </div>
