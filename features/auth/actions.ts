@@ -109,7 +109,7 @@ export async function registerAction(
   try {
     const supabase = await createClient();
     const emailRedirectTo = await resolveCallbackUrl("/dashboard");
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: parsed.data.email,
       password: parsed.data.password,
       options: {
@@ -118,13 +118,19 @@ export async function registerAction(
       },
     });
     if (error) return { status: "error", message: getAuthErrorMessage(error) };
-  } catch {
+
+    if (data?.session) {
+      revalidatePath("/", "layout");
+      redirect("/dashboard");
+    }
+  } catch (err: any) {
+    if (err?.digest?.includes("NEXT_REDIRECT")) throw err;
     return unexpectedState();
   }
 
   return {
     status: "success",
-    message: "Revisa tu correo para confirmar la cuenta. El enlace puede tardar unos minutos.",
+    message: "¡Cuenta creada exitosamente! Revisa tu correo electrónico para confirmar tu cuenta y acceder al dashboard.",
   };
 }
 
