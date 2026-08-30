@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
@@ -7,7 +7,6 @@ import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 
 export default function SignalsPage() {
   const [signals, setSignals] = useState<MarketOpportunity[]>([]);
-  const [historySignals, setHistorySignals] = useState<MarketOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Filters
@@ -15,7 +14,7 @@ export default function SignalsPage() {
   const [selectedLeague, setSelectedLeague] = useState("all");
   const [selectedMarket, setSelectedMarket] = useState("all");
   const [minProbability, setMinProbability] = useState<number>(60);
-  const [selectedDate, setSelectedDate] = useState<"all" | "today" | "tomorrow" | "week" | "history">("all");
+  const [selectedDate, setSelectedDate] = useState<"all" | "today" | "tomorrow" | "week">("all");
 
   useEffect(() => {
     async function fetchSignals() {
@@ -26,9 +25,6 @@ export default function SignalsPage() {
         if (json.signals) {
           setSignals(json.signals);
         }
-        if (json.history) {
-          setHistorySignals(json.history);
-        }
       } catch (err) {
         console.error("Failed to load signals:", err);
       } finally {
@@ -38,10 +34,8 @@ export default function SignalsPage() {
     fetchSignals();
   }, []);
 
-  const activeBaseList = selectedDate === "history" ? historySignals : signals;
-
-  const leagues = ["all", ...Array.from(new Set(activeBaseList.map((s) => s.league).filter(Boolean)))];
-  const markets = ["all", ...Array.from(new Set(activeBaseList.map((s) => s.market).filter(Boolean)))];
+  const leagues = ["all", ...Array.from(new Set(signals.map((s) => s.league).filter(Boolean)))];
+  const markets = ["all", ...Array.from(new Set(signals.map((s) => s.market).filter(Boolean)))];
 
   // Precise Local Calendar Day Filtering
   const now = new Date();
@@ -49,7 +43,7 @@ export default function SignalsPage() {
   const tomorrowDay = todayDay + 86400000;
   const weekEndDay = todayDay + 7 * 86400000;
 
-  const filtered = activeBaseList.filter((item) => {
+  const filtered = signals.filter((item) => {
     const matchesSearch =
       search === "" ||
       item.match.toLowerCase().includes(search.toLowerCase()) ||
@@ -113,88 +107,56 @@ export default function SignalsPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-black tracking-tight text-white sm:text-3xl">
-              {selectedDate === "history" ? "Histórico de Señales" : "Picks & Señales Estadísticas"}
+              Picks & Señales Estadísticas
             </h1>
             <p className="mt-1 text-xs text-slate-400 sm:text-sm">
-              {selectedDate === "history"
-                ? "Registro auditable de aciertos y resultados de predicciones anteriores"
-                : "Filtrado dinámico por fecha, cuota, probabilidad estimada y ligas principales"}
+              Filtrado dinámico por fecha, cuota, probabilidad estimada y ligas principales
             </p>
           </div>
         </div>
 
         {/* Date Filter Tabs */}
         <div className="mt-6 flex flex-wrap gap-2 rounded-2xl border border-slate-800/80 bg-slate-900/80 p-2.5">
-          <span className="self-center text-xs font-bold text-slate-400 mr-2 ml-1">Vista:</span>
+          <span className="self-center text-xs font-bold text-slate-400 mr-2 ml-1">Fecha:</span>
           <button
-            onClick={() => {
-              setSelectedDate("all");
-              setSelectedLeague("all");
-              setSelectedMarket("all");
-            }}
+            onClick={() => setSelectedDate("all")}
             className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
               selectedDate === "all"
-                ? "bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20"
+                ? "bg-emerald-500 text-slate-950 font-bold shadow-md"
                 : "bg-slate-950/60 text-slate-300 hover:bg-slate-800 border border-slate-800"
             }`}
           >
-            🌟 Todos los Picks ({signals.length})
+            🌟 Todos los Días ({signals.length})
           </button>
           <button
-            onClick={() => {
-              setSelectedDate("today");
-              setSelectedLeague("all");
-              setSelectedMarket("all");
-            }}
+            onClick={() => setSelectedDate("today")}
             className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
               selectedDate === "today"
-                ? "bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20"
+                ? "bg-emerald-500 text-slate-950 font-bold shadow-md"
                 : "bg-slate-950/60 text-slate-300 hover:bg-slate-800 border border-slate-800"
             }`}
           >
             📅 Hoy
           </button>
           <button
-            onClick={() => {
-              setSelectedDate("tomorrow");
-              setSelectedLeague("all");
-              setSelectedMarket("all");
-            }}
+            onClick={() => setSelectedDate("tomorrow")}
             className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
               selectedDate === "tomorrow"
-                ? "bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20"
+                ? "bg-emerald-500 text-slate-950 font-bold shadow-md"
                 : "bg-slate-950/60 text-slate-300 hover:bg-slate-800 border border-slate-800"
             }`}
           >
             🔥 Mañana
           </button>
           <button
-            onClick={() => {
-              setSelectedDate("week");
-              setSelectedLeague("all");
-              setSelectedMarket("all");
-            }}
+            onClick={() => setSelectedDate("week")}
             className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
               selectedDate === "week"
-                ? "bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20"
+                ? "bg-emerald-500 text-slate-950 font-bold shadow-md"
                 : "bg-slate-950/60 text-slate-300 hover:bg-slate-800 border border-slate-800"
             }`}
           >
             🗓️ Esta Semana
-          </button>
-          <button
-            onClick={() => {
-              setSelectedDate("history");
-              setSelectedLeague("all");
-              setSelectedMarket("all");
-            }}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
-              selectedDate === "history"
-                ? "bg-sky-500 text-slate-950 font-bold shadow-md shadow-sky-500/20"
-                : "bg-slate-950/60 text-slate-300 hover:bg-slate-800 border border-slate-800"
-            }`}
-          >
-            📜 Histórico / Jugados ({historySignals.length})
           </button>
         </div>
 
