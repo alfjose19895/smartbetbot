@@ -212,8 +212,8 @@ ${prediction.explanation}
         {/* AI Explanation Box */}
         <div className="mt-4 rounded-2xl bg-slate-50 p-4 border border-slate-200/80 dark:bg-slate-950/80 dark:border-slate-800/60">
           <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-slate-300">
-            <span>☕</span>
-            <span>{t("aiExplanation")}</span>
+            <span>🧠</span>
+            <span className="font-extrabold text-slate-900 dark:text-white uppercase tracking-wider text-[11px]">{t("aiExplanation")}</span>
           </div>
           <p className="mt-2 text-xs leading-relaxed text-slate-800 font-medium dark:text-slate-200">
             {prediction.explanation}
