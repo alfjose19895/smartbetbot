@@ -9,6 +9,7 @@ import {
   evaluateFixturePrediction,
   MarketOpportunity,
   normalizeTeamName,
+  getCanonicalTeamKey,
   normalizeLeagueInfo,
 } from "./prediction-engine";
 
@@ -85,8 +86,8 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
 
   const addUniqueMatchPick = (opp: MarketOpportunity) => {
     const dateStr = opp.kickoff ? opp.kickoff.split("T")[0] : "nodate";
-    const hNorm = normalizeTeamName(opp.homeTeam);
-    const aNorm = normalizeTeamName(opp.awayTeam);
+    const hNorm = getCanonicalTeamKey(opp.homeTeam);
+    const aNorm = getCanonicalTeamKey(opp.awayTeam);
     const matchKey = `${hNorm}-${aNorm}-${dateStr}`;
 
     if (!processedMatchKeys.has(matchKey)) {
@@ -223,8 +224,8 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
 
   const addUniqueHistoricalPick = (p: HistoricalSettledPick) => {
     const dateStr = p.kickoff ? p.kickoff.split("T")[0] : p.date;
-    const hNorm = normalizeTeamName(p.homeTeam);
-    const aNorm = normalizeTeamName(p.awayTeam);
+    const hNorm = getCanonicalTeamKey(p.homeTeam);
+    const aNorm = getCanonicalTeamKey(p.awayTeam);
     const matchKey = `${hNorm}-${aNorm}-${dateStr}`;
 
     if (!processedMatchKeys.has(matchKey)) {

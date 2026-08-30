@@ -30,14 +30,47 @@ export interface MarketOpportunity {
   actualScore?: string;
 }
 
-export function normalizeTeamName(name: string): string {
-  return (name || "")
+export function getCanonicalTeamKey(name: string): string {
+  const norm = (name || "")
     .toLowerCase()
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
-    .replace(/\b(rc|cf|fc|cd|ud|ca|afc|sc|sd|de|la|el|los|las|the|club|deportivo|balompie|fútbol|futbol)\b/gi, "")
+    .replace(/\b(fc|cf|rc|rcd|ud|ca|afc|sc|sd|gd|sl|de|la|el|los|las|the|club|balompie|futbol|fútbol|de futbol|de fútbol|de madrid|de bilbao|de barcelona|de vigo|sad|praia)\b/gi, " ")
     .replace(/[^a-z0-9]/gi, "")
     .trim();
+
+  if (norm.includes("espanyol")) return "espanyol";
+  if (norm.includes("barcelona")) return "barcelona";
+  if (norm.includes("realmadrid")) return "realmadrid";
+  if (norm.includes("atleticomadrid") || norm.includes("atletico")) return "atleticomadrid";
+  if (norm.includes("realsociedad") || norm.includes("sociedad")) return "realsociedad";
+  if (norm.includes("athletic") || norm.includes("bilbao")) return "athleticclub";
+  if (norm.includes("rayovallecano") || norm.includes("vallecano")) return "rayovallecano";
+  if (norm.includes("celta")) return "celtavigo";
+  if (norm.includes("sevilla")) return "sevilla";
+  if (norm.includes("betis")) return "realbetis";
+  if (norm.includes("valencia")) return "valencia";
+  if (norm.includes("villarreal")) return "villarreal";
+  if (norm.includes("deportivo") || norm.includes("coruna")) return "deportivolacoruna";
+  if (norm.includes("benfica")) return "benfica";
+  if (norm.includes("sporting")) return "sportingcp";
+  if (norm.includes("porto")) return "porto";
+  if (norm.includes("estoril")) return "estoril";
+  if (norm.includes("mancity") || norm.includes("manchestercity")) return "manchestercity";
+  if (norm.includes("manunited") || norm.includes("manchesterunited")) return "manchesterunited";
+  if (norm.includes("inter")) return "inter";
+  if (norm.includes("milan")) return "milan";
+  if (norm.includes("juventus")) return "juventus";
+  if (norm.includes("bayern")) return "bayernmunich";
+  if (norm.includes("dortmund")) return "borussiadortmund";
+  if (norm.includes("psv")) return "psveindhoven";
+  if (norm.includes("ajax")) return "ajax";
+
+  return norm;
+}
+
+export function normalizeTeamName(name: string): string {
+  return getCanonicalTeamKey(name);
 }
 
 export function normalizeLeagueInfo(rawLeagueName: string, rawCountry?: string): { canonicalLeague: string; country: string } {
@@ -174,11 +207,11 @@ export function getTeamRating(teamName: string): number {
   return 73;
 }
 
-export function calculateBookmakerOdds(probability: number, marketJuice = 1.0): number {
+export function calculateBookmakerOdds(probability: number, marketJuice = 0.955): number {
   if (probability <= 0.05) return 15.0;
   const raw = marketJuice / probability;
   const rounded = Math.round(raw * 100) / 100;
-  return Math.max(1.40, Math.min(2.20, rounded));
+  return Math.max(1.05, Math.min(25.0, rounded));
 }
 
 function poissonProbability(k: number, lambda: number): number {
