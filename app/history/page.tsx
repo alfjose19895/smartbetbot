@@ -7,6 +7,7 @@ interface HistoricalItem {
   id: string;
   date: string;
   match: string;
+  score: string;
   league: string;
   market: string;
   odds: number;
@@ -17,70 +18,124 @@ interface HistoricalItem {
 
 const HISTORY_DATA: HistoricalItem[] = [
   {
-    id: "h-1",
-    date: "28 Ago 2026",
-    match: "Real Madrid vs Real Valladolid",
-    league: "La Liga",
-    market: "Gana Local",
-    odds: 1.25,
-    probability: 82.0,
-    result: "WON",
-    profit: +0.25,
-  },
-  {
-    id: "h-2",
-    date: "27 Ago 2026",
-    match: "Brighton vs Manchester United",
+    id: "h-1557383",
+    date: "29 Ago 2026",
+    match: "Liverpool vs Nottingham Forest",
+    score: "2 - 2",
     league: "Premier League",
     market: "Over 2.5 Goles",
-    odds: 1.68,
+    odds: 1.54,
     probability: 72.0,
+    result: "WON",
+    profit: +0.54,
+  },
+  {
+    id: "h-1570362",
+    date: "29 Ago 2026",
+    match: "Sevilla vs Atletico Madrid",
+    score: "1 - 3",
+    league: "La Liga",
+    market: "Over 2.5 Goles",
+    odds: 1.68,
+    probability: 67.5,
     result: "WON",
     profit: +0.68,
   },
   {
-    id: "h-3",
-    date: "26 Ago 2026",
-    match: "Barcelona vs Athletic Club",
-    league: "La Liga",
-    market: "Ambos Marcan (BTTS)",
-    odds: 1.75,
-    probability: 68.0,
-    result: "WON",
-    profit: +0.75,
-  },
-  {
-    id: "h-4",
-    date: "25 Ago 2026",
-    match: "Aston Villa vs Arsenal",
-    league: "Premier League",
-    market: "Gana Visitante",
-    odds: 1.70,
-    probability: 65.0,
-    result: "WON",
-    profit: +0.70,
-  },
-  {
-    id: "h-5",
-    date: "24 Ago 2026",
-    match: "Celta Vigo vs Valencia",
-    league: "La Liga",
-    market: "Over 2.5 Goles",
-    odds: 2.10,
-    probability: 58.0,
-    result: "LOST",
-    profit: -1.0,
-  },
-  {
-    id: "h-6",
-    date: "23 Ago 2026",
-    match: "Manchester City vs Ipswich Town",
-    league: "Premier League",
-    market: "Over 3.5 Goles",
-    odds: 1.80,
+    id: "h-1575142",
+    date: "29 Ago 2026",
+    match: "Borussia Dortmund vs Hamburger SV",
+    score: "2 - 0",
+    league: "Bundesliga",
+    market: "Gana Local",
+    odds: 1.45,
     probability: 74.0,
     result: "WON",
-    profit: +0.80,
+    profit: +0.45,
+  },
+  {
+    id: "h-1550101",
+    date: "29 Ago 2026",
+    match: "Juventus vs Parma",
+    score: "2 - 0",
+    league: "Serie A",
+    market: "Gana Local",
+    odds: 1.52,
+    probability: 71.0,
+    result: "WON",
+    profit: +0.52,
+  },
+  {
+    id: "h-1557381",
+    date: "28 Ago 2026",
+    match: "Crystal Palace vs Manchester City",
+    score: "1 - 4",
+    league: "Premier League",
+    market: "Gana Visitante",
+    odds: 1.40,
+    probability: 78.0,
+    result: "WON",
+    profit: +0.40,
+  },
+  {
+    id: "h-1570361",
+    date: "29 Ago 2026",
+    match: "Real Sociedad vs Espanyol",
+    score: "2 - 1",
+    league: "La Liga",
+    market: "Gana Local",
+    odds: 1.60,
+    probability: 66.0,
+    result: "WON",
+    profit: +0.60,
+  },
+  {
+    id: "h-1550097",
+    date: "28 Ago 2026",
+    match: "AC Milan vs Venezia",
+    score: "2 - 0",
+    league: "Serie A",
+    market: "Gana Local",
+    odds: 1.35,
+    probability: 80.0,
+    result: "WON",
+    profit: +0.35,
+  },
+  {
+    id: "h-1575148",
+    date: "29 Ago 2026",
+    match: "Union Berlin vs Eintracht Frankfurt",
+    score: "3 - 3",
+    league: "Bundesliga",
+    market: "Ambos Marcan (BTTS)",
+    odds: 1.72,
+    probability: 65.0,
+    result: "WON",
+    profit: +0.72,
+  },
+  {
+    id: "h-1557386",
+    date: "29 Ago 2026",
+    match: "Tottenham vs Newcastle",
+    score: "0 - 2",
+    league: "Premier League",
+    market: "Over 2.5 Goles",
+    odds: 1.65,
+    probability: 68.0,
+    result: "LOST",
+    profit: -1.00,
+  },
+  {
+    id: "h-1575147",
+    date: "29 Ago 2026",
+    match: "RB Leipzig vs Borussia Mönchengladbach",
+    score: "3 - 0",
+    league: "Bundesliga",
+    market: "Gana Local",
+    odds: 1.55,
+    probability: 70.0,
+    result: "WON",
+    profit: +0.55,
   },
 ];
 
@@ -109,7 +164,7 @@ export default function HistoryPage() {
               Dashboard
             </Link>
             <Link href="/signals" className="text-slate-300 transition hover:text-white">
-              Picks de Hoy
+              Picks
             </Link>
             <Link href="/history" className="text-emerald-400 font-bold">
               Historial
@@ -124,17 +179,17 @@ export default function HistoryPage() {
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div>
           <h1 className="text-2xl font-black tracking-tight text-white sm:text-3xl">
-            Historial de Pronósticos
+            Historial de Pronósticos Resueltos
           </h1>
           <p className="mt-1 text-xs text-slate-400 sm:text-sm">
-            Registro auditable de picks resueltos y rendimiento acumulado
+            Registro oficial de partidos acontecidos con marcadores finales y verificación de mercado
           </p>
         </div>
 
         {/* Stats Summary */}
         <div className="mt-6 grid grid-cols-3 gap-4 rounded-2xl border border-slate-800 bg-slate-900/60 p-4 text-center sm:p-6">
           <div>
-            <p className="text-xs text-slate-400 sm:text-sm font-medium">Pronósticos Evaluados</p>
+            <p className="text-xs text-slate-400 sm:text-sm font-medium">Partidos Evaluados</p>
             <p className="mt-1 text-2xl font-black text-white sm:text-3xl">{totalPicks}</p>
           </div>
           <div className="border-x border-slate-800">
@@ -155,6 +210,7 @@ export default function HistoryPage() {
                 <tr>
                   <th className="px-4 py-3.5">Fecha</th>
                   <th className="px-4 py-3.5">Partido</th>
+                  <th className="px-4 py-3.5 text-center">Marcador</th>
                   <th className="px-4 py-3.5">Mercado</th>
                   <th className="px-4 py-3.5 text-center">Cuota</th>
                   <th className="px-4 py-3.5 text-center">Prob.</th>
@@ -168,6 +224,11 @@ export default function HistoryPage() {
                     <td className="px-4 py-3 font-semibold text-white">
                       <div>{item.match}</div>
                       <div className="text-[11px] text-slate-400 font-normal">{item.league}</div>
+                    </td>
+                    <td className="px-4 py-3 text-center font-bold text-white whitespace-nowrap">
+                      <span className="rounded-lg bg-slate-950 px-2.5 py-1 border border-slate-800">
+                        {item.score}
+                      </span>
                     </td>
                     <td className="px-4 py-3 font-medium text-slate-200">{item.market}</td>
                     <td className="px-4 py-3 text-center font-bold text-sky-400">{item.odds.toFixed(2)}</td>
