@@ -376,6 +376,20 @@ export class ApiFootballClient {
   /**
    * Fetch live in-play fixtures
    */
+  /**
+   * Fetch recently finished fixtures for a league
+   */
+  async getLastFixtures(
+    leagueId: number,
+    lastCount: number = 4
+  ): Promise<ApiFootballFixtureItem[]> {
+    return this.request<ApiFootballFixtureItem>("fixtures", {
+      league: leagueId,
+      last: lastCount,
+      status: "FT",
+    });
+  }
+
   async getLiveFixtures(): Promise<ApiFootballFixtureItem[]> {
     return this.request<ApiFootballFixtureItem>("fixtures", { live: "all" });
   }
