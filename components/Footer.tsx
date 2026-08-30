@@ -8,25 +8,25 @@ import { useLanguage } from "@/context/LanguageContext";
 export function Footer() {
   const pathname = usePathname();
   const { language, t } = useLanguage();
+
   const phone = "593964082483";
+  const isHomePage = pathname === "/";
 
-  const isLandingPage = pathname === "/" || pathname === "/login" || pathname === "/register";
+  let badgeText: string;
+  let title: string;
+  let subtitle: string;
+  let btnText: string;
+  let defaultMessage: string;
 
-  let badgeText = "";
-  let title = "";
-  let subtitle = "";
-  let btnText = "";
-  let defaultMessage = "";
-
-  if (isLandingPage) {
-    badgeText = language === "en" ? "VIP Sales & Access" : "Asesoría & Adquisición VIP";
+  if (isHomePage) {
+    badgeText = language === "en" ? "Official VIP Assistance" : "Asesoría Personalizada VIP";
     title =
       language === "en"
-        ? "¿Have questions about how to acquire SmartBetBot?"
-        : "¿Tienes dudas o preguntas sobre cómo adquirir SmartBetBot?";
+        ? "¿Have questions or want to acquire SmartBetBot?"
+        : "¿Tienes dudas o deseas adquirir SmartBetBot?";
     subtitle =
       language === "en"
-        ? "Chat directly with our official WhatsApp team for instant guidance, membership plans, and immediate VIP activation."
+        ? "Chat directly with our official support team on WhatsApp to get personalized guidance on access plans and instant activation."
         : "Escríbenos directamente a nuestro WhatsApp oficial para recibir asesoría personalizada sobre planes de acceso y activación inmediata.";
     btnText =
       language === "en"
@@ -59,10 +59,10 @@ export function Footer() {
   const waUrl = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(defaultMessage)}`;
 
   return (
-    <footer className="w-full min-w-full border-t border-slate-200 bg-white pt-12 pb-32 sm:pb-24 text-slate-700 transition-colors dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300 flex flex-col items-center justify-center">
-      <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 flex flex-col items-center text-center">
+    <footer className="w-full min-w-full border-t border-slate-200 bg-white pt-12 pb-32 sm:pb-24 text-slate-700 transition-colors dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300">
+      <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 flex flex-col items-center justify-center text-center">
         {/* Main WhatsApp Card */}
-        <div className="w-full relative overflow-hidden rounded-3xl border border-emerald-200/80 bg-gradient-to-b from-emerald-50/50 to-white p-6 sm:p-10 text-center shadow-xl dark:border-emerald-500/20 dark:from-slate-900 dark:to-slate-950 flex flex-col items-center">
+        <div className="w-full mx-auto relative overflow-hidden rounded-3xl border border-emerald-200/80 bg-gradient-to-b from-emerald-50/50 to-white p-6 sm:p-10 text-center shadow-xl dark:border-emerald-500/20 dark:from-slate-900 dark:to-slate-950 flex flex-col items-center justify-center">
           <div className="absolute top-0 right-0 -mt-10 -mr-10 h-40 w-40 rounded-full bg-emerald-500/10 blur-2xl pointer-events-none" />
           <div className="absolute bottom-0 left-0 -mb-10 -ml-10 h-40 w-40 rounded-full bg-cyan-500/10 blur-2xl pointer-events-none" />
 
@@ -109,8 +109,8 @@ export function Footer() {
         </div>
 
         {/* Footer Navigation & Brand Row */}
-        <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-200 dark:border-slate-800 pt-6">
-          <Link href="/" className="flex items-center gap-2.5">
+        <div className="w-full max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-200 dark:border-slate-800 pt-6">
+          <Link href="/" className="flex items-center gap-2.5 mx-auto sm:mx-0">
             <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 text-sm font-black text-slate-950 shadow-md">
               🎯
             </span>
@@ -136,7 +136,7 @@ export function Footer() {
         </div>
 
         {/* Legal Disclaimer */}
-        <div className="w-full border-t border-slate-100 dark:border-slate-900 pt-4 text-center">
+        <div className="w-full max-w-3xl mx-auto border-t border-slate-100 dark:border-slate-900 pt-4 text-center">
           <p className="text-[11px] text-slate-500 dark:text-slate-500 max-w-2xl mx-auto leading-relaxed font-medium text-center">
             {language === "en"
               ? "© " + new Date().getFullYear() + " SmartBetBot. Advanced football intelligence based on predictive Poisson models, Expected Goals (xG) and Elo ratings. Sports betting involves financial risk. Play responsibly (+18)."

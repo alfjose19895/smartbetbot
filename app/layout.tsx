@@ -1,4 +1,4 @@
-﻿import type { Metadata, Viewport } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 
 import "./globals.css";
@@ -25,7 +25,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="es" suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning className="w-full">
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -50,10 +50,12 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
           }}
         />
       </head>
-      <body>
+      <body className="w-full min-h-screen flex flex-col items-stretch m-0 p-0 overflow-x-hidden">
         <LanguageProvider>
           <ServiceWorkerRegistration />
-          {children}
+          <div className="w-full flex-1 flex flex-col">
+            {children}
+          </div>
           <Footer />
           <WhatsAppButton />
         </LanguageProvider>

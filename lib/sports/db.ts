@@ -145,6 +145,66 @@ export async function generatePredictionsForUpcoming(
     }
   }
 
+  // If API-Football is rate-limited or returned 0, query upcoming fixtures from Supabase
+  if (allOpportunities.length === 0) {
+    const supabase = getAdminClient();
+    if (supabase) {
+      try {
+        const { data: dbFixtures } = await supabase
+          .from("fixtures")
+          .select(`
+            id,
+            provider_id,
+            kickoff_at,
+            status,
+            raw_payload,
+            home_team:teams!home_team_id (name, logo_url),
+            away_team:teams!away_team_id (name, logo_url),
+            league:leagues!league_id (name, logo_url)
+          `)
+          .in("status", ["scheduled", "NS", "TBD", "1H", "HT", "2H", "live"])
+          .gte("kickoff_at", new Date(nowMs).toISOString())
+          .order("kickoff_at", { ascending: true })
+          .limit(80);
+
+        if (dbFixtures && dbFixtures.length > 0) {
+          for (const item of dbFixtures) {
+            const f = item as any;
+            const homeName = f.home_team?.name || (Array.isArray(f.home_team) ? f.home_team[0]?.name : null) || f.raw_payload?.teams?.home?.name;
+            const awayName = f.away_team?.name || (Array.isArray(f.away_team) ? f.away_team[0]?.name : null) || f.raw_payload?.teams?.away?.name;
+            const homeLogo = f.home_team?.logo_url || (Array.isArray(f.home_team) ? f.home_team[0]?.logo_url : null) || f.raw_payload?.teams?.home?.logo;
+            const awayLogo = f.away_team?.logo_url || (Array.isArray(f.away_team) ? f.away_team[0]?.logo_url : null) || f.raw_payload?.teams?.away?.logo;
+            const leagueName = f.league?.name || (Array.isArray(f.league) ? f.league[0]?.name : null) || f.raw_payload?.league?.name;
+            const leagueLogo = f.league?.logo_url || (Array.isArray(f.league) ? f.league[0]?.logo_url : null) || f.raw_payload?.league?.logo;
+
+            if (!homeName || !awayName || !leagueName) continue;
+
+            const fid = parseInt(f.provider_id) || 0;
+            const opps = evaluateFixturePrediction({
+              fixtureId: fid,
+              homeTeam: homeName,
+              awayTeam: awayName,
+              homeLogo,
+              awayLogo,
+              league: leagueName,
+              leagueLogo,
+              kickoff: f.kickoff_at,
+            });
+
+            for (const opp of opps.slice(0, 2)) {
+              const key = `${fid}-${opp.market}`;
+              if (processedKeys.has(key)) continue;
+              processedKeys.add(key);
+              allOpportunities.push(opp);
+            }
+          }
+        }
+      } catch {
+        // Continue
+      }
+    }
+  }
+
   // Sort strictly by upcoming kickoff ascending
   const sorted = allOpportunities.sort(
     (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
@@ -267,7 +327,102 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
   const settledPicks: HistoricalSettledPick[] = [];
   const processedFixtureIds = new Set<number>();
 
-  // Scan real finished fixtures across active leagues from API-Football
+  // 1. Query previously evaluated fixtures and predictions stored in Supabase
+  const supabase = getAdminClient();
+  if (supabase) {
+    try {
+      const { data: dbFixtures } = await supabase
+        .from("fixtures")
+        .select(`
+            id,
+            provider_id,
+            kickoff_at,
+            status,
+            home_score,
+            away_score,
+            raw_payload,
+            home_team:teams!home_team_id (name, logo_url),
+            away_team:teams!away_team_id (name, logo_url),
+            league:leagues!league_id (name, logo_url)
+          `)
+        .in("status", ["FT", "finished", "AET", "PEN"])
+        .order("kickoff_at", { ascending: false })
+        .limit(30);
+
+      if (dbFixtures && dbFixtures.length > 0) {
+        for (const item of dbFixtures) {
+          const f = item as any;
+          const fid = parseInt(f.provider_id) || 0;
+          if (fid && processedFixtureIds.has(fid)) continue;
+          if (fid) processedFixtureIds.add(fid);
+
+          const homeName = f.home_team?.name || (Array.isArray(f.home_team) ? f.home_team[0]?.name : null) || f.raw_payload?.teams?.home?.name;
+          const awayName = f.away_team?.name || (Array.isArray(f.away_team) ? f.away_team[0]?.name : null) || f.raw_payload?.teams?.away?.name;
+          const homeLogo = f.home_team?.logo_url || (Array.isArray(f.home_team) ? f.home_team[0]?.logo_url : null) || f.raw_payload?.teams?.home?.logo;
+          const awayLogo = f.away_team?.logo_url || (Array.isArray(f.away_team) ? f.away_team[0]?.logo_url : null) || f.raw_payload?.teams?.away?.logo;
+          const leagueName = f.league?.name || (Array.isArray(f.league) ? f.league[0]?.name : null) || f.raw_payload?.league?.name;
+          const leagueLogo = f.league?.logo_url || (Array.isArray(f.league) ? f.league[0]?.logo_url : null) || f.raw_payload?.league?.logo;
+
+          if (!homeName || !awayName || !leagueName) continue;
+
+          const homeGoals = f.home_score ?? (f.raw_payload as any)?.goals?.home ?? 0;
+          const awayGoals = f.away_score ?? (f.raw_payload as any)?.goals?.away ?? 0;
+
+          const opps = evaluateFixturePrediction({
+            fixtureId: fid,
+            homeTeam: homeName,
+            awayTeam: awayName,
+            homeLogo,
+            awayLogo,
+            league: leagueName,
+            leagueLogo,
+            kickoff: f.kickoff_at,
+          });
+
+          if (opps.length === 0) continue;
+          const topPick = opps[0];
+
+          let isWon = false;
+          if (topPick.market === "Gana Local") isWon = homeGoals > awayGoals;
+          else if (topPick.market === "Gana Visitante") isWon = awayGoals > homeGoals;
+          else if (topPick.market === "Over 2.5 Goles") isWon = homeGoals + awayGoals > 2.5;
+          else if (topPick.market === "Under 2.5 Goles") isWon = homeGoals + awayGoals < 2.5;
+          else if (topPick.market === "Ambos Marcan (BTTS)") isWon = homeGoals > 0 && awayGoals > 0;
+
+          const profit = isWon ? Math.round((topPick.odds - 1) * 100) / 100 : -1.0;
+
+          const dateObj = new Date(f.kickoff_at);
+          const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+          const formattedDate = `${dateObj.getDate()} ${months[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
+
+          settledPicks.push({
+            id: `h-db-${fid || f.id}`,
+            date: formattedDate,
+            kickoff: f.kickoff_at,
+            match: `${homeName} vs ${awayName}`,
+            homeTeam: homeName,
+            awayTeam: awayName,
+            homeLogo,
+            awayLogo,
+            score: `${homeGoals} - ${awayGoals}`,
+            league: leagueName,
+            leagueLogo,
+            market: topPick.market,
+            selection: topPick.selection,
+            odds: topPick.odds,
+            probability: topPick.probability,
+            result: isWon ? "WON" : "LOST",
+            profit,
+            explanation: topPick.explanation,
+          });
+        }
+      }
+    } catch {
+      // Fall through to live API-Football scan
+    }
+  }
+
+  // 2. Scan real finished fixtures across active leagues from API-Football
   const leaguesToScan = ACTIVE_SCAN_LEAGUES.slice(0, 16); // High priority top & world leagues
   const chunkSize = 4;
 
