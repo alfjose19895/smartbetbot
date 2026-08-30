@@ -13,17 +13,13 @@ performance views, fixed-stake backtesting, CI, and controlled deployment runboo
 ## Architecture
 
 ```text
-Browser / PWA (Next.js on Vercel)
+Browser / PWA (Next.js Serverless on Vercel)
         |             |
         |             +--> Supabase Cloud (Auth, PostgreSQL, Realtime, RLS)
-        |
-        +--> FastAPI on Railway
-                 |
-                 +--> prematch / live / odds workers
-                 +--> API-Football adapter
-                 +--> Upstash Redis Cloud (temporary state only)
-                 +--> signal and probability engines
-                 +--> Firebase Cloud Messaging
+        |             |
+        |             +--> API-Football Live Endpoints (Real Fixtures & Odds)
+        |             |
+        |             +--> SmartBetBot Quantitative Engine (Elo, Poisson & xG)
 ```
 
 The Next.js application lives at the repository root. Python is isolated under `backend/`. See
