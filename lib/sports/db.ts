@@ -195,8 +195,28 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
     }
   }
 
+  // Curate elite top 1-2 picks per league with strict high precision (Prob >= 65%, Odds >= 1.40, SmartScore >= 75)
+  const leagueBuckets: Record<string, MarketOpportunity[]> = {};
+  for (const opp of allOpportunities) {
+    if (opp.probability >= 65.0 && opp.odds >= 1.40 && opp.smartScore >= 75) {
+      if (!leagueBuckets[opp.league]) {
+        leagueBuckets[opp.league] = [];
+      }
+      leagueBuckets[opp.league].push(opp);
+    }
+  }
+
+  const curatedList: MarketOpportunity[] = [];
+  for (const [_, picks] of Object.entries(leagueBuckets)) {
+    const sortedPicks = picks.sort((a, b) => b.smartScore - a.smartScore || b.probability - a.probability);
+    curatedList.push(...sortedPicks.slice(0, 2)); // Strict max 2 top picks per league
+  }
+
+  // Fallback: If curated list is small, include any other valid opportunities with prob >= 65% & odds >= 1.40
+  const finalList = curatedList.length > 0 ? curatedList : allOpportunities.filter(o => o.probability >= 65.0 && o.odds >= 1.40);
+
   // Sort strictly by upcoming kickoff ascending
-  const sorted = allOpportunities.sort(
+  const sorted = finalList.sort(
     (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
   );
 

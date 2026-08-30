@@ -20,7 +20,7 @@ export function Navbar({ onSync, syncing, userRole, userEmail }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
-  const [currentRole, setCurrentRole] = useState<"admin" | "user" | null>(userRole || "admin");
+  const [currentRole, setCurrentRole] = useState<"admin" | "user" | null>(userRole || null);
   const [currentEmail, setCurrentEmail] = useState<string | null>(userEmail || null);
 
   useEffect(() => {
@@ -117,8 +117,8 @@ export function Navbar({ onSync, syncing, userRole, userEmail }: NavbarProps) {
             <ThemeToggle />
           </div>
 
-          {/* Update / Sync Button (visible on mobile and desktop) */}
-          {onSync && (
+          {/* Update / Sync Button (strictly restricted to admin users only) */}
+          {onSync && currentRole === "admin" && (
             <button
               onClick={onSync}
               disabled={syncing}
