@@ -1,19 +1,24 @@
 "use client";
 
 import React, { useState } from "react";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface WhatsAppButtonProps {
   phoneNumber?: string;
-  defaultMessage?: string;
 }
 
 export function WhatsAppButton({
-  phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "584120000000",
-  defaultMessage = "¡Hola SmartBetBot! Tengo una consulta sobre los pronósticos deportivos y mi cuenta.",
+  phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "5934082483",
 }: WhatsAppButtonProps) {
+  const { language } = useLanguage();
   const [showTooltip, setShowTooltip] = useState(false);
 
   const cleanPhone = phoneNumber.replace(/[^0-9]/g, "");
+  const defaultMessage =
+    language === "en"
+      ? "Hello! ⚽🔥 I would like to get personalized guidance on SmartBetBot sports predictions and VIP access. How can I get started today?"
+      : "¡Hola! ⚽🔥 Quiero recibir asesoría personalizada sobre los pronósticos deportivos y membresías VIP de SmartBetBot. ¿Cómo puedo empezar a ganar hoy mismo?";
+
   const encodedText = encodeURIComponent(defaultMessage);
   const waUrl = `https://wa.me/${cleanPhone}?text=${encodedText}`;
 
@@ -32,7 +37,11 @@ export function WhatsAppButton({
         }`}
       >
         <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
-        <span>¿Dudas con los picks? Escríbenos</span>
+        <span>
+          {language === "en"
+            ? "Questions about picks? Chat with us"
+            : "¿Dudas con los pronósticos? Escríbenos"}
+        </span>
       </div>
 
       {/* WhatsApp Action Floating Button */}
@@ -41,7 +50,7 @@ export function WhatsAppButton({
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Contactar soporte por WhatsApp"
-        title="Escríbenos por WhatsApp para resolver cualquier duda"
+        title="Escríbenos por WhatsApp (+593 4082483) para resolver cualquier duda"
         className="flex h-13 w-13 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg shadow-emerald-500/30 transition-all duration-300 hover:scale-110 hover:shadow-xl hover:shadow-emerald-500/40 active:scale-95 cursor-pointer relative"
       >
         {/* Pulse Ring Indicator */}
