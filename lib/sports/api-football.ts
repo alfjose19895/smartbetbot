@@ -132,6 +132,7 @@ export interface ApiFootballOdds {
 }
 
 const DEFAULT_BASE_URL = "https://v3.football.api-sports.io";
+const DEFAULT_API_KEY = "01de09ba37a81c948be7aebcaf154c61";
 
 export class ApiFootballClient {
   private apiKey: string;
@@ -142,7 +143,7 @@ export class ApiFootballClient {
       apiKey ||
       process.env.API_FOOTBALL_KEY ||
       process.env.NEXT_PUBLIC_API_FOOTBALL_KEY ||
-      "";
+      DEFAULT_API_KEY;
     this.baseUrl = (baseUrl || process.env.API_FOOTBALL_BASE_URL || DEFAULT_BASE_URL).replace(
       /\/$/,
       ""
@@ -150,11 +151,6 @@ export class ApiFootballClient {
   }
 
   private async request<T>(endpoint: string, params: Record<string, string | number> = {}): Promise<T[]> {
-    if (!this.apiKey) {
-      console.warn("[ApiFootball] No API key configured. Returning empty result.");
-      return [];
-    }
-
     const searchParams = new URLSearchParams();
     for (const [key, value] of Object.entries(params)) {
       if (value !== undefined && value !== null) {
@@ -255,7 +251,6 @@ export class ApiFootballClient {
       if (data && data.length > 0) return data;
     }
 
-    // Default to fetching next fixtures for this league
     return this.request<ApiFootballFixtureItem>("fixtures", {
       league: leagueId,
       next: nextCount,

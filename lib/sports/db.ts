@@ -116,7 +116,7 @@ export async function syncUpcomingFixtures(leagueIds: number[] = ALL_LEAGUE_IDS,
 
   for (const leagueId of leagueIds) {
     try {
-      const fixtures = await apiFootball.getFixtures(leagueId, 2026, from, to, 6);
+      const fixtures = await apiFootball.getFixtures(leagueId, 2026, from, to, 8);
 
       for (const f of fixtures) {
         if (!f.fixture || !f.teams) continue;
@@ -222,72 +222,34 @@ interface RawFixtureRow {
 }
 
 /**
- * Generate predictions for upcoming fixtures and return opportunities across all leagues
+ * Generate predictions for upcoming fixtures across all 24 leagues
  */
 export async function generatePredictionsForUpcoming(targetLeagueIds?: number[]): Promise<MarketOpportunity[]> {
   const supabase = getAdminClient();
   const allOpportunities: MarketOpportunity[] = [];
   const processedFixtureIds = new Set<string>();
 
-  // 1. Query upcoming fixtures from Supabase
-  const now = new Date().toISOString();
-  const maxDate = new Date(Date.now() + 14 * 86400000).toISOString();
+  // 1. Fetch live matches directly from API-Football for all major world leagues
+  const leaguesToScan =
+    targetLeagueIds && targetLeagueIds.length > 0
+      ? targetLeagueIds
+      : [39, 140, 135, 78, 61, 71, 128, 262, 253, 79, 40, 94, 88, 203, 179, 144, 141, 136, 307];
 
-  const { data } = await supabase
-    .from("fixtures")
-    .select(`
-      id,
-      provider_id,
-      kickoff_at,
-      status,
-      raw_payload,
-      home_team:teams!fixtures_home_team_id_fkey(name, logo_url),
-      away_team:teams!fixtures_away_team_id_fkey(name, logo_url),
-      league:leagues!fixtures_league_id_fkey(name, logo_url)
-    `)
-    .gte("kickoff_at", now)
-    .lte("kickoff_at", maxDate)
-    .order("kickoff_at", { ascending: true })
-    .limit(60);
-
-  const fixtures = data as unknown as RawFixtureRow[] | null;
-
-  if (fixtures && fixtures.length > 0) {
-    for (const item of fixtures) {
-      if (processedFixtureIds.has(item.provider_id)) continue;
-      processedFixtureIds.add(item.provider_id);
-
-      const homeName = item.home_team?.name || item.raw_payload?.home_team?.name || "Local";
-      const awayName = item.away_team?.name || item.raw_payload?.away_team?.name || "Visitante";
-      const homeLogo = item.home_team?.logo_url || item.raw_payload?.home_team?.logo_url || undefined;
-      const awayLogo = item.away_team?.logo_url || item.raw_payload?.away_team?.logo_url || undefined;
-      const leagueName = item.league?.name || item.raw_payload?.league?.name || "Liga Principal";
-      const leagueLogo = item.league?.logo_url || item.raw_payload?.league?.logo_url || undefined;
-
-      const opps = evaluateFixturePrediction({
-        fixtureId: item.provider_id,
-        homeTeam: homeName,
-        awayTeam: awayName,
-        homeLogo,
-        awayLogo,
-        league: leagueName,
-        leagueLogo,
-        kickoff: item.kickoff_at,
-      });
-
-      if (opps.length > 0) {
-        allOpportunities.push(opps[0]);
-      }
-    }
-  }
-
-  // 2. Fetch directly from API-Football for popular leagues if we have few predictions
-  const leaguesToFetch = targetLeagueIds || [39, 140, 135, 78, 61, 71, 128, 262, 253, 79, 40];
-
-  for (const lid of leaguesToFetch) {
+  const fetchPromises = leaguesToScan.map(async (lid) => {
     try {
-      const directFixtures = await apiFootball.getFixtures(lid, 2026, undefined, undefined, 4);
-      for (const item of directFixtures) {
+      return await apiFootball.getFixtures(lid, 2026, undefined, undefined, 6);
+    } catch {
+      return [];
+    }
+  });
+
+  const results = await Promise.allSettled(fetchPromises);
+
+  for (const res of results) {
+    if (res.status === "fulfilled" && Array.isArray(res.value)) {
+      for (const item of res.value) {
+        if (!item.fixture || !item.teams) continue;
+
         const fixtureIdStr = String(item.fixture.id);
         if (processedFixtureIds.has(fixtureIdStr)) continue;
         processedFixtureIds.add(fixtureIdStr);
@@ -307,16 +269,67 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
           allOpportunities.push(opps[0]);
         }
       }
-    } catch (err) {
-      console.warn(`[LivePrediction] League ${lid} fallback warning:`, err);
     }
   }
 
-  // 3. If still empty, return fallback featured cards
-  const result = allOpportunities.length > 0 ? allOpportunities : getFallbackFeaturedPredictions();
+  // 2. Also check and merge fixtures saved in Supabase
+  try {
+    const now = new Date().toISOString();
+    const maxDate = new Date(Date.now() + 14 * 86400000).toISOString();
 
-  // Sort by kickoff date ascending, then edge descending
-  return result.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
+    const { data } = await supabase
+      .from("fixtures")
+      .select(`
+        id,
+        provider_id,
+        kickoff_at,
+        status,
+        raw_payload,
+        home_team:teams!fixtures_home_team_id_fkey(name, logo_url),
+        away_team:teams!fixtures_away_team_id_fkey(name, logo_url),
+        league:leagues!fixtures_league_id_fkey(name, logo_url)
+      `)
+      .gte("kickoff_at", now)
+      .lte("kickoff_at", maxDate)
+      .order("kickoff_at", { ascending: true })
+      .limit(60);
+
+    const dbFixtures = data as unknown as RawFixtureRow[] | null;
+
+    if (dbFixtures && dbFixtures.length > 0) {
+      for (const item of dbFixtures) {
+        if (processedFixtureIds.has(item.provider_id)) continue;
+        processedFixtureIds.add(item.provider_id);
+
+        const homeName = item.home_team?.name || item.raw_payload?.home_team?.name || "Local";
+        const awayName = item.away_team?.name || item.raw_payload?.away_team?.name || "Visitante";
+        const homeLogo = item.home_team?.logo_url || item.raw_payload?.home_team?.logo_url || undefined;
+        const awayLogo = item.away_team?.logo_url || item.raw_payload?.away_team?.logo_url || undefined;
+        const leagueName = item.league?.name || item.raw_payload?.league?.name || "Liga Principal";
+        const leagueLogo = item.league?.logo_url || item.raw_payload?.league?.logo_url || undefined;
+
+        const opps = evaluateFixturePrediction({
+          fixtureId: item.provider_id,
+          homeTeam: homeName,
+          awayTeam: awayName,
+          homeLogo,
+          awayLogo,
+          league: leagueName,
+          leagueLogo,
+          kickoff: item.kickoff_at,
+        });
+
+        if (opps.length > 0) {
+          allOpportunities.push(opps[0]);
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("[Predictions] Supabase fixtures query warning:", err);
+  }
+
+  // Sort by kickoff date ascending (today first, then tomorrow, then upcoming)
+  return allOpportunities.length > 0 ? allOpportunities.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()) : getFallbackFeaturedPredictions();
 }
 
 /**

@@ -14,7 +14,6 @@ export type PublicEnvironment = {
 };
 
 function runtimePublicEnvironment(): PublicEnvironment {
-  // Keep direct property accesses: Next.js replaces NEXT_PUBLIC_* references in browser bundles.
   return {
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_VERCEL_URL: process.env.NEXT_PUBLIC_VERCEL_URL,

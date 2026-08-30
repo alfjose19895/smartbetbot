@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { PredictionCard } from "@/components/PredictionCard";
 import { getFallbackFeaturedPredictions } from "@/lib/sports/db";
+import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 
 export default function HomePage() {
-  const featuredPicks = getFallbackFeaturedPredictions().slice(0, 3);
+  const featuredPicks: MarketOpportunity[] = getFallbackFeaturedPredictions().slice(0, 3);
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-emerald-500 selection:text-white">
@@ -120,8 +121,8 @@ export default function HomePage() {
           </div>
 
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {featuredPicks.map((pick) => (
-              <PredictionCard key={pick.id} prediction={pick} />
+            {featuredPicks.map((pick: MarketOpportunity) => (
+              <PredictionCard key={pick.id || pick.fixtureId} prediction={pick} />
             ))}
           </div>
 
@@ -130,7 +131,7 @@ export default function HomePage() {
               href="/signals"
               className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-6 py-3 text-sm font-bold text-emerald-400 border border-slate-800 transition hover:bg-slate-850 hover:border-emerald-500/50"
             >
-              <span>Ver Todos los Análisis Disponibles ({getFallbackFeaturedPredictions().length})</span>
+              <span>Ver Todos los Análisis Disponibles</span>
               <span>→</span>
             </Link>
           </div>
