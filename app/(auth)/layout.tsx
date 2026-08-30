@@ -16,7 +16,7 @@ export default function AuthLayout({ children }: Readonly<{ children: ReactNode 
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8 gap-4">
           <Link href="/" className="flex items-center gap-2.5 mr-auto">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 text-lg font-black text-slate-950 shadow-lg shadow-emerald-500/20">
-              💲
+              🎯
             </span>
             <span className="text-xl font-black tracking-tight text-white">
               Smart<span className="text-emerald-400">Bet</span>Bot
@@ -83,9 +83,7 @@ export default function AuthLayout({ children }: Readonly<{ children: ReactNode 
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-900 bg-slate-950/80 py-4 text-center text-xs text-slate-500">
-        <p>© {new Date().getFullYear()} SmartBetBot. Análisis estadístico sin promesas de rendimiento.</p>
-      </footer>
+      
     </div>
   );
 }

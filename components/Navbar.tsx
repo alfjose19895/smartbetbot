@@ -66,7 +66,7 @@ export function Navbar({ onSync, syncing, userRole, userEmail }: NavbarProps) {
         {/* Brand */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0 mr-auto sm:mr-0">
           <span className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 text-base sm:text-lg font-black text-slate-950 shadow-md shadow-emerald-500/20">
-            💲
+            🎯
           </span>
           <div className="flex flex-col">
             <span className="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-white leading-none">
