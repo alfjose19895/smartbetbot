@@ -58,13 +58,21 @@ export function isSupabaseConfigured(
 export function getSiteUrl(environment?: PublicEnvironment): string {
   const resolved = environment ?? runtimePublicEnvironment();
   const configuredUrl = resolved.NEXT_PUBLIC_APP_URL?.trim();
-  const vercelUrl = resolved.NEXT_PUBLIC_VERCEL_URL?.trim();
-  const candidate = configuredUrl || vercelUrl || "http://localhost:3000";
+  const vercelProdUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  const vercelUrl = process.env.VERCEL_URL?.trim() || resolved.NEXT_PUBLIC_VERCEL_URL?.trim();
+
+  // Pick best available production host before falling back to smartbetbot.vercel.app or localhost
+  const candidate =
+    configuredUrl ||
+    (vercelProdUrl ? `https://${vercelProdUrl}` : undefined) ||
+    (vercelUrl ? `https://${vercelUrl}` : undefined) ||
+    "https://smartbetbot.vercel.app";
+
   const withProtocol = candidate.startsWith("http") ? candidate : `https://${candidate}`;
 
   try {
     return new URL(withProtocol).origin;
   } catch {
-    return "http://localhost:3000";
+    return "https://smartbetbot.vercel.app";
   }
 }

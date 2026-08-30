@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useRef } from "react";
 import { toPng } from "html-to-image";
@@ -101,19 +101,19 @@ ${prediction.explanation}
 
   return (
     <>
-      <div className="relative flex flex-col justify-between rounded-2xl bg-gradient-to-b from-slate-900/95 via-slate-900/90 to-slate-950/95 p-6 text-slate-100 shadow-xl border border-slate-800/80 backdrop-blur-sm transition-all duration-200 hover:border-slate-700/90 hover:shadow-2xl hover:shadow-cyan-950/20">
+      <div className="relative flex flex-col justify-between rounded-3xl bg-white border border-slate-200/90 p-6 text-slate-900 shadow-lg shadow-slate-200/50 backdrop-blur-sm transition-all duration-200 hover:border-emerald-300 hover:shadow-xl dark:bg-gradient-to-b dark:from-slate-900/95 dark:via-slate-900/90 dark:to-slate-950/95 dark:border-slate-800/80 dark:text-slate-100 dark:shadow-2xl dark:hover:border-slate-700/90">
         {/* Card Header */}
-        <div className="flex items-center justify-between border-b border-slate-800/60 pb-3">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800/60">
           <div className="flex items-center gap-2">
             <span className="text-lg">📊</span>
-            <h3 className="text-base font-bold tracking-tight text-white">Análisis SmartBetBot</h3>
+            <h3 className="text-base font-bold tracking-tight text-slate-900 dark:text-white">Análisis SmartBetBot</h3>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="rounded-full bg-emerald-950/90 px-2.5 py-1 text-[11px] font-bold text-emerald-400 border border-emerald-700/60">
+            <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-700 border border-emerald-200 dark:bg-emerald-950/90 dark:text-emerald-400 dark:border-emerald-700/60">
               📅 {formattedDate}
             </span>
             {prediction.league && (
-              <span className="rounded-full bg-slate-800/80 px-2.5 py-1 text-xs font-medium text-slate-300 border border-slate-700/50">
+              <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 border border-slate-200 dark:bg-slate-800/80 dark:text-slate-300 dark:border-slate-700/50">
                 {prediction.league}
               </span>
             )}
@@ -123,53 +123,53 @@ ${prediction.explanation}
         {/* Match & Market Section */}
         <div className="mt-4 grid grid-cols-2 gap-4">
           <div>
-            <span className="text-xs font-medium uppercase tracking-wider text-slate-400">Partido</span>
-            <p className="mt-1 text-sm font-bold text-white leading-snug">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Partido</span>
+            <p className="mt-1 text-sm font-bold text-slate-900 dark:text-white leading-snug">
               {prediction.match}
             </p>
           </div>
           <div className="text-right">
-            <span className="text-xs font-medium uppercase tracking-wider text-slate-400">Mercado</span>
-            <p className="mt-1 text-sm font-bold text-emerald-400 leading-snug">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Mercado</span>
+            <p className="mt-1 text-sm font-bold text-emerald-600 dark:text-emerald-400 leading-snug">
               {prediction.market}
             </p>
           </div>
         </div>
 
         {/* Odds & Probability Metrics */}
-        <div className="mt-4 grid grid-cols-2 gap-4 rounded-xl bg-slate-950/60 p-3.5 border border-slate-800/50">
+        <div className="mt-4 grid grid-cols-2 gap-4 rounded-2xl bg-slate-50 p-3.5 border border-slate-200/80 dark:bg-slate-950/60 dark:border-slate-800/50">
           <div>
-            <span className="text-xs font-medium uppercase tracking-wider text-slate-400">Cuota</span>
-            <p className="mt-0.5 text-2xl font-extrabold tracking-tight text-sky-400">
+            <span className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Cuota</span>
+            <p className="mt-0.5 text-2xl font-extrabold tracking-tight text-sky-600 dark:text-sky-400">
               {prediction.odds.toFixed(2)}
             </p>
           </div>
           <div className="text-right">
-            <span className="text-xs font-medium uppercase tracking-wider text-slate-400">Probabilidad</span>
-            <p className="mt-0.5 text-2xl font-extrabold tracking-tight text-emerald-400">
+            <span className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Probabilidad</span>
+            <p className="mt-0.5 text-2xl font-extrabold tracking-tight text-emerald-600 dark:text-emerald-400">
               {prediction.probability.toFixed(1)}%
             </p>
           </div>
         </div>
 
         {/* AI Explanation Box */}
-        <div className="mt-4 rounded-xl bg-slate-950/80 p-4 border border-slate-800/60">
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-300">
+        <div className="mt-4 rounded-2xl bg-slate-50 p-4 border border-slate-200/80 dark:bg-slate-950/80 dark:border-slate-800/60">
+          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-slate-300">
             <span>☕</span>
             <span>Explicación IA</span>
           </div>
-          <p className="mt-2 text-xs leading-relaxed text-slate-300 font-normal">
+          <p className="mt-2 text-xs leading-relaxed text-slate-700 font-normal dark:text-slate-300">
             {prediction.explanation}
           </p>
         </div>
 
         {/* Action Buttons Footer */}
-        <div className="mt-5 flex items-center justify-between gap-2 pt-2 border-t border-slate-800/40">
+        <div className="mt-5 flex items-center justify-between gap-2 pt-2 border-t border-slate-100 dark:border-slate-800/40">
           <div className="flex items-center gap-1.5">
-            <span className="inline-flex items-center rounded-md bg-emerald-950/60 px-2 py-0.5 text-[11px] font-semibold text-emerald-400 border border-emerald-800/40">
+            <span className="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-400 dark:border-emerald-800/40">
               +{prediction.edge}% Edge
             </span>
-            <span className="inline-flex items-center rounded-md bg-sky-950/60 px-2 py-0.5 text-[11px] font-semibold text-sky-300 border border-sky-800/40">
+            <span className="inline-flex items-center rounded-md bg-sky-50 px-2 py-0.5 text-[11px] font-semibold text-sky-700 border border-sky-200 dark:bg-sky-950/60 dark:text-sky-300 dark:border-sky-800/40">
               Score: {prediction.smartScore}/100
             </span>
           </div>
@@ -177,14 +177,14 @@ ${prediction.explanation}
           <div className="flex items-center gap-2">
             <button
               onClick={handleCopy}
-              className="inline-flex items-center gap-1 rounded-lg bg-slate-800/80 px-2.5 py-1.5 text-xs font-medium text-slate-200 transition hover:bg-slate-700 hover:text-white border border-slate-700/50"
+              className="inline-flex items-center gap-1 rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-200 border border-slate-200 dark:bg-slate-800/80 dark:text-slate-200 dark:hover:bg-slate-700 dark:border-slate-700/50"
               title="Copiar texto para Telegram/WhatsApp"
             >
               {copied ? "✓ Copiado" : "📋 Copiar"}
             </button>
             <button
               onClick={() => setShowStoryModal(true)}
-              className="inline-flex items-center gap-1 rounded-lg bg-emerald-600/90 px-2.5 py-1.5 text-xs font-medium text-white transition hover:bg-emerald-500 shadow-sm"
+              className="inline-flex items-center gap-1 rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-emerald-500 shadow-sm"
               title="Ver formato Historia / Descargar Screenshot"
             >
               📸 Historia
@@ -195,7 +195,7 @@ ${prediction.explanation}
 
       {/* Story / Share Modal */}
       {showStoryModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-md">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
           <div className="relative w-full max-w-sm overflow-hidden rounded-3xl bg-slate-950 p-6 text-slate-100 shadow-2xl border border-slate-700">
             {/* Close Button */}
             <button

@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -12,7 +13,7 @@ import {
   resetPasswordSchema,
 } from "@/features/auth/lib/validation";
 import type { AuthActionState } from "@/features/auth/types";
-import { isSupabaseConfigured, SUPABASE_CONFIGURATION_MESSAGE } from "@/lib/env";
+import { isSupabaseConfigured, SUPABASE_CONFIGURATION_MESSAGE, getSiteUrl } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 
 function formValue(formData: FormData, name: string): string {
@@ -37,6 +38,22 @@ function unexpectedState(): AuthActionState {
     status: "error",
     message: "No pudimos contactar el servicio de autenticación. Inténtalo nuevamente.",
   };
+}
+
+async function resolveCallbackUrl(path: string): Promise<string> {
+  try {
+    const headerList = await headers();
+    const host = headerList.get("x-forwarded-host") || headerList.get("host");
+    const proto = headerList.get("x-forwarded-proto") || "https";
+    if (host && !host.includes("localhost") && !host.includes("127.0.0.1")) {
+      const url = new URL("/auth/confirm", `${proto}://${host}`);
+      url.searchParams.set("next", safeRedirectPath(path));
+      return url.toString();
+    }
+  } catch {
+    // Fallback to getSiteUrl
+  }
+  return buildAuthCallbackUrl(path);
 }
 
 export async function loginAction(
@@ -83,11 +100,12 @@ export async function registerAction(
 
   try {
     const supabase = await createClient();
+    const emailRedirectTo = await resolveCallbackUrl("/dashboard");
     const { error } = await supabase.auth.signUp({
       email: parsed.data.email,
       password: parsed.data.password,
       options: {
-        emailRedirectTo: buildAuthCallbackUrl("/dashboard"),
+        emailRedirectTo,
         data: { full_name: parsed.data.fullName },
       },
     });
@@ -112,8 +130,9 @@ export async function forgotPasswordAction(
 
   try {
     const supabase = await createClient();
+    const redirectTo = await resolveCallbackUrl("/reset-password");
     const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
-      redirectTo: buildAuthCallbackUrl("/reset-password"),
+      redirectTo,
     });
     if (error?.code === "over_email_send_rate_limit") {
       return { status: "error", message: getAuthErrorMessage(error) };
@@ -138,10 +157,11 @@ export async function resendVerificationAction(
 
   try {
     const supabase = await createClient();
+    const emailRedirectTo = await resolveCallbackUrl("/dashboard");
     const { error } = await supabase.auth.resend({
       type: "signup",
       email: parsed.data.email,
-      options: { emailRedirectTo: buildAuthCallbackUrl("/dashboard") },
+      options: { emailRedirectTo },
     });
     if (error?.code === "over_email_send_rate_limit") {
       return { status: "error", message: getAuthErrorMessage(error) };

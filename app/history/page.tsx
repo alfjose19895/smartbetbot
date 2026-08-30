@@ -147,31 +147,31 @@ export default function HistoryPage() {
   const netProfit = HISTORY_DATA.reduce((acc, p) => acc + p.profit, 0).toFixed(2);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
+    <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100">
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-950/80">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2">
             <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 text-base font-black text-slate-950">
               ⚡
             </span>
-            <span className="text-lg font-black tracking-tight text-white">
-              Smart<span className="text-emerald-400">Bet</span>Bot
+            <span className="text-lg font-black tracking-tight text-slate-900 dark:text-white">
+              Smart<span className="text-emerald-500 dark:text-emerald-400">Bet</span>Bot
             </span>
           </Link>
 
           <nav className="flex items-center gap-4 text-xs font-semibold sm:gap-6 sm:text-sm">
             <ThemeToggle />
-            <Link href="/dashboard" className="text-slate-300 transition hover:text-white">
+            <Link href="/dashboard" className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition">
               Dashboard
             </Link>
-            <Link href="/signals" className="text-slate-300 transition hover:text-white">
+            <Link href="/signals" className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition">
               Picks
             </Link>
-            <Link href="/history" className="text-emerald-400 font-bold">
+            <Link href="/history" className="text-emerald-600 dark:text-emerald-400 font-bold">
               Historial
             </Link>
-            <Link href="/admin" className="text-slate-300 transition hover:text-white">
+            <Link href="/admin" className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition">
               Admin
             </Link>
           </nav>
@@ -180,35 +180,35 @@ export default function HistoryPage() {
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-white sm:text-3xl">
+          <h1 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
             Historial de Pronósticos Resueltos
           </h1>
-          <p className="mt-1 text-xs text-slate-400 sm:text-sm">
+          <p className="mt-1 text-xs text-slate-600 sm:text-sm dark:text-slate-400">
             Registro oficial de partidos acontecidos con marcadores finales y verificación de mercado
           </p>
         </div>
 
         {/* Stats Summary */}
-        <div className="mt-6 grid grid-cols-3 gap-4 rounded-2xl border border-slate-800 bg-slate-900/60 p-4 text-center sm:p-6">
+        <div className="mt-6 grid grid-cols-3 gap-4 rounded-3xl border border-slate-200 bg-white p-4 text-center shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900/60">
           <div>
-            <p className="text-xs text-slate-400 sm:text-sm font-medium">Partidos Evaluados</p>
-            <p className="mt-1 text-2xl font-black text-white sm:text-3xl">{totalPicks}</p>
+            <p className="text-xs text-slate-500 sm:text-sm font-medium dark:text-slate-400">Partidos Evaluados</p>
+            <p className="mt-1 text-2xl font-black text-slate-900 sm:text-3xl dark:text-white">{totalPicks}</p>
           </div>
-          <div className="border-x border-slate-800">
-            <p className="text-xs text-slate-400 sm:text-sm font-medium">Tasa de Acierto</p>
-            <p className="mt-1 text-2xl font-black text-emerald-400 sm:text-3xl">{winRate}%</p>
+          <div className="border-x border-slate-200 dark:border-slate-800">
+            <p className="text-xs text-slate-500 sm:text-sm font-medium dark:text-slate-400">Tasa de Acierto</p>
+            <p className="mt-1 text-2xl font-black text-emerald-600 sm:text-3xl dark:text-emerald-400">{winRate}%</p>
           </div>
           <div>
-            <p className="text-xs text-slate-400 sm:text-sm font-medium">Balance Neto</p>
-            <p className="mt-1 text-2xl font-black text-sky-400 sm:text-3xl">+{netProfit} U</p>
+            <p className="text-xs text-slate-500 sm:text-sm font-medium dark:text-slate-400">Balance Neto</p>
+            <p className="mt-1 text-2xl font-black text-sky-600 sm:text-3xl dark:text-sky-400">+{netProfit} U</p>
           </div>
         </div>
 
         {/* Table / List */}
-        <div className="mt-8 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80 shadow-xl">
+        <div className="mt-8 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg dark:border-slate-800 dark:bg-slate-900/80">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs sm:text-sm">
-              <thead className="border-b border-slate-800 bg-slate-950/80 text-slate-400 font-bold uppercase text-[11px] tracking-wider">
+              <thead className="border-b border-slate-200 bg-slate-50 text-slate-600 font-bold uppercase text-[11px] tracking-wider dark:border-slate-800 dark:bg-slate-950/80 dark:text-slate-400">
                 <tr>
                   <th className="px-4 py-3.5">Fecha</th>
                   <th className="px-4 py-3.5">Partido</th>
@@ -219,29 +219,29 @@ export default function HistoryPage() {
                   <th className="px-4 py-3.5 text-right">Resultado</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60 text-slate-300">
+              <tbody className="divide-y divide-slate-100 text-slate-700 dark:divide-slate-800/60 dark:text-slate-300">
                 {HISTORY_DATA.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-850/60 transition">
-                    <td className="px-4 py-3 text-slate-400 text-xs whitespace-nowrap">{item.date}</td>
-                    <td className="px-4 py-3 font-semibold text-white">
+                  <tr key={item.id} className="hover:bg-slate-50 transition dark:hover:bg-slate-850/60">
+                    <td className="px-4 py-3 text-slate-500 text-xs whitespace-nowrap dark:text-slate-400">{item.date}</td>
+                    <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white">
                       <div>{item.match}</div>
-                      <div className="text-[11px] text-slate-400 font-normal">{item.league}</div>
+                      <div className="text-[11px] text-slate-500 font-normal dark:text-slate-400">{item.league}</div>
                     </td>
-                    <td className="px-4 py-3 text-center font-bold text-white whitespace-nowrap">
-                      <span className="rounded-lg bg-slate-950 px-2.5 py-1 border border-slate-800">
+                    <td className="px-4 py-3 text-center font-bold text-slate-900 whitespace-nowrap dark:text-white">
+                      <span className="rounded-lg bg-slate-100 px-2.5 py-1 border border-slate-200 dark:bg-slate-950 dark:border-slate-800">
                         {item.score}
                       </span>
                     </td>
-                    <td className="px-4 py-3 font-medium text-slate-200">{item.market}</td>
-                    <td className="px-4 py-3 text-center font-bold text-sky-400">{item.odds.toFixed(2)}</td>
-                    <td className="px-4 py-3 text-center font-bold text-emerald-400">{item.probability}%</td>
+                    <td className="px-4 py-3 font-medium text-slate-800 dark:text-slate-200">{item.market}</td>
+                    <td className="px-4 py-3 text-center font-bold text-sky-600 dark:text-sky-400">{item.odds.toFixed(2)}</td>
+                    <td className="px-4 py-3 text-center font-bold text-emerald-600 dark:text-emerald-400">{item.probability}%</td>
                     <td className="px-4 py-3 text-right">
                       {item.result === "WON" ? (
-                        <span className="inline-flex items-center rounded-lg bg-emerald-950/80 px-2.5 py-1 text-xs font-bold text-emerald-400 border border-emerald-800/50">
+                        <span className="inline-flex items-center rounded-lg bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700 border border-emerald-200 dark:bg-emerald-950/80 dark:text-emerald-400 dark:border-emerald-800/50">
                           ✓ Ganada
                         </span>
                       ) : (
-                        <span className="inline-flex items-center rounded-lg bg-red-950/80 px-2.5 py-1 text-xs font-bold text-red-400 border border-red-800/50">
+                        <span className="inline-flex items-center rounded-lg bg-red-50 px-2.5 py-1 text-xs font-bold text-red-700 border border-red-200 dark:bg-red-950/80 dark:text-red-400 dark:border-red-800/50">
                           ✗ Perdida
                         </span>
                       )}

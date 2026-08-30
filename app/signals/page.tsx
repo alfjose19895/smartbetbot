@@ -9,16 +9,12 @@ import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 export default function SignalsPage() {
   const [signals, setSignals] = useState<MarketOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
-
-  // Filters
-  const [search, setSearch] = useState("");
-  const [selectedLeague, setSelectedLeague] = useState("all");
-  const [selectedMarket, setSelectedMarket] = useState("all");
+  const [selectedLeague, setSelectedLeague] = useState<string>("all");
   const [minProbability, setMinProbability] = useState<number>(60);
   const [selectedDate, setSelectedDate] = useState<"all" | "today" | "tomorrow" | "week">("all");
 
   useEffect(() => {
-    async function fetchSignals() {
+    const fetchSignals = async () => {
       try {
         setLoading(true);
         const res = await fetch("/api/signals");
@@ -27,16 +23,16 @@ export default function SignalsPage() {
           setSignals(json.signals);
         }
       } catch (err) {
-        console.error("Failed to load signals:", err);
+        console.error("Error fetching signals:", err);
       } finally {
         setLoading(false);
       }
-    }
+    };
+
     fetchSignals();
   }, []);
 
   const leagues = ["all", ...Array.from(new Set(signals.map((s) => s.league).filter(Boolean)))];
-  const markets = ["all", ...Array.from(new Set(signals.map((s) => s.market).filter(Boolean)))];
 
   // Precise Local Calendar Day Filtering
   const now = new Date();
@@ -44,88 +40,78 @@ export default function SignalsPage() {
   const tomorrowDay = todayDay + 86400000;
   const weekEndDay = todayDay + 7 * 86400000;
 
-  const filtered = signals.filter((item) => {
-    const matchesSearch =
-      search === "" ||
-      item.match.toLowerCase().includes(search.toLowerCase()) ||
-      item.league.toLowerCase().includes(search.toLowerCase());
+  const filteredSignals = signals.filter((s) => {
+    if (s.probability < minProbability) return false;
+    if (selectedLeague !== "all" && s.league !== selectedLeague) return false;
 
-    const matchesLeague = selectedLeague === "all" || item.league === selectedLeague;
-    const matchesMarket = selectedMarket === "all" || item.market === selectedMarket;
-    const matchesProb = item.probability >= minProbability;
-
-    let matchesDate = true;
     if (selectedDate === "today") {
-      const d = new Date(item.kickoff);
+      const d = new Date(s.kickoff);
       const matchDay = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-      matchesDate = matchDay === todayDay;
+      if (matchDay !== todayDay) return false;
     } else if (selectedDate === "tomorrow") {
-      const d = new Date(item.kickoff);
+      const d = new Date(s.kickoff);
       const matchDay = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-      matchesDate = matchDay === tomorrowDay;
+      if (matchDay !== tomorrowDay) return false;
     } else if (selectedDate === "week") {
-      const d = new Date(item.kickoff);
+      const d = new Date(s.kickoff);
       const matchDay = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-      matchesDate = matchDay >= todayDay && matchDay <= weekEndDay;
+      if (matchDay < todayDay || matchDay > weekEndDay) return false;
     }
 
-    return matchesSearch && matchesLeague && matchesMarket && matchesProb && matchesDate;
+    return true;
   });
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
+    <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100">
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-950/80">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 text-base font-black text-slate-950 shadow-md">
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 text-base font-black text-slate-950">
               ⚡
             </span>
-            <span className="text-lg font-black tracking-tight text-white">
-              Smart<span className="text-emerald-400">Bet</span>Bot
+            <span className="text-lg font-black tracking-tight text-slate-900 dark:text-white">
+              Smart<span className="text-emerald-500 dark:text-emerald-400">Bet</span>Bot
             </span>
           </Link>
 
           <nav className="flex items-center gap-4 text-xs font-semibold sm:gap-6 sm:text-sm">
             <ThemeToggle />
-            <Link href="/dashboard" className="text-slate-300 transition hover:text-white">
+            <Link href="/dashboard" className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition">
               Dashboard
             </Link>
-            <Link href="/signals" className="text-emerald-400 font-bold">
+            <Link href="/signals" className="text-emerald-600 dark:text-emerald-400 font-bold">
               Picks
             </Link>
-            <Link href="/history" className="text-slate-300 transition hover:text-white">
+            <Link href="/history" className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition">
               Historial
             </Link>
-            <Link href="/admin" className="text-slate-300 transition hover:text-white">
+            <Link href="/admin" className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition">
               Admin
             </Link>
           </nav>
         </div>
       </header>
 
-      {/* Main Container */}
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-black tracking-tight text-white sm:text-3xl">
-              Picks & Señales Estadísticas
-            </h1>
-            <p className="mt-1 text-xs text-slate-400 sm:text-sm">
-              Filtrado dinámico por fecha, cuota, probabilidad estimada y ligas principales
-            </p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
+            Picks Deportivos con Mayor Probabilidad
+          </h1>
+          <p className="mt-1 text-xs text-slate-600 sm:text-sm dark:text-slate-400">
+            Filtra por fecha, probabilidad mínima o liga para encontrar las mejores oportunidades del día
+          </p>
         </div>
 
         {/* Date Filter Tabs */}
-        <div className="mt-6 flex flex-wrap gap-2 rounded-2xl border border-slate-800/80 bg-slate-900/80 p-2.5">
-          <span className="self-center text-xs font-bold text-slate-400 mr-2 ml-1">Fecha:</span>
+        <div className="mt-6 flex flex-wrap gap-2 rounded-2xl border border-slate-200 bg-white p-2.5 shadow-sm dark:border-slate-800/80 dark:bg-slate-900/80">
+          <span className="self-center text-xs font-bold text-slate-500 mr-2 ml-1 dark:text-slate-400">Fecha:</span>
           <button
             onClick={() => setSelectedDate("all")}
             className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
               selectedDate === "all"
-                ? "bg-emerald-500 text-slate-950 font-bold shadow-md"
-                : "bg-slate-950/60 text-slate-300 hover:bg-slate-800 border border-slate-800"
+                ? "bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 dark:bg-slate-950/60 dark:text-slate-300 dark:hover:bg-slate-800 dark:border-slate-800"
             }`}
           >
             🌟 Todos los Días ({signals.length})
@@ -134,8 +120,8 @@ export default function SignalsPage() {
             onClick={() => setSelectedDate("today")}
             className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
               selectedDate === "today"
-                ? "bg-emerald-500 text-slate-950 font-bold shadow-md"
-                : "bg-slate-950/60 text-slate-300 hover:bg-slate-800 border border-slate-800"
+                ? "bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 dark:bg-slate-950/60 dark:text-slate-300 dark:hover:bg-slate-800 dark:border-slate-800"
             }`}
           >
             📅 Hoy
@@ -144,8 +130,8 @@ export default function SignalsPage() {
             onClick={() => setSelectedDate("tomorrow")}
             className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
               selectedDate === "tomorrow"
-                ? "bg-emerald-500 text-slate-950 font-bold shadow-md"
-                : "bg-slate-950/60 text-slate-300 hover:bg-slate-800 border border-slate-800"
+                ? "bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 dark:bg-slate-950/60 dark:text-slate-300 dark:hover:bg-slate-800 dark:border-slate-800"
             }`}
           >
             🔥 Mañana
@@ -154,8 +140,8 @@ export default function SignalsPage() {
             onClick={() => setSelectedDate("week")}
             className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
               selectedDate === "week"
-                ? "bg-emerald-500 text-slate-950 font-bold shadow-md"
-                : "bg-slate-950/60 text-slate-300 hover:bg-slate-800 border border-slate-800"
+                ? "bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 dark:bg-slate-950/60 dark:text-slate-300 dark:hover:bg-slate-800 dark:border-slate-800"
             }`}
           >
             🗓️ Esta Semana
@@ -163,43 +149,31 @@ export default function SignalsPage() {
         </div>
 
         {/* Filter Controls Bar */}
-        <div className="mt-4 grid gap-4 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-4 sm:grid-cols-3">
-          {/* Search */}
-          <div>
-            <label className="text-[11px] font-semibold uppercase text-slate-400">Buscar Partido o Liga</label>
-            <input
-              type="text"
-              placeholder="Ej: Liverpool, Real Madrid, Premier..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white focus:border-emerald-500 focus:outline-none"
-            />
-          </div>
-
-          {/* Probability Slider */}
-          <div>
-            <div className="flex justify-between text-[11px] font-semibold uppercase text-slate-400">
-              <span>Probabilidad Mínima</span>
-              <span className="text-emerald-400 font-bold">{minProbability}%</span>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Probabilidad Mínima:</span>
+            <div className="flex items-center gap-2">
+              <input
+                type="range"
+                min="50"
+                max="85"
+                step="5"
+                value={minProbability}
+                onChange={(e) => setMinProbability(Number(e.target.value))}
+                className="h-2 w-32 cursor-pointer accent-emerald-500"
+              />
+              <span className="rounded-lg bg-emerald-50 px-2 py-0.5 text-xs font-extrabold text-emerald-700 border border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800">
+                {minProbability}%
+              </span>
             </div>
-            <input
-              type="range"
-              min="50"
-              max="85"
-              step="1"
-              value={minProbability}
-              onChange={(e) => setMinProbability(Number(e.target.value))}
-              className="mt-2 w-full accent-emerald-500 cursor-pointer"
-            />
           </div>
 
-          {/* League Dropdown */}
-          <div>
-            <label className="text-[11px] font-semibold uppercase text-slate-400">Liga</label>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Filtrar Liga:</span>
             <select
               value={selectedLeague}
               onChange={(e) => setSelectedLeague(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white focus:border-emerald-500 focus:outline-none"
+              className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
             >
               {leagues.map((l) => (
                 <option key={l} value={l}>
@@ -210,49 +184,24 @@ export default function SignalsPage() {
           </div>
         </div>
 
-        {/* Market Filter Chips */}
-        <div className="mt-4 flex flex-wrap gap-2">
-          {markets.map((m) => (
-            <button
-              key={m}
-              onClick={() => setSelectedMarket(m)}
-              className={`rounded-lg px-3 py-1 text-xs font-semibold transition ${
-                selectedMarket === m
-                  ? "bg-sky-500 text-slate-950 font-bold"
-                  : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"
-              }`}
-            >
-              {m === "all" ? "Todos los Mercados" : m}
-            </button>
-          ))}
-        </div>
-
-        {/* Grid List */}
+        {/* Signals List */}
         {loading ? (
-          <div className="mt-16 text-center text-slate-400">
-            <span className="inline-block animate-spin text-3xl">⏳</span>
-            <p className="mt-3 text-sm">Cargando picks...</p>
+          <div className="py-20 text-center text-slate-500">
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent" />
+            <p className="mt-3 text-sm font-semibold">Cargando pronósticos...</p>
           </div>
-        ) : filtered.length === 0 ? (
-          <div className="mt-16 rounded-2xl bg-slate-900/40 p-12 text-center border border-slate-800">
-            <p className="text-base text-slate-400">No hay picks que coincidan con estos filtros de búsqueda o fecha.</p>
-            <button
-              onClick={() => {
-                setSelectedDate("all");
-                setSelectedLeague("all");
-                setSelectedMarket("all");
-                setSearch("");
-                setMinProbability(60);
-              }}
-              className="mt-4 rounded-xl bg-slate-800 px-4 py-2 text-xs font-bold text-white hover:bg-slate-700"
-            >
-              Restablecer Filtros
-            </button>
+        ) : filteredSignals.length === 0 ? (
+          <div className="mt-8 rounded-3xl border border-slate-200 bg-white p-12 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900/40">
+            <span className="text-4xl">🔍</span>
+            <h3 className="mt-3 text-lg font-bold text-slate-900 dark:text-white">Sin resultados</h3>
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+              Ajusta el slider de probabilidad o selecciona otra liga.
+            </p>
           </div>
         ) : (
-          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((item) => (
-              <PredictionCard key={item.id || item.fixtureId} prediction={item} />
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {filteredSignals.map((signal) => (
+              <PredictionCard key={signal.id || signal.fixtureId} prediction={signal} />
             ))}
           </div>
         )}
