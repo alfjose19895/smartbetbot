@@ -71,11 +71,19 @@ export async function loginAction(
 
   try {
     const supabase = await createClient();
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: parsed.data.email,
       password: parsed.data.password,
     });
     if (error) return { status: "error", message: getAuthErrorMessage(error) };
+
+    if (data?.user?.user_metadata?.status === "paused") {
+      await supabase.auth.signOut({ scope: "local" });
+      return {
+        status: "error",
+        message: "Tu cuenta ha sido pausada por el administrador. Contacta con soporte para reactivarla.",
+      };
+    }
   } catch {
     return unexpectedState();
   }

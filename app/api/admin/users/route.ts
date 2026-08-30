@@ -32,7 +32,7 @@ export async function GET() {
     role: "admin" | "user";
     roleId?: number;
     roleName: string;
-    status: "approved" | "pending";
+    status: "approved" | "paused" | "pending";
     createdAt: string;
   }> = [];
 
@@ -86,7 +86,14 @@ export async function GET() {
           const isAdm = rawRole === "admin";
           const roleId = roleObj?.id || profile?.role_id || (isAdm ? 1 : 2);
           const roleName = roleObj?.name || (isAdm ? "Administrador" : "Apostador");
-          const status = meta.status === "pending" ? "pending" : "approved";
+
+          let status: "approved" | "paused" | "pending" = "approved";
+          if (u.banned_until || meta.status === "paused") {
+            status = "paused";
+          } else if (meta.status === "pending") {
+            status = "pending";
+          }
+
           const fullName =
             profile?.display_name ||
             meta.full_name ||
@@ -110,22 +117,6 @@ export async function GET() {
     }
   }
 
-  // Fallback only if no users found in DB
-  if (usersList.length === 0 && identity) {
-    usersList = [
-      {
-        id: identity.id,
-        email: identity.email || "alfredo@smartbetbot.app",
-        fullName: identity.fullName || "Alfredo (Admin)",
-        role: "admin",
-        roleId: 1,
-        roleName: "Administrador",
-        status: "approved",
-        createdAt: new Date().toISOString(),
-      },
-    ];
-  }
-
   return NextResponse.json({ users: usersList });
 }
 
@@ -137,41 +128,129 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const { userId, action, role, status } = body;
+    const { userId, action, role, status, fullName, email, password } = body;
 
     const supabase = getAdminClient();
-    if (supabase && userId) {
-      if (action === "updateRole" && role) {
-        const targetSlug = role === "admin" ? "admin" : "bettor";
-        let targetRoleId = role === "admin" ? 1 : 2;
+    if (!supabase || !userId) {
+      return NextResponse.json({ error: "Parámetros inválidos o cliente no configurado" }, { status: 400 });
+    }
 
+    if (action === "updateStatus" && status) {
+      const isPaused = status === "paused";
+      // Update metadata and ban status to block access immediately
+      await supabase.auth.admin.updateUserById(userId, {
+        user_metadata: { status },
+        ban_duration: isPaused ? "876000h" : "none",
+      });
+
+      return NextResponse.json({ success: true, message: `Usuario ${isPaused ? "pausado" : "aprobado"} con éxito` });
+    }
+
+    if (action === "updateRole" && role) {
+      const targetSlug = role === "admin" ? "admin" : "bettor";
+      let targetRoleId = role === "admin" ? 1 : 2;
+
+      try {
+        const { data: rRow } = await supabase
+          .from("roles")
+          .select("id")
+          .eq("slug", targetSlug)
+          .single();
+        if (rRow) targetRoleId = rRow.id;
+      } catch {
+        // Fallback
+      }
+
+      await supabase.auth.admin.updateUserById(userId, {
+        user_metadata: { role, role_id: targetRoleId },
+      });
+
+      await supabase
+        .from("profiles")
+        .update({ role, role_id: targetRoleId })
+        .eq("id", userId);
+
+      return NextResponse.json({ success: true, message: "Rol actualizado correctamente" });
+    }
+
+    if (action === "editUser") {
+      const updatePayload: {
+        email?: string;
+        password?: string;
+        email_confirm?: boolean;
+        user_metadata?: Record<string, unknown>;
+        ban_duration?: string;
+      } = {
+        user_metadata: {},
+      };
+
+      if (email && email.includes("@")) {
+        updatePayload.email = email;
+        updatePayload.email_confirm = true;
+      }
+
+      if (password && password.trim().length >= 6) {
+        updatePayload.password = password.trim();
+      }
+
+      if (fullName) {
+        updatePayload.user_metadata = {
+          ...updatePayload.user_metadata,
+          full_name: fullName,
+        };
+        await supabase
+          .from("profiles")
+          .update({ display_name: fullName })
+          .eq("id", userId);
+      }
+
+      if (role) {
+        const targetSlug = role === "admin" ? "admin" : (role === "analyst" ? "analyst" : "bettor");
+        let targetRoleId = role === "admin" ? 1 : (role === "analyst" ? 4 : 2);
         try {
-          const { data: rRow } = await supabase
-            .from("roles")
-            .select("id")
-            .eq("slug", targetSlug)
-            .single();
+          const { data: rRow } = await supabase.from("roles").select("id").eq("slug", targetSlug).single();
           if (rRow) targetRoleId = rRow.id;
-        } catch {
-          // Keep default
-        }
+        } catch {}
 
-        await supabase.auth.admin.updateUserById(userId, {
-          user_metadata: { role, role_id: targetRoleId },
-        });
+        updatePayload.user_metadata = {
+          ...updatePayload.user_metadata,
+          role,
+          role_id: targetRoleId,
+        };
 
         await supabase
           .from("profiles")
           .update({ role, role_id: targetRoleId })
           .eq("id", userId);
-      } else if (action === "updateStatus" && status) {
-        await supabase.auth.admin.updateUserById(userId, {
-          user_metadata: { status },
-        });
       }
+
+      if (status) {
+        const isPaused = status === "paused";
+        updatePayload.user_metadata = {
+          ...updatePayload.user_metadata,
+          status,
+        };
+        updatePayload.ban_duration = isPaused ? "876000h" : "none";
+      }
+
+      await supabase.auth.admin.updateUserById(userId, updatePayload);
+
+      return NextResponse.json({ success: true, message: "Datos de usuario actualizados correctamente" });
     }
 
-    return NextResponse.json({ success: true, message: "Usuario y rol normalizado actualizados" });
+    if (action === "deleteUser") {
+      // 1. Delete from profiles
+      await supabase.from("profiles").delete().eq("id", userId);
+      // 2. Delete from auth.users
+      const { error: delErr } = await supabase.auth.admin.deleteUser(userId);
+      if (delErr) {
+        return NextResponse.json({ error: delErr.message }, { status: 500 });
+      }
+
+      return NextResponse.json({ success: true, message: "Usuario eliminado definitivamente" });
+    }
+
+    return NextResponse.json({ error: "Acción no reconocida" }, { status: 400 });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }

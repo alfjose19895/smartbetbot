@@ -70,11 +70,20 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
   const { data: { user }, error } = await supabase.auth.getUser();
   const hasVerifiedIdentity = Boolean(user?.id) && !error;
 
-  if (!hasVerifiedIdentity && isProtectedRoute) {
+  const isPaused = Boolean(
+    user?.banned_until ||
+    (user?.user_metadata && typeof user.user_metadata === "object" && (user.user_metadata as Record<string, unknown>).status === "paused")
+  );
+
+  if ((!hasVerifiedIdentity || isPaused) && isProtectedRoute) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = "/login";
     loginUrl.search = "";
-    loginUrl.searchParams.set("next", safeRedirectPath(`${pathname}${request.nextUrl.search}`));
+    if (isPaused) {
+      loginUrl.searchParams.set("error", "account_paused");
+    } else {
+      loginUrl.searchParams.set("next", safeRedirectPath(`${pathname}${request.nextUrl.search}`));
+    }
     const response = NextResponse.redirect(loginUrl);
     copySessionState(supabaseResponse, response);
     response.headers.set("Cache-Control", "private, no-store");

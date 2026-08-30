@@ -11,7 +11,7 @@ interface UserItem {
   role: "admin" | "user";
   roleId?: number;
   roleName?: string;
-  status: "approved" | "pending";
+  status: "approved" | "paused" | "pending";
   createdAt: string;
 }
 
@@ -24,7 +24,17 @@ export default function AdminControlPage() {
   // Users state
   const [users, setUsers] = useState<UserItem[]>([]);
   const [loadingUsers, setLoadingUsers] = useState<boolean>(false);
-  const [userMsg, setUserMsg] = useState<string | null>(null);
+  const [userMsg, setUserMsg] = useState<{ text: string; type: "success" | "error" } | null>(null);
+
+  // Edit Modal State
+  const [editingUser, setEditingUser] = useState<UserItem | null>(null);
+  const [editFullName, setEditFullName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editPassword, setEditPassword] = useState("");
+  const [editRole, setEditRole] = useState<string>("bettor");
+  const [editStatus, setEditStatus] = useState<"approved" | "paused">("approved");
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const addLog = (msg: string) => {
     setLogs((prev) => [`[${new Date().toLocaleTimeString()}] ${msg}`, ...prev.slice(0, 49)]);
@@ -64,10 +74,90 @@ export default function AdminControlPage() {
     }
   }, [activeTab]);
 
+  const openEditModal = (user: UserItem) => {
+    setEditingUser(user);
+    setEditFullName(user.fullName);
+    setEditEmail(user.email);
+    setEditPassword("");
+    setEditRole(user.role === "admin" ? "admin" : "bettor");
+    setEditStatus(user.status === "paused" ? "paused" : "approved");
+  };
+
+  const handleSaveEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingUser) return;
+
+    try {
+      setSavingEdit(true);
+      const res = await fetch("/api/admin/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: editingUser.id,
+          action: "editUser",
+          fullName: editFullName,
+          email: editEmail,
+          password: editPassword.trim() ? editPassword.trim() : undefined,
+          role: editRole,
+          status: editStatus,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setUserMsg({ text: `✓ Usuario ${editEmail} actualizado con éxito.`, type: "success" });
+        addLog(`✓ Datos actualizados para ${editEmail}`);
+        setEditingUser(null);
+        await fetchUsers();
+      } else {
+        setUserMsg({ text: `✗ ${data.error || "Error al actualizar usuario"}`, type: "error" });
+      }
+    } catch (err) {
+      setUserMsg({ text: `✗ Fallo de red: ${String(err)}`, type: "error" });
+    } finally {
+      setSavingEdit(false);
+      setTimeout(() => setUserMsg(null), 4000);
+    }
+  };
+
+  const handleDeleteUser = async (user: UserItem) => {
+    if (!window.confirm(`¿Estás seguro de ELIMINAR permanentemente a ${user.email}? Esta acción no se puede deshacer.`)) {
+      return;
+    }
+
+    try {
+      setDeletingId(user.id);
+      setUserMsg({ text: `Eliminando usuario ${user.email}...`, type: "success" });
+      const res = await fetch("/api/admin/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user.id,
+          action: "deleteUser",
+        }),
+      });
+
+      if (res.ok) {
+        setUsers((prev) => prev.filter((u) => u.id !== user.id));
+        addLog(`✓ Usuario ${user.email} eliminado permanentemente.`);
+        setUserMsg({ text: `✓ Usuario ${user.email} eliminado definitivamente.`, type: "success" });
+      } else {
+        const data = await res.json();
+        setUserMsg({ text: `✗ Error: ${data.error || "No se pudo eliminar"}`, type: "error" });
+      }
+    } catch (err) {
+      setUserMsg({ text: `✗ Fallo de red: ${String(err)}`, type: "error" });
+    } finally {
+      setDeletingId(null);
+      setTimeout(() => setUserMsg(null), 4000);
+    }
+  };
+
+
   const handleToggleApproval = async (user: UserItem) => {
     const nextStatus = user.status === "approved" ? "pending" : "approved";
     try {
-      setUserMsg(`Actualizando estado de ${user.email}...`);
+      setUserMsg({ text: `Actualizando estado de ${user.email}...`, type: "success" });
       const res = await fetch("/api/admin/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -93,7 +183,7 @@ export default function AdminControlPage() {
   const handleToggleRole = async (user: UserItem) => {
     const nextRole = user.role === "admin" ? "user" : "admin";
     try {
-      setUserMsg(`Cambiando rol de ${user.email}...`);
+      setUserMsg({ text: `Cambiando rol de ${user.email}...`, type: "success" });
       const res = await fetch("/api/admin/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -372,8 +462,12 @@ export default function AdminControlPage() {
         {activeTab === "users" && (
           <div className="mt-6 space-y-6">
             {userMsg && (
-              <div className="rounded-2xl bg-emerald-50 border border-emerald-300 p-3 text-center text-xs font-bold text-emerald-800 dark:bg-emerald-950/80 dark:border-emerald-700 dark:text-emerald-300">
-                {userMsg}
+              <div className={`rounded-2xl p-3 text-center text-xs font-bold ${
+                userMsg.type === "success"
+                  ? "bg-emerald-50 border border-emerald-300 text-emerald-800 dark:bg-emerald-950/80 dark:border-emerald-700 dark:text-emerald-300"
+                  : "bg-red-50 border border-red-300 text-red-800 dark:bg-red-950/80 dark:border-red-700 dark:text-red-300"
+              }`}>
+                {userMsg.text}
               </div>
             )}
 
@@ -432,7 +526,11 @@ export default function AdminControlPage() {
                           <td className="px-4 py-3 text-center">
                             {u.status === "approved" ? (
                               <span className="inline-flex items-center rounded-lg bg-emerald-50 px-2 py-0.5 text-xs font-bold text-emerald-700 border border-emerald-200 dark:bg-emerald-950/80 dark:text-emerald-400 dark:border-emerald-800">
-                                ✓ Aprobado
+                                ✓ Aprobado / Activo
+                              </span>
+                            ) : u.status === "paused" ? (
+                              <span className="inline-flex items-center rounded-lg bg-red-50 px-2 py-0.5 text-xs font-bold text-red-700 border border-red-200 dark:bg-red-950/80 dark:text-red-400 dark:border-red-800">
+                                ⏸️ Pausado (Bloqueado)
                               </span>
                             ) : (
                               <span className="inline-flex items-center rounded-lg bg-amber-50 px-2 py-0.5 text-xs font-bold text-amber-700 border border-amber-200 dark:bg-amber-950/80 dark:text-amber-400 dark:border-amber-800">
@@ -441,23 +539,34 @@ export default function AdminControlPage() {
                             )}
                           </td>
                           <td className="px-4 py-3 text-right">
-                            <div className="flex items-center justify-end gap-2">
+                            <div className="flex items-center justify-end gap-1.5">
                               <button
                                 onClick={() => handleToggleApproval(u)}
-                                className={`rounded-xl px-2.5 py-1 text-xs font-bold transition border ${
+                                className={`rounded-xl px-2.5 py-1 text-xs font-bold transition border cursor-pointer ${
                                   u.status === "approved"
-                                    ? "bg-slate-100 text-slate-700 hover:bg-slate-200 border-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
+                                    ? "bg-amber-50 text-amber-800 hover:bg-amber-100 border-amber-300 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800"
                                     : "bg-emerald-500 text-slate-950 hover:bg-emerald-400 border-emerald-400 shadow-sm"
                                 }`}
+                                title={u.status === "approved" ? "Pausar usuario y bloquear acceso" : "Activar cuenta"}
                               >
-                                {u.status === "approved" ? "Pausar" : "✓ Aprobar Cuenta"}
+                                {u.status === "approved" ? "⏸️ Pausar" : "✓ Aprobar"}
                               </button>
 
                               <button
-                                onClick={() => handleToggleRole(u)}
-                                className="rounded-xl bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700 hover:bg-slate-200 border border-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:border-slate-700"
+                                onClick={() => openEditModal(u)}
+                                className="rounded-xl bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700 hover:bg-slate-200 border border-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:border-slate-700 cursor-pointer"
+                                title="Editar nombre, correo, contraseña o rol"
                               >
-                                {u.role === "admin" ? "Hacer Apostador" : "Hacer Admin"}
+                                ✏️ Editar
+                              </button>
+
+                              <button
+                                onClick={() => handleDeleteUser(u)}
+                                disabled={deletingId === u.id}
+                                className="rounded-xl bg-red-50 px-2 py-1 text-xs font-bold text-red-700 hover:bg-red-100 border border-red-200 dark:bg-red-950/60 dark:text-red-300 dark:border-red-900/60 dark:hover:bg-red-900/80 cursor-pointer disabled:opacity-50"
+                                title="Eliminar usuario definitivamente"
+                              >
+                                {deletingId === u.id ? "⏳" : "🗑️"}
                               </button>
                             </div>
                           </td>
@@ -510,6 +619,118 @@ export default function AdminControlPage() {
           </div>
         </div>
       </main>
+
+      {/* EDIT USER MODAL */}
+      {editingUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-800 dark:bg-slate-900">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">✏️</span>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                  Editar Usuario: {editingUser.email}
+                </h3>
+              </div>
+              <button
+                onClick={() => setEditingUser(null)}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-bold cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEdit} className="mt-4 space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">
+                  Nombres y Apellidos
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editFullName}
+                  onChange={(e) => setEditFullName(e.target.value)}
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-emerald-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">
+                  Correo Electrónico de Registro
+                </label>
+                <input
+                  type="email"
+                  required
+                  value={editEmail}
+                  onChange={(e) => setEditEmail(e.target.value)}
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-emerald-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">
+                  Nueva Contraseña <span className="text-slate-400 lowercase font-normal">(dejar en blanco para no cambiar)</span>
+                </label>
+                <input
+                  type="password"
+                  placeholder="Mínimo 6 caracteres"
+                  value={editPassword}
+                  onChange={(e) => setEditPassword(e.target.value)}
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-emerald-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">
+                    Rol en el Sistema
+                  </label>
+                  <select
+                    value={editRole}
+                    onChange={(e) => setEditRole(e.target.value)}
+                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-emerald-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+                  >
+                    <option value="admin">👑 Administrador (ID: 1)</option>
+                    <option value="bettor">🎯 Apostador (ID: 2)</option>
+                    <option value="analyst">📊 Analista (ID: 4)</option>
+                    <option value="user">👤 Usuario Estándar (ID: 3)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">
+                    Estado de la Cuenta
+                  </label>
+                  <select
+                    value={editStatus}
+                    onChange={(e) => setEditStatus(e.target.value as "approved" | "paused")}
+                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-emerald-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+                  >
+                    <option value="approved">✓ Aprobado / Activo</option>
+                    <option value="paused">⏸️ Pausado (Bloqueado)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="mt-6 flex items-center justify-end gap-2 border-t border-slate-100 pt-4 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setEditingUser(null)}
+                  className="rounded-xl bg-slate-100 px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingEdit}
+                  className="rounded-xl bg-emerald-500 px-5 py-2 text-xs font-bold text-slate-950 hover:bg-emerald-400 shadow-md shadow-emerald-500/20 disabled:opacity-50 cursor-pointer"
+                >
+                  {savingEdit ? "Guardando..." : "💾 Guardar Cambios"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
