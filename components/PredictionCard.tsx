@@ -266,7 +266,7 @@ ${prediction.explanation}
             <div ref={storyCardRef} className="rounded-2xl bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 p-5 border border-slate-800 text-slate-100 shadow-xl">
               <div className="text-center">
                 <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-950/90 px-3 py-1 text-xs font-bold text-emerald-400 border border-emerald-700/50">
-                  <span>⚡ PICK OFICIAL • {conf.stars} {conf.shortLabel.toUpperCase()}</span>
+                  <span>💲 PICK OFICIAL • {conf.stars} {conf.shortLabel.toUpperCase()}</span>
                 </div>
                 <h4 className="mt-2.5 text-lg font-extrabold tracking-tight text-white">
                   Análisis Estadístico
@@ -310,7 +310,7 @@ ${prediction.explanation}
               {/* Footer Brand in Screenshot */}
               <div className="mt-4 flex items-center justify-between text-xs text-slate-400 border-t border-slate-800/50 pt-2.5">
                 <span className="font-bold text-white flex items-center gap-1">
-                  ⚡ SmartBetBot
+                  💲 SmartBetBot
                 </span>
                 <span className="text-emerald-400 font-semibold">smartbetbot.app</span>
               </div>

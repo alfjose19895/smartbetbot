@@ -100,7 +100,7 @@ export function Footer() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-200 dark:border-slate-800/80 pt-4">
           <Link href="/" className="flex items-center gap-2">
             <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 text-xs font-black text-slate-950">
-              ⚡
+              💲
             </span>
             <span className="text-sm font-black tracking-tight text-slate-900 dark:text-white">
               Smart<span className="text-emerald-500 dark:text-emerald-400">Bet</span>Bot

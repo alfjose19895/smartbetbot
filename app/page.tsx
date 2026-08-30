@@ -14,7 +14,7 @@ export default function HomePage() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-3.5 py-3.5 sm:px-6 sm:py-4 lg:px-8 gap-3 sm:gap-6">
           <Link href="/" className="flex items-center gap-2 sm:gap-2.5 mr-auto shrink-0 pr-2">
             <span className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 text-base sm:text-lg font-black text-slate-950 shadow-lg shadow-emerald-500/20">
-              ⚡
+              💲
             </span>
             <span className="text-lg sm:text-xl font-black tracking-tight text-white leading-none">
               Smart<span className="text-emerald-400">Bet</span>Bot

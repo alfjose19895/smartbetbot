@@ -66,7 +66,7 @@ export function Navbar({ onSync, syncing, userRole, userEmail }: NavbarProps) {
         {/* Brand */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0 mr-auto sm:mr-0">
           <span className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 text-base sm:text-lg font-black text-slate-950 shadow-md shadow-emerald-500/20">
-            ⚡
+            💲
           </span>
           <div className="flex flex-col">
             <span className="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-white leading-none">
@@ -121,7 +121,7 @@ export function Navbar({ onSync, syncing, userRole, userEmail }: NavbarProps) {
               className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-3 py-1.5 text-xs font-bold text-emerald-700 hover:bg-emerald-500 hover:text-slate-950 transition-all shadow-sm active:scale-95 dark:border-emerald-500/30 dark:bg-emerald-950/60 dark:text-emerald-400 dark:hover:bg-emerald-500 dark:hover:text-slate-950 cursor-pointer shrink-0"
               title="Actualizar pronósticos en vivo"
             >
-              <span>{syncing ? "🔄" : "⚡"}</span>
+              <span className={syncing ? "animate-spin" : ""}>🔄</span>
               <span className="hidden sm:inline">{syncing ? t("navSyncing") : t("navSync")}</span>
             </button>
           )}
@@ -133,7 +133,7 @@ export function Navbar({ onSync, syncing, userRole, userEmail }: NavbarProps) {
             className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50/80 px-2.5 py-1.5 text-xs font-bold text-red-700 transition hover:bg-red-100 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-900/60 cursor-pointer"
             title="Cerrar sesión"
           >
-            <span>🚪</span>
+            <span className="text-sm font-bold">⎋</span>
             <span className="hidden sm:inline">{loggingOut ? "..." : t("navLogout")}</span>
           </button>
 
@@ -195,7 +195,7 @@ export function Navbar({ onSync, syncing, userRole, userEmail }: NavbarProps) {
               disabled={loggingOut}
               className="flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-bold text-red-700 dark:border-red-900 dark:bg-red-950/60 dark:text-red-300"
             >
-              <span>🚪</span>
+              <span className="text-sm font-bold">⎋</span>
               <span>{t("navLogout")}</span>
             </button>
           </div>
