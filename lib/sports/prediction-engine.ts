@@ -229,20 +229,48 @@ function generateExplanation(
   return list[hash % list.length];
 }
 
-const LEAGUE_PACE: Record<string, number> = {
-  "bundesliga": 1.14,
-  "eredivisie": 1.12,
-  "premier league": 1.08,
-  "jupiler pro league": 1.06,
-  "premiership": 1.04,
-  "serie a": 0.98,
-  "la liga": 0.97,
-  "primera division": 0.97,
-  "brasileirão": 0.96,
-  "liga mx": 1.00,
-  "major league soccer": 1.08,
-  "mls": 1.08,
-  "saudi pro league": 1.05,
+export interface LeagueProfile {
+  baseHomeXg: number;
+  baseAwayXg: number;
+  margin: number;
+}
+
+export const LEAGUE_PROFILES: Record<string, LeagueProfile> = {
+  // España (La Liga, La Liga 2, Copa del Rey) - Tactical & Defensive
+  "la liga": { baseHomeXg: 1.30, baseAwayXg: 1.10, margin: 0.95 },
+  "la liga 2": { baseHomeXg: 1.22, baseAwayXg: 1.00, margin: 0.95 },
+  "primera division": { baseHomeXg: 1.30, baseAwayXg: 1.10, margin: 0.95 },
+  "segunda division": { baseHomeXg: 1.22, baseAwayXg: 1.00, margin: 0.95 },
+
+  // Inglaterra (Premier League, Championship) - Dynamic & Fast-paced
+  "premier league": { baseHomeXg: 1.62, baseAwayXg: 1.32, margin: 0.955 },
+  "championship": { baseHomeXg: 1.48, baseAwayXg: 1.24, margin: 0.95 },
+
+  // Italia (Serie A, Serie B) - Tactical & Balanced
+  "serie a": { baseHomeXg: 1.42, baseAwayXg: 1.18, margin: 0.95 },
+  "serie b": { baseHomeXg: 1.25, baseAwayXg: 1.02, margin: 0.95 },
+
+  // Alemania (Bundesliga, 2. Bundesliga) - High Scoring
+  "bundesliga": { baseHomeXg: 1.78, baseAwayXg: 1.48, margin: 0.955 },
+  "2. bundesliga": { baseHomeXg: 1.65, baseAwayXg: 1.38, margin: 0.95 },
+
+  // Países Bajos (Eredivisie) & Bélgica
+  "eredivisie": { baseHomeXg: 1.74, baseAwayXg: 1.44, margin: 0.955 },
+  "jupiler pro league": { baseHomeXg: 1.55, baseAwayXg: 1.30, margin: 0.95 },
+
+  // Francia & Portugal
+  "ligue 1": { baseHomeXg: 1.45, baseAwayXg: 1.20, margin: 0.95 },
+  "primeira liga": { baseHomeXg: 1.45, baseAwayXg: 1.18, margin: 0.95 },
+
+  // Américas (Brasil, México, MLS, Argentina)
+  "brasileirão": { baseHomeXg: 1.30, baseAwayXg: 1.05, margin: 0.95 },
+  "brasileirão série a": { baseHomeXg: 1.30, baseAwayXg: 1.05, margin: 0.95 },
+  "liga mx": { baseHomeXg: 1.46, baseAwayXg: 1.20, margin: 0.95 },
+  "mls": { baseHomeXg: 1.60, baseAwayXg: 1.30, margin: 0.95 },
+  "liga profesional argentina": { baseHomeXg: 1.22, baseAwayXg: 0.98, margin: 0.95 },
+
+  // Arabia Saudita
+  "saudi pro league": { baseHomeXg: 1.58, baseAwayXg: 1.30, margin: 0.95 },
 };
 
 export function evaluateFixturePrediction(params: {
@@ -283,45 +311,26 @@ export function evaluateFixturePrediction(params: {
   const rHome = rHomeBase + 7; // Home advantage
   const diff = rHome - rAway;
 
-  let pace = 1.0;
   const normLeg = canonicalLeague.toLowerCase();
-  for (const [k, v] of Object.entries(LEAGUE_PACE)) {
+  let profile = LEAGUE_PROFILES["premier league"];
+  for (const [k, v] of Object.entries(LEAGUE_PROFILES)) {
     if (normLeg.includes(k)) {
-      pace = v;
+      profile = v;
       break;
     }
   }
 
-  // Deterministic team hash for authentic market variance
   const hashSeed = (homeTeam + awayTeam + canonicalLeague)
     .split("")
     .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  const varFactor = ((hashSeed % 100) - 50) / 500.0; // -0.10 to +0.10
+  const varFactor = ((hashSeed % 100) - 50) / 400.0; // Subtle -0.12 to +0.12 variation
 
-  let hXg: number;
-  let aXg: number;
+  // Calculate realistic expected goals from authentic league base and team Elo difference
+  const expDiffHome = Math.exp(0.024 * diff);
+  const expDiffAway = Math.exp(-0.024 * diff);
 
-  if (diff >= 16) {
-    // Clear home favorite
-    hXg = (2.28 + varFactor) * pace;
-    aXg = (0.78 - varFactor * 0.5) * pace;
-  } else if (diff >= 7) {
-    // Moderate home advantage
-    hXg = (2.16 + varFactor) * pace;
-    aXg = (0.84 - varFactor * 0.5) * pace;
-  } else if (diff >= -6) {
-    // Balanced competitive match
-    hXg = (1.82 + varFactor) * pace;
-    aXg = (1.64 - varFactor) * pace;
-  } else if (diff >= -15) {
-    // Moderate away favorite
-    hXg = (0.84 - varFactor * 0.5) * pace;
-    aXg = (2.16 + varFactor) * pace;
-  } else {
-    // Clear away favorite
-    hXg = (0.76 - varFactor * 0.5) * pace;
-    aXg = (2.30 + varFactor) * pace;
-  }
+  let hXg = Math.max(0.40, Math.min(3.40, (profile.baseHomeXg + varFactor) * expDiffHome));
+  let aXg = Math.max(0.40, Math.min(3.40, (profile.baseAwayXg - varFactor * 0.5) * expDiffAway));
 
   const maxGoals = 6;
   const scoreMatrix: number[][] = [];
@@ -380,7 +389,9 @@ export function evaluateFixturePrediction(params: {
     if (!item.odds || item.odds < 1.40) continue; // Discard unprofitable micro-odds < 1.40
 
     const probPercent = Math.round(item.prob * 1000) / 10;
-    if (probPercent < 65.0) continue; // Strict high precision >= 65.0%
+    const expectedValue = item.prob * item.odds - 1;
+    // Strict High Precision filter: Probability >= 65.0% or (Probability >= 62.0% with positive EV >= +3.0%)
+    if (probPercent < 65.0 && !(item.prob >= 0.62 && expectedValue >= 0.03)) continue;
 
     const impliedProb = Math.round((1 / item.odds) * 1000) / 10;
     const edgePercent = Math.max(2.0, Math.round((item.prob - 1 / item.odds) * 1000) / 10);
