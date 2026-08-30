@@ -119,7 +119,7 @@ export async function syncLeaguesAndTeams(leagueIds: number[] = TOP_5_LEAGUE_IDS
 }
 
 /**
- * Synchronize upcoming fixtures for active leagues (10-15 per league)
+ * Synchronize upcoming fixtures for active leagues (strictly unplayed)
  */
 export async function syncUpcomingFixtures(leagueIds: number[] = ALL_LEAGUE_IDS, lookaheadDays: number = 7) {
   const supabase = getAdminClient();
@@ -140,6 +140,11 @@ export async function syncUpcomingFixtures(leagueIds: number[] = ALL_LEAGUE_IDS,
 
       for (const f of fixtures) {
         if (!f.fixture || !f.teams) continue;
+
+        const shortStatus = f.fixture.status?.short || "NS";
+        // Strictly reject past/finished fixtures
+        if (["FT", "AET", "PEN", "PST", "CANC", "ABD"].includes(shortStatus)) continue;
+        if (new Date(f.fixture.date).getTime() < Date.now() - 3600000) continue;
 
         // Upsert home and away teams
         const { data: homeTeam } = await supabase
@@ -187,10 +192,8 @@ export async function syncUpcomingFixtures(leagueIds: number[] = ALL_LEAGUE_IDS,
           .select("id")
           .single();
 
-        const shortStatus = f.fixture.status?.short || "NS";
         let status = "scheduled";
         if (["1H", "2H", "HT", "ET", "P"].includes(shortStatus)) status = "live";
-        else if (["FT", "AET", "PEN"].includes(shortStatus)) status = "finished";
 
         await supabase.from("fixtures").upsert(
           {
@@ -242,12 +245,13 @@ interface RawFixtureRow {
 }
 
 /**
- * Generate predictions for upcoming fixtures across all active leagues (10-15 per league)
+ * Generate predictions for upcoming fixtures across all active leagues (strictly unplayed)
  */
 export async function generatePredictionsForUpcoming(targetLeagueIds?: number[]): Promise<MarketOpportunity[]> {
   const supabase = getAdminClient();
   const allOpportunities: MarketOpportunity[] = [];
   const processedKeys = new Set<string>();
+  const nowMs = Date.now();
 
   // 1. Scan active leagues (fetching 10-12 fixtures per league)
   const leaguesToScan =
@@ -260,6 +264,13 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
       const items = await apiFootball.getFixtures(lid, 2026, undefined, undefined, 12);
       for (const item of items) {
         if (!item.fixture || !item.teams) continue;
+
+        const kickoffMs = new Date(item.fixture.date).getTime();
+        const shortStatus = item.fixture.status?.short || "NS";
+
+        // Filter out finished or past matches
+        if (["FT", "AET", "PEN", "PST", "CANC", "ABD"].includes(shortStatus)) continue;
+        if (kickoffMs <= nowMs - 15 * 60 * 1000) continue;
 
         const opps = evaluateFixturePrediction({
           fixtureId: item.fixture.id,
@@ -288,8 +299,8 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
   // 2. Also check and merge fixtures saved in Supabase
   if (supabase) {
     try {
-      const now = new Date().toISOString();
-      const maxDate = new Date(Date.now() + 14 * 86400000).toISOString();
+      const nowIso = new Date().toISOString();
+      const maxDateIso = new Date(Date.now() + 14 * 86400000).toISOString();
 
       const { data } = await supabase
         .from("fixtures")
@@ -303,8 +314,9 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
           away_team:teams!fixtures_away_team_id_fkey(name, logo_url),
           league:leagues!fixtures_league_id_fkey(name, logo_url)
         `)
-        .gte("kickoff_at", now)
-        .lte("kickoff_at", maxDate)
+        .gte("kickoff_at", nowIso)
+        .lte("kickoff_at", maxDateIso)
+        .eq("status", "scheduled")
         .order("kickoff_at", { ascending: true })
         .limit(100);
 
@@ -312,6 +324,9 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
 
       if (dbFixtures && dbFixtures.length > 0) {
         for (const item of dbFixtures) {
+          const kickoffMs = new Date(item.kickoff_at).getTime();
+          if (kickoffMs <= nowMs - 15 * 60 * 1000) continue;
+
           const homeName = item.home_team?.name || item.raw_payload?.home_team?.name || "Local";
           const awayName = item.away_team?.name || item.raw_payload?.away_team?.name || "Visitante";
           const homeLogo = item.home_team?.logo_url || item.raw_payload?.home_team?.logo_url || undefined;
@@ -345,7 +360,7 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
 
   const result = allOpportunities.length >= 10 ? allOpportunities : getFallbackFeaturedPredictions();
 
-  // Sort by kickoff date ascending
+  // Strictly sort by upcoming kickoff date ascending
   return result.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
 }
 
