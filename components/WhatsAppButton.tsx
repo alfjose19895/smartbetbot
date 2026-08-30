@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { usePathname } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface WhatsAppButtonProps {
@@ -10,14 +11,37 @@ interface WhatsAppButtonProps {
 export function WhatsAppButton({
   phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "593964082483",
 }: WhatsAppButtonProps) {
+  const pathname = usePathname();
   const { language } = useLanguage();
   const [showTooltip, setShowTooltip] = useState(false);
 
   const cleanPhone = phoneNumber.replace(/[^0-9]/g, "");
-  const defaultMessage =
-    language === "en"
-      ? "Hello! ⚽🔥 I would like to get personalized guidance on SmartBetBot sports predictions and VIP access. How can I get started today?"
-      : "¡Hola! ⚽🔥 Quiero recibir asesoría personalizada sobre los pronósticos deportivos y membresías VIP de SmartBetBot. ¿Cómo puedo empezar a ganar hoy mismo?";
+  const isLandingPage = pathname === "/" || pathname === "/login" || pathname === "/register";
+
+  let defaultMessage = "";
+  let tooltipText = "";
+
+  if (isLandingPage) {
+    // Sales & Acquisition Mode
+    defaultMessage =
+      language === "en"
+        ? "Hello! ⚽🔥 I would like to get personalized guidance on how to acquire SmartBetBot and activate my VIP access. How can I get started?"
+        : "¡Hola! ⚽🔥 Tengo dudas y me gustaría recibir asesoría sobre cómo adquirir SmartBetBot y activar mi acceso VIP. ¿Cómo puedo empezar?";
+    tooltipText =
+      language === "en"
+        ? "Questions on getting SmartBetBot? Chat with us"
+        : "¿Dudas sobre cómo adquirir SmartBetBot? Escríbenos";
+  } else {
+    // Support & Account Assistance Mode
+    defaultMessage =
+      language === "en"
+        ? "Hello! ⚽ I need technical support / assistance with my SmartBetBot account and sports predictions."
+        : "¡Hola! ⚽ Necesito soporte técnico / asistencia con mi cuenta de SmartBetBot y el uso de los pronósticos.";
+    tooltipText =
+      language === "en"
+        ? "Need help with your account? Chat with support"
+        : "¿Necesitas soporte con tu cuenta? Escríbenos";
+  }
 
   const encodedText = encodeURIComponent(defaultMessage);
   const waUrl = `https://wa.me/${cleanPhone}?text=${encodedText}`;
@@ -37,11 +61,7 @@ export function WhatsAppButton({
         }`}
       >
         <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
-        <span>
-          {language === "en"
-            ? "Questions about picks? Chat with us"
-            : "¿Dudas con los pronósticos? Escríbenos"}
-        </span>
+        <span>{tooltipText}</span>
       </div>
 
       {/* WhatsApp Action Floating Button */}
@@ -49,8 +69,8 @@ export function WhatsAppButton({
         href={waUrl}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="Contactar soporte por WhatsApp"
-        title="Escríbenos por WhatsApp (+593 964082483) para resolver cualquier duda"
+        aria-label="Contactar soporte o ventas por WhatsApp"
+        title="Escríbenos por WhatsApp (+593 964082483)"
         className="flex h-13 w-13 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg shadow-emerald-500/30 transition-all duration-300 hover:scale-110 hover:shadow-xl hover:shadow-emerald-500/40 active:scale-95 cursor-pointer relative"
       >
         {/* Pulse Ring Indicator */}

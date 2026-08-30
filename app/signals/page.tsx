@@ -6,11 +6,12 @@ import Link from "next/link";
 import { PredictionCard } from "@/components/PredictionCard";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
+import { MultiSelectDropdown } from "@/components/MultiSelectDropdown";
 
 export default function SignalsPage() {
   const [signals, setSignals] = useState<MarketOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedLeague, setSelectedLeague] = useState<string>("all");
+  const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [minProbability, setMinProbability] = useState<number>(60);
   const [selectedDate, setSelectedDate] = useState<"all" | "today" | "tomorrow" | "week">("all");
 
@@ -44,7 +45,7 @@ export default function SignalsPage() {
 
   const filteredSignals = signals.filter((s) => {
     if (s.probability < minProbability) return false;
-    if (selectedLeague !== "all" && s.league !== selectedLeague) return false;
+    if (selectedLeagues.length > 0 && !selectedLeagues.includes(s.league)) return false;
 
     if (selectedDate === "today") {
       const d = new Date(s.kickoff);
@@ -143,20 +144,14 @@ export default function SignalsPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Filtrar Liga:</span>
-            <select
-              value={selectedLeague}
-              onChange={(e) => setSelectedLeague(e.target.value)}
-              className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-            >
-              {leagues.map((l) => (
-                <option key={l} value={l}>
-                  {l === "all" ? "Todas las Ligas" : l}
-                </option>
-              ))}
-            </select>
-          </div>
+          <MultiSelectDropdown
+            label="Ligas"
+            icon="🏆"
+            options={availableLeagueNames}
+            selected={selectedLeagues}
+            onChange={setSelectedLeagues}
+            placeholderAll="Todas las Ligas"
+          />
         </div>
 
         {/* Signals List */}
