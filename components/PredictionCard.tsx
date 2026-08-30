@@ -49,6 +49,47 @@ function formatKickoffDate(dateString: string): string {
   }
 }
 
+function getConfidenceInfo(probability: number, declaredConfidence?: string) {
+  if (probability >= 75 || declaredConfidence === "Muy Alta") {
+    return {
+      level: "muy_alta",
+      label: "Confianza Muy Alta",
+      shortLabel: "Muy Alta",
+      stars: "⭐⭐⭐",
+      badgeClass:
+        "bg-emerald-50 text-emerald-800 border-emerald-300 shadow-sm dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700/80",
+    };
+  }
+  if (probability >= 65 || declaredConfidence === "Alta") {
+    return {
+      level: "alta",
+      label: "Confianza Alta",
+      shortLabel: "Alta",
+      stars: "⭐⭐",
+      badgeClass:
+        "bg-teal-50 text-teal-800 border-teal-300 shadow-sm dark:bg-teal-950/80 dark:text-teal-300 dark:border-teal-700/80",
+    };
+  }
+  if (probability >= 55 || declaredConfidence === "Media" || declaredConfidence === "Moderada") {
+    return {
+      level: "media",
+      label: "Confianza Media",
+      shortLabel: "Media",
+      stars: "⭐",
+      badgeClass:
+        "bg-amber-50 text-amber-800 border-amber-300 shadow-sm dark:bg-amber-950/80 dark:text-amber-300 dark:border-amber-700/80",
+    };
+  }
+  return {
+    level: "baja",
+    label: "Confianza Baja",
+    shortLabel: "Baja",
+    stars: "⭐",
+    badgeClass:
+      "bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800",
+  };
+}
+
 export function PredictionCard({ prediction }: PredictionCardProps) {
   const [copied, setCopied] = useState(false);
   const [showStoryModal, setShowStoryModal] = useState(false);
@@ -56,6 +97,7 @@ export function PredictionCard({ prediction }: PredictionCardProps) {
   const storyCardRef = useRef<HTMLDivElement>(null);
 
   const formattedDate = formatKickoffDate(prediction.kickoff);
+  const conf = getConfidenceInfo(prediction.probability, prediction.confidence);
 
   const handleCopy = () => {
     const text = `📊 *Análisis SmartBetBot*
@@ -118,6 +160,18 @@ ${prediction.explanation}
               </span>
             )}
           </div>
+        </div>
+
+        {/* Confidence Badge */}
+        <div className="mt-3.5 flex items-center justify-between">
+          <span className={`inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs font-black border ${conf.badgeClass}`}>
+            <span>{conf.stars}</span>
+            <span>{conf.label}</span>
+          </span>
+
+          <span className="text-[11px] font-extrabold text-slate-500 dark:text-slate-400">
+            IA Score: <span className="text-slate-900 dark:text-white">{prediction.smartScore}/100</span>
+          </span>
         </div>
 
         {/* Match & Market Section */}
@@ -209,7 +263,7 @@ ${prediction.explanation}
             <div ref={storyCardRef} className="rounded-2xl bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 p-5 border border-slate-800 text-slate-100 shadow-xl">
               <div className="text-center">
                 <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-950/90 px-3 py-1 text-xs font-bold text-emerald-400 border border-emerald-700/50">
-                  <span>⚡ PICK OFICIAL SMARTBETBOT</span>
+                  <span>⚡ PICK OFICIAL • {conf.stars} {conf.shortLabel.toUpperCase()}</span>
                 </div>
                 <h4 className="mt-2.5 text-lg font-extrabold tracking-tight text-white">
                   Análisis Estadístico
