@@ -11,12 +11,12 @@ export default function HomePage() {
     <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-emerald-500 selection:text-white">
       {/* Navigation Header */}
       <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 text-lg font-black text-slate-950 shadow-lg shadow-emerald-500/20">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-3.5 py-3.5 sm:px-6 sm:py-4 lg:px-8 gap-3 sm:gap-6">
+          <Link href="/" className="flex items-center gap-2 sm:gap-2.5 mr-auto shrink-0 pr-2">
+            <span className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 text-base sm:text-lg font-black text-slate-950 shadow-lg shadow-emerald-500/20">
               ⚡
             </span>
-            <span className="text-xl font-black tracking-tight text-white">
+            <span className="text-lg sm:text-xl font-black tracking-tight text-white leading-none">
               Smart<span className="text-emerald-400">Bet</span>Bot
             </span>
           </Link>
@@ -36,17 +36,17 @@ export default function HomePage() {
             </Link>
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <ThemeToggle />
             <Link
               href="/login"
-              className="rounded-xl px-4 py-2 text-sm font-semibold text-slate-300 transition hover:text-white"
+              className="hidden sm:inline-flex rounded-xl px-3 py-2 text-xs sm:text-sm font-semibold text-slate-300 transition hover:text-white"
             >
               Iniciar Sesión
             </Link>
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-bold text-slate-950 shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-400 hover:scale-[1.02]"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold text-slate-950 shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-400 hover:scale-[1.02]"
             >
               <span>Ver Picks</span>
               <span>→</span>

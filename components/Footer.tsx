@@ -6,7 +6,7 @@ import { useLanguage } from "@/context/LanguageContext";
 
 export function Footer() {
   const { language } = useLanguage();
-  const phone = "5934082483";
+  const phone = "593964082483";
   const defaultMessage =
     language === "en"
       ? "Hello! ⚽🔥 I would like to get personalized guidance on SmartBetBot sports predictions and VIP access. How can I get started today?"
@@ -31,7 +31,7 @@ export function Footer() {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1 rounded-xl bg-[#25D366] px-3 py-1 font-black text-white shadow-sm transition hover:scale-105 hover:bg-[#20bd5a] cursor-pointer"
           >
-            <span>WhatsApp (+593 4082483)</span>
+            <span>WhatsApp (+593 964082483)</span>
             <span>→</span>
           </a>
         </div>

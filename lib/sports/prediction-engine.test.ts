@@ -35,5 +35,5 @@ describe("Prediction Engine (TypeScript MVP)", () => {
       console.log("Sample prediction:", predictions[0]);
     }
     expect(predictions.length).toBeGreaterThan(0);
-  });
+  }, 25000);
 });

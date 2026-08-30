@@ -8,7 +8,7 @@ interface WhatsAppButtonProps {
 }
 
 export function WhatsAppButton({
-  phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "5934082483",
+  phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "593964082483",
 }: WhatsAppButtonProps) {
   const { language } = useLanguage();
   const [showTooltip, setShowTooltip] = useState(false);
@@ -50,7 +50,7 @@ export function WhatsAppButton({
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Contactar soporte por WhatsApp"
-        title="Escríbenos por WhatsApp (+593 4082483) para resolver cualquier duda"
+        title="Escríbenos por WhatsApp (+593 964082483) para resolver cualquier duda"
         className="flex h-13 w-13 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg shadow-emerald-500/30 transition-all duration-300 hover:scale-110 hover:shadow-xl hover:shadow-emerald-500/40 active:scale-95 cursor-pointer relative"
       >
         {/* Pulse Ring Indicator */}
