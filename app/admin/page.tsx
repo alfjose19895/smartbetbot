@@ -1,5 +1,6 @@
 "use client";
 
+import { ThemeToggle } from "@/components/ThemeToggle";
 import React, { useState } from "react";
 import Link from "next/link";
 import {
@@ -119,6 +120,7 @@ export default function AdminPage() {
           </Link>
 
           <nav className="flex items-center gap-4 text-xs font-semibold sm:gap-6 sm:text-sm">
+            <ThemeToggle />
             <Link href="/dashboard" className="text-slate-300 transition hover:text-white">
               Dashboard
             </Link>

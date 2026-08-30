@@ -1,6 +1,7 @@
 ﻿"use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import { toPng } from "html-to-image";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 
 interface PredictionCardProps {
@@ -51,6 +52,8 @@ function formatKickoffDate(dateString: string): string {
 export function PredictionCard({ prediction }: PredictionCardProps) {
   const [copied, setCopied] = useState(false);
   const [showStoryModal, setShowStoryModal] = useState(false);
+  const [downloadingImage, setDownloadingImage] = useState(false);
+  const storyCardRef = useRef<HTMLDivElement>(null);
 
   const formattedDate = formatKickoffDate(prediction.kickoff);
 
@@ -73,6 +76,27 @@ ${prediction.explanation}
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
+  };
+
+  const handleDownloadStoryImage = async () => {
+    if (!storyCardRef.current) return;
+    try {
+      setDownloadingImage(true);
+      const dataUrl = await toPng(storyCardRef.current, {
+        cacheBust: true,
+        pixelRatio: 3, // Ultra-sharp 3x retina export
+      });
+
+      const filename = `smartbetbot-${prediction.match.toLowerCase().replace(/[^a-z0-9]/g, "-")}.png`;
+      const link = document.createElement("a");
+      link.download = filename;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error("Error capturing story screenshot:", err);
+    } finally {
+      setDownloadingImage(false);
+    }
   };
 
   return (
@@ -161,7 +185,7 @@ ${prediction.explanation}
             <button
               onClick={() => setShowStoryModal(true)}
               className="inline-flex items-center gap-1 rounded-lg bg-emerald-600/90 px-2.5 py-1.5 text-xs font-medium text-white transition hover:bg-emerald-500 shadow-sm"
-              title="Ver formato Historia / Screenshot"
+              title="Ver formato Historia / Descargar Screenshot"
             >
               📸 Historia
             </button>
@@ -181,72 +205,85 @@ ${prediction.explanation}
               ✕
             </button>
 
-            {/* Story Card Container */}
-            <div className="mt-2 text-center">
-              <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-950/80 px-3 py-1 text-xs font-bold text-emerald-400 border border-emerald-700/50">
-                <span>🔥 PICK SMARTBETBOT</span>
-              </div>
-              <h4 className="mt-2 text-xl font-extrabold tracking-tight text-white">
-                Análisis SmartBetBot
-              </h4>
-              <p className="text-xs text-slate-400">{prediction.league} • {formattedDate}</p>
-            </div>
-
-            <div className="mt-6 rounded-2xl bg-slate-900/90 p-4 border border-slate-800">
+            {/* Visual Capture Target */}
+            <div ref={storyCardRef} className="rounded-2xl bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 p-5 border border-slate-800 text-slate-100 shadow-xl">
               <div className="text-center">
-                <span className="text-[11px] font-semibold uppercase text-slate-400">Partido</span>
-                <p className="text-base font-bold text-white mt-0.5">{prediction.match}</p>
+                <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-950/90 px-3 py-1 text-xs font-bold text-emerald-400 border border-emerald-700/50">
+                  <span>⚡ PICK OFICIAL SMARTBETBOT</span>
+                </div>
+                <h4 className="mt-2.5 text-lg font-extrabold tracking-tight text-white">
+                  Análisis Estadístico
+                </h4>
+                <p className="text-xs text-slate-400 font-medium">{prediction.league} • {formattedDate}</p>
               </div>
 
-              <div className="mt-4 flex items-center justify-around border-t border-slate-800/60 pt-3">
-                <div className="text-center">
-                  <span className="text-[11px] font-semibold uppercase text-slate-400">Mercado</span>
-                  <p className="text-sm font-extrabold text-emerald-400 mt-0.5">{prediction.market}</p>
+              <div className="mt-4 rounded-xl bg-slate-950/80 p-4 border border-slate-800/80 text-center">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Partido</span>
+                <p className="text-base font-extrabold text-white mt-0.5">{prediction.match}</p>
+
+                <div className="mt-3 flex items-center justify-around border-t border-slate-800/80 pt-3">
+                  <div className="text-center">
+                    <span className="text-[10px] font-semibold uppercase text-slate-400">Mercado</span>
+                    <p className="text-sm font-extrabold text-emerald-400 mt-0.5">{prediction.market}</p>
+                  </div>
+                  <div className="h-7 w-px bg-slate-800" />
+                  <div className="text-center">
+                    <span className="text-[10px] font-semibold uppercase text-slate-400">Cuota</span>
+                    <p className="text-base font-extrabold text-sky-400 mt-0.5">{prediction.odds.toFixed(2)}</p>
+                  </div>
+                  <div className="h-7 w-px bg-slate-800" />
+                  <div className="text-center">
+                    <span className="text-[10px] font-semibold uppercase text-slate-400">Prob.</span>
+                    <p className="text-base font-extrabold text-emerald-400 mt-0.5">{prediction.probability}%</p>
+                  </div>
                 </div>
-                <div className="h-8 w-px bg-slate-800" />
-                <div className="text-center">
-                  <span className="text-[11px] font-semibold uppercase text-slate-400">Cuota</span>
-                  <p className="text-lg font-extrabold text-sky-400 mt-0.5">{prediction.odds.toFixed(2)}</p>
+              </div>
+
+              {/* AI Explanation in Story */}
+              <div className="mt-3.5 rounded-xl bg-slate-950/60 p-3 border border-slate-800/60 text-left">
+                <div className="flex items-center gap-1 text-[11px] font-bold text-slate-300">
+                  <span>☕</span>
+                  <span>Explicación del Modelo IA</span>
                 </div>
-                <div className="h-8 w-px bg-slate-800" />
-                <div className="text-center">
-                  <span className="text-[11px] font-semibold uppercase text-slate-400">Probabilidad</span>
-                  <p className="text-lg font-extrabold text-emerald-400 mt-0.5">{prediction.probability}%</p>
-                </div>
+                <p className="mt-1 text-xs leading-relaxed text-slate-300">
+                  {prediction.explanation}
+                </p>
+              </div>
+
+              {/* Footer Brand in Screenshot */}
+              <div className="mt-4 flex items-center justify-between text-xs text-slate-400 border-t border-slate-800/50 pt-2.5">
+                <span className="font-bold text-white flex items-center gap-1">
+                  ⚡ SmartBetBot
+                </span>
+                <span className="text-emerald-400 font-semibold">smartbetbot.app</span>
               </div>
             </div>
 
-            {/* AI Explanation in Story */}
-            <div className="mt-4 rounded-xl bg-slate-900/70 p-3.5 border border-slate-800/60 text-left">
-              <div className="flex items-center gap-1 text-xs font-semibold text-slate-300">
-                <span>☕</span>
-                <span>Explicación IA</span>
-              </div>
-              <p className="mt-1.5 text-xs leading-relaxed text-slate-300">
-                {prediction.explanation}
-              </p>
-            </div>
-
-            {/* Footer Brand */}
-            <div className="mt-5 flex items-center justify-between text-xs text-slate-400 border-t border-slate-800/50 pt-3">
-              <span className="font-semibold text-white">SmartBetBot</span>
-              <span className="text-emerald-400 font-medium">smartbetbot.app</span>
-            </div>
-
-            {/* Download/Copy Actions */}
-            <div className="mt-5 flex gap-2">
+            {/* Download and Share Actions */}
+            <div className="mt-5 flex flex-col gap-2">
               <button
-                onClick={handleCopy}
-                className="flex-1 rounded-xl bg-slate-800 py-2.5 text-xs font-bold text-white transition hover:bg-slate-700"
+                onClick={handleDownloadStoryImage}
+                disabled={downloadingImage}
+                className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 py-3 text-sm font-extrabold text-slate-950 shadow-lg shadow-emerald-500/25 transition hover:from-emerald-400 hover:to-teal-400 hover:scale-[1.02]"
               >
-                {copied ? "✓ Texto Copiado" : "📋 Copiar Texto"}
+                <span>{downloadingImage ? "⏳" : "📸"}</span>
+                <span>{downloadingImage ? "Generando Imagen PNG..." : "Descargar Imagen para Historia"}</span>
               </button>
-              <button
-                onClick={() => setShowStoryModal(false)}
-                className="flex-1 rounded-xl bg-emerald-600 py-2.5 text-xs font-bold text-white transition hover:bg-emerald-500"
-              >
-                Listo (Tomar Screenshot)
-              </button>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={handleCopy}
+                  className="flex-1 rounded-xl bg-slate-800/90 py-2.5 text-xs font-bold text-slate-200 transition hover:bg-slate-700 hover:text-white border border-slate-700"
+                >
+                  {copied ? "✓ Texto Copiado" : "📋 Copiar Texto"}
+                </button>
+                <button
+                  onClick={() => setShowStoryModal(false)}
+                  className="rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-medium text-slate-400 transition hover:bg-slate-800 hover:text-white"
+                >
+                  Cerrar
+                </button>
+              </div>
             </div>
           </div>
         </div>

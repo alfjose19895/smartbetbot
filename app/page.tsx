@@ -1,3 +1,4 @@
+import { ThemeToggle } from "@/components/ThemeToggle";
 import Link from "next/link";
 import { PredictionCard } from "@/components/PredictionCard";
 import { getFallbackFeaturedPredictions } from "@/lib/sports/db";
@@ -36,6 +37,7 @@ export default function HomePage() {
           </nav>
 
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             <Link
               href="/login"
               className="rounded-xl px-4 py-2 text-sm font-semibold text-slate-300 transition hover:text-white"

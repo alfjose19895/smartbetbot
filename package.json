@@ -42,6 +42,7 @@
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.3",
     "firebase": "^12.18.0",
+    "html-to-image": "^1.11.13",
     "next": "16.2.11",
     "react": "19.2.8",
     "react-dom": "19.2.8",

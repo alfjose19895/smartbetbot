@@ -1,5 +1,6 @@
-﻿"use client";
+"use client";
 
+import { ThemeToggle } from "@/components/ThemeToggle";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { PredictionCard } from "@/components/PredictionCard";
@@ -109,6 +110,7 @@ export default function DashboardPage() {
           </Link>
 
           <nav className="flex items-center gap-4 text-xs font-semibold sm:gap-6 sm:text-sm">
+            <ThemeToggle />
             <Link href="/dashboard" className="text-emerald-400 font-bold">
               Dashboard
             </Link>
