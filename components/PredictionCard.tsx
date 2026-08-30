@@ -3,6 +3,7 @@
 import React, { useState, useRef } from "react";
 import { toPng } from "html-to-image";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
+import { useLanguage, Language } from "@/context/LanguageContext";
 
 interface PredictionCardProps {
   prediction: MarketOpportunity;
@@ -49,12 +50,13 @@ function formatKickoffDate(dateString: string): string {
   }
 }
 
-function getConfidenceInfo(probability: number, declaredConfidence?: string) {
+function getConfidenceInfo(probability: number, declaredConfidence?: string, lang: Language = "es") {
+  const isEn = lang === "en";
   if (probability >= 75 || declaredConfidence === "Muy Alta") {
     return {
       level: "muy_alta",
-      label: "Confianza Muy Alta",
-      shortLabel: "Muy Alta",
+      label: isEn ? "Very High Confidence" : "Confianza Muy Alta",
+      shortLabel: isEn ? "Very High" : "Muy Alta",
       stars: "⭐⭐⭐",
       badgeClass:
         "bg-emerald-50 text-emerald-800 border-emerald-300 shadow-sm dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700/80",
@@ -63,8 +65,8 @@ function getConfidenceInfo(probability: number, declaredConfidence?: string) {
   if (probability >= 65 || declaredConfidence === "Alta") {
     return {
       level: "alta",
-      label: "Confianza Alta",
-      shortLabel: "Alta",
+      label: isEn ? "High Confidence" : "Confianza Alta",
+      shortLabel: isEn ? "High" : "Alta",
       stars: "⭐⭐",
       badgeClass:
         "bg-teal-50 text-teal-800 border-teal-300 shadow-sm dark:bg-teal-950/80 dark:text-teal-300 dark:border-teal-700/80",
@@ -73,8 +75,8 @@ function getConfidenceInfo(probability: number, declaredConfidence?: string) {
   if (probability >= 55 || declaredConfidence === "Media" || declaredConfidence === "Moderada") {
     return {
       level: "media",
-      label: "Confianza Media",
-      shortLabel: "Media",
+      label: isEn ? "Medium Confidence" : "Confianza Media",
+      shortLabel: isEn ? "Medium" : "Media",
       stars: "⭐",
       badgeClass:
         "bg-amber-50 text-amber-800 border-amber-300 shadow-sm dark:bg-amber-950/80 dark:text-amber-300 dark:border-amber-700/80",
@@ -82,8 +84,8 @@ function getConfidenceInfo(probability: number, declaredConfidence?: string) {
   }
   return {
     level: "baja",
-    label: "Confianza Baja",
-    shortLabel: "Baja",
+    label: isEn ? "Low Confidence" : "Confianza Baja",
+    shortLabel: isEn ? "Low" : "Baja",
     stars: "⭐",
     badgeClass:
       "bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800",
@@ -91,13 +93,14 @@ function getConfidenceInfo(probability: number, declaredConfidence?: string) {
 }
 
 export function PredictionCard({ prediction }: PredictionCardProps) {
+  const { language, t } = useLanguage();
   const [copied, setCopied] = useState(false);
   const [showStoryModal, setShowStoryModal] = useState(false);
   const [downloadingImage, setDownloadingImage] = useState(false);
   const storyCardRef = useRef<HTMLDivElement>(null);
 
   const formattedDate = formatKickoffDate(prediction.kickoff);
-  const conf = getConfidenceInfo(prediction.probability, prediction.confidence);
+  const conf = getConfidenceInfo(prediction.probability, prediction.confidence, language);
 
   const handleCopy = () => {
     const text = `📊 *Análisis SmartBetBot*
@@ -177,13 +180,13 @@ ${prediction.explanation}
         {/* Match & Market Section */}
         <div className="mt-4 grid grid-cols-2 gap-4">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Partido</span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t("matchLabel")}</span>
             <p className="mt-1 text-sm font-bold text-slate-900 dark:text-white leading-snug">
               {prediction.match}
             </p>
           </div>
           <div className="text-right">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Mercado</span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t("marketLabel")}</span>
             <p className="mt-1 text-sm font-bold text-emerald-600 dark:text-emerald-400 leading-snug">
               {prediction.market}
             </p>
@@ -193,13 +196,13 @@ ${prediction.explanation}
         {/* Odds & Probability Metrics */}
         <div className="mt-4 grid grid-cols-2 gap-4 rounded-2xl bg-slate-50 p-3.5 border border-slate-200/80 dark:bg-slate-950/60 dark:border-slate-800/50">
           <div>
-            <span className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Cuota</span>
+            <span className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">{t("oddsLabel")}</span>
             <p className="mt-0.5 text-2xl font-extrabold tracking-tight text-sky-600 dark:text-sky-400">
               {prediction.odds.toFixed(2)}
             </p>
           </div>
           <div className="text-right">
-            <span className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Probabilidad</span>
+            <span className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">{t("probLabel")}</span>
             <p className="mt-0.5 text-2xl font-extrabold tracking-tight text-emerald-600 dark:text-emerald-400">
               {prediction.probability.toFixed(1)}%
             </p>
@@ -210,7 +213,7 @@ ${prediction.explanation}
         <div className="mt-4 rounded-2xl bg-slate-50 p-4 border border-slate-200/80 dark:bg-slate-950/80 dark:border-slate-800/60">
           <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-slate-300">
             <span>☕</span>
-            <span>Explicación IA</span>
+            <span>{t("aiExplanation")}</span>
           </div>
           <p className="mt-2 text-xs leading-relaxed text-slate-700 font-normal dark:text-slate-300">
             {prediction.explanation}
@@ -234,14 +237,14 @@ ${prediction.explanation}
               className="inline-flex items-center gap-1 rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-200 border border-slate-200 dark:bg-slate-800/80 dark:text-slate-200 dark:hover:bg-slate-700 dark:border-slate-700/50"
               title="Copiar texto para Telegram/WhatsApp"
             >
-              {copied ? "✓ Copiado" : "📋 Copiar"}
+              {copied ? t("copiedBtn") : `📋 ${t("copyBtn")}`}
             </button>
             <button
               onClick={() => setShowStoryModal(true)}
               className="inline-flex items-center gap-1 rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-emerald-500 shadow-sm"
               title="Ver formato Historia / Descargar Screenshot"
             >
-              📸 Historia
+              📸 {t("storyBtn")}
             </button>
           </div>
         </div>

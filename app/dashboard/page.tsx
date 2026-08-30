@@ -6,8 +6,10 @@ import Link from "next/link";
 import { PredictionCard } from "@/components/PredictionCard";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function DashboardPage() {
+  const { t } = useLanguage();
   const [predictions, setPredictions] = useState<MarketOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
@@ -124,7 +126,7 @@ export default function DashboardPage() {
 
           <div className="flex items-center gap-3">
             <div className="rounded-2xl bg-white px-4 py-2.5 border border-slate-200/90 text-center shadow-sm dark:bg-slate-900/80 dark:border-slate-800">
-              <span className="text-[10px] uppercase text-slate-500 block font-semibold dark:text-slate-400">Picks Activos</span>
+              <span className="text-[10px] uppercase text-slate-500 block font-semibold dark:text-slate-400">{t("statActivePicks")}</span>
               <span className="text-base font-extrabold text-slate-900 dark:text-white">{filteredPredictions.length}</span>
             </div>
             <div className="rounded-2xl bg-white px-4 py-2.5 border border-slate-200/90 text-center shadow-sm dark:bg-slate-900/80 dark:border-slate-800">

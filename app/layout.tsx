@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import "./globals.css";
 import { ServiceWorkerRegistration } from "@/features/notifications/service-worker-registration";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
+import { LanguageProvider } from "@/context/LanguageContext";
 
 export const metadata: Metadata = {
   title: {
@@ -49,9 +50,11 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         />
       </head>
       <body>
-        <ServiceWorkerRegistration />
-        {children}
-        <WhatsAppButton />
+        <LanguageProvider>
+          <ServiceWorkerRegistration />
+          {children}
+          <WhatsAppButton />
+        </LanguageProvider>
       </body>
     </html>
   );

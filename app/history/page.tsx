@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Navbar } from "@/components/Navbar";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface HistoricalItem {
   id: string;
@@ -217,6 +218,7 @@ const HISTORY_DATA: HistoricalItem[] = [
 ];
 
 export default function HistoryPage() {
+  const { language, t } = useLanguage();
   const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
   const [filterResult, setFilterResult] = useState<"ALL" | "WON" | "LOST">("ALL");
   const [selectedLeague, setSelectedLeague] = useState<string>("all");
@@ -244,13 +246,13 @@ export default function HistoryPage() {
           <div>
             <div className="inline-flex items-center gap-2 rounded-xl bg-emerald-500/10 px-3 py-1 text-xs font-extrabold text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
               <span>📜</span>
-              <span>Historial Oficial</span>
+              <span>{t("historyKicker")}</span>
             </div>
             <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
-              Pronósticos Deportivos Resueltos
+              {t("historyTitle")}
             </h1>
             <p className="mt-1 text-xs text-slate-600 sm:text-sm dark:text-slate-400">
-              Registro histórico de partidos acontecidos con marcadores oficiales y cálculo de rentabilidad
+              {t("historySubtitle")}
             </p>
           </div>
 
@@ -265,7 +267,7 @@ export default function HistoryPage() {
               }`}
             >
               <span>🃏</span>
-              <span>Tarjetas (Cards)</span>
+              <span>{t("viewCards")}</span>
             </button>
             <button
               onClick={() => setViewMode("table")}
@@ -276,7 +278,7 @@ export default function HistoryPage() {
               }`}
             >
               <span>📋</span>
-              <span>Tabla</span>
+              <span>{t("viewTable")}</span>
             </button>
           </div>
         </div>
@@ -284,15 +286,15 @@ export default function HistoryPage() {
         {/* Stats KPI Summary */}
         <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-4 rounded-3xl border border-slate-200 bg-white p-3.5 text-center shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900/60">
           <div>
-            <p className="text-[10px] sm:text-xs text-slate-500 font-medium dark:text-slate-400">Partidos Evaluados</p>
+            <p className="text-[10px] sm:text-xs text-slate-500 font-medium dark:text-slate-400">{t("historyEvaluated")}</p>
             <p className="mt-1 text-lg sm:text-2xl font-black text-slate-900 dark:text-white">{totalPicks}</p>
           </div>
           <div className="border-x border-slate-200 dark:border-slate-800">
-            <p className="text-[10px] sm:text-xs text-slate-500 font-medium dark:text-slate-400">Tasa de Acierto</p>
+            <p className="text-[10px] sm:text-xs text-slate-500 font-medium dark:text-slate-400">{t("historyWinRate")}</p>
             <p className="mt-1 text-lg sm:text-2xl font-black text-emerald-600 dark:text-emerald-400">{winRate}%</p>
           </div>
           <div>
-            <p className="text-[10px] sm:text-xs text-slate-500 font-medium dark:text-slate-400">Balance Neto</p>
+            <p className="text-[10px] sm:text-xs text-slate-500 font-medium dark:text-slate-400">{t("historyProfit")}</p>
             <p className="mt-1 text-lg sm:text-2xl font-black text-sky-600 dark:text-sky-400">+{netProfit} U</p>
           </div>
         </div>
@@ -300,7 +302,7 @@ export default function HistoryPage() {
         {/* Filters Bar */}
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 mr-1">Resultado:</span>
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 mr-1">{t("filterResult")}</span>
             <button
               onClick={() => setFilterResult("ALL")}
               className={`rounded-xl px-2.5 py-1 text-xs font-bold transition cursor-pointer ${
@@ -309,7 +311,7 @@ export default function HistoryPage() {
                   : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
               }`}
             >
-              Todos ({HISTORY_DATA.length})
+              {t("filterAll")} ({HISTORY_DATA.length})
             </button>
             <button
               onClick={() => setFilterResult("WON")}
@@ -319,7 +321,7 @@ export default function HistoryPage() {
                   : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
               }`}
             >
-              ✓ Ganadas ({wonPicks})
+              {t("filterWon")} ({wonPicks})
             </button>
             <button
               onClick={() => setFilterResult("LOST")}
@@ -329,7 +331,7 @@ export default function HistoryPage() {
                   : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
               }`}
             >
-              ✗ Perdidas ({totalPicks - wonPicks})
+              {t("filterLost")} ({totalPicks - wonPicks})
             </button>
           </div>
 
@@ -443,13 +445,13 @@ export default function HistoryPage() {
               <table className="w-full text-left text-xs sm:text-sm">
                 <thead className="border-b border-slate-200 bg-slate-50 text-slate-600 font-bold uppercase text-[11px] tracking-wider dark:border-slate-800 dark:bg-slate-950/80 dark:text-slate-400">
                   <tr>
-                    <th className="px-4 py-3.5">Fecha</th>
-                    <th className="px-4 py-3.5">Partido</th>
-                    <th className="px-4 py-3.5 text-center">Marcador</th>
-                    <th className="px-4 py-3.5">Mercado</th>
-                    <th className="px-4 py-3.5 text-center">Cuota</th>
-                    <th className="px-4 py-3.5 text-center">Prob.</th>
-                    <th className="px-4 py-3.5 text-right">Resultado</th>
+                    <th className="px-4 py-3.5">{t("colDate")}</th>
+                    <th className="px-4 py-3.5">{t("colMatch")}</th>
+                    <th className="px-4 py-3.5 text-center">{t("colScore")}</th>
+                    <th className="px-4 py-3.5">{t("colMarket")}</th>
+                    <th className="px-4 py-3.5 text-center">{t("colOdds")}</th>
+                    <th className="px-4 py-3.5 text-center">{t("colProb")}</th>
+                    <th className="px-4 py-3.5 text-right">{t("colResult")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-700 dark:divide-slate-800/60 dark:text-slate-300">
