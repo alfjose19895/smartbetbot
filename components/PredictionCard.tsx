@@ -4,9 +4,11 @@ import React, { useState, useRef } from "react";
 import { toPng } from "html-to-image";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 import { useLanguage, Language } from "@/context/LanguageContext";
+import { MatchDetailModal } from "@/components/MatchDetailModal";
 
 interface PredictionCardProps {
   prediction: MarketOpportunity;
+  onOpenDetail?: (prediction: MarketOpportunity) => void;
 }
 
 function formatKickoffDate(dateString: string): string {
@@ -69,10 +71,10 @@ function getConfidenceInfo(probability: number, declaredConfidence?: string, lan
       shortLabel: isEn ? "High" : "Alta",
       stars: "⭐⭐",
       badgeClass:
-        "bg-teal-50 text-teal-800 border-teal-300 shadow-sm dark:bg-teal-950/80 dark:text-teal-300 dark:border-teal-700/80",
+        "bg-cyan-50 text-cyan-800 border-cyan-300 shadow-sm dark:bg-cyan-950/80 dark:text-cyan-300 dark:border-cyan-700/80",
     };
   }
-  if (probability >= 55 || declaredConfidence === "Media" || declaredConfidence === "Moderada") {
+  if (probability >= 55 || declaredConfidence === "Media") {
     return {
       level: "media",
       label: isEn ? "Medium Confidence" : "Confianza Media",
@@ -84,39 +86,37 @@ function getConfidenceInfo(probability: number, declaredConfidence?: string, lan
   }
   return {
     level: "baja",
-    label: isEn ? "Low Confidence" : "Confianza Baja",
+    label: isEn ? "Low Confidence" : "Confianza Baja / Moderada",
     shortLabel: isEn ? "Low" : "Baja",
-    stars: "⭐",
+    stars: "⚪",
     badgeClass:
       "bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800",
   };
 }
 
-export function PredictionCard({ prediction }: PredictionCardProps) {
+export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps) {
   const { language, t } = useLanguage();
   const [copied, setCopied] = useState(false);
   const [showStoryModal, setShowStoryModal] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
   const [downloadingImage, setDownloadingImage] = useState(false);
   const storyCardRef = useRef<HTMLDivElement>(null);
 
   const formattedDate = formatKickoffDate(prediction.kickoff);
   const conf = getConfidenceInfo(prediction.probability, prediction.confidence, language);
 
+  const fairOddsVal = prediction.fairOdds || Math.round((100 / (prediction.probability || 50)) * 100) / 100;
+
+  const handleOpenDetail = () => {
+    if (onOpenDetail) {
+      onOpenDetail(prediction);
+    } else {
+      setShowDetailModal(true);
+    }
+  };
+
   const handleCopy = () => {
-    const text = `📊 *Análisis SmartBetBot*
-
-⚽ *Partido:* ${prediction.match}
-🏆 *Liga:* ${prediction.league}
-📅 *Fecha:* ${formattedDate}
-🎯 *Mercado:* ${prediction.market}
-💰 *Cuota:* ${prediction.odds.toFixed(2)}
-📈 *Probabilidad:* ${prediction.probability}%
-🔥 *Smart Edge:* +${prediction.edge}%
-
-💡 *Explicación IA:*
-${prediction.explanation}
-
-🔗 _Generado por SmartBetBot_`;
+    const text = `📊 *Análisis SmartBetBot*\n\n⚽ *Partido:* ${prediction.match}\n🏆 *Liga:* ${prediction.league}\n📅 *Fecha:* ${formattedDate}\n🎯 *Mercado:* ${prediction.market}\n💰 *Cuota Casa:* ${prediction.odds.toFixed(2)} | *Cuota Justa:* ${fairOddsVal.toFixed(2)}\n📈 *Probabilidad:* ${prediction.probability}%\n🔥 *Smart Edge:* +${prediction.edge}%\n⭐ *Confianza:* ${conf.stars} ${conf.shortLabel}\n\n💡 *Explicación IA:*\n${prediction.explanation}\n\n🔗 _Generado por SmartBetBot_`;
 
     navigator.clipboard.writeText(text);
     setCopied(true);
@@ -129,16 +129,14 @@ ${prediction.explanation}
       setDownloadingImage(true);
       const dataUrl = await toPng(storyCardRef.current, {
         cacheBust: true,
-        pixelRatio: 3, // Ultra-sharp 3x retina export
+        pixelRatio: 2.5,
       });
-
-      const filename = `smartbetbot-${prediction.match.toLowerCase().replace(/[^a-z0-9]/g, "-")}.png`;
       const link = document.createElement("a");
-      link.download = filename;
+      link.download = `SmartBetBot-Pick-${prediction.match.replace(/\s+/g, "-")}.png`;
       link.href = dataUrl;
       link.click();
     } catch (err) {
-      console.error("Error capturing story screenshot:", err);
+      console.error("Failed to download story image:", err);
     } finally {
       setDownloadingImage(false);
     }
@@ -146,102 +144,108 @@ ${prediction.explanation}
 
   return (
     <>
-      <div className="relative flex flex-col justify-between rounded-3xl bg-white border border-slate-200/90 p-6 text-slate-900 shadow-lg shadow-slate-200/50 backdrop-blur-sm transition-all duration-200 hover:border-emerald-300 hover:shadow-xl dark:bg-gradient-to-b dark:from-slate-900/95 dark:via-slate-900/90 dark:to-slate-950/95 dark:border-slate-800/80 dark:text-slate-100 dark:shadow-2xl dark:hover:border-slate-700/90">
-        {/* Card Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800/60">
-          <div className="flex items-center gap-2">
-            <span className="text-lg">📊</span>
-            <h3 className="text-base font-bold tracking-tight text-slate-900 dark:text-white">Análisis SmartBetBot</h3>
+      <div className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-slate-200/90 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-500/50 hover:shadow-xl hover:shadow-emerald-500/5 dark:border-slate-800/90 dark:bg-slate-900/90 dark:hover:border-emerald-500/40">
+        {/* Top Badges */}
+        <div>
+          <div className="flex items-center justify-between gap-2">
+            <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-xs font-extrabold text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700">
+              🏆 {prediction.league}
+            </span>
+            <div className={`inline-flex items-center gap-1.5 rounded-full px-3 py-0.5 text-xs font-black border ${conf.badgeClass}`}>
+              <span>{conf.stars}</span>
+              <span>{conf.shortLabel}</span>
+            </div>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-700 border border-emerald-200 dark:bg-emerald-950/90 dark:text-emerald-400 dark:border-emerald-700/60">
+
+          {/* Match Title & Date */}
+          <div className="mt-3.5 cursor-pointer" onClick={handleOpenDetail}>
+            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 block">
               📅 {formattedDate}
             </span>
-            {prediction.league && (
-              <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 border border-slate-200 dark:bg-slate-800/80 dark:text-slate-300 dark:border-slate-700/50">
-                {prediction.league}
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Confidence Badge */}
-        <div className="mt-3.5 flex items-center justify-between">
-          <span className={`inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs font-black border ${conf.badgeClass}`}>
-            <span>{conf.stars}</span>
-            <span>{conf.label}</span>
-          </span>
-
-          <span className="text-[11px] font-extrabold text-slate-600 dark:text-slate-400 font-bold">
-            IA Score: <span className="text-slate-900 dark:text-white">{prediction.smartScore}/100</span>
-          </span>
-        </div>
-
-        {/* Match & Market Section */}
-        <div className="mt-4 grid grid-cols-2 gap-4">
-          <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 font-bold">{t("matchLabel")}</span>
-            <p className="mt-1 text-sm font-bold text-slate-900 dark:text-white leading-snug">
+            <h3 className="mt-1 text-lg font-black tracking-tight text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
               {prediction.match}
-            </p>
+            </h3>
           </div>
-          <div className="text-right">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 font-bold">{t("marketLabel")}</span>
-            <p className="mt-1 text-sm font-bold text-emerald-700 dark:text-emerald-400 font-black leading-snug">
-              {prediction.market}
-            </p>
-          </div>
-        </div>
 
-        {/* Odds & Probability Metrics */}
-        <div className="mt-4 grid grid-cols-2 gap-4 rounded-2xl bg-slate-50 p-3.5 border border-slate-200/80 dark:bg-slate-950/60 dark:border-slate-800/50">
-          <div>
-            <span className="text-xs font-medium uppercase tracking-wider text-slate-600 dark:text-slate-400 font-bold">{t("oddsLabel")}</span>
-            <p className="mt-0.5 text-2xl font-extrabold tracking-tight text-sky-700 dark:text-sky-400 font-black">
-              {prediction.odds.toFixed(2)}
-            </p>
+          {/* Market Selection Box */}
+          <div className="mt-3 rounded-2xl bg-emerald-50/70 p-3.5 border border-emerald-200/90 dark:bg-emerald-950/40 dark:border-emerald-900/60">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-800 dark:text-emerald-400 block">
+              {t("marketLabel")}
+            </span>
+            <span className="text-base font-black text-emerald-950 dark:text-emerald-200 mt-0.5 block">
+              🎯 {prediction.market}
+            </span>
           </div>
-          <div className="text-right">
-            <span className="text-xs font-medium uppercase tracking-wider text-slate-600 dark:text-slate-400 font-bold">{t("probLabel")}</span>
-            <p className="mt-0.5 text-2xl font-extrabold tracking-tight text-emerald-700 dark:text-emerald-400 font-black">
-              {prediction.probability.toFixed(1)}%
-            </p>
-          </div>
-        </div>
 
-        {/* AI Explanation Box */}
-        <div className="mt-4 rounded-2xl bg-slate-50 p-4 border border-slate-200/80 dark:bg-slate-950/80 dark:border-slate-800/60">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-slate-300">
-            <span>🧠</span>
-            <span className="font-extrabold text-slate-900 dark:text-white uppercase tracking-wider text-[11px]">{t("aiExplanation")}</span>
+          {/* Dual Odds Box: Cuota Casa de Apuestas vs Cuota Justa (App) */}
+          <div className="mt-3 grid grid-cols-3 gap-2 rounded-2xl bg-slate-50 p-3 border border-slate-200/80 text-center dark:bg-slate-950/70 dark:border-slate-800/80">
+            <div>
+              <span className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 block">
+                Cuota Casa
+              </span>
+              <p className="text-lg font-black text-sky-700 dark:text-sky-400 mt-0.5">
+                @{prediction.odds.toFixed(2)}
+              </p>
+            </div>
+            <div className="border-x border-slate-200 dark:border-slate-800">
+              <span className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 block">
+                Cuota Justa
+              </span>
+              <p className="text-lg font-black text-emerald-700 dark:text-emerald-400 mt-0.5">
+                @{fairOddsVal.toFixed(2)}
+              </p>
+            </div>
+            <div>
+              <span className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 block">
+                Probabilidad
+              </span>
+              <p className="text-lg font-black text-emerald-600 dark:text-emerald-400 mt-0.5">
+                {prediction.probability.toFixed(0)}%
+              </p>
+            </div>
           </div>
-          <p className="mt-2 text-xs leading-relaxed text-slate-800 font-medium dark:text-slate-200">
-            {prediction.explanation}
-          </p>
+
+          {/* AI Explanation Box */}
+          <div className="mt-3 rounded-2xl bg-slate-50 p-3 border border-slate-200/70 dark:bg-slate-950/80 dark:border-slate-800/60">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-slate-300">
+              <span>🧠</span>
+              <span className="font-black text-slate-900 dark:text-white uppercase tracking-wider text-[10px]">{t("aiExplanation")}</span>
+            </div>
+            <p className="mt-1.5 text-xs leading-relaxed text-slate-800 font-medium dark:text-slate-200 line-clamp-3">
+              {prediction.explanation}
+            </p>
+          </div>
         </div>
 
         {/* Action Buttons Footer */}
-        <div className="mt-5 flex items-center justify-between gap-2 pt-2 border-t border-slate-100 dark:border-slate-800/40">
-          <div className="flex items-center gap-1.5">
-            <span className="inline-flex items-center rounded-md bg-emerald-100 px-2 py-0.5 text-[11px] font-extrabold text-emerald-900 border border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-400 dark:border-emerald-800/40">
-              +{prediction.edge}% Edge
+        <div className="mt-4 flex flex-col gap-2 pt-2 border-t border-slate-100 dark:border-slate-800/60">
+          <div className="flex items-center justify-between">
+            <span className="inline-flex items-center rounded-md bg-emerald-100 px-2 py-0.5 text-[10px] font-black text-emerald-900 border border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-400 dark:border-emerald-800/40">
+              +{prediction.edge}% Valor
             </span>
-            <span className="inline-flex items-center rounded-md bg-sky-100 px-2 py-0.5 text-[11px] font-extrabold text-sky-900 border border-sky-300 dark:bg-sky-950/60 dark:text-sky-300 dark:border-sky-800/40">
+            <span className="inline-flex items-center rounded-md bg-sky-100 px-2 py-0.5 text-[10px] font-black text-sky-900 border border-sky-300 dark:bg-sky-950/60 dark:text-sky-300 dark:border-sky-800/40">
               Score: {prediction.smartScore}/100
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="grid grid-cols-3 gap-1.5 mt-1">
+            <button
+              onClick={handleOpenDetail}
+              className="col-span-1 inline-flex items-center justify-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1.5 text-[11px] font-bold text-slate-800 transition hover:bg-slate-200 border border-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:border-slate-700 cursor-pointer"
+              title="Ver H2H y últimos 5 partidos"
+            >
+              📊 H2H
+            </button>
             <button
               onClick={handleCopy}
-              className="inline-flex items-center gap-1 rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-200 border border-slate-200 dark:bg-slate-800/80 dark:text-slate-200 dark:hover:bg-slate-700 dark:border-slate-700/50"
+              className="col-span-1 inline-flex items-center justify-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1.5 text-[11px] font-bold text-slate-800 transition hover:bg-slate-200 border border-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:border-slate-700 cursor-pointer"
               title="Copiar texto para Telegram/WhatsApp"
             >
               {copied ? t("copiedBtn") : `📋 ${t("copyBtn")}`}
             </button>
             <button
               onClick={() => setShowStoryModal(true)}
-              className="inline-flex items-center gap-1 rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-emerald-500 shadow-sm"
+              className="col-span-1 inline-flex items-center justify-center gap-1 rounded-xl bg-emerald-600 px-2.5 py-1.5 text-[11px] font-black text-white transition hover:bg-emerald-500 shadow-sm cursor-pointer"
               title="Ver formato Historia / Descargar Screenshot"
             >
               📸 {t("storyBtn")}
@@ -250,11 +254,18 @@ ${prediction.explanation}
         </div>
       </div>
 
+      {/* Match Detail Modal (H2H & Recent 5 Matches) */}
+      {showDetailModal && (
+        <MatchDetailModal
+          prediction={prediction}
+          onClose={() => setShowDetailModal(false)}
+        />
+      )}
+
       {/* Story / Share Modal */}
       {showStoryModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
           <div className="relative w-full max-w-sm overflow-hidden rounded-3xl bg-slate-950 p-6 text-slate-100 shadow-2xl border border-slate-700">
-            {/* Close Button */}
             <button
               onClick={() => setShowStoryModal(false)}
               className="absolute right-4 top-4 rounded-full bg-slate-800/80 p-1.5 text-slate-400 hover:text-white"
@@ -262,7 +273,6 @@ ${prediction.explanation}
               ✕
             </button>
 
-            {/* Visual Capture Target */}
             <div ref={storyCardRef} className="rounded-2xl bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 p-5 border border-slate-800 text-slate-100 shadow-xl">
               <div className="text-center">
                 <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-950/90 px-3 py-1 text-xs font-bold text-emerald-400 border border-emerald-700/50">
@@ -285,7 +295,7 @@ ${prediction.explanation}
                   </div>
                   <div className="h-7 w-px bg-slate-800" />
                   <div className="text-center">
-                    <span className="text-[10px] font-semibold uppercase text-slate-400">Cuota</span>
+                    <span className="text-[10px] font-semibold uppercase text-slate-400">Cuota Casa</span>
                     <p className="text-base font-extrabold text-sky-400 mt-0.5">{prediction.odds.toFixed(2)}</p>
                   </div>
                   <div className="h-7 w-px bg-slate-800" />
@@ -296,10 +306,9 @@ ${prediction.explanation}
                 </div>
               </div>
 
-              {/* AI Explanation in Story */}
               <div className="mt-3.5 rounded-xl bg-slate-950/60 p-3 border border-slate-800/60 text-left">
                 <div className="flex items-center gap-1 text-[11px] font-bold text-slate-300">
-                  <span>☕</span>
+                  <span>🧠</span>
                   <span>Explicación del Modelo IA</span>
                 </div>
                 <p className="mt-1 text-xs leading-relaxed text-slate-300">
@@ -307,7 +316,6 @@ ${prediction.explanation}
                 </p>
               </div>
 
-              {/* Footer Brand in Screenshot */}
               <div className="mt-4 flex items-center justify-between text-xs text-slate-400 border-t border-slate-800/50 pt-2.5">
                 <span className="font-bold text-white flex items-center gap-1">
                   🎯 SmartBetBot
@@ -316,7 +324,6 @@ ${prediction.explanation}
               </div>
             </div>
 
-            {/* Download and Share Actions */}
             <div className="mt-5 flex flex-col gap-2">
               <button
                 onClick={handleDownloadStoryImage}

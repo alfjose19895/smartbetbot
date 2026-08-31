@@ -195,28 +195,27 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
     }
   }
 
-  // Curate elite top 1-2 picks per league with strict high precision (Prob >= 65%, Odds >= 1.40, SmartScore >= 75)
-  const leagueBuckets: Record<string, MarketOpportunity[]> = {};
-  for (const opp of allOpportunities) {
-    if (opp.probability >= 65.0 && opp.odds >= 1.40 && opp.smartScore >= 75) {
-      if (!leagueBuckets[opp.league]) {
-        leagueBuckets[opp.league] = [];
-      }
-      leagueBuckets[opp.league].push(opp);
+  // Filter strictly for the best profitable picks with odds >= 1.40 and probability >= 55.0%
+  const validOpportunities = allOpportunities.filter(
+    (opp) => opp.odds >= 1.40 && opp.probability >= 55.0
+  );
+
+  // Sort by highest probability, smartScore and expected value to rank the elite picks of the day
+  const rankedPicks = validOpportunities.sort((a, b) => {
+    if (b.probability !== a.probability) {
+      return b.probability - a.probability;
     }
-  }
+    if ((b.smartScore || 0) !== (a.smartScore || 0)) {
+      return (b.smartScore || 0) - (a.smartScore || 0);
+    }
+    return b.edge - a.edge;
+  });
 
-  const curatedList: MarketOpportunity[] = [];
-  for (const [_, picks] of Object.entries(leagueBuckets)) {
-    const sortedPicks = picks.sort((a, b) => b.smartScore - a.smartScore || b.probability - a.probability);
-    curatedList.push(...sortedPicks.slice(0, 2)); // Strict max 2 top picks per league
-  }
+  // Strictly select the Top 30 highest-quality picks of the day
+  const top30DailyPicks = rankedPicks.slice(0, 30);
 
-  // Fallback: If curated list is small, include any other valid opportunities with prob >= 65% & odds >= 1.40
-  const finalList = curatedList.length > 0 ? curatedList : allOpportunities.filter(o => o.probability >= 65.0 && o.odds >= 1.40);
-
-  // Sort strictly by upcoming kickoff ascending
-  const sorted = finalList.sort(
+  // Sort final display by kickoff time ascending for convenient betting timeline
+  const sorted = top30DailyPicks.sort(
     (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
   );
 

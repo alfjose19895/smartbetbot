@@ -4,6 +4,8 @@ import { Navbar } from "@/components/Navbar";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { PredictionCard } from "@/components/PredictionCard";
+import { RecommendedParlay } from "@/components/RecommendedParlay";
+import { MatchDetailModal } from "@/components/MatchDetailModal";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
 import { useLanguage } from "@/context/LanguageContext";
@@ -15,12 +17,13 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
+  const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
 
   // Filters
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
-  const [selectedDate, setSelectedDate] = useState<"all" | "today" | "tomorrow" | "week">("all");
+  const [selectedDate, setSelectedDate] = useState<"all" | "today" | "tomorrow" | "week">("today");
 
   const loadSignals = async () => {
     try {
@@ -128,40 +131,49 @@ export default function DashboardPage() {
   const todayStartMs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
   const weekEndMs = todayStartMs + 7 * 86400000;
 
-  // Calculate counts per date tab
   const todayCount = predictions.filter((p) => getLocalDateStr(p.kickoff) === todayStr).length;
   const tomorrowCount = predictions.filter((p) => getLocalDateStr(p.kickoff) === tomorrowStr).length;
 
   const filteredPredictions = predictions.filter((p) => {
-    // League and Country multi-select filter with alias matching
     if (selectedLeagues.length > 0) {
       const normLeague = (p.league || "").toLowerCase().trim();
       const normCountry = (p.country || "").toLowerCase().trim();
       const matched = selectedLeagues.some((sel) => {
-        const s = sel.toLowerCase().trim();
-        return normLeague.includes(s) || s.includes(normLeague) || normCountry === s || normCountry.includes(s);
+        const selLower = sel.toLowerCase().trim();
+        return (
+          normLeague.includes(selLower) ||
+          selLower.includes(normLeague) ||
+          normCountry === selLower ||
+          normCountry.includes(selLower)
+        );
       });
       if (!matched) return false;
     }
 
-    // Confidence multi-select filter
     if (selectedConfidence.length > 0) {
-      let level = "baja";
-      if (p.probability >= 75 || p.confidence === "Muy Alta") level = "muy_alta";
-      else if (p.probability >= 65 || p.confidence === "Alta") level = "alta";
-      else if (p.probability >= 55 || p.confidence === "Moderada") level = "media";
-
-      if (!selectedConfidence.includes(level)) {
+      const isMatch = selectedConfidence.some((c) => {
+        if (c === "muy_alta") return p.confidence === "Muy Alta" || p.probability >= 75;
+        if (c === "alta") return p.confidence === "Alta" || (p.probability >= 65 && p.probability < 75);
+        if (c === "media") return p.confidence === "Media" || (p.probability >= 55 && p.probability < 65);
+        if (c === "baja") return p.confidence === "Baja" || p.probability < 55;
         return false;
-      }
+      });
+      if (!isMatch) return false;
     }
 
-    // Market multi-select filter (Exact match)
-    if (selectedMarkets.length > 0 && !selectedMarkets.includes(p.market)) {
-      return false;
+    if (selectedMarkets.length > 0) {
+      const match = selectedMarkets.some((m) => {
+        const normSelected = m.toLowerCase().replace(/[^a-z0-9]/g, "");
+        const normActual = p.market.toLowerCase().replace(/[^a-z0-9]/g, "");
+        return (
+          normActual.includes(normSelected) ||
+          normSelected.includes(normActual) ||
+          (m.includes("BTTS") && (p.market.includes("Ambos") || p.market.includes("BTTS")))
+        );
+      });
+      if (!match) return false;
     }
 
-    // Date filter using local date comparison
     const matchDateStr = getLocalDateStr(p.kickoff);
     const matchTimeMs = new Date(p.kickoff).getTime();
 
@@ -181,11 +193,11 @@ export default function DashboardPage() {
       {/* Header */}
       <Navbar onSync={handleSyncPredictions} syncing={syncing} />
 
-      <main className="mx-auto max-w-7xl px-3.5 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <main className="mx-auto max-w-7xl px-3.5 py-6 sm:px-6 sm:py-8 lg:px-8 space-y-6">
         {/* Sync feedback notification */}
         {syncMessage && (
           <div
-            className={`mb-6 rounded-2xl p-3 text-center text-xs font-bold shadow-sm ${
+            className={`rounded-2xl p-3 text-center text-xs font-bold shadow-sm ${
               syncMessage.includes("✓")
                 ? "bg-emerald-50 border border-emerald-300 text-emerald-900 dark:bg-emerald-950/80 dark:border-emerald-700 dark:text-emerald-300"
                 : "bg-red-50 border border-red-300 text-red-900 dark:bg-red-950/80 dark:border-red-700 dark:text-red-300"
@@ -195,8 +207,14 @@ export default function DashboardPage() {
           </div>
         )}
 
+        {/* Recommended Parlay Banner */}
+        <RecommendedParlay
+          predictions={predictions}
+          onSelectPrediction={(p) => setActiveModalPick(p)}
+        />
+
         {/* Dashboard Title & KPIs */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pt-2">
           <div>
             <div className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-1 text-xs font-extrabold text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30">
               <span>📊</span>
@@ -245,22 +263,12 @@ export default function DashboardPage() {
         </div>
 
         {/* Compact Filters Toolbar */}
-        <div className="mt-6 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800/80 dark:bg-slate-900/80">
+        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800/80 dark:bg-slate-900/80">
           {/* Date Selector Buttons */}
           <div className="flex flex-wrap items-center gap-1.5">
             <span className="text-xs font-bold text-slate-600 mr-1 dark:text-slate-400">
               {t("filterDateLabel")}
             </span>
-            <button
-              onClick={() => setSelectedDate("all")}
-              className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
-                selectedDate === "all"
-                  ? "bg-emerald-600 text-white shadow-sm dark:bg-emerald-500 dark:text-slate-950"
-                  : "bg-slate-100 text-slate-800 hover:bg-slate-200 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
-              }`}
-            >
-              {t("filterTimeAll")} ({predictions.length})
-            </button>
             <button
               onClick={() => setSelectedDate("today")}
               className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
@@ -270,6 +278,16 @@ export default function DashboardPage() {
               }`}
             >
               📅 {t("filterTimeToday")} ({todayCount})
+            </button>
+            <button
+              onClick={() => setSelectedDate("all")}
+              className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
+                selectedDate === "all"
+                  ? "bg-emerald-600 text-white shadow-sm dark:bg-emerald-500 dark:text-slate-950"
+                  : "bg-slate-100 text-slate-800 hover:bg-slate-200 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
+              }`}
+            >
+              {t("filterTimeAll")} ({predictions.length})
             </button>
             <button
               onClick={() => setSelectedDate("tomorrow")}
@@ -293,7 +311,7 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          {/* Multi-Select Dropdowns for Classified Leagues & Markets */}
+          {/* Multi-Select Dropdowns for Classified Leagues, Confidence & Markets */}
           <div className="flex flex-wrap items-center gap-2.5">
             <MultiSelectDropdown
               label="Ligas por País"
@@ -305,7 +323,7 @@ export default function DashboardPage() {
             />
 
             <MultiSelectDropdown
-              label={language === "en" ? "Confidence" : "Confianza"}
+              label="4 Niveles de Confianza"
               icon="⭐"
               options={confidenceDropdownOptions}
               selected={selectedConfidence}
@@ -331,7 +349,7 @@ export default function DashboardPage() {
             <p className="mt-3 text-sm font-semibold">{t("loadingSignals")}</p>
           </div>
         ) : filteredPredictions.length === 0 ? (
-          <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-12 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900/40">
+          <div className="rounded-3xl border border-slate-200 bg-white p-12 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900/40">
             <span className="text-4xl">🔍</span>
             <h3 className="mt-3 text-lg font-bold text-slate-900 dark:text-white">
               {t("noPicksFound")}
@@ -343,13 +361,25 @@ export default function DashboardPage() {
             </p>
           </div>
         ) : (
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
             {filteredPredictions.map((pred) => (
-              <PredictionCard key={pred.id || `${pred.fixtureId}-${pred.market}`} prediction={pred} />
+              <PredictionCard
+                key={pred.id || `${pred.fixtureId}-${pred.market}`}
+                prediction={pred}
+                onOpenDetail={(p) => setActiveModalPick(p)}
+              />
             ))}
           </div>
         )}
       </main>
+
+      {/* Match Detail Modal */}
+      {activeModalPick && (
+        <MatchDetailModal
+          prediction={activeModalPick}
+          onClose={() => setActiveModalPick(null)}
+        />
+      )}
     </div>
   );
 }
