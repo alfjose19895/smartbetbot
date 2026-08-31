@@ -40,6 +40,54 @@ function formatKickoffTime(dateString: string): string {
   }
 }
 
+function getTimeRemainingStatus(dateString: string) {
+  try {
+    const kickoffMs = new Date(dateString).getTime();
+    const nowMs = Date.now();
+    const diffMs = kickoffMs - nowMs;
+
+    if (diffMs > 0) {
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMins / 60);
+      const remMins = diffMins % 60;
+
+      if (diffMins <= 30) {
+        return {
+          label: `⏳ En ${diffMins}m`,
+          bg: "bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950/80 dark:text-amber-300 dark:border-amber-700",
+        };
+      }
+      if (diffHours < 24) {
+        return {
+          label: `🟢 En ${diffHours}h ${remMins}m`,
+          bg: "bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700",
+        };
+      }
+      return {
+        label: `📅 Próximo`,
+        bg: "bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700",
+      };
+    } else {
+      const elapsedMins = Math.floor(Math.abs(diffMs) / 60000);
+      if (elapsedMins <= 115) {
+        return {
+          label: `🔴 En Juego (~${elapsedMins}')`,
+          bg: "bg-rose-100 text-rose-900 border-rose-300 animate-pulse dark:bg-rose-950/80 dark:text-rose-300 dark:border-rose-700",
+        };
+      }
+      return {
+        label: `🏁 Finalizado`,
+        bg: "bg-slate-100 text-slate-600 border-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700",
+      };
+    }
+  } catch {
+    return {
+      label: `📅 Programado`,
+      bg: "bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700",
+    };
+  }
+}
+
 export default function DailyParlayPage() {
   const { language } = useLanguage();
   const [signals, setSignals] = useState<MarketOpportunity[]>([]);
@@ -90,24 +138,35 @@ export default function DailyParlayPage() {
   const potentialProfit = (stake * totalOdds - stake).toFixed(2);
   const potentialTotalReturn = (stake * totalOdds).toFixed(2);
 
-  const handleCopyParlay = () => {
-    const lines = [
-      `🔥 PARLEY COMBINADO DEL DÍA (${selectedPicks.length} JUGADAS)`,
-      `🎯 Cuota Total Acumulada: @${totalOdds.toFixed(2)} | Probabilidad: ${combinedProbability.toFixed(1)}%`,
-      `📅 Fecha: ${todayFormatted}`,
-      "",
-      ...selectedPicks.map(
-        (p, idx) =>
-          `${idx + 1}. ${p.match}\n   🏆 ${p.league} (${p.country || "Mundial"})\n   🕒 Horario: ${formatKickoffTime(p.kickoff)}\n   🎯 Pronóstico: ${p.market} @${p.odds.toFixed(2)}\n   ⭐ Confianza: ${p.confidence || "Alta"} (${p.probability.toFixed(0)}% prob)`
-      ),
-      "",
-      `💰 Apuesta simulada: $${stake} ➔ Retorno estimado: $${potentialTotalReturn} (+$${potentialProfit})`,
-      "🔒 Pronóstico Oficial Diario de SmartBetBot - Inmutable para Trazabilidad",
-    ];
+  const parlayShareText = [
+    `🔥 *PARLEY COMBINADO DEL DÍA (${selectedPicks.length} JUGADAS)*`,
+    `🎯 *Cuota Total Acumulada:* @${totalOdds.toFixed(2)} | *Probabilidad:* ${combinedProbability.toFixed(1)}%`,
+    `📅 *Fecha:* ${todayFormatted}`,
+    "",
+    ...selectedPicks.map(
+      (p, idx) =>
+        `${idx + 1}. *${p.match}*\n   🏆 ${p.league} (${p.country || "Mundial"})\n   🕒 ${formatKickoffTime(p.kickoff)}\n   🎯 *Pronóstico:* ${p.market} (@${p.odds.toFixed(2)})\n   ⭐ *Confianza:* ${p.confidence || "Alta"} (${p.probability.toFixed(0)}% prob)`
+    ),
+    "",
+    `💰 *Simulación:* Apostando $${stake} ➔ Retorno: *$${potentialTotalReturn}* (+$${potentialProfit})`,
+    "🔒 _Pronóstico Oficial Diario de SmartBetBot - Inmutable_",
+    "🔗 https://www.smartbetbot.educandotea.com/parlay",
+  ].join("\n");
 
-    navigator.clipboard.writeText(lines.join("\n"));
+  const handleCopyParlay = () => {
+    navigator.clipboard.writeText(parlayShareText);
     setCopied(true);
     setTimeout(() => setCopied(false), 3000);
+  };
+
+  const handleShareWhatsApp = () => {
+    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(parlayShareText)}`;
+    window.open(url, "_blank");
+  };
+
+  const handleShareTelegram = () => {
+    const url = `https://t.me/share/url?url=${encodeURIComponent("https://www.smartbetbot.educandotea.com/parlay")}&text=${encodeURIComponent(parlayShareText)}`;
+    window.open(url, "_blank");
   };
 
   const parlayTierDescriptions: Record<3 | 4 | 5 | 8 | 10, { title: string; desc: string; icon: string }> = {
@@ -223,62 +282,69 @@ export default function DailyParlayPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             {/* Picks List */}
             <div className="lg:col-span-2 space-y-3">
-              {selectedPicks.map((pick, idx) => (
-                <div
-                  key={pick.id || `${pick.fixtureId}-${pick.market}`}
-                  className="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-emerald-500/50 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
-                >
-                  <div className="flex items-start sm:items-center gap-3.5">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-sm font-black text-emerald-800 border border-emerald-300 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800">
-                      #{idx + 1}
+              {selectedPicks.map((pick, idx) => {
+                const timeStatus = getTimeRemainingStatus(pick.kickoff);
+                return (
+                  <div
+                    key={pick.id || `${pick.fixtureId}-${pick.market}`}
+                    className="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-emerald-500/50 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
+                  >
+                    <div className="flex items-start sm:items-center gap-3.5">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-sm font-black text-emerald-800 border border-emerald-300 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800">
+                        #{idx + 1}
+                      </div>
+
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-extrabold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                            <span>🏆</span>
+                            <span>{pick.league}</span>
+                            <span className="text-slate-400">•</span>
+                            <span className="text-emerald-700 dark:text-emerald-400 font-black">
+                              {pick.country || "Mundial"}
+                            </span>
+                          </span>
+
+                          <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600 dark:bg-slate-950 dark:text-slate-400 border border-slate-200 dark:border-slate-800">
+                            🕒 {formatKickoffTime(pick.kickoff)}
+                          </span>
+
+                          <span className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-black border ${timeStatus.bg}`}>
+                            {timeStatus.label}
+                          </span>
+                        </div>
+
+                        <h3 className="mt-1.5 text-base font-black text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
+                          {pick.match}
+                        </h3>
+                      </div>
                     </div>
 
-                    <div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-extrabold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                          <span>🏆</span>
-                          <span>{pick.league}</span>
-                          <span className="text-slate-400">•</span>
-                          <span className="text-emerald-700 dark:text-emerald-400 font-black">
-                            {pick.country || "Mundial"}
-                          </span>
+                    <div className="flex items-center justify-between sm:justify-end gap-2.5 border-t sm:border-t-0 border-slate-100 pt-2 sm:pt-0 dark:border-slate-800">
+                      <div className="text-right">
+                        <span className="rounded-xl bg-emerald-50 px-2.5 py-1 text-xs font-black text-emerald-800 border border-emerald-200 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-800 block">
+                          🎯 {pick.market}
                         </span>
-
-                        <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600 dark:bg-slate-950 dark:text-slate-400 border border-slate-200 dark:border-slate-800">
-                          🕒 {formatKickoffTime(pick.kickoff)}
+                        <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 block mt-0.5">
+                          {pick.confidence} ({pick.probability}%)
                         </span>
                       </div>
 
-                      <h3 className="mt-1.5 text-base font-black text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
-                        {pick.match}
-                      </h3>
+                      <span className="rounded-xl bg-sky-50 px-3 py-1.5 text-sm font-black text-sky-800 border border-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800">
+                        @{pick.odds.toFixed(2)}
+                      </span>
+
+                      <button
+                        onClick={() => setActiveModalPick(pick)}
+                        className="rounded-xl bg-slate-100 p-2 text-xs font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
+                        title="Ver H2H y últimos 5 partidos"
+                      >
+                        📊
+                      </button>
                     </div>
                   </div>
-
-                  <div className="flex items-center justify-between sm:justify-end gap-2.5 border-t sm:border-t-0 border-slate-100 pt-2 sm:pt-0 dark:border-slate-800">
-                    <div className="text-right">
-                      <span className="rounded-xl bg-emerald-50 px-2.5 py-1 text-xs font-black text-emerald-800 border border-emerald-200 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-800 block">
-                        🎯 {pick.market}
-                      </span>
-                      <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 block mt-0.5">
-                        {pick.confidence} ({pick.probability}%)
-                      </span>
-                    </div>
-
-                    <span className="rounded-xl bg-sky-50 px-3 py-1.5 text-sm font-black text-sky-800 border border-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800">
-                      @{pick.odds.toFixed(2)}
-                    </span>
-
-                    <button
-                      onClick={() => setActiveModalPick(pick)}
-                      className="rounded-xl bg-slate-100 p-2 text-xs font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
-                      title="Ver H2H y últimos 5 partidos"
-                    >
-                      📊
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Parley Ticket Summary & Payout Calculator */}
@@ -351,15 +417,32 @@ export default function DailyParlayPage() {
                 </div>
               </div>
 
-              {/* Action Buttons */}
+              {/* Action Buttons: Copy, WhatsApp & Telegram Direct Share */}
               <div className="mt-5 space-y-2">
                 <button
                   onClick={handleCopyParlay}
                   className="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 py-3.5 text-xs font-black text-slate-950 shadow-lg shadow-emerald-500/25 transition hover:from-emerald-400 hover:to-teal-400 hover:scale-[1.01] cursor-pointer"
                 >
                   <span>{copied ? "✓" : "📋"}</span>
-                  <span>{copied ? "¡Parley Copiado al Portapapeles!" : "Copiar para Telegram / WhatsApp"}</span>
+                  <span>{copied ? "¡Parley Copiado al Portapapeles!" : "Copiar Parley Completo"}</span>
                 </button>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={handleShareWhatsApp}
+                    className="flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 py-2.5 text-xs font-black text-white hover:bg-emerald-500 shadow-sm transition cursor-pointer"
+                  >
+                    <span>💬</span>
+                    <span>Enviar a WhatsApp</span>
+                  </button>
+                  <button
+                    onClick={handleShareTelegram}
+                    className="flex items-center justify-center gap-1.5 rounded-xl bg-sky-600 py-2.5 text-xs font-black text-white hover:bg-sky-500 shadow-sm transition cursor-pointer"
+                  >
+                    <span>✈️</span>
+                    <span>Enviar a Telegram</span>
+                  </button>
+                </div>
               </div>
 
               <div className="mt-4 text-center">

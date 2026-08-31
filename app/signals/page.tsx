@@ -15,7 +15,8 @@ export default function SignalsPage() {
   const [loading, setLoading] = useState(true);
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
 
-  // Filters (exclusively for Today's Top 30)
+  // Search & Filters (exclusively for Today's Top 30)
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
@@ -58,7 +59,6 @@ export default function SignalsPage() {
     }
   });
 
-  // Core markets
   const coreMarkets = [
     "Gana Local",
     "Gana Visitante",
@@ -93,10 +93,31 @@ export default function SignalsPage() {
 
   // Filter signals strictly for today's matches
   const filteredCandidates = signals.filter((s) => {
-    // 1. Min probability slider filter
+    // 1. Text Search Query Filter
+    if (searchQuery.trim().length > 0) {
+      const q = searchQuery.toLowerCase().trim();
+      const matchText = (s.match || "").toLowerCase();
+      const homeText = (s.homeTeam || "").toLowerCase();
+      const awayText = (s.awayTeam || "").toLowerCase();
+      const leagueText = (s.league || "").toLowerCase();
+      const countryText = (s.country || "").toLowerCase();
+      const marketText = (s.market || "").toLowerCase();
+
+      const matched =
+        matchText.includes(q) ||
+        homeText.includes(q) ||
+        awayText.includes(q) ||
+        leagueText.includes(q) ||
+        countryText.includes(q) ||
+        marketText.includes(q);
+
+      if (!matched) return false;
+    }
+
+    // 2. Min probability slider filter
     if (s.probability < minProbability) return false;
 
-    // 2. League filter
+    // 3. League filter
     if (selectedLeagues.length > 0) {
       const normLeague = (s.league || "").toLowerCase().trim();
       const normCountry = (s.country || "").toLowerCase().trim();
@@ -112,7 +133,7 @@ export default function SignalsPage() {
       if (!matched) return false;
     }
 
-    // 3. 4-tier Confidence filter
+    // 4. 4-tier Confidence filter
     if (selectedConfidence.length > 0) {
       const isMatch = selectedConfidence.some((c) => {
         if (c === "muy_alta") return s.confidence === "Muy Alta" || s.probability >= 75;
@@ -124,7 +145,7 @@ export default function SignalsPage() {
       if (!isMatch) return false;
     }
 
-    // 4. Market filter
+    // 5. Market filter
     if (selectedMarkets.length > 0) {
       const match = selectedMarkets.some((m) => {
         const normSelected = m.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -183,7 +204,7 @@ export default function SignalsPage() {
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="rounded-2xl bg-white px-3.5 py-2 sm:px-4 sm:py-2.5 border border-slate-200 text-center shadow-sm dark:bg-slate-900/80 dark:border-slate-800">
               <span className="text-[10px] uppercase text-slate-600 block font-bold dark:text-slate-400">
-                Picks de Hoy
+                Picks Filtrados
               </span>
               <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
                 {top30Picks.length} / 30
@@ -208,55 +229,77 @@ export default function SignalsPage() {
           </div>
         </div>
 
-        {/* Filter Controls Bar: Probability Slider, Classified Leagues, 4 Confidence Levels & Markets */}
-        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800/80 dark:bg-slate-900/80">
-          {/* Probability Slider */}
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Probabilidad Mínima:</span>
-            <div className="flex items-center gap-2">
-              <input
-                type="range"
-                min="50"
-                max="85"
-                step="5"
-                value={minProbability}
-                onChange={(e) => setMinProbability(Number(e.target.value))}
-                className="h-2 w-28 cursor-pointer accent-emerald-500"
-              />
-              <span className="rounded-lg bg-emerald-50 px-2 py-0.5 text-xs font-extrabold text-emerald-700 border border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800">
-                {minProbability}%
-              </span>
-            </div>
+        {/* Search Input and Filter Controls Bar */}
+        <div className="space-y-3">
+          {/* Instant Search Bar */}
+          <div className="relative">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="🔍 Buscar equipo o liga (ej. Real Madrid, Arsenal, Chelsea, La Liga, Premier League)..."
+              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs sm:text-sm font-semibold text-slate-800 shadow-sm focus:border-emerald-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900/80 dark:text-white"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3.5 top-3 text-xs font-bold text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer"
+              >
+                ✕ Limpiar
+              </button>
+            )}
           </div>
 
-          {/* Multi-Select Dropdowns */}
-          <div className="flex flex-wrap items-center gap-2.5">
-            <MultiSelectDropdown
-              label="Ligas por País"
-              icon="🏆"
-              options={leagueDropdownOptions}
-              selected={selectedLeagues}
-              onChange={setSelectedLeagues}
-              placeholderAll="Todas las Ligas"
-            />
+          {/* Filter Dropdowns & Slider */}
+          <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800/80 dark:bg-slate-900/80">
+            {/* Probability Slider */}
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Probabilidad Mínima:</span>
+              <div className="flex items-center gap-2">
+                <input
+                  type="range"
+                  min="50"
+                  max="85"
+                  step="5"
+                  value={minProbability}
+                  onChange={(e) => setMinProbability(Number(e.target.value))}
+                  className="h-2 w-28 cursor-pointer accent-emerald-500"
+                />
+                <span className="rounded-lg bg-emerald-50 px-2 py-0.5 text-xs font-extrabold text-emerald-700 border border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800">
+                  {minProbability}%
+                </span>
+              </div>
+            </div>
 
-            <MultiSelectDropdown
-              label="4 Niveles de Confianza"
-              icon="⭐"
-              options={confidenceDropdownOptions}
-              selected={selectedConfidence}
-              onChange={setSelectedConfidence}
-              placeholderAll="Todas las Confianzas"
-            />
+            {/* Multi-Select Dropdowns */}
+            <div className="flex flex-wrap items-center gap-2.5">
+              <MultiSelectDropdown
+                label="Ligas por País"
+                icon="🏆"
+                options={leagueDropdownOptions}
+                selected={selectedLeagues}
+                onChange={setSelectedLeagues}
+                placeholderAll="Todas las Ligas"
+              />
 
-            <MultiSelectDropdown
-              label="Mercados"
-              icon="🎯"
-              options={marketDropdownOptions}
-              selected={selectedMarkets}
-              onChange={setSelectedMarkets}
-              placeholderAll="Todos los Mercados"
-            />
+              <MultiSelectDropdown
+                label="4 Niveles de Confianza"
+                icon="⭐"
+                options={confidenceDropdownOptions}
+                selected={selectedConfidence}
+                onChange={setSelectedConfidence}
+                placeholderAll="Todas las Confianzas"
+              />
+
+              <MultiSelectDropdown
+                label="Mercados"
+                icon="🎯"
+                options={marketDropdownOptions}
+                selected={selectedMarkets}
+                onChange={setSelectedMarkets}
+                placeholderAll="Todos los Mercados"
+              />
+            </div>
           </div>
         </div>
 
@@ -271,7 +314,7 @@ export default function SignalsPage() {
             <span className="text-4xl">🔍</span>
             <h3 className="mt-3 text-lg font-bold text-slate-900 dark:text-white">Sin resultados para hoy</h3>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              Ajusta los filtros de ligas, confianza o mercados para ver más pronósticos del día.
+              {searchQuery ? `No encontramos partidos que coincidan con "${searchQuery}".` : "Ajusta los filtros de ligas, confianza o mercados para ver más pronósticos del día."}
             </p>
           </div>
         ) : (

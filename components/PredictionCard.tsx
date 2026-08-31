@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { toPng } from "html-to-image";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 import { useLanguage, Language } from "@/context/LanguageContext";
@@ -49,6 +49,54 @@ function formatKickoffDate(dateString: string): string {
     return `${dayName} ${dayNum} ${monthName} • ${timeStr}`;
   } catch {
     return "Próximamente";
+  }
+}
+
+function getTimeRemainingStatus(dateString: string) {
+  try {
+    const kickoffMs = new Date(dateString).getTime();
+    const nowMs = Date.now();
+    const diffMs = kickoffMs - nowMs;
+
+    if (diffMs > 0) {
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMins / 60);
+      const remMins = diffMins % 60;
+
+      if (diffMins <= 30) {
+        return {
+          label: `⏳ Inicia en ${diffMins}m`,
+          bg: "bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950/80 dark:text-amber-300 dark:border-amber-700",
+        };
+      }
+      if (diffHours < 24) {
+        return {
+          label: `🟢 Inicia en ${diffHours}h ${remMins}m`,
+          bg: "bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700",
+        };
+      }
+      return {
+        label: `📅 Próximo`,
+        bg: "bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700",
+      };
+    } else {
+      const elapsedMins = Math.floor(Math.abs(diffMs) / 60000);
+      if (elapsedMins <= 115) {
+        return {
+          label: `🔴 En Juego (~${elapsedMins}')`,
+          bg: "bg-rose-100 text-rose-900 border-rose-300 animate-pulse dark:bg-rose-950/80 dark:text-rose-300 dark:border-rose-700",
+        };
+      }
+      return {
+        label: `🏁 Finalizado`,
+        bg: "bg-slate-100 text-slate-600 border-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700",
+      };
+    }
+  } catch {
+    return {
+      label: `📅 Programado`,
+      bg: "bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700",
+    };
   }
 }
 
@@ -103,6 +151,7 @@ export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps
   const storyCardRef = useRef<HTMLDivElement>(null);
 
   const formattedDate = formatKickoffDate(prediction.kickoff);
+  const timeStatus = getTimeRemainingStatus(prediction.kickoff);
   const conf = getConfidenceInfo(prediction.probability, prediction.confidence, language);
 
   const fairOddsVal = prediction.fairOdds || Math.round((100 / (prediction.probability || 50)) * 100) / 100;
@@ -116,12 +165,22 @@ export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps
     }
   };
 
-  const handleCopy = () => {
-    const text = `📊 *Análisis SmartBetBot*\n\n⚽ *Partido:* ${prediction.match}\n🏆 *Liga:* ${prediction.league} (${countryDisplay})\n📅 *Fecha:* ${formattedDate}\n🎯 *Mercado:* ${prediction.market}\n💰 *Cuota Casa:* ${prediction.odds.toFixed(2)} | *Cuota Justa:* ${fairOddsVal.toFixed(2)}\n📈 *Probabilidad:* ${prediction.probability}%\n🔥 *Smart Edge:* +${prediction.edge}%\n⭐ *Confianza:* ${conf.stars} ${conf.shortLabel}\n\n💡 *Explicación IA:*\n${prediction.explanation}\n\n🔗 _Generado por SmartBetBot_`;
+  const shareText = `📊 *Pronóstico SmartBetBot*\n\n⚽ *Partido:* ${prediction.match}\n🏆 *Liga:* ${prediction.league} (${countryDisplay})\n📅 *Fecha:* ${formattedDate}\n🎯 *Mercado:* ${prediction.market}\n💰 *Cuota Casa:* @${prediction.odds.toFixed(2)} | *Cuota Justa:* @${fairOddsVal.toFixed(2)}\n📈 *Probabilidad:* ${prediction.probability.toFixed(0)}%\n🔥 *Valor (+Edge):* +${prediction.edge}%\n⭐ *Confianza:* ${conf.stars} ${conf.shortLabel}\n\n💡 *Explicación IA:*\n${prediction.explanation}\n\n🔗 https://www.smartbetbot.educandotea.com`;
 
-    navigator.clipboard.writeText(text);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(shareText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
+  };
+
+  const handleShareWhatsApp = () => {
+    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
+    window.open(url, "_blank");
+  };
+
+  const handleShareTelegram = () => {
+    const url = `https://t.me/share/url?url=${encodeURIComponent("https://www.smartbetbot.educandotea.com")}&text=${encodeURIComponent(shareText)}`;
+    window.open(url, "_blank");
   };
 
   const handleDownloadStoryImage = async () => {
@@ -146,7 +205,7 @@ export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps
   return (
     <>
       <div className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-slate-200/90 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-500/50 hover:shadow-xl hover:shadow-emerald-500/5 dark:border-slate-800/90 dark:bg-slate-900/90 dark:hover:border-emerald-500/40">
-        {/* Top Badges: League + Country and Confidence */}
+        {/* Top Badges: League + Country, Live Countdown Status, and Confidence */}
         <div>
           <div className="flex items-center justify-between gap-2">
             <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-xs font-extrabold text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700">
@@ -155,18 +214,24 @@ export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps
               <span className="text-slate-400 font-normal">•</span>
               <span className="text-emerald-700 dark:text-emerald-400 font-black">{countryDisplay}</span>
             </span>
-            <div className={`inline-flex items-center gap-1.5 rounded-full px-3 py-0.5 text-xs font-black border ${conf.badgeClass}`}>
-              <span>{conf.stars}</span>
-              <span>{conf.shortLabel}</span>
+            <div className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black border ${timeStatus.bg}`}>
+              <span>{timeStatus.label}</span>
             </div>
           </div>
 
           {/* Match Title & Date */}
           <div className="mt-3.5 cursor-pointer" onClick={handleOpenDetail}>
-            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 block">
-              📅 {formattedDate}
-            </span>
-            <h3 className="mt-1 text-lg font-black tracking-tight text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 block">
+                📅 {formattedDate}
+              </span>
+              <div className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-black border ${conf.badgeClass}`}>
+                <span>{conf.stars}</span>
+                <span>{conf.shortLabel}</span>
+              </div>
+            </div>
+
+            <h3 className="mt-1.5 text-lg font-black tracking-tight text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
               {prediction.match}
             </h3>
           </div>
@@ -232,27 +297,38 @@ export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps
             </span>
           </div>
 
-          <div className="grid grid-cols-3 gap-1.5 mt-1">
+          {/* Controls Bar: H2H, Copy, WhatsApp, Telegram, Story */}
+          <div className="grid grid-cols-4 gap-1.5 mt-1">
             <button
               onClick={handleOpenDetail}
-              className="col-span-1 inline-flex items-center justify-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1.5 text-[11px] font-bold text-slate-800 transition hover:bg-slate-200 border border-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:border-slate-700 cursor-pointer"
+              className="col-span-1 inline-flex items-center justify-center gap-1 rounded-xl bg-slate-100 px-2 py-1.5 text-[11px] font-bold text-slate-800 transition hover:bg-slate-200 border border-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:border-slate-700 cursor-pointer"
               title="Ver H2H y últimos 5 partidos"
             >
               📊 H2H
             </button>
+
             <button
               onClick={handleCopy}
-              className="col-span-1 inline-flex items-center justify-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1.5 text-[11px] font-bold text-slate-800 transition hover:bg-slate-200 border border-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:border-slate-700 cursor-pointer"
-              title="Copiar texto para Telegram/WhatsApp"
+              className="col-span-1 inline-flex items-center justify-center gap-1 rounded-xl bg-slate-100 px-2 py-1.5 text-[11px] font-bold text-slate-800 transition hover:bg-slate-200 border border-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:border-slate-700 cursor-pointer"
+              title="Copiar texto"
             >
-              {copied ? t("copiedBtn") : `📋 ${t("copyBtn")}`}
+              {copied ? "✓ Copiado" : "📋 Copiar"}
             </button>
+
+            <button
+              onClick={handleShareWhatsApp}
+              className="col-span-1 inline-flex items-center justify-center gap-1 rounded-xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-300 px-2 py-1.5 text-[11px] font-black dark:bg-emerald-950/80 dark:text-emerald-400 dark:border-emerald-700 cursor-pointer transition"
+              title="Compartir por WhatsApp"
+            >
+              💬 WhatsApp
+            </button>
+
             <button
               onClick={() => setShowStoryModal(true)}
-              className="col-span-1 inline-flex items-center justify-center gap-1 rounded-xl bg-emerald-600 px-2.5 py-1.5 text-[11px] font-black text-white transition hover:bg-emerald-500 shadow-sm cursor-pointer"
-              title="Ver formato Historia / Descargar Screenshot"
+              className="col-span-1 inline-flex items-center justify-center gap-1 rounded-xl bg-slate-900 text-white hover:bg-slate-800 px-2 py-1.5 text-[11px] font-black dark:bg-emerald-600 dark:hover:bg-emerald-500 shadow-sm cursor-pointer transition"
+              title="Descargar Formato Historia"
             >
-              📸 {t("storyBtn")}
+              📸 Historia
             </button>
           </div>
         </div>
@@ -272,7 +348,7 @@ export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps
           <div className="relative w-full max-w-sm overflow-hidden rounded-3xl bg-slate-950 p-6 text-slate-100 shadow-2xl border border-slate-700">
             <button
               onClick={() => setShowStoryModal(false)}
-              className="absolute right-4 top-4 rounded-full bg-slate-800/80 p-1.5 text-slate-400 hover:text-white"
+              className="absolute right-4 top-4 rounded-full bg-slate-800/80 p-1.5 text-slate-400 hover:text-white cursor-pointer"
             >
               ✕
             </button>
@@ -332,24 +408,24 @@ export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps
               <button
                 onClick={handleDownloadStoryImage}
                 disabled={downloadingImage}
-                className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 py-3 text-sm font-extrabold text-slate-950 shadow-lg shadow-emerald-500/25 transition hover:from-emerald-400 hover:to-teal-400 hover:scale-[1.02]"
+                className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 py-3 text-sm font-extrabold text-slate-950 shadow-lg shadow-emerald-500/25 transition hover:from-emerald-400 hover:to-teal-400 hover:scale-[1.02] cursor-pointer"
               >
                 <span>{downloadingImage ? "⏳" : "📸"}</span>
                 <span>{downloadingImage ? "Generando Imagen PNG..." : "Descargar Imagen para Historia"}</span>
               </button>
 
-              <div className="flex gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 <button
-                  onClick={handleCopy}
-                  className="flex-1 rounded-xl bg-slate-800/90 py-2.5 text-xs font-bold text-slate-200 transition hover:bg-slate-700 hover:text-white border border-slate-700"
+                  onClick={handleShareWhatsApp}
+                  className="rounded-xl bg-emerald-600 py-2.5 text-xs font-bold text-white transition hover:bg-emerald-500 cursor-pointer"
                 >
-                  {copied ? "✓ Texto Copiado" : "📋 Copiar Texto"}
+                  💬 Enviar WhatsApp
                 </button>
                 <button
-                  onClick={() => setShowStoryModal(false)}
-                  className="rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-medium text-slate-400 transition hover:bg-slate-800 hover:text-white"
+                  onClick={handleShareTelegram}
+                  className="rounded-xl bg-sky-600 py-2.5 text-xs font-bold text-white transition hover:bg-sky-500 cursor-pointer"
                 >
-                  Cerrar
+                  ✈️ Enviar Telegram
                 </button>
               </div>
             </div>

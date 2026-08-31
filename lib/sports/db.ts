@@ -106,6 +106,28 @@ let cachedLivePredictions: MarketOpportunity[] = [];
 let cacheTimestamp = 0;
 const CACHE_TTL_MS = 3 * 60 * 1000; // 3 minutes
 
+export interface HistoricalSettledParlay {
+  id: string;
+  date: string;
+  parlaySize: number;
+  title: string;
+  totalOdds: number;
+  combinedProbability: number;
+  result: "WON" | "LOST" | "VOID";
+  profit: number;
+  legs: Array<{
+    match: string;
+    league: string;
+    country?: string;
+    kickoff: string;
+    market: string;
+    odds: number;
+    probability: number;
+    score: string;
+    result: "WON" | "LOST" | "VOID";
+  }>;
+}
+
 export interface HistoricalSettledPick {
   id: string;
   date: string;
@@ -565,6 +587,61 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
   historyCacheTimestamp = nowMs;
 
   return sortedHistory;
+}
+
+/**
+ * Returns settled historical parlays evaluated day by day for total traceability.
+ */
+export async function getHistoricalSettledParlays(): Promise<HistoricalSettledParlay[]> {
+  const settledHistory = await getHistoricalSettledPredictions();
+  const dateGroups: Record<string, typeof settledHistory> = {};
+
+  for (const pick of settledHistory) {
+    const d = pick.date || (pick.kickoff ? pick.kickoff.split("T")[0] : "2026-08-30");
+    if (!dateGroups[d]) dateGroups[d] = [];
+    dateGroups[d].push(pick);
+  }
+
+  const result: HistoricalSettledParlay[] = [];
+
+  for (const [dateStr, picks] of Object.entries(dateGroups)) {
+    const sorted = [...picks].sort((a, b) => b.probability - a.probability || b.odds - a.odds);
+    
+    const sizes = [3, 4, 5] as const;
+    for (const size of sizes) {
+      if (sorted.length >= size) {
+        const parlayLegs = sorted.slice(0, size);
+        const totalOdds = parlayLegs.reduce((acc, p) => acc * p.odds, 1);
+        const combinedProb = parlayLegs.reduce((acc, p) => acc * (p.probability / 100), 1) * 100;
+        const allWon = parlayLegs.every((p) => p.result === "WON");
+        const profit = allWon ? Math.round((totalOdds - 1) * 100) / 100 : -1;
+
+        result.push({
+          id: `parlay-${dateStr}-${size}`,
+          date: dateStr,
+          parlaySize: size,
+          title: size === 3 ? "Trío Élite (3 Jugadas)" : size === 4 ? "Cuarteta Pro (4 Jugadas)" : "Quíntuple Estrella (5 Jugadas)",
+          totalOdds: Math.round(totalOdds * 100) / 100,
+          combinedProbability: Math.round(combinedProb * 10) / 10,
+          result: allWon ? "WON" : "LOST",
+          profit,
+          legs: parlayLegs.map((l) => ({
+            match: l.match,
+            league: l.league,
+            country: l.country,
+            kickoff: l.kickoff,
+            market: l.market,
+            odds: l.odds,
+            probability: l.probability,
+            score: l.score,
+            result: l.result,
+          })),
+        });
+      }
+    }
+  }
+
+  return result.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
 export async function syncUpcomingFixtures(leagueIds: number[] = ALL_LEAGUE_IDS, daysAhead: number = 7): Promise<{ fixturesSaved: number }> {
