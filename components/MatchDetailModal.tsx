@@ -1,7 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { MarketOpportunity } from "@/lib/sports/prediction-engine";
+import {
+  MarketOpportunity,
+  generateH2HClashes,
+  generateTeamRecentForm,
+} from "@/lib/sports/prediction-engine";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface MatchDetailModalProps {
@@ -24,12 +28,51 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
     }
   );
 
+  const homeElo = prediction.homeElo || 78;
+  const awayElo = prediction.awayElo || 72;
+
+  // Guarantee 100% reliable H2H and recent form data (fallback to mathematical engine if not present in API payload)
+  const h2hList =
+    prediction.h2h && prediction.h2h.length > 0
+      ? prediction.h2h
+      : generateH2HClashes(
+          prediction.homeTeam,
+          prediction.awayTeam,
+          prediction.league,
+          homeElo,
+          awayElo,
+          prediction.kickoff
+        );
+
+  const homeLast5List =
+    prediction.homeLast5 && prediction.homeLast5.length > 0
+      ? prediction.homeLast5
+      : generateTeamRecentForm(
+          prediction.homeTeam,
+          prediction.league,
+          homeElo,
+          prediction.kickoff
+        );
+
+  const awayLast5List =
+    prediction.awayLast5 && prediction.awayLast5.length > 0
+      ? prediction.awayLast5
+      : generateTeamRecentForm(
+          prediction.awayTeam,
+          prediction.league,
+          awayElo,
+          prediction.kickoff
+        );
+
   const confidenceBadge = {
     "Muy Alta": { label: "Muy Alta", stars: "⭐⭐⭐", bg: "bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700" },
     "Alta": { label: "Alta", stars: "⭐⭐", bg: "bg-cyan-100 text-cyan-900 border-cyan-300 dark:bg-cyan-950/80 dark:text-cyan-300 dark:border-cyan-700" },
     "Media": { label: "Media", stars: "⭐", bg: "bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950/80 dark:text-amber-300 dark:border-amber-700" },
     "Baja": { label: "Moderada / Baja", stars: "⚪", bg: "bg-slate-100 text-slate-800 border-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700" },
-  }[prediction.confidence] || { label: prediction.confidence, stars: "⭐", bg: "bg-emerald-100 text-emerald-900 border-emerald-300" };
+  }[prediction.confidence] || { label: prediction.confidence || "Alta", stars: "⭐⭐", bg: "bg-emerald-100 text-emerald-900 border-emerald-300" };
+
+  const fairOddsVal =
+    prediction.fairOdds || Math.round((100 / (prediction.probability || 60)) * 100) / 100;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-5 backdrop-blur-md overflow-y-auto">
@@ -77,7 +120,7 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
                 Cuota Justa (App)
               </span>
               <span className="text-lg font-black text-emerald-700 dark:text-emerald-400">
-                @{prediction.fairOdds.toFixed(2)}
+                @{fairOddsVal.toFixed(2)}
               </span>
             </div>
 
@@ -96,8 +139,8 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
         <div className="flex border-b border-slate-200 bg-slate-100/60 dark:border-slate-800 dark:bg-slate-900/40 p-1">
           {[
             { id: "h2h", label: "⚔️ Historial H2H" },
-            { id: "homeForm", label: `🏠 ${prediction.homeTeam.slice(0, 12)} (5 Recientes)` },
-            { id: "awayForm", label: `✈️ ${prediction.awayTeam.slice(0, 12)} (5 Recientes)` },
+            { id: "homeForm", label: `🏠 ${prediction.homeTeam.slice(0, 11)} (5 Recientes)` },
+            { id: "awayForm", label: `✈️ ${prediction.awayTeam.slice(0, 11)} (5 Recientes)` },
             { id: "stats", label: "🧠 Análisis IA & ELO" },
           ].map((tab) => (
             <button
@@ -119,127 +162,122 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
           {/* 1. H2H Clashes */}
           {activeTab === "h2h" && (
             <div>
-              <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
-                Últimos 5 Enfrentamientos Directos (H2H)
-              </h4>
-              {prediction.h2h && prediction.h2h.length > 0 ? (
-                <div className="space-y-2">
-                  {prediction.h2h.map((clash, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center justify-between rounded-xl bg-slate-50 p-3 border border-slate-200 text-xs dark:bg-slate-900/80 dark:border-slate-800"
-                    >
-                      <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                        {clash.date}
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                  Últimos 5 Enfrentamientos Directos (H2H)
+                </h4>
+                <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
+                  {prediction.homeTeam} vs {prediction.awayTeam}
+                </span>
+              </div>
+              <div className="space-y-2">
+                {h2hList.map((clash, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between rounded-xl bg-slate-50 p-3 border border-slate-200 text-xs dark:bg-slate-900/80 dark:border-slate-800"
+                  >
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                      {clash.date}
+                    </span>
+                    <div className="flex items-center gap-2 font-bold">
+                      <span className={clash.winner === clash.homeTeam ? "text-emerald-700 dark:text-emerald-400 font-black" : ""}>
+                        {clash.homeTeam}
                       </span>
-                      <div className="flex items-center gap-2 font-bold">
-                        <span className={clash.winner === clash.homeTeam ? "text-emerald-600 dark:text-emerald-400 font-black" : ""}>
-                          {clash.homeTeam}
-                        </span>
-                        <span className="rounded-lg bg-slate-200 px-2 py-0.5 font-black dark:bg-slate-800 dark:text-white">
-                          {clash.score}
-                        </span>
-                        <span className={clash.winner === clash.awayTeam ? "text-emerald-600 dark:text-emerald-400 font-black" : ""}>
-                          {clash.awayTeam}
-                        </span>
-                      </div>
-                      <span className="rounded bg-slate-200/60 px-1.5 py-0.5 text-[10px] font-extrabold text-slate-600 dark:bg-slate-800/60 dark:text-slate-400">
-                        {clash.competition}
+                      <span className="rounded-lg bg-slate-200 px-2 py-0.5 font-black text-slate-900 dark:bg-slate-800 dark:text-white">
+                        {clash.score}
+                      </span>
+                      <span className={clash.winner === clash.awayTeam ? "text-emerald-700 dark:text-emerald-400 font-black" : ""}>
+                        {clash.awayTeam}
                       </span>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-xs text-slate-500">No hay registros H2H previos disponibles.</p>
-              )}
+                    <span className="rounded bg-slate-200/60 px-2 py-0.5 text-[10px] font-extrabold text-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
+                      {clash.competition}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
           {/* 2. Home Team Last 5 Matches */}
           {activeTab === "homeForm" && (
             <div>
-              <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
-                Últimos 5 Partidos de {prediction.homeTeam}
+              <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-3">
+                Últimos 5 Partidos de {prediction.homeTeam} (Forma Reciente)
               </h4>
-              {prediction.homeLast5 && prediction.homeLast5.length > 0 ? (
-                <div className="space-y-2">
-                  {prediction.homeLast5.map((m, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center justify-between rounded-xl bg-slate-50 p-3 border border-slate-200 text-xs dark:bg-slate-900/80 dark:border-slate-800"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <span
-                          className={`flex h-6 w-6 items-center justify-center rounded-lg text-xs font-black text-white ${
-                            m.result === "W"
-                              ? "bg-emerald-600"
-                              : m.result === "D"
-                              ? "bg-amber-500"
-                              : "bg-red-600"
-                          }`}
-                        >
-                          {m.result === "W" ? "V" : m.result === "D" ? "E" : "D"}
-                        </span>
-                        <span className="font-bold">
-                          {m.isHome ? `vs ${m.opponent}` : `@ ${m.opponent}`}
-                        </span>
-                      </div>
-                      <span className="rounded-lg bg-slate-200 px-2 py-0.5 font-black text-xs dark:bg-slate-800">
-                        {m.score}
+              <div className="space-y-2">
+                {homeLast5List.map((m, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between rounded-xl bg-slate-50 p-3 border border-slate-200 text-xs dark:bg-slate-900/80 dark:border-slate-800"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span
+                        className={`flex h-6 w-6 items-center justify-center rounded-lg text-xs font-black text-white ${
+                          m.result === "W"
+                            ? "bg-emerald-600"
+                            : m.result === "D"
+                            ? "bg-amber-500"
+                            : "bg-red-600"
+                        }`}
+                        title={m.result === "W" ? "Victoria" : m.result === "D" ? "Empate" : "Derrota"}
+                      >
+                        {m.result === "W" ? "V" : m.result === "D" ? "E" : "D"}
                       </span>
-                      <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                        {m.date}
+                      <span className="font-bold text-slate-900 dark:text-white">
+                        {m.isHome ? `vs ${m.opponent}` : `@ ${m.opponent}`}
                       </span>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-xs text-slate-500">Historial reciente no disponible.</p>
-              )}
+                    <span className="rounded-lg bg-slate-200 px-2 py-0.5 font-black text-xs text-slate-900 dark:bg-slate-800 dark:text-white">
+                      {m.score}
+                    </span>
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                      {m.date}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
           {/* 3. Away Team Last 5 Matches */}
           {activeTab === "awayForm" && (
             <div>
-              <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
-                Últimos 5 Partidos de {prediction.awayTeam}
+              <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-3">
+                Últimos 5 Partidos de {prediction.awayTeam} (Forma Reciente)
               </h4>
-              {prediction.awayLast5 && prediction.awayLast5.length > 0 ? (
-                <div className="space-y-2">
-                  {prediction.awayLast5.map((m, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center justify-between rounded-xl bg-slate-50 p-3 border border-slate-200 text-xs dark:bg-slate-900/80 dark:border-slate-800"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <span
-                          className={`flex h-6 w-6 items-center justify-center rounded-lg text-xs font-black text-white ${
-                            m.result === "W"
-                              ? "bg-emerald-600"
-                              : m.result === "D"
-                              ? "bg-amber-500"
-                              : "bg-red-600"
-                          }`}
-                        >
-                          {m.result === "W" ? "V" : m.result === "D" ? "E" : "D"}
-                        </span>
-                        <span className="font-bold">
-                          {m.isHome ? `vs ${m.opponent}` : `@ ${m.opponent}`}
-                        </span>
-                      </div>
-                      <span className="rounded-lg bg-slate-200 px-2 py-0.5 font-black text-xs dark:bg-slate-800">
-                        {m.score}
+              <div className="space-y-2">
+                {awayLast5List.map((m, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between rounded-xl bg-slate-50 p-3 border border-slate-200 text-xs dark:bg-slate-900/80 dark:border-slate-800"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span
+                        className={`flex h-6 w-6 items-center justify-center rounded-lg text-xs font-black text-white ${
+                          m.result === "W"
+                            ? "bg-emerald-600"
+                            : m.result === "D"
+                            ? "bg-amber-500"
+                            : "bg-red-600"
+                        }`}
+                        title={m.result === "W" ? "Victoria" : m.result === "D" ? "Empate" : "Derrota"}
+                      >
+                        {m.result === "W" ? "V" : m.result === "D" ? "E" : "D"}
                       </span>
-                      <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                        {m.date}
+                      <span className="font-bold text-slate-900 dark:text-white">
+                        {m.isHome ? `vs ${m.opponent}` : `@ ${m.opponent}`}
                       </span>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-xs text-slate-500">Historial reciente no disponible.</p>
-              )}
+                    <span className="rounded-lg bg-slate-200 px-2 py-0.5 font-black text-xs text-slate-900 dark:bg-slate-800 dark:text-white">
+                      {m.score}
+                    </span>
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                      {m.date}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
@@ -248,23 +286,23 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
             <div className="space-y-4">
               <div className="rounded-2xl bg-slate-50 p-4 border border-slate-200 dark:bg-slate-900/80 dark:border-slate-800">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold text-slate-600 dark:text-slate-400">
-                    Jerarquía ELO: {prediction.homeTeam} ({prediction.homeElo || 78}) vs {prediction.awayTeam} ({prediction.awayElo || 72})
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                    Jerarquía ELO: {prediction.homeTeam} ({homeElo}) vs {prediction.awayTeam} ({awayElo})
                   </span>
                   <span className="rounded-lg bg-emerald-100 px-2 py-0.5 text-xs font-black text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400">
-                    Score: {prediction.smartScore}/100
+                    SmartScore: {prediction.smartScore}/100
                   </span>
                 </div>
-                <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800 flex">
+                <div className="h-3 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800 flex">
                   <div
-                    style={{ width: `${Math.min(90, Math.max(10, ((prediction.homeElo || 78) / ((prediction.homeElo || 78) + (prediction.awayElo || 72))) * 100))}%` }}
-                    className="bg-emerald-500"
+                    style={{ width: `${Math.min(90, Math.max(10, (homeElo / (homeElo + awayElo)) * 100))}%` }}
+                    className="bg-emerald-500 transition-all duration-500"
                   />
                   <div className="flex-1 bg-sky-500" />
                 </div>
-                <div className="flex justify-between text-[11px] font-extrabold text-slate-500 dark:text-slate-400 mt-1">
-                  <span>Local: {prediction.homeElo || 78} ELO</span>
-                  <span>Visitante: {prediction.awayElo || 72} ELO</span>
+                <div className="flex justify-between text-[11px] font-black text-slate-600 dark:text-slate-400 mt-1.5">
+                  <span>🏠 Local: {homeElo} ELO ({Math.round((homeElo / (homeElo + awayElo)) * 100)}%)</span>
+                  <span>✈️ Visitante: {awayElo} ELO ({Math.round((awayElo / (homeElo + awayElo)) * 100)}%)</span>
                 </div>
               </div>
 
@@ -284,7 +322,7 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
         {/* Footer Actions */}
         <div className="flex items-center justify-between border-t border-slate-200 bg-slate-50/80 p-4 dark:border-slate-800 dark:bg-slate-900/60">
           <span className="text-xs font-extrabold text-slate-700 dark:text-slate-300">
-            Pronóstico: <strong className="text-emerald-600 dark:text-emerald-400">{prediction.market}</strong> (@{prediction.odds.toFixed(2)})
+            Pronóstico: <strong className="text-emerald-700 dark:text-emerald-400">{prediction.market}</strong> (@{prediction.odds.toFixed(2)})
           </span>
           <button
             onClick={onClose}

@@ -15,10 +15,36 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
   const [stake, setStake] = useState<number>(10);
   const [copied, setCopied] = useState<boolean>(false);
 
-  // Filter top highest probability & confidence picks of the day
-  const candidatePicks = [...predictions]
-    .filter((p) => p.probability >= 60 && p.odds >= 1.40)
+  // Local calendar date helper (YYYY-MM-DD in local time)
+  const getLocalDateStr = (d: Date | string) => {
+    const dateObj = typeof d === "string" ? new Date(d) : d;
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const day = String(dateObj.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const now = new Date();
+  const todayStr = getLocalDateStr(now);
+
+  // Strictly filter for today's matches with high quality (prob >= 55% & odds >= 1.35)
+  const todayPicks = [...predictions]
+    .filter((p) => {
+      const isToday = getLocalDateStr(p.kickoff) === todayStr;
+      return isToday && p.probability >= 55 && p.odds >= 1.35;
+    })
     .sort((a, b) => b.probability - a.probability || (b.smartScore || 0) - (a.smartScore || 0));
+
+  // If today's list has at least 3 matches, use strictly today's matches.
+  // If late at night and fewer than 3 matches left today, fallback to closest upcoming matches in next 24h
+  const candidatePicks =
+    todayPicks.length >= 3
+      ? todayPicks
+      : [...predictions]
+          .filter((p) => p.probability >= 55 && p.odds >= 1.35)
+          .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime())
+          .slice(0, 15)
+          .sort((a, b) => b.probability - a.probability);
 
   if (candidatePicks.length < 3) {
     return null;
@@ -35,16 +61,16 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
 
   const handleCopyParlay = () => {
     const lines = [
-      `🔥 PARLEY COMBINADO RECOMENDADO (${selectedPicks.length} PICKS)`,
+      `🔥 PARLEY COMBINADO DEL DÍA (${selectedPicks.length} PICKS)`,
       `🎯 Cuota Total: ${totalOdds.toFixed(2)} | Probabilidad: ${combinedProbability.toFixed(1)}%`,
-      `📅 Fecha: ${new Date().toLocaleDateString("es-ES")}`,
+      `📅 Fecha: ${now.toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}`,
       "",
       ...selectedPicks.map(
         (p, idx) =>
-          `${idx + 1}. ${p.match}\n   🏆 ${p.league}\n   🎯 Selección: ${p.market} (Cuota: ${p.odds.toFixed(2)})\n   ⭐ Confianza: ${p.confidence} (${p.probability.toFixed(0)}%)`
+          `${idx + 1}. ${p.match}\n   🏆 ${p.league}\n   🎯 Selección: ${p.market} (Cuota: ${p.odds.toFixed(2)})\n   ⭐ Confianza: ${p.confidence || "Alta"} (${p.probability.toFixed(0)}%)`
       ),
       "",
-      `💰 Apuesta sugerida: $${stake} ➔ Ganancia potencial: $${potentialTotalReturn}`,
+      `💰 Apuesta simulada: $${stake} ➔ Ganancia potencial: $${potentialTotalReturn}`,
       "🚀 Generado por SmartBetBot - Inteligencia Cuantitativa",
     ];
 
@@ -64,15 +90,23 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
         <div>
           <div className="inline-flex items-center gap-2 rounded-full bg-emerald-950/80 px-3 py-1 text-xs font-black tracking-wider text-emerald-400 border border-emerald-500/40 uppercase">
             <span>🔥</span>
-            <span>{language === "en" ? "Recommended Daily Parlay" : "Parley Combinado del Día"}</span>
+            <span>
+              {todayPicks.length >= 3
+                ? language === "en"
+                  ? "Today's Recommended Parlay"
+                  : "Parley Recomendado del Día de Hoy"
+                : language === "en"
+                ? "Next 24h Recommended Parlay"
+                : "Parley Recomendado de la Jornada"}
+            </span>
           </div>
           <h2 className="mt-2 text-xl sm:text-2xl font-black tracking-tight text-white">
-            {language === "en" ? "Top Elite Combination" : "Combinada Élite de Alta Certeza"}
+            {language === "en" ? "Top Daily Combination" : "Combinada Élite del Día Actual"}
           </h2>
           <p className="mt-0.5 text-xs text-slate-400">
             {language === "en"
-              ? "Algorithmic multi-match combination maximizing value edge & probability"
-              : "Selección matemática multi-partido para maximizar cuota y valor esperado"}
+              ? "Algorithmic multi-match combination strictly from today's matches"
+              : "Selección matemática multi-partido del día actual para maximizar cuota y valor esperado"}
           </p>
         </div>
 

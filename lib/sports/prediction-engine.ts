@@ -504,45 +504,130 @@ export function evaluateFixturePrediction(params: {
   return opportunities.sort((a, b) => b.probability - a.probability);
 }
 
+export const LEAGUE_ROSTERS: Record<string, string[]> = {
+  "La Liga": [
+    "Real Madrid", "Barcelona", "Atlético Madrid", "Real Sociedad", "Athletic Club",
+    "Real Betis", "Villarreal", "Sevilla", "Valencia", "Osasuna",
+    "Celta de Vigo", "Mallorca", "Rayo Vallecano", "Getafe", "Las Palmas", "Alavés", "Espanyol", "Leganés", "Valladolid"
+  ],
+  "Premier League": [
+    "Manchester City", "Arsenal", "Liverpool", "Chelsea", "Tottenham",
+    "Newcastle", "Aston Villa", "West Ham", "Brighton", "Fulham",
+    "Wolves", "Crystal Palace", "Everton", "Brentford", "Bournemouth", "Leicester", "Ipswich", "Southampton"
+  ],
+  "Serie A": [
+    "Inter", "Juventus", "AC Milan", "Napoli", "Atalanta",
+    "Roma", "Lazio", "Fiorentina", "Bologna", "Torino",
+    "Monza", "Genoa", "Lecce", "Udinese", "Cagliari", "Empoli", "Parma", "Como", "Venezia"
+  ],
+  "Bundesliga": [
+    "Bayern Munich", "Bayer Leverkusen", "Borussia Dortmund", "RB Leipzig", "Eintracht Frankfurt",
+    "VfB Stuttgart", "Freiburg", "Hoffenheim", "Wolfsburg", "Borussia M'gladbach",
+    "Augsburg", "Werder Bremen", "Union Berlin", "Mainz 05", "Heidenheim", "St. Pauli", "Holstein Kiel"
+  ],
+  "Ligue 1": [
+    "Paris Saint-Germain", "Monaco", "Marseille", "Lille", "Lyon",
+    "Lens", "Nice", "Rennes", "Brest", "Reims",
+    "Strasbourg", "Toulouse", "Nantes", "Montpellier", "Le Havre", "Auxerre", "Angers", "Saint-Étienne"
+  ],
+  "Liga MX": [
+    "América", "Tigres", "Monterrey", "Cruz Azul", "Chivas Guadalajara",
+    "Toluca", "Pachuca", "Pumas UNAM", "León", "Santos Laguna", "Atlas", "Necaxa", "Tijuana", "Mazatlán"
+  ],
+  "Brasileirão": [
+    "Flamengo", "Palmeiras", "Botafogo", "Atlético Mineiro", "São Paulo",
+    "Internacional", "Fluminense", "Grêmio", "Corinthians", "Cruzeiro", "Vasco da Gama", "Fortaleza", "Bahia", "Athletico Paranaense"
+  ],
+  "Primeira Liga": [
+    "Sporting CP", "Benfica", "Porto", "Braga", "Vitória de Guimarães",
+    "Famalicão", "Moreirense", "Rio Ave", "Gil Vicente", "Estoril Praia", "Arouca", "Boavista", "Farense"
+  ],
+  "Eredivisie": [
+    "PSV Eindhoven", "Feyenoord", "Ajax", "AZ Alkmaar", "FC Twente",
+    "FC Utrecht", "Go Ahead Eagles", "NEC Nijmegen", "SC Heerenveen", "Fortuna Sittard", "PEC Zwolle"
+  ],
+};
+
+export function getLeagueRoster(leagueName: string): string[] {
+  const norm = (leagueName || "").toLowerCase();
+  for (const [k, v] of Object.entries(LEAGUE_ROSTERS)) {
+    if (norm.includes(k.toLowerCase()) || k.toLowerCase().includes(norm)) {
+      return v;
+    }
+  }
+  return [
+    "Arsenal", "Chelsea", "Liverpool", "Manchester City", "Real Madrid",
+    "Barcelona", "Atlético Madrid", "Bayern Munich", "Inter", "Juventus",
+    "PSG", "Bayer Leverkusen", "Borussia Dortmund", "AC Milan", "Napoli"
+  ];
+}
+
 export function generateTeamRecentForm(teamName: string, league: string, teamElo: number, kickoffDateStr: string): TeamFormMatch[] {
   const seed = (teamName + league).split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
   const baseDate = new Date(kickoffDateStr || Date.now());
   const form: TeamFormMatch[] = [];
 
-  const genericOpponents: Record<string, string[]> = {
-    "La Liga": ["Getafe", "Mallorca", "Osasuna", "Rayo Vallecano", "Alavés", "Celta de Vigo", "Las Palmas"],
-    "Premier League": ["Fulham", "Brentford", "Crystal Palace", "Wolves", "Everton", "Bournemouth", "Nottingham Forest"],
-    "Serie A": ["Torino", "Genoa", "Monza", "Lecce", "Udinese", "Cagliari", "Empoli"],
-    "Bundesliga": ["Augsburg", "Mainz 05", "Bochum", "Union Berlin", "Werder Bremen", "Wolfsburg", "Heidenheim"],
-    "Ligue 1": ["Reims", "Nantes", "Toulouse", "Montpellier", "Le Havre", "Strasbourg", "Brest"],
-  };
-
-  const opponents = genericOpponents[league] || ["Rival A", "Rival B", "Rival C", "Rival D", "Rival E"];
+  const roster = getLeagueRoster(league).filter((t) => t.toLowerCase() !== teamName.toLowerCase());
+  const opponents = roster.length >= 5 ? roster : ["Rival A", "Rival B", "Rival C", "Rival D", "Rival E"];
 
   for (let i = 1; i <= 5; i++) {
     const matchDate = new Date(baseDate);
-    matchDate.setDate(matchDate.getDate() - (i * 5 + (seed % 3)));
+    matchDate.setDate(matchDate.getDate() - (i * 6 + ((seed + i) % 4) + 1));
     const dateStr = matchDate.toISOString().split("T")[0];
-    const opp = opponents[(seed + i) % opponents.length];
+    const opp = opponents[(seed + i * 3) % opponents.length];
     const isHome = (seed + i) % 2 === 0;
 
-    // Determine result based on team strength
-    const rand = (seed * 17 + i * 31) % 100;
+    const oppElo = getTeamRating(opp);
+    const diff = teamElo - oppElo;
+    const rand = (seed * 19 + i * 29) % 100;
+
     let result: "W" | "D" | "L" = "W";
     let score = "2 - 1";
 
-    if (teamElo >= 85) {
-      if (rand < 65) { result = "W"; score = isHome ? "3 - 1" : "2 - 0"; }
-      else if (rand < 85) { result = "D"; score = "1 - 1"; }
-      else { result = "L"; score = isHome ? "1 - 2" : "0 - 1"; }
-    } else if (teamElo >= 75) {
-      if (rand < 50) { result = "W"; score = isHome ? "2 - 1" : "1 - 0"; }
-      else if (rand < 75) { result = "D"; score = "1 - 1"; }
-      else { result = "L"; score = isHome ? "1 - 2" : "0 - 2"; }
+    if (diff >= 12) {
+      if (rand < 70) {
+        result = "W";
+        score = isHome ? `${2 + (rand % 2)} - ${rand % 2}` : `${2 + (rand % 2)} - ${rand % 2}`;
+      } else if (rand < 88) {
+        result = "D";
+        score = "1 - 1";
+      } else {
+        result = "L";
+        score = isHome ? "1 - 2" : "0 - 1";
+      }
+    } else if (diff >= 4) {
+      if (rand < 55) {
+        result = "W";
+        score = isHome ? "2 - 1" : "1 - 0";
+      } else if (rand < 78) {
+        result = "D";
+        score = (rand % 2 === 0) ? "1 - 1" : "2 - 2";
+      } else {
+        result = "L";
+        score = isHome ? "0 - 1" : "1 - 2";
+      }
+    } else if (diff <= -10) {
+      if (rand < 28) {
+        result = "W";
+        score = isHome ? "1 - 0" : "2 - 1";
+      } else if (rand < 55) {
+        result = "D";
+        score = "0 - 0";
+      } else {
+        result = "L";
+        score = isHome ? "1 - 3" : "0 - 2";
+      }
     } else {
-      if (rand < 35) { result = "W"; score = isHome ? "1 - 0" : "2 - 1"; }
-      else if (rand < 65) { result = "D"; score = "0 - 0"; }
-      else { result = "L"; score = isHome ? "0 - 2" : "1 - 3"; }
+      if (rand < 42) {
+        result = "W";
+        score = isHome ? "2 - 1" : "1 - 0";
+      } else if (rand < 72) {
+        result = "D";
+        score = "1 - 1";
+      } else {
+        result = "L";
+        score = isHome ? "1 - 2" : "0 - 1";
+      }
     }
 
     form.push({
@@ -567,29 +652,50 @@ export function generateH2HClashes(homeTeam: string, awayTeam: string, league: s
 
   for (let i = 1; i <= 5; i++) {
     const clashDate = new Date(baseDate);
-    clashDate.setMonth(clashDate.getMonth() - (i * 4 + (seed % 2)));
+    clashDate.setMonth(clashDate.getMonth() - (i * 4 + ((seed + i) % 3) + 1));
     const dateStr = clashDate.toISOString().split("T")[0];
 
     const isHomeFirst = (seed + i) % 2 === 0;
     const teamA = isHomeFirst ? homeTeam : awayTeam;
     const teamB = isHomeFirst ? awayTeam : homeTeam;
 
-    const rand = (seed * 19 + i * 23) % 100;
+    const rand = (seed * 23 + i * 37) % 100;
     let score = "1 - 1";
     let winner = "Empate";
 
-    if (diff >= 10) {
-      if (rand < 55) { score = isHomeFirst ? "2 - 0" : "0 - 2"; winner = homeTeam; }
-      else if (rand < 80) { score = "1 - 1"; winner = "Empate"; }
-      else { score = isHomeFirst ? "1 - 2" : "2 - 1"; winner = awayTeam; }
-    } else if (diff <= -10) {
-      if (rand < 55) { score = isHomeFirst ? "0 - 2" : "2 - 0"; winner = awayTeam; }
-      else if (rand < 80) { score = "1 - 1"; winner = "Empate"; }
-      else { score = isHomeFirst ? "2 - 1" : "1 - 2"; winner = homeTeam; }
+    if (diff >= 12) {
+      if (rand < 62) {
+        score = isHomeFirst ? "2 - 0" : "1 - 3";
+        winner = homeTeam;
+      } else if (rand < 84) {
+        score = "1 - 1";
+        winner = "Empate";
+      } else {
+        score = isHomeFirst ? "1 - 2" : "2 - 1";
+        winner = awayTeam;
+      }
+    } else if (diff <= -12) {
+      if (rand < 62) {
+        score = isHomeFirst ? "0 - 2" : "3 - 1";
+        winner = awayTeam;
+      } else if (rand < 84) {
+        score = "1 - 1";
+        winner = "Empate";
+      } else {
+        score = isHomeFirst ? "2 - 1" : "1 - 2";
+        winner = homeTeam;
+      }
     } else {
-      if (rand < 38) { score = "2 - 1"; winner = teamA; }
-      else if (rand < 72) { score = "1 - 1"; winner = "Empate"; }
-      else { score = "1 - 2"; winner = teamB; }
+      if (rand < 40) {
+        score = "2 - 1";
+        winner = teamA;
+      } else if (rand < 75) {
+        score = (rand % 2 === 0) ? "1 - 1" : "0 - 0";
+        winner = "Empate";
+      } else {
+        score = "1 - 2";
+        winner = teamB;
+      }
     }
 
     clashes.push({
