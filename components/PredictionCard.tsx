@@ -106,6 +106,7 @@ export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps
   const conf = getConfidenceInfo(prediction.probability, prediction.confidence, language);
 
   const fairOddsVal = prediction.fairOdds || Math.round((100 / (prediction.probability || 50)) * 100) / 100;
+  const countryDisplay = prediction.country || "Mundial";
 
   const handleOpenDetail = () => {
     if (onOpenDetail) {
@@ -116,7 +117,7 @@ export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps
   };
 
   const handleCopy = () => {
-    const text = `📊 *Análisis SmartBetBot*\n\n⚽ *Partido:* ${prediction.match}\n🏆 *Liga:* ${prediction.league}\n📅 *Fecha:* ${formattedDate}\n🎯 *Mercado:* ${prediction.market}\n💰 *Cuota Casa:* ${prediction.odds.toFixed(2)} | *Cuota Justa:* ${fairOddsVal.toFixed(2)}\n📈 *Probabilidad:* ${prediction.probability}%\n🔥 *Smart Edge:* +${prediction.edge}%\n⭐ *Confianza:* ${conf.stars} ${conf.shortLabel}\n\n💡 *Explicación IA:*\n${prediction.explanation}\n\n🔗 _Generado por SmartBetBot_`;
+    const text = `📊 *Análisis SmartBetBot*\n\n⚽ *Partido:* ${prediction.match}\n🏆 *Liga:* ${prediction.league} (${countryDisplay})\n📅 *Fecha:* ${formattedDate}\n🎯 *Mercado:* ${prediction.market}\n💰 *Cuota Casa:* ${prediction.odds.toFixed(2)} | *Cuota Justa:* ${fairOddsVal.toFixed(2)}\n📈 *Probabilidad:* ${prediction.probability}%\n🔥 *Smart Edge:* +${prediction.edge}%\n⭐ *Confianza:* ${conf.stars} ${conf.shortLabel}\n\n💡 *Explicación IA:*\n${prediction.explanation}\n\n🔗 _Generado por SmartBetBot_`;
 
     navigator.clipboard.writeText(text);
     setCopied(true);
@@ -145,11 +146,14 @@ export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps
   return (
     <>
       <div className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-slate-200/90 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-500/50 hover:shadow-xl hover:shadow-emerald-500/5 dark:border-slate-800/90 dark:bg-slate-900/90 dark:hover:border-emerald-500/40">
-        {/* Top Badges */}
+        {/* Top Badges: League + Country and Confidence */}
         <div>
           <div className="flex items-center justify-between gap-2">
             <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-xs font-extrabold text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700">
-              🏆 {prediction.league}
+              <span>🏆</span>
+              <span>{prediction.league}</span>
+              <span className="text-slate-400 font-normal">•</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-black">{countryDisplay}</span>
             </span>
             <div className={`inline-flex items-center gap-1.5 rounded-full px-3 py-0.5 text-xs font-black border ${conf.badgeClass}`}>
               <span>{conf.stars}</span>
@@ -281,7 +285,7 @@ export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps
                 <h4 className="mt-2.5 text-lg font-extrabold tracking-tight text-white">
                   Análisis Estadístico
                 </h4>
-                <p className="text-xs text-slate-400 font-medium">{prediction.league} • {formattedDate}</p>
+                <p className="text-xs text-slate-400 font-medium">{prediction.league} • {countryDisplay} • {formattedDate}</p>
               </div>
 
               <div className="mt-4 rounded-xl bg-slate-950/80 p-4 border border-slate-800/80 text-center">

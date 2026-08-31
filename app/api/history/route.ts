@@ -8,13 +8,20 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const league = searchParams.get("league");
     const result = searchParams.get("result");
+    const date = searchParams.get("date");
 
     const history = await getHistoricalSettledPredictions();
 
     let filtered = history;
+
+    if (date && date !== "all") {
+      filtered = filtered.filter((h) => h.date === date || (h.kickoff && h.kickoff.startsWith(date)));
+    }
+
     if (league && league !== "all") {
       filtered = filtered.filter((h) => h.league.toLowerCase().includes(league.toLowerCase()));
     }
+
     if (result && result !== "ALL") {
       filtered = filtered.filter((h) => h.result === result);
     }
