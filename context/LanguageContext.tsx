@@ -15,6 +15,7 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     // Navigation
     navDashboard: "Dashboard",
     navPicks: "Picks",
+    navParlay: "Parley del Día",
     navHistory: "Historial",
     navProfile: "Mi Perfil",
     navAdmin: "Admin",
@@ -119,6 +120,7 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     // Navigation
     navDashboard: "Dashboard",
     navPicks: "Picks",
+    navParlay: "Parley del Día",
     navHistory: "History",
     navProfile: "My Profile",
     navAdmin: "Admin",
