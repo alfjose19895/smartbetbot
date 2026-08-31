@@ -6,7 +6,7 @@
 import fs from "fs";
 import path from "path";
 import { createClient } from "@supabase/supabase-js";
-import { apiFootball, ALL_LEAGUE_IDS, TOP_5_LEAGUE_IDS, SUPPORTED_LEAGUES } from "./api-football";
+import { apiFootball, ALL_LEAGUE_IDS, TOP_5_LEAGUE_IDS, SUPPORTED_LEAGUES, ApiFootballFixtureItem } from "./api-football";
 import {
   evaluateFixturePrediction,
   MarketOpportunity,
@@ -92,7 +92,7 @@ function getAllDailySnapshots(): Record<string, MarketOpportunity[]> {
             result[dateStr] = parsed;
           }
         } catch {
-          // ignore corrupted files
+          // ignore
         }
       }
     }
@@ -130,7 +130,7 @@ export interface HistoricalSettledPick {
 
 let cachedSettledHistory: HistoricalSettledPick[] = [];
 let historyCacheTimestamp = 0;
-const HISTORY_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const HISTORY_CACHE_TTL_MS = 3 * 60 * 1000; // 3 minutes
 
 /**
  * Generates verified, high-precision predictions strictly for the current day.
@@ -296,8 +296,8 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
 }
 
 /**
- * Returns authentic settled predictions (history) evaluated and finished.
- * Strictly checks the exact predictions that were emitted to maintain 100% traceability.
+ * Returns authentic settled predictions (history) evaluated strictly with 100% REAL match scores.
+ * Queries API-Football official finished matches and Supabase finished fixtures.
  */
 export async function getHistoricalSettledPredictions(): Promise<HistoricalSettledPick[]> {
   const nowMs = Date.now();
@@ -322,77 +322,124 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
     }
   };
 
-  // Official real scores verified from match providers for historical settlement
-  const VERIFIED_REAL_SCORES: Record<string, { home: number; away: number }> = {
-    "realmadrid-malaga-2026-08-30": { home: 4, away: 0 },
-    "chelsea-brighton-2026-08-30": { home: 3, away: 1 },
-    "manchesterunited-ipswich-2026-08-30": { home: 3, away: 1 },
-    "napoli-como-2026-08-30": { home: 2, away: 0 },
-    "parisfc-nice-2026-08-30": { home: 2, away: 0 },
-    "scfreiburg-werderbremen-2026-08-30": { home: 3, away: 2 },
-    "nacional-estrela-2026-08-30": { home: 2, away: 0 },
-    "tsvhartberg-ried-2026-08-30": { home: 3, away: 2 },
-    "feyenoord-adodenhaag-2026-08-30": { home: 2, away: 2 },
-    "fcstpauli-1fckaiserslautern-2026-08-30": { home: 3, away: 2 },
-    "redbullsalzburg-austriavienna-2026-08-30": { home: 3, away: 2 },
-    "intermiami-cfmontreal-2026-08-29": { home: 3, away: 1 },
-    "liverpool-nottinghamforest-2026-08-29": { home: 2, away: 2 },
-    "tottenham-newcastle-2026-08-29": { home: 0, away: 2 },
-    "sevilla-atleticomadrid-2026-08-29": { home: 1, away: 3 },
-    "realsociedad-espanyol-2026-08-29": { home: 2, away: 1 },
-    "levante-realbetis-2026-08-29": { home: 5, away: 2 },
-    "borussiadortmund-hamburgersv-2026-08-29": { home: 2, away: 0 },
-    "athleticclub-rayovallecano-2026-08-29": { home: 1, away: 2 },
-    "bayerleverkusen-hoffenheim-2026-08-29": { home: 3, away: 1 },
-    "inter-lecce-2026-08-29": { home: 2, away: 0 },
-    "monaco-strasbourg-2026-08-29": { home: 3, away: 0 },
-    "porto-rioave-2026-08-29": { home: 2, away: 0 },
-    "benfica-casaapia-2026-08-29": { home: 3, away: 0 },
-    "sportingcp-farense-2026-08-29": { home: 4, away: 1 },
-    "juventus-verona-2026-08-28": { home: 3, away: 0 },
-    "barcelona-valencia-2026-08-28": { home: 2, away: 1 },
-    "arsenal-astonvilla-2026-08-28": { home: 2, away: 0 },
-    "milan-torino-2026-08-28": { home: 2, away: 2 },
-    "marseille-reims-2026-08-28": { home: 2, away: 2 },
-    "villarreal-celtavigo-2026-08-28": { home: 4, away: 3 },
+  // Map to store 100% real official match scores from API-Football & Supabase
+  const realScoresMap: Record<string, { home: number; away: number; date: string }> = {};
+
+  const registerRealScore = (homeName: string, awayName: string, dateStr: string, homeGoals: number, awayGoals: number) => {
+    const hNorm = getCanonicalTeamKey(homeName);
+    const aNorm = getCanonicalTeamKey(awayName);
+    const key1 = `${hNorm}-${aNorm}-${dateStr}`;
+    const key2 = `${hNorm}-${aNorm}`;
+    realScoresMap[key1] = { home: homeGoals, away: awayGoals, date: dateStr };
+    realScoresMap[key2] = { home: homeGoals, away: awayGoals, date: dateStr };
   };
 
-  // 1. Settle all daily predictions from daily snapshots (Strict Traceability)
+  // 1. Fetch official finished match scores from API-Football for today, yesterday and previous dates
+  const todayDateStr = new Date(nowMs).toISOString().split("T")[0];
+  const yesterdayDate = new Date(nowMs - 86400000);
+  const yesterdayDateStr = yesterdayDate.toISOString().split("T")[0];
+  const twoDaysAgoDate = new Date(nowMs - 2 * 86400000);
+  const twoDaysAgoDateStr = twoDaysAgoDate.toISOString().split("T")[0];
+
+  const datesToScan = [todayDateStr, yesterdayDateStr, twoDaysAgoDateStr];
+
+  for (const d of datesToScan) {
+    try {
+      const finishedFixtures = await apiFootball.getFinishedFixturesByDate(d);
+      if (Array.isArray(finishedFixtures)) {
+        for (const item of finishedFixtures) {
+          if (!item.teams?.home?.name || !item.teams?.away?.name) continue;
+          const homeGoals = item.goals?.home ?? item.score?.fulltime?.home;
+          const awayGoals = item.goals?.away ?? item.score?.fulltime?.away;
+          if (typeof homeGoals === "number" && typeof awayGoals === "number") {
+            const fixtureDate = item.fixture?.date ? item.fixture.date.split("T")[0] : d;
+            registerRealScore(item.teams.home.name, item.teams.away.name, fixtureDate, homeGoals, awayGoals);
+
+            // Also evaluate what our quantitative model predicted for this real match
+            const { canonicalLeague, country } = normalizeLeagueInfo(item.league?.name || "");
+            const opps = evaluateFixturePrediction({
+              fixtureId: item.fixture?.id || 0,
+              homeTeam: item.teams.home.name,
+              awayTeam: item.teams.away.name,
+              homeTeamId: item.teams.home.id,
+              awayTeamId: item.teams.away.id,
+              league: canonicalLeague,
+              kickoff: item.fixture?.date || `${d}T12:00:00Z`,
+            });
+
+            if (opps.length > 0) {
+              const top = opps[0];
+              const totalGoals = homeGoals + awayGoals;
+              const btts = homeGoals > 0 && awayGoals > 0;
+              let isWon = false;
+
+              if (top.market === "Gana Local") isWon = homeGoals > awayGoals;
+              else if (top.market === "Gana Visitante") isWon = awayGoals > homeGoals;
+              else if (top.market === "Empate") isWon = homeGoals === awayGoals;
+              else if (top.market === "Over 2.5 Goles") isWon = totalGoals > 2;
+              else if (top.market === "Under 2.5 Goles") isWon = totalGoals < 3;
+              else if (top.market.includes("Ambos") || top.market.includes("BTTS")) isWon = btts;
+              else isWon = homeGoals > awayGoals;
+
+              addUniqueHistoricalPick({
+                id: `real-ft-${item.fixture?.id || `${d}-${top.homeTeam}-${top.awayTeam}`}`,
+                date: fixtureDate,
+                kickoff: item.fixture?.date || `${d}T12:00:00Z`,
+                match: `${item.teams.home.name} vs ${item.teams.away.name}`,
+                homeTeam: item.teams.home.name,
+                awayTeam: item.teams.away.name,
+                homeLogo: item.teams.home.logo,
+                awayLogo: item.teams.away.logo,
+                score: `${homeGoals} - ${awayGoals}`,
+                league: canonicalLeague,
+                leagueLogo: item.league?.logo,
+                country,
+                market: top.market,
+                selection: top.market,
+                odds: top.odds,
+                probability: top.probability,
+                result: isWon ? "WON" : "LOST",
+                profit: isWon ? Math.round((top.odds - 1) * 100) / 100 : -1,
+                explanation: top.explanation,
+              });
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.warn(`[History] Error fetching real finished matches for ${d}:`, err);
+    }
+  }
+
+  // 2. Settle all daily predictions from daily snapshots against confirmed real scores
   const snapshots = getAllDailySnapshots();
   for (const [dateStr, picks] of Object.entries(snapshots)) {
     for (const p of picks) {
-      const kickoffTime = new Date(p.kickoff).getTime();
-      // If match is finished (kickoff in the past by at least 110 minutes or past date)
-      if (kickoffTime <= nowMs - 110 * 60 * 1000 || dateStr < nowIso.split("T")[0]) {
-        const hNorm = getCanonicalTeamKey(p.homeTeam);
-        const aNorm = getCanonicalTeamKey(p.awayTeam);
-        const scoreKey = `${hNorm}-${aNorm}-${dateStr}`;
+      const hNorm = getCanonicalTeamKey(p.homeTeam);
+      const aNorm = getCanonicalTeamKey(p.awayTeam);
+      const scoreKeyWithDate = `${hNorm}-${aNorm}-${dateStr}`;
+      const scoreKeyGeneric = `${hNorm}-${aNorm}`;
 
-        let finalScore = VERIFIED_REAL_SCORES[scoreKey] || null;
+      const realScore = realScoresMap[scoreKeyWithDate] || realScoresMap[scoreKeyGeneric];
 
-        // Deterministic official settlement
-        if (!finalScore) {
-          const charSum = (p.homeTeam + p.awayTeam + dateStr).split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
-          finalScore = {
-            home: (charSum % 4) + (p.market === "Gana Local" ? 1 : 0),
-            away: ((charSum * 3) % 3),
-          };
-        }
-
-        const totalGoals = finalScore.home + finalScore.away;
-        const btts = finalScore.home > 0 && finalScore.away > 0;
+      // ONLY settle if we have the verified, real match score from API-Football
+      if (realScore && typeof realScore.home === "number" && typeof realScore.away === "number") {
+        const homeGoals = realScore.home;
+        const awayGoals = realScore.away;
+        const totalGoals = homeGoals + awayGoals;
+        const btts = homeGoals > 0 && awayGoals > 0;
         let isWon = false;
 
-        if (p.market === "Gana Local") isWon = finalScore.home > finalScore.away;
-        else if (p.market === "Gana Visitante") isWon = finalScore.away > finalScore.home;
-        else if (p.market === "Empate") isWon = finalScore.home === finalScore.away;
+        if (p.market === "Gana Local") isWon = homeGoals > awayGoals;
+        else if (p.market === "Gana Visitante") isWon = awayGoals > homeGoals;
+        else if (p.market === "Empate") isWon = homeGoals === awayGoals;
         else if (p.market === "Over 2.5 Goles") isWon = totalGoals > 2;
         else if (p.market === "Under 2.5 Goles") isWon = totalGoals < 3;
         else if (p.market.includes("Ambos") || p.market.includes("BTTS")) isWon = btts;
-        else isWon = finalScore.home > finalScore.away;
+        else isWon = homeGoals > awayGoals;
 
         addUniqueHistoricalPick({
-          id: p.id || `settled-${scoreKey}-${p.market}`,
+          id: p.id || `snapshot-settled-${scoreKeyWithDate}-${p.market}`,
           date: dateStr,
           kickoff: p.kickoff,
           match: p.match,
@@ -400,7 +447,7 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
           awayTeam: p.awayTeam,
           homeLogo: p.homeLogo,
           awayLogo: p.awayLogo,
-          score: `${finalScore.home} - ${finalScore.away}`,
+          score: `${homeGoals} - ${awayGoals}`,
           league: p.league,
           leagueLogo: p.leagueLogo,
           country: p.country,
@@ -416,7 +463,7 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
     }
   }
 
-  // 2. Query finished fixtures from Supabase
+  // 3. Query finished fixtures from Supabase
   const supabase = getAdminClient();
   if (supabase) {
     try {
@@ -435,6 +482,8 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
           league:leagues!league_id (name, logo_url)
         `)
         .lte("kickoff_at", nowIso)
+        .not("home_score", "is", null)
+        .not("away_score", "is", null)
         .order("kickoff_at", { ascending: false })
         .limit(100);
 
@@ -449,12 +498,9 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
           const leagueLogo = f.league?.logo_url || (Array.isArray(f.league) ? f.league[0]?.logo_url : null);
 
           if (!homeName || !awayName || !leagueName) continue;
+          if (typeof f.home_score !== "number" || typeof f.away_score !== "number") continue;
 
           const dateStr = f.kickoff_at ? f.kickoff_at.split("T")[0] : "nodate";
-          const hNorm = getCanonicalTeamKey(homeName);
-          const aNorm = getCanonicalTeamKey(awayName);
-          const matchKey = `${hNorm}-${aNorm}-${dateStr}`;
-
           const { canonicalLeague, country } = normalizeLeagueInfo(leagueName);
 
           const opps = evaluateFixturePrediction({
@@ -468,14 +514,8 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
           if (opps.length === 0) continue;
           const top = opps[0];
 
-          let homeGoals = typeof f.home_score === "number" ? f.home_score : 2;
-          let awayGoals = typeof f.away_score === "number" ? f.away_score : 1;
-
-          if (VERIFIED_REAL_SCORES[matchKey]) {
-            homeGoals = VERIFIED_REAL_SCORES[matchKey].home;
-            awayGoals = VERIFIED_REAL_SCORES[matchKey].away;
-          }
-
+          const homeGoals = f.home_score;
+          const awayGoals = f.away_score;
           const totalGoals = homeGoals + awayGoals;
           const btts = homeGoals > 0 && awayGoals > 0;
           let isWon = false;
@@ -516,89 +556,6 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
     }
   }
 
-  // 3. Guarantee baseline verified historical record
-  const BASELINE_HISTORICAL_FIXTURES: Array<{
-    date: string;
-    kickoff: string;
-    home: string;
-    away: string;
-    league: string;
-    homeScore: number;
-    awayScore: number;
-  }> = [
-    { date: "2026-08-30", kickoff: "2026-08-30T16:00:00Z", home: "Real Madrid", away: "Malaga", league: "La Liga", homeScore: 4, awayScore: 0 },
-    { date: "2026-08-30", kickoff: "2026-08-30T14:00:00Z", home: "Chelsea", away: "Brighton", league: "Premier League", homeScore: 3, awayScore: 1 },
-    { date: "2026-08-30", kickoff: "2026-08-30T15:30:00Z", home: "SC Freiburg", away: "Werder Bremen", league: "Bundesliga", homeScore: 3, awayScore: 2 },
-    { date: "2026-08-30", kickoff: "2026-08-30T17:00:00Z", home: "Paris FC", away: "Nice", league: "Ligue 1", homeScore: 2, awayScore: 0 },
-    { date: "2026-08-30", kickoff: "2026-08-30T19:45:00Z", home: "Napoli", away: "Como", league: "Serie A", homeScore: 2, awayScore: 0 },
-    { date: "2026-08-30", kickoff: "2026-08-30T18:00:00Z", home: "Nacional", away: "Estrela", league: "Primeira Liga", homeScore: 2, awayScore: 0 },
-    { date: "2026-08-30", kickoff: "2026-08-30T13:30:00Z", home: "Feyenoord", away: "ADO Den Haag", league: "Eredivisie", homeScore: 2, awayScore: 2 },
-    { date: "2026-08-30", kickoff: "2026-08-30T12:30:00Z", home: "FC St. Pauli", away: "1. FC Kaiserslautern", league: "Bundesliga 2", homeScore: 3, awayScore: 2 },
-    { date: "2026-08-30", kickoff: "2026-08-30T16:00:00Z", home: "Red Bull Salzburg", away: "Austria Vienna", league: "Austrian Bundesliga", homeScore: 3, awayScore: 2 },
-    { date: "2026-08-29", kickoff: "2026-08-29T18:30:00Z", home: "Inter Miami", away: "CF Montreal", league: "MLS", homeScore: 3, awayScore: 1 },
-    { date: "2026-08-29", kickoff: "2026-08-29T14:00:00Z", home: "Liverpool", away: "Nottingham Forest", league: "Premier League", homeScore: 2, awayScore: 2 },
-    { date: "2026-08-29", kickoff: "2026-08-29T16:30:00Z", home: "Tottenham", away: "Newcastle", league: "Premier League", homeScore: 0, awayScore: 2 },
-    { date: "2026-08-29", kickoff: "2026-08-29T20:00:00Z", home: "Sevilla", away: "Atletico Madrid", league: "La Liga", homeScore: 1, awayScore: 3 },
-    { date: "2026-08-29", kickoff: "2026-08-29T16:15:00Z", home: "Real Sociedad", away: "Espanyol", league: "La Liga", homeScore: 2, awayScore: 1 },
-    { date: "2026-08-29", kickoff: "2026-08-29T15:30:00Z", home: "Borussia Dortmund", away: "Hamburger SV", league: "Bundesliga", homeScore: 2, awayScore: 0 },
-    { date: "2026-08-29", kickoff: "2026-08-29T17:30:00Z", home: "Bayer Leverkusen", away: "Hoffenheim", league: "Bundesliga", homeScore: 3, awayScore: 1 },
-    { date: "2026-08-29", kickoff: "2026-08-29T19:45:00Z", home: "Inter", away: "Lecce", league: "Serie A", homeScore: 2, awayScore: 0 },
-    { date: "2026-08-29", kickoff: "2026-08-29T18:00:00Z", home: "Monaco", away: "Strasbourg", league: "Ligue 1", homeScore: 3, awayScore: 0 },
-    { date: "2026-08-29", kickoff: "2026-08-29T19:30:00Z", home: "Porto", away: "Rio Ave", league: "Primeira Liga", homeScore: 2, awayScore: 0 },
-    { date: "2026-08-29", kickoff: "2026-08-29T17:00:00Z", home: "Sporting CP", away: "Farense", league: "Primeira Liga", homeScore: 4, awayScore: 1 },
-    { date: "2026-08-28", kickoff: "2026-08-28T19:45:00Z", home: "Juventus", away: "Verona", league: "Serie A", homeScore: 3, awayScore: 0 },
-    { date: "2026-08-28", kickoff: "2026-08-28T20:30:00Z", home: "Barcelona", away: "Valencia", league: "La Liga", homeScore: 2, awayScore: 1 },
-    { date: "2026-08-28", kickoff: "2026-08-28T19:00:00Z", home: "Arsenal", away: "Aston Villa", league: "Premier League", homeScore: 2, awayScore: 0 },
-    { date: "2026-08-28", kickoff: "2026-08-28T19:45:00Z", home: "Milan", away: "Torino", league: "Serie A", homeScore: 2, awayScore: 2 },
-    { date: "2026-08-28", kickoff: "2026-08-28T20:00:00Z", home: "Marseille", away: "Reims", league: "Ligue 1", homeScore: 2, awayScore: 2 },
-    { date: "2026-08-28", kickoff: "2026-08-28T20:30:00Z", home: "Villarreal", away: "Celta Vigo", league: "La Liga", homeScore: 4, awayScore: 3 },
-  ];
-
-  for (const b of BASELINE_HISTORICAL_FIXTURES) {
-    const { canonicalLeague, country } = normalizeLeagueInfo(b.league);
-    const opps = evaluateFixturePrediction({
-      fixtureId: `baseline-${b.date}-${getCanonicalTeamKey(b.home)}`,
-      homeTeam: b.home,
-      awayTeam: b.away,
-      league: canonicalLeague,
-      kickoff: b.kickoff,
-    });
-
-    if (opps.length === 0) continue;
-    const top = opps[0];
-
-    const totalGoals = b.homeScore + b.awayScore;
-    const btts = b.homeScore > 0 && b.awayScore > 0;
-    let isWon = false;
-
-    if (top.market === "Gana Local") isWon = b.homeScore > b.awayScore;
-    else if (top.market === "Gana Visitante") isWon = b.awayScore > b.homeScore;
-    else if (top.market === "Empate") isWon = b.homeScore === b.awayScore;
-    else if (top.market === "Over 2.5 Goles") isWon = totalGoals > 2;
-    else if (top.market === "Under 2.5 Goles") isWon = totalGoals < 3;
-    else if (top.market.includes("Ambos") || top.market.includes("BTTS")) isWon = btts;
-    else isWon = b.homeScore > b.awayScore;
-
-    addUniqueHistoricalPick({
-      id: `baseline-${b.date}-${getCanonicalTeamKey(b.home)}`,
-      date: b.date,
-      kickoff: b.kickoff,
-      match: `${b.home} vs ${b.away}`,
-      homeTeam: b.home,
-      awayTeam: b.away,
-      score: `${b.homeScore} - ${b.awayScore}`,
-      league: canonicalLeague,
-      country,
-      market: top.market,
-      selection: top.market,
-      odds: top.odds,
-      probability: top.probability,
-      result: isWon ? "WON" : "LOST",
-      profit: isWon ? Math.round((top.odds - 1) * 100) / 100 : -1,
-      explanation: top.explanation,
-    });
-  }
-
   // Sort history descending by date and kickoff
   const sortedHistory = settledPicks.sort(
     (a, b) => new Date(b.kickoff || b.date).getTime() - new Date(a.kickoff || a.date).getTime()
@@ -609,7 +566,6 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
 
   return sortedHistory;
 }
-
 
 export async function syncUpcomingFixtures(leagueIds: number[] = ALL_LEAGUE_IDS, daysAhead: number = 7): Promise<{ fixturesSaved: number }> {
   const preds = await generatePredictionsForUpcoming(leagueIds);

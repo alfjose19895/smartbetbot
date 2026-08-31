@@ -353,6 +353,13 @@ export class ApiFootballClient {
     /**
    * Fetch all fixtures for a specific date in a single API call (maximizes API efficiency)
    */
+    /**
+   * Fetch official finished fixtures with confirmed real final scores for a specific date
+   */
+  async getFinishedFixturesByDate(dateStr: string): Promise<ApiFootballFixtureItem[]> {
+    return this.request<ApiFootballFixtureItem>("fixtures", { date: dateStr, status: "FT" });
+  }
+
   async getFixturesByDate(dateStr?: string): Promise<ApiFootballFixtureItem[]> {
     const d = dateStr || new Date().toISOString().split("T")[0];
     return this.request<ApiFootballFixtureItem>("fixtures", { date: d });
