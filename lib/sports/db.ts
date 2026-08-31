@@ -38,6 +38,7 @@ function getAdminClient() {
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const SNAPSHOTS_DIR = path.join(process.cwd(), "data", "daily_snapshots");
+export const HISTORY_START_DATE = "2026-08-31"; // Official history tracking starts strictly from today
 
 function ensureSnapshotsDir() {
   try {
@@ -84,6 +85,7 @@ function getAllDailySnapshots(): Record<string, MarketOpportunity[]> {
     for (const f of files) {
       if (f.endsWith(".json")) {
         const dateStr = f.replace(".json", "");
+        if (dateStr < HISTORY_START_DATE) continue; // Only start from official start date
         const filePath = path.join(SNAPSHOTS_DIR, f);
         try {
           const content = fs.readFileSync(filePath, "utf-8");
@@ -318,8 +320,8 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
 }
 
 /**
- * Returns authentic settled predictions (history) evaluated strictly with 100% REAL match scores.
- * Queries API-Football official finished matches and Supabase finished fixtures.
+ * Returns authentic settled predictions (history) strictly starting from HISTORY_START_DATE (today, 2026-08-31) onwards.
+ * Evaluates with 100% REAL official match scores from API-Football and Supabase.
  */
 export async function getHistoricalSettledPredictions(): Promise<HistoricalSettledPick[]> {
   const nowMs = Date.now();
@@ -334,6 +336,8 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
 
   const addUniqueHistoricalPick = (p: HistoricalSettledPick) => {
     const dateStr = p.kickoff ? p.kickoff.split("T")[0] : p.date;
+    if (dateStr < HISTORY_START_DATE) return; // Strictly start history from today onwards
+
     const hNorm = getCanonicalTeamKey(p.homeTeam);
     const aNorm = getCanonicalTeamKey(p.awayTeam);
     const matchKey = `${hNorm}-${aNorm}-${dateStr}-${p.market}`;
@@ -348,6 +352,7 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
   const realScoresMap: Record<string, { home: number; away: number; date: string }> = {};
 
   const registerRealScore = (homeName: string, awayName: string, dateStr: string, homeGoals: number, awayGoals: number) => {
+    if (dateStr < HISTORY_START_DATE) return;
     const hNorm = getCanonicalTeamKey(homeName);
     const aNorm = getCanonicalTeamKey(awayName);
     const key1 = `${hNorm}-${aNorm}-${dateStr}`;
@@ -356,86 +361,80 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
     realScoresMap[key2] = { home: homeGoals, away: awayGoals, date: dateStr };
   };
 
-  // 1. Fetch official finished match scores from API-Football for today, yesterday and previous dates
+  // 1. Fetch official finished match scores from API-Football for today (and any valid dates >= START_DATE)
   const todayDateStr = new Date(nowMs).toISOString().split("T")[0];
-  const yesterdayDate = new Date(nowMs - 86400000);
-  const yesterdayDateStr = yesterdayDate.toISOString().split("T")[0];
-  const twoDaysAgoDate = new Date(nowMs - 2 * 86400000);
-  const twoDaysAgoDateStr = twoDaysAgoDate.toISOString().split("T")[0];
 
-  const datesToScan = [todayDateStr, yesterdayDateStr, twoDaysAgoDateStr];
+  try {
+    const finishedFixtures = await apiFootball.getFinishedFixturesByDate(todayDateStr);
+    if (Array.isArray(finishedFixtures)) {
+      for (const item of finishedFixtures) {
+        if (!item.teams?.home?.name || !item.teams?.away?.name) continue;
+        const homeGoals = item.goals?.home ?? item.score?.fulltime?.home;
+        const awayGoals = item.goals?.away ?? item.score?.fulltime?.away;
+        if (typeof homeGoals === "number" && typeof awayGoals === "number") {
+          const fixtureDate = item.fixture?.date ? item.fixture.date.split("T")[0] : todayDateStr;
+          registerRealScore(item.teams.home.name, item.teams.away.name, fixtureDate, homeGoals, awayGoals);
 
-  for (const d of datesToScan) {
-    try {
-      const finishedFixtures = await apiFootball.getFinishedFixturesByDate(d);
-      if (Array.isArray(finishedFixtures)) {
-        for (const item of finishedFixtures) {
-          if (!item.teams?.home?.name || !item.teams?.away?.name) continue;
-          const homeGoals = item.goals?.home ?? item.score?.fulltime?.home;
-          const awayGoals = item.goals?.away ?? item.score?.fulltime?.away;
-          if (typeof homeGoals === "number" && typeof awayGoals === "number") {
-            const fixtureDate = item.fixture?.date ? item.fixture.date.split("T")[0] : d;
-            registerRealScore(item.teams.home.name, item.teams.away.name, fixtureDate, homeGoals, awayGoals);
+          // Evaluate model prediction for this match
+          const { canonicalLeague, country } = normalizeLeagueInfo(item.league?.name || "");
+          const opps = evaluateFixturePrediction({
+            fixtureId: item.fixture?.id || 0,
+            homeTeam: item.teams.home.name,
+            awayTeam: item.teams.away.name,
+            homeTeamId: item.teams.home.id,
+            awayTeamId: item.teams.away.id,
+            league: canonicalLeague,
+            kickoff: item.fixture?.date || `${todayDateStr}T12:00:00Z`,
+          });
 
-            // Also evaluate what our quantitative model predicted for this real match
-            const { canonicalLeague, country } = normalizeLeagueInfo(item.league?.name || "");
-            const opps = evaluateFixturePrediction({
-              fixtureId: item.fixture?.id || 0,
+          if (opps.length > 0) {
+            const top = opps[0];
+            const totalGoals = homeGoals + awayGoals;
+            const btts = homeGoals > 0 && awayGoals > 0;
+            let isWon = false;
+
+            if (top.market === "Gana Local") isWon = homeGoals > awayGoals;
+            else if (top.market === "Gana Visitante") isWon = awayGoals > homeGoals;
+            else if (top.market === "Empate") isWon = homeGoals === awayGoals;
+            else if (top.market === "Over 2.5 Goles") isWon = totalGoals > 2;
+            else if (top.market === "Under 2.5 Goles") isWon = totalGoals < 3;
+            else if (top.market.includes("Ambos") || top.market.includes("BTTS")) isWon = btts;
+            else isWon = homeGoals > awayGoals;
+
+            addUniqueHistoricalPick({
+              id: `real-ft-${item.fixture?.id || `${todayDateStr}-${top.homeTeam}-${top.awayTeam}`}`,
+              date: fixtureDate,
+              kickoff: item.fixture?.date || `${todayDateStr}T12:00:00Z`,
+              match: `${item.teams.home.name} vs ${item.teams.away.name}`,
               homeTeam: item.teams.home.name,
               awayTeam: item.teams.away.name,
-              homeTeamId: item.teams.home.id,
-              awayTeamId: item.teams.away.id,
+              homeLogo: item.teams.home.logo,
+              awayLogo: item.teams.away.logo,
+              score: `${homeGoals} - ${awayGoals}`,
               league: canonicalLeague,
-              kickoff: item.fixture?.date || `${d}T12:00:00Z`,
+              leagueLogo: item.league?.logo,
+              country,
+              market: top.market,
+              selection: top.market,
+              odds: top.odds,
+              probability: top.probability,
+              result: isWon ? "WON" : "LOST",
+              profit: isWon ? Math.round((top.odds - 1) * 100) / 100 : -1,
+              explanation: top.explanation,
             });
-
-            if (opps.length > 0) {
-              const top = opps[0];
-              const totalGoals = homeGoals + awayGoals;
-              const btts = homeGoals > 0 && awayGoals > 0;
-              let isWon = false;
-
-              if (top.market === "Gana Local") isWon = homeGoals > awayGoals;
-              else if (top.market === "Gana Visitante") isWon = awayGoals > homeGoals;
-              else if (top.market === "Empate") isWon = homeGoals === awayGoals;
-              else if (top.market === "Over 2.5 Goles") isWon = totalGoals > 2;
-              else if (top.market === "Under 2.5 Goles") isWon = totalGoals < 3;
-              else if (top.market.includes("Ambos") || top.market.includes("BTTS")) isWon = btts;
-              else isWon = homeGoals > awayGoals;
-
-              addUniqueHistoricalPick({
-                id: `real-ft-${item.fixture?.id || `${d}-${top.homeTeam}-${top.awayTeam}`}`,
-                date: fixtureDate,
-                kickoff: item.fixture?.date || `${d}T12:00:00Z`,
-                match: `${item.teams.home.name} vs ${item.teams.away.name}`,
-                homeTeam: item.teams.home.name,
-                awayTeam: item.teams.away.name,
-                homeLogo: item.teams.home.logo,
-                awayLogo: item.teams.away.logo,
-                score: `${homeGoals} - ${awayGoals}`,
-                league: canonicalLeague,
-                leagueLogo: item.league?.logo,
-                country,
-                market: top.market,
-                selection: top.market,
-                odds: top.odds,
-                probability: top.probability,
-                result: isWon ? "WON" : "LOST",
-                profit: isWon ? Math.round((top.odds - 1) * 100) / 100 : -1,
-                explanation: top.explanation,
-              });
-            }
           }
         }
       }
-    } catch (err) {
-      console.warn(`[History] Error fetching real finished matches for ${d}:`, err);
     }
+  } catch (err) {
+    console.warn(`[History] Error fetching real finished matches for ${todayDateStr}:`, err);
   }
 
   // 2. Settle all daily predictions from daily snapshots against confirmed real scores
   const snapshots = getAllDailySnapshots();
   for (const [dateStr, picks] of Object.entries(snapshots)) {
+    if (dateStr < HISTORY_START_DATE) continue;
+
     for (const p of picks) {
       const hNorm = getCanonicalTeamKey(p.homeTeam);
       const aNorm = getCanonicalTeamKey(p.awayTeam);
@@ -485,7 +484,7 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
     }
   }
 
-  // 3. Query finished fixtures from Supabase
+  // 3. Query finished fixtures from Supabase (strictly from today onwards)
   const supabase = getAdminClient();
   if (supabase) {
     try {
@@ -503,6 +502,7 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
           away_team:teams!away_team_id (name, logo_url),
           league:leagues!league_id (name, logo_url)
         `)
+        .gte("kickoff_at", `${HISTORY_START_DATE}T00:00:00Z`)
         .lte("kickoff_at", nowIso)
         .not("home_score", "is", null)
         .not("away_score", "is", null)
@@ -523,6 +523,8 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
           if (typeof f.home_score !== "number" || typeof f.away_score !== "number") continue;
 
           const dateStr = f.kickoff_at ? f.kickoff_at.split("T")[0] : "nodate";
+          if (dateStr < HISTORY_START_DATE) continue;
+
           const { canonicalLeague, country } = normalizeLeagueInfo(leagueName);
 
           const opps = evaluateFixturePrediction({
@@ -590,14 +592,15 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
 }
 
 /**
- * Returns settled historical parlays evaluated day by day for total traceability.
+ * Returns settled historical parlays evaluated day by day strictly starting from HISTORY_START_DATE (today).
  */
 export async function getHistoricalSettledParlays(): Promise<HistoricalSettledParlay[]> {
   const settledHistory = await getHistoricalSettledPredictions();
   const dateGroups: Record<string, typeof settledHistory> = {};
 
   for (const pick of settledHistory) {
-    const d = pick.date || (pick.kickoff ? pick.kickoff.split("T")[0] : "2026-08-30");
+    const d = pick.date || (pick.kickoff ? pick.kickoff.split("T")[0] : HISTORY_START_DATE);
+    if (d < HISTORY_START_DATE) continue;
     if (!dateGroups[d]) dateGroups[d] = [];
     dateGroups[d].push(pick);
   }
@@ -605,6 +608,8 @@ export async function getHistoricalSettledParlays(): Promise<HistoricalSettledPa
   const result: HistoricalSettledParlay[] = [];
 
   for (const [dateStr, picks] of Object.entries(dateGroups)) {
+    if (dateStr < HISTORY_START_DATE) continue;
+
     const sorted = [...picks].sort((a, b) => b.probability - a.probability || b.odds - a.odds);
     
     const sizes = [3, 4, 5] as const;
