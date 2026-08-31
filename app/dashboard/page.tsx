@@ -3,7 +3,6 @@
 import { Navbar } from "@/components/Navbar";
 import React, { useState, useEffect } from "react";
 import { PredictionCard } from "@/components/PredictionCard";
-import { RecommendedParlay } from "@/components/RecommendedParlay";
 import { MatchDetailModal } from "@/components/MatchDetailModal";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
@@ -178,12 +177,6 @@ export default function DashboardPage() {
             {syncMessage}
           </div>
         )}
-
-        {/* Recommended Parlay Banner */}
-        <RecommendedParlay
-          predictions={predictions}
-          onSelectPrediction={(p) => setActiveModalPick(p)}
-        />
 
         {/* Dashboard Title & KPIs */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pt-2">

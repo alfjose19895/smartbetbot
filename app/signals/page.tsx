@@ -3,7 +3,6 @@
 import { Navbar } from "@/components/Navbar";
 import React, { useState, useEffect } from "react";
 import { PredictionCard } from "@/components/PredictionCard";
-import { RecommendedParlay } from "@/components/RecommendedParlay";
 import { MatchDetailModal } from "@/components/MatchDetailModal";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
@@ -166,12 +165,6 @@ export default function SignalsPage() {
       <Navbar />
 
       <main className="mx-auto max-w-7xl px-3.5 py-6 sm:px-6 sm:py-8 lg:px-8 space-y-6">
-        {/* Recommended Parlay (Parley Recomendado del Día de Hoy) */}
-        <RecommendedParlay
-          predictions={signals}
-          onSelectPrediction={(p) => setActiveModalPick(p)}
-        />
-
         {/* Title & Stats Bar */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pt-2">
           <div>
