@@ -405,6 +405,34 @@ export class ApiFootballClient {
   /**
    * Fetch official Head to Head (H2H) clashes between two teams
    */
+    /**
+   * Search for a team by name and resolve its official API ID
+   */
+  async searchTeam(name: string): Promise<number | null> {
+    if (!name || name.trim().length === 0) return null;
+    const cleanName = name.replace(/^(fc|cf|rcd|ud|ca|afc|sc|sd|de|la|el|los|las|the)\s+/gi, "").trim();
+
+    // 1. Try exact name query
+    const exactResults = await this.request<{
+      team: { id: number; name: string };
+    }>("teams", { name: cleanName });
+
+    if (exactResults && exactResults.length > 0 && exactResults[0].team?.id) {
+      return exactResults[0].team.id;
+    }
+
+    // 2. Try fuzzy search query
+    const searchResults = await this.request<{
+      team: { id: number; name: string };
+    }>("teams", { search: cleanName });
+
+    if (searchResults && searchResults.length > 0 && searchResults[0].team?.id) {
+      return searchResults[0].team.id;
+    }
+
+    return null;
+  }
+
   async getHeadToHead(homeTeamId: number, awayTeamId: number, lastCount: number = 5): Promise<ApiFootballFixtureItem[]> {
     if (!homeTeamId || !awayTeamId) return [];
     return this.request<ApiFootballFixtureItem>("fixtures/headtohead", {

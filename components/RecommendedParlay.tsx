@@ -9,6 +9,40 @@ interface RecommendedParlayProps {
   onSelectPrediction?: (prediction: MarketOpportunity) => void;
 }
 
+function formatKickoffTime(dateString: string): string {
+  try {
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) return "Hoy";
+
+    const hours = String(d.getHours()).padStart(2, "0");
+    const minutes = String(d.getMinutes()).padStart(2, "0");
+    const timeStr = `${hours}:${minutes}`;
+
+    const now = new Date();
+    const isToday =
+      d.getFullYear() === now.getFullYear() &&
+      d.getMonth() === now.getMonth() &&
+      d.getDate() === now.getDate();
+
+    const tomorrow = new Date(now);
+    tomorrow.setDate(now.getDate() + 1);
+    const isTomorrow =
+      d.getFullYear() === tomorrow.getFullYear() &&
+      d.getMonth() === tomorrow.getMonth() &&
+      d.getDate() === tomorrow.getDate();
+
+    const dayNum = d.getDate();
+    const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+    const monthName = months[d.getMonth()];
+
+    if (isToday) return `Hoy • ${timeStr}`;
+    if (isTomorrow) return `Mañana • ${timeStr}`;
+    return `${dayNum} ${monthName} • ${timeStr}`;
+  } catch {
+    return "Hoy";
+  }
+}
+
 export function RecommendedParlay({ predictions, onSelectPrediction }: RecommendedParlayProps) {
   const { language } = useLanguage();
   const [parlaySize, setParlaySize] = useState<3 | 4 | 5>(3);
@@ -67,7 +101,7 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
       "",
       ...selectedPicks.map(
         (p, idx) =>
-          `${idx + 1}. ${p.match}\n   🏆 ${p.league}\n   🎯 Selección: ${p.market} (Cuota: ${p.odds.toFixed(2)})\n   ⭐ Confianza: ${p.confidence || "Alta"} (${p.probability.toFixed(0)}%)`
+          `${idx + 1}. ${p.match}\n   🏆 ${p.league}\n   📅 Horario: ${formatKickoffTime(p.kickoff)}\n   🎯 Selección: ${p.market} (Cuota: ${p.odds.toFixed(2)})\n   ⭐ Confianza: ${p.confidence || "Alta"} (${p.probability.toFixed(0)}%)`
       ),
       "",
       `💰 Apuesta simulada: $${stake} ➔ Ganancia potencial: $${potentialTotalReturn}`,
@@ -147,10 +181,15 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
                   {idx + 1}
                 </div>
                 <div>
-                  <span className="text-[10px] font-bold uppercase text-slate-400 block">
-                    {pick.league}
-                  </span>
-                  <span className="text-sm font-black text-white group-hover:text-emerald-300 transition">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-bold uppercase text-slate-400">
+                      {pick.league}
+                    </span>
+                    <span className="inline-flex items-center gap-1 rounded-md bg-slate-900 px-2 py-0.5 text-[10px] font-black text-emerald-400 border border-emerald-950">
+                      🕒 {formatKickoffTime(pick.kickoff)}
+                    </span>
+                  </div>
+                  <span className="text-sm font-black text-white group-hover:text-emerald-300 transition mt-0.5 block">
                     {pick.match}
                   </span>
                 </div>

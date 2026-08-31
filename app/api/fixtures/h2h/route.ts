@@ -65,12 +65,31 @@ function formatTeamFixture(item: ApiFootballFixtureItem, targetTeamName: string)
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const homeTeamId = parseInt(searchParams.get("homeTeamId") || "0");
-    const awayTeamId = parseInt(searchParams.get("awayTeamId") || "0");
+    let homeTeamId = parseInt(searchParams.get("homeTeamId") || "0");
+    let awayTeamId = parseInt(searchParams.get("awayTeamId") || "0");
     const homeTeam = searchParams.get("homeTeam") || "Equipo Local";
     const awayTeam = searchParams.get("awayTeam") || "Equipo Visitante";
     const league = searchParams.get("league") || "Liga";
     const kickoff = searchParams.get("kickoff") || new Date().toISOString();
+
+    // 1. If IDs are missing, dynamically resolve them by team name from API-Football
+    if (!homeTeamId && homeTeam) {
+      try {
+        const resolvedHomeId = await apiFootball.searchTeam(homeTeam);
+        if (resolvedHomeId) homeTeamId = resolvedHomeId;
+      } catch (err) {
+        console.warn("[H2H API] Error searching home team ID:", err);
+      }
+    }
+
+    if (!awayTeamId && awayTeam) {
+      try {
+        const resolvedAwayId = await apiFootball.searchTeam(awayTeam);
+        if (resolvedAwayId) awayTeamId = resolvedAwayId;
+      } catch (err) {
+        console.warn("[H2H API] Error searching away team ID:", err);
+      }
+    }
 
     const homeElo = getTeamRating(homeTeam);
     const awayElo = getTeamRating(awayTeam);
@@ -79,7 +98,7 @@ export async function GET(request: NextRequest) {
     let homeLast5: TeamFormMatch[] = [];
     let awayLast5: TeamFormMatch[] = [];
 
-    // 1. Fetch real H2H from API-Football if IDs provided
+    // 2. Fetch real H2H from API-Football if IDs are resolved
     if (homeTeamId && awayTeamId) {
       try {
         const h2hRaw = await apiFootball.getHeadToHead(homeTeamId, awayTeamId, 5);
@@ -91,7 +110,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // 2. Fetch real Home last 5 matches from API-Football
+    // 3. Fetch real Home last 5 matches from API-Football
     if (homeTeamId) {
       try {
         const homeRaw = await apiFootball.getTeamLastFixtures(homeTeamId, 5);
@@ -103,7 +122,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // 3. Fetch real Away last 5 matches from API-Football
+    // 4. Fetch real Away last 5 matches from API-Football
     if (awayTeamId) {
       try {
         const awayRaw = await apiFootball.getTeamLastFixtures(awayTeamId, 5);
@@ -115,7 +134,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // 4. Guarantee 100% full dataset if API was rate-limited or IDs unavailable
+    // 5. Fallback only if API is completely unavailable
     if (h2hMatches.length === 0) {
       h2hMatches = generateH2HClashes(homeTeam, awayTeam, league, homeElo, awayElo, kickoff);
     }
@@ -130,6 +149,8 @@ export async function GET(request: NextRequest) {
       success: true,
       homeTeam,
       awayTeam,
+      homeTeamId,
+      awayTeamId,
       homeElo,
       awayElo,
       h2h: h2hMatches,
