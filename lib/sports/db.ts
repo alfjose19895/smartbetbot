@@ -96,46 +96,35 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
     }
   };
 
-  const chunkSize = 6;
-  for (let i = 0; i < leaguesToScan.length; i += chunkSize) {
-    const chunk = leaguesToScan.slice(i, i + chunkSize);
-    const results = await Promise.allSettled(
-      chunk.map((leagueId) => apiFootball.getUpcomingFixtures(leagueId, 10))
-    );
+  // Efficient single API call for today's entire match schedule
+  const todayDateStr = new Date(nowMs).toISOString().split("T")[0];
+  const todayFixtures = await apiFootball.getFixturesByDate(todayDateStr);
 
-    for (const res of results) {
-      if (res.status !== "fulfilled" || !Array.isArray(res.value)) continue;
+  if (Array.isArray(todayFixtures) && todayFixtures.length > 0) {
+    for (const item of todayFixtures) {
+      if (!item.fixture?.id || !item.teams?.home?.name || !item.teams?.away?.name) continue;
 
-      for (const item of res.value) {
-        if (!item.fixture?.id || !item.teams?.home?.name || !item.teams?.away?.name) continue;
+      const kickoffMs = new Date(item.fixture.date).getTime();
+      const shortStatus = item.fixture.status?.short || "NS";
+      if (["FT", "AET", "PEN", "PST", "CANC", "ABD"].includes(shortStatus)) continue;
+      if (kickoffMs < nowMs - 5 * 60 * 1000) continue; // Skip already finished matches
 
-        const kickoffMs = new Date(item.fixture.date).getTime();
-        const shortStatus = item.fixture.status?.short || "NS";
-        if (["FT", "AET", "PEN", "PST", "CANC", "ABD"].includes(shortStatus)) continue;
-        if (kickoffMs <= nowMs) continue; // Match already started; belongs in history
+      const opps = evaluateFixturePrediction({
+        fixtureId: item.fixture.id,
+        homeTeam: item.teams.home.name,
+        awayTeam: item.teams.away.name,
+        homeTeamId: item.teams.home.id,
+        awayTeamId: item.teams.away.id,
+        homeLogo: item.teams.home.logo,
+        awayLogo: item.teams.away.logo,
+        league: item.league.name,
+        leagueLogo: item.league.logo,
+        kickoff: item.fixture.date,
+      });
 
-        const opps = evaluateFixturePrediction({
-          fixtureId: item.fixture.id,
-          homeTeam: item.teams.home.name,
-          awayTeam: item.teams.away.name,
-          homeTeamId: item.teams.home.id,
-          awayTeamId: item.teams.away.id,
-          homeLogo: item.teams.home.logo,
-          awayLogo: item.teams.away.logo,
-          league: item.league.name,
-          leagueLogo: item.league.logo,
-          kickoff: item.fixture.date,
-        });
-
-        // Add ONLY the single top-confidence pick for this match
-        if (opps.length > 0) {
-          addUniqueMatchPick(opps[0]);
-        }
+      if (opps.length > 0) {
+        addUniqueMatchPick(opps[0]);
       }
-    }
-
-    if (i + chunkSize < leaguesToScan.length) {
-      await sleep(150);
     }
   }
 

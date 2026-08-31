@@ -2,7 +2,6 @@
 
 import { Navbar } from "@/components/Navbar";
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
 import { PredictionCard } from "@/components/PredictionCard";
 import { RecommendedParlay } from "@/components/RecommendedParlay";
 import { MatchDetailModal } from "@/components/MatchDetailModal";
@@ -17,12 +16,11 @@ export default function SignalsPage() {
   const [loading, setLoading] = useState(true);
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
 
-  // Filters
+  // Filters (exclusively for Today's Top 30)
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
   const [minProbability, setMinProbability] = useState<number>(55);
-  const [selectedDate, setSelectedDate] = useState<"all" | "today" | "tomorrow" | "week">("today");
 
   useEffect(() => {
     const fetchSignals = async () => {
@@ -86,29 +84,15 @@ export default function SignalsPage() {
     { value: "baja", label: language === "en" ? "Low / Moderate (<55%)" : "Moderada / Baja (<55%)" },
   ];
 
-  // Local calendar date helper (YYYY-MM-DD in local time)
-  const getLocalDateStr = (d: Date | string) => {
-    const dateObj = typeof d === "string" ? new Date(d) : d;
-    const year = dateObj.getFullYear();
-    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-    const day = String(dateObj.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
-
   const now = new Date();
-  const todayStr = getLocalDateStr(now);
+  const formattedToday = now.toLocaleDateString("es-ES", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 
-  const tomorrowObj = new Date(now);
-  tomorrowObj.setDate(tomorrowObj.getDate() + 1);
-  const tomorrowStr = getLocalDateStr(tomorrowObj);
-
-  const todayStartMs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-  const weekEndMs = todayStartMs + 7 * 86400000;
-
-  const todayCount = signals.filter((s) => getLocalDateStr(s.kickoff) === todayStr).length;
-  const tomorrowCount = signals.filter((s) => getLocalDateStr(s.kickoff) === tomorrowStr).length;
-
-  // Filter signals
+  // Filter signals strictly for today's matches
   const filteredCandidates = signals.filter((s) => {
     // 1. Min probability slider filter
     if (s.probability < minProbability) return false;
@@ -155,18 +139,6 @@ export default function SignalsPage() {
       if (!match) return false;
     }
 
-    // 5. Date filter
-    const matchDateStr = getLocalDateStr(s.kickoff);
-    const matchTimeMs = new Date(s.kickoff).getTime();
-
-    if (selectedDate === "today") {
-      if (matchDateStr !== todayStr) return false;
-    } else if (selectedDate === "tomorrow") {
-      if (matchDateStr !== tomorrowStr) return false;
-    } else if (selectedDate === "week") {
-      if (matchTimeMs < todayStartMs || matchTimeMs > weekEndMs) return false;
-    }
-
     return true;
   });
 
@@ -194,7 +166,7 @@ export default function SignalsPage() {
       <Navbar />
 
       <main className="mx-auto max-w-7xl px-3.5 py-6 sm:px-6 sm:py-8 lg:px-8 space-y-6">
-        {/* Recommended Parlay (Parley Combinado del Día) */}
+        {/* Recommended Parlay (Parley Recomendado del Día de Hoy) */}
         <RecommendedParlay
           predictions={signals}
           onSelectPrediction={(p) => setActiveModalPick(p)}
@@ -204,21 +176,21 @@ export default function SignalsPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pt-2">
           <div>
             <div className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-1 text-xs font-extrabold text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30">
-              <span>🎯</span>
-              <span>Top 30 Pronósticos del Día</span>
+              <span>📅</span>
+              <span className="capitalize">{formattedToday} • Top 30 Pronósticos del Día</span>
             </div>
             <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
-              Picks Deportivos de Máxima Rentabilidad
+              Picks Deportivos del Día Actual
             </h1>
             <p className="mt-1 text-xs text-slate-700 sm:text-sm dark:text-slate-400">
-              Análisis cuantitativo de cuotas del día con jerarquía Elo, H2H y 4 niveles de confianza
+              Concentrado exclusivamente en los 30 mejores partidos de hoy con mayor probabilidad y precisión cuantitativa
             </p>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="rounded-2xl bg-white px-3.5 py-2 sm:px-4 sm:py-2.5 border border-slate-200 text-center shadow-sm dark:bg-slate-900/80 dark:border-slate-800">
               <span className="text-[10px] uppercase text-slate-600 block font-bold dark:text-slate-400">
-                Picks Visibles
+                Picks de Hoy
               </span>
               <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
                 {top30Picks.length} / 30
@@ -243,52 +215,7 @@ export default function SignalsPage() {
           </div>
         </div>
 
-        {/* Date Filter Tabs */}
-        <div className="flex flex-wrap items-center gap-1.5 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800/80 dark:bg-slate-900/80">
-          <span className="text-xs font-bold text-slate-600 mr-1 dark:text-slate-400">Fecha:</span>
-          <button
-            onClick={() => setSelectedDate("today")}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-bold transition cursor-pointer ${
-              selectedDate === "today"
-                ? "bg-emerald-600 text-white shadow-sm dark:bg-emerald-500 dark:text-slate-950"
-                : "bg-slate-100 text-slate-800 hover:bg-slate-200 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
-            }`}
-          >
-            📅 Partidos de Hoy ({todayCount})
-          </button>
-          <button
-            onClick={() => setSelectedDate("all")}
-            className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
-              selectedDate === "all"
-                ? "bg-emerald-600 text-white shadow-sm dark:bg-emerald-500 dark:text-slate-950"
-                : "bg-slate-100 text-slate-800 hover:bg-slate-200 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
-            }`}
-          >
-            🌟 Todos los Picks ({signals.length})
-          </button>
-          <button
-            onClick={() => setSelectedDate("tomorrow")}
-            className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
-              selectedDate === "tomorrow"
-                ? "bg-emerald-600 text-white shadow-sm dark:bg-emerald-500 dark:text-slate-950"
-                : "bg-slate-100 text-slate-800 hover:bg-slate-200 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
-            }`}
-          >
-            🔥 Mañana ({tomorrowCount})
-          </button>
-          <button
-            onClick={() => setSelectedDate("week")}
-            className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
-              selectedDate === "week"
-                ? "bg-emerald-600 text-white shadow-sm dark:bg-emerald-500 dark:text-slate-950"
-                : "bg-slate-100 text-slate-800 hover:bg-slate-200 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
-            }`}
-          >
-            🗓️ Esta Semana
-          </button>
-        </div>
-
-        {/* Filter Controls Bar: Leagues, 4 Confidence Levels, Markets, Min Probability */}
+        {/* Filter Controls Bar: Probability Slider, Classified Leagues, 4 Confidence Levels & Markets */}
         <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800/80 dark:bg-slate-900/80">
           {/* Probability Slider */}
           <div className="flex items-center gap-3">
@@ -340,18 +267,18 @@ export default function SignalsPage() {
           </div>
         </div>
 
-        {/* Signals List (Top 30) */}
+        {/* Signals List (Top 30 of Today) */}
         {loading ? (
           <div className="py-20 text-center text-slate-500">
             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent" />
-            <p className="mt-3 text-sm font-semibold">Cargando los 30 mejores pronósticos...</p>
+            <p className="mt-3 text-sm font-semibold">Analizando los 30 mejores pronósticos de hoy...</p>
           </div>
         ) : top30Picks.length === 0 ? (
           <div className="rounded-3xl border border-slate-200 bg-white p-12 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900/40">
             <span className="text-4xl">🔍</span>
-            <h3 className="mt-3 text-lg font-bold text-slate-900 dark:text-white">Sin resultados</h3>
+            <h3 className="mt-3 text-lg font-bold text-slate-900 dark:text-white">Sin resultados para hoy</h3>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              Ajusta los filtros de ligas, confianza o mercados para ver más pronósticos.
+              Ajusta los filtros de ligas, confianza o mercados para ver más pronósticos del día.
             </p>
           </div>
         ) : (

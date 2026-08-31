@@ -350,6 +350,14 @@ export class ApiFootballClient {
   /**
    * Fetch upcoming and next fixtures for a league
    */
+    /**
+   * Fetch all fixtures for a specific date in a single API call (maximizes API efficiency)
+   */
+  async getFixturesByDate(dateStr?: string): Promise<ApiFootballFixtureItem[]> {
+    const d = dateStr || new Date().toISOString().split("T")[0];
+    return this.request<ApiFootballFixtureItem>("fixtures", { date: d });
+  }
+
   async getUpcomingFixtures(leagueId: number, nextCount: number = 6): Promise<ApiFootballFixtureItem[]> {
     return this.getFixtures(leagueId, undefined, undefined, undefined, nextCount);
   }
