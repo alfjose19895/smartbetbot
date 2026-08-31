@@ -401,6 +401,30 @@ export class ApiFootballClient {
   /**
    * Fetch match odds from bookmakers
    */
+  
+  /**
+   * Fetch official Head to Head (H2H) clashes between two teams
+   */
+  async getHeadToHead(homeTeamId: number, awayTeamId: number, lastCount: number = 5): Promise<ApiFootballFixtureItem[]> {
+    if (!homeTeamId || !awayTeamId) return [];
+    return this.request<ApiFootballFixtureItem>("fixtures/headtohead", {
+      h2h: `${homeTeamId}-${awayTeamId}`,
+      last: lastCount,
+    });
+  }
+
+  /**
+   * Fetch official recently finished fixtures for a specific team
+   */
+  async getTeamLastFixtures(teamId: number, lastCount: number = 5): Promise<ApiFootballFixtureItem[]> {
+    if (!teamId) return [];
+    return this.request<ApiFootballFixtureItem>("fixtures", {
+      team: teamId,
+      last: lastCount,
+      status: "FT",
+    });
+  }
+
   async getOdds(fixtureId: number): Promise<ApiFootballOdds | null> {
     const data = await this.request<{
       fixture: { id: number };

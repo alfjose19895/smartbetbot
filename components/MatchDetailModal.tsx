@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   MarketOpportunity,
   generateH2HClashes,
   generateTeamRecentForm,
+  H2HMatch,
+  TeamFormMatch,
 } from "@/lib/sports/prediction-engine";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -17,6 +19,84 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
   const { language } = useLanguage();
   const [activeTab, setActiveTab] = useState<"h2h" | "homeForm" | "awayForm" | "stats">("h2h");
 
+  const initialHomeElo = prediction.homeElo || 78;
+  const initialAwayElo = prediction.awayElo || 72;
+
+  const [h2hList, setH2hList] = useState<H2HMatch[]>(() =>
+    prediction.h2h && prediction.h2h.length > 0
+      ? prediction.h2h
+      : generateH2HClashes(
+          prediction.homeTeam,
+          prediction.awayTeam,
+          prediction.league,
+          initialHomeElo,
+          initialAwayElo,
+          prediction.kickoff
+        )
+  );
+
+  const [homeLast5List, setHomeLast5List] = useState<TeamFormMatch[]>(() =>
+    prediction.homeLast5 && prediction.homeLast5.length > 0
+      ? prediction.homeLast5
+      : generateTeamRecentForm(
+          prediction.homeTeam,
+          prediction.league,
+          initialHomeElo,
+          prediction.kickoff
+        )
+  );
+
+  const [awayLast5List, setAwayLast5List] = useState<TeamFormMatch[]>(() =>
+    prediction.awayLast5 && prediction.awayLast5.length > 0
+      ? prediction.awayLast5
+      : generateTeamRecentForm(
+          prediction.awayTeam,
+          prediction.league,
+          initialAwayElo,
+          prediction.kickoff
+        )
+  );
+
+  const [homeElo, setHomeElo] = useState<number>(initialHomeElo);
+  const [awayElo, setAwayElo] = useState<number>(initialAwayElo);
+  const [isOfficialLoaded, setIsOfficialLoaded] = useState<boolean>(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchOfficialH2H = async () => {
+      try {
+        const params = new URLSearchParams({
+          homeTeamId: String(prediction.homeTeamId || 0),
+          awayTeamId: String(prediction.awayTeamId || 0),
+          homeTeam: prediction.homeTeam,
+          awayTeam: prediction.awayTeam,
+          league: prediction.league,
+          kickoff: prediction.kickoff,
+        });
+
+        const res = await fetch(`/api/fixtures/h2h?${params.toString()}`);
+        if (!res.ok) return;
+        const data = await res.json();
+
+        if (isMounted && data.success) {
+          if (data.h2h && data.h2h.length > 0) setH2hList(data.h2h);
+          if (data.homeLast5 && data.homeLast5.length > 0) setHomeLast5List(data.homeLast5);
+          if (data.awayLast5 && data.awayLast5.length > 0) setAwayLast5List(data.awayLast5);
+          if (data.homeElo) setHomeElo(data.homeElo);
+          if (data.awayElo) setAwayElo(data.awayElo);
+          setIsOfficialLoaded(true);
+        }
+      } catch (err) {
+        console.warn("Could not load real-time H2H API:", err);
+      }
+    };
+
+    fetchOfficialH2H();
+    return () => {
+      isMounted = false;
+    };
+  }, [prediction]);
+
   const formattedDate = new Date(prediction.kickoff).toLocaleDateString(
     language === "en" ? "en-US" : "es-ES",
     {
@@ -27,42 +107,6 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
       minute: "2-digit",
     }
   );
-
-  const homeElo = prediction.homeElo || 78;
-  const awayElo = prediction.awayElo || 72;
-
-  // Guarantee 100% reliable H2H and recent form data (fallback to mathematical engine if not present in API payload)
-  const h2hList =
-    prediction.h2h && prediction.h2h.length > 0
-      ? prediction.h2h
-      : generateH2HClashes(
-          prediction.homeTeam,
-          prediction.awayTeam,
-          prediction.league,
-          homeElo,
-          awayElo,
-          prediction.kickoff
-        );
-
-  const homeLast5List =
-    prediction.homeLast5 && prediction.homeLast5.length > 0
-      ? prediction.homeLast5
-      : generateTeamRecentForm(
-          prediction.homeTeam,
-          prediction.league,
-          homeElo,
-          prediction.kickoff
-        );
-
-  const awayLast5List =
-    prediction.awayLast5 && prediction.awayLast5.length > 0
-      ? prediction.awayLast5
-      : generateTeamRecentForm(
-          prediction.awayTeam,
-          prediction.league,
-          awayElo,
-          prediction.kickoff
-        );
 
   const confidenceBadge = {
     "Muy Alta": { label: "Muy Alta", stars: "⭐⭐⭐", bg: "bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700" },
@@ -98,6 +142,11 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
             <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
               📅 {formattedDate}
             </span>
+            {isOfficialLoaded && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-sky-100 px-2 py-0.5 text-[10px] font-black text-sky-800 dark:bg-sky-950 dark:text-sky-300 border border-sky-300 dark:border-sky-800">
+                ✓ Historial Oficial Verificado
+              </span>
+            )}
           </div>
 
           <h2 className="mt-3 text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white">

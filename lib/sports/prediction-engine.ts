@@ -28,6 +28,8 @@ export interface MarketOpportunity {
   match: string;
   homeTeam: string;
   awayTeam: string;
+  homeTeamId?: number;
+  awayTeamId?: number;
   homeLogo?: string;
   awayLogo?: string;
   league: string;
@@ -335,6 +337,8 @@ export function evaluateFixturePrediction(params: {
   fixtureId: number | string;
   homeTeam: string;
   awayTeam: string;
+  homeTeamId?: number;
+  awayTeamId?: number;
   homeLogo?: string;
   awayLogo?: string;
   league: string;
@@ -354,6 +358,8 @@ export function evaluateFixturePrediction(params: {
     fixtureId,
     homeTeam,
     awayTeam,
+    homeTeamId,
+    awayTeamId,
     homeLogo,
     awayLogo,
     league,
@@ -473,6 +479,8 @@ export function evaluateFixturePrediction(params: {
       match: `${homeTeam} vs ${awayTeam}`,
       homeTeam,
       awayTeam,
+      homeTeamId,
+      awayTeamId,
       homeLogo,
       awayLogo,
       league: canonicalLeague,

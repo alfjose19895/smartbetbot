@@ -118,6 +118,8 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
           fixtureId: item.fixture.id,
           homeTeam: item.teams.home.name,
           awayTeam: item.teams.away.name,
+          homeTeamId: item.teams.home.id,
+          awayTeamId: item.teams.away.id,
           homeLogo: item.teams.home.logo,
           awayLogo: item.teams.away.logo,
           league: item.league.name,
