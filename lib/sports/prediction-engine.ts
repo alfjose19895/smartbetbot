@@ -143,14 +143,26 @@ export function normalizeLeagueInfo(rawLeagueName: string, rawCountry?: string):
   if (norm.includes("eredivisie") || norm.includes("holanda") || norm.includes("netherlands") || norm.includes("países bajos")) {
     return { canonicalLeague: "Eredivisie", country: "Países Bajos", tier: 2 };
   }
+  if (norm.includes("jupiler") || norm.includes("pro league") || norm.includes("belgica") || norm.includes("belgium")) {
+    return { canonicalLeague: "Jupiler Pro League", country: "Bélgica", tier: 2 };
+  }
   if (norm.includes("primeira liga") || norm.includes("portugal") || norm.includes("liga portugal")) {
     return { canonicalLeague: "Primeira Liga", country: "Portugal", tier: 2 };
   }
+  if (norm.includes("ekstraklasa") || norm.includes("polonia") || norm.includes("poland")) {
+    return { canonicalLeague: "Ekstraklasa", country: "Polonia", tier: 2 };
+  }
+  if (norm.includes("persha liga") || (norm.includes("premier") && norm.includes("ucrania"))) {
+    return { canonicalLeague: "Premier League (Ucrania)", country: "Ucrania", tier: 2 };
+  }
+  if (norm.includes("hnl") || norm.includes("croacia") || norm.includes("croatia")) {
+    return { canonicalLeague: "HNL", country: "Croacia", tier: 2 };
+  }
+  if (norm.includes("nb i") || norm.includes("nb 1") || norm.includes("hungria") || norm.includes("hungary")) {
+    return { canonicalLeague: "NB I (OTP Bank Liga)", country: "Hungría", tier: 2 };
+  }
   if (norm.includes("süper lig") || norm.includes("super lig") || norm.includes("turquia") || norm.includes("turkey")) {
     return { canonicalLeague: "Süper Lig", country: "Turquía", tier: 2 };
-  }
-  if (norm.includes("jupiler") || norm.includes("pro league") || norm.includes("belgica") || norm.includes("belgium")) {
-    return { canonicalLeague: "Jupiler Pro League", country: "Bélgica", tier: 2 };
   }
   if (norm.includes("premiership") || norm.includes("scotland") || norm.includes("escocia")) {
     return { canonicalLeague: "Premiership", country: "Escocia", tier: 2 };
@@ -170,6 +182,36 @@ export function normalizeLeagueInfo(rawLeagueName: string, rawCountry?: string):
   if (norm.includes("allsvenskan") || norm.includes("suecia") || norm.includes("sweden")) {
     return { canonicalLeague: "Allsvenskan", country: "Suecia", tier: 2 };
   }
+  if (norm.includes("veikkausliiga") || norm.includes("finlandia") || norm.includes("finland")) {
+    return { canonicalLeague: "Veikkausliiga", country: "Finlandia", tier: 2 };
+  }
+  if (norm.includes("meistriliiga") || norm.includes("estonia")) {
+    return { canonicalLeague: "Meistriliiga", country: "Estonia", tier: 2 };
+  }
+  if (norm.includes("snl") || norm.includes("eslovenia") || norm.includes("slovenia")) {
+    return { canonicalLeague: "1. SNL (PrvaLiga)", country: "Eslovenia", tier: 2 };
+  }
+  if (norm.includes("niké liga") || norm.includes("eslovaquia") || norm.includes("slovakia")) {
+    return { canonicalLeague: "Super Liga (Niké liga)", country: "Eslovaquia", tier: 2 };
+  }
+  if (norm.includes("cyprus") || norm.includes("chipre")) {
+    return { canonicalLeague: "1. Division", country: "Chipre", tier: 2 };
+  }
+  if (norm.includes("premijer liga") || norm.includes("bosnia")) {
+    return { canonicalLeague: "Premijer Liga BiH", country: "Bosnia", tier: 2 };
+  }
+  if (norm.includes("urvalsdeild") || norm.includes("besta deild") || norm.includes("islandia") || norm.includes("iceland")) {
+    return { canonicalLeague: "Úrvalsdeild", country: "Islandia", tier: 2 };
+  }
+  if (norm.includes("ligat ha'al") || norm.includes("israel")) {
+    return { canonicalLeague: "Ligat Ha'al", country: "Israel", tier: 2 };
+  }
+  if (norm.includes("a-league") || norm.includes("australia")) {
+    return { canonicalLeague: "A-League", country: "Australia", tier: 2 };
+  }
+  if (norm.includes("indian super league") || norm.includes("india")) {
+    return { canonicalLeague: "Indian Super League", country: "India", tier: 2 };
+  }
 
   // Tier 2: Américas (1ra División)
   if (norm.includes("liga pro") || norm.includes("ecuador")) {
@@ -180,6 +222,9 @@ export function normalizeLeagueInfo(rawLeagueName: string, rawCountry?: string):
   }
   if (norm.includes("liga profesional") || (norm.includes("primera") && norm.includes("argentina"))) {
     return { canonicalLeague: "Liga Profesional Argentina", country: "Argentina", tier: 2 };
+  }
+  if (norm.includes("bolivia")) {
+    return { canonicalLeague: "Primera División", country: "Bolivia", tier: 2 };
   }
   if (norm.includes("liga mx") || norm.includes("mexico")) {
     return { canonicalLeague: "Liga MX", country: "México", tier: 2 };
@@ -330,16 +375,18 @@ export const LEAGUE_PROFILES: Record<string, { baseHomeXg: number; baseAwayXg: n
 
   // Mid Europe
   "eredivisie": { baseHomeXg: 1.75, baseAwayXg: 1.35, margin: 0.95 },
-  "primeira liga": { baseHomeXg: 1.45, baseAwayXg: 1.18, margin: 0.95 },
-  "süper lig": { baseHomeXg: 1.50, baseAwayXg: 1.20, margin: 0.95 },
   "jupiler pro league": { baseHomeXg: 1.60, baseAwayXg: 1.28, margin: 0.95 },
+  "primeira liga": { baseHomeXg: 1.45, baseAwayXg: 1.18, margin: 0.95 },
+  "ekstraklasa": { baseHomeXg: 1.45, baseAwayXg: 1.15, margin: 0.95 },
+  "süper lig": { baseHomeXg: 1.50, baseAwayXg: 1.20, margin: 0.95 },
   "premiership": { baseHomeXg: 1.45, baseAwayXg: 1.15, margin: 0.95 },
 
-  // Américas
+  // Américas & Australia
   "liga pro": { baseHomeXg: 1.40, baseAwayXg: 1.10, margin: 0.95 },
   "brasileirão": { baseHomeXg: 1.35, baseAwayXg: 1.05, margin: 0.95 },
   "liga mx": { baseHomeXg: 1.46, baseAwayXg: 1.20, margin: 0.95 },
   "mls": { baseHomeXg: 1.65, baseAwayXg: 1.30, margin: 0.95 },
+  "a-league": { baseHomeXg: 1.65, baseAwayXg: 1.30, margin: 0.95 },
   "liga profesional argentina": { baseHomeXg: 1.25, baseAwayXg: 0.98, margin: 0.95 },
 };
 
