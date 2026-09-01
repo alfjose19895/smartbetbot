@@ -90,7 +90,7 @@ export default function DashboardPage() {
       leagueDropdownOptions.push({
         value: p.league,
         label: p.league,
-        group: "Otras Ligas",
+        group: p.country || "Competiciones Oficiales",
       });
     }
   });
@@ -99,12 +99,15 @@ export default function DashboardPage() {
     "Doble Oportunidad (1X)",
     "Doble Oportunidad (X2)",
     "Over 1.5 Goles",
+    "Over 2.5 Goles",
+    "Over 3.5 Goles",
+    "Under 2.5 Goles",
     "Under 3.5 Goles",
+    "Over 8.5 Córners",
+    "Over 3.5 Tarjetas",
     "Gana Local",
     "Gana Visitante",
     "Ambos Marcan (BTTS)",
-    "Over 2.5 Goles",
-    "Under 2.5 Goles",
   ];
 
   const availableMarketNames = Array.from(
@@ -208,7 +211,7 @@ export default function DashboardPage() {
           <div>
             <div className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-1 text-xs font-extrabold text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30">
               <span>🎯</span>
-              <span className="capitalize">{formattedToday} • Top 20 Alta Precisión (≥85% Target)</span>
+              <span className="capitalize">{formattedToday} • Alertas de Alta Precisión (≥85% Win Rate Target)</span>
             </div>
             <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
               {t("dashboardTitle")}
@@ -302,7 +305,7 @@ export default function DashboardPage() {
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
               <span>💎</span>
-              <span>Top 20 Partidos de Máxima Seguridad del Día</span>
+              <span>Partidos Analizados de Máxima Seguridad de la Jornada</span>
             </span>
           </div>
 

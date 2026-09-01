@@ -76,7 +76,7 @@ export default function HistoryPage() {
       leagueDropdownOptions.push({
         value: h.league,
         label: h.league,
-        group: "Otras Ligas",
+        group: h.country || "Competiciones Oficiales",
       });
     }
   });
@@ -85,12 +85,15 @@ export default function HistoryPage() {
     "Doble Oportunidad (1X)",
     "Doble Oportunidad (X2)",
     "Over 1.5 Goles",
+    "Over 2.5 Goles",
+    "Over 3.5 Goles",
+    "Under 2.5 Goles",
     "Under 3.5 Goles",
+    "Over 8.5 Córners",
+    "Over 3.5 Tarjetas",
     "Gana Local",
     "Gana Visitante",
     "Ambos Marcan (BTTS)",
-    "Over 2.5 Goles",
-    "Under 2.5 Goles",
   ];
 
   const availableMarkets = Array.from(

@@ -66,7 +66,7 @@ export default function SignalsPage() {
       leagueDropdownOptions.push({
         value: s.league,
         label: s.league,
-        group: "Otras Ligas",
+        group: s.country || "Competiciones Oficiales",
       });
     }
   });
@@ -75,12 +75,15 @@ export default function SignalsPage() {
     "Doble Oportunidad (1X)",
     "Doble Oportunidad (X2)",
     "Over 1.5 Goles",
+    "Over 2.5 Goles",
+    "Over 3.5 Goles",
+    "Under 2.5 Goles",
     "Under 3.5 Goles",
+    "Over 8.5 Córners",
+    "Over 3.5 Tarjetas",
     "Gana Local",
     "Gana Visitante",
     "Ambos Marcan (BTTS)",
-    "Over 2.5 Goles",
-    "Under 2.5 Goles",
   ];
 
   const availableMarketNames = Array.from(
@@ -219,13 +222,13 @@ export default function SignalsPage() {
           <div>
             <div className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-1 text-xs font-extrabold text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30">
               <span>🎯</span>
-              <span className="capitalize">{formattedToday} • Top 20 Picks de Alta Precisión (≥85% Target)</span>
+              <span className="capitalize">{formattedToday} • Alertas de Alta Precisión (≥85% Win Rate Target)</span>
             </div>
             <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
-              Picks Deportivos del Día (Máxima Seguridad)
+              Picks y Alertas Cuantitativas de la Jornada
             </h1>
             <p className="mt-1 text-xs text-slate-700 sm:text-sm dark:text-slate-400">
-              Concentrado exclusivamente en los 20 mejores partidos de hoy priorizando Ligas Top y Ligas Europeas de élite
+              Pronósticos de máxima certeza estadística priorizando Ligas Top y Ligas Europeas de élite
             </p>
           </div>
 

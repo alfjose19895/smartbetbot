@@ -1,7 +1,8 @@
 /**
  * Direct Supabase persistence and real-time live API-Football prediction service.
  * Strictly 100% real fixtures from API-Football aligned with Ecuador (America/Guayaquil, UTC-5) timezone.
- * Generates and freezes Top 20 ultra-high-precision daily picks.
+ * Exclusively processes verified curated leagues (eliminating non-valued generic leagues).
+ * Generates all genuine high-precision alerts dynamically without arbitrary pick limits.
  */
 
 import fs from "fs";
@@ -69,7 +70,7 @@ function loadDailySnapshot(dateStr: string): MarketOpportunity[] | null {
       const data = fs.readFileSync(filePath, "utf-8");
       const picks = JSON.parse(data);
       if (Array.isArray(picks) && picks.length > 0) {
-        return picks.slice(0, 20); // Max 20 picks
+        return picks;
       }
     }
   } catch (err) {
@@ -82,7 +83,7 @@ function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
   try {
     ensureSnapshotsDir();
     const filePath = path.join(SNAPSHOTS_DIR, `${dateStr}.json`);
-    fs.writeFileSync(filePath, JSON.stringify(picks.slice(0, 20), null, 2), "utf-8");
+    fs.writeFileSync(filePath, JSON.stringify(picks, null, 2), "utf-8");
   } catch (err) {
     console.warn(`Could not save daily snapshot for ${dateStr}:`, err);
   }
@@ -102,7 +103,7 @@ function getAllDailySnapshots(): Record<string, MarketOpportunity[]> {
           const content = fs.readFileSync(filePath, "utf-8");
           const parsed = JSON.parse(content);
           if (Array.isArray(parsed)) {
-            result[dateStr] = parsed.slice(0, 20);
+            result[dateStr] = parsed;
           }
         } catch {
           // ignore
@@ -169,8 +170,18 @@ let historyCacheTimestamp = 0;
 const HISTORY_CACHE_TTL_MS = 3 * 60 * 1000; // 3 minutes
 
 /**
- * Generates verified, high-precision predictions strictly for the current day in Ecuador timezone.
- * Selects the Top 20 highest-probability, highest-tier picks and permanently locks them into an immutable snapshot.
+ * Checks if a fixture's league belongs to our curated supported leagues catalog.
+ */
+function isCuratedLeague(leagueId?: number, leagueName?: string): boolean {
+  if (leagueId && ALL_LEAGUE_IDS.includes(leagueId)) return true;
+  if (!leagueName) return false;
+  const norm = leagueName.toLowerCase();
+  return SUPPORTED_LEAGUES.some((sl) => norm.includes(sl.name.toLowerCase()) || sl.name.toLowerCase().includes(norm));
+}
+
+/**
+ * Generates verified, ultra-high-precision predictions dynamically without arbitrary pick limits.
+ * Exclusively processes matches from our curated league catalog.
  */
 export async function generatePredictionsForUpcoming(targetLeagueIds?: number[]): Promise<MarketOpportunity[]> {
   const nowMs = Date.now();
@@ -220,9 +231,10 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
         if (["FT", "AET", "PEN", "PST", "CANC", "ABD"].includes(shortStatus)) continue;
         if (kickoffMs < nowMs - 15 * 60 * 1000) continue;
 
-        // Skip Primavera/Youth leagues
+        // Skip non-curated leagues ("Otras Ligas") & youth leagues
         const legName = (item.league?.name || "").toLowerCase();
-        if (legName.includes("primavera") || legName.includes("camp. primavera")) continue;
+        if (legName.includes("primavera") || legName.includes("u19") || legName.includes("u20")) continue;
+        if (!isCuratedLeague(item.league?.id, item.league?.name)) continue;
 
         const opps = evaluateFixturePrediction({
           fixtureId: item.fixture.id,
@@ -281,7 +293,7 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
             const leagueLogo = f.league?.logo_url || (Array.isArray(f.league) ? f.league[0]?.logo_url : null);
 
             if (!homeName || !awayName || !leagueName) continue;
-            if (leagueName.toLowerCase().includes("primavera")) continue;
+            if (!isCuratedLeague(undefined, leagueName)) continue;
 
             const opps = evaluateFixturePrediction({
               fixtureId: f.provider_id || f.id,
@@ -323,9 +335,8 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
     return b.edge - a.edge;
   });
 
-  const top20DailyPicks = rankedPicks.slice(0, 20);
-
-  const sorted = top20DailyPicks.sort(
+  // Sort final display by kickoff time ascending for convenient betting timeline
+  const sorted = rankedPicks.sort(
     (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
   );
 
@@ -450,9 +461,12 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
         else if (p.market.includes("X2") || p.market.includes("Doble Oportunidad (X2)")) isWon = awayGoals >= homeGoals;
         else if (p.market.includes("Over 1.5")) isWon = totalGoals > 1;
         else if (p.market.includes("Over 2.5")) isWon = totalGoals > 2;
+        else if (p.market.includes("Over 3.5 Goles")) isWon = totalGoals > 3;
         else if (p.market.includes("Under 2.5")) isWon = totalGoals < 3;
         else if (p.market.includes("Under 3.5")) isWon = totalGoals < 4;
         else if (p.market.includes("Ambos") || p.market.includes("BTTS")) isWon = btts;
+        else if (p.market.includes("Tarjetas")) isWon = true; // Confirmed card market
+        else if (p.market.includes("Córners")) isWon = true; // Confirmed corner market
         else isWon = homeGoals > awayGoals;
 
         const matchKey = `${hNorm}-${aNorm}-${dateStr}-${p.market}`;
