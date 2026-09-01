@@ -82,6 +82,26 @@ export async function generatePredictionCardBlob(prediction: MarketOpportunity):
   ctx.font = "900 30px system-ui, -apple-system, sans-serif";
   ctx.fillText(prediction.awayTeam, 40, 275);
 
+  // Result Badge & Actual Score (if finished/settled)
+  if (prediction.status === "won" || prediction.status === "lost") {
+    const isWon = prediction.status === "won";
+    ctx.fillStyle = isWon ? "#10b981" : "#e11d48";
+    ctx.beginPath();
+    ctx.roundRect(width - 200, 180, 160, 42, 14);
+    ctx.fill();
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "900 16px system-ui, -apple-system, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(isWon ? "✓ GANADO" : "✗ PERDIDO", width - 120, 207);
+
+    if (prediction.actualScore) {
+      ctx.fillStyle = "#f8fafc";
+      ctx.font = "bold 14px system-ui, -apple-system, sans-serif";
+      ctx.fillText(`Marcador: ${prediction.actualScore}`, width - 120, 250);
+    }
+    ctx.textAlign = "left";
+  }
+
   // Main Prediction Box
   const pickBoxGrad = ctx.createLinearGradient(40, 310, width - 80, 420);
   pickBoxGrad.addColorStop(0, "rgba(16, 185, 129, 0.18)");

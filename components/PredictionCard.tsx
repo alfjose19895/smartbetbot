@@ -118,11 +118,21 @@ export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps
             </span>
           </div>
 
-          {statusBadge && (
-            <span className={`inline-flex items-center rounded-xl px-2.5 py-1 text-[10px] font-black border ${statusBadge.cls}`}>
-              {statusBadge.label}
-            </span>
-          )}
+          <div className="flex items-center gap-2">
+            {prediction.status === "won" ? (
+              <span className="inline-flex items-center gap-1 rounded-xl px-3 py-1 text-xs font-black bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30">
+                ✓ Ganado
+              </span>
+            ) : prediction.status === "lost" ? (
+              <span className="inline-flex items-center gap-1 rounded-xl px-3 py-1 text-xs font-black bg-rose-600 text-white shadow-md shadow-rose-600/30">
+                ✗ Perdido
+              </span>
+            ) : statusBadge ? (
+              <span className={`inline-flex items-center rounded-xl px-2.5 py-1 text-[10px] font-black border ${statusBadge.cls}`}>
+                {statusBadge.label}
+              </span>
+            ) : null}
+          </div>
         </div>
 
         {/* Kickoff Date/Time & Confidence Badge */}
@@ -144,6 +154,15 @@ export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps
           <div className="text-base font-black text-slate-900 dark:text-white leading-snug">
             {prediction.awayTeam}
           </div>
+
+          {prediction.actualScore && (
+            <div className="mt-2.5 flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800/80">
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Marcador Final:</span>
+              <span className="px-2.5 py-0.5 rounded-lg bg-slate-800 text-xs font-black text-emerald-400 border border-slate-700">
+                {prediction.actualScore}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Main Pick Highlight Box */}
