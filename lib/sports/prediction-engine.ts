@@ -2,9 +2,11 @@
  * Production-ready TypeScript SmartBetBot Quantitative Prediction Engine (MVP).
  * Combines Team Elo ratings, Poisson Expected Goals (xG), market valuation,
  * and ultra-high-precision filtering (>=70% - 85% win rate target) with authentic bookmaker odds.
- * Features 1X2, Double Chance, Asian Handicap, Over/Under 1.5, 2.5, 3.5, BTTS, Corners, Cards, Shots, and Player Shots.
+ * Features 1X2, Double Chance, Asian Handicap, Over/Under 1.5, 2.5, 3.5, BTTS, Corners, Cards, Shots, and Exact Player Shots.
  * Badges: 💣 Bomba (High Payout / High Odds), 💎 Valor (Maximum Certainty ~100%).
  */
+
+import { SUPPORTED_LEAGUES } from "./api-football";
 
 export interface H2HMatch {
   date: string;
@@ -61,6 +63,113 @@ export interface MarketOpportunity {
   leagueTier?: number;
 }
 
+export const TEAM_STAR_PLAYERS: Record<string, string> = {
+  // España
+  "realmadrid": "Vinicius Jr",
+  "barcelona": "Robert Lewandowski",
+  "atleticomadrid": "Julián Álvarez",
+  "realsociedad": "Mikel Oyarzabal",
+  "athleticclub": "Nico Williams",
+  "villarreal": "Gerard Moreno",
+  "realbetis": "Vitor Roque",
+  "sevilla": "Isaac Romero",
+  "valencia": "Hugo Duro",
+  "celtavigo": "Iago Aspas",
+  "osasuna": "Ante Budimir",
+  "rayovallecano": "James Rodríguez",
+  "mallorca": "Vedat Muriqi",
+  "getafe": "Borja Mayoral",
+  "alaves": "Kike García",
+  "laspalmas": "Sandro Ramírez",
+  "espanyol": "Javi Puado",
+  "leganes": "Juan Cruz",
+  "valladolid": "Mamadou Sylla",
+
+  // Inglaterra
+  "manchestercity": "Erling Haaland",
+  "arsenal": "Bukayo Saka",
+  "liverpool": "Mohamed Salah",
+  "chelsea": "Cole Palmer",
+  "tottenham": "Son Heung-min",
+  "newcastle": "Alexander Isak",
+  "astonvilla": "Ollie Watkins",
+  "brighton": "Kaoru Mitoma",
+  "manchesterunited": "Bruno Fernandes",
+  "westham": "Jarrod Bowen",
+  "fulham": "Raúl Jiménez",
+  "brentford": "Bryan Mbeumo",
+  "crystalpalace": "Jean-Philippe Mateta",
+  "bournemouth": "Antoine Semenyo",
+  "everton": "Dominic Calvert-Lewin",
+  "wolves": "Matheus Cunha",
+  "nottinghamforest": "Chris Wood",
+  "leicester": "Jamie Vardy",
+  "ipswich": "Liam Delap",
+  "southampton": "Cameron Archer",
+
+  // Italia
+  "inter": "Lautaro Martínez",
+  "juventus": "Dušan Vlahović",
+  "milan": "Rafael Leão",
+  "atalanta": "Mateo Retegui",
+  "napoli": "Romelu Lukaku",
+  "roma": "Paulo Dybala",
+  "lazio": "Valentín Castellanos",
+  "fiorentina": "Moise Kean",
+  "bologna": "Riccardo Orsolini",
+  "torino": "Duván Zapata",
+
+  // Alemania
+  "bayernmunich": "Harry Kane",
+  "bayerleverkusen": "Florian Wirtz",
+  "borussiadortmund": "Serhou Guirassy",
+  "rbleipzig": "Loïs Openda",
+  "eintrachtfrankfurt": "Omar Marmoush",
+  "vfb": "Deniz Undav",
+
+  // Francia
+  "psg": "Ousmane Dembélé",
+  "monaco": "Breel Embolo",
+  "marseille": "Mason Greenwood",
+  "lille": "Jonathan David",
+  "lyon": "Alexandre Lacazette",
+
+  // Portugal & Países Bajos
+  "sportingcp": "Viktor Gyökeres",
+  "benfica": "Ángel Di María",
+  "porto": "Samu Omorodion",
+  "psveindhoven": "Luuk de Jong",
+  "ajax": "Brian Brobbey",
+  "feyenoord": "Santiago Giménez",
+
+  // Ecuador (Liga Pro)
+  "lduquito": "Alex Arce",
+  "independientedelvalle": "Jeison Medina",
+  "barcelonasc": "Octavio Rivero",
+  "emelec": "Jaime Ayoví",
+  "aucas": "Jean Carlos Blanco",
+  "universidadcatolica": "Jhon Jairo Cifuente",
+
+  // China & Costa Rica
+  "shanghaiport": "Wu Lei",
+  "shandongtaishan": "Cryzan",
+  "shanghaishenhua": "Cephas Malele",
+  "beijingguoan": "Fábio Abreu",
+  "saprissa": "Mariano Torres",
+  "alajuelense": "Jonathan Moya",
+  "herediano": "Marcel Hernández",
+};
+
+export function getTeamStarPlayer(teamName: string): string {
+  const norm = getCanonicalTeamKey(teamName);
+  for (const [k, v] of Object.entries(TEAM_STAR_PLAYERS)) {
+    if (norm.includes(k) || k.includes(norm)) {
+      return v;
+    }
+  }
+  return `${teamName} (Delantero Referente)`;
+}
+
 export function getCanonicalTeamKey(name: string): string {
   const norm = (name || "")
     .toLowerCase()
@@ -109,9 +218,30 @@ export function normalizeTeamName(name: string): string {
   return getCanonicalTeamKey(name);
 }
 
-export function normalizeLeagueInfo(rawLeagueName: string, rawCountry?: string): { canonicalLeague: string; country: string; tier: number } {
+export function normalizeLeagueInfo(
+  rawLeagueName: string,
+  rawCountry?: string,
+  leagueId?: number
+): { canonicalLeague: string; country: string; tier: number } {
+  // 1. Strict ID Match against Curated Catalog
+  if (leagueId) {
+    const matched = SUPPORTED_LEAGUES.find((l) => l.id === leagueId);
+    if (matched) {
+      return { canonicalLeague: matched.name, country: matched.country, tier: matched.tier || 2 };
+    }
+  }
+
   const norm = (rawLeagueName || "").toLowerCase().trim();
-  
+  const normCountry = (rawCountry || "").toLowerCase().trim();
+
+  // If country is Egypt, Kuwait or other uncurated countries, do NOT classify as England
+  if (normCountry.includes("egypt") || normCountry.includes("egipto")) {
+    return { canonicalLeague: "Premier League (Egipto)", country: "Egipto", tier: 3 };
+  }
+  if (normCountry.includes("kuwait")) {
+    return { canonicalLeague: "Premier League (Kuwait)", country: "Kuwait", tier: 3 };
+  }
+
   // Tier 1: Top 5 European Leagues & UEFA Competitions
   if (norm.includes("champions league") || norm.includes("ucl")) {
     return { canonicalLeague: "UEFA Champions League", country: "Europa", tier: 1 };
@@ -122,19 +252,21 @@ export function normalizeLeagueInfo(rawLeagueName: string, rawCountry?: string):
   if (norm.includes("conference league")) {
     return { canonicalLeague: "UEFA Conference League", country: "Europa", tier: 1 };
   }
-  if (norm.includes("premier league") || norm.includes("england") || norm.includes("inglaterra")) {
+
+  // England specifically
+  if ((norm.includes("premier league") && (normCountry.includes("england") || normCountry.includes("inglaterra") || !rawCountry)) || norm.includes("inglaterra")) {
     if (norm.includes("u21") || norm.includes("2")) return { canonicalLeague: "Premier League U21", country: "Inglaterra", tier: 2 };
     return { canonicalLeague: "Premier League", country: "Inglaterra", tier: 1 };
   }
-  if (norm.includes("la liga") || norm.includes("laliga") || norm.includes("primera division") || norm.includes("españa") || norm.includes("spain")) {
+  if (norm.includes("la liga") || norm.includes("laliga") || (norm.includes("primera division") && normCountry.includes("españ")) || norm.includes("españa") || norm.includes("spain")) {
     if (norm.includes("2") || norm.includes("segunda")) return { canonicalLeague: "La Liga 2", country: "España", tier: 2 };
     if (norm.includes("femenin")) return { canonicalLeague: "Liga F (Femenina)", country: "España", tier: 2 };
     return { canonicalLeague: "La Liga", country: "España", tier: 1 };
   }
-  if (norm.includes("serie a") || norm.includes("italia") || norm.includes("italy")) {
+  if (norm.includes("serie a") && (normCountry.includes("ital") || !rawCountry)) {
     return { canonicalLeague: "Serie A", country: "Italia", tier: 1 };
   }
-  if (norm.includes("bundesliga")) {
+  if (norm.includes("bundesliga") && (normCountry.includes("alem") || normCountry.includes("germany") || !rawCountry)) {
     if (norm.includes("2")) return { canonicalLeague: "2. Bundesliga", country: "Alemania", tier: 2 };
     return { canonicalLeague: "Bundesliga", country: "Alemania", tier: 1 };
   }
@@ -143,106 +275,106 @@ export function normalizeLeagueInfo(rawLeagueName: string, rawCountry?: string):
   }
 
   // Tier 2: Top Mid European Leagues
-  if (norm.includes("eredivisie") || norm.includes("holanda") || norm.includes("netherlands") || norm.includes("países bajos")) {
+  if (norm.includes("eredivisie") || normCountry.includes("netherlands") || normCountry.includes("países bajos")) {
     return { canonicalLeague: "Eredivisie", country: "Países Bajos", tier: 2 };
   }
-  if (norm.includes("jupiler") || norm.includes("pro league") || norm.includes("belgica") || norm.includes("belgium")) {
+  if (norm.includes("jupiler") || norm.includes("pro league") && normCountry.includes("belg")) {
     return { canonicalLeague: "Jupiler Pro League", country: "Bélgica", tier: 2 };
   }
-  if (norm.includes("primeira liga") || norm.includes("portugal") || norm.includes("liga portugal")) {
+  if (norm.includes("primeira liga") || norm.includes("liga portugal")) {
     return { canonicalLeague: "Primeira Liga", country: "Portugal", tier: 2 };
   }
-  if (norm.includes("ekstraklasa") || norm.includes("polonia") || norm.includes("poland")) {
+  if (norm.includes("ekstraklasa") || normCountry.includes("poland") || normCountry.includes("polonia")) {
     return { canonicalLeague: "Ekstraklasa", country: "Polonia", tier: 2 };
   }
-  if (norm.includes("persha liga") || (norm.includes("premier") && norm.includes("ucrania"))) {
+  if (norm.includes("persha liga") || (norm.includes("premier") && normCountry.includes("ucrania"))) {
     return { canonicalLeague: "Premier League (Ucrania)", country: "Ucrania", tier: 2 };
   }
-  if (norm.includes("hnl") || norm.includes("croacia") || norm.includes("croatia")) {
+  if (norm.includes("hnl") || normCountry.includes("croat") || normCountry.includes("croacia")) {
     return { canonicalLeague: "HNL", country: "Croacia", tier: 2 };
   }
-  if (norm.includes("nb i") || norm.includes("nb 1") || norm.includes("hungria") || norm.includes("hungary")) {
+  if (norm.includes("nb i") || norm.includes("nb 1") || normCountry.includes("hungar") || normCountry.includes("hungría")) {
     return { canonicalLeague: "NB I (OTP Bank Liga)", country: "Hungría", tier: 2 };
   }
-  if (norm.includes("süper lig") || norm.includes("super lig") || norm.includes("turquia") || norm.includes("turkey")) {
+  if (norm.includes("süper lig") || norm.includes("super lig") || normCountry.includes("turkey") || normCountry.includes("turquía")) {
     return { canonicalLeague: "Süper Lig", country: "Turquía", tier: 2 };
   }
-  if (norm.includes("premiership") || norm.includes("scotland") || norm.includes("escocia")) {
+  if (norm.includes("premiership") && (normCountry.includes("scot") || normCountry.includes("escocia"))) {
     return { canonicalLeague: "Premiership", country: "Escocia", tier: 2 };
   }
-  if (norm.includes("austrian") || norm.includes("austria")) {
+  if (norm.includes("austrian") || (norm.includes("bundesliga") && normCountry.includes("austria"))) {
     return { canonicalLeague: "Austrian Bundesliga", country: "Austria", tier: 2 };
   }
-  if (norm.includes("super league") && (norm.includes("suiza") || norm.includes("switzerland"))) {
+  if (norm.includes("super league") && (normCountry.includes("switz") || normCountry.includes("suiza"))) {
     return { canonicalLeague: "Super League", country: "Suiza", tier: 2 };
   }
-  if (norm.includes("superliga") && (norm.includes("dinamarca") || norm.includes("denmark"))) {
+  if (norm.includes("superliga") && (normCountry.includes("denmark") || normCountry.includes("dinamarca"))) {
     return { canonicalLeague: "Superliga", country: "Dinamarca", tier: 2 };
   }
-  if (norm.includes("eliteserien") || norm.includes("noruega") || norm.includes("norway")) {
+  if (norm.includes("eliteserien") || normCountry.includes("norway") || normCountry.includes("noruega")) {
     return { canonicalLeague: "Eliteserien", country: "Noruega", tier: 2 };
   }
-  if (norm.includes("allsvenskan") || norm.includes("suecia") || norm.includes("sweden")) {
+  if (norm.includes("allsvenskan") || normCountry.includes("sweden") || normCountry.includes("suecia")) {
     return { canonicalLeague: "Allsvenskan", country: "Suecia", tier: 2 };
   }
-  if (norm.includes("veikkausliiga") || norm.includes("finlandia") || norm.includes("finland")) {
+  if (norm.includes("veikkausliiga") || normCountry.includes("finland")) {
     return { canonicalLeague: "Veikkausliiga", country: "Finlandia", tier: 2 };
   }
-  if (norm.includes("meistriliiga") || norm.includes("estonia")) {
+  if (norm.includes("meistriliiga") || normCountry.includes("estonia")) {
     return { canonicalLeague: "Meistriliiga", country: "Estonia", tier: 2 };
   }
-  if (norm.includes("snl") || norm.includes("eslovenia") || norm.includes("slovenia")) {
+  if (norm.includes("snl") || normCountry.includes("slovenia") || normCountry.includes("eslovenia")) {
     return { canonicalLeague: "1. SNL (PrvaLiga)", country: "Eslovenia", tier: 2 };
   }
-  if (norm.includes("niké liga") || norm.includes("eslovaquia") || norm.includes("slovakia")) {
+  if (norm.includes("niké liga") || normCountry.includes("slovakia") || normCountry.includes("eslovaquia")) {
     return { canonicalLeague: "Super Liga (Niké liga)", country: "Eslovaquia", tier: 2 };
   }
-  if (norm.includes("cyprus") || norm.includes("chipre")) {
+  if (norm.includes("cyprus") || normCountry.includes("chipre")) {
     return { canonicalLeague: "1. Division", country: "Chipre", tier: 2 };
   }
-  if (norm.includes("premijer liga") || norm.includes("bosnia")) {
+  if (norm.includes("premijer liga") || normCountry.includes("bosnia")) {
     return { canonicalLeague: "Premijer Liga BiH", country: "Bosnia", tier: 2 };
   }
-  if (norm.includes("urvalsdeild") || norm.includes("besta deild") || norm.includes("islandia") || norm.includes("iceland")) {
+  if (norm.includes("urvalsdeild") || norm.includes("besta deild") || normCountry.includes("iceland") || normCountry.includes("islandia")) {
     return { canonicalLeague: "Úrvalsdeild", country: "Islandia", tier: 2 };
   }
-  if (norm.includes("ligat ha'al") || norm.includes("israel")) {
+  if (norm.includes("ligat ha'al") || normCountry.includes("israel")) {
     return { canonicalLeague: "Ligat Ha'al", country: "Israel", tier: 2 };
   }
-  if (norm.includes("a-league") || norm.includes("australia")) {
+  if (norm.includes("a-league") || normCountry.includes("australia")) {
     return { canonicalLeague: "A-League", country: "Australia", tier: 2 };
   }
-  if (norm.includes("indian super league") || norm.includes("india")) {
+  if (norm.includes("indian super league") || normCountry.includes("india")) {
     return { canonicalLeague: "Indian Super League", country: "India", tier: 2 };
   }
 
   // Tier 2: China & Asia
-  if (norm.includes("chinese super league") || norm.includes("csl") || norm.includes("china")) {
+  if (norm.includes("chinese super league") || norm.includes("csl") || normCountry.includes("china")) {
     if (norm.includes("one") || norm.includes("1") || norm.includes("league one")) return { canonicalLeague: "China League One", country: "China", tier: 3 };
     return { canonicalLeague: "Chinese Super League", country: "China", tier: 2 };
   }
 
   // Tier 2: Costa Rica & Américas
-  if (norm.includes("costa rica") || norm.includes("fpd") || norm.includes("promerica")) {
+  if (norm.includes("costa rica") || normCountry.includes("costa rica") || norm.includes("fpd") || norm.includes("promerica")) {
     if (norm.includes("ascenso") || norm.includes("segunda")) return { canonicalLeague: "Liga de Ascenso", country: "Costa Rica", tier: 3 };
     return { canonicalLeague: "Primera División (Liga FPD)", country: "Costa Rica", tier: 2 };
   }
-  if (norm.includes("liga pro") || norm.includes("ecuador")) {
+  if (norm.includes("liga pro") || normCountry.includes("ecuador")) {
     return { canonicalLeague: "Liga Pro", country: "Ecuador", tier: 2 };
   }
-  if (norm.includes("brasileir") || norm.includes("serie a") && norm.includes("brazil")) {
+  if (norm.includes("brasileir") || (norm.includes("serie a") && normCountry.includes("brazil"))) {
     return { canonicalLeague: "Brasileirão Série A", country: "Brasil", tier: 2 };
   }
-  if (norm.includes("liga profesional") || (norm.includes("primera") && norm.includes("argentina"))) {
+  if (norm.includes("liga profesional") || (norm.includes("primera") && normCountry.includes("argentina"))) {
     return { canonicalLeague: "Liga Profesional Argentina", country: "Argentina", tier: 2 };
   }
-  if (norm.includes("bolivia")) {
+  if (normCountry.includes("bolivia")) {
     return { canonicalLeague: "Primera División", country: "Bolivia", tier: 2 };
   }
-  if (norm.includes("liga mx") || norm.includes("mexico")) {
+  if (norm.includes("liga mx") || normCountry.includes("mexico")) {
     return { canonicalLeague: "Liga MX", country: "México", tier: 2 };
   }
-  if (norm.includes("mls") || norm.includes("major league soccer") || norm.includes("usa") || norm.includes("estados unidos")) {
+  if (norm.includes("mls") || norm.includes("major league soccer") || normCountry.includes("usa") || normCountry.includes("estados unidos")) {
     return { canonicalLeague: "Major League Soccer (MLS)", country: "Estados Unidos", tier: 2 };
   }
   if (norm.includes("libertadores")) {
@@ -251,11 +383,6 @@ export function normalizeLeagueInfo(rawLeagueName: string, rawCountry?: string):
   if (norm.includes("sudamericana")) {
     return { canonicalLeague: "Copa Sudamericana", country: "Sudamérica", tier: 2 };
   }
-
-  // Tier 3: Segundas divisiones y ligas regionales
-  if (norm.includes("championship")) return { canonicalLeague: "Championship", country: "Inglaterra", tier: 3 };
-  if (norm.includes("serie b")) return { canonicalLeague: "Serie B", country: "Italia", tier: 3 };
-  if (norm.includes("ligue 2")) return { canonicalLeague: "Ligue 2", country: "Francia", tier: 3 };
 
   return { canonicalLeague: rawLeagueName || "Competición Oficial", country: rawCountry || "Mundial", tier: 3 };
 }
@@ -433,6 +560,9 @@ function generateExplanation(
   const totalXg = (hXg + aXg).toFixed(2);
   const tierContext = tier === 1 ? "Liga de Élite (Top 5 / UEFA)" : tier === 2 ? "Liga Primera División de Alta Confianza" : "Competición Oficial";
 
+  if (market.includes("Disparos a Puerta -") || market.includes("Disparos -")) {
+    return `[${tierContext}] Referente ofensivo estrella: Se proyecta que el atacante registre remates a portería con ${prob}% de certeza estadística y cuota rentable de alto valor @${odds.toFixed(2)}.`;
+  }
   if (market.includes("Hándicap Asiático (+1.5") || market.includes("AH +1.5")) {
     return `[${tierContext}] Margen de seguridad extraordinario (+1.5): Cobertura del ${prob}% de probabilidad, ganando incluso si el equipo pierde por un gol a cuota @${odds.toFixed(2)}.`;
   }
@@ -441,9 +571,6 @@ function generateExplanation(
   }
   if (market.includes("Hándicap Asiático (-0.5") || market.includes("AH -0.5")) {
     return `[${tierContext}] Dominio proyectado: Victoria requerida cubierta con ${prob}% de probabilidad según el diferencial Elo y métricas Poisson a cuota @${odds.toFixed(2)}.`;
-  }
-  if (market.includes("Disparos a Puerta (Jugador") || market.includes("Disparos (Jugador")) {
-    return `[${tierContext}] Referente ofensivo: Se proyecta que el atacante clave registre disparos a puerta con ${prob}% de certeza estadística y alto valor a cuota @${odds.toFixed(2)}.`;
   }
   if (market.includes("1X") || market.includes("Doble Oportunidad (1X)")) {
     return `[${tierContext}] Seguridad máxima: El modelo otorga un ${prob}% de probabilidad a que ${home} sume puntos en casa (xG: ${hXg.toFixed(2)} vs ${aXg.toFixed(2)}), cubriendo victoria o empate a cuota @${odds.toFixed(2)}.`;
@@ -577,6 +704,8 @@ export function evaluateFixturePrediction(params: {
   homeLogo?: string;
   awayLogo?: string;
   league: string;
+  leagueId?: number;
+  country?: string;
   leagueLogo?: string;
   kickoff: string;
   marketOdds?: {
@@ -598,12 +727,14 @@ export function evaluateFixturePrediction(params: {
     homeLogo,
     awayLogo,
     league,
+    leagueId,
+    country: rawCountry,
     leagueLogo,
     kickoff,
     marketOdds = {},
   } = params;
 
-  const { canonicalLeague, country, tier } = normalizeLeagueInfo(league);
+  const { canonicalLeague, country, tier } = normalizeLeagueInfo(league, rawCountry, leagueId);
 
   const rHomeBase = getTeamRating(homeTeam);
   const rAway = getTeamRating(awayTeam);
@@ -697,7 +828,8 @@ export function evaluateFixturePrediction(params: {
   }
   pOverShots85 = Math.min(0.87, Math.max(0.45, pOverShots85));
 
-  // Expected Player Shots on Target (Key Striker / Winger)
+  // Exact Star Player Shot on Target
+  const topStarPlayer = hXg >= aXg ? getTeamStarPlayer(homeTeam) : getTeamStarPlayer(awayTeam);
   const pPlayerShot05 = Math.min(0.88, Math.max(0.68, 0.72 + (hXg >= aXg ? (hXg - 1.2) * 0.08 : (aXg - 1.2) * 0.08)));
 
   const matchJuice = 0.99 + ((hashSeed % 7) * 0.005);
@@ -728,31 +860,31 @@ export function evaluateFixturePrediction(params: {
     odds: number;
     minOddsThreshold: number;
   }[] = [
-    // Ultra-High Precision Markets (Target >= 70% Win Rate / Valor)
-    { market: "Doble Oportunidad (1X)", selection: "1X", prob: p1X, odds: calculated1XOdds, minOddsThreshold: 1.30 },
-    { market: "Doble Oportunidad (X2)", selection: "X2", prob: pX2, odds: calculatedX2Odds, minOddsThreshold: 1.30 },
-    { market: "Hándicap Asiático (+0.5 Local)", selection: "+0.5 1", prob: p1X, odds: calculated1XOdds, minOddsThreshold: 1.30 },
-    { market: "Hándicap Asiático (+0.5 Visitante)", selection: "+0.5 2", prob: pX2, odds: calculatedX2Odds, minOddsThreshold: 1.30 },
-    { market: "Hándicap Asiático (+1.5 Local)", selection: "+1.5 1", prob: pAhPlus15Home, odds: calculateBookmakerOdds(pAhPlus15Home, matchJuice), minOddsThreshold: 1.25 },
-    { market: "Hándicap Asiático (+1.5 Visitante)", selection: "+1.5 2", prob: pAhPlus15Away, odds: calculateBookmakerOdds(pAhPlus15Away, matchJuice), minOddsThreshold: 1.25 },
-    { market: "Hándicap Asiático (-0.5 Local)", selection: "-0.5 1", prob: pHome, odds: calculatedHomeOdds, minOddsThreshold: 1.38 },
-    { market: "Hándicap Asiático (-0.5 Visitante)", selection: "-0.5 2", prob: pAway, odds: calculatedAwayOdds, minOddsThreshold: 1.38 },
-    { market: "Over 1.5 Goles", selection: "Over 1.5", prob: pOver15, odds: calculatedOver15Odds, minOddsThreshold: 1.30 },
-    { market: "Under 3.5 Goles", selection: "Under 3.5", prob: pUnder35, odds: calculatedUnder35Odds, minOddsThreshold: 1.30 },
+    // Ultra-High Precision Markets (Target >= 70% Win Rate / Valor con Cuotas Rentables)
+    { market: "Doble Oportunidad (1X)", selection: "1X", prob: p1X, odds: calculated1XOdds, minOddsThreshold: 1.40 },
+    { market: "Doble Oportunidad (X2)", selection: "X2", prob: pX2, odds: calculatedX2Odds, minOddsThreshold: 1.40 },
+    { market: "Hándicap Asiático (+0.5 Local)", selection: "+0.5 1", prob: p1X, odds: calculated1XOdds, minOddsThreshold: 1.40 },
+    { market: "Hándicap Asiático (+0.5 Visitante)", selection: "+0.5 2", prob: pX2, odds: calculatedX2Odds, minOddsThreshold: 1.40 },
+    { market: "Hándicap Asiático (+1.5 Local)", selection: "+1.5 1", prob: pAhPlus15Home, odds: calculateBookmakerOdds(pAhPlus15Home, matchJuice), minOddsThreshold: 1.38 },
+    { market: "Hándicap Asiático (+1.5 Visitante)", selection: "+1.5 2", prob: pAhPlus15Away, odds: calculateBookmakerOdds(pAhPlus15Away, matchJuice), minOddsThreshold: 1.38 },
+    { market: "Hándicap Asiático (-0.5 Local)", selection: "-0.5 1", prob: pHome, odds: calculatedHomeOdds, minOddsThreshold: 1.45 },
+    { market: "Hándicap Asiático (-0.5 Visitante)", selection: "-0.5 2", prob: pAway, odds: calculatedAwayOdds, minOddsThreshold: 1.45 },
+    { market: "Over 1.5 Goles", selection: "Over 1.5", prob: pOver15, odds: calculatedOver15Odds, minOddsThreshold: 1.40 },
+    { market: "Under 3.5 Goles", selection: "Under 3.5", prob: pUnder35, odds: calculatedUnder35Odds, minOddsThreshold: 1.40 },
 
     // Primary 1X2 & Over/Under Markets
-    { market: "Gana Local", selection: "1", prob: pHome, odds: marketOdds.homeWin || calculatedHomeOdds, minOddsThreshold: 1.38 },
-    { market: "Gana Visitante", selection: "2", prob: pAway, odds: marketOdds.awayWin || calculatedAwayOdds, minOddsThreshold: 1.38 },
-    { market: "Over 2.5 Goles", selection: "Over 2.5", prob: pOver25, odds: marketOdds.over25 || calculatedOver25Odds, minOddsThreshold: 1.38 },
-    { market: "Over 3.5 Goles", selection: "Over 3.5", prob: pOver35, odds: calculatedOver35Odds, minOddsThreshold: 1.50 },
-    { market: "Under 2.5 Goles", selection: "Under 2.5", prob: pUnder25, odds: marketOdds.under25 || calculatedUnder25Odds, minOddsThreshold: 1.38 },
-    { market: "Ambos Marcan (BTTS)", selection: "Yes", prob: pBttsYes, odds: marketOdds.bttsYes || calculatedBttsOdds, minOddsThreshold: 1.38 },
+    { market: "Gana Local", selection: "1", prob: pHome, odds: marketOdds.homeWin || calculatedHomeOdds, minOddsThreshold: 1.45 },
+    { market: "Gana Visitante", selection: "2", prob: pAway, odds: marketOdds.awayWin || calculatedAwayOdds, minOddsThreshold: 1.45 },
+    { market: "Over 2.5 Goles", selection: "Over 2.5", prob: pOver25, odds: marketOdds.over25 || calculatedOver25Odds, minOddsThreshold: 1.45 },
+    { market: "Over 3.5 Goles", selection: "Over 3.5", prob: pOver35, odds: calculatedOver35Odds, minOddsThreshold: 1.55 },
+    { market: "Under 2.5 Goles", selection: "Under 2.5", prob: pUnder25, odds: marketOdds.under25 || calculatedUnder25Odds, minOddsThreshold: 1.45 },
+    { market: "Ambos Marcan (BTTS)", selection: "Yes", prob: pBttsYes, odds: marketOdds.bttsYes || calculatedBttsOdds, minOddsThreshold: 1.45 },
 
-    // Corners, Cards, Shots, and Player Shots Markets
-    { market: "Over 8.5 Córners", selection: "Over 8.5", prob: pOverCorners85, odds: calculatedCornersOdds, minOddsThreshold: 1.35 },
-    { market: "Over 3.5 Tarjetas", selection: "Over 3.5", prob: pOverCards35, odds: calculatedCardsOdds, minOddsThreshold: 1.35 },
-    { market: "Over 8.5 Disparos a Puerta", selection: "Over 8.5", prob: pOverShots85, odds: calculatedShotsOdds, minOddsThreshold: 1.35 },
-    { market: "Over 0.5 Disparos a Puerta (Jugador Clave)", selection: "+0.5 Disparos", prob: pPlayerShot05, odds: calculatedPlayerShotOdds, minOddsThreshold: 1.30 },
+    // Corners, Cards, Shots, and Exact Player Shots Markets
+    { market: "Over 8.5 Córners", selection: "Over 8.5", prob: pOverCorners85, odds: calculatedCornersOdds, minOddsThreshold: 1.42 },
+    { market: "Over 3.5 Tarjetas", selection: "Over 3.5", prob: pOverCards35, odds: calculatedCardsOdds, minOddsThreshold: 1.42 },
+    { market: "Over 8.5 Disparos a Puerta", selection: "Over 8.5", prob: pOverShots85, odds: calculatedShotsOdds, minOddsThreshold: 1.42 },
+    { market: `Over 0.5 Disparos a Puerta - ${topStarPlayer}`, selection: `+0.5 Disparos (${topStarPlayer})`, prob: pPlayerShot05, odds: calculatedPlayerShotOdds, minOddsThreshold: 1.40 },
   ];
 
   const opportunities: MarketOpportunity[] = [];
@@ -779,7 +911,7 @@ export function evaluateFixturePrediction(params: {
     else if (probPercent >= 60.0) confidence = "Media";
     else confidence = "Baja";
 
-    // Bomba (High Payout / High Odds) or Valor (Maximum Certainty ~100%)
+    // Bomba (High Payout / High Odds >= 2.00) or Valor (Maximum Certainty ~100% / prob >= 76%)
     let pickBadge: "bomba" | "valor" | "estandar" = "estandar";
     if (item.odds >= 2.05 || (item.market.includes("Over 3.5") && item.odds >= 1.90)) {
       pickBadge = "bomba";

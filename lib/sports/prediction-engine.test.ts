@@ -38,6 +38,36 @@ describe("Prediction Engine (TypeScript MVP)", () => {
     expect(picks.some((p) => p.market.includes("Hándicap Asiático") || p.market.includes("Disparos") || p.market.includes("Córners") || p.market.includes("Tarjetas") || p.market.includes("Goles"))).toBe(true);
   });
 
+  it("strictly differentiates Egyptian Premier League from English Premier League and assigns star players", () => {
+    const egyptPicks = evaluateFixturePrediction({
+      fixtureId: 999123,
+      homeTeam: "Al Ahly",
+      awayTeam: "Zamalek",
+      league: "Premier League",
+      country: "Egypt",
+      kickoff: "2026-08-30T17:00:00Z",
+    });
+
+    expect(egyptPicks.length).toBeGreaterThan(0);
+    expect(egyptPicks[0].country).toBe("Egipto");
+    expect(egyptPicks[0].league).not.toBe("Premier League (Inglaterra)");
+
+    const realMadridPicks = evaluateFixturePrediction({
+      fixtureId: 999124,
+      homeTeam: "Real Madrid",
+      awayTeam: "Alavés",
+      league: "La Liga",
+      country: "Spain",
+      kickoff: "2026-08-30T19:00:00Z",
+    });
+
+    const shotPick = realMadridPicks.find((p) => p.market.includes("Disparos"));
+    if (shotPick) {
+      expect(shotPick.market).toContain("Vinicius Jr");
+      expect(shotPick.selection).toContain("Vinicius Jr");
+    }
+  });
+
   it("generates predictions with rich market variety from live curated multi-league queries", async () => {
     const predictions = await generatePredictionsForUpcoming();
     console.log("TOTAL LIVE PREDICTIONS:", predictions.length);

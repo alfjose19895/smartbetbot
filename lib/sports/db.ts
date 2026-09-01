@@ -173,11 +173,24 @@ const HISTORY_CACHE_TTL_MS = 3 * 60 * 1000; // 3 minutes
 /**
  * Checks if a fixture's league belongs to our curated supported leagues catalog.
  */
-function isCuratedLeague(leagueId?: number, leagueName?: string): boolean {
+function isCuratedLeague(leagueId?: number, leagueName?: string, country?: string): boolean {
   if (leagueId && ALL_LEAGUE_IDS.includes(leagueId)) return true;
   if (!leagueName) return false;
-  const norm = leagueName.toLowerCase();
-  return SUPPORTED_LEAGUES.some((sl) => norm.includes(sl.name.toLowerCase()) || sl.name.toLowerCase().includes(norm));
+  const norm = leagueName.toLowerCase().trim();
+  const normCountry = (country || "").toLowerCase().trim();
+
+  if (normCountry) {
+    return SUPPORTED_LEAGUES.some((sl) => {
+      const matchName = norm.includes(sl.name.toLowerCase()) || sl.name.toLowerCase().includes(norm);
+      const matchCountry =
+        sl.country.toLowerCase() === normCountry ||
+        normCountry.includes(sl.country.toLowerCase()) ||
+        sl.country.toLowerCase().includes(normCountry);
+      return matchName && matchCountry;
+    });
+  }
+
+  return SUPPORTED_LEAGUES.some((sl) => norm === sl.name.toLowerCase());
 }
 
 /**
@@ -280,7 +293,7 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
         // Skip non-curated leagues ("Otras Ligas") & youth leagues
         const legName = (item.league?.name || "").toLowerCase();
         if (legName.includes("primavera") || legName.includes("u19") || legName.includes("u20")) continue;
-        if (!isCuratedLeague(item.league?.id, item.league?.name)) continue;
+        if (!isCuratedLeague(item.league?.id, item.league?.name, item.league?.country)) continue;
 
         const opps = evaluateFixturePrediction({
           fixtureId: item.fixture.id,
@@ -291,6 +304,8 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
           homeLogo: item.teams.home.logo,
           awayLogo: item.teams.away.logo,
           league: item.league.name,
+          leagueId: item.league.id,
+          country: item.league.country,
           leagueLogo: item.league.logo,
           kickoff: item.fixture.date,
         });
