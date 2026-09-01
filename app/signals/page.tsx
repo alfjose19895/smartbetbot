@@ -15,12 +15,12 @@ export default function SignalsPage() {
   const [loading, setLoading] = useState(true);
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
 
-  // Search & Filters (exclusively for Today's Top 30)
+  // Search & Filters (exclusively for Today's Top 20)
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
-  const [minProbability, setMinProbability] = useState<number>(55);
+  const [minProbability, setMinProbability] = useState<number>(60);
 
   useEffect(() => {
     const fetchSignals = async () => {
@@ -29,7 +29,7 @@ export default function SignalsPage() {
         const res = await fetch("/api/signals");
         const json = await res.json();
         if (json.signals) {
-          setSignals(json.signals);
+          setSignals(json.signals.slice(0, 20));
         }
       } catch (err) {
         console.error("Error fetching signals:", err);
@@ -60,6 +60,10 @@ export default function SignalsPage() {
   });
 
   const coreMarkets = [
+    "Doble Oportunidad (1X)",
+    "Doble Oportunidad (X2)",
+    "Over 1.5 Goles",
+    "Under 3.5 Goles",
     "Gana Local",
     "Gana Visitante",
     "Ambos Marcan (BTTS)",
@@ -78,9 +82,8 @@ export default function SignalsPage() {
 
   const confidenceDropdownOptions: DropdownOption[] = [
     { value: "muy_alta", label: language === "en" ? "⭐⭐⭐ Very High (≥75%)" : "⭐⭐⭐ Muy Alta (≥75%)" },
-    { value: "alta", label: language === "en" ? "⭐⭐ High (65% - 74%)" : "⭐⭐ Alta (65% - 74%)" },
-    { value: "media", label: language === "en" ? "⭐ Medium (55% - 64%)" : "⭐ Media (55% - 64%)" },
-    { value: "baja", label: language === "en" ? "Low / Moderate (<55%)" : "Moderada / Baja (<55%)" },
+    { value: "alta", label: language === "en" ? "⭐⭐ High (68% - 74%)" : "⭐⭐ Alta (68% - 74%)" },
+    { value: "media", label: language === "en" ? "⭐ Medium (60% - 67%)" : "⭐ Media (60% - 67%)" },
   ];
 
   const now = new Date();
@@ -133,13 +136,12 @@ export default function SignalsPage() {
       if (!matched) return false;
     }
 
-    // 4. 4-tier Confidence filter
+    // 4. Confidence filter
     if (selectedConfidence.length > 0) {
       const isMatch = selectedConfidence.some((c) => {
         if (c === "muy_alta") return s.confidence === "Muy Alta" || s.probability >= 75;
-        if (c === "alta") return s.confidence === "Alta" || (s.probability >= 65 && s.probability < 75);
-        if (c === "media") return s.confidence === "Media" || (s.probability >= 55 && s.probability < 65);
-        if (c === "baja") return s.confidence === "Baja" || s.probability < 55;
+        if (c === "alta") return s.confidence === "Alta" || (s.probability >= 68 && s.probability < 75);
+        if (c === "media") return s.confidence === "Media" || (s.probability >= 60 && s.probability < 68);
         return false;
       });
       if (!isMatch) return false;
@@ -162,22 +164,27 @@ export default function SignalsPage() {
     return true;
   });
 
-  // Sort strictly by highest probability & confidence/smartScore, closing strictly at Top 30 daily picks
+  // Sort strictly by league tier priority, highest probability & smartScore, capped at Top 20 daily picks
   const sortedSignals = [...filteredCandidates].sort((a, b) => {
+    const aTier = a.leagueTier || 3;
+    const bTier = b.leagueTier || 3;
+    if (aTier !== bTier) {
+      return aTier - bTier;
+    }
     if (b.probability !== a.probability) {
       return b.probability - a.probability;
     }
     return (b.smartScore || 0) - (a.smartScore || 0) || b.odds - a.odds;
   });
 
-  const top30Picks = sortedSignals.slice(0, 30);
+  const top20Picks = sortedSignals.slice(0, 20);
 
-  const avgOdds = top30Picks.length > 0
-    ? (top30Picks.reduce((acc, p) => acc + p.odds, 0) / top30Picks.length).toFixed(2)
+  const avgOdds = top20Picks.length > 0
+    ? (top20Picks.reduce((acc, p) => acc + p.odds, 0) / top20Picks.length).toFixed(2)
     : "0.00";
 
-  const avgProb = top30Picks.length > 0
-    ? (top30Picks.reduce((acc, p) => acc + p.probability, 0) / top30Picks.length).toFixed(0)
+  const avgProb = top20Picks.length > 0
+    ? (top20Picks.reduce((acc, p) => acc + p.probability, 0) / top20Picks.length).toFixed(0)
     : "0";
 
   return (
@@ -190,14 +197,14 @@ export default function SignalsPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pt-2">
           <div>
             <div className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-1 text-xs font-extrabold text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30">
-              <span>📅</span>
-              <span className="capitalize">{formattedToday} • Top 30 Pronósticos del Día</span>
+              <span>🎯</span>
+              <span className="capitalize">{formattedToday} • Top 20 Picks de Alta Precisión (≥85% Target)</span>
             </div>
             <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
-              Picks Deportivos del Día Actual
+              Picks Deportivos del Día (Máxima Seguridad)
             </h1>
             <p className="mt-1 text-xs text-slate-700 sm:text-sm dark:text-slate-400">
-              Concentrado exclusivamente en los 30 mejores partidos de hoy con mayor probabilidad y precisión cuantitativa
+              Concentrado exclusivamente en los 20 mejores partidos de hoy priorizando Ligas Top y Ligas Europeas de élite
             </p>
           </div>
 
@@ -207,7 +214,7 @@ export default function SignalsPage() {
                 Picks Filtrados
               </span>
               <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                {top30Picks.length} / 30
+                {top20Picks.length} / 20
               </span>
             </div>
             <div className="rounded-2xl bg-white px-3.5 py-2 sm:px-4 sm:py-2.5 border border-slate-200 text-center shadow-sm dark:bg-slate-900/80 dark:border-slate-800">
@@ -258,8 +265,8 @@ export default function SignalsPage() {
               <div className="flex items-center gap-2">
                 <input
                   type="range"
-                  min="50"
-                  max="85"
+                  min="60"
+                  max="90"
                   step="5"
                   value={minProbability}
                   onChange={(e) => setMinProbability(Number(e.target.value))}
@@ -283,7 +290,7 @@ export default function SignalsPage() {
               />
 
               <MultiSelectDropdown
-                label="4 Niveles de Confianza"
+                label="Nivel de Confianza"
                 icon="⭐"
                 options={confidenceDropdownOptions}
                 selected={selectedConfidence}
@@ -303,13 +310,13 @@ export default function SignalsPage() {
           </div>
         </div>
 
-        {/* Signals List (Top 30 of Today) */}
+        {/* Signals List (Top 20 of Today) */}
         {loading ? (
           <div className="py-20 text-center text-slate-500">
             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent" />
-            <p className="mt-3 text-sm font-semibold">Analizando los 30 mejores pronósticos de hoy...</p>
+            <p className="mt-3 text-sm font-semibold">Analizando los 20 mejores pronósticos de alta precisión...</p>
           </div>
-        ) : top30Picks.length === 0 ? (
+        ) : top20Picks.length === 0 ? (
           <div className="rounded-3xl border border-slate-200 bg-white p-12 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900/40">
             <span className="text-4xl">🔍</span>
             <h3 className="mt-3 text-lg font-bold text-slate-900 dark:text-white">Sin resultados para hoy</h3>
@@ -319,7 +326,7 @@ export default function SignalsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
-            {top30Picks.map((signal) => (
+            {top20Picks.map((signal) => (
               <PredictionCard
                 key={signal.id || `${signal.fixtureId}-${signal.market}`}
                 prediction={signal}

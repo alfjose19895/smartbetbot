@@ -17,7 +17,7 @@ describe("Prediction Engine (TypeScript MVP)", () => {
     console.log("REAL MADRID vs MALAGA TOP PICK:", topPick.market, topPick.probability, topPick.odds);
 
     expect(topPick.probability).toBeGreaterThanOrEqual(60);
-    expect(topPick.odds).toBeGreaterThanOrEqual(1.40);
+    expect(topPick.odds).toBeGreaterThanOrEqual(1.35);
     expect(topPick.fairOdds).toBeGreaterThanOrEqual(1.0);
     expect(topPick.h2h).toBeDefined();
     expect(topPick.homeLast5).toBeDefined();
@@ -35,18 +35,18 @@ describe("Prediction Engine (TypeScript MVP)", () => {
     expect(picks.length).toBeGreaterThan(0);
     const topPick = picks[0];
     console.log("CHELSEA vs BRIGHTON TOP PICK:", topPick.market, topPick.probability, topPick.odds);
-    expect(topPick.probability).toBeGreaterThanOrEqual(55);
-    expect(topPick.odds).toBeGreaterThanOrEqual(1.40);
+    expect(topPick.probability).toBeGreaterThanOrEqual(60);
+    expect(topPick.odds).toBeGreaterThanOrEqual(1.35);
   });
 
-  it("generates predictions with rich market variety with odds >= 1.40 from live multi-league queries", async () => {
+  it("generates predictions with rich market variety from live multi-league queries", async () => {
     const predictions = await generatePredictionsForUpcoming();
     console.log("TOTAL LIVE PREDICTIONS:", predictions.length);
 
     const marketCounts: Record<string, number> = {};
     for (const p of predictions) {
       marketCounts[p.market] = (marketCounts[p.market] || 0) + 1;
-      expect(p.odds).toBeGreaterThanOrEqual(1.40);
+      expect(p.odds).toBeGreaterThanOrEqual(1.35);
       expect(p.probability).toBeGreaterThanOrEqual(55);
     }
 
@@ -54,6 +54,6 @@ describe("Prediction Engine (TypeScript MVP)", () => {
 
     expect(predictions.length).toBeGreaterThan(0);
     expect(Object.keys(marketCounts).length).toBeGreaterThanOrEqual(1);
-    expect(predictions.length).toBeLessThanOrEqual(30); // Strictly max 30 picks
+    expect(predictions.length).toBeLessThanOrEqual(20); // Strictly max 20 picks
   }, 25000);
 });

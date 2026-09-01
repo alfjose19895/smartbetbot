@@ -1,6 +1,7 @@
 /**
  * Direct Supabase persistence and real-time live API-Football prediction service.
  * Strictly 100% real fixtures from API-Football aligned with Ecuador (America/Guayaquil, UTC-5) timezone.
+ * Generates and freezes Top 20 ultra-high-precision daily picks.
  */
 
 import fs from "fs";
@@ -68,7 +69,7 @@ function loadDailySnapshot(dateStr: string): MarketOpportunity[] | null {
       const data = fs.readFileSync(filePath, "utf-8");
       const picks = JSON.parse(data);
       if (Array.isArray(picks) && picks.length > 0) {
-        return picks;
+        return picks.slice(0, 20); // Max 20 picks
       }
     }
   } catch (err) {
@@ -81,7 +82,7 @@ function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
   try {
     ensureSnapshotsDir();
     const filePath = path.join(SNAPSHOTS_DIR, `${dateStr}.json`);
-    fs.writeFileSync(filePath, JSON.stringify(picks, null, 2), "utf-8");
+    fs.writeFileSync(filePath, JSON.stringify(picks.slice(0, 20), null, 2), "utf-8");
   } catch (err) {
     console.warn(`Could not save daily snapshot for ${dateStr}:`, err);
   }
@@ -95,13 +96,13 @@ function getAllDailySnapshots(): Record<string, MarketOpportunity[]> {
     for (const f of files) {
       if (f.endsWith(".json")) {
         const dateStr = f.replace(".json", "");
-        if (dateStr < HISTORY_START_DATE) continue; // Only start from official start date
+        if (dateStr < HISTORY_START_DATE) continue;
         const filePath = path.join(SNAPSHOTS_DIR, f);
         try {
           const content = fs.readFileSync(filePath, "utf-8");
           const parsed = JSON.parse(content);
           if (Array.isArray(parsed)) {
-            result[dateStr] = parsed;
+            result[dateStr] = parsed.slice(0, 20);
           }
         } catch {
           // ignore
@@ -168,7 +169,7 @@ const HISTORY_CACHE_TTL_MS = 3 * 60 * 1000; // 3 minutes
 
 /**
  * Generates verified, high-precision predictions strictly for the current day in Ecuador timezone.
- * Once computed for today, it is permanently locked into an immutable snapshot to ensure 100% traceability.
+ * Selects the Top 20 highest-probability, highest-tier picks and permanently locks them into an immutable snapshot.
  */
 export async function generatePredictionsForUpcoming(targetLeagueIds?: number[]): Promise<MarketOpportunity[]> {
   const nowMs = Date.now();
@@ -300,22 +301,30 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
     }
   }
 
-  // Rank all valid opportunities by highest probability, confidence, smartScore and value edge
+  // Prioritize Top Leagues, High Probability, and Smart Value
   const rankedPicks = [...allOpportunities].sort((a, b) => {
+    // 1. League tier priority (Tier 1 > Tier 2 > Tier 3)
+    const aTier = a.leagueTier || 3;
+    const bTier = b.leagueTier || 3;
+    if (aTier !== bTier) {
+      return aTier - bTier;
+    }
+    // 2. Highest probability
     if (b.probability !== a.probability) {
       return b.probability - a.probability;
     }
+    // 3. Highest smart score
     if ((b.smartScore || 0) !== (a.smartScore || 0)) {
       return (b.smartScore || 0) - (a.smartScore || 0);
     }
     return b.edge - a.edge;
   });
 
-  // Strictly select the Top 30 highest-quality picks of the day
-  const top30DailyPicks = rankedPicks.slice(0, 30);
+  // Strictly select the Top 20 highest-quality picks of the day
+  const top20DailyPicks = rankedPicks.slice(0, 20);
 
   // Sort final display by kickoff time ascending for convenient betting timeline
-  const sorted = top30DailyPicks.sort(
+  const sorted = top20DailyPicks.sort(
     (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
   );
 
@@ -437,11 +446,15 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
         const btts = homeGoals > 0 && awayGoals > 0;
         let isWon = false;
 
-        if (p.market === "Gana Local") isWon = homeGoals > awayGoals;
-        else if (p.market === "Gana Visitante") isWon = awayGoals > homeGoals;
-        else if (p.market === "Empate") isWon = homeGoals === awayGoals;
-        else if (p.market === "Over 2.5 Goles") isWon = totalGoals > 2;
-        else if (p.market === "Under 2.5 Goles") isWon = totalGoals < 3;
+        if (p.market === "Gana Local" || p.market === "1") isWon = homeGoals > awayGoals;
+        else if (p.market === "Gana Visitante" || p.market === "2") isWon = awayGoals > homeGoals;
+        else if (p.market === "Empate" || p.market === "X") isWon = homeGoals === awayGoals;
+        else if (p.market.includes("1X") || p.market.includes("Doble Oportunidad (1X)")) isWon = homeGoals >= awayGoals;
+        else if (p.market.includes("X2") || p.market.includes("Doble Oportunidad (X2)")) isWon = awayGoals >= homeGoals;
+        else if (p.market.includes("Over 1.5")) isWon = totalGoals > 1;
+        else if (p.market.includes("Over 2.5")) isWon = totalGoals > 2;
+        else if (p.market.includes("Under 2.5")) isWon = totalGoals < 3;
+        else if (p.market.includes("Under 3.5")) isWon = totalGoals < 4;
         else if (p.market.includes("Ambos") || p.market.includes("BTTS")) isWon = btts;
         else isWon = homeGoals > awayGoals;
 
@@ -462,7 +475,7 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
             leagueLogo: p.leagueLogo,
             country: p.country,
             market: p.market,
-            selection: p.market,
+            selection: p.selection || p.market,
             odds: p.odds,
             probability: p.probability,
             result: isWon ? "WON" : "LOST",
