@@ -1,43 +1,41 @@
 import { NextRequest, NextResponse } from "next/server";
 import { apiFootball } from "@/lib/sports/api-football";
-import { getTeamRating } from "@/lib/sports/prediction-engine";
+import {
+  getTeamRating,
+  getCanonicalTeamKey,
+  H2HMatch,
+  TeamFormMatch,
+} from "@/lib/sports/prediction-engine";
+import fs from "fs";
+import path from "path";
 
-export const dynamic = "force-dynamic";
-
-export interface H2HMatch {
-  date: string;
-  homeTeam: string;
-  awayTeam: string;
-  homeScore: number;
-  awayScore: number;
-  league: string;
-  winner: "home" | "away" | "draw";
-}
-
-export interface TeamFormMatch {
-  date: string;
-  opponent: string;
-  isHome: boolean;
-  score: string;
-  result: "W" | "D" | "L";
-  league: string;
-}
-
-export interface H2HResponse {
+interface H2HResponse {
   success: boolean;
   homeTeam: {
-    id: number;
+    id?: number;
     name: string;
     elo: number;
     last5: TeamFormMatch[];
-    formStats: { wins: number; draws: number; losses: number; goalsScored: number; goalsConceded: number };
+    formStats: {
+      wins: number;
+      draws: number;
+      losses: number;
+      goalsScored: number;
+      goalsConceded: number;
+    };
   };
   awayTeam: {
-    id: number;
+    id?: number;
     name: string;
     elo: number;
     last5: TeamFormMatch[];
-    formStats: { wins: number; draws: number; losses: number; goalsScored: number; goalsConceded: number };
+    formStats: {
+      wins: number;
+      draws: number;
+      losses: number;
+      goalsScored: number;
+      goalsConceded: number;
+    };
   };
   h2hSummary: {
     totalPlayed: number;
@@ -48,46 +46,114 @@ export interface H2HResponse {
     bttsRate: number;
     over25Rate: number;
   };
-  recentH2H: H2HMatch[];
+  recentH2H: Array<{
+    date: string;
+    homeTeam: string;
+    awayTeam: string;
+    homeScore: number;
+    awayScore: number;
+    league: string;
+    winner: "home" | "away" | "draw";
+  }>;
+  error?: string;
+}
+
+// Persistent In-Memory and Disk Cache for H2H Clashes
+const memoryH2HCache: Record<string, { timestamp: number; data: H2HResponse }> = {};
+const CACHE_DIR = path.join(process.cwd(), "data", "h2h_cache");
+
+function ensureCacheDir() {
+  try {
+    if (!fs.existsSync(CACHE_DIR)) {
+      fs.mkdirSync(CACHE_DIR, { recursive: true });
+    }
+  } catch (err) {
+    console.warn("Could not create h2h cache dir:", err);
+  }
+}
+
+function loadH2HFromDisk(cacheKey: string): H2HResponse | null {
+  try {
+    ensureCacheDir();
+    const filePath = path.join(CACHE_DIR, `${cacheKey}.json`);
+    if (fs.existsSync(filePath)) {
+      const content = fs.readFileSync(filePath, "utf-8");
+      return JSON.parse(content);
+    }
+  } catch (err) {
+    console.warn(`Could not read H2H cache for ${cacheKey}:`, err);
+  }
+  return null;
+}
+
+function saveH2HToDisk(cacheKey: string, data: H2HResponse) {
+  try {
+    ensureCacheDir();
+    const filePath = path.join(CACHE_DIR, `${cacheKey}.json`);
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
+  } catch (err) {
+    console.warn(`Could not write H2H cache for ${cacheKey}:`, err);
+  }
 }
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    let homeTeamId = parseInt(searchParams.get("homeTeamId") || "0");
-    let awayTeamId = parseInt(searchParams.get("awayTeamId") || "0");
-    const homeTeam = searchParams.get("homeTeam") || "Equipo Local";
-    const awayTeam = searchParams.get("awayTeam") || "Equipo Visitante";
+    const homeTeam = searchParams.get("homeTeam") || searchParams.get("home") || "";
+    const awayTeam = searchParams.get("awayTeam") || searchParams.get("away") || "";
     const league = searchParams.get("league") || "Liga";
-    const kickoff = searchParams.get("kickoff") || new Date().toISOString();
 
-    // 1. If IDs are missing, dynamically resolve them by team name from API-Football
-    if (!homeTeamId && homeTeam) {
-      try {
-        const resolvedHome = await apiFootball.searchTeam(homeTeam);
-        if (resolvedHome?.id) homeTeamId = resolvedHome.id;
-      } catch (err) {
-        console.warn("[H2H API] Error searching home team ID:", err);
-      }
+    if (!homeTeam || !awayTeam) {
+      return NextResponse.json({ success: false, error: "Faltan parámetros homeTeam y awayTeam" }, { status: 400 });
     }
 
-    if (!awayTeamId && awayTeam) {
-      try {
-        const resolvedAway = await apiFootball.searchTeam(awayTeam);
-        if (resolvedAway?.id) awayTeamId = resolvedAway.id;
-      } catch (err) {
-        console.warn("[H2H API] Error searching away team ID:", err);
-      }
+    const hNorm = getCanonicalTeamKey(homeTeam);
+    const aNorm = getCanonicalTeamKey(awayTeam);
+    const cacheKey = `${hNorm}-${aNorm}`;
+
+    // 1. Return from Memory Cache (0ms latency, 0 API calls)
+    if (memoryH2HCache[cacheKey]) {
+      return NextResponse.json(memoryH2HCache[cacheKey].data);
+    }
+
+    // 2. Return from Disk Cache (0 API calls)
+    const diskCached = loadH2HFromDisk(cacheKey);
+    if (diskCached) {
+      memoryH2HCache[cacheKey] = { timestamp: Date.now(), data: diskCached };
+      return NextResponse.json(diskCached);
+    }
+
+    let homeTeamId = searchParams.get("homeTeamId") ? parseInt(searchParams.get("homeTeamId")!) : undefined;
+    let awayTeamId = searchParams.get("awayTeamId") ? parseInt(searchParams.get("awayTeamId")!) : undefined;
+
+    // Search official team IDs if not supplied
+    if (!homeTeamId) {
+      const homeSearch = await apiFootball.searchTeam(homeTeam);
+      if (homeSearch) homeTeamId = homeSearch.id;
+    }
+
+    if (!awayTeamId) {
+      const awaySearch = await apiFootball.searchTeam(awayTeam);
+      if (awaySearch) awayTeamId = awaySearch.id;
     }
 
     const homeElo = getTeamRating(homeTeam);
     const awayElo = getTeamRating(awayTeam);
 
-    let h2hMatches: H2HMatch[] = [];
+    let h2hMatches: Array<{
+      date: string;
+      homeTeam: string;
+      awayTeam: string;
+      homeScore: number;
+      awayScore: number;
+      league: string;
+      winner: "home" | "away" | "draw";
+    }> = [];
+
     let homeLast5: TeamFormMatch[] = [];
     let awayLast5: TeamFormMatch[] = [];
 
-    // 2. Fetch live H2H from API-Football
+    // Fetch live H2H from API-Football ONCE
     if (homeTeamId && awayTeamId) {
       try {
         const rawH2H = await apiFootball.getHeadToHead(homeTeamId, awayTeamId, 5);
@@ -133,7 +199,7 @@ export async function GET(request: NextRequest) {
               isHome,
               score: `${myGoals}-${oppGoals}`,
               result,
-              league: item.league.name,
+              competition: item.league.name,
             };
           });
         }
@@ -160,7 +226,7 @@ export async function GET(request: NextRequest) {
               isHome,
               score: `${myGoals}-${oppGoals}`,
               result,
-              league: item.league.name,
+              competition: item.league.name,
             };
           });
         }
@@ -169,7 +235,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // 3. Mathematical Fallback based on real Team Rating if API had 0 historical records
+    // Mathematical Fallback based on authentic Team Rating if API returned 0
     if (h2hMatches.length === 0) {
       const isHomeStronger = homeElo >= awayElo;
       h2hMatches = [
@@ -206,26 +272,25 @@ export async function GET(request: NextRequest) {
     if (homeLast5.length === 0) {
       const isStrong = homeElo >= 1500;
       homeLast5 = [
-        { date: "2026-08-24", opponent: "Rival A", isHome: true, score: isStrong ? "2-0" : "1-2", result: isStrong ? "W" : "L", league },
-        { date: "2026-08-18", opponent: "Rival B", isHome: false, score: "1-1", result: "D", league },
-        { date: "2026-08-12", opponent: "Rival C", isHome: true, score: isStrong ? "3-1" : "0-1", result: isStrong ? "W" : "L", league },
-        { date: "2026-08-05", opponent: "Rival D", isHome: false, score: isStrong ? "2-1" : "1-1", result: isStrong ? "W" : "D", league },
-        { date: "2026-07-29", opponent: "Rival E", isHome: true, score: "1-0", result: "W", league },
+        { date: "2026-08-24", opponent: "Rival A", isHome: true, score: isStrong ? "2-0" : "1-2", result: isStrong ? "W" : "L", competition: league },
+        { date: "2026-08-18", opponent: "Rival B", isHome: false, score: "1-1", result: "D", competition: league },
+        { date: "2026-08-12", opponent: "Rival C", isHome: true, score: isStrong ? "3-1" : "0-1", result: isStrong ? "W" : "L", competition: league },
+        { date: "2026-08-05", opponent: "Rival D", isHome: false, score: isStrong ? "2-1" : "1-1", result: isStrong ? "W" : "D", competition: league },
+        { date: "2026-07-29", opponent: "Rival E", isHome: true, score: "1-0", result: "W", competition: league },
       ];
     }
 
     if (awayLast5.length === 0) {
       const isStrong = awayElo >= 1500;
       awayLast5 = [
-        { date: "2026-08-25", opponent: "Rival X", isHome: false, score: isStrong ? "2-1" : "0-2", result: isStrong ? "W" : "L", league },
-        { date: "2026-08-19", opponent: "Rival Y", isHome: true, score: "2-2", result: "D", league },
-        { date: "2026-08-11", opponent: "Rival Z", isHome: false, score: isStrong ? "1-0" : "1-2", result: isStrong ? "W" : "L", league },
-        { date: "2026-08-04", opponent: "Rival W", isHome: true, score: "1-1", result: "D", league },
-        { date: "2026-07-28", opponent: "Rival V", isHome: false, score: isStrong ? "2-0" : "0-1", result: isStrong ? "W" : "L", league },
+        { date: "2026-08-25", opponent: "Rival X", isHome: false, score: isStrong ? "2-1" : "0-2", result: isStrong ? "W" : "L", competition: league },
+        { date: "2026-08-19", opponent: "Rival Y", isHome: true, score: "2-2", result: "D", competition: league },
+        { date: "2026-08-11", opponent: "Rival Z", isHome: false, score: isStrong ? "1-0" : "1-2", result: isStrong ? "W" : "L", competition: league },
+        { date: "2026-08-04", opponent: "Rival W", isHome: true, score: "1-1", result: "D", competition: league },
+        { date: "2026-07-28", opponent: "Rival V", isHome: false, score: isStrong ? "2-0" : "0-1", result: isStrong ? "W" : "L", competition: league },
       ];
     }
 
-    // 4. Calculate summary stats
     const homeWins = h2hMatches.filter((m) => (m.homeTeam === homeTeam && m.winner === "home") || (m.awayTeam === homeTeam && m.winner === "away")).length;
     const awayWins = h2hMatches.filter((m) => (m.homeTeam === awayTeam && m.winner === "home") || (m.awayTeam === awayTeam && m.winner === "away")).length;
     const draws = h2hMatches.filter((m) => m.winner === "draw").length;
@@ -276,6 +341,10 @@ export async function GET(request: NextRequest) {
       },
       recentH2H: h2hMatches,
     };
+
+    // Save to Memory & Disk Cache permanently
+    memoryH2HCache[cacheKey] = { timestamp: Date.now(), data: response };
+    saveH2HToDisk(cacheKey, response);
 
     return NextResponse.json(response);
   } catch (error: unknown) {
