@@ -129,7 +129,7 @@ export async function generatePredictionCardBlob(prediction: MarketOpportunity):
 
   ctx.fillStyle = "#10b981";
   ctx.font = "bold 13px system-ui, -apple-system, sans-serif";
-  ctx.fillText("🎯 PRONÓSTICO OFICIAL DE ALTA PRECISIÓN", 60, 340);
+  ctx.fillText("🎯 PRONÓSTICO SMARTBETBOT", 60, 340);
 
   ctx.fillStyle = "#ffffff";
   ctx.font = "900 24px system-ui, -apple-system, sans-serif";
