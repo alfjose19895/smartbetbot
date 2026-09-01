@@ -32,7 +32,7 @@ export default function SignalsPage() {
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
-  const [minProbability, setMinProbability] = useState<number>(60);
+  const [minProbability, setMinProbability] = useState<number>(50);
 
   useEffect(() => {
     const fetchSignals = async () => {
@@ -334,7 +334,7 @@ export default function SignalsPage() {
               <div className="flex items-center gap-2">
                 <input
                   type="range"
-                  min="60"
+                  min="50"
                   max="90"
                   step="5"
                   value={minProbability}
