@@ -168,7 +168,7 @@ export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps
         {/* Main Pick Highlight Box */}
         <div className="mt-4 rounded-2xl border border-emerald-300 bg-emerald-50/60 p-3.5 dark:border-emerald-500/30 dark:bg-emerald-950/20">
           <div className="text-[10px] font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-400">
-            🎯 PRONÓSTICO OFICIAL SMARTBETBOT
+            ⚡ ALERTA DEL DÍA • SMARTBETBOT
           </div>
           <div className="mt-1 flex items-center justify-between">
             <span className="text-sm font-black text-slate-900 dark:text-white">

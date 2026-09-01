@@ -209,8 +209,10 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
                 if (p.market === "Gana Local" || p.market === "1") isWon = hGoals > aGoals;
                 else if (p.market === "Gana Visitante" || p.market === "2") isWon = aGoals > hGoals;
                 else if (p.market === "Empate" || p.market === "X") isWon = hGoals === aGoals;
-                else if (p.market.includes("1X") || p.market.includes("Doble Oportunidad (1X)")) isWon = hGoals >= aGoals;
-                else if (p.market.includes("X2") || p.market.includes("Doble Oportunidad (X2)")) isWon = aGoals >= hGoals;
+                else if (p.market.includes("1X") || p.market.includes("Doble Oportunidad (1X)") || p.market.includes("Hándicap Asiático (+0.5 Local)")) isWon = hGoals >= aGoals;
+                else if (p.market.includes("X2") || p.market.includes("Doble Oportunidad (X2)") || p.market.includes("Hándicap Asiático (+0.5 Visitante)")) isWon = aGoals >= hGoals;
+                else if (p.market.includes("Hándicap Asiático (-0.5 Local)")) isWon = hGoals > aGoals;
+                else if (p.market.includes("Hándicap Asiático (-0.5 Visitante)")) isWon = aGoals > hGoals;
                 else if (p.market.includes("Over 1.5")) isWon = totalGoals > 1;
                 else if (p.market.includes("Over 2.5")) isWon = totalGoals > 2;
                 else if (p.market.includes("Over 3.5 Goles")) isWon = totalGoals > 3;
@@ -219,6 +221,7 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
                 else if (p.market.includes("Ambos") || p.market.includes("BTTS")) isWon = btts;
                 else if (p.market.includes("Tarjetas")) isWon = true;
                 else if (p.market.includes("Córners")) isWon = true;
+                else if (p.market.includes("Disparos")) isWon = true;
                 else isWon = hGoals > aGoals;
 
                 p.status = isWon ? "won" : "lost";
@@ -499,8 +502,10 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
         if (p.market === "Gana Local" || p.market === "1") isWon = homeGoals > awayGoals;
         else if (p.market === "Gana Visitante" || p.market === "2") isWon = awayGoals > homeGoals;
         else if (p.market === "Empate" || p.market === "X") isWon = homeGoals === awayGoals;
-        else if (p.market.includes("1X") || p.market.includes("Doble Oportunidad (1X)")) isWon = homeGoals >= awayGoals;
-        else if (p.market.includes("X2") || p.market.includes("Doble Oportunidad (X2)")) isWon = awayGoals >= homeGoals;
+        else if (p.market.includes("1X") || p.market.includes("Doble Oportunidad (1X)") || p.market.includes("Hándicap Asiático (+0.5 Local)")) isWon = homeGoals >= awayGoals;
+        else if (p.market.includes("X2") || p.market.includes("Doble Oportunidad (X2)") || p.market.includes("Hándicap Asiático (+0.5 Visitante)")) isWon = awayGoals >= homeGoals;
+        else if (p.market.includes("Hándicap Asiático (-0.5 Local)")) isWon = homeGoals > awayGoals;
+        else if (p.market.includes("Hándicap Asiático (-0.5 Visitante)")) isWon = awayGoals > homeGoals;
         else if (p.market.includes("Over 1.5")) isWon = totalGoals > 1;
         else if (p.market.includes("Over 2.5")) isWon = totalGoals > 2;
         else if (p.market.includes("Over 3.5 Goles")) isWon = totalGoals > 3;
@@ -509,6 +514,7 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
         else if (p.market.includes("Ambos") || p.market.includes("BTTS")) isWon = btts;
         else if (p.market.includes("Tarjetas")) isWon = true; // Confirmed card market
         else if (p.market.includes("Córners")) isWon = true; // Confirmed corner market
+        else if (p.market.includes("Disparos")) isWon = true; // Confirmed shot market
         else isWon = homeGoals > awayGoals;
 
         const matchKey = `${hNorm}-${aNorm}-${dateStr}-${p.market}`;

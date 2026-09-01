@@ -1,8 +1,8 @@
 /**
  * Production-ready TypeScript SmartBetBot Quantitative Prediction Engine (MVP).
  * Combines Team Elo ratings, Poisson Expected Goals (xG), market valuation,
- * and high-precision filtering (>=85% win rate target) with authentic bookmaker odds.
- * Features 1X2, Double Chance, Over/Under 1.5, 2.5, 3.5, BTTS, Corners, and Cards.
+ * and ultra-high-precision filtering (>=70% - 85% win rate target) with authentic bookmaker odds.
+ * Features 1X2, Double Chance, Asian Handicap, Over/Under 1.5, 2.5, 3.5, BTTS, Corners, Cards, and Shots.
  */
 
 export interface H2HMatch {
@@ -405,6 +405,12 @@ function generateExplanation(
   const totalXg = (hXg + aXg).toFixed(2);
   const tierContext = tier === 1 ? "Liga de Élite (Top 5 / UEFA)" : tier === 2 ? "Liga Primera División de Alta Confianza" : "Competición Oficial";
 
+  if (market.includes("Hándicap Asiático (+0.5") || market.includes("AH +0.5")) {
+    return `[${tierContext}] Cobertura de alta precisión: Hándicap positivo (+0.5) con ${prob}% de certeza matemática, garantizando ganancia si el equipo empata o gana el partido a cuota @${odds.toFixed(2)}.`;
+  }
+  if (market.includes("Hándicap Asiático (-0.5") || market.includes("AH -0.5")) {
+    return `[${tierContext}] Dominio proyectado: Victoria requerida cubierta con ${prob}% de probabilidad según el diferencial Elo y métricas Poisson a cuota @${odds.toFixed(2)}.`;
+  }
   if (market.includes("1X") || market.includes("Doble Oportunidad (1X)")) {
     return `[${tierContext}] Seguridad máxima: El modelo otorga un ${prob}% de probabilidad a que ${home} sume puntos en casa (xG: ${hXg.toFixed(2)} vs ${aXg.toFixed(2)}), cubriendo victoria o empate a cuota @${odds.toFixed(2)}.`;
   }
@@ -422,6 +428,9 @@ function generateExplanation(
   }
   if (market.includes("Under 3.5")) {
     return `[${tierContext}] Solidez defensiva proyectada: Modelo Poisson proyecta un ${prob}% de probabilidad de que el encuentro concluya con 3 o menos goles totales.`;
+  }
+  if (market.includes("Disparos")) {
+    return `[${tierContext}] Alto volumen de remates esperados. Modelo predictivo estima ${prob}% de probabilidad de superar la línea de disparos a puerta a cuota @${odds.toFixed(2)}.`;
   }
   if (market.includes("Tarjetas")) {
     return `[${tierContext}] Alta fricción táctica y rigor arbitral proyectado. Análisis disciplinario estima ${prob}% de probabilidad para más de 3.5 tarjetas totales a cuota @${odds.toFixed(2)}.`;
@@ -646,6 +655,14 @@ export function evaluateFixturePrediction(params: {
   }
   pOverCards35 = Math.min(0.86, Math.max(0.40, pOverCards35));
 
+  // Expected Shots on Target Calculation
+  const expectedShotsOnTarget = 6.2 + totalXg * 1.85 + ((hashSeed % 9) * 0.12);
+  let pOverShots85 = 0;
+  for (let s = 9; s <= 25; s++) {
+    pOverShots85 += poissonProbability(s, expectedShotsOnTarget);
+  }
+  pOverShots85 = Math.min(0.87, Math.max(0.45, pOverShots85));
+
   const matchJuice = 0.99 + ((hashSeed % 7) * 0.005);
 
   const calculatedHomeOdds = calculateBookmakerOdds(pHome, matchJuice);
@@ -660,6 +677,7 @@ export function evaluateFixturePrediction(params: {
   const calculatedBttsOdds = calculateBookmakerOdds(pBttsYes, matchJuice);
   const calculatedCornersOdds = calculateBookmakerOdds(pOverCorners85, matchJuice);
   const calculatedCardsOdds = calculateBookmakerOdds(pOverCards35, matchJuice);
+  const calculatedShotsOdds = calculateBookmakerOdds(pOverShots85, matchJuice);
 
   const candidates: {
     market: string;
@@ -668,23 +686,26 @@ export function evaluateFixturePrediction(params: {
     odds: number;
     minOddsThreshold: number;
   }[] = [
-    // Ultra-High Precision Markets
-    { market: "Doble Oportunidad (1X)", selection: "1X", prob: p1X, odds: calculated1XOdds, minOddsThreshold: 1.35 },
-    { market: "Doble Oportunidad (X2)", selection: "X2", prob: pX2, odds: calculatedX2Odds, minOddsThreshold: 1.35 },
-    { market: "Over 1.5 Goles", selection: "Over 1.5", prob: pOver15, odds: calculatedOver15Odds, minOddsThreshold: 1.35 },
-    { market: "Under 3.5 Goles", selection: "Under 3.5", prob: pUnder35, odds: calculatedUnder35Odds, minOddsThreshold: 1.35 },
+    // Ultra-High Precision Markets (Target >= 70% Win Rate)
+    { market: "Doble Oportunidad (1X)", selection: "1X", prob: p1X, odds: calculated1XOdds, minOddsThreshold: 1.30 },
+    { market: "Doble Oportunidad (X2)", selection: "X2", prob: pX2, odds: calculatedX2Odds, minOddsThreshold: 1.30 },
+    { market: "Hándicap Asiático (+0.5 Local)", selection: "+0.5 1", prob: p1X, odds: calculated1XOdds, minOddsThreshold: 1.30 },
+    { market: "Hándicap Asiático (+0.5 Visitante)", selection: "+0.5 2", prob: pX2, odds: calculatedX2Odds, minOddsThreshold: 1.30 },
+    { market: "Over 1.5 Goles", selection: "Over 1.5", prob: pOver15, odds: calculatedOver15Odds, minOddsThreshold: 1.30 },
+    { market: "Under 3.5 Goles", selection: "Under 3.5", prob: pUnder35, odds: calculatedUnder35Odds, minOddsThreshold: 1.30 },
 
     // Primary 1X2 & Over/Under Markets
-    { market: "Gana Local", selection: "1", prob: pHome, odds: marketOdds.homeWin || calculatedHomeOdds, minOddsThreshold: 1.40 },
-    { market: "Gana Visitante", selection: "2", prob: pAway, odds: marketOdds.awayWin || calculatedAwayOdds, minOddsThreshold: 1.40 },
-    { market: "Over 2.5 Goles", selection: "Over 2.5", prob: pOver25, odds: marketOdds.over25 || calculatedOver25Odds, minOddsThreshold: 1.40 },
+    { market: "Gana Local", selection: "1", prob: pHome, odds: marketOdds.homeWin || calculatedHomeOdds, minOddsThreshold: 1.38 },
+    { market: "Gana Visitante", selection: "2", prob: pAway, odds: marketOdds.awayWin || calculatedAwayOdds, minOddsThreshold: 1.38 },
+    { market: "Over 2.5 Goles", selection: "Over 2.5", prob: pOver25, odds: marketOdds.over25 || calculatedOver25Odds, minOddsThreshold: 1.38 },
     { market: "Over 3.5 Goles", selection: "Over 3.5", prob: pOver35, odds: calculatedOver35Odds, minOddsThreshold: 1.50 },
-    { market: "Under 2.5 Goles", selection: "Under 2.5", prob: pUnder25, odds: marketOdds.under25 || calculatedUnder25Odds, minOddsThreshold: 1.40 },
-    { market: "Ambos Marcan (BTTS)", selection: "Yes", prob: pBttsYes, odds: marketOdds.bttsYes || calculatedBttsOdds, minOddsThreshold: 1.40 },
+    { market: "Under 2.5 Goles", selection: "Under 2.5", prob: pUnder25, odds: marketOdds.under25 || calculatedUnder25Odds, minOddsThreshold: 1.38 },
+    { market: "Ambos Marcan (BTTS)", selection: "Yes", prob: pBttsYes, odds: marketOdds.bttsYes || calculatedBttsOdds, minOddsThreshold: 1.38 },
 
-    // Corners & Cards Markets
-    { market: "Over 8.5 Córners", selection: "Over 8.5", prob: pOverCorners85, odds: calculatedCornersOdds, minOddsThreshold: 1.40 },
-    { market: "Over 3.5 Tarjetas", selection: "Over 3.5", prob: pOverCards35, odds: calculatedCardsOdds, minOddsThreshold: 1.40 },
+    // Corners, Cards, and Shots Markets
+    { market: "Over 8.5 Córners", selection: "Over 8.5", prob: pOverCorners85, odds: calculatedCornersOdds, minOddsThreshold: 1.35 },
+    { market: "Over 3.5 Tarjetas", selection: "Over 3.5", prob: pOverCards35, odds: calculatedCardsOdds, minOddsThreshold: 1.35 },
+    { market: "Over 8.5 Disparos a Puerta", selection: "Over 8.5", prob: pOverShots85, odds: calculatedShotsOdds, minOddsThreshold: 1.35 },
   ];
 
   const opportunities: MarketOpportunity[] = [];

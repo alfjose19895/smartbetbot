@@ -74,11 +74,14 @@ export default function SignalsPage() {
   const coreMarkets = [
     "Doble Oportunidad (1X)",
     "Doble Oportunidad (X2)",
+    "Hándicap Asiático (+0.5 Local)",
+    "Hándicap Asiático (+0.5 Visitante)",
     "Over 1.5 Goles",
     "Over 2.5 Goles",
     "Over 3.5 Goles",
     "Under 2.5 Goles",
     "Under 3.5 Goles",
+    "Over 8.5 Disparos a Puerta",
     "Over 8.5 Córners",
     "Over 3.5 Tarjetas",
     "Gana Local",
@@ -225,7 +228,7 @@ export default function SignalsPage() {
               <span className="capitalize">{formattedToday} • Alertas de Alta Precisión (≥85% Win Rate Target)</span>
             </div>
             <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
-              Picks y Alertas Cuantitativas de la Jornada
+              Alertas del Día y Pronósticos Cuantitativos (≥70% Probabilidad)
             </h1>
             <p className="mt-1 text-xs text-slate-700 sm:text-sm dark:text-slate-400">
               Pronósticos de máxima certeza estadística priorizando Ligas Top y Ligas Europeas de élite
@@ -235,7 +238,7 @@ export default function SignalsPage() {
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="rounded-2xl bg-white px-3.5 py-2 sm:px-4 sm:py-2.5 border border-slate-200 text-center shadow-sm dark:bg-slate-900/80 dark:border-slate-800">
               <span className="text-[10px] uppercase text-slate-600 block font-bold dark:text-slate-400">
-                Picks Filtrados
+                Alertas Filtradas
               </span>
               <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
                 {displayPicks.length}

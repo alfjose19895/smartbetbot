@@ -23,7 +23,7 @@ describe("Prediction Engine (TypeScript MVP)", () => {
     expect(topPick.homeLast5).toBeDefined();
   });
 
-  it("accurately detects high-value profitable opportunities in Chelsea vs Brighton including Corners and Cards", () => {
+  it("accurately detects high-value profitable opportunities in Chelsea vs Brighton including Asian Handicap, Shots, Corners and Cards", () => {
     const picks = evaluateFixturePrediction({
       fixtureId: 1557379,
       homeTeam: "Chelsea",
@@ -35,7 +35,7 @@ describe("Prediction Engine (TypeScript MVP)", () => {
     expect(picks.length).toBeGreaterThan(0);
     const markets = picks.map((p) => p.market);
     console.log("CHELSEA vs BRIGHTON AVAILABLE MARKETS:", markets);
-    expect(picks.some((p) => p.market.includes("Córners") || p.market.includes("Tarjetas") || p.market.includes("Goles"))).toBe(true);
+    expect(picks.some((p) => p.market.includes("Hándicap Asiático") || p.market.includes("Disparos") || p.market.includes("Córners") || p.market.includes("Tarjetas") || p.market.includes("Goles"))).toBe(true);
   });
 
   it("generates predictions with rich market variety from live curated multi-league queries", async () => {
