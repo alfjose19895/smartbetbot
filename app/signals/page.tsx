@@ -41,7 +41,7 @@ export default function SignalsPage() {
         const res = await fetch("/api/signals");
         const json = await res.json();
         if (json.signals) {
-          setSignals(json.signals.slice(0, 20));
+          setSignals(json.signals);
         }
       } catch (err) {
         console.error("Error fetching signals:", err);
@@ -202,14 +202,14 @@ export default function SignalsPage() {
     return (b.smartScore || 0) - (a.smartScore || 0) || b.odds - a.odds;
   });
 
-  const top20Picks = sortedSignals.slice(0, 20);
+  const displayPicks = sortedSignals;
 
-  const avgOdds = top20Picks.length > 0
-    ? (top20Picks.reduce((acc, p) => acc + p.odds, 0) / top20Picks.length).toFixed(2)
+  const avgOdds = displayPicks.length > 0
+    ? (displayPicks.reduce((acc, p) => acc + p.odds, 0) / displayPicks.length).toFixed(2)
     : "0.00";
 
-  const avgProb = top20Picks.length > 0
-    ? (top20Picks.reduce((acc, p) => acc + p.probability, 0) / top20Picks.length).toFixed(0)
+  const avgProb = displayPicks.length > 0
+    ? (displayPicks.reduce((acc, p) => acc + p.probability, 0) / displayPicks.length).toFixed(0)
     : "0";
 
   return (
@@ -238,7 +238,7 @@ export default function SignalsPage() {
                 Picks Filtrados
               </span>
               <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                {top20Picks.length} / 20
+                {displayPicks.length}
               </span>
             </div>
             <div className="rounded-2xl bg-white px-3.5 py-2 sm:px-4 sm:py-2.5 border border-slate-200 text-center shadow-sm dark:bg-slate-900/80 dark:border-slate-800">
@@ -379,13 +379,13 @@ export default function SignalsPage() {
           </div>
         </div>
 
-        {/* Signals List (Top 20 of Today) */}
+        {/* Signals List */}
         {loading ? (
           <div className="py-20 text-center text-slate-500">
             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent" />
-            <p className="mt-3 text-sm font-semibold">Analizando los 20 mejores pronósticos de alta precisión...</p>
+            <p className="mt-3 text-sm font-semibold">Analizando pronósticos de alta precisión...</p>
           </div>
-        ) : top20Picks.length === 0 ? (
+        ) : displayPicks.length === 0 ? (
           <div className="rounded-3xl border border-slate-200 bg-white p-12 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900/40">
             <span className="text-4xl">🔍</span>
             <h3 className="mt-3 text-lg font-bold text-slate-900 dark:text-white">Sin resultados para hoy</h3>
@@ -395,7 +395,7 @@ export default function SignalsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
-            {top20Picks.map((signal) => (
+            {displayPicks.map((signal) => (
               <PredictionCard
                 key={signal.id || `${signal.fixtureId}-${signal.market}`}
                 prediction={signal}

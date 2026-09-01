@@ -40,7 +40,7 @@ export default function DashboardPage() {
       const res = await fetch("/api/signals");
       const json = await res.json();
       if (json.signals) {
-        setPredictions(json.signals.slice(0, 20));
+        setPredictions(json.signals);
       }
     } catch (err) {
       console.error("Error loading signals:", err);
@@ -186,7 +186,7 @@ export default function DashboardPage() {
     return true;
   });
 
-  const displayPicks = filteredPredictions.slice(0, 20);
+  const displayPicks = filteredPredictions;
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100 overflow-x-hidden">
@@ -227,7 +227,7 @@ export default function DashboardPage() {
                 Picks de Hoy
               </span>
               <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                {displayPicks.length} / 20
+                {displayPicks.length}
               </span>
             </div>
             <div className="rounded-2xl bg-white px-3.5 py-2 sm:px-4 sm:py-2.5 border border-slate-200 text-center shadow-sm dark:bg-slate-900/80 dark:border-slate-800">
