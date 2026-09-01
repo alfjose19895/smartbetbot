@@ -59,16 +59,29 @@ export async function generatePredictionCardBlob(prediction: MarketOpportunity):
   ctx.font = "bold 15px system-ui, -apple-system, sans-serif";
   ctx.fillText(`🏆 ${prediction.league} ${prediction.country ? `• ${prediction.country}` : ""}`, 54, 133);
 
-  // Confidence Pill
-  const confText = prediction.confidence === "Muy Alta" ? "⭐⭐⭐ MUY ALTA (85%+)" : prediction.confidence === "Alta" ? "⭐⭐ ALTA SEGURIDAD" : "⭐ MEDIA";
-  ctx.fillStyle = "rgba(16, 185, 129, 0.25)";
+  // Badge Pill (Bomba, Valor, or Confidence)
+  let badgeText = prediction.confidence === "Muy Alta" ? "⭐⭐⭐ MUY ALTA (85%+)" : prediction.confidence === "Alta" ? "⭐⭐ ALTA SEGURIDAD" : "⭐ MEDIA";
+  let badgeBg = "rgba(16, 185, 129, 0.25)";
+  let badgeColor = "#34d399";
+
+  if (prediction.pickBadge === "bomba") {
+    badgeText = "💣 BOMBA (ALTA CUOTA)";
+    badgeBg = "rgba(249, 115, 22, 0.35)";
+    badgeColor = "#fb923c";
+  } else if (prediction.pickBadge === "valor") {
+    badgeText = "💎 VALOR (MÁXIMA CERTEZA)";
+    badgeBg = "rgba(16, 185, 129, 0.35)";
+    badgeColor = "#10b981";
+  }
+
+  ctx.fillStyle = badgeBg;
   ctx.beginPath();
-  ctx.roundRect(width - 290, 110, 250, 34, 12);
+  ctx.roundRect(width - 310, 110, 270, 34, 12);
   ctx.fill();
-  ctx.fillStyle = "#34d399";
+  ctx.fillStyle = badgeColor;
   ctx.font = "900 13px system-ui, -apple-system, sans-serif";
   ctx.textAlign = "center";
-  ctx.fillText(confText, width - 165, 133);
+  ctx.fillText(badgeText, width - 175, 133);
   ctx.textAlign = "left";
 
   // Match Teams

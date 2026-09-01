@@ -175,6 +175,10 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
   { id: 265, name: "Primera División", country: "Chile", category: "americas", tier: 2 },
   { id: 271, name: "Primera División", country: "Uruguay", category: "americas", tier: 2 },
   { id: 250, name: "Primera División", country: "Paraguay", category: "americas", tier: 2 },
+  { id: 162, name: "Primera División (Liga FPD)", country: "Costa Rica", category: "americas", tier: 2 },
+  { id: 163, name: "Liga de Ascenso", country: "Costa Rica", category: "second_divisions", tier: 3 },
+  { id: 169, name: "Chinese Super League", country: "China", category: "asia_africa", tier: 2 },
+  { id: 170, name: "China League One", country: "China", category: "second_divisions", tier: 3 },
 ];
 
 export const ALL_LEAGUE_IDS = SUPPORTED_LEAGUES.map((l) => l.id);

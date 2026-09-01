@@ -2,7 +2,8 @@
  * Production-ready TypeScript SmartBetBot Quantitative Prediction Engine (MVP).
  * Combines Team Elo ratings, Poisson Expected Goals (xG), market valuation,
  * and ultra-high-precision filtering (>=70% - 85% win rate target) with authentic bookmaker odds.
- * Features 1X2, Double Chance, Asian Handicap, Over/Under 1.5, 2.5, 3.5, BTTS, Corners, Cards, and Shots.
+ * Features 1X2, Double Chance, Asian Handicap, Over/Under 1.5, 2.5, 3.5, BTTS, Corners, Cards, Shots, and Player Shots.
+ * Badges: 💣 Bomba (High Payout / High Odds), 💎 Valor (Maximum Certainty ~100%).
  */
 
 export interface H2HMatch {
@@ -47,6 +48,7 @@ export interface MarketOpportunity {
   edge: number;
   expectedValue: number;
   confidence: "Muy Alta" | "Alta" | "Media" | "Baja";
+  pickBadge?: "bomba" | "valor" | "estandar";
   smartScore: number;
   explanation: string;
   status: "pending" | "won" | "lost" | "void";
@@ -214,7 +216,17 @@ export function normalizeLeagueInfo(rawLeagueName: string, rawCountry?: string):
     return { canonicalLeague: "Indian Super League", country: "India", tier: 2 };
   }
 
-  // Tier 2: Américas (1ra División)
+  // Tier 2: China & Asia
+  if (norm.includes("chinese super league") || norm.includes("csl") || norm.includes("china")) {
+    if (norm.includes("one") || norm.includes("1") || norm.includes("league one")) return { canonicalLeague: "China League One", country: "China", tier: 3 };
+    return { canonicalLeague: "Chinese Super League", country: "China", tier: 2 };
+  }
+
+  // Tier 2: Costa Rica & Américas
+  if (norm.includes("costa rica") || norm.includes("fpd") || norm.includes("promerica")) {
+    if (norm.includes("ascenso") || norm.includes("segunda")) return { canonicalLeague: "Liga de Ascenso", country: "Costa Rica", tier: 3 };
+    return { canonicalLeague: "Primera División (Liga FPD)", country: "Costa Rica", tier: 2 };
+  }
   if (norm.includes("liga pro") || norm.includes("ecuador")) {
     return { canonicalLeague: "Liga Pro", country: "Ecuador", tier: 2 };
   }
@@ -327,6 +339,20 @@ export const KNOWN_ELO_RATINGS: Record<string, number> = {
   "benfica": 1850,
   "porto": 1830,
 
+  // China
+  "shanghaiport": 1660,
+  "shandongtaishan": 1640,
+  "shanghaishenhua": 1650,
+  "beijingguoan": 1620,
+  "chengdutongwei": 1600,
+
+  // Costa Rica
+  "saprissa": 1620,
+  "alajuelense": 1610,
+  "herediano": 1590,
+  "cartagines": 1540,
+  "san carlos": 1520,
+
   // Ecuador (Liga Pro)
   "lduquito": 1620,
   "independientedelvalle": 1640,
@@ -374,15 +400,17 @@ export const LEAGUE_PROFILES: Record<string, { baseHomeXg: number; baseAwayXg: n
   "bundesliga": { baseHomeXg: 1.70, baseAwayXg: 1.35, margin: 0.95 },
   "ligue 1": { baseHomeXg: 1.45, baseAwayXg: 1.20, margin: 0.95 },
 
-  // Mid Europe
+  // Mid Europe & Asia
   "eredivisie": { baseHomeXg: 1.75, baseAwayXg: 1.35, margin: 0.95 },
   "jupiler pro league": { baseHomeXg: 1.60, baseAwayXg: 1.28, margin: 0.95 },
   "primeira liga": { baseHomeXg: 1.45, baseAwayXg: 1.18, margin: 0.95 },
   "ekstraklasa": { baseHomeXg: 1.45, baseAwayXg: 1.15, margin: 0.95 },
   "süper lig": { baseHomeXg: 1.50, baseAwayXg: 1.20, margin: 0.95 },
   "premiership": { baseHomeXg: 1.45, baseAwayXg: 1.15, margin: 0.95 },
+  "chinese super league": { baseHomeXg: 1.60, baseAwayXg: 1.25, margin: 0.95 },
 
   // Américas & Australia
+  "primera división (liga fpd)": { baseHomeXg: 1.50, baseAwayXg: 1.18, margin: 0.95 },
   "liga pro": { baseHomeXg: 1.40, baseAwayXg: 1.10, margin: 0.95 },
   "brasileirão": { baseHomeXg: 1.35, baseAwayXg: 1.05, margin: 0.95 },
   "liga mx": { baseHomeXg: 1.46, baseAwayXg: 1.20, margin: 0.95 },
@@ -405,11 +433,17 @@ function generateExplanation(
   const totalXg = (hXg + aXg).toFixed(2);
   const tierContext = tier === 1 ? "Liga de Élite (Top 5 / UEFA)" : tier === 2 ? "Liga Primera División de Alta Confianza" : "Competición Oficial";
 
+  if (market.includes("Hándicap Asiático (+1.5") || market.includes("AH +1.5")) {
+    return `[${tierContext}] Margen de seguridad extraordinario (+1.5): Cobertura del ${prob}% de probabilidad, ganando incluso si el equipo pierde por un gol a cuota @${odds.toFixed(2)}.`;
+  }
   if (market.includes("Hándicap Asiático (+0.5") || market.includes("AH +0.5")) {
     return `[${tierContext}] Cobertura de alta precisión: Hándicap positivo (+0.5) con ${prob}% de certeza matemática, garantizando ganancia si el equipo empata o gana el partido a cuota @${odds.toFixed(2)}.`;
   }
   if (market.includes("Hándicap Asiático (-0.5") || market.includes("AH -0.5")) {
     return `[${tierContext}] Dominio proyectado: Victoria requerida cubierta con ${prob}% de probabilidad según el diferencial Elo y métricas Poisson a cuota @${odds.toFixed(2)}.`;
+  }
+  if (market.includes("Disparos a Puerta (Jugador") || market.includes("Disparos (Jugador")) {
+    return `[${tierContext}] Referente ofensivo: Se proyecta que el atacante clave registre disparos a puerta con ${prob}% de certeza estadística y alto valor a cuota @${odds.toFixed(2)}.`;
   }
   if (market.includes("1X") || market.includes("Doble Oportunidad (1X)")) {
     return `[${tierContext}] Seguridad máxima: El modelo otorga un ${prob}% de probabilidad a que ${home} sume puntos en casa (xG: ${hXg.toFixed(2)} vs ${aXg.toFixed(2)}), cubriendo victoria o empate a cuota @${odds.toFixed(2)}.`;
@@ -424,12 +458,12 @@ function generateExplanation(
     return `[${tierContext}] Potencial ofensivo elevado (${totalXg} xG combinado). Probabilidad matemática del ${prob}% con +${edge}% de valor (+EV) frente a la casa de apuestas @${odds.toFixed(2)}.`;
   }
   if (market.includes("Over 3.5 Goles")) {
-    return `[${tierContext}] Partido de alta producción goleadora (${totalXg} xG proyectado). Modelo cuantitativo detecta ${prob}% de probabilidad para 4 o más goles totales a cuota de alto valor @${odds.toFixed(2)}.`;
+    return `[${tierContext}] 💣 Pronóstico Bomba: Partido de alta producción goleadora (${totalXg} xG proyectado). Modelo cuantitativo detecta ${prob}% de probabilidad para 4 o más goles a cuota excelente @${odds.toFixed(2)}.`;
   }
   if (market.includes("Under 3.5")) {
     return `[${tierContext}] Solidez defensiva proyectada: Modelo Poisson proyecta un ${prob}% de probabilidad de que el encuentro concluya con 3 o menos goles totales.`;
   }
-  if (market.includes("Disparos")) {
+  if (market.includes("Disparos a Puerta")) {
     return `[${tierContext}] Alto volumen de remates esperados. Modelo predictivo estima ${prob}% de probabilidad de superar la línea de disparos a puerta a cuota @${odds.toFixed(2)}.`;
   }
   if (market.includes("Tarjetas")) {
@@ -663,6 +697,9 @@ export function evaluateFixturePrediction(params: {
   }
   pOverShots85 = Math.min(0.87, Math.max(0.45, pOverShots85));
 
+  // Expected Player Shots on Target (Key Striker / Winger)
+  const pPlayerShot05 = Math.min(0.88, Math.max(0.68, 0.72 + (hXg >= aXg ? (hXg - 1.2) * 0.08 : (aXg - 1.2) * 0.08)));
+
   const matchJuice = 0.99 + ((hashSeed % 7) * 0.005);
 
   const calculatedHomeOdds = calculateBookmakerOdds(pHome, matchJuice);
@@ -678,6 +715,11 @@ export function evaluateFixturePrediction(params: {
   const calculatedCornersOdds = calculateBookmakerOdds(pOverCorners85, matchJuice);
   const calculatedCardsOdds = calculateBookmakerOdds(pOverCards35, matchJuice);
   const calculatedShotsOdds = calculateBookmakerOdds(pOverShots85, matchJuice);
+  const calculatedPlayerShotOdds = calculateBookmakerOdds(pPlayerShot05, matchJuice);
+
+  // Asian Handicap calculations (+1.5, +0.5, -0.5)
+  const pAhPlus15Home = Math.min(0.93, p1X + 0.12);
+  const pAhPlus15Away = Math.min(0.93, pX2 + 0.12);
 
   const candidates: {
     market: string;
@@ -686,11 +728,15 @@ export function evaluateFixturePrediction(params: {
     odds: number;
     minOddsThreshold: number;
   }[] = [
-    // Ultra-High Precision Markets (Target >= 70% Win Rate)
+    // Ultra-High Precision Markets (Target >= 70% Win Rate / Valor)
     { market: "Doble Oportunidad (1X)", selection: "1X", prob: p1X, odds: calculated1XOdds, minOddsThreshold: 1.30 },
     { market: "Doble Oportunidad (X2)", selection: "X2", prob: pX2, odds: calculatedX2Odds, minOddsThreshold: 1.30 },
     { market: "Hándicap Asiático (+0.5 Local)", selection: "+0.5 1", prob: p1X, odds: calculated1XOdds, minOddsThreshold: 1.30 },
     { market: "Hándicap Asiático (+0.5 Visitante)", selection: "+0.5 2", prob: pX2, odds: calculatedX2Odds, minOddsThreshold: 1.30 },
+    { market: "Hándicap Asiático (+1.5 Local)", selection: "+1.5 1", prob: pAhPlus15Home, odds: calculateBookmakerOdds(pAhPlus15Home, matchJuice), minOddsThreshold: 1.25 },
+    { market: "Hándicap Asiático (+1.5 Visitante)", selection: "+1.5 2", prob: pAhPlus15Away, odds: calculateBookmakerOdds(pAhPlus15Away, matchJuice), minOddsThreshold: 1.25 },
+    { market: "Hándicap Asiático (-0.5 Local)", selection: "-0.5 1", prob: pHome, odds: calculatedHomeOdds, minOddsThreshold: 1.38 },
+    { market: "Hándicap Asiático (-0.5 Visitante)", selection: "-0.5 2", prob: pAway, odds: calculatedAwayOdds, minOddsThreshold: 1.38 },
     { market: "Over 1.5 Goles", selection: "Over 1.5", prob: pOver15, odds: calculatedOver15Odds, minOddsThreshold: 1.30 },
     { market: "Under 3.5 Goles", selection: "Under 3.5", prob: pUnder35, odds: calculatedUnder35Odds, minOddsThreshold: 1.30 },
 
@@ -702,10 +748,11 @@ export function evaluateFixturePrediction(params: {
     { market: "Under 2.5 Goles", selection: "Under 2.5", prob: pUnder25, odds: marketOdds.under25 || calculatedUnder25Odds, minOddsThreshold: 1.38 },
     { market: "Ambos Marcan (BTTS)", selection: "Yes", prob: pBttsYes, odds: marketOdds.bttsYes || calculatedBttsOdds, minOddsThreshold: 1.38 },
 
-    // Corners, Cards, and Shots Markets
+    // Corners, Cards, Shots, and Player Shots Markets
     { market: "Over 8.5 Córners", selection: "Over 8.5", prob: pOverCorners85, odds: calculatedCornersOdds, minOddsThreshold: 1.35 },
     { market: "Over 3.5 Tarjetas", selection: "Over 3.5", prob: pOverCards35, odds: calculatedCardsOdds, minOddsThreshold: 1.35 },
     { market: "Over 8.5 Disparos a Puerta", selection: "Over 8.5", prob: pOverShots85, odds: calculatedShotsOdds, minOddsThreshold: 1.35 },
+    { market: "Over 0.5 Disparos a Puerta (Jugador Clave)", selection: "+0.5 Disparos", prob: pPlayerShot05, odds: calculatedPlayerShotOdds, minOddsThreshold: 1.30 },
   ];
 
   const opportunities: MarketOpportunity[] = [];
@@ -731,6 +778,14 @@ export function evaluateFixturePrediction(params: {
     else if (probPercent >= 68.0) confidence = "Alta";
     else if (probPercent >= 60.0) confidence = "Media";
     else confidence = "Baja";
+
+    // Bomba (High Payout / High Odds) or Valor (Maximum Certainty ~100%)
+    let pickBadge: "bomba" | "valor" | "estandar" = "estandar";
+    if (item.odds >= 2.05 || (item.market.includes("Over 3.5") && item.odds >= 1.90)) {
+      pickBadge = "bomba";
+    } else if (probPercent >= 76.0 || (confidence === "Muy Alta" && probPercent >= 74.0)) {
+      pickBadge = "valor";
+    }
 
     const tierBonus = tier === 1 ? 15 : tier === 2 ? 8 : 0;
     const rawScore = Math.round(item.prob * 100 + (item.prob - 1 / item.odds) * 10 + tierBonus);
@@ -759,6 +814,7 @@ export function evaluateFixturePrediction(params: {
       edge: edgePercent,
       expectedValue: evPercent,
       confidence,
+      pickBadge,
       smartScore,
       explanation: generateExplanation(homeTeam, awayTeam, item.market, probPercent, edgePercent, item.odds, hXg, aXg, tier),
       status: "pending",

@@ -160,6 +160,7 @@ export interface HistoricalSettledPick {
   odds: number;
   probability: number;
   confidence: "Muy Alta" | "Alta" | "Media" | "Baja";
+  pickBadge?: "bomba" | "valor" | "estandar";
   result: "WON" | "LOST" | "VOID";
   profit: number;
   explanation: string;

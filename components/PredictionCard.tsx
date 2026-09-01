@@ -135,14 +135,26 @@ export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps
           </div>
         </div>
 
-        {/* Kickoff Date/Time & Confidence Badge */}
-        <div className="mt-3 flex items-center justify-between">
+        {/* Kickoff Date/Time & Badges (Bomba / Valor / Confidence) */}
+        <div className="mt-3 flex items-center justify-between flex-wrap gap-2">
           <span className="text-xs font-bold text-slate-600 dark:text-slate-400">
             📅 {formattedDate} • ⏰ {formattedTime} (Ecuador UTC-5)
           </span>
-          <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black border ${confidenceBadge.cls}`}>
-            <span>{confidenceBadge.label}</span>
-          </span>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {prediction.pickBadge === "bomba" && (
+              <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-gradient-to-r from-orange-500 to-rose-500 text-white shadow-sm border border-orange-400 animate-pulse">
+                💣 BOMBA
+              </span>
+            )}
+            {prediction.pickBadge === "valor" && (
+              <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-sm border border-emerald-400 font-extrabold">
+                💎 VALOR
+              </span>
+            )}
+            <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black border ${confidenceBadge.cls}`}>
+              <span>{confidenceBadge.label}</span>
+            </span>
+          </div>
         </div>
 
         {/* Match Header (Teams) */}
