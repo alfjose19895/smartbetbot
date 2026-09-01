@@ -9,14 +9,26 @@ import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
 import { useLanguage } from "@/context/LanguageContext";
 import { MultiSelectDropdown, DropdownOption } from "@/components/MultiSelectDropdown";
 
+function getMatchLiveStatus(kickoff: string): "SCHEDULED" | "IN_PLAY" | "FINISHED" {
+  if (!kickoff) return "SCHEDULED";
+  const nowMs = Date.now();
+  const kickoffMs = new Date(kickoff).getTime();
+  const diffMinutes = Math.floor((nowMs - kickoffMs) / 60000);
+
+  if (diffMinutes < 0) return "SCHEDULED";
+  if (diffMinutes >= 0 && diffMinutes <= 120) return "IN_PLAY";
+  return "FINISHED";
+}
+
 export default function SignalsPage() {
   const { language } = useLanguage();
   const [signals, setSignals] = useState<MarketOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
 
-  // Search & Filters (exclusively for Today's Top 20)
+  // Search & Filters
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [matchStatusFilter, setMatchStatusFilter] = useState<"ALL" | "SCHEDULED" | "IN_PLAY" | "FINISHED">("ALL");
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
@@ -94,6 +106,11 @@ export default function SignalsPage() {
     year: "numeric",
   });
 
+  // Count matches by status
+  const scheduledCount = signals.filter((s) => getMatchLiveStatus(s.kickoff) === "SCHEDULED").length;
+  const inPlayCount = signals.filter((s) => getMatchLiveStatus(s.kickoff) === "IN_PLAY").length;
+  const finishedCount = signals.filter((s) => getMatchLiveStatus(s.kickoff) === "FINISHED").length;
+
   // Filter signals strictly for today's matches
   const filteredCandidates = signals.filter((s) => {
     // 1. Text Search Query Filter
@@ -117,10 +134,16 @@ export default function SignalsPage() {
       if (!matched) return false;
     }
 
-    // 2. Min probability slider filter
+    // 2. Match Live Status Filter
+    if (matchStatusFilter !== "ALL") {
+      const status = getMatchLiveStatus(s.kickoff);
+      if (status !== matchStatusFilter) return false;
+    }
+
+    // 3. Min probability slider filter
     if (s.probability < minProbability) return false;
 
-    // 3. League filter
+    // 4. League filter
     if (selectedLeagues.length > 0) {
       const normLeague = (s.league || "").toLowerCase().trim();
       const normCountry = (s.country || "").toLowerCase().trim();
@@ -136,7 +159,7 @@ export default function SignalsPage() {
       if (!matched) return false;
     }
 
-    // 4. Confidence filter
+    // 5. Confidence filter
     if (selectedConfidence.length > 0) {
       const isMatch = selectedConfidence.some((c) => {
         if (c === "muy_alta") return s.confidence === "Muy Alta" || s.probability >= 75;
@@ -147,7 +170,7 @@ export default function SignalsPage() {
       if (!isMatch) return false;
     }
 
-    // 5. Market filter
+    // 6. Market filter
     if (selectedMarkets.length > 0) {
       const match = selectedMarkets.some((m) => {
         const normSelected = m.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -164,7 +187,6 @@ export default function SignalsPage() {
     return true;
   });
 
-  // Sort strictly by league tier priority, highest probability & smartScore, capped at Top 20 daily picks
   const sortedSignals = [...filteredCandidates].sort((a, b) => {
     const aTier = a.leagueTier || 3;
     const bTier = b.leagueTier || 3;
@@ -189,7 +211,6 @@ export default function SignalsPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100 overflow-x-hidden">
-      {/* Header */}
       <Navbar />
 
       <main className="mx-auto max-w-7xl px-3.5 py-6 sm:px-6 sm:py-8 lg:px-8 space-y-6">
@@ -257,6 +278,51 @@ export default function SignalsPage() {
             )}
           </div>
 
+          {/* Match Status Quick Filter Buttons */}
+          <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800/80 dark:bg-slate-900/80">
+            <span className="text-xs font-bold text-slate-600 mr-1 dark:text-slate-400">Estado del Partido:</span>
+            <button
+              onClick={() => setMatchStatusFilter("ALL")}
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+                matchStatusFilter === "ALL"
+                  ? "bg-slate-900 text-white dark:bg-slate-700"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+              }`}
+            >
+              🌟 Todos ({signals.length})
+            </button>
+            <button
+              onClick={() => setMatchStatusFilter("SCHEDULED")}
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+                matchStatusFilter === "SCHEDULED"
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+              }`}
+            >
+              ⏳ Por Comenzar ({scheduledCount})
+            </button>
+            <button
+              onClick={() => setMatchStatusFilter("IN_PLAY")}
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+                matchStatusFilter === "IN_PLAY"
+                  ? "bg-amber-600 text-white shadow-sm"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+              }`}
+            >
+              🔴 En Juego ({inPlayCount})
+            </button>
+            <button
+              onClick={() => setMatchStatusFilter("FINISHED")}
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+                matchStatusFilter === "FINISHED"
+                  ? "bg-sky-600 text-white shadow-sm"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+              }`}
+            >
+              🏁 Finalizados ({finishedCount})
+            </button>
+          </div>
+
           {/* Filter Dropdowns & Slider */}
           <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800/80 dark:bg-slate-900/80">
             {/* Probability Slider */}
@@ -321,7 +387,7 @@ export default function SignalsPage() {
             <span className="text-4xl">🔍</span>
             <h3 className="mt-3 text-lg font-bold text-slate-900 dark:text-white">Sin resultados para hoy</h3>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              {searchQuery ? `No encontramos partidos que coincidan con "${searchQuery}".` : "Ajusta los filtros de ligas, confianza o mercados para ver más pronósticos del día."}
+              {searchQuery ? `No encontramos partidos que coincidan con "${searchQuery}".` : "Ajusta los filtros de estado, ligas, confianza o mercados para ver más pronósticos del día."}
             </p>
           </div>
         ) : (

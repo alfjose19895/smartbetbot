@@ -9,6 +9,17 @@ import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
 import { useLanguage } from "@/context/LanguageContext";
 import { MultiSelectDropdown, DropdownOption } from "@/components/MultiSelectDropdown";
 
+function getMatchLiveStatus(kickoff: string): "SCHEDULED" | "IN_PLAY" | "FINISHED" {
+  if (!kickoff) return "SCHEDULED";
+  const nowMs = Date.now();
+  const kickoffMs = new Date(kickoff).getTime();
+  const diffMinutes = Math.floor((nowMs - kickoffMs) / 60000);
+
+  if (diffMinutes < 0) return "SCHEDULED";
+  if (diffMinutes >= 0 && diffMinutes <= 120) return "IN_PLAY";
+  return "FINISHED";
+}
+
 export default function DashboardPage() {
   const { language, t } = useLanguage();
   const [predictions, setPredictions] = useState<MarketOpportunity[]>([]);
@@ -18,6 +29,7 @@ export default function DashboardPage() {
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
 
   // Filters (exclusively for Today's Top 20)
+  const [matchStatusFilter, setMatchStatusFilter] = useState<"ALL" | "SCHEDULED" | "IN_PLAY" | "FINISHED">("ALL");
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
@@ -118,7 +130,18 @@ export default function DashboardPage() {
     year: "numeric",
   });
 
+  // Count matches by status
+  const scheduledCount = predictions.filter((p) => getMatchLiveStatus(p.kickoff) === "SCHEDULED").length;
+  const inPlayCount = predictions.filter((p) => getMatchLiveStatus(p.kickoff) === "IN_PLAY").length;
+  const finishedCount = predictions.filter((p) => getMatchLiveStatus(p.kickoff) === "FINISHED").length;
+
   const filteredPredictions = predictions.filter((p) => {
+    // Match Live Status Filter
+    if (matchStatusFilter !== "ALL") {
+      const status = getMatchLiveStatus(p.kickoff);
+      if (status !== matchStatusFilter) return false;
+    }
+
     if (selectedLeagues.length > 0) {
       const normLeague = (p.league || "").toLowerCase().trim();
       const normCountry = (p.country || "").toLowerCase().trim();
@@ -185,7 +208,7 @@ export default function DashboardPage() {
           <div>
             <div className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-1 text-xs font-extrabold text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30">
               <span>🎯</span>
-              <span className="capitalize">{formattedToday} • Top 20 Alta Precisión (≥85% Win Rate)</span>
+              <span className="capitalize">{formattedToday} • Top 20 Alta Precisión (≥85% Target)</span>
             </div>
             <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
               {t("dashboardTitle")}
@@ -227,6 +250,51 @@ export default function DashboardPage() {
               </span>
             </div>
           </div>
+        </div>
+
+        {/* Match Status Filter Buttons */}
+        <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800/80 dark:bg-slate-900/80">
+          <span className="text-xs font-bold text-slate-600 mr-1 dark:text-slate-400">Estado del Partido:</span>
+          <button
+            onClick={() => setMatchStatusFilter("ALL")}
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+              matchStatusFilter === "ALL"
+                ? "bg-slate-900 text-white dark:bg-slate-700"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+            }`}
+          >
+            🌟 Todos ({predictions.length})
+          </button>
+          <button
+            onClick={() => setMatchStatusFilter("SCHEDULED")}
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+              matchStatusFilter === "SCHEDULED"
+                ? "bg-emerald-600 text-white shadow-sm"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+            }`}
+          >
+            ⏳ Por Comenzar ({scheduledCount})
+          </button>
+          <button
+            onClick={() => setMatchStatusFilter("IN_PLAY")}
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+              matchStatusFilter === "IN_PLAY"
+                ? "bg-amber-600 text-white shadow-sm"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+            }`}
+          >
+            🔴 En Juego ({inPlayCount})
+          </button>
+          <button
+            onClick={() => setMatchStatusFilter("FINISHED")}
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+              matchStatusFilter === "FINISHED"
+                ? "bg-sky-600 text-white shadow-sm"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+            }`}
+          >
+            🏁 Finalizados ({finishedCount})
+          </button>
         </div>
 
         {/* Filters Toolbar */}

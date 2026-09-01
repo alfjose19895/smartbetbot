@@ -7,6 +7,25 @@ import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
 import { MultiSelectDropdown, DropdownOption } from "@/components/MultiSelectDropdown";
 import { HistoricalSettledPick, HistoricalSettledParlay } from "@/lib/sports/db";
 
+function getConfidenceBadge(confidence?: string, probability: number = 70) {
+  if (confidence === "Muy Alta" || probability >= 75) {
+    return {
+      label: "⭐⭐⭐ Muy Alta",
+      cls: "bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700",
+    };
+  }
+  if (confidence === "Alta" || probability >= 68) {
+    return {
+      label: "⭐⭐ Alta",
+      cls: "bg-cyan-100 text-cyan-900 border-cyan-300 dark:bg-cyan-950/80 dark:text-cyan-300 dark:border-cyan-700",
+    };
+  }
+  return {
+    label: "⭐ Media",
+    cls: "bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950/80 dark:text-amber-300 dark:border-amber-700",
+  };
+}
+
 export default function HistoryPage() {
   const { language, t } = useLanguage();
   const [historyType, setHistoryType] = useState<"picks" | "parlays">("picks");
@@ -16,7 +35,6 @@ export default function HistoryPage() {
 
   // Search & Filters
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
   const [filterResult, setFilterResult] = useState<"ALL" | "WON" | "LOST">("ALL");
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
@@ -64,6 +82,10 @@ export default function HistoryPage() {
   });
 
   const coreMarkets = [
+    "Doble Oportunidad (1X)",
+    "Doble Oportunidad (X2)",
+    "Over 1.5 Goles",
+    "Under 3.5 Goles",
     "Gana Local",
     "Gana Visitante",
     "Ambos Marcan (BTTS)",
@@ -100,7 +122,6 @@ export default function HistoryPage() {
 
   // Filter Individual Picks
   const filteredHistory = historyItems.filter((item) => {
-    // 1. Search query filter
     if (searchQuery.trim().length > 0) {
       const q = searchQuery.toLowerCase().trim();
       const matchText = (item.match || "").toLowerCase();
@@ -121,10 +142,8 @@ export default function HistoryPage() {
       if (!matched) return false;
     }
 
-    // 2. Result filter
     if (filterResult !== "ALL" && item.result !== filterResult) return false;
 
-    // 3. League filter
     if (selectedLeagues.length > 0) {
       const normLeague = (item.league || "").toLowerCase().trim();
       const normCountry = (item.country || "").toLowerCase().trim();
@@ -140,7 +159,6 @@ export default function HistoryPage() {
       if (!matched) return false;
     }
 
-    // 4. Market filter
     if (selectedMarkets.length > 0) {
       const match = selectedMarkets.some((m) => {
         const normSelected = m.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -154,7 +172,6 @@ export default function HistoryPage() {
       if (!match) return false;
     }
 
-    // 5. Date filter
     const itemDateStr = item.date || getLocalDateStr(item.kickoff);
     const itemTimeMs = new Date(item.kickoff || item.date).getTime();
 
@@ -239,14 +256,14 @@ export default function HistoryPage() {
               <span>{t("historyKicker")}</span>
             </div>
             <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
-              Historial de Pronósticos & Trazabilidad
+              Historial de Pronósticos & Trazabilidad Oficial
             </h1>
             <p className="mt-1 text-xs text-slate-700 sm:text-sm dark:text-slate-400">
               Auditoría oficial de picks individuales y parleys recomendados evaluados con marcadores reales
             </p>
           </div>
 
-          {/* Module Switcher: Individual Picks vs Parlays */}
+          {/* Module Switcher */}
           <div className="flex items-center gap-2 self-start sm:self-auto rounded-2xl bg-white p-1.5 border border-slate-200 shadow-sm dark:bg-slate-900 dark:border-slate-800">
             <button
               onClick={() => setHistoryType("picks")}
@@ -346,7 +363,6 @@ export default function HistoryPage() {
             </button>
           </div>
 
-          {/* Specific Date Picker Input */}
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-slate-600 dark:text-slate-400">Fecha Exacta:</span>
             <input
@@ -422,7 +438,7 @@ export default function HistoryPage() {
           </div>
         </div>
 
-        {/* Secondary Filter Controls: Result, Leagues & Markets */}
+        {/* Secondary Filter Controls */}
         <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800/80 dark:bg-slate-900/80">
           <div className="flex items-center gap-1.5">
             <span className="text-xs font-bold text-slate-600 mr-1 dark:text-slate-400">Resultado:</span>
@@ -481,7 +497,7 @@ export default function HistoryPage() {
           )}
         </div>
 
-        {/* TAB 1: INDIVIDUAL PICKS */}
+        {/* TAB 1: INDIVIDUAL PICKS WITH ENHANCED CARDS */}
         {isPicksTab && (
           <>
             {loading ? (
@@ -501,6 +517,7 @@ export default function HistoryPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
                 {filteredHistory.map((item) => {
                   const isWon = item.result === "WON";
+                  const conf = getConfidenceBadge(item.confidence, item.probability);
                   return (
                     <div
                       key={item.id}
@@ -511,6 +528,7 @@ export default function HistoryPage() {
                       }`}
                     >
                       <div>
+                        {/* Top Badge: League & Status */}
                         <div className="flex items-center justify-between gap-2">
                           <span className="inline-flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                             <span>🏆</span>
@@ -534,10 +552,17 @@ export default function HistoryPage() {
                           )}
                         </div>
 
-                        <div className="mt-3 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                          📅 {item.date}
+                        {/* Date & Initial Confidence Badge */}
+                        <div className="mt-3 flex items-center justify-between">
+                          <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                            📅 {item.date}
+                          </span>
+                          <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-black border ${conf.cls}`}>
+                            <span>{conf.label}</span>
+                          </span>
                         </div>
 
+                        {/* Teams & Real Match Score */}
                         <div className="mt-3 flex items-center justify-between rounded-2xl bg-slate-50 p-3.5 border border-slate-100 dark:bg-slate-950/80 dark:border-slate-800/80">
                           <div className="flex-1 pr-2">
                             <div className="text-sm font-extrabold text-slate-900 dark:text-white leading-tight">
@@ -554,6 +579,7 @@ export default function HistoryPage() {
                           </div>
                         </div>
 
+                        {/* Predicted Market Box */}
                         <div className="mt-4 rounded-2xl border border-slate-200/80 bg-slate-50/60 p-3 dark:border-slate-800 dark:bg-slate-950/50">
                           <div className="text-[10px] font-extrabold uppercase text-slate-500 dark:text-slate-400">
                             Mercado Pronosticado
@@ -616,7 +642,6 @@ export default function HistoryPage() {
                           : "border-slate-200 bg-white dark:border-slate-800/80 dark:bg-slate-900/90"
                       }`}
                     >
-                      {/* Header */}
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4 dark:border-slate-800">
                         <div>
                           <div className="flex items-center gap-2">
@@ -652,7 +677,6 @@ export default function HistoryPage() {
                         </div>
                       </div>
 
-                      {/* Legs List */}
                       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                         {parlay.legs.map((leg, idx) => {
                           const legWon = leg.result === "WON";

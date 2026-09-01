@@ -158,6 +158,7 @@ export interface HistoricalSettledPick {
   selection: string;
   odds: number;
   probability: number;
+  confidence: "Muy Alta" | "Alta" | "Media" | "Baja";
   result: "WON" | "LOST" | "VOID";
   profit: number;
   explanation: string;
@@ -217,7 +218,11 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
         const kickoffMs = new Date(item.fixture.date).getTime();
         const shortStatus = item.fixture.status?.short || "NS";
         if (["FT", "AET", "PEN", "PST", "CANC", "ABD"].includes(shortStatus)) continue;
-        if (kickoffMs < nowMs - 15 * 60 * 1000) continue; // Skip already finished matches
+        if (kickoffMs < nowMs - 15 * 60 * 1000) continue;
+
+        // Skip Primavera/Youth leagues
+        const legName = (item.league?.name || "").toLowerCase();
+        if (legName.includes("primavera") || legName.includes("camp. primavera")) continue;
 
         const opps = evaluateFixturePrediction({
           fixtureId: item.fixture.id,
@@ -276,6 +281,7 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
             const leagueLogo = f.league?.logo_url || (Array.isArray(f.league) ? f.league[0]?.logo_url : null);
 
             if (!homeName || !awayName || !leagueName) continue;
+            if (leagueName.toLowerCase().includes("primavera")) continue;
 
             const opps = evaluateFixturePrediction({
               fixtureId: f.provider_id || f.id,
@@ -303,32 +309,26 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
 
   // Prioritize Top Leagues, High Probability, and Smart Value
   const rankedPicks = [...allOpportunities].sort((a, b) => {
-    // 1. League tier priority (Tier 1 > Tier 2 > Tier 3)
     const aTier = a.leagueTier || 3;
     const bTier = b.leagueTier || 3;
     if (aTier !== bTier) {
       return aTier - bTier;
     }
-    // 2. Highest probability
     if (b.probability !== a.probability) {
       return b.probability - a.probability;
     }
-    // 3. Highest smart score
     if ((b.smartScore || 0) !== (a.smartScore || 0)) {
       return (b.smartScore || 0) - (a.smartScore || 0);
     }
     return b.edge - a.edge;
   });
 
-  // Strictly select the Top 20 highest-quality picks of the day
   const top20DailyPicks = rankedPicks.slice(0, 20);
 
-  // Sort final display by kickoff time ascending for convenient betting timeline
   const sorted = top20DailyPicks.sort(
     (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
   );
 
-  // Save and lock into immutable daily snapshot
   if (sorted.length > 0) {
     saveDailySnapshot(todayDateStr, sorted);
     cachedLivePredictions = sorted;
@@ -353,7 +353,6 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
   const settledPicks: HistoricalSettledPick[] = [];
   const processedMatchKeys = new Set<string>();
 
-  // Map to store 100% real official match scores from API-Football & Supabase
   const realScoresMap: Record<string, { home: number; away: number; date: string }> = {};
 
   const registerRealScore = (homeName: string, awayName: string, dateStr: string, homeGoals: number, awayGoals: number) => {
@@ -366,7 +365,6 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
     realScoresMap[key2] = { home: homeGoals, away: awayGoals, date: dateStr };
   };
 
-  // Load all accumulated daily snapshots (2026-08-31, 2026-09-01, etc.)
   const snapshots = getAllDailySnapshots();
   const snapshotDates = Array.from(new Set([...Object.keys(snapshots), todayDateStr])).filter(
     (d) => d >= HISTORY_START_DATE
@@ -438,7 +436,6 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
 
       const realScore = realScoresMap[scoreKeyWithDate] || realScoresMap[scoreKeyGeneric];
 
-      // ONLY settle if this predicted match has finished with confirmed real goals from API-Football/Supabase
       if (realScore && typeof realScore.home === "number" && typeof realScore.away === "number") {
         const homeGoals = realScore.home;
         const awayGoals = realScore.away;
@@ -478,6 +475,7 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
             selection: p.selection || p.market,
             odds: p.odds,
             probability: p.probability,
+            confidence: p.confidence || (p.probability >= 75 ? "Muy Alta" : p.probability >= 68 ? "Alta" : "Media"),
             result: isWon ? "WON" : "LOST",
             profit: isWon ? Math.round((p.odds - 1) * 100) / 100 : -1,
             explanation: p.explanation,
@@ -487,7 +485,6 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
     }
   }
 
-  // Sort history descending by date and kickoff
   const sortedHistory = settledPicks.sort(
     (a, b) => new Date(b.kickoff || b.date).getTime() - new Date(a.kickoff || a.date).getTime()
   );
