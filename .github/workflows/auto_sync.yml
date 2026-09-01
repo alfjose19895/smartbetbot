@@ -1,16 +1,16 @@
-name: Auto 6-Hour Sync
+name: Auto 4-Hour Sync Engine
 
 on:
   schedule:
-    - cron: '0 */6 * * *'
+    - cron: '0 */4 * * *'
   workflow_dispatch:
 
 jobs:
   sync:
-    name: Execute 6-Hour Sync
+    name: Execute 4-Hour Prediction & Result Sync
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Automated Sync Endpoint
         run: |
-          echo "Triggering 6-hour synchronization endpoint..."
-          curl -f -sL "https://www.smartbetbot.educandotea.com/api/cron/sync" || echo "Sync endpoint reached"
+          echo "Triggering 4-hour synchronization endpoint..."
+          curl -f -sL -X GET "https://www.smartbetbot.educandotea.com/api/cron/sync" || echo "Sync endpoint reached"
