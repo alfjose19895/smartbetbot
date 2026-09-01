@@ -95,7 +95,7 @@ function getAllDailySnapshots(): Record<string, MarketOpportunity[]> {
     for (const f of files) {
       if (f.endsWith(".json")) {
         const dateStr = f.replace(".json", "");
-        if (dateStr < HISTORY_START_DATE) continue;
+        if (dateStr < HISTORY_START_DATE) continue; // Only start from official start date
         const filePath = path.join(SNAPSHOTS_DIR, f);
         try {
           const content = fs.readFileSync(filePath, "utf-8");
@@ -330,8 +330,8 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
 }
 
 /**
- * Returns authentic settled predictions (history) STRICTLY for the predictions SmartBetBot made starting from today (2026-08-31) onwards.
- * Only settles a match when that specific predicted match finishes with an official real score from API-Football or Supabase.
+ * Returns authentic settled predictions (history) strictly for all daily predictions made starting from HISTORY_START_DATE onwards.
+ * Preserves day-by-day accumulation permanently across all dates.
  */
 export async function getHistoricalSettledPredictions(): Promise<HistoricalSettledPick[]> {
   const nowMs = Date.now();
@@ -357,22 +357,30 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
     realScoresMap[key2] = { home: homeGoals, away: awayGoals, date: dateStr };
   };
 
-  // 1. Fetch finished match scores from API-Football for today in Ecuador timezone
-  try {
-    const finishedFixtures = await apiFootball.getFinishedFixturesByDate(todayDateStr, "America/Guayaquil");
-    if (Array.isArray(finishedFixtures)) {
-      for (const item of finishedFixtures) {
-        if (!item.teams?.home?.name || !item.teams?.away?.name) continue;
-        const homeGoals = item.goals?.home ?? item.score?.fulltime?.home;
-        const awayGoals = item.goals?.away ?? item.score?.fulltime?.away;
-        if (typeof homeGoals === "number" && typeof awayGoals === "number") {
-          const fixtureDate = item.fixture?.date ? item.fixture.date.split("T")[0] : todayDateStr;
-          registerRealScore(item.teams.home.name, item.teams.away.name, fixtureDate, homeGoals, awayGoals);
+  // Load all accumulated daily snapshots (2026-08-31, 2026-09-01, etc.)
+  const snapshots = getAllDailySnapshots();
+  const snapshotDates = Array.from(new Set([...Object.keys(snapshots), todayDateStr])).filter(
+    (d) => d >= HISTORY_START_DATE
+  );
+
+  // 1. Fetch finished match scores from API-Football for ALL snapshot dates in Ecuador timezone
+  for (const dateStr of snapshotDates) {
+    try {
+      const finishedFixtures = await apiFootball.getFinishedFixturesByDate(dateStr, "America/Guayaquil");
+      if (Array.isArray(finishedFixtures)) {
+        for (const item of finishedFixtures) {
+          if (!item.teams?.home?.name || !item.teams?.away?.name) continue;
+          const homeGoals = item.goals?.home ?? item.score?.fulltime?.home;
+          const awayGoals = item.goals?.away ?? item.score?.fulltime?.away;
+          if (typeof homeGoals === "number" && typeof awayGoals === "number") {
+            const fixtureDate = item.fixture?.date ? item.fixture.date.split("T")[0] : dateStr;
+            registerRealScore(item.teams.home.name, item.teams.away.name, fixtureDate, homeGoals, awayGoals);
+          }
         }
       }
+    } catch (err) {
+      console.warn(`[History] Error fetching real finished matches for ${dateStr}:`, err);
     }
-  } catch (err) {
-    console.warn(`[History] Error fetching real finished matches for ${todayDateStr}:`, err);
   }
 
   // 2. Fetch finished fixtures from Supabase (strictly >= START_DATE)
@@ -409,8 +417,7 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
     }
   }
 
-  // 3. Settle ONLY the predictions that SmartBetBot ACTUALLY made in the daily snapshots
-  const snapshots = getAllDailySnapshots();
+  // 3. Settle all predictions from ALL historical daily snapshots permanently
   for (const [dateStr, picks] of Object.entries(snapshots)) {
     if (dateStr < HISTORY_START_DATE) continue;
 
@@ -479,7 +486,7 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
 }
 
 /**
- * Returns settled historical parlays evaluated day by day strictly starting from HISTORY_START_DATE (today).
+ * Returns settled historical parlays evaluated day by day across all historical dates permanently.
  */
 export async function getHistoricalSettledParlays(): Promise<HistoricalSettledParlay[]> {
   const settledHistory = await getHistoricalSettledPredictions();
