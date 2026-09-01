@@ -1,6 +1,6 @@
 /**
  * Direct Supabase persistence and real-time live API-Football prediction service.
- * Strictly 100% real fixtures from API-Football across all European divisions and world leagues.
+ * Strictly 100% real fixtures from API-Football aligned with Ecuador (America/Guayaquil, UTC-5) timezone.
  */
 
 import fs from "fs";
@@ -14,6 +14,16 @@ import {
   getCanonicalTeamKey,
   normalizeLeagueInfo,
 } from "./prediction-engine";
+
+export function getEcuadorDateString(d: Date | number = Date.now()): string {
+  const dateObj = typeof d === "number" ? new Date(d) : d;
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Guayaquil",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(dateObj);
+}
 
 function getAdminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -85,7 +95,7 @@ function getAllDailySnapshots(): Record<string, MarketOpportunity[]> {
     for (const f of files) {
       if (f.endsWith(".json")) {
         const dateStr = f.replace(".json", "");
-        if (dateStr < HISTORY_START_DATE) continue; // Strictly from official start date onwards
+        if (dateStr < HISTORY_START_DATE) continue;
         const filePath = path.join(SNAPSHOTS_DIR, f);
         try {
           const content = fs.readFileSync(filePath, "utf-8");
@@ -157,12 +167,12 @@ let historyCacheTimestamp = 0;
 const HISTORY_CACHE_TTL_MS = 3 * 60 * 1000; // 3 minutes
 
 /**
- * Generates verified, high-precision predictions strictly for the current day.
+ * Generates verified, high-precision predictions strictly for the current day in Ecuador timezone.
  * Once computed for today, it is permanently locked into an immutable snapshot to ensure 100% traceability.
  */
 export async function generatePredictionsForUpcoming(targetLeagueIds?: number[]): Promise<MarketOpportunity[]> {
   const nowMs = Date.now();
-  const todayDateStr = new Date(nowMs).toISOString().split("T")[0];
+  const todayDateStr = getEcuadorDateString(nowMs);
 
   // 1. If a frozen snapshot exists for today, return it immediately without altering
   const existingSnapshot = loadDailySnapshot(todayDateStr);
@@ -195,9 +205,9 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
     }
   };
 
-  // Efficient single API call for today's entire match schedule
+  // Efficient single API call for today's entire match schedule in Ecuador timezone
   try {
-    const todayFixtures = await apiFootball.getFixturesByDate(todayDateStr);
+    const todayFixtures = await apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil");
 
     if (Array.isArray(todayFixtures) && todayFixtures.length > 0) {
       for (const item of todayFixtures) {
@@ -325,7 +335,7 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
  */
 export async function getHistoricalSettledPredictions(): Promise<HistoricalSettledPick[]> {
   const nowMs = Date.now();
-  const todayDateStr = new Date(nowMs).toISOString().split("T")[0];
+  const todayDateStr = getEcuadorDateString(nowMs);
 
   if (cachedSettledHistory.length > 0 && nowMs - historyCacheTimestamp < HISTORY_CACHE_TTL_MS) {
     return cachedSettledHistory;
@@ -347,9 +357,9 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
     realScoresMap[key2] = { home: homeGoals, away: awayGoals, date: dateStr };
   };
 
-  // 1. Fetch finished match scores from API-Football for today (and dates >= START_DATE)
+  // 1. Fetch finished match scores from API-Football for today in Ecuador timezone
   try {
-    const finishedFixtures = await apiFootball.getFinishedFixturesByDate(todayDateStr);
+    const finishedFixtures = await apiFootball.getFinishedFixturesByDate(todayDateStr, "America/Guayaquil");
     if (Array.isArray(finishedFixtures)) {
       for (const item of finishedFixtures) {
         if (!item.teams?.home?.name || !item.teams?.away?.name) continue;

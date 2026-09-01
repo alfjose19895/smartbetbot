@@ -1,20 +1,23 @@
 import { NextResponse } from "next/server";
 import { apiFootball } from "@/lib/sports/api-football";
+import { getEcuadorDateString } from "@/lib/sports/db";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const live = await apiFootball.getLiveFixtures();
-    const today = new Date().toISOString().split("T")[0];
-    const upcoming = await apiFootball.getFixtures(39, 2026, today, today);
+    const today = getEcuadorDateString();
+    const [live, todayFixtures] = await Promise.all([
+      apiFootball.getLiveFixtures(),
+      apiFootball.getFixturesByDate(today),
+    ]);
 
     return NextResponse.json({
       success: true,
       liveCount: live.length,
-      todayCount: upcoming.length,
+      todayCount: todayFixtures.length,
       live,
-      upcoming,
+      todayFixtures,
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Failed to fetch fixtures";

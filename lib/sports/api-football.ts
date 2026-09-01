@@ -1,122 +1,51 @@
 /**
- * Direct API-Football client for Next.js (Vercel Serverless / Server Actions).
- * Provides typed, in-memory cached, rate-limited access to fixtures, leagues, teams, and odds.
+ * API-Football Client for SmartBetBot
+ * Comprehensive integration with RapidAPI / API-Sports v3
+ * Strictly real data with America/Guayaquil (UTC-5) timezone alignment.
  */
 
 export interface SupportedLeague {
   id: number;
   name: string;
   country: string;
-  category: "top_europe" | "cups" | "other_europe" | "americas" | "asia_africa" | "second_divisions";
+  category: "top5" | "second_divisions" | "europe_mid" | "americas" | "cups" | "asia_africa";
   tier?: number;
 }
 
 export const SUPPORTED_LEAGUES: SupportedLeague[] = [
-  // Top 5 European Leagues - Tier 1
-  { id: 39, name: "Premier League", country: "Inglaterra", category: "top_europe", tier: 1 },
-  { id: 140, name: "La Liga", country: "España", category: "top_europe", tier: 1 },
-  { id: 135, name: "Serie A", country: "Italia", category: "top_europe", tier: 1 },
-  { id: 78, name: "Bundesliga", country: "Alemania", category: "top_europe", tier: 1 },
-  { id: 61, name: "Ligue 1", country: "Francia", category: "top_europe", tier: 1 },
+  // Top 5 Ligas Europeas
+  { id: 39, name: "Premier League", country: "Inglaterra", category: "top5", tier: 1 },
+  { id: 140, name: "La Liga", country: "España", category: "top5", tier: 1 },
+  { id: 135, name: "Serie A", country: "Italia", category: "top5", tier: 1 },
+  { id: 78, name: "Bundesliga", country: "Alemania", category: "top5", tier: 1 },
+  { id: 61, name: "Ligue 1", country: "Francia", category: "top5", tier: 1 },
 
-  // European 2nd & 3rd Divisions (Inglaterra, España, Italia, Alemania, Francia)
-  { id: 40, name: "Championship (2da Div)", country: "Inglaterra", category: "second_divisions", tier: 2 },
-  { id: 41, name: "League One (3ra Div)", country: "Inglaterra", category: "second_divisions", tier: 3 },
-  { id: 42, name: "League Two (4ta Div)", country: "Inglaterra", category: "second_divisions", tier: 4 },
-  { id: 45, name: "FA Cup", country: "Inglaterra", category: "cups" },
-  { id: 48, name: "EFL Cup (Carabao Cup)", country: "Inglaterra", category: "cups" },
-
+  // Segundas Divisiones Europeas
+  { id: 40, name: "Championship", country: "Inglaterra", category: "second_divisions", tier: 2 },
   { id: 141, name: "La Liga 2 (Segunda División)", country: "España", category: "second_divisions", tier: 2 },
-  { id: 142, name: "Primera Federación (3ra Div)", country: "España", category: "second_divisions", tier: 3 },
-  { id: 143, name: "Copa del Rey", country: "España", category: "cups" },
-
   { id: 136, name: "Serie B", country: "Italia", category: "second_divisions", tier: 2 },
-  { id: 137, name: "Serie C (3ra Div)", country: "Italia", category: "second_divisions", tier: 3 },
-  { id: 138, name: "Coppa Italia", country: "Italia", category: "cups" },
-
   { id: 79, name: "2. Bundesliga", country: "Alemania", category: "second_divisions", tier: 2 },
-  { id: 80, name: "3. Liga", country: "Alemania", category: "second_divisions", tier: 3 },
-  { id: 81, name: "DFB Pokal", country: "Alemania", category: "cups" },
-
   { id: 62, name: "Ligue 2", country: "Francia", category: "second_divisions", tier: 2 },
-  { id: 63, name: "National 1 (3ra Div)", country: "Francia", category: "second_divisions", tier: 3 },
-  { id: 66, name: "Coupe de France", country: "Francia", category: "cups" },
 
-  // Portugal (1ra, 2da, 3ra)
-  { id: 94, name: "Primeira Liga", country: "Portugal", category: "other_europe", tier: 1 },
-  { id: 95, name: "Liga Portugal 2", country: "Portugal", category: "second_divisions", tier: 2 },
-  { id: 804, name: "Liga 3", country: "Portugal", category: "second_divisions", tier: 3 },
-  { id: 96, name: "Taça de Portugal", country: "Portugal", category: "cups" },
-
-  // Países Bajos (1ra, 2da)
-  { id: 88, name: "Eredivisie", country: "Países Bajos", category: "other_europe", tier: 1 },
+  // Ligas Europeas Medianas (1ra División)
+  { id: 88, name: "Eredivisie", country: "Países Bajos", category: "europe_mid", tier: 1 },
   { id: 89, name: "Eerste Divisie (2da Div)", country: "Países Bajos", category: "second_divisions", tier: 2 },
-  { id: 90, name: "KNVB Beker", country: "Países Bajos", category: "cups" },
+  { id: 94, name: "Primeira Liga", country: "Portugal", category: "europe_mid", tier: 1 },
+  { id: 95, name: "Liga Portugal 2", country: "Portugal", category: "second_divisions", tier: 2 },
+  { id: 203, name: "Süper Lig", country: "Turquía", category: "europe_mid", tier: 1 },
+  { id: 144, name: "Jupiler Pro League", country: "Bélgica", category: "europe_mid", tier: 1 },
+  { id: 179, name: "Premiership", country: "Escocia", category: "europe_mid", tier: 1 },
+  { id: 218, name: "Austrian Bundesliga", country: "Austria", category: "europe_mid", tier: 1 },
+  { id: 207, name: "Super League", country: "Suiza", category: "europe_mid", tier: 1 },
+  { id: 119, name: "Superliga", country: "Dinamarca", category: "europe_mid", tier: 1 },
+  { id: 103, name: "Eliteserien", country: "Noruega", category: "europe_mid", tier: 1 },
+  { id: 113, name: "Allsvenskan", country: "Suecia", category: "europe_mid", tier: 1 },
+  { id: 197, name: "Super League 1", country: "Grecia", category: "europe_mid", tier: 1 },
 
-  // Bélgica (1ra, 2da, 3ra)
-  { id: 144, name: "Pro League", country: "Bélgica", category: "other_europe", tier: 1 },
-  { id: 145, name: "Challenger Pro League (2da Div)", country: "Bélgica", category: "second_divisions", tier: 2 },
-  { id: 146, name: "National 1 (3ra Div)", country: "Bélgica", category: "second_divisions", tier: 3 },
-  { id: 147, name: "Belgian Cup", country: "Bélgica", category: "cups" },
-
-  // Escocia (1ra, 2da, 3ra)
-  { id: 179, name: "Premiership", country: "Escocia", category: "other_europe", tier: 1 },
-  { id: 180, name: "Championship (2da Div)", country: "Escocia", category: "second_divisions", tier: 2 },
-  { id: 181, name: "League One (3ra Div)", country: "Escocia", category: "second_divisions", tier: 3 },
-  { id: 182, name: "Scottish Cup", country: "Escocia", category: "cups" },
-
-  // Turquía (1ra, 2da, 3ra)
-  { id: 203, name: "Süper Lig", country: "Turquía", category: "other_europe", tier: 1 },
-  { id: 204, name: "1. Lig (2da Div)", country: "Turquía", category: "second_divisions", tier: 2 },
-  { id: 205, name: "2. Lig (3ra Div)", country: "Turquía", category: "second_divisions", tier: 3 },
-
-  // Grecia (1ra, 2da)
-  { id: 197, name: "Super League 1", country: "Grecia", category: "other_europe", tier: 1 },
-  { id: 198, name: "Super League 2 (2da Div)", country: "Grecia", category: "second_divisions", tier: 2 },
-
-  // Austria (1ra, 2da, 3ra)
-  { id: 218, name: "Austrian Bundesliga", country: "Austria", category: "other_europe", tier: 1 },
-  { id: 219, name: "2. Liga", country: "Austria", category: "second_divisions", tier: 2 },
-  { id: 220, name: "Regionalliga (3ra Div)", country: "Austria", category: "second_divisions", tier: 3 },
-
-  // Suiza (1ra, 2da, 3ra)
-  { id: 207, name: "Super League", country: "Suiza", category: "other_europe", tier: 1 },
-  { id: 208, name: "Challenge League (2da Div)", country: "Suiza", category: "second_divisions", tier: 2 },
-  { id: 209, name: "Promotion League (3ra Div)", country: "Suiza", category: "second_divisions", tier: 3 },
-
-  // Dinamarca (1ra, 2da, 3ra)
-  { id: 119, name: "Superliga", country: "Dinamarca", category: "other_europe", tier: 1 },
-  { id: 120, name: "1. Division (2da Div)", country: "Dinamarca", category: "second_divisions", tier: 2 },
-  { id: 121, name: "2. Division (3ra Div)", country: "Dinamarca", category: "second_divisions", tier: 3 },
-
-  // Suecia (1ra, 2da, 3ra)
-  { id: 113, name: "Allsvenskan", country: "Suecia", category: "other_europe", tier: 1 },
-  { id: 114, name: "Superettan (2da Div)", country: "Suecia", category: "second_divisions", tier: 2 },
-  { id: 115, name: "Ettan (3ra Div)", country: "Suecia", category: "second_divisions", tier: 3 },
-
-  // Noruega (1ra, 2da, 3ra)
-  { id: 103, name: "Eliteserien", country: "Noruega", category: "other_europe", tier: 1 },
-  { id: 104, name: "1. Division (2da Div)", country: "Noruega", category: "second_divisions", tier: 2 },
-  { id: 105, name: "2. Division (3ra Div)", country: "Noruega", category: "second_divisions", tier: 3 },
-
-  // Polonia (1ra, 2da, 3ra)
-  { id: 106, name: "Ekstraklasa", country: "Polonia", category: "other_europe", tier: 1 },
-  { id: 107, name: "I Liga (2da Div)", country: "Polonia", category: "second_divisions", tier: 2 },
-  { id: 108, name: "II Liga (3ra Div)", country: "Polonia", category: "second_divisions", tier: 3 },
-
-  // República Checa (1ra, 2da)
-  { id: 345, name: "Czech First League", country: "República Checa", category: "other_europe", tier: 1 },
-  { id: 346, name: "FNL (2da Div)", country: "República Checa", category: "second_divisions", tier: 2 },
-
-  // Croacia (1ra, 2da)
-  { id: 210, name: "HNL", country: "Croacia", category: "other_europe", tier: 1 },
-  { id: 211, name: "1. NL (2da Div)", country: "Croacia", category: "second_divisions", tier: 2 },
-
-  // UEFA & Continental Cups
+  // Copas y Torneos Internacionales
   { id: 2, name: "UEFA Champions League", country: "Europa", category: "cups" },
   { id: 3, name: "UEFA Europa League", country: "Europa", category: "cups" },
-  { id: 848, name: "UEFA Conference League", country: "Europa", category: "cups" },
-  { id: 531, name: "UEFA Super Cup", country: "Europa", category: "cups" },
+  { id: 848, name: "UEFA Europa Conference League", country: "Europa", category: "cups" },
   { id: 5, name: "UEFA Nations League", country: "Europa", category: "cups" },
   { id: 1, name: "World Cup", country: "Mundial", category: "cups" },
 
@@ -171,7 +100,7 @@ export interface ApiFootballLeague {
 export interface ApiFootballTeam {
   id: number;
   name: string;
-  code: string | null;
+  code: string;
   logo: string;
   country: string;
 }
@@ -183,6 +112,15 @@ export interface ApiFootballFixtureItem {
     timezone: string;
     date: string;
     timestamp: number;
+    periods: {
+      first: number | null;
+      second: number | null;
+    };
+    venue: {
+      id: number | null;
+      name: string | null;
+      city: string | null;
+    };
     status: {
       long: string;
       short: string;
@@ -217,85 +155,99 @@ export interface ApiFootballFixtureItem {
     away: number | null;
   };
   score: {
-    halftime: { home: number | null; away: number | null };
-    fulltime: { home: number | null; away: number | null };
+    halftime: {
+      home: number | null;
+      away: number | null;
+    };
+    fulltime: {
+      home: number | null;
+      away: number | null;
+    };
+    extratime: {
+      home: number | null;
+      away: number | null;
+    };
+    penalty: {
+      home: number | null;
+      away: number | null;
+    };
   };
 }
 
-export interface ApiFootballOdds {
-  fixtureId: number;
-  bookmaker: string;
-  markets: {
+export interface ApiFootballOddsItem {
+  league: {
+    id: number;
     name: string;
-    values: {
-      value: string;
-      odd: number;
+    country: string;
+    logo: string;
+    season: number;
+  };
+  fixture: {
+    id: number;
+    timezone: string;
+    date: string;
+    timestamp: number;
+  };
+  bookmakers: {
+    id: number;
+    name: string;
+    bets: {
+      id: number;
+      name: string;
+      values: {
+        value: string | number;
+        odd: string;
+      }[];
     }[];
   }[];
 }
 
-const DEFAULT_BASE_URL = "https://v3.football.api-sports.io";
-const DEFAULT_API_KEY = "01de09ba37a81c948be7aebcaf154c61";
-
-// In-memory cache for Serverless runtime (prevents burning through API rate limits)
-const cacheStore = new Map<string, { data: unknown; timestamp: number }>();
-const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
-
-export class ApiFootballClient {
+class ApiFootballClient {
   private apiKey: string;
-  private baseUrl: string;
+  private baseUrl: string = "https://v3.football.api-sports.io";
+  private defaultTimezone: string = "America/Guayaquil";
 
-  constructor(apiKey?: string, baseUrl?: string) {
+  constructor() {
     this.apiKey =
-      apiKey ||
       process.env.API_FOOTBALL_KEY ||
       process.env.NEXT_PUBLIC_API_FOOTBALL_KEY ||
-      DEFAULT_API_KEY;
-    this.baseUrl = (baseUrl || process.env.API_FOOTBALL_BASE_URL || DEFAULT_BASE_URL).replace(
-      /\/$/,
-      ""
-    );
+      "01de09ba37a81c948be7aebcaf154c61";
   }
 
-  private async request<T>(endpoint: string, params: Record<string, string | number> = {}): Promise<T[]> {
-    const searchParams = new URLSearchParams();
-    for (const [key, value] of Object.entries(params)) {
-      if (value !== undefined && value !== null) {
-        searchParams.append(key, String(value));
-      }
+  public async request<T>(endpoint: string, params: Record<string, string | number> = {}): Promise<T[]> {
+    if (!this.apiKey) {
+      console.warn(`[ApiFootball] API Key is missing. Skipping request to ${endpoint}`);
+      return [];
     }
-
-    const cacheKey = `${endpoint}?${searchParams.toString()}`;
-    const cached = cacheStore.get(cacheKey);
-    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
-      return cached.data as T[];
-    }
-
-    const url = `${this.baseUrl}/${endpoint.replace(/^\//, "")}?${searchParams.toString()}`;
 
     try {
-      const response = await fetch(url, {
+      const url = new URL(`${this.baseUrl}/${endpoint}`);
+      Object.entries(params).forEach(([key, value]) => {
+        url.searchParams.append(key, String(value));
+      });
+
+      const response = await fetch(url.toString(), {
+        method: "GET",
         headers: {
-          "x-apisports-key": this.apiKey,
           "x-rapidapi-key": this.apiKey,
+          "x-apisports-key": this.apiKey,
         },
+        next: { revalidate: 180 },
       });
 
       if (!response.ok) {
-        console.error(`[ApiFootball] Error ${response.status} fetching ${url}`);
+        console.error(`[ApiFootball] HTTP error ${response.status} fetching ${endpoint}`);
         return [];
       }
 
-      const data = await response.json();
-      if (data.errors && Object.keys(data.errors).length > 0 && !Array.isArray(data.errors)) {
-        console.warn("[ApiFootball] API message:", data.errors);
+      const json = await response.json();
+
+      if (json.errors && Object.keys(json.errors).length > 0) {
+        console.warn(`[ApiFootball] API returned errors:`, json.errors);
+        return [];
       }
 
-      const result = (data.response as T[]) || [];
-      if (result.length > 0) {
-        cacheStore.set(cacheKey, { data: result, timestamp: Date.now() });
-      }
-      return result;
+      return (json.response as T[]) || [];
     } catch (err) {
       console.error(`[ApiFootball] Request exception for ${endpoint}:`, err);
       return [];
@@ -350,152 +302,88 @@ export class ApiFootballClient {
   /**
    * Fetch upcoming and next fixtures for a league
    */
-    /**
-   * Fetch all fixtures for a specific date in a single API call (maximizes API efficiency)
-   */
-    /**
-   * Fetch official finished fixtures with confirmed real final scores for a specific date
-   */
-  async getFinishedFixturesByDate(dateStr: string): Promise<ApiFootballFixtureItem[]> {
-    return this.request<ApiFootballFixtureItem>("fixtures", { date: dateStr, status: "FT" });
-  }
-
-  async getFixturesByDate(dateStr?: string): Promise<ApiFootballFixtureItem[]> {
-    const d = dateStr || new Date().toISOString().split("T")[0];
-    return this.request<ApiFootballFixtureItem>("fixtures", { date: d });
-  }
-
-  async getUpcomingFixtures(leagueId: number, nextCount: number = 6): Promise<ApiFootballFixtureItem[]> {
-    return this.getFixtures(leagueId, undefined, undefined, undefined, nextCount);
-  }
-
-  async getFixtures(
-    leagueId: number,
-    season?: number,
-    fromDate?: string,
-    toDate?: string,
-    nextCount: number = 6
-  ): Promise<ApiFootballFixtureItem[]> {
-    if (fromDate && toDate && season) {
-      const data = await this.request<ApiFootballFixtureItem>("fixtures", {
-        league: leagueId,
-        season,
-        from: fromDate,
-        to: toDate,
-      });
-      if (data && data.length > 0) return data;
-    }
-
+  async getUpcomingFixtures(leagueId: number, nextCount: number = 10, timezone: string = this.defaultTimezone): Promise<ApiFootballFixtureItem[]> {
     return this.request<ApiFootballFixtureItem>("fixtures", {
       league: leagueId,
       next: nextCount,
+      timezone,
     });
+  }
+
+  /**
+   * Fetch all fixtures for a specific date in a single API call strictly in Ecuador timezone
+   */
+  async getFixturesByDate(dateStr: string, timezone: string = this.defaultTimezone): Promise<ApiFootballFixtureItem[]> {
+    return this.request<ApiFootballFixtureItem>("fixtures", { date: dateStr, timezone });
+  }
+
+  /**
+   * Fetch official finished fixtures with confirmed real final scores for a specific date in Ecuador timezone
+   */
+  async getFinishedFixturesByDate(dateStr: string, timezone: string = this.defaultTimezone): Promise<ApiFootballFixtureItem[]> {
+    return this.request<ApiFootballFixtureItem>("fixtures", { date: dateStr, status: "FT", timezone });
   }
 
   /**
    * Fetch live in-play fixtures
    */
+  async getLiveFixtures(timezone: string = this.defaultTimezone): Promise<ApiFootballFixtureItem[]> {
+    return this.request<ApiFootballFixtureItem>("fixtures", { live: "all", timezone });
+  }
+
   /**
-   * Fetch recently finished fixtures for a league
+   * Fetch fixtures for a league (general helper)
    */
-  async getLastFixtures(
-    leagueId: number,
-    lastCount: number = 4
-  ): Promise<ApiFootballFixtureItem[]> {
-    return this.request<ApiFootballFixtureItem>("fixtures", {
-      league: leagueId,
-      last: lastCount,
-      status: "FT",
+  async getFixtures(leagueId: number, count: number = 20, timezone: string = this.defaultTimezone): Promise<ApiFootballFixtureItem[]> {
+    return this.request<ApiFootballFixtureItem>("fixtures", { league: leagueId, next: count, timezone });
+  }
+
+  /**
+   * Fetch Head-to-Head between two team IDs
+   */
+  async getHeadToHead(teamA: number, teamB: number, last: number = 10, timezone: string = this.defaultTimezone): Promise<ApiFootballFixtureItem[]> {
+    return this.request<ApiFootballFixtureItem>("fixtures/headtohead", {
+      h2h: `${teamA}-${teamB}`,
+      last,
+      timezone,
     });
   }
 
-  async getLiveFixtures(): Promise<ApiFootballFixtureItem[]> {
-    return this.request<ApiFootballFixtureItem>("fixtures", { live: "all" });
+  /**
+   * Fetch recent finished fixtures for a specific team
+   */
+  async getTeamRecentFixtures(teamId: number, last: number = 5, timezone: string = this.defaultTimezone): Promise<ApiFootballFixtureItem[]> {
+    return this.request<ApiFootballFixtureItem>("fixtures", {
+      team: teamId,
+      last,
+      status: "FT",
+      timezone,
+    });
+  }
+
+  async getTeamLastFixtures(teamId: number, last: number = 5, timezone: string = this.defaultTimezone): Promise<ApiFootballFixtureItem[]> {
+    return this.getTeamRecentFixtures(teamId, last, timezone);
   }
 
   /**
-   * Fetch match odds from bookmakers
+   * Search for a team by name to get its official API-Football ID
    */
-  
-  /**
-   * Fetch official Head to Head (H2H) clashes between two teams
-   */
-    /**
-   * Search for a team by name and resolve its official API ID
-   */
-  async searchTeam(name: string): Promise<number | null> {
-    if (!name || name.trim().length === 0) return null;
-    const cleanName = name.replace(/^(fc|cf|rcd|ud|ca|afc|sc|sd|de|la|el|los|las|the)\s+/gi, "").trim();
-
-    // 1. Try exact name query
-    const exactResults = await this.request<{
-      team: { id: number; name: string };
-    }>("teams", { name: cleanName });
-
-    if (exactResults && exactResults.length > 0 && exactResults[0].team?.id) {
-      return exactResults[0].team.id;
+  async searchTeam(name: string): Promise<ApiFootballTeam | null> {
+    const results = await this.request<{ team: ApiFootballTeam }>("teams", { search: name });
+    if (results && results.length > 0) {
+      return results[0].team;
     }
-
-    // 2. Try fuzzy search query
-    const searchResults = await this.request<{
-      team: { id: number; name: string };
-    }>("teams", { search: cleanName });
-
-    if (searchResults && searchResults.length > 0 && searchResults[0].team?.id) {
-      return searchResults[0].team.id;
-    }
-
     return null;
   }
 
-  async getHeadToHead(homeTeamId: number, awayTeamId: number, lastCount: number = 5): Promise<ApiFootballFixtureItem[]> {
-    if (!homeTeamId || !awayTeamId) return [];
-    return this.request<ApiFootballFixtureItem>("fixtures/headtohead", {
-      h2h: `${homeTeamId}-${awayTeamId}`,
-      last: lastCount,
-    });
-  }
-
   /**
-   * Fetch official recently finished fixtures for a specific team
+   * Fetch live in-play odds or pre-match odds for a fixture
    */
-  async getTeamLastFixtures(teamId: number, lastCount: number = 5): Promise<ApiFootballFixtureItem[]> {
-    if (!teamId) return [];
-    return this.request<ApiFootballFixtureItem>("fixtures", {
-      team: teamId,
-      last: lastCount,
-      status: "FT",
+  async getOddsByFixture(fixtureId: number): Promise<ApiFootballOddsItem | null> {
+    const data = await this.request<ApiFootballOddsItem>("odds", {
+      fixture: fixtureId,
     });
-  }
-
-  async getOdds(fixtureId: number): Promise<ApiFootballOdds | null> {
-    const data = await this.request<{
-      fixture: { id: number };
-      bookmakers: {
-        name: string;
-        bets: {
-          name: string;
-          values: { value: string; odd: string }[];
-        }[];
-      }[];
-    }>("odds", { fixture: fixtureId });
-
-    if (!data || data.length === 0 || !data[0].bookmakers || data[0].bookmakers.length === 0) {
-      return null;
-    }
-
-    const bookmaker = data[0].bookmakers[0];
-    return {
-      fixtureId,
-      bookmaker: bookmaker.name,
-      markets: bookmaker.bets.map((bet) => ({
-        name: bet.name,
-        values: bet.values.map((v) => ({
-          value: v.value,
-          odd: parseFloat(v.odd),
-        })),
-      })),
-    };
+    return data.length > 0 ? data[0] : null;
   }
 }
 
