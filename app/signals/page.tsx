@@ -28,7 +28,7 @@ export default function SignalsPage() {
 
   // Search & Filters
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [matchStatusFilter, setMatchStatusFilter] = useState<"ALL" | "SCHEDULED" | "IN_PLAY" | "FINISHED" | "WON" | "LOST">("ALL");
+  const [matchStatusFilter, setMatchStatusFilter] = useState<"ALL" | "VALOR" | "BOMBA" | "WON" | "LOST" | "SCHEDULED" | "IN_PLAY" | "FINISHED">("ALL");
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
@@ -112,12 +112,14 @@ export default function SignalsPage() {
     year: "numeric",
   });
 
-  // Count matches by status
+  // Count matches by status & badge
   const scheduledCount = signals.filter((s) => getMatchLiveStatus(s.kickoff) === "SCHEDULED").length;
   const inPlayCount = signals.filter((s) => getMatchLiveStatus(s.kickoff) === "IN_PLAY").length;
   const finishedCount = signals.filter((s) => getMatchLiveStatus(s.kickoff) === "FINISHED").length;
   const wonCount = signals.filter((s) => s.status === "won").length;
   const lostCount = signals.filter((s) => s.status === "lost").length;
+  const valorCount = signals.filter((s) => s.pickBadge === "valor" || s.probability >= 76).length;
+  const bombaCount = signals.filter((s) => s.pickBadge === "bomba" || s.odds >= 2.05).length;
 
   // Filter signals strictly for today's matches
   const filteredCandidates = signals.filter((s) => {
@@ -142,8 +144,12 @@ export default function SignalsPage() {
       if (!matched) return false;
     }
 
-    // 2. Result & Status Filter (Ganadas, Perdidas, Por Comenzar, En Juego, Finalizadas, Todas)
-    if (matchStatusFilter === "WON") {
+    // 2. Result, Badge & Status Filter (Valor, Bomba, Ganadas, Perdidas, Por Comenzar, En Juego, Finalizadas, Todas)
+    if (matchStatusFilter === "VALOR") {
+      if (s.pickBadge !== "valor" && s.probability < 76) return false;
+    } else if (matchStatusFilter === "BOMBA") {
+      if (s.pickBadge !== "bomba" && s.odds < 2.05) return false;
+    } else if (matchStatusFilter === "WON") {
       if (s.status !== "won") return false;
     } else if (matchStatusFilter === "LOST") {
       if (s.status !== "lost") return false;
@@ -302,6 +308,26 @@ export default function SignalsPage() {
               }`}
             >
               🌟 Todos ({signals.length})
+            </button>
+            <button
+              onClick={() => setMatchStatusFilter("VALOR")}
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+                matchStatusFilter === "VALOR"
+                  ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black shadow-md shadow-emerald-500/30 border border-emerald-400"
+                  : "bg-emerald-50 text-emerald-900 border border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800 dark:hover:bg-emerald-900"
+              }`}
+            >
+              💎 Valor ({valorCount})
+            </button>
+            <button
+              onClick={() => setMatchStatusFilter("BOMBA")}
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+                matchStatusFilter === "BOMBA"
+                  ? "bg-gradient-to-r from-orange-500 to-rose-500 text-white font-black shadow-md shadow-orange-500/30 border border-orange-400"
+                  : "bg-orange-50 text-orange-900 border border-orange-200 hover:bg-orange-100 dark:bg-orange-950/60 dark:text-orange-300 dark:border-orange-800 dark:hover:bg-orange-900"
+              }`}
+            >
+              💣 Bomba ({bombaCount})
             </button>
             <button
               onClick={() => setMatchStatusFilter("WON")}

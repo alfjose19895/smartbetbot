@@ -29,7 +29,7 @@ export default function DashboardPage() {
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
 
   // Filters (exclusively for Today's Alertas)
-  const [matchStatusFilter, setMatchStatusFilter] = useState<"ALL" | "SCHEDULED" | "IN_PLAY" | "FINISHED" | "WON" | "LOST">("ALL");
+  const [matchStatusFilter, setMatchStatusFilter] = useState<"ALL" | "VALOR" | "BOMBA" | "WON" | "LOST" | "SCHEDULED" | "IN_PLAY" | "FINISHED">("ALL");
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
@@ -134,16 +134,22 @@ export default function DashboardPage() {
     year: "numeric",
   });
 
-  // Count matches by status
+  // Count matches by status & badge
   const scheduledCount = predictions.filter((p) => getMatchLiveStatus(p.kickoff) === "SCHEDULED").length;
   const inPlayCount = predictions.filter((p) => getMatchLiveStatus(p.kickoff) === "IN_PLAY").length;
   const finishedCount = predictions.filter((p) => getMatchLiveStatus(p.kickoff) === "FINISHED").length;
   const wonCount = predictions.filter((p) => p.status === "won").length;
   const lostCount = predictions.filter((p) => p.status === "lost").length;
+  const valorCount = predictions.filter((p) => p.pickBadge === "valor" || p.probability >= 76).length;
+  const bombaCount = predictions.filter((p) => p.pickBadge === "bomba" || p.odds >= 2.05).length;
 
   const filteredPredictions = predictions.filter((p) => {
-    // Result & Status Filter (Ganadas, Perdidas, En Juego, Por Comenzar, Finalizadas, Todas)
-    if (matchStatusFilter === "WON") {
+    // Result, Badge & Status Filter (Valor, Bomba, Ganadas, Perdidas, En Juego, Por Comenzar, Finalizadas, Todas)
+    if (matchStatusFilter === "VALOR") {
+      if (p.pickBadge !== "valor" && p.probability < 76) return false;
+    } else if (matchStatusFilter === "BOMBA") {
+      if (p.pickBadge !== "bomba" && p.odds < 2.05) return false;
+    } else if (matchStatusFilter === "WON") {
       if (p.status !== "won") return false;
     } else if (matchStatusFilter === "LOST") {
       if (p.status !== "lost") return false;
@@ -274,6 +280,26 @@ export default function DashboardPage() {
             }`}
           >
             🌟 Todos ({predictions.length})
+          </button>
+          <button
+            onClick={() => setMatchStatusFilter("VALOR")}
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+              matchStatusFilter === "VALOR"
+                ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black shadow-md shadow-emerald-500/30 border border-emerald-400"
+                : "bg-emerald-50 text-emerald-900 border border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800 dark:hover:bg-emerald-900"
+            }`}
+          >
+            💎 Valor ({valorCount})
+          </button>
+          <button
+            onClick={() => setMatchStatusFilter("BOMBA")}
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+              matchStatusFilter === "BOMBA"
+                ? "bg-gradient-to-r from-orange-500 to-rose-500 text-white font-black shadow-md shadow-orange-500/30 border border-orange-400"
+                : "bg-orange-50 text-orange-900 border border-orange-200 hover:bg-orange-100 dark:bg-orange-950/60 dark:text-orange-300 dark:border-orange-800 dark:hover:bg-orange-900"
+            }`}
+          >
+            💣 Bomba ({bombaCount})
           </button>
           <button
             onClick={() => setMatchStatusFilter("WON")}
