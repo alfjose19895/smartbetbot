@@ -28,7 +28,7 @@ export default function SignalsPage() {
 
   // Search & Filters
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [matchStatusFilter, setMatchStatusFilter] = useState<"ALL" | "SCHEDULED" | "IN_PLAY" | "FINISHED">("ALL");
+  const [matchStatusFilter, setMatchStatusFilter] = useState<"ALL" | "SCHEDULED" | "IN_PLAY" | "FINISHED" | "WON" | "LOST">("ALL");
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
@@ -116,6 +116,8 @@ export default function SignalsPage() {
   const scheduledCount = signals.filter((s) => getMatchLiveStatus(s.kickoff) === "SCHEDULED").length;
   const inPlayCount = signals.filter((s) => getMatchLiveStatus(s.kickoff) === "IN_PLAY").length;
   const finishedCount = signals.filter((s) => getMatchLiveStatus(s.kickoff) === "FINISHED").length;
+  const wonCount = signals.filter((s) => s.status === "won").length;
+  const lostCount = signals.filter((s) => s.status === "lost").length;
 
   // Filter signals strictly for today's matches
   const filteredCandidates = signals.filter((s) => {
@@ -140,8 +142,12 @@ export default function SignalsPage() {
       if (!matched) return false;
     }
 
-    // 2. Match Live Status Filter
-    if (matchStatusFilter !== "ALL") {
+    // 2. Result & Status Filter (Ganadas, Perdidas, Por Comenzar, En Juego, Finalizadas, Todas)
+    if (matchStatusFilter === "WON") {
+      if (s.status !== "won") return false;
+    } else if (matchStatusFilter === "LOST") {
+      if (s.status !== "lost") return false;
+    } else if (matchStatusFilter !== "ALL") {
       const status = getMatchLiveStatus(s.kickoff);
       if (status !== matchStatusFilter) return false;
     }
@@ -296,6 +302,26 @@ export default function SignalsPage() {
               }`}
             >
               🌟 Todos ({signals.length})
+            </button>
+            <button
+              onClick={() => setMatchStatusFilter("WON")}
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+                matchStatusFilter === "WON"
+                  ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30"
+                  : "bg-emerald-50 text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:hover:bg-emerald-900"
+              }`}
+            >
+              ✓ Ganadas ({wonCount})
+            </button>
+            <button
+              onClick={() => setMatchStatusFilter("LOST")}
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+                matchStatusFilter === "LOST"
+                  ? "bg-rose-600 text-white shadow-md shadow-rose-600/30"
+                  : "bg-rose-50 text-rose-800 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-rose-300 dark:hover:bg-rose-900"
+              }`}
+            >
+              ✗ Perdidas ({lostCount})
             </button>
             <button
               onClick={() => setMatchStatusFilter("SCHEDULED")}

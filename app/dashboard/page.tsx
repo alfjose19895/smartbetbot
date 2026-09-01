@@ -28,8 +28,8 @@ export default function DashboardPage() {
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
 
-  // Filters (exclusively for Today's Top 20)
-  const [matchStatusFilter, setMatchStatusFilter] = useState<"ALL" | "SCHEDULED" | "IN_PLAY" | "FINISHED">("ALL");
+  // Filters (exclusively for Today's Alertas)
+  const [matchStatusFilter, setMatchStatusFilter] = useState<"ALL" | "SCHEDULED" | "IN_PLAY" | "FINISHED" | "WON" | "LOST">("ALL");
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
@@ -59,18 +59,16 @@ export default function DashboardPage() {
       setSyncMessage("⚡ Consultando los mejores partidos y cuotas del día en API-Football (Ecuador UTC-5)...");
       const res = await fetch("/api/admin/sync/predictions", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
       });
       const data = await res.json();
       if (data.success) {
-        setSyncMessage(`✓ ¡Listo! ${data.count} pronósticos de alta precisión actualizados.`);
+        setSyncMessage(`✓ ¡Sincronización exitosa! ${data.count} alertas cuantitativas de alta precisión generadas.`);
         await loadSignals();
       } else {
-        setSyncMessage(`✗ Error: ${data.error || "No se pudo sincronizar"}`);
+        setSyncMessage(`⚠️ ${data.message || "Error al sincronizar"}`);
       }
     } catch {
-      setSyncMessage("✗ Fallo de red al actualizar pronósticos");
+      setSyncMessage("❌ Error de conexión al sincronizar");
     } finally {
       setSyncing(false);
       setTimeout(() => setSyncMessage(null), 4000);
@@ -113,20 +111,20 @@ export default function DashboardPage() {
     "Ambos Marcan (BTTS)",
   ];
 
-  const availableMarketNames = Array.from(
+  const availableMarkets = Array.from(
     new Set([...coreMarkets, ...predictions.map((p) => p.market).filter(Boolean)])
   );
+
+  const marketDropdownOptions: DropdownOption[] = availableMarkets.map((m) => ({
+    value: m,
+    label: m,
+  }));
 
   const confidenceDropdownOptions: DropdownOption[] = [
     { value: "muy_alta", label: language === "en" ? "⭐⭐⭐ Very High (≥75%)" : "⭐⭐⭐ Muy Alta (≥75%)" },
     { value: "alta", label: language === "en" ? "⭐⭐ High (68% - 74%)" : "⭐⭐ Alta (68% - 74%)" },
     { value: "media", label: language === "en" ? "⭐ Medium (60% - 67%)" : "⭐ Media (60% - 67%)" },
   ];
-
-  const marketDropdownOptions: DropdownOption[] = availableMarketNames.map((m) => ({
-    value: m,
-    label: m,
-  }));
 
   const now = new Date();
   const formattedToday = now.toLocaleDateString("es-ES", {
@@ -140,10 +138,16 @@ export default function DashboardPage() {
   const scheduledCount = predictions.filter((p) => getMatchLiveStatus(p.kickoff) === "SCHEDULED").length;
   const inPlayCount = predictions.filter((p) => getMatchLiveStatus(p.kickoff) === "IN_PLAY").length;
   const finishedCount = predictions.filter((p) => getMatchLiveStatus(p.kickoff) === "FINISHED").length;
+  const wonCount = predictions.filter((p) => p.status === "won").length;
+  const lostCount = predictions.filter((p) => p.status === "lost").length;
 
   const filteredPredictions = predictions.filter((p) => {
-    // Match Live Status Filter
-    if (matchStatusFilter !== "ALL") {
+    // Result & Status Filter (Ganadas, Perdidas, En Juego, Por Comenzar, Finalizadas, Todas)
+    if (matchStatusFilter === "WON") {
+      if (p.status !== "won") return false;
+    } else if (matchStatusFilter === "LOST") {
+      if (p.status !== "lost") return false;
+    } else if (matchStatusFilter !== "ALL") {
       const status = getMatchLiveStatus(p.kickoff);
       if (status !== matchStatusFilter) return false;
     }
@@ -270,6 +274,26 @@ export default function DashboardPage() {
             }`}
           >
             🌟 Todos ({predictions.length})
+          </button>
+          <button
+            onClick={() => setMatchStatusFilter("WON")}
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+              matchStatusFilter === "WON"
+                ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30"
+                : "bg-emerald-50 text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:hover:bg-emerald-900"
+            }`}
+          >
+            ✓ Ganadas ({wonCount})
+          </button>
+          <button
+            onClick={() => setMatchStatusFilter("LOST")}
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+              matchStatusFilter === "LOST"
+                ? "bg-rose-600 text-white shadow-md shadow-rose-600/30"
+                : "bg-rose-50 text-rose-800 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-rose-300 dark:hover:bg-rose-900"
+            }`}
+          >
+            ✗ Perdidas ({lostCount})
           </button>
           <button
             onClick={() => setMatchStatusFilter("SCHEDULED")}
