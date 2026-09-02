@@ -177,6 +177,20 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
   { id: 250, name: "Primera División", country: "Paraguay", category: "americas", tier: 2 },
   { id: 162, name: "Primera División (Liga FPD)", country: "Costa Rica", category: "americas", tier: 2 },
   { id: 163, name: "Liga de Ascenso", country: "Costa Rica", category: "second_divisions", tier: 3 },
+  // --- JAPÓN (1RA, 2DA Y 3RA DIVISIÓN & COPAS) ---
+  { id: 98, name: "J1 League", country: "Japón", category: "asia_africa", tier: 1 },
+  { id: 99, name: "J2 League", country: "Japón", category: "second_divisions", tier: 2 },
+  { id: 100, name: "J3 League", country: "Japón", category: "nordics_others", tier: 3 },
+  { id: 101, name: "J-League Cup", country: "Japón", category: "cups", tier: 2 },
+  { id: 102, name: "Emperor Cup", country: "Japón", category: "cups", tier: 2 },
+
+  // --- COREA DEL SUR (1RA, 2DA Y 3RA DIVISIÓN & COPAS) ---
+  { id: 292, name: "K League 1", country: "Corea del Sur", category: "asia_africa", tier: 1 },
+  { id: 293, name: "K League 2", country: "Corea del Sur", category: "second_divisions", tier: 2 },
+  { id: 295, name: "K3 League", country: "Corea del Sur", category: "nordics_others", tier: 3 },
+  { id: 294, name: "Korean FA Cup", country: "Corea del Sur", category: "cups", tier: 2 },
+
+  // --- CHINA ---
   { id: 169, name: "Chinese Super League", country: "China", category: "asia_africa", tier: 2 },
   { id: 170, name: "China League One", country: "China", category: "second_divisions", tier: 3 },
 ];
@@ -354,6 +368,10 @@ class ApiFootballClient {
       console.error(`[ApiFootball] Request exception for ${endpoint}:`, err);
       return [];
     }
+  }
+
+  async queryLeagues(params: Record<string, string | number>): Promise<any[]> {
+    return this.request<any>("leagues", params);
   }
 
   async getLeagues(leagueIds: number[] = TOP_5_LEAGUE_IDS): Promise<ApiFootballLeague[]> {

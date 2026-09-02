@@ -66,6 +66,36 @@ describe("Prediction Engine (TypeScript MVP)", () => {
     expect(realMadridPicks[0].probability).toBeGreaterThanOrEqual(68);
   });
 
+  it("accurately evaluates and categorizes J1/J2 League (Japan) and K League 1/2 (South Korea)", () => {
+    const japanPicks = evaluateFixturePrediction({
+      fixtureId: 888101,
+      homeTeam: "Vissel Kobe",
+      awayTeam: "Yokohama F. Marinos",
+      league: "J1 League",
+      country: "Japan",
+      kickoff: "2026-09-03T10:00:00Z",
+    });
+
+    expect(japanPicks.length).toBeGreaterThan(0);
+    expect(japanPicks[0].country).toBe("Japón");
+    expect(japanPicks[0].league).toBe("J1 League");
+    expect(japanPicks[0].probability).toBeGreaterThanOrEqual(55);
+
+    const koreaPicks = evaluateFixturePrediction({
+      fixtureId: 888102,
+      homeTeam: "Ulsan HD",
+      awayTeam: "Jeonbuk Motors",
+      league: "K League 1",
+      country: "South-Korea",
+      kickoff: "2026-09-03T11:00:00Z",
+    });
+
+    expect(koreaPicks.length).toBeGreaterThan(0);
+    expect(koreaPicks[0].country).toBe("Corea del Sur");
+    expect(koreaPicks[0].league).toBe("K League 1");
+    expect(koreaPicks[0].probability).toBeGreaterThanOrEqual(55);
+  });
+
   it("generates predictions with rich market variety from live curated multi-league queries", async () => {
     const predictions = await generatePredictionsForUpcoming();
     console.log("TOTAL LIVE PREDICTIONS:", predictions.length);

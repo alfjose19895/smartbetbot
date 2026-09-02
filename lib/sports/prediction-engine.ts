@@ -349,6 +349,28 @@ export function normalizeLeagueInfo(
     return { canonicalLeague: "Indian Super League", country: "India", tier: 2 };
   }
 
+  // Tier 2: Japón (J1 League & J2 League)
+  if (norm.includes("j1 league") || norm.includes("j.league 1") || (norm.includes("j1") && normCountry.includes("japan")) || (norm.includes("j league") && !norm.includes("j2") && !norm.includes("j3")) || (normCountry.includes("japan") && !norm.includes("2") && !norm.includes("3") && !norm.includes("cup"))) {
+    return { canonicalLeague: "J1 League", country: "Japón", tier: 1 };
+  }
+  if (norm.includes("j2 league") || norm.includes("j2") || norm.includes("j.league 2") || (normCountry.includes("japan") && norm.includes("2"))) {
+    return { canonicalLeague: "J2 League", country: "Japón", tier: 2 };
+  }
+  if (norm.includes("j3 league") || norm.includes("j3") || (normCountry.includes("japan") && norm.includes("3"))) {
+    return { canonicalLeague: "J3 League", country: "Japón", tier: 3 };
+  }
+
+  // Tier 2: Corea del Sur (K League 1 & K League 2)
+  if (norm.includes("k league 1") || norm.includes("k-league 1") || (norm.includes("k league") && !norm.includes("k league 2") && !norm.includes("k2") && !norm.includes("k3")) || (normCountry.includes("korea") && !norm.includes("2") && !norm.includes("3") && !norm.includes("cup"))) {
+    return { canonicalLeague: "K League 1", country: "Corea del Sur", tier: 1 };
+  }
+  if (norm.includes("k league 2") || norm.includes("k2 league") || norm.includes("k-league 2") || norm.includes("k2") || (normCountry.includes("korea") && norm.includes("2"))) {
+    return { canonicalLeague: "K League 2", country: "Corea del Sur", tier: 2 };
+  }
+  if (norm.includes("k3 league") || norm.includes("k3") || (normCountry.includes("korea") && norm.includes("3"))) {
+    return { canonicalLeague: "K3 League", country: "Corea del Sur", tier: 3 };
+  }
+
   // Tier 2: China & Asia
   if (norm.includes("chinese super league") || norm.includes("csl") || normCountry.includes("china")) {
     if (norm.includes("one") || norm.includes("1") || norm.includes("league one")) return { canonicalLeague: "China League One", country: "China", tier: 3 };
@@ -488,6 +510,36 @@ export const KNOWN_ELO_RATINGS: Record<string, number> = {
   "emelec": 1570,
   "aucas": 1540,
   "universidadcatolica": 1550,
+
+  // Japón (J1 & J2 League)
+  "visselkobe": 1690,
+  "yokohamarf": 1670,
+  "sanfreccehiroshima": 1660,
+  "machidazelvia": 1650,
+  "kashimaantlers": 1650,
+  "kawasaki frontale": 1640,
+  "urawareds": 1630,
+  "gambaosaka": 1620,
+  "cerezoosaka": 1610,
+  "fctokyo": 1600,
+  "nagoyagrampus": 1590,
+  "shimizu s-pulse": 1570,
+  "jefunited": 1540,
+  "yokohamafc": 1550,
+
+  // Corea del Sur (K League 1 & 2)
+  "ulsanhd": 1680,
+  "jeonbuk": 1660,
+  "pohangsteelers": 1650,
+  "gwangjufc": 1630,
+  "fcseoul": 1620,
+  "incheonunited": 1590,
+  "daegufc": 1580,
+  "gangwonfc": 1600,
+  "suwonsamsung": 1560,
+  "suwonfc": 1570,
+  "jejunited": 1570,
+  "gimcheonsangmu": 1610,
 };
 
 export function getTeamRating(teamName: string): number {
@@ -509,14 +561,14 @@ function factorial(n: number): number {
 }
 
 export function poissonProbability(k: number, lambda: number): number {
-  return (Math.exp(-lambda) * Math.pow(lambda, k)) / factorial(k);
+  if (lambda <= 0) return k === 0 ? 1 : 0;
+  return (Math.pow(lambda, k) * Math.exp(-lambda)) / factorial(k);
 }
 
-export function calculateBookmakerOdds(prob: number, juice: number = 1.00): number {
-  if (prob <= 0.01) return 25.0;
-  if (prob >= 0.99) return 1.05;
-  const rawFair = 1 / prob;
-  const withMargin = rawFair * juice;
+export function calculateBookmakerOdds(fairProbability: number, marginMultiplier: number = 0.95): number {
+  if (fairProbability <= 0) return 25.0;
+  const rawOdds = 1.0 / fairProbability;
+  const withMargin = rawOdds * marginMultiplier;
   return Math.max(1.10, Math.min(25.0, Math.round(withMargin * 100) / 100));
 }
 
@@ -536,6 +588,10 @@ export const LEAGUE_PROFILES: Record<string, { baseHomeXg: number; baseAwayXg: n
   "süper lig": { baseHomeXg: 1.50, baseAwayXg: 1.20, margin: 0.95 },
   "premiership": { baseHomeXg: 1.45, baseAwayXg: 1.15, margin: 0.95 },
   "chinese super league": { baseHomeXg: 1.60, baseAwayXg: 1.25, margin: 0.95 },
+  "j1 league": { baseHomeXg: 1.48, baseAwayXg: 1.18, margin: 0.95 },
+  "j2 league": { baseHomeXg: 1.42, baseAwayXg: 1.15, margin: 0.95 },
+  "k league 1": { baseHomeXg: 1.46, baseAwayXg: 1.16, margin: 0.95 },
+  "k league 2": { baseHomeXg: 1.40, baseAwayXg: 1.12, margin: 0.95 },
 
   // Américas & Australia
   "primera división (liga fpd)": { baseHomeXg: 1.50, baseAwayXg: 1.18, margin: 0.95 },
