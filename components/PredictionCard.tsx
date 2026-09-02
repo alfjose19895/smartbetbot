@@ -8,6 +8,7 @@ import { shareCardAsImage, copyCardImageToClipboard, downloadCardImage } from "@
 interface PredictionCardProps {
   prediction: MarketOpportunity;
   onOpenDetail?: (prediction: MarketOpportunity) => void;
+  defaultExpanded?: boolean;
 }
 
 function getMatchLiveStatusBadge(kickoff: string) {
@@ -42,9 +43,9 @@ function getMatchLiveStatusBadge(kickoff: string) {
   };
 }
 
-export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps) {
+export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = false }: PredictionCardProps) {
   const { language } = useLanguage();
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [copyingImage, setCopyingImage] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
 
@@ -96,6 +97,84 @@ export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps
       ? { label: "⭐⭐⭐ Muy Alta", cls: "bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700" }
       : { label: "⭐⭐ Alta", cls: "bg-cyan-100 text-cyan-900 border-cyan-300 dark:bg-cyan-950/80 dark:text-cyan-300 dark:border-cyan-700" };
 
+  // 1. MINIMIZED / COMPACT ROW VIEW (Reduces card size drastically so user can scan effortlessly)
+  if (!isExpanded) {
+    return (
+      <div
+        onClick={() => onOpenDetail?.(prediction)}
+        className="group relative flex items-center justify-between gap-3 overflow-hidden rounded-2xl border border-slate-200/90 bg-white px-4 py-3 shadow-xs transition-all duration-200 hover:border-emerald-500/50 hover:shadow-md dark:border-slate-800/80 dark:bg-slate-900/90 cursor-pointer"
+      >
+        {/* Left: League & Teams */}
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-sm font-black text-slate-800 dark:bg-slate-800 dark:text-slate-200 shrink-0">
+            🏆
+          </span>
+          <div className="min-w-0">
+            <div className="text-sm font-black text-slate-900 dark:text-white truncate">
+              {prediction.homeTeam} <span className="text-slate-400 font-normal">vs</span> {prediction.awayTeam}
+            </div>
+            <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 truncate">
+              {prediction.league} {prediction.country ? `(${prediction.country})` : ""} • ⏰ {formattedTime}
+            </div>
+          </div>
+        </div>
+
+        {/* Center: Pick Market, Odds & Badges */}
+        <div className="hidden md:flex items-center gap-2 shrink-0">
+          {prediction.pickBadge === "bomba" && (
+            <span className="rounded-lg px-2 py-0.5 text-[10px] font-black bg-rose-500 text-white animate-pulse">
+              💣 BOMBA
+            </span>
+          )}
+          {prediction.pickBadge === "valor" && (
+            <span className="rounded-lg px-2 py-0.5 text-[10px] font-black bg-emerald-500 text-slate-950 font-extrabold">
+              💎 VALOR
+            </span>
+          )}
+          <span className="rounded-xl bg-emerald-50 border border-emerald-300 dark:bg-emerald-950/60 dark:border-emerald-700/60 px-2.5 py-1 text-xs font-black text-emerald-800 dark:text-emerald-300">
+            🎯 {prediction.market} ({prediction.selection})
+          </span>
+          <span className="rounded-xl bg-sky-600 px-2.5 py-1 text-xs font-black text-white">
+            @{prediction.odds.toFixed(2)}
+          </span>
+          <span className="rounded-xl bg-emerald-600 px-2.5 py-1 text-xs font-black text-white">
+            {prediction.probability}%
+          </span>
+        </div>
+
+        {/* Right: Status & Expand Button */}
+        <div className="flex items-center gap-2 shrink-0">
+          {prediction.status === "won" ? (
+            <span className="rounded-xl px-2.5 py-1 text-xs font-black bg-emerald-500 text-slate-950">
+              ✓ Ganado
+            </span>
+          ) : prediction.status === "lost" ? (
+            <span className="rounded-xl px-2.5 py-1 text-xs font-black bg-rose-600 text-white">
+              ✗ Perdido
+            </span>
+          ) : statusBadge ? (
+            <span className={`inline-flex items-center rounded-xl px-2 py-0.5 text-[10px] font-black border ${statusBadge.cls}`}>
+              {statusBadge.label}
+            </span>
+          ) : null}
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsExpanded(true);
+            }}
+            title="Ampliar tarjeta completa"
+            className="flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
+          >
+            <span>▼</span>
+            <span className="hidden sm:inline">Ampliar</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. EXPANDED FULL VIEW
   return (
     <div
       onClick={() => onOpenDetail?.(prediction)}
@@ -132,17 +211,17 @@ export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps
               </span>
             ) : null}
 
-            {/* Toggle Expand / Minimize Button */}
+            {/* Toggle Minimize Button */}
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                setIsExpanded(!isExpanded);
+                setIsExpanded(false);
               }}
-              title={isExpanded ? "Minimizar tarjeta" : "Expandir tarjeta"}
+              title="Minimizar a vista compacta"
               className="flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
             >
-              <span>{isExpanded ? "▲" : "▼"}</span>
-              <span className="hidden sm:inline">{isExpanded ? "Minimizar" : "Expandir"}</span>
+              <span>▲</span>
+              <span className="hidden sm:inline">Minimizar</span>
             </button>
           </div>
         </div>
@@ -209,10 +288,10 @@ export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps
           </div>
         </div>
 
-        {/* Collapsible Section: AI Mathematical Analysis Quote & Metrics */}
-        {isExpanded && prediction.explanation && (
-          <div className="animate-fadeIn transition-all">
-            <p className="mt-3 text-xs text-slate-700 dark:text-slate-300 leading-relaxed italic border-l-2 border-emerald-500 pl-2.5 py-0.5">
+        {/* AI Analysis Quote */}
+        {prediction.explanation && (
+          <div className="mt-3 rounded-2xl bg-slate-50/80 p-3 border border-slate-100 dark:bg-slate-950/60 dark:border-slate-800">
+            <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed italic">
               &quot;{prediction.explanation}&quot;
             </p>
           </div>
