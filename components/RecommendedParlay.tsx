@@ -97,7 +97,7 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
       }
     }
 
-    const offsetMap: Record<number, number> = { 3: 0, 4: 2, 5: 4 };
+    const offsetMap: Record<number, number> = { 3: 0, 4: 2, 5: 5 };
     const startOffset = offsetMap[parlaySize] || 0;
     const pool = others.length > 0 ? others : candidatePicks;
     const poolLen = pool.length;

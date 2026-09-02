@@ -847,12 +847,61 @@ export async function getHistoricalSettledParlays(): Promise<HistoricalSettledPa
   for (const [dateStr, picks] of Object.entries(dateGroups)) {
     if (dateStr < HISTORY_START_DATE) continue;
 
-    const sorted = [...picks].sort((a, b) => b.probability - a.probability || b.odds - a.odds);
-    
+    // Filter unique matches (one pick per match) and sort by probability
+    const seenMatches = new Set<string>();
+    const uniquePicks: typeof picks = [];
+    for (const p of [...picks].sort((a, b) => b.probability - a.probability || b.odds - a.odds)) {
+      if (!seenMatches.has(p.match)) {
+        seenMatches.add(p.match);
+        uniquePicks.push(p);
+      }
+    }
+
+    if (uniquePicks.length < 3) continue;
+
+    // Bankers: Only picks with high probability (>= 78%) or "Muy Alta" confidence can be anchored across combinations
+    const bankers = uniquePicks.filter((p) => p.probability >= 78);
+    const topBanker = bankers.length > 0 ? bankers[0] : null;
+
+    // Non-banker pool
+    const nonBankerPool = uniquePicks.filter((p) => !topBanker || p.match !== topBanker.match);
+
     const sizes = [3, 4, 5] as const;
+    const startOffsets: Record<number, number> = { 3: 0, 4: 2, 5: 5 };
+
     for (const size of sizes) {
-      if (sorted.length >= size) {
-        const parlayLegs = sorted.slice(0, size);
+      const parlayLegs: typeof picks = [];
+      const usedInParlay = new Set<string>();
+
+      // 1. Anchor with top high-confidence banker (if available)
+      if (topBanker) {
+        parlayLegs.push(topBanker);
+        usedInParlay.add(topBanker.match);
+      }
+
+      // 2. Fill remaining legs from nonBankerPool using diversified rotational offset
+      const offset = startOffsets[size] || 0;
+      const poolLen = nonBankerPool.length;
+
+      for (let i = 0; i < poolLen && parlayLegs.length < size; i++) {
+        const pick = nonBankerPool[(offset + i) % poolLen];
+        if (!usedInParlay.has(pick.match)) {
+          parlayLegs.push(pick);
+          usedInParlay.add(pick.match);
+        }
+      }
+
+      // 3. Fallback if pool is small
+      if (parlayLegs.length < size) {
+        for (const pick of uniquePicks) {
+          if (!usedInParlay.has(pick.match) && parlayLegs.length < size) {
+            parlayLegs.push(pick);
+            usedInParlay.add(pick.match);
+          }
+        }
+      }
+
+      if (parlayLegs.length >= size) {
         const totalOdds = parlayLegs.reduce((acc, p) => acc * p.odds, 1);
         const combinedProb = parlayLegs.reduce((acc, p) => acc * (p.probability / 100), 1) * 100;
         const allWon = parlayLegs.every((p) => p.result === "WON");

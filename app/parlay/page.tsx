@@ -158,7 +158,7 @@ export default function DailyParlayPage() {
     }
 
     // Offset rotational index to avoid giving the exact same matches across parlay sizes
-    const offsetMap: Record<number, number> = { 3: 0, 4: 2, 5: 4, 8: 1, 10: 0 };
+    const offsetMap: Record<number, number> = { 3: 0, 4: 2, 5: 5, 8: 9, 10: 0 };
     const startOffset = offsetMap[parlaySize] || 0;
 
     const pool = others.length > 0 ? others : sortedDailyPicks;
