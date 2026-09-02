@@ -352,7 +352,7 @@ export function evaluateMarketResult(
 
     const isOver = !mLower.includes("under") && !mLower.includes("menos");
     const isWon = isOver ? actualCorners > line : actualCorners < line;
-    return { isWon, actualScoreText: `${actualCorners} Córners (${homeGoals} - ${awayGoals})` };
+    return { isWon, actualScoreText: `${homeGoals} - ${awayGoals} (${actualCorners} Córners)` };
   }
 
   // 10. Tarjetas / Cards
@@ -378,7 +378,7 @@ export function evaluateMarketResult(
 
     const isOver = !mLower.includes("under") && !mLower.includes("menos");
     const isWon = isOver ? actualCards > line : actualCards < line;
-    return { isWon, actualScoreText: `${actualCards} Tarjetas (${homeGoals} - ${awayGoals})` };
+    return { isWon, actualScoreText: `${homeGoals} - ${awayGoals} (${actualCards} Tarjetas)` };
   }
 
   // Default fallback
