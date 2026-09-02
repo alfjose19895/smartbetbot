@@ -113,44 +113,4 @@ describe("Exhaustive Market Evaluation Suite (All 8 Core Markets)", () => {
       expect(res2.actualScoreText).toBe("0 - 0 (No)");
     });
   });
-
-  describe("7. Over 8.5 Córners", () => {
-    it("wins when corners exceed 8.5", () => {
-      const res = evaluateMarketResult("Over 8.5 Córners", 2, 0, {
-        homeCorners: 6,
-        awayCorners: 4,
-      });
-      expect(res.isWon).toBe(true);
-      expect(res.actualScoreText).toBe("2 - 0 (10 Córners)");
-    });
-
-    it("loses when corners are 8 or fewer", () => {
-      const res = evaluateMarketResult("Over 8.5 Córners", 1, 0, {
-        homeCorners: 4,
-        awayCorners: 3,
-      });
-      expect(res.isWon).toBe(false);
-      expect(res.actualScoreText).toBe("1 - 0 (7 Córners)");
-    });
-  });
-
-  describe("8. Over 3.5 Tarjetas", () => {
-    it("wins when cards exceed 3.5", () => {
-      const res = evaluateMarketResult("Over 3.5 Tarjetas", 0, 0, {
-        homeCards: 4,
-        awayCards: 3,
-      });
-      expect(res.isWon).toBe(true);
-      expect(res.actualScoreText).toBe("0 - 0 (7 Tarjetas)");
-    });
-
-    it("loses when cards are 3 or fewer", () => {
-      const res = evaluateMarketResult("Over 3.5 Tarjetas", 2, 1, {
-        homeCards: 1,
-        awayCards: 1,
-      });
-      expect(res.isWon).toBe(false);
-      expect(res.actualScoreText).toBe("2 - 1 (2 Tarjetas)");
-    });
-  });
 });

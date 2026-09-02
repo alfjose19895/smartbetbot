@@ -336,44 +336,6 @@ export function evaluateMarketResult(
     }
   }
 
-  // 9. Córners / Corners
-  if (mLower.includes("córner") || mLower.includes("corner") || mLower.includes("corners")) {
-    let line = 8.5;
-    if (mLower.includes("7.5")) line = 7.5;
-    else if (mLower.includes("8.5")) line = 8.5;
-    else if (mLower.includes("9.5")) line = 9.5;
-    else if (mLower.includes("10.5")) line = 10.5;
-
-    if (options?.homeCorners !== undefined && options?.awayCorners !== undefined) {
-      const actualCorners = options.homeCorners + options.awayCorners;
-      const isOver = !mLower.includes("under") && !mLower.includes("menos");
-      const isWon = isOver ? actualCorners > line : actualCorners < line;
-      return { isWon, actualScoreText: `${homeGoals} - ${awayGoals} (${actualCorners} Córners)` };
-    }
-
-    // Default to real match goals without fabricating corner counts
-    return { isWon: false, actualScoreText: `${homeGoals} - ${awayGoals}` };
-  }
-
-  // 10. Tarjetas / Cards
-  if (mLower.includes("tarjeta") || mLower.includes("card") || mLower.includes("tarjetas") || mLower.includes("cards")) {
-    let line = 3.5;
-    if (mLower.includes("2.5")) line = 2.5;
-    else if (mLower.includes("3.5")) line = 3.5;
-    else if (mLower.includes("4.5")) line = 4.5;
-    else if (mLower.includes("5.5")) line = 5.5;
-
-    if (options?.homeCards !== undefined && options?.awayCards !== undefined) {
-      const actualCards = options.homeCards + options.awayCards;
-      const isOver = !mLower.includes("under") && !mLower.includes("menos");
-      const isWon = isOver ? actualCards > line : actualCards < line;
-      return { isWon, actualScoreText: `${homeGoals} - ${awayGoals} (${actualCards} Tarjetas)` };
-    }
-
-    // Default to real match goals without fabricating card counts
-    return { isWon: false, actualScoreText: `${homeGoals} - ${awayGoals}` };
-  }
-
   // Default fallback
   const isWon = homeGoals > awayGoals;
   return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
@@ -427,40 +389,12 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
                 (hNorm.length > 3 && pHNorm.length > 3 && (hNorm.includes(pHNorm) || pHNorm.includes(hNorm)) && (aNorm.includes(pANorm) || pANorm.includes(aNorm)));
 
               if (isMatch) {
-                let homeCorners: number | undefined;
-                let awayCorners: number | undefined;
-                let homeCards: number | undefined;
-                let awayCards: number | undefined;
-
-                const mLower = p.market.toLowerCase();
-                if (
-                  fixtureIdNum &&
-                  (mLower.includes("córner") || mLower.includes("corner") || mLower.includes("tarjeta") || mLower.includes("card"))
-                ) {
-                  try {
-                    const stats = await apiFootball.getFixtureStatistics(fixtureIdNum);
-                    const details = extractMatchDetails(stats);
-                    if (details.hasStats) {
-                      homeCorners = details.homeCorners;
-                      awayCorners = details.awayCorners;
-                      homeCards = details.homeYellowCards + details.homeRedCards;
-                      awayCards = details.awayYellowCards + details.awayRedCards;
-                    }
-                  } catch {
-                    // graceful fallback
-                  }
-                }
-
                 const evaluation = evaluateMarketResult(p.market, hGoals, aGoals, {
                   league: p.league,
                   country: p.country,
                   homeTeam: p.homeTeam,
                   awayTeam: p.awayTeam,
                   probability: p.probability,
-                  homeCorners,
-                  awayCorners,
-                  homeCards,
-                  awayCards,
                 });
 
                 if (p.status !== (evaluation.isWon ? "won" : "lost") || p.actualScore !== evaluation.actualScoreText) {

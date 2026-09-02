@@ -100,8 +100,6 @@ export default function DashboardPage() {
     "Over 2.5 Goles",
     "Under 2.5 Goles",
     "Ambos Marcan (BTTS)",
-    "Over 8.5 Córners",
-    "Over 3.5 Tarjetas",
   ];
 
   const availableMarkets = Array.from(

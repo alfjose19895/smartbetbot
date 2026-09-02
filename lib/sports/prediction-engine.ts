@@ -627,22 +627,6 @@ function generateExplanation(
     return variants[hash % variants.length];
   }
 
-  if (market.includes("Córners")) {
-    const variants = [
-      `Despliegue exterior y asedio constante: ${home} y ${away} utilizan carriles laterales y centros continuos al área rival, generando un promedio superior a 9.2 saques de esquina por encuentro. Proyección de ${prob}% para superar la línea de 8.5 córners a cuota @${odds.toFixed(2)}.`,
-      `Volumen de llegadas por bandas: El esquema táctico de ambos clubes favorece tiros bloqueados y desvíos a línea final. El modelo cuantitativo estima ${prob}% de probabilidad de éxito para el Over 8.5 saques de esquina.`,
-    ];
-    return variants[hash % variants.length];
-  }
-
-  if (market.includes("Tarjetas")) {
-    const variants = [
-      `Alta fricción táctica y rigor disciplinario: La rivalidad y el promedio de faltas tácticas cometidas entre ${home} y ${away} proyectan un encuentro de gran intensidad en la medular. El algoritmo estima un ${prob}% de probabilidad para superar las 3.5 tarjetas a cuota @${odds.toFixed(2)}.`,
-      `Duelo disputado y cortes tácticos: Ambos conjuntos promedian interrupciones y tarjetas en fases tempranas del partido. Certeza cuantitativa del ${prob}% para el Over 3.5 tarjetas a cuota rentable @${odds.toFixed(2)}.`,
-    ];
-    return variants[hash % variants.length];
-  }
-
   return `Análisis cuantitativo avanzado: ${prob}% de probabilidad estadística con valor positivo (+${edge}%) frente a la cuota del mercado @${odds.toFixed(2)}.`;
 }
 
@@ -833,24 +817,6 @@ export function evaluateFixturePrediction(params: {
     }
   }
 
-  // Expected Corners Calculation
-  const totalXg = hXg + aXg;
-  const expectedCorners = 5.2 + totalXg * 1.6 + ((hashSeed % 11) * 0.15);
-  let pOverCorners85 = 0;
-  for (let c = 9; c <= 20; c++) {
-    pOverCorners85 += poissonProbability(c, expectedCorners);
-  }
-  pOverCorners85 = Math.min(0.88, Math.max(0.40, pOverCorners85));
-
-  // Expected Cards Calculation
-  const isHighTension = Math.abs(diff) < 90;
-  const expectedCards = (normLeg.includes("la liga") || normLeg.includes("serie a") || normLeg.includes("brasileir") || normLeg.includes("argentina") ? 4.7 : 3.9) + (isHighTension ? 0.6 : 0.0);
-  let pOverCards35 = 0;
-  for (let cd = 4; cd <= 15; cd++) {
-    pOverCards35 += poissonProbability(cd, expectedCards);
-  }
-  pOverCards35 = Math.min(0.86, Math.max(0.40, pOverCards35));
-
   const matchJuice = 0.99 + ((hashSeed % 7) * 0.005);
 
   const calculatedHomeOdds = calculateBookmakerOdds(pHome, matchJuice);
@@ -859,8 +825,6 @@ export function evaluateFixturePrediction(params: {
   const calculatedOver25Odds = calculateBookmakerOdds(pOver25, matchJuice);
   const calculatedUnder25Odds = calculateBookmakerOdds(pUnder25, matchJuice);
   const calculatedBttsOdds = calculateBookmakerOdds(pBttsYes, matchJuice);
-  const calculatedCornersOdds = calculateBookmakerOdds(pOverCorners85, matchJuice);
-  const calculatedCardsOdds = calculateBookmakerOdds(pOverCards35, matchJuice);
 
   const candidates: {
     market: string;
@@ -878,10 +842,6 @@ export function evaluateFixturePrediction(params: {
     { market: "Over 2.5 Goles", selection: "Over 2.5", prob: pOver25, odds: marketOdds.over25 || calculatedOver25Odds, minOddsThreshold: 1.45 },
     { market: "Under 2.5 Goles", selection: "Under 2.5", prob: pUnder25, odds: marketOdds.under25 || calculatedUnder25Odds, minOddsThreshold: 1.45 },
     { market: "Ambos Marcan (BTTS)", selection: "Yes", prob: pBttsYes, odds: marketOdds.bttsYes || calculatedBttsOdds, minOddsThreshold: 1.45 },
-
-    // Corners y Tarjetas
-    { market: "Over 8.5 Córners", selection: "Over 8.5", prob: pOverCorners85, odds: calculatedCornersOdds, minOddsThreshold: 1.42 },
-    { market: "Over 3.5 Tarjetas", selection: "Over 3.5", prob: pOverCards35, odds: calculatedCardsOdds, minOddsThreshold: 1.42 },
   ];
 
   const opportunities: MarketOpportunity[] = [];
@@ -905,15 +865,21 @@ export function evaluateFixturePrediction(params: {
     const edgePercent = Math.max(1.0, Math.round((item.prob - 1 / item.odds) * 1000) / 10);
     const evPercent = Math.round((item.prob * item.odds - 1) * 1000) / 10;
 
-    const confidence: "Muy Alta" | "Alta" =
-      (isDrawMarket ? probPercent >= 33.5 : probPercent >= 75.0) ? "Muy Alta" : "Alta";
-
-    // Bomba (High Payout / High Odds >= 2.05) or Valor (Maximum Certainty ~100% / prob >= 76%)
+    // Confidence and Badge Rules:
+    // 1. Las apuestas de VALOR 💎 son obligatoriamente de confianza "Muy Alta" (prob >= 75.0%)
+    // 2. Las apuestas BOMBA 💣 son de cuota alta (>= 2.05 o Empates), no necesariamente muy alta (confianza "Alta")
+    let confidence: "Muy Alta" | "Alta" = "Alta";
     let pickBadge: "bomba" | "valor" | "estandar" = "estandar";
+
     if (item.odds >= 2.05 || isDrawMarket) {
       pickBadge = "bomba";
-    } else if (probPercent >= 76.0 || confidence === "Muy Alta") {
+      confidence = "Alta";
+    } else if (probPercent >= 75.0) {
       pickBadge = "valor";
+      confidence = "Muy Alta";
+    } else {
+      pickBadge = "estandar";
+      confidence = "Alta";
     }
 
     const tierBonus = tier === 1 ? 15 : tier === 2 ? 8 : 0;
