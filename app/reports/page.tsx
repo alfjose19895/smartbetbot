@@ -195,7 +195,7 @@ export default function ReportsPage() {
 
     if (sorted.length === 0) return [];
 
-    // Group by date
+    // If we have multiple distinct dates (>= 4), group by date
     const dateMap: Record<string, { total: number; won: number }> = {};
     sorted.forEach((item) => {
       const d = (item.date || item.kickoff || "").slice(0, 10);
@@ -204,25 +204,71 @@ export default function ReportsPage() {
       if (item.result === "WON") dateMap[d].won++;
     });
 
-    let cumulativeWon = 0;
-    let cumulativeTotal = 0;
+    const dateKeys = Object.keys(dateMap);
 
-    return Object.entries(dateMap).map(([dateStr, data]) => {
-      cumulativeWon += data.won;
-      cumulativeTotal += data.total;
-      const rate = cumulativeTotal > 0 ? (cumulativeWon / cumulativeTotal) * 100 : 0;
-      const dObj = new Date(dateStr);
-      const label = isNaN(dObj.getTime())
-        ? dateStr
-        : dObj.toLocaleDateString("es-ES", { month: "short", day: "numeric" });
-      return {
-        date: dateStr,
+    if (dateKeys.length >= 4) {
+      let cumulativeWon = 0;
+      let cumulativeTotal = 0;
+      return dateKeys.map((dateStr) => {
+        const data = dateMap[dateStr];
+        cumulativeWon += data.won;
+        cumulativeTotal += data.total;
+        const rate = cumulativeTotal > 0 ? (cumulativeWon / cumulativeTotal) * 100 : 0;
+        const dObj = new Date(dateStr);
+        const label = isNaN(dObj.getTime())
+          ? dateStr
+          : dObj.toLocaleDateString("es-ES", { month: "short", day: "numeric" });
+        return {
+          date: dateStr,
+          label,
+          rate,
+          dayWon: data.won,
+          dayTotal: data.total,
+          cumulativeWon,
+          cumulativeTotal,
+        };
+      });
+    }
+
+    // Otherwise, partition sorted items into 6-8 chronological sequential match batches
+    const batchSize = Math.max(2, Math.floor(sorted.length / 7));
+    const points: Array<{
+      date: string;
+      label: string;
+      rate: number;
+      dayWon: number;
+      dayTotal: number;
+      cumulativeWon: number;
+      cumulativeTotal: number;
+    }> = [];
+
+    let cumWon = 0;
+    let cumTotal = 0;
+
+    for (let i = 0; i < sorted.length; i += batchSize) {
+      const chunk = sorted.slice(i, i + batchSize);
+      const chunkWon = chunk.filter((c) => c.result === "WON").length;
+      cumWon += chunkWon;
+      cumTotal += chunk.length;
+      const rate = cumTotal > 0 ? (cumWon / cumTotal) * 100 : 0;
+      const firstItem = chunk[0];
+      const timeStr = firstItem.kickoff
+        ? new Date(firstItem.kickoff).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })
+        : `J${points.length + 1}`;
+      const label = firstItem.date ? `${firstItem.date.slice(5)} ${timeStr}` : `Tanda ${points.length + 1}`;
+
+      points.push({
+        date: firstItem.date || String(i),
         label,
         rate,
-        dayWon: data.won,
-        dayTotal: data.total,
-      };
-    });
+        dayWon: chunkWon,
+        dayTotal: chunk.length,
+        cumulativeWon: cumWon,
+        cumulativeTotal: cumTotal,
+      });
+    }
+
+    return points;
   }, [filteredItems]);
 
   // Donut SVG circumference calculation

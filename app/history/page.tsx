@@ -220,6 +220,9 @@ export default function HistoryPage() {
     return true;
   });
 
+  const [expandedPicks, setExpandedPicks] = useState<Record<string, boolean>>({});
+  const [expandedParlays, setExpandedParlays] = useState<Record<string, boolean>>({});
+
   // Statistics for Current Tab
   const isPicksTab = historyType === "picks";
   const totalCount = isPicksTab ? filteredHistory.length : filteredParlays.length;
@@ -259,6 +262,37 @@ export default function HistoryPage() {
             <p className="mt-1 text-xs text-slate-700 sm:text-sm dark:text-slate-400">
               Auditoría oficial de picks individuales y parleys recomendados evaluados con marcadores reales
             </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => {
+                if (isPicksTab) {
+                  const allExp = filteredHistory.every((p) => expandedPicks[p.id]);
+                  const nextState: Record<string, boolean> = {};
+                  filteredHistory.forEach((p) => {
+                    nextState[p.id] = !allExp;
+                  });
+                  setExpandedPicks(nextState);
+                } else {
+                  const allExp = filteredParlays.every((p) => expandedParlays[p.id]);
+                  const nextState: Record<string, boolean> = {};
+                  filteredParlays.forEach((p) => {
+                    nextState[p.id] = !allExp;
+                  });
+                  setExpandedParlays(nextState);
+                }
+              }}
+              className="rounded-xl bg-white px-3 py-2 text-xs font-black text-slate-700 hover:text-slate-900 border border-slate-200 shadow-sm dark:bg-slate-900 dark:border-slate-800 dark:text-slate-300 dark:hover:text-white transition cursor-pointer"
+            >
+              {isPicksTab
+                ? filteredHistory.every((p) => expandedPicks[p.id])
+                  ? "▲ Minimizar Todo"
+                  : "▼ Expandir Todo"
+                : filteredParlays.every((p) => expandedParlays[p.id])
+                ? "▲ Minimizar Todo"
+                : "▼ Expandir Todo"}
+            </button>
           </div>
 
           {/* Module Switcher */}
@@ -512,97 +546,119 @@ export default function HistoryPage() {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+              <div className="space-y-3">
                 {filteredHistory.map((item) => {
                   const isWon = item.result === "WON";
                   const conf = getConfidenceBadge(item.confidence, item.probability);
+                  const isExpanded = Boolean(expandedPicks[item.id]);
+
                   return (
                     <div
                       key={item.id}
-                      className={`overflow-hidden rounded-3xl border p-5 shadow-sm transition hover:shadow-md ${
+                      className={`overflow-hidden rounded-3xl border transition shadow-sm ${
                         isWon
                           ? "border-emerald-200 bg-white dark:border-emerald-900/40 dark:bg-slate-900/90"
                           : "border-red-200 bg-white dark:border-red-900/40 dark:bg-slate-900/90"
                       }`}
                     >
-                      <div>
-                        {/* Top Badge: League & Status */}
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="inline-flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                            <span>🏆</span>
-                            <span>{item.league}</span>
-                            {item.country && (
-                              <>
-                                <span className="text-slate-400 font-normal">•</span>
-                                <span className="text-emerald-700 dark:text-emerald-400 font-bold">{item.country}</span>
-                              </>
-                            )}
+                      {/* Compact Header / Row */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4">
+                        <div className="flex items-start sm:items-center gap-3">
+                          <span
+                            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-xs font-black ${
+                              isWon
+                                ? "bg-emerald-500 text-slate-950"
+                                : "bg-red-500 text-white"
+                            }`}
+                          >
+                            {isWon ? "✓" : "✗"}
                           </span>
 
-                          {isWon ? (
-                            <span className="inline-flex items-center gap-1 rounded-xl bg-emerald-50 px-2.5 py-1 text-xs font-black text-emerald-700 border border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-400 dark:border-emerald-800">
-                              ✓ Ganada (+{item.profit.toFixed(2)} U)
+                          <div>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-extrabold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                                <span>🏆</span>
+                                <span>{item.league}</span>
+                                {item.country && (
+                                  <>
+                                    <span className="text-slate-400 font-normal">•</span>
+                                    <span className="text-emerald-700 dark:text-emerald-400 font-bold">{item.country}</span>
+                                  </>
+                                )}
+                              </span>
+
+                              <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                                📅 {item.date}
+                              </span>
+
+                              {isWon ? (
+                                <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-black text-emerald-800 border border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700">
+                                  ✓ Ganada (+{item.profit.toFixed(2)} U)
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 rounded-md bg-red-50 px-2 py-0.5 text-[10px] font-black text-red-800 border border-red-300 dark:bg-red-950/80 dark:text-red-300 dark:border-red-700">
+                                  ✗ Perdida ({item.profit.toFixed(2)} U)
+                                </span>
+                              )}
+                            </div>
+
+                            <h3 className="mt-1 text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                              {item.homeTeam} vs {item.awayTeam}
+                            </h3>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between sm:justify-end gap-2.5 border-t sm:border-t-0 border-slate-100 pt-2 sm:pt-0 dark:border-slate-800">
+                          <div className="text-right">
+                            <span className="rounded-xl bg-emerald-50 px-2.5 py-1 text-xs font-black text-emerald-800 border border-emerald-200 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-800 block">
+                              🎯 {item.market}
                             </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 rounded-xl bg-red-50 px-2.5 py-1 text-xs font-black text-red-700 border border-red-300 dark:bg-red-950/80 dark:text-red-400 dark:border-red-800">
-                              ✗ Perdida ({item.profit.toFixed(2)} U)
+                          </div>
+
+                          <span className="rounded-xl bg-sky-50 px-2.5 py-1 text-xs font-black text-sky-800 border border-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800">
+                            @{item.odds.toFixed(2)}
+                          </span>
+
+                          <span className="rounded-xl bg-slate-100 px-2.5 py-1 text-xs font-black text-slate-900 border border-slate-200 dark:bg-slate-800 dark:text-white dark:border-slate-700">
+                            {item.score}
+                          </span>
+
+                          <button
+                            onClick={() =>
+                              setExpandedPicks((prev) => ({ ...prev, [item.id]: !prev[item.id] }))
+                            }
+                            className="rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
+                          >
+                            {isExpanded ? "▲ Menos" : "▼ Análisis"}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Expanded Content */}
+                      {isExpanded && (
+                        <div className="border-t border-slate-100 bg-slate-50/70 p-4 dark:border-slate-800/80 dark:bg-slate-950/50 space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black border ${conf.cls}`}>
+                              <span>{conf.label}</span>
                             </span>
+                            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                              Probabilidad Estimada: <strong className="text-emerald-600 dark:text-emerald-400">{item.probability}%</strong>
+                            </span>
+                          </div>
+
+                          {item.explanation && (
+                            <div className="rounded-2xl bg-white p-3.5 border border-slate-200 shadow-sm dark:bg-slate-900/90 dark:border-slate-800">
+                              <div className="flex items-center gap-1.5 text-xs font-black text-emerald-700 dark:text-emerald-400">
+                                <span>🧠</span>
+                                <span>Análisis Cuantitativo del Encuentro:</span>
+                              </div>
+                              <p className="mt-1.5 text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
+                                {item.explanation}
+                              </p>
+                            </div>
                           )}
                         </div>
-
-                        {/* Date & Initial Confidence Badge */}
-                        <div className="mt-3 flex items-center justify-between">
-                          <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                            📅 {item.date}
-                          </span>
-                          <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-black border ${conf.cls}`}>
-                            <span>{conf.label}</span>
-                          </span>
-                        </div>
-
-                        {/* Teams & Real Match Score */}
-                        <div className="mt-3 flex items-center justify-between rounded-2xl bg-slate-50 p-3.5 border border-slate-100 dark:bg-slate-950/80 dark:border-slate-800/80">
-                          <div className="flex-1 pr-2">
-                            <div className="text-sm font-extrabold text-slate-900 dark:text-white leading-tight">
-                              {item.homeTeam}
-                            </div>
-                            <div className="text-sm font-extrabold text-slate-900 dark:text-white leading-tight mt-1">
-                              {item.awayTeam}
-                            </div>
-                          </div>
-
-                          <div className="flex flex-col items-center justify-center rounded-xl bg-white px-3 py-1.5 border border-slate-200 shadow-sm dark:bg-slate-900 dark:border-slate-700 shrink-0">
-                            <span className="text-[10px] uppercase font-bold text-slate-400">Marcador Real</span>
-                            <span className="text-base font-black text-slate-900 dark:text-white">{item.score}</span>
-                          </div>
-                        </div>
-
-                        {/* Predicted Market Box */}
-                        <div className="mt-4 rounded-2xl border border-slate-200/80 bg-slate-50/60 p-3 dark:border-slate-800 dark:bg-slate-950/50">
-                          <div className="text-[10px] font-extrabold uppercase text-slate-500 dark:text-slate-400">
-                            Mercado Pronosticado
-                          </div>
-                          <div className="mt-1 flex items-center justify-between">
-                            <span className="text-sm font-extrabold text-slate-900 dark:text-white">
-                              🎯 {item.market} ({item.selection})
-                            </span>
-                            <div className="flex items-center gap-2">
-                              <span className="rounded-lg bg-sky-50 px-2 py-0.5 text-xs font-black text-sky-700 border border-sky-200 dark:bg-sky-950 dark:text-sky-400 dark:border-sky-800">
-                                @{item.odds.toFixed(2)}
-                              </span>
-                              <span className="rounded-lg bg-emerald-50 px-2 py-0.5 text-xs font-black text-emerald-700 border border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800">
-                                {item.probability}%
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {item.explanation && (
-                          <p className="mt-3 text-xs text-slate-600 dark:text-slate-400 leading-relaxed italic">
-                            &quot;{item.explanation}&quot;
-                          </p>
-                        )}
-                      </div>
+                      )}
                     </div>
                   );
                 })}
@@ -628,19 +684,21 @@ export default function HistoryPage() {
                 </p>
               </div>
             ) : (
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {filteredParlays.map((parlay) => {
                   const isWon = parlay.result === "WON";
+                  const isExpanded = Boolean(expandedParlays[parlay.id]);
+
                   return (
                     <div
                       key={parlay.id}
-                      className={`overflow-hidden rounded-3xl border p-5 sm:p-6 shadow-sm transition hover:shadow-md ${
+                      className={`overflow-hidden rounded-3xl border transition shadow-sm ${
                         isWon
                           ? "border-emerald-300 bg-white dark:border-emerald-900/50 dark:bg-slate-900/90"
                           : "border-slate-200 bg-white dark:border-slate-800/80 dark:bg-slate-900/90"
                       }`}
                     >
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4 dark:border-slate-800">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 sm:p-5">
                         <div>
                           <div className="flex items-center gap-2">
                             <span className="rounded-xl bg-emerald-100 px-3 py-1 text-xs font-black text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800">
@@ -658,66 +716,80 @@ export default function HistoryPage() {
                         <div className="flex items-center gap-3">
                           <div className="text-right">
                             <span className="text-[10px] font-bold uppercase text-slate-400 block">Cuota Total</span>
-                            <span className="text-xl font-black text-sky-600 dark:text-sky-400">
+                            <span className="text-lg sm:text-xl font-black text-sky-600 dark:text-sky-400">
                               @{parlay.totalOdds.toFixed(2)}
                             </span>
                           </div>
 
                           {isWon ? (
-                            <span className="rounded-2xl bg-emerald-500 px-3.5 py-2 text-xs font-black text-slate-950 shadow-md shadow-emerald-500/20">
+                            <span className="rounded-2xl bg-emerald-500 px-3 py-1.5 text-xs font-black text-slate-950 shadow-md shadow-emerald-500/20">
                               ✓ GANADA (+{parlay.profit.toFixed(2)} U)
                             </span>
                           ) : (
-                            <span className="rounded-2xl bg-slate-100 px-3.5 py-2 text-xs font-bold text-red-600 border border-red-200 dark:bg-slate-800 dark:text-red-400 dark:border-red-900/50">
+                            <span className="rounded-2xl bg-slate-100 px-3 py-1.5 text-xs font-bold text-red-600 border border-red-200 dark:bg-slate-800 dark:text-red-400 dark:border-red-900/50">
                               ✗ PERDIDA (-1.00 U)
                             </span>
                           )}
+
+                          <button
+                            onClick={() =>
+                              setExpandedParlays((prev) => ({ ...prev, [parlay.id]: !prev[parlay.id] }))
+                            }
+                            className="rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
+                          >
+                            {isExpanded ? "▲ Menos" : "▼ Ver Jugadas"}
+                          </button>
                         </div>
                       </div>
 
-                      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                        {parlay.legs.map((leg, idx) => {
-                          const legWon = leg.result === "WON";
-                          return (
-                            <div
-                              key={idx}
-                              className={`rounded-2xl p-3.5 border text-xs ${
-                                legWon
-                                  ? "bg-emerald-50/50 border-emerald-200 dark:bg-emerald-950/20 dark:border-emerald-900/40"
-                                  : "bg-red-50/50 border-red-200 dark:bg-red-950/20 dark:border-red-900/40"
-                              }`}
-                            >
-                              <div className="flex items-center justify-between gap-1 mb-1.5">
-                                <span className="font-extrabold text-slate-600 dark:text-slate-400 text-[10px]">
-                                  #{idx + 1} • {leg.league} {leg.country ? `(${leg.country})` : ""}
-                                </span>
-                                {legWon ? (
-                                  <span className="text-emerald-700 dark:text-emerald-400 font-black text-[11px]">
-                                    ✓ Acierto
-                                  </span>
-                                ) : (
-                                  <span className="text-red-600 dark:text-red-400 font-bold text-[11px]">
-                                    ✗ Fallo
-                                  </span>
-                                )}
-                              </div>
+                      {/* Expanded Legs Grid */}
+                      {isExpanded && (
+                        <div className="border-t border-slate-100 bg-slate-50/60 p-4 sm:p-5 dark:border-slate-800/80 dark:bg-slate-950/40">
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                            {parlay.legs.map((leg, idx) => {
+                              const legWon = leg.result === "WON";
+                              return (
+                                <div
+                                  key={idx}
+                                  className={`rounded-2xl p-3.5 border text-xs ${
+                                    legWon
+                                      ? "bg-emerald-50/50 border-emerald-200 dark:bg-emerald-950/20 dark:border-emerald-900/40"
+                                      : "bg-red-50/50 border-red-200 dark:bg-red-950/20 dark:border-red-900/40"
+                                  }`}
+                                >
+                                  <div className="flex items-center justify-between gap-1 mb-1.5">
+                                    <span className="font-extrabold text-slate-600 dark:text-slate-400 text-[10px]">
+                                      #{idx + 1} • {leg.league} {leg.country ? `(${leg.country})` : ""}
+                                    </span>
+                                    {legWon ? (
+                                      <span className="text-emerald-700 dark:text-emerald-400 font-black text-[11px]">
+                                        ✓ Acierto
+                                      </span>
+                                    ) : (
+                                      <span className="text-red-600 dark:text-red-400 font-bold text-[11px]">
+                                        ✗ Fallo
+                                      </span>
+                                    )}
+                                  </div>
 
-                              <div className="font-black text-slate-900 dark:text-white text-sm">
-                                {leg.match}
-                              </div>
+                                  <div className="font-black text-slate-900 dark:text-white text-sm">
+                                    {leg.match}
+                                  </div>
 
-                              <div className="mt-2 flex items-center justify-between border-t border-slate-200/60 pt-2 dark:border-slate-800">
-                                <span className="font-bold text-emerald-800 dark:text-emerald-300">
-                                  🎯 {leg.market} (@{leg.odds.toFixed(2)})
-                                </span>
-                                <span className="rounded-lg bg-white px-2 py-0.5 font-black text-slate-900 border border-slate-200 dark:bg-slate-950 dark:text-white dark:border-slate-800">
-                                  {leg.score}
-                                </span>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
+                                  <div className="mt-2 flex items-center justify-between border-t border-slate-200/60 pt-2 dark:border-slate-800">
+                                    <span className="font-bold text-emerald-800 dark:text-emerald-300">
+                                      🎯 {leg.market} (@{leg.odds.toFixed(2)})
+                                    </span>
+                                    <span className="rounded-lg bg-white px-2 py-0.5 font-black text-slate-900 border border-slate-200 dark:bg-slate-950 dark:text-white dark:border-slate-800">
+                                      {leg.score}
+                                    </span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   );
                 })}

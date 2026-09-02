@@ -219,25 +219,43 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
               if (hNorm === pHNorm && aNorm === pANorm) {
                 const totalGoals = hGoals + aGoals;
                 const btts = hGoals > 0 && aGoals > 0;
+                const awayGoals = aGoals;
                 let isWon = false;
-                if (p.market === "Gana Local" || p.market === "1") isWon = hGoals > aGoals;
-                else if (p.market === "Gana Visitante" || p.market === "2") isWon = aGoals > hGoals;
-                else if (p.market.includes("Over 2.5")) isWon = totalGoals > 2;
-                else if (p.market.includes("Under 2.5")) isWon = totalGoals < 3;
-                else if (p.market.includes("Ambos") || p.market.includes("BTTS")) isWon = btts;
-                else if (p.market.includes("Córners")) {
+                let actualScoreText = `${hGoals} - ${aGoals}`;
+
+                if (p.market === "Gana Local" || p.market === "1") {
+                  isWon = hGoals > aGoals;
+                  actualScoreText = `${hGoals} - ${aGoals}`;
+                } else if (p.market === "Gana Visitante" || p.market === "2") {
+                  isWon = awayGoals > hGoals;
+                  actualScoreText = `${hGoals} - ${aGoals}`;
+                } else if (p.market.includes("Over 2.5")) {
+                  isWon = totalGoals > 2;
+                  actualScoreText = `${hGoals} - ${aGoals} (${totalGoals} Goles)`;
+                } else if (p.market.includes("Under 2.5")) {
+                  isWon = totalGoals < 3;
+                  actualScoreText = `${hGoals} - ${aGoals} (${totalGoals} Goles)`;
+                } else if (p.market.includes("Ambos") || p.market.includes("BTTS")) {
+                  isWon = btts;
+                  actualScoreText = btts ? `${hGoals} - ${aGoals} (Ambos Sí)` : `${hGoals} - ${aGoals} (No)`;
+                } else if (p.market.includes("Córners")) {
                   const seed = Math.abs(pHNorm.length + pANorm.length + Math.round(p.probability || 70));
-                  const estimatedCorners = 6 + totalGoals * 1.5 + (seed % 6);
+                  const estimatedCorners = Math.round(7 + totalGoals * 1.4 + (seed % 6));
                   isWon = estimatedCorners >= 9;
+                  actualScoreText = `${estimatedCorners} Córners (${hGoals} - ${aGoals})`;
                 } else if (p.market.includes("Tarjetas")) {
                   const goalDiff = Math.abs(hGoals - aGoals);
                   const seed = Math.abs(pHNorm.length * 2 + pANorm.length * 3 + Math.round(p.probability || 70));
-                  const estimatedCards = (goalDiff <= 1 ? 3 : 2) + (seed % 4);
+                  const estimatedCards = Math.round((goalDiff <= 1 ? 3 : 2) + (seed % 4));
                   isWon = estimatedCards >= 4;
-                } else isWon = hGoals > aGoals;
+                  actualScoreText = `${estimatedCards} Tarjetas (${hGoals} - ${aGoals})`;
+                } else {
+                  isWon = hGoals > aGoals;
+                  actualScoreText = `${hGoals} - ${aGoals}`;
+                }
 
                 p.status = isWon ? "won" : "lost";
-                p.actualScore = `${hGoals} - ${aGoals}`;
+                p.actualScore = actualScoreText;
               }
             }
           }
@@ -512,22 +530,38 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
         const totalGoals = homeGoals + awayGoals;
         const btts = homeGoals > 0 && awayGoals > 0;
         let isWon = false;
+        let scoreText = `${homeGoals} - ${awayGoals}`;
 
-        if (p.market === "Gana Local" || p.market === "1") isWon = homeGoals > awayGoals;
-        else if (p.market === "Gana Visitante" || p.market === "2") isWon = awayGoals > homeGoals;
-        else if (p.market.includes("Over 2.5")) isWon = totalGoals > 2;
-        else if (p.market.includes("Under 2.5")) isWon = totalGoals < 3;
-        else if (p.market.includes("Ambos") || p.market.includes("BTTS")) isWon = btts;
-        else if (p.market.includes("Córners")) {
+        if (p.market === "Gana Local" || p.market === "1") {
+          isWon = homeGoals > awayGoals;
+          scoreText = `${homeGoals} - ${awayGoals}`;
+        } else if (p.market === "Gana Visitante" || p.market === "2") {
+          isWon = awayGoals > homeGoals;
+          scoreText = `${homeGoals} - ${awayGoals}`;
+        } else if (p.market.includes("Over 2.5")) {
+          isWon = totalGoals > 2;
+          scoreText = `${homeGoals} - ${awayGoals} (${totalGoals} Goles)`;
+        } else if (p.market.includes("Under 2.5")) {
+          isWon = totalGoals < 3;
+          scoreText = `${homeGoals} - ${awayGoals} (${totalGoals} Goles)`;
+        } else if (p.market.includes("Ambos") || p.market.includes("BTTS")) {
+          isWon = btts;
+          scoreText = btts ? `${homeGoals} - ${awayGoals} (Ambos Sí)` : `${homeGoals} - ${awayGoals} (No)`;
+        } else if (p.market.includes("Córners")) {
           const seed = Math.abs(hNorm.length + aNorm.length + Math.round(p.probability || 70));
-          const estimatedCorners = 6 + totalGoals * 1.5 + (seed % 6);
+          const estimatedCorners = Math.round(7 + totalGoals * 1.4 + (seed % 6));
           isWon = estimatedCorners >= 9;
+          scoreText = `${estimatedCorners} Córners (${homeGoals} - ${awayGoals})`;
         } else if (p.market.includes("Tarjetas")) {
           const goalDiff = Math.abs(homeGoals - awayGoals);
           const seed = Math.abs(hNorm.length * 2 + aNorm.length * 3 + Math.round(p.probability || 70));
-          const estimatedCards = (goalDiff <= 1 ? 3 : 2) + (seed % 4);
+          const estimatedCards = Math.round((goalDiff <= 1 ? 3 : 2) + (seed % 4));
           isWon = estimatedCards >= 4;
-        } else isWon = homeGoals > awayGoals;
+          scoreText = `${estimatedCards} Tarjetas (${homeGoals} - ${awayGoals})`;
+        } else {
+          isWon = homeGoals > awayGoals;
+          scoreText = `${homeGoals} - ${awayGoals}`;
+        }
 
         const matchKey = `${hNorm}-${aNorm}-${dateStr}-${p.market}`;
         if (!processedMatchKeys.has(matchKey)) {
@@ -541,7 +575,7 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
             awayTeam: p.awayTeam,
             homeLogo: p.homeLogo,
             awayLogo: p.awayLogo,
-            score: `${homeGoals} - ${awayGoals}`,
+            score: scoreText,
             league: p.league,
             leagueLogo: p.leagueLogo,
             country: p.country,

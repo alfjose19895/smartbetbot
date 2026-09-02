@@ -101,6 +101,7 @@ export default function DailyParlayPage() {
   const [stake, setStake] = useState<number>(10);
   const [copied, setCopied] = useState<boolean>(false);
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
+  const [expandedLegs, setExpandedLegs] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const fetchSignals = async () => {
@@ -385,66 +386,148 @@ export default function DailyParlayPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             {/* Picks List */}
             <div className="lg:col-span-2 space-y-3">
+              <div className="flex items-center justify-between px-1">
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                  Selecciones del Parley ({selectedPicks.length})
+                </span>
+                <button
+                  onClick={() => {
+                    const allExp = selectedPicks.every((p) => expandedLegs[p.id || p.match]);
+                    const nextState: Record<string, boolean> = {};
+                    selectedPicks.forEach((p) => {
+                      nextState[p.id || p.match] = !allExp;
+                    });
+                    setExpandedLegs(nextState);
+                  }}
+                  className="text-xs font-black text-emerald-700 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300 transition cursor-pointer"
+                >
+                  {selectedPicks.every((p) => expandedLegs[p.id || p.match])
+                    ? "▲ Minimizar Todo"
+                    : "▼ Expandir Todo"}
+                </button>
+              </div>
+
               {selectedPicks.map((pick, idx) => {
+                const legKey = pick.id || pick.match;
+                const isLegExpanded = Boolean(expandedLegs[legKey]);
                 const timeStatus = getTimeRemainingStatus(pick.kickoff);
+                const isWon = pick.status === "won";
+                const isLost = pick.status === "lost";
+
                 return (
                   <div
                     key={pick.id || `${pick.fixtureId}-${pick.market}`}
-                    className="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-emerald-500/50 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
+                    className={`overflow-hidden rounded-3xl border transition shadow-sm ${
+                      isWon
+                        ? "border-emerald-300 bg-white dark:border-emerald-800/80 dark:bg-slate-900"
+                        : isLost
+                        ? "border-rose-300 bg-white dark:border-rose-800/80 dark:bg-slate-900"
+                        : "border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
+                    }`}
                   >
-                    <div className="flex items-start sm:items-center gap-3.5">
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-sm font-black text-emerald-800 border border-emerald-300 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800">
-                        #{idx + 1}
+                    {/* Header Row (Always visible) */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4">
+                      <div className="flex items-start sm:items-center gap-3.5">
+                        <div
+                          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl text-sm font-black border ${
+                            isWon
+                              ? "bg-emerald-500 text-slate-950 border-emerald-400 shadow-md shadow-emerald-500/20"
+                              : isLost
+                              ? "bg-rose-500 text-white border-rose-400"
+                              : "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800"
+                          }`}
+                        >
+                          {isWon ? "✓" : isLost ? "✗" : `#${idx + 1}`}
+                        </div>
+
+                        <div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-extrabold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                              <span>🏆</span>
+                              <span>{pick.league}</span>
+                              <span className="text-slate-400">•</span>
+                              <span className="text-emerald-700 dark:text-emerald-400 font-black">
+                                {pick.country || "Mundial"}
+                              </span>
+                            </span>
+
+                            <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600 dark:bg-slate-950 dark:text-slate-400 border border-slate-200 dark:border-slate-800">
+                              🕒 {formatKickoffTime(pick.kickoff)}
+                            </span>
+
+                            {/* Settlement Status Badge */}
+                            {isWon ? (
+                              <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2.5 py-0.5 text-[10px] font-black text-emerald-800 border border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700">
+                                ✓ Acertado {pick.actualScore ? `(${pick.actualScore})` : ""}
+                              </span>
+                            ) : isLost ? (
+                              <span className="inline-flex items-center gap-1 rounded-md bg-rose-50 px-2.5 py-0.5 text-[10px] font-black text-rose-800 border border-rose-300 dark:bg-rose-950/80 dark:text-rose-300 dark:border-rose-700">
+                                ✗ No Acertado {pick.actualScore ? `(${pick.actualScore})` : ""}
+                              </span>
+                            ) : (
+                              <span className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-black border ${timeStatus.bg}`}>
+                                {timeStatus.label}
+                              </span>
+                            )}
+                          </div>
+
+                          <h3 className="mt-1 text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                            {pick.match}
+                          </h3>
+                        </div>
                       </div>
 
-                      <div>
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-extrabold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                            <span>🏆</span>
-                            <span>{pick.league}</span>
-                            <span className="text-slate-400">•</span>
-                            <span className="text-emerald-700 dark:text-emerald-400 font-black">
-                              {pick.country || "Mundial"}
-                            </span>
-                          </span>
-
-                          <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600 dark:bg-slate-950 dark:text-slate-400 border border-slate-200 dark:border-slate-800">
-                            🕒 {formatKickoffTime(pick.kickoff)}
-                          </span>
-
-                          <span className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-black border ${timeStatus.bg}`}>
-                            {timeStatus.label}
+                      <div className="flex items-center justify-between sm:justify-end gap-2 border-t sm:border-t-0 border-slate-100 pt-2 sm:pt-0 dark:border-slate-800">
+                        <div className="text-right">
+                          <span className="rounded-xl bg-emerald-50 px-2.5 py-1 text-xs font-black text-emerald-800 border border-emerald-200 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-800 block">
+                            🎯 {pick.market}
                           </span>
                         </div>
 
-                        <h3 className="mt-1.5 text-base font-black text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
-                          {pick.match}
-                        </h3>
+                        <span className="rounded-xl bg-sky-50 px-3 py-1.5 text-sm font-black text-sky-800 border border-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800">
+                          @{pick.odds.toFixed(2)}
+                        </span>
+
+                        {/* Toggle Button */}
+                        <button
+                          onClick={() =>
+                            setExpandedLegs((prev) => ({ ...prev, [legKey]: !prev[legKey] }))
+                          }
+                          className="rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
+                        >
+                          {isLegExpanded ? "▲ Menos" : "▼ Análisis"}
+                        </button>
+
+                        <button
+                          onClick={() => setActiveModalPick(pick)}
+                          className="rounded-xl bg-slate-100 p-2 text-xs font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
+                          title="Ver H2H y últimos 5 partidos"
+                        >
+                          📊
+                        </button>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between sm:justify-end gap-2.5 border-t sm:border-t-0 border-slate-100 pt-2 sm:pt-0 dark:border-slate-800">
-                      <div className="text-right">
-                        <span className="rounded-xl bg-emerald-50 px-2.5 py-1 text-xs font-black text-emerald-800 border border-emerald-200 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-800 block">
-                          🎯 {pick.market}
-                        </span>
-                        <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 block mt-0.5">
-                          {pick.confidence} ({pick.probability}%)
-                        </span>
+                    {/* Expanded Content: Dynamic AI Analysis & Detailed Metrics */}
+                    {isLegExpanded && (
+                      <div className="border-t border-slate-100 bg-slate-50/70 p-4 dark:border-slate-800/80 dark:bg-slate-950/50 space-y-3">
+                        <div className="rounded-2xl bg-white p-3.5 border border-slate-200 shadow-sm dark:bg-slate-900/90 dark:border-slate-800">
+                          <div className="flex items-center gap-1.5 text-xs font-black text-emerald-700 dark:text-emerald-400">
+                            <span>🧠</span>
+                            <span>Análisis Táctico y Estadístico del Modelo:</span>
+                          </div>
+                          <p className="mt-1.5 text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
+                            {pick.explanation}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center justify-between text-xs font-bold text-slate-500 dark:text-slate-400">
+                          <span>Confianza: <strong className="text-slate-800 dark:text-slate-200">{pick.confidence} ({pick.probability}%)</strong></span>
+                          <span>Valor Matemático: <strong className="text-emerald-600 dark:text-emerald-400">+{pick.edge}%</strong></span>
+                          <span>Rating Elo: <strong className="text-sky-600 dark:text-sky-400">{Math.round(pick.homeElo || 1500)} vs {Math.round(pick.awayElo || 1500)}</strong></span>
+                        </div>
                       </div>
-
-                      <span className="rounded-xl bg-sky-50 px-3 py-1.5 text-sm font-black text-sky-800 border border-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800">
-                        @{pick.odds.toFixed(2)}
-                      </span>
-
-                      <button
-                        onClick={() => setActiveModalPick(pick)}
-                        className="rounded-xl bg-slate-100 p-2 text-xs font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
-                        title="Ver H2H y últimos 5 partidos"
-                      >
-                        📊
-                      </button>
-                    </div>
+                    )}
                   </div>
                 );
               })}
@@ -454,9 +537,28 @@ export default function DailyParlayPage() {
             <div className="rounded-3xl border border-emerald-500/40 bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950 p-6 text-white shadow-xl lg:sticky lg:top-24">
               <div className="flex items-center justify-between border-b border-slate-800 pb-4">
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400 block">
-                    Boleto Combinado Oficial
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400 block">
+                      Boleto Combinado Oficial
+                    </span>
+                    {selectedPicks.some((p) => p.status === "won" || p.status === "lost") && (
+                      <span
+                        className={`rounded-md px-2 py-0.5 text-[9px] font-black uppercase ${
+                          selectedPicks.some((p) => p.status === "lost")
+                            ? "bg-rose-500/20 text-rose-300 border border-rose-500/40"
+                            : selectedPicks.every((p) => p.status === "won")
+                            ? "bg-emerald-500 text-slate-950 font-black"
+                            : "bg-amber-500/20 text-amber-300 border border-amber-500/40"
+                        }`}
+                      >
+                        {selectedPicks.some((p) => p.status === "lost")
+                          ? `❌ No Acertado (${selectedPicks.filter((p) => p.status === "lost").length} fallo${selectedPicks.filter((p) => p.status === "lost").length > 1 ? "s" : ""})`
+                          : selectedPicks.every((p) => p.status === "won")
+                          ? "🏆 ¡Ganado y Cobrado!"
+                          : `⏳ En Curso (${selectedPicks.filter((p) => p.status === "won").length}/${selectedPicks.length} OK)`}
+                      </span>
+                    )}
+                  </div>
                   <span className="text-lg font-black text-white">
                     {parlayTierDescriptions[parlaySize].title}
                   </span>
