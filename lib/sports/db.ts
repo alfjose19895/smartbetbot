@@ -398,18 +398,42 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
   const existingSnapshot = loadDailySnapshot(todayDateStr);
   if (existingSnapshot && existingSnapshot.length > 0) {
     try {
-      const finishedToday = await apiFootball.getFinishedFixturesByDate(todayDateStr, "America/Guayaquil");
-      if (Array.isArray(finishedToday) && finishedToday.length > 0) {
+      const allTodayFixtures = await apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil");
+      if (Array.isArray(allTodayFixtures) && allTodayFixtures.length > 0) {
+        const finishedToday = allTodayFixtures.filter((f) => {
+          const s = f.fixture?.status?.short;
+          return (
+            ["FT", "AET", "PEN", "120", "POST"].includes(s) ||
+            (typeof f.goals?.home === "number" &&
+              typeof f.goals?.away === "number" &&
+              s !== "NS" &&
+              s !== "1H" &&
+              s !== "2H" &&
+              s !== "HT")
+          );
+        });
+
+        let snapshotUpdated = false;
+
         for (const fItem of finishedToday) {
           const hGoals = fItem.goals?.home ?? fItem.score?.fulltime?.home;
           const aGoals = fItem.goals?.away ?? fItem.score?.fulltime?.away;
           if (typeof hGoals === "number" && typeof aGoals === "number") {
             const hNorm = getCanonicalTeamKey(fItem.teams?.home?.name || "");
             const aNorm = getCanonicalTeamKey(fItem.teams?.away?.name || "");
+            const fixtureIdNum = Number(fItem.fixture?.id);
+
             for (const p of existingSnapshot) {
+              const pFixtureIdNum = Number(p.fixtureId);
               const pHNorm = getCanonicalTeamKey(p.homeTeam);
               const pANorm = getCanonicalTeamKey(p.awayTeam);
-              if (hNorm === pHNorm && aNorm === pANorm) {
+
+              const isMatch =
+                (pFixtureIdNum && fixtureIdNum && pFixtureIdNum === fixtureIdNum) ||
+                (hNorm === pHNorm && aNorm === pANorm) ||
+                (hNorm.length > 3 && pHNorm.length > 3 && (hNorm.includes(pHNorm) || pHNorm.includes(hNorm)) && (aNorm.includes(pANorm) || pANorm.includes(aNorm)));
+
+              if (isMatch) {
                 const evaluation = evaluateMarketResult(p.market, hGoals, aGoals, {
                   league: p.league,
                   country: p.country,
@@ -418,11 +442,18 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
                   probability: p.probability,
                 });
 
-                p.status = evaluation.isWon ? "won" : "lost";
-                p.actualScore = evaluation.actualScoreText;
+                if (p.status !== (evaluation.isWon ? "won" : "lost") || p.actualScore !== evaluation.actualScoreText) {
+                  p.status = evaluation.isWon ? "won" : "lost";
+                  p.actualScore = evaluation.actualScoreText;
+                  snapshotUpdated = true;
+                }
               }
             }
           }
+        }
+
+        if (snapshotUpdated) {
+          saveDailySnapshot(todayDateStr, existingSnapshot);
         }
       }
     } catch (err) {
@@ -622,7 +653,7 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
 
   const realScoresMap: Record<string, { home: number; away: number; date: string }> = {};
 
-  const registerRealScore = (homeName: string, awayName: string, dateStr: string, homeGoals: number, awayGoals: number) => {
+  const registerRealScore = (homeName: string, awayName: string, dateStr: string, homeGoals: number, awayGoals: number, fixtureId?: number) => {
     if (dateStr < HISTORY_START_DATE) return;
     const hNorm = getCanonicalTeamKey(homeName);
     const aNorm = getCanonicalTeamKey(awayName);
@@ -630,6 +661,9 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
     const key2 = `${hNorm}-${aNorm}`;
     realScoresMap[key1] = { home: homeGoals, away: awayGoals, date: dateStr };
     realScoresMap[key2] = { home: homeGoals, away: awayGoals, date: dateStr };
+    if (fixtureId) {
+      realScoresMap[`fix-${fixtureId}`] = { home: homeGoals, away: awayGoals, date: dateStr };
+    }
   };
 
   const snapshots = getAllDailySnapshots();
@@ -640,15 +674,26 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
   // 1. Fetch finished match scores from API-Football for ALL snapshot dates in Ecuador timezone
   for (const dateStr of snapshotDates) {
     try {
-      const finishedFixtures = await apiFootball.getFinishedFixturesByDate(dateStr, "America/Guayaquil");
-      if (Array.isArray(finishedFixtures)) {
-        for (const item of finishedFixtures) {
+      const allFixtures = await apiFootball.getFixturesByDate(dateStr, "America/Guayaquil");
+      if (Array.isArray(allFixtures)) {
+        for (const item of allFixtures) {
           if (!item.teams?.home?.name || !item.teams?.away?.name) continue;
-          const homeGoals = item.goals?.home ?? item.score?.fulltime?.home;
-          const awayGoals = item.goals?.away ?? item.score?.fulltime?.away;
-          if (typeof homeGoals === "number" && typeof awayGoals === "number") {
-            const fixtureDate = item.fixture?.date ? item.fixture.date.split("T")[0] : dateStr;
-            registerRealScore(item.teams.home.name, item.teams.away.name, fixtureDate, homeGoals, awayGoals);
+          const s = item.fixture?.status?.short;
+          const isFinished =
+            ["FT", "AET", "PEN", "120", "POST"].includes(s) ||
+            (typeof item.goals?.home === "number" &&
+              typeof item.goals?.away === "number" &&
+              s !== "NS" &&
+              s !== "1H" &&
+              s !== "2H" &&
+              s !== "HT");
+          if (isFinished) {
+            const homeGoals = item.goals?.home ?? item.score?.fulltime?.home;
+            const awayGoals = item.goals?.away ?? item.score?.fulltime?.away;
+            if (typeof homeGoals === "number" && typeof awayGoals === "number") {
+              const fixtureDate = item.fixture?.date ? item.fixture.date.split("T")[0] : dateStr;
+              registerRealScore(item.teams.home.name, item.teams.away.name, fixtureDate, homeGoals, awayGoals, item.fixture?.id);
+            }
           }
         }
       }
@@ -700,8 +745,12 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
       const aNorm = getCanonicalTeamKey(p.awayTeam);
       const scoreKeyWithDate = `${hNorm}-${aNorm}-${dateStr}`;
       const scoreKeyGeneric = `${hNorm}-${aNorm}`;
+      const fixKey = p.fixtureId ? `fix-${p.fixtureId}` : "";
 
-      const realScore = realScoresMap[scoreKeyWithDate] || realScoresMap[scoreKeyGeneric];
+      const realScore =
+        (fixKey ? realScoresMap[fixKey] : undefined) ||
+        realScoresMap[scoreKeyWithDate] ||
+        realScoresMap[scoreKeyGeneric];
 
       if (realScore && typeof realScore.home === "number" && typeof realScore.away === "number") {
         const homeGoals = realScore.home;

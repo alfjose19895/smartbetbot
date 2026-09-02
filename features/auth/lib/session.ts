@@ -70,9 +70,12 @@ export async function getVerifiedIdentity(): Promise<VerifiedIdentity | null> {
       // Fallback to metadata
     }
 
-    const isPending = metadata?.status === "pending";
+    const status = metadata?.status;
+    const isApprovedFlag = metadata?.is_approved;
+    const isAdm = role === "admin";
+    const isPending = !isAdm && (status === "pending" || status === "pending_approval" || isApprovedFlag === false || !status);
     const isPaused = Boolean(user.banned_until || metadata?.status === "paused");
-    const isApproved = !isPending && !isPaused;
+    const isApproved = isAdm || (!isPending && !isPaused && status === "approved" && isApprovedFlag !== false);
 
     return {
       id: user.id,

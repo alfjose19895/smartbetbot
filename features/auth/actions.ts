@@ -77,12 +77,28 @@ export async function loginAction(
     });
     if (error) return { status: "error", message: getAuthErrorMessage(error) };
 
-    if (data?.user?.user_metadata?.status === "paused") {
-      await supabase.auth.signOut({ scope: "local" });
-      return {
-        status: "error",
-        message: "Tu cuenta ha sido pausada por el administrador. Contacta con soporte para reactivarla.",
-      };
+    const meta = data?.user?.user_metadata || {};
+    const role = meta.role || data?.user?.role;
+    const status = meta.status;
+    const isApproved = meta.is_approved;
+    const isAdmin = role === "admin" || (data?.user?.email || "").toLowerCase().includes("admin");
+
+    if (!isAdmin) {
+      if (status === "paused" || data?.user?.banned_until) {
+        await supabase.auth.signOut({ scope: "local" });
+        return {
+          status: "error",
+          message: "Tu cuenta ha sido pausada por el administrador. Contacta con soporte para reactivarla.",
+        };
+      }
+
+      if (status === "pending" || status === "pending_approval" || isApproved === false || !status) {
+        await supabase.auth.signOut({ scope: "local" });
+        return {
+          status: "error",
+          message: "Tu cuenta está pendiente de validación y aprobación por el administrador. Te notificaremos en cuanto tu acceso sea habilitado.",
+        };
+      }
     }
   } catch {
     return unexpectedState();
@@ -108,22 +124,28 @@ export async function registerAction(
 
   try {
     const supabase = await createClient();
-    const emailRedirectTo = await resolveCallbackUrl("/dashboard");
+    const emailRedirectTo = await resolveCallbackUrl("/login");
     const { data, error } = await supabase.auth.signUp({
       email: parsed.data.email,
       password: parsed.data.password,
       options: {
         emailRedirectTo,
-        data: { full_name: parsed.data.fullName },
+        data: {
+          full_name: parsed.data.fullName,
+          status: "pending",
+          is_approved: false,
+          role: "bettor",
+          role_id: 2,
+        },
       },
     });
     if (error) {
       return { status: "error", message: getAuthErrorMessage(error) };
     }
 
+    // Always log out session on registration to force admin validation
     if (data?.session) {
-      revalidatePath("/", "layout");
-      redirect("/dashboard");
+      await supabase.auth.signOut({ scope: "local" });
     }
   } catch (err: any) {
     if (err?.digest?.includes("NEXT_REDIRECT")) throw err;
@@ -136,7 +158,7 @@ export async function registerAction(
 
   return {
     status: "success",
-    message: "¡Cuenta creada exitosamente! Revisa tu correo electrónico para confirmar tu cuenta y acceder al dashboard.",
+    message: "¡Registro recibido con éxito! Tu cuenta ha sido creada y se encuentra pendiente de validación y aprobación por el administrador. Podrás ingresar una vez que el administrador active tu acceso.",
   };
 }
 

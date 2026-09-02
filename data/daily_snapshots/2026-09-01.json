@@ -25,7 +25,7 @@
     "pickBadge": "estandar",
     "smartScore": 75,
     "explanation": "[Liga Primera División de Alta Confianza] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.49.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -138,7 +138,8 @@
     ],
     "homeElo": 1490,
     "awayElo": 1566,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "0 - 1 (1 Goles)"
   },
   {
     "fixtureId": 1605062,
@@ -166,7 +167,7 @@
     "pickBadge": "estandar",
     "smartScore": 76,
     "explanation": "[Liga Primera División de Alta Confianza] Potencial ofensivo elevado (3.83 xG combinado). Probabilidad matemática del 67.7% con +1% de valor (+EV) frente a la casa de apuestas @1.48.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -279,7 +280,8 @@
     ],
     "homeElo": 1508,
     "awayElo": 1568,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "0 - 0 (0 Goles)"
   },
   {
     "fixtureId": 1585737,
@@ -307,7 +309,7 @@
     "pickBadge": "estandar",
     "smartScore": 75,
     "explanation": "[Liga Primera División de Alta Confianza] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.49.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -420,7 +422,8 @@
     ],
     "homeElo": 1649,
     "awayElo": 1538,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "0 - 1 (1 Goles)"
   },
   {
     "fixtureId": 1605058,
@@ -448,7 +451,7 @@
     "pickBadge": "estandar",
     "smartScore": 75,
     "explanation": "[Liga Primera División de Alta Confianza] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.48.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -561,7 +564,8 @@
     ],
     "homeElo": 1567,
     "awayElo": 1506,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "1 - 1 (2 Goles)"
   },
   {
     "fixtureId": 1587445,
@@ -589,7 +593,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "[Competición Oficial] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.48.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -702,7 +706,8 @@
     ],
     "homeElo": 1544,
     "awayElo": 1657,
-    "leagueTier": 4
+    "leagueTier": 4,
+    "actualScore": "0 - 4 (4 Goles)"
   },
   {
     "fixtureId": 1582787,
@@ -730,7 +735,7 @@
     "pickBadge": "estandar",
     "smartScore": 76,
     "explanation": "[Liga Primera División de Alta Confianza] Solidez defensiva proyectada: Modelo Poisson proyecta un 68.3% de probabilidad de que el encuentro concluya con 3 o menos goles totales.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -843,7 +848,8 @@
     ],
     "homeElo": 1608,
     "awayElo": 1629,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "0 - 0 (0 Goles)"
   },
   {
     "fixtureId": 1571541,
@@ -871,7 +877,7 @@
     "pickBadge": "estandar",
     "smartScore": 75,
     "explanation": "[Liga Primera División de Alta Confianza] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.49.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -984,7 +990,8 @@
     ],
     "homeElo": 1485,
     "awayElo": 1653,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "1 - 1 (2 Goles)"
   },
   {
     "fixtureId": 1585735,
@@ -1012,7 +1019,7 @@
     "pickBadge": "estandar",
     "smartScore": 75,
     "explanation": "[Liga Primera División de Alta Confianza] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.47.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -1125,7 +1132,8 @@
     ],
     "homeElo": 1515,
     "awayElo": 1635,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "2 - 0 (2 Goles)"
   },
   {
     "fixtureId": 1497674,
@@ -1153,7 +1161,7 @@
     "pickBadge": "estandar",
     "smartScore": 74,
     "explanation": "[Liga Primera División de Alta Confianza] Alto volumen de llegadas por bandas y disparos bloqueados. Proyección estadística de 66% para más de 8.5 saques de esquina a cuota @1.53.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -1266,7 +1274,8 @@
     ],
     "homeElo": 1540,
     "awayElo": 1567,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "12 Córners (1 - 1)"
   },
   {
     "fixtureId": 1585731,
@@ -1294,7 +1303,7 @@
     "pickBadge": "estandar",
     "smartScore": 74,
     "explanation": "[Liga Primera División de Alta Confianza] Alta fricción táctica y rigor arbitral proyectado. Análisis disciplinario estima 65.8% de probabilidad para más de 3.5 tarjetas totales a cuota @1.52.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -1407,7 +1416,8 @@
     ],
     "homeElo": 1614,
     "awayElo": 1649,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "4 Tarjetas (0 - 2)"
   },
   {
     "fixtureId": 1605350,
@@ -1435,7 +1445,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "[Competición Oficial] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1.5% de valor (+EV) frente a la casa de apuestas @1.52.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -1548,7 +1558,8 @@
     ],
     "homeElo": 1657,
     "awayElo": 1520,
-    "leagueTier": 4
+    "leagueTier": 4,
+    "actualScore": "0 - 1 (1 Goles)"
   },
   {
     "fixtureId": 1508846,
@@ -1576,7 +1587,7 @@
     "pickBadge": "estandar",
     "smartScore": 77,
     "explanation": "[Liga Primera División de Alta Confianza] Potencial ofensivo elevado (3.88 xG combinado). Probabilidad matemática del 68.6% con +1% de valor (+EV) frente a la casa de apuestas @1.47.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -1689,7 +1700,8 @@
     ],
     "homeElo": 1533,
     "awayElo": 1503,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "1 - 1 (2 Goles)"
   },
   {
     "fixtureId": 1561915,
@@ -1717,7 +1729,7 @@
     "pickBadge": "estandar",
     "smartScore": 76,
     "explanation": "[Liga Primera División de Alta Confianza] Potencial ofensivo elevado (3.87 xG combinado). Probabilidad matemática del 68.4% con +1% de valor (+EV) frente a la casa de apuestas @1.48.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -1830,7 +1842,8 @@
     ],
     "homeElo": 1538,
     "awayElo": 1600,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "1 - 3 (4 Goles)"
   },
   {
     "fixtureId": 1555043,
@@ -1858,7 +1871,7 @@
     "pickBadge": "estandar",
     "smartScore": 75,
     "explanation": "[Liga Primera División de Alta Confianza] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1.5% de valor (+EV) frente a la casa de apuestas @1.52.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -1971,7 +1984,8 @@
     ],
     "homeElo": 1597,
     "awayElo": 1524,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "3 - 0 (3 Goles)"
   },
   {
     "fixtureId": 1555044,
@@ -1999,7 +2013,7 @@
     "pickBadge": "estandar",
     "smartScore": 75,
     "explanation": "[Liga Primera División de Alta Confianza] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1.1% de valor (+EV) frente a la casa de apuestas @1.51.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -2112,7 +2126,8 @@
     ],
     "homeElo": 1645,
     "awayElo": 1562,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "1 - 1 (2 Goles)"
   },
   {
     "fixtureId": 1555045,
@@ -2140,7 +2155,7 @@
     "pickBadge": "estandar",
     "smartScore": 75,
     "explanation": "[Liga Primera División de Alta Confianza] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.50.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -2253,7 +2268,8 @@
     ],
     "homeElo": 1596,
     "awayElo": 1960,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "2 - 2 (4 Goles)"
   },
   {
     "fixtureId": 1555046,
@@ -2281,7 +2297,7 @@
     "pickBadge": "estandar",
     "smartScore": 74,
     "explanation": "[Liga Primera División de Alta Confianza] Alta fricción táctica y rigor arbitral proyectado. Análisis disciplinario estima 65.8% de probabilidad para más de 3.5 tarjetas totales a cuota @1.54.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -2394,7 +2410,8 @@
     ],
     "homeElo": 1493,
     "awayElo": 1531,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "4 Tarjetas (1 - 2)"
   },
   {
     "fixtureId": 1587447,
@@ -2422,7 +2439,7 @@
     "pickBadge": "estandar",
     "smartScore": 71,
     "explanation": "[Competición Oficial] Solidez defensiva proyectada: Modelo Poisson proyecta un 70.5% de probabilidad de que el encuentro concluya con 3 o menos goles totales.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -2535,7 +2552,8 @@
     ],
     "homeElo": 1526,
     "awayElo": 1536,
-    "leagueTier": 4
+    "leagueTier": 4,
+    "actualScore": "6 - 0 (6 Goles)"
   },
   {
     "fixtureId": 1587444,
@@ -2563,7 +2581,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "[Competición Oficial] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.49.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -2676,7 +2694,8 @@
     ],
     "homeElo": 1644,
     "awayElo": 1554,
-    "leagueTier": 4
+    "leagueTier": 4,
+    "actualScore": "2 - 2 (4 Goles)"
   },
   {
     "fixtureId": 1587446,
@@ -2704,7 +2723,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "[Competición Oficial] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.50.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -2817,7 +2836,8 @@
     ],
     "homeElo": 1870,
     "awayElo": 1589,
-    "leagueTier": 4
+    "leagueTier": 4,
+    "actualScore": "3 - 1 (4 Goles)"
   },
   {
     "fixtureId": 1587449,
@@ -2845,7 +2865,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "[Competición Oficial] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.49.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -2958,7 +2978,8 @@
     ],
     "homeElo": 1657,
     "awayElo": 1562,
-    "leagueTier": 4
+    "leagueTier": 4,
+    "actualScore": "4 - 1 (5 Goles)"
   },
   {
     "fixtureId": 1555377,
@@ -2986,7 +3007,7 @@
     "pickBadge": "estandar",
     "smartScore": 76,
     "explanation": "[Liga Primera División de Alta Confianza] Potencial ofensivo elevado (3.81 xG combinado). Probabilidad matemática del 67.5% con +1% de valor (+EV) frente a la casa de apuestas @1.50.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -3099,7 +3120,8 @@
     ],
     "homeElo": 1558,
     "awayElo": 1623,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "2 - 4 (6 Goles)"
   },
   {
     "fixtureId": 1563125,
@@ -3127,7 +3149,7 @@
     "pickBadge": "estandar",
     "smartScore": 78,
     "explanation": "[Liga Primera División de Alta Confianza] Alto volumen de llegadas por bandas y disparos bloqueados. Proyección estadística de 70.3% para más de 8.5 saques de esquina a cuota @1.44.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -3240,7 +3262,8 @@
     ],
     "homeElo": 1482,
     "awayElo": 1487,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "10 Córners (2 - 0)"
   },
   {
     "fixtureId": 1563120,
@@ -3268,7 +3291,7 @@
     "pickBadge": "estandar",
     "smartScore": 75,
     "explanation": "[Liga Primera División de Alta Confianza] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.49.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -3381,7 +3404,8 @@
     ],
     "homeElo": 1659,
     "awayElo": 1496,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "0 - 0 (0 Goles)"
   },
   {
     "fixtureId": 1563121,
@@ -3409,7 +3433,7 @@
     "pickBadge": "estandar",
     "smartScore": 75,
     "explanation": "[Liga Primera División de Alta Confianza] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.50.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -3522,7 +3546,8 @@
     ],
     "homeElo": 1493,
     "awayElo": 1622,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "0 - 2 (2 Goles)"
   },
   {
     "fixtureId": 1563122,
@@ -3550,7 +3575,7 @@
     "pickBadge": "estandar",
     "smartScore": 75,
     "explanation": "[Liga Primera División de Alta Confianza] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.49.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -3663,7 +3688,8 @@
     ],
     "homeElo": 1507,
     "awayElo": 1576,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "1 - 3 (4 Goles)"
   },
   {
     "fixtureId": 1563123,
@@ -3691,7 +3717,7 @@
     "pickBadge": "estandar",
     "smartScore": 75,
     "explanation": "[Liga Primera División de Alta Confianza] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.50.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -3804,7 +3830,8 @@
     ],
     "homeElo": 1639,
     "awayElo": 1562,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "3 - 2 (5 Goles)"
   },
   {
     "fixtureId": 1563126,
@@ -3832,7 +3859,7 @@
     "pickBadge": "estandar",
     "smartScore": 75,
     "explanation": "[Liga Primera División de Alta Confianza] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.49.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -3945,7 +3972,8 @@
     ],
     "homeElo": 1700,
     "awayElo": 1630,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "4 - 2 (6 Goles)"
   },
   {
     "fixtureId": 1582789,
@@ -3973,7 +4001,7 @@
     "pickBadge": "estandar",
     "smartScore": 75,
     "explanation": "[Liga Primera División de Alta Confianza] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.49.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -4086,7 +4114,8 @@
     ],
     "homeElo": 1612,
     "awayElo": 1561,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "3 - 1 (4 Goles)"
   },
   {
     "fixtureId": 1564272,
@@ -4114,7 +4143,7 @@
     "pickBadge": "estandar",
     "smartScore": 71,
     "explanation": "[Competición Oficial] Seguridad máxima: Cambridge United cuenta con un 70.9% de probabilidad de puntuar como visitante (xG: 1.60), cubriendo empate o triunfo a cuota @1.41.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -4227,7 +4256,8 @@
     ],
     "homeElo": 1564,
     "awayElo": 1583,
-    "leagueTier": 3
+    "leagueTier": 3,
+    "actualScore": "1 - 2"
   },
   {
     "fixtureId": 1564277,
@@ -4255,7 +4285,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "[Competición Oficial] Alto volumen de llegadas por bandas y disparos bloqueados. Proyección estadística de 70.5% para más de 8.5 saques de esquina a cuota @1.42.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -4368,7 +4398,8 @@
     ],
     "homeElo": 1620,
     "awayElo": 1626,
-    "leagueTier": 3
+    "leagueTier": 3,
+    "actualScore": "10 Córners (2 - 0)"
   },
   {
     "fixtureId": 1564279,
@@ -4396,7 +4427,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "[Competición Oficial] Alto volumen de llegadas por bandas y disparos bloqueados. Proyección estadística de 69.9% para más de 8.5 saques de esquina a cuota @1.43.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -4509,7 +4540,8 @@
     ],
     "homeElo": 1490,
     "awayElo": 1510,
-    "leagueTier": 3
+    "leagueTier": 3,
+    "actualScore": "11 Córners (0 - 0)"
   },
   {
     "fixtureId": 1564273,
@@ -4537,7 +4569,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "[Competición Oficial] Solidez defensiva proyectada: Modelo Poisson proyecta un 67.9% de probabilidad de que el encuentro concluya con 3 o menos goles totales.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -4650,7 +4682,8 @@
     ],
     "homeElo": 1490,
     "awayElo": 1512,
-    "leagueTier": 3
+    "leagueTier": 3,
+    "actualScore": "0 - 5 (5 Goles)"
   },
   {
     "fixtureId": 1564275,
@@ -4678,7 +4711,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "[Competición Oficial] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1.5% de valor (+EV) frente a la casa de apuestas @1.52.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -4791,7 +4824,8 @@
     ],
     "homeElo": 1511,
     "awayElo": 1610,
-    "leagueTier": 3
+    "leagueTier": 3,
+    "actualScore": "1 - 1 (2 Goles)"
   },
   {
     "fixtureId": 1564281,
@@ -4819,7 +4853,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "[Competición Oficial] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1.5% de valor (+EV) frente a la casa de apuestas @1.52.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -4932,7 +4966,8 @@
     ],
     "homeElo": 1486,
     "awayElo": 1550,
-    "leagueTier": 3
+    "leagueTier": 3,
+    "actualScore": "1 - 2 (3 Goles)"
   },
   {
     "fixtureId": 1564276,
@@ -4960,7 +4995,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "[Competición Oficial] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.50.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -5073,7 +5108,8 @@
     ],
     "homeElo": 1635,
     "awayElo": 1495,
-    "leagueTier": 3
+    "leagueTier": 3,
+    "actualScore": "3 - 1 (4 Goles)"
   },
   {
     "fixtureId": 1563726,
@@ -5101,7 +5137,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "[Competición Oficial] Solidez defensiva proyectada: Modelo Poisson proyecta un 70.2% de probabilidad de que el encuentro concluya con 3 o menos goles totales.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -5214,7 +5250,8 @@
     ],
     "homeElo": 1578,
     "awayElo": 1583,
-    "leagueTier": 4
+    "leagueTier": 4,
+    "actualScore": "1 - 1 (2 Goles)"
   },
   {
     "fixtureId": 1563729,
@@ -5242,7 +5279,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "[Competición Oficial] Margen de seguridad extraordinario (+1.5): Cobertura del 69.8% de probabilidad, ganando incluso si el equipo pierde por un gol a cuota @1.45.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -5355,7 +5392,8 @@
     ],
     "homeElo": 1594,
     "awayElo": 1605,
-    "leagueTier": 4
+    "leagueTier": 4,
+    "actualScore": "3 - 1"
   },
   {
     "fixtureId": 1563722,
@@ -5383,7 +5421,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "[Competición Oficial] Potencial ofensivo elevado (3.84 xG combinado). Probabilidad matemática del 67.9% con +1% de valor (+EV) frente a la casa de apuestas @1.48.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -5496,7 +5534,8 @@
     ],
     "homeElo": 1634,
     "awayElo": 1600,
-    "leagueTier": 4
+    "leagueTier": 4,
+    "actualScore": "1 - 1 (2 Goles)"
   },
   {
     "fixtureId": 1563721,
@@ -5524,7 +5563,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "[Competición Oficial] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1.5% de valor (+EV) frente a la casa de apuestas @1.52.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -5637,7 +5676,8 @@
     ],
     "homeElo": 1597,
     "awayElo": 1541,
-    "leagueTier": 4
+    "leagueTier": 4,
+    "actualScore": "3 - 2 (5 Goles)"
   },
   {
     "fixtureId": 1563725,
@@ -5665,7 +5705,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "[Competición Oficial] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1.1% de valor (+EV) frente a la casa de apuestas @1.51.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -5778,7 +5818,8 @@
     ],
     "homeElo": 1613,
     "awayElo": 1537,
-    "leagueTier": 4
+    "leagueTier": 4,
+    "actualScore": "1 - 1 (2 Goles)"
   },
   {
     "fixtureId": 1563719,
@@ -5806,7 +5847,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "[Competición Oficial] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.47.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -5919,7 +5960,8 @@
     ],
     "homeElo": 1631,
     "awayElo": 1493,
-    "leagueTier": 4
+    "leagueTier": 4,
+    "actualScore": "2 - 2 (4 Goles)"
   },
   {
     "fixtureId": 1563723,
@@ -5947,7 +5989,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "[Competición Oficial] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.47.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -6060,7 +6102,8 @@
     ],
     "homeElo": 1622,
     "awayElo": 1480,
-    "leagueTier": 4
+    "leagueTier": 4,
+    "actualScore": "2 - 2 (4 Goles)"
   },
   {
     "fixtureId": 1563724,
@@ -6088,7 +6131,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "[Competición Oficial] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.49.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -6201,7 +6244,8 @@
     ],
     "homeElo": 1642,
     "awayElo": 1544,
-    "leagueTier": 4
+    "leagueTier": 4,
+    "actualScore": "1 - 1 (2 Goles)"
   },
   {
     "fixtureId": 1563727,
@@ -6229,7 +6273,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "[Competición Oficial] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.48.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -6342,7 +6386,8 @@
     ],
     "homeElo": 1562,
     "awayElo": 1486,
-    "leagueTier": 4
+    "leagueTier": 4,
+    "actualScore": "3 - 0 (3 Goles)"
   },
   {
     "fixtureId": 1563728,
@@ -6370,7 +6415,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "[Competición Oficial] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.48.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -6483,7 +6528,8 @@
     ],
     "homeElo": 1556,
     "awayElo": 1645,
-    "leagueTier": 4
+    "leagueTier": 4,
+    "actualScore": "2 - 1 (3 Goles)"
   },
   {
     "fixtureId": 1563730,
@@ -6511,7 +6557,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "[Competición Oficial] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.47.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -6624,7 +6670,8 @@
     ],
     "homeElo": 1590,
     "awayElo": 1518,
-    "leagueTier": 4
+    "leagueTier": 4,
+    "actualScore": "2 - 2 (4 Goles)"
   },
   {
     "fixtureId": 1563720,
@@ -6652,7 +6699,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "[Competición Oficial] Alta fricción táctica y rigor arbitral proyectado. Análisis disciplinario estima 65.8% de probabilidad para más de 3.5 tarjetas totales a cuota @1.54.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -6765,7 +6812,8 @@
     ],
     "homeElo": 1628,
     "awayElo": 1616,
-    "leagueTier": 4
+    "leagueTier": 4,
+    "actualScore": "4 Tarjetas (2 - 0)"
   },
   {
     "fixtureId": 1585188,
@@ -6793,7 +6841,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "[Competición Oficial] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.49.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -6906,7 +6954,8 @@
     ],
     "homeElo": 1546,
     "awayElo": 1630,
-    "leagueTier": 5
+    "leagueTier": 5,
+    "actualScore": "1 - 0 (1 Goles)"
   },
   {
     "fixtureId": 1563119,
@@ -6934,7 +6983,7 @@
     "pickBadge": "estandar",
     "smartScore": 75,
     "explanation": "[Liga Primera División de Alta Confianza] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.48.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -7047,7 +7096,8 @@
     ],
     "homeElo": 1602,
     "awayElo": 1530,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "1 - 1 (2 Goles)"
   },
   {
     "fixtureId": 1563124,
@@ -7075,7 +7125,7 @@
     "pickBadge": "estandar",
     "smartScore": 75,
     "explanation": "[Liga Primera División de Alta Confianza] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.47.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -7188,7 +7238,8 @@
     ],
     "homeElo": 1539,
     "awayElo": 1490,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "1 - 0 (1 Goles)"
   },
   {
     "fixtureId": 1549469,
@@ -7216,7 +7267,7 @@
     "pickBadge": "estandar",
     "smartScore": 75,
     "explanation": "[Liga Primera División de Alta Confianza] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1% de valor (+EV) frente a la casa de apuestas @1.48.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -7329,7 +7380,8 @@
     ],
     "homeElo": 1880,
     "awayElo": 1595,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "1 - 0 (1 Goles)"
   },
   {
     "fixtureId": 1519473,
@@ -7357,7 +7409,7 @@
     "pickBadge": "estandar",
     "smartScore": 75,
     "explanation": "[Liga Primera División de Alta Confianza] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1.1% de valor (+EV) frente a la casa de apuestas @1.51.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -7470,7 +7522,8 @@
     ],
     "homeElo": 1536,
     "awayElo": 1637,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "1 - 0 (1 Goles)"
   },
   {
     "fixtureId": 1520846,
@@ -7498,7 +7551,7 @@
     "pickBadge": "estandar",
     "smartScore": 75,
     "explanation": "[Liga Primera División de Alta Confianza] Potencial ofensivo elevado (3.80 xG combinado). Probabilidad matemática del 67.3% con +1.1% de valor (+EV) frente a la casa de apuestas @1.51.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -7611,7 +7664,8 @@
     ],
     "homeElo": 1583,
     "awayElo": 1534,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "0 - 0 (0 Goles)"
   },
   {
     "fixtureId": 1519475,
@@ -7639,7 +7693,7 @@
     "pickBadge": "estandar",
     "smartScore": 74,
     "explanation": "[Liga Primera División de Alta Confianza] Alta fricción táctica y rigor arbitral proyectado. Análisis disciplinario estima 65.8% de probabilidad para más de 3.5 tarjetas totales a cuota @1.52.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -7752,7 +7806,8 @@
     ],
     "homeElo": 1620,
     "awayElo": 1649,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "5 Tarjetas (0 - 0)"
   },
   {
     "fixtureId": 1549758,
