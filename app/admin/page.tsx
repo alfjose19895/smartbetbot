@@ -619,93 +619,93 @@ function AdminControlContent() {
               </div>
             )}
 
-            <div className="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden dark:border-slate-800 dark:bg-slate-900/80">
-              <div className="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden dark:border-slate-800 dark:bg-slate-900/80">
+              <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
                 <div>
-                  <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                  <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
                     Usuarios Registrados & Control de Acceso
                   </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    Aprueba nuevos registros, supervisa última conexión y asigna roles de Administrador o Apostador
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                    Supervisa última conexión, cantidad de accesos y gestiona roles y aprobaciones
                   </p>
                 </div>
                 <button
                   onClick={fetchUsers}
-                  className="rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 cursor-pointer"
+                  className="rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 cursor-pointer"
                 >
                   🔄 Refrescar
                 </button>
               </div>
 
               {loadingUsers ? (
-                <div className="py-12 text-center text-slate-500">
-                  <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
-                  <p className="mt-2 text-xs font-semibold">Cargando usuarios...</p>
+                <div className="py-8 text-center text-slate-500">
+                  <div className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
+                  <p className="mt-1.5 text-xs font-semibold">Cargando usuarios...</p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs sm:text-sm">
-                    <thead className="border-b border-slate-200 bg-slate-50 text-slate-600 font-bold uppercase text-[11px] tracking-wider dark:border-slate-800 dark:bg-slate-950/80 dark:text-slate-400">
+                  <table className="w-full text-left text-xs">
+                    <thead className="border-b border-slate-200 bg-slate-50 text-slate-600 font-bold uppercase text-[10px] tracking-wider dark:border-slate-800 dark:bg-slate-950/80 dark:text-slate-400">
                       <tr>
-                        <th className="px-4 py-3.5">Usuario / Correo</th>
-                        <th className="px-4 py-3.5">Rol Actual</th>
-                        <th className="px-4 py-3.5">Último Inicio de Sesión</th>
-                        <th className="px-4 py-3.5 text-center">Conexiones</th>
-                        <th className="px-4 py-3.5 text-center">Estado</th>
-                        <th className="px-4 py-3.5 text-right">Acciones</th>
+                        <th className="px-3 py-2">Usuario / Correo</th>
+                        <th className="px-3 py-2">Rol Actual</th>
+                        <th className="px-3 py-2">Último Inicio de Sesión</th>
+                        <th className="px-3 py-2 text-center">Conexiones</th>
+                        <th className="px-3 py-2 text-center">Estado</th>
+                        <th className="px-3 py-2 text-right">Acciones</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-slate-700 dark:divide-slate-800/60 dark:text-slate-300">
                       {filteredUsers.map((u) => (
-                        <tr key={u.id} className="hover:bg-slate-50 transition dark:hover:bg-slate-850/60">
-                          <td className="px-4 py-3">
-                            <div className="font-bold text-slate-900 dark:text-white">{u.fullName}</div>
-                            <div className="text-xs text-slate-500 dark:text-slate-400">{u.email}</div>
+                        <tr key={u.id} className="hover:bg-slate-50/80 transition dark:hover:bg-slate-850/60">
+                          <td className="px-3 py-2">
+                            <div className="font-bold text-slate-900 dark:text-white leading-snug">{u.fullName}</div>
+                            <div className="text-[11px] text-slate-500 dark:text-slate-400">{u.email}</div>
                           </td>
-                          <td className="px-4 py-3">
+                          <td className="px-3 py-2">
                             {u.role === "admin" ? (
-                              <span className="inline-flex items-center gap-1 rounded-lg bg-purple-50 px-2.5 py-1 text-xs font-bold text-purple-700 border border-purple-200 dark:bg-purple-950/80 dark:text-purple-300 dark:border-purple-800">
-                                👑 {u.roleName || "Administrador"} (ID: {u.roleId || 1})
+                              <span className="inline-flex items-center gap-1 rounded-md bg-purple-50 px-2 py-0.5 text-[11px] font-bold text-purple-700 border border-purple-200 dark:bg-purple-950/80 dark:text-purple-300 dark:border-purple-800">
+                                👑 {u.roleName || "Administrador"}
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700 border border-blue-200 dark:bg-blue-950/80 dark:text-blue-300 dark:border-blue-800">
-                                🎯 {u.roleName || "Apostador"} (ID: {u.roleId || 2})
+                              <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-[11px] font-bold text-blue-700 border border-blue-200 dark:bg-blue-950/80 dark:text-blue-300 dark:border-blue-800">
+                                🎯 {u.roleName || "Apostador"}
                               </span>
                             )}
                           </td>
-                          <td className="px-4 py-3">
-                            <div className="font-semibold text-slate-800 dark:text-slate-200">
+                          <td className="px-3 py-2">
+                            <div className="font-semibold text-slate-800 dark:text-slate-200 text-xs">
                               {u.lastSignInFormatted || "Sin registros"}
                             </div>
                             <div className="text-[10px] text-slate-500 dark:text-slate-400">
                               {u.lastSignInAt ? "Hora local (Ecuador UTC-5)" : "Nunca conectado"}
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-center">
-                            <span className="inline-flex items-center justify-center rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-black text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700">
+                          <td className="px-3 py-2 text-center">
+                            <span className="inline-flex items-center justify-center rounded-md bg-slate-100 px-2 py-0.5 text-xs font-black text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700">
                               🔢 {u.loginCount || 0}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-center">
+                          <td className="px-3 py-2 text-center">
                             {u.status === "approved" ? (
-                              <span className="inline-flex items-center rounded-lg bg-emerald-50 px-2 py-0.5 text-xs font-bold text-emerald-700 border border-emerald-200 dark:bg-emerald-950/80 dark:text-emerald-400 dark:border-emerald-800">
-                                ✓ Aprobado / Activo
+                              <span className="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700 border border-emerald-200 dark:bg-emerald-950/80 dark:text-emerald-400 dark:border-emerald-800">
+                                ✓ Aprobado
                               </span>
                             ) : u.status === "paused" ? (
-                              <span className="inline-flex items-center rounded-lg bg-red-50 px-2 py-0.5 text-xs font-bold text-red-700 border border-red-200 dark:bg-red-950/80 dark:text-red-400 dark:border-red-800">
-                                ⏸️ Pausado (Bloqueado)
+                              <span className="inline-flex items-center rounded-md bg-red-50 px-2 py-0.5 text-[11px] font-bold text-red-700 border border-red-200 dark:bg-red-950/80 dark:text-red-400 dark:border-red-800">
+                                ⏸️ Pausado
                               </span>
                             ) : (
-                              <span className="inline-flex items-center rounded-lg bg-amber-50 px-2 py-0.5 text-xs font-bold text-amber-700 border border-amber-200 dark:bg-amber-950/80 dark:text-amber-400 dark:border-amber-800">
+                              <span className="inline-flex items-center rounded-md bg-amber-50 px-2 py-0.5 text-[11px] font-bold text-amber-700 border border-amber-200 dark:bg-amber-950/80 dark:text-amber-400 dark:border-amber-800">
                                 ⏳ Pendiente
                               </span>
                             )}
                           </td>
-                          <td className="px-4 py-3 text-right">
-                            <div className="flex items-center justify-end gap-1.5">
+                          <td className="px-3 py-2 text-right">
+                            <div className="flex items-center justify-end gap-1">
                               <button
                                 onClick={() => handleToggleApproval(u)}
-                                className={`rounded-xl px-2.5 py-1 text-xs font-bold transition border cursor-pointer ${
+                                className={`rounded-lg px-2 py-0.5 text-[11px] font-bold transition border cursor-pointer ${
                                   u.status === "approved"
                                     ? "bg-amber-50 text-amber-800 hover:bg-amber-100 border-amber-300 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800"
                                     : "bg-emerald-500 text-slate-950 hover:bg-emerald-400 border-emerald-400 shadow-sm"
@@ -717,8 +717,8 @@ function AdminControlContent() {
 
                               <button
                                 onClick={() => openEditModal(u)}
-                                className="rounded-xl bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700 hover:bg-slate-200 border border-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:border-slate-700 cursor-pointer"
-                                title="Editar nombre, correo, contraseña o rol"
+                                className="rounded-lg bg-slate-100 px-2 py-0.5 text-[11px] font-bold text-slate-700 hover:bg-slate-200 border border-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:border-slate-700 cursor-pointer"
+                                title="Editar datos o rol"
                               >
                                 ✏️ Editar
                               </button>
@@ -726,8 +726,8 @@ function AdminControlContent() {
                               <button
                                 onClick={() => handleDeleteUser(u)}
                                 disabled={deletingId === u.id}
-                                className="rounded-xl bg-red-50 px-2 py-1 text-xs font-bold text-red-700 hover:bg-red-100 border border-red-200 dark:bg-red-950/60 dark:text-red-300 dark:border-red-900/60 dark:hover:bg-red-900/80 cursor-pointer disabled:opacity-50"
-                                title="Eliminar usuario definitivamente"
+                                className="rounded-lg bg-red-50 px-1.5 py-0.5 text-[11px] font-bold text-red-700 hover:bg-red-100 border border-red-200 dark:bg-red-950/60 dark:text-red-300 dark:border-red-900/60 cursor-pointer disabled:opacity-50"
+                                title="Eliminar definitivamente"
                               >
                                 {deletingId === u.id ? "⏳" : "🗑️"}
                               </button>
@@ -747,49 +747,49 @@ function AdminControlContent() {
         {activeTab === "audit" && (
           <div className="mt-6 space-y-6">
             {/* Audit KPI Cards */}
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
+            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+              <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
                 <span className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 block">Total Eventos Registrados</span>
-                <span className="mt-1 text-2xl font-black text-slate-900 dark:text-white">{auditLogs.length}</span>
+                <span className="mt-0.5 text-xl font-black text-slate-900 dark:text-white">{auditLogs.length}</span>
               </div>
-              <div className="rounded-2xl border border-emerald-300 bg-emerald-50/60 p-4 shadow-sm dark:border-emerald-700/60 dark:bg-emerald-950/30">
+              <div className="rounded-2xl border border-emerald-300 bg-emerald-50/60 p-3 shadow-sm dark:border-emerald-700/60 dark:bg-emerald-950/30">
                 <span className="text-[10px] font-bold uppercase text-emerald-800 dark:text-emerald-300 block">✓ Inicios de Sesión Exitosos</span>
-                <span className="mt-1 text-2xl font-black text-emerald-800 dark:text-emerald-400">
+                <span className="mt-0.5 text-xl font-black text-emerald-800 dark:text-emerald-400">
                   {auditLogs.filter((l) => l.action === "login_success").length}
                 </span>
               </div>
-              <div className="rounded-2xl border border-amber-300 bg-amber-50/60 p-4 shadow-sm dark:border-amber-700/60 dark:bg-amber-950/30">
+              <div className="rounded-2xl border border-amber-300 bg-amber-50/60 p-3 shadow-sm dark:border-amber-700/60 dark:bg-amber-950/30">
                 <span className="text-[10px] font-bold uppercase text-amber-800 dark:text-amber-300 block">⏳ Accesos Pendientes</span>
-                <span className="mt-1 text-2xl font-black text-amber-800 dark:text-amber-400">
+                <span className="mt-0.5 text-xl font-black text-amber-800 dark:text-amber-400">
                   {auditLogs.filter((l) => l.action === "login_failed").length}
                 </span>
               </div>
-              <div className="rounded-2xl border border-blue-200 bg-blue-50/60 p-4 shadow-sm dark:border-blue-800/60 dark:bg-blue-950/30">
+              <div className="rounded-2xl border border-blue-200 bg-blue-50/60 p-3 shadow-sm dark:border-blue-800/60 dark:bg-blue-950/30">
                 <span className="text-[10px] font-bold uppercase text-blue-700 dark:text-blue-400 block">👥 Usuarios Únicos Registrados</span>
-                <span className="mt-1 text-2xl font-black text-blue-700 dark:text-blue-400">
+                <span className="mt-0.5 text-xl font-black text-blue-700 dark:text-blue-400">
                   {new Set(auditLogs.map((l) => l.email)).size}
                 </span>
               </div>
             </div>
 
             {/* Search and Filters for Audit Log */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 rounded-2xl border border-slate-200 bg-white p-2.5 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
               <div className="flex items-center gap-2 flex-1 max-w-md">
-                <span className="text-slate-400 text-sm">🔍</span>
+                <span className="text-slate-400 text-xs">🔍</span>
                 <input
                   type="text"
                   placeholder="Buscar por usuario o correo..."
                   value={auditSearch}
                   onChange={(e) => setAuditSearch(e.target.value)}
-                  className="w-full rounded-xl bg-slate-50 px-3 py-1.5 text-xs text-slate-900 outline-none border border-slate-200 dark:bg-slate-950 dark:text-white dark:border-slate-800"
+                  className="w-full rounded-lg bg-slate-50 px-2.5 py-1 text-xs text-slate-900 outline-none border border-slate-200 dark:bg-slate-950 dark:text-white dark:border-slate-800"
                 />
               </div>
 
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="text-xs font-bold text-slate-600 dark:text-slate-400 mr-1">Tipo de Evento:</span>
+                <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400 mr-1">Filtrar Evento:</span>
                 <button
                   onClick={() => setAuditActionFilter("all")}
-                  className={`rounded-xl px-2.5 py-1 text-xs font-bold transition cursor-pointer ${
+                  className={`rounded-lg px-2.5 py-1 text-[11px] font-bold transition cursor-pointer ${
                     auditActionFilter === "all"
                       ? "bg-slate-900 text-white dark:bg-slate-700"
                       : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
@@ -799,17 +799,17 @@ function AdminControlContent() {
                 </button>
                 <button
                   onClick={() => setAuditActionFilter("login_success")}
-                  className={`rounded-xl px-2.5 py-1 text-xs font-bold transition cursor-pointer ${
+                  className={`rounded-lg px-2.5 py-1 text-[11px] font-bold transition cursor-pointer ${
                     auditActionFilter === "login_success"
                       ? "bg-emerald-600 text-white shadow-sm"
                       : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
                   }`}
                 >
-                  ✓ Inicios de Sesión
+                  ✓ Inicios
                 </button>
                 <button
                   onClick={() => setAuditActionFilter("login_failed")}
-                  className={`rounded-xl px-2.5 py-1 text-xs font-bold transition cursor-pointer ${
+                  className={`rounded-lg px-2.5 py-1 text-[11px] font-bold transition cursor-pointer ${
                     auditActionFilter === "login_failed"
                       ? "bg-amber-600 text-white shadow-sm"
                       : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
@@ -819,7 +819,7 @@ function AdminControlContent() {
                 </button>
                 <button
                   onClick={() => setAuditActionFilter("user_paused")}
-                  className={`rounded-xl px-2.5 py-1 text-xs font-bold transition cursor-pointer ${
+                  className={`rounded-lg px-2.5 py-1 text-[11px] font-bold transition cursor-pointer ${
                     auditActionFilter === "user_paused"
                       ? "bg-red-600 text-white shadow-sm"
                       : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
@@ -829,7 +829,7 @@ function AdminControlContent() {
                 </button>
                 <button
                   onClick={fetchAuditLogs}
-                  className="rounded-xl bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 cursor-pointer ml-1"
+                  className="rounded-lg bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 cursor-pointer ml-1"
                 >
                   🔄 Refrescar
                 </button>
@@ -837,37 +837,37 @@ function AdminControlContent() {
             </div>
 
             {/* Audit Log Table */}
-            <div className="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden dark:border-slate-800 dark:bg-slate-900/80">
-              <div className="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden dark:border-slate-800 dark:bg-slate-900/80">
+              <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
                 <div>
-                  <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                  <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
                     Historial Cronológico de Inicios de Sesión & Conexiones
                   </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                     Trazabilidad en tiempo real de cada inicio de sesión, dispositivo utilizado e IP
                   </p>
                 </div>
               </div>
 
               {loadingAudit ? (
-                <div className="py-12 text-center text-slate-500">
-                  <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
-                  <p className="mt-2 text-xs font-semibold">Cargando bitácora de conexiones...</p>
+                <div className="py-8 text-center text-slate-500">
+                  <div className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
+                  <p className="mt-1.5 text-xs font-semibold">Cargando bitácora de conexiones...</p>
                 </div>
               ) : auditLogs.length === 0 ? (
-                <div className="py-12 text-center text-slate-500 text-xs">
+                <div className="py-8 text-center text-slate-500 text-xs">
                   No hay registros de conexiones en la bitácora aún.
                 </div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs sm:text-sm">
-                    <thead className="border-b border-slate-200 bg-slate-50 text-slate-600 font-bold uppercase text-[11px] tracking-wider dark:border-slate-800 dark:bg-slate-950/80 dark:text-slate-400">
+                  <table className="w-full text-left text-xs">
+                    <thead className="border-b border-slate-200 bg-slate-50 text-slate-600 font-bold uppercase text-[10px] tracking-wider dark:border-slate-800 dark:bg-slate-950/80 dark:text-slate-400">
                       <tr>
-                        <th className="px-4 py-3.5">Fecha & Hora (Ecuador)</th>
-                        <th className="px-4 py-3.5">Usuario / Correo</th>
-                        <th className="px-4 py-3.5">Evento / Acción</th>
-                        <th className="px-4 py-3.5">Dispositivo / Navegador</th>
-                        <th className="px-4 py-3.5 text-right">Dirección IP</th>
+                        <th className="px-3 py-2">Fecha & Hora (Ecuador)</th>
+                        <th className="px-3 py-2">Usuario / Correo</th>
+                        <th className="px-3 py-2">Evento / Acción</th>
+                        <th className="px-3 py-2">Dispositivo / Navegador</th>
+                        <th className="px-3 py-2 text-right">Dirección IP</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-slate-700 dark:divide-slate-800/60 dark:text-slate-300">
@@ -884,40 +884,40 @@ function AdminControlContent() {
                           return true;
                         })
                         .map((log) => (
-                          <tr key={log.id} className="hover:bg-slate-50 transition dark:hover:bg-slate-850/60">
-                            <td className="px-4 py-3 font-mono text-xs text-slate-800 dark:text-slate-200">
+                          <tr key={log.id} className="hover:bg-slate-50/80 transition dark:hover:bg-slate-850/60">
+                            <td className="px-3 py-2 font-mono text-xs text-slate-800 dark:text-slate-200">
                               <div>📅 {log.formattedDate}</div>
                             </td>
-                            <td className="px-4 py-3">
-                              <div className="font-bold text-slate-900 dark:text-white">{log.fullName || log.email}</div>
-                              <div className="text-xs text-slate-500 dark:text-slate-400">{log.email}</div>
+                            <td className="px-3 py-2">
+                              <div className="font-bold text-slate-900 dark:text-white leading-snug">{log.fullName || log.email}</div>
+                              <div className="text-[11px] text-slate-500 dark:text-slate-400">{log.email}</div>
                             </td>
-                            <td className="px-4 py-3">
+                            <td className="px-3 py-2">
                               {log.action === "login_success" ? (
-                                <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700 border border-emerald-200 dark:bg-emerald-950/80 dark:text-emerald-400 dark:border-emerald-800">
+                                <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700 border border-emerald-200 dark:bg-emerald-950/80 dark:text-emerald-400 dark:border-emerald-800">
                                   ✓ {log.actionLabel}
                                 </span>
                               ) : log.action === "login_failed" ? (
-                                <span className="inline-flex items-center gap-1 rounded-lg bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-700 border border-amber-200 dark:bg-amber-950/80 dark:text-amber-400 dark:border-amber-800">
+                                <span className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-0.5 text-[11px] font-bold text-amber-700 border border-amber-200 dark:bg-amber-950/80 dark:text-amber-400 dark:border-amber-800">
                                   ⏳ {log.actionLabel}
                                 </span>
                               ) : log.action === "user_paused" ? (
-                                <span className="inline-flex items-center gap-1 rounded-lg bg-red-50 px-2.5 py-1 text-xs font-bold text-red-700 border border-red-200 dark:bg-red-950/80 dark:text-red-400 dark:border-red-800">
+                                <span className="inline-flex items-center gap-1 rounded-md bg-red-50 px-2 py-0.5 text-[11px] font-bold text-red-700 border border-red-200 dark:bg-red-950/80 dark:text-red-400 dark:border-red-800">
                                   ⏸️ {log.actionLabel}
                                 </span>
                               ) : (
-                                <span className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700 border border-blue-200 dark:bg-blue-950/80 dark:text-blue-400 dark:border-blue-800">
+                                <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-[11px] font-bold text-blue-700 border border-blue-200 dark:bg-blue-950/80 dark:text-blue-400 dark:border-blue-800">
                                   ℹ️ {log.actionLabel}
                                 </span>
                               )}
                             </td>
-                            <td className="px-4 py-3">
+                            <td className="px-3 py-2">
                               <div className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300 font-medium">
                                 <span>{log.device === "Móvil" ? "📱" : log.device === "Tablet" ? "📟" : "💻"}</span>
                                 <span>{log.device || "Escritorio"}</span>
                               </div>
                             </td>
-                            <td className="px-4 py-3 text-right font-mono text-xs text-slate-500 dark:text-slate-400">
+                            <td className="px-3 py-2 text-right font-mono text-xs text-slate-500 dark:text-slate-400">
                               {log.ip || "127.0.0.1"}
                             </td>
                           </tr>
