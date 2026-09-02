@@ -51,6 +51,7 @@ export default function SettingsPage() {
   // Form fields
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -75,6 +76,7 @@ export default function SettingsPage() {
       if (data.user) {
         setFullName(data.user.fullName || "");
         setEmail(data.user.email || "");
+        setPhone(data.user.phone || "");
         setRole(data.user.role || "user");
         setRoleName(data.user.roleName || (data.user.role === "admin" ? t("navAdminRole") : t("navBettor")));
         setRoleId(data.user.roleId || (data.user.role === "admin" ? 1 : 2));
@@ -114,6 +116,7 @@ export default function SettingsPage() {
         body: JSON.stringify({
           fullName,
           email,
+          phone: phone.trim(),
           password: password.trim() ? password.trim() : undefined,
         }),
       });
@@ -121,7 +124,7 @@ export default function SettingsPage() {
       const data = await res.json();
       if (res.ok) {
         setUserMsg({
-          text: language === "es" ? "✓ ¡Tu perfil ha sido actualizado con éxito!" : "✓ Your profile has been updated successfully!",
+          text: language === "es" ? "✓ ¡Tu perfil y WhatsApp han sido actualizados con éxito!" : "✓ Your profile and WhatsApp have been updated successfully!",
           type: "success",
         });
         setPassword("");
@@ -242,6 +245,30 @@ export default function SettingsPage() {
                       className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none focus:border-emerald-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
                     />
                   </div>
+                </div>
+
+                {/* WhatsApp / Phone Field */}
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">
+                    💬 {language === "es" ? "Número de WhatsApp / Teléfono" : "WhatsApp / Phone Number"}
+                  </label>
+                  <div className="flex rounded-xl border border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-950 overflow-hidden focus-within:border-emerald-500">
+                    <span className="inline-flex items-center bg-slate-100 dark:bg-slate-800 px-3 text-sm font-bold text-emerald-600 dark:text-emerald-400 border-r border-slate-200 dark:border-slate-700">
+                      📱 WA
+                    </span>
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="+593 99 999 9999 / +54 9 11..."
+                      className="w-full bg-transparent px-3.5 py-2.5 text-sm text-slate-900 outline-none dark:text-white"
+                    />
+                  </div>
+                  <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
+                    {language === "es" 
+                      ? "Guarda tu número internacional para recibir alertas de alto valor y notificaciones de jugadas por WhatsApp." 
+                      : "Save your international phone number to receive high-value alerts and pick notifications via WhatsApp."}
+                  </p>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2 pt-2">

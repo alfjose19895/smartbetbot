@@ -82,21 +82,13 @@ export default function HistoryPage() {
   });
 
   const coreMarkets = [
-    "Doble Oportunidad (1X)",
-    "Doble Oportunidad (X2)",
-    "Hándicap Asiático (+0.5 Local)",
-    "Hándicap Asiático (+0.5 Visitante)",
-    "Over 1.5 Goles",
-    "Over 2.5 Goles",
-    "Over 3.5 Goles",
-    "Under 2.5 Goles",
-    "Under 3.5 Goles",
-    "Over 8.5 Disparos a Puerta",
-    "Over 8.5 Córners",
-    "Over 3.5 Tarjetas",
     "Gana Local",
     "Gana Visitante",
+    "Over 2.5 Goles",
+    "Under 2.5 Goles",
     "Ambos Marcan (BTTS)",
+    "Over 8.5 Córners",
+    "Over 3.5 Tarjetas",
   ];
 
   const availableMarkets = Array.from(

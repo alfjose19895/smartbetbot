@@ -77,14 +77,41 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
       : [...predictions]
           .filter((p) => p.probability >= 55 && p.odds >= 1.35)
           .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime())
-          .slice(0, 15)
-          .sort((a, b) => b.probability - a.probability);
+  const selectedPicks: MarketOpportunity[] = (() => {
+    if (candidatePicks.length <= parlaySize) {
+      return candidatePicks;
+    }
 
-  if (candidatePicks.length < 3) {
-    return null;
-  }
+    const bankers = candidatePicks.filter((p) => p.probability >= 78 || p.pickBadge === "valor");
+    const others = candidatePicks.filter((p) => p.probability < 78 && p.pickBadge !== "valor");
 
-  const selectedPicks = candidatePicks.slice(0, Math.min(parlaySize, candidatePicks.length));
+    const result: MarketOpportunity[] = [];
+    const usedMatches = new Set<string>();
+
+    const maxBankers = 1;
+    for (const b of bankers) {
+      if (result.length < maxBankers && !usedMatches.has(b.match)) {
+        result.push(b);
+        usedMatches.add(b.match);
+      }
+    }
+
+    const offsetMap: Record<number, number> = { 3: 0, 4: 2, 5: 4 };
+    const startOffset = offsetMap[parlaySize] || 0;
+    const pool = others.length > 0 ? others : candidatePicks;
+    const poolLen = pool.length;
+
+    for (let i = 0; i < poolLen && result.length < parlaySize; i++) {
+      const idx = (startOffset + i) % poolLen;
+      const pick = pool[idx];
+      if (!usedMatches.has(pick.match)) {
+        result.push(pick);
+        usedMatches.add(pick.match);
+      }
+    }
+
+    return result;
+  })();
 
   // Calculate accumulated parlay odds and combined probability
   const totalOdds = selectedPicks.reduce((acc, p) => acc * p.odds, 1);

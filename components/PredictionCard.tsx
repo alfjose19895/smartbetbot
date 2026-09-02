@@ -44,6 +44,7 @@ function getMatchLiveStatusBadge(kickoff: string) {
 
 export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps) {
   const { language } = useLanguage();
+  const [isExpanded, setIsExpanded] = useState(true);
   const [copyingImage, setCopyingImage] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
 
@@ -93,9 +94,7 @@ export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps
   const confidenceBadge =
     prediction.confidence === "Muy Alta"
       ? { label: "⭐⭐⭐ Muy Alta", cls: "bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700" }
-      : prediction.confidence === "Alta"
-      ? { label: "⭐⭐ Alta", cls: "bg-cyan-100 text-cyan-900 border-cyan-300 dark:bg-cyan-950/80 dark:text-cyan-300 dark:border-cyan-700" }
-      : { label: "⭐ Media", cls: "bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950/80 dark:text-amber-300 dark:border-amber-700" };
+      : { label: "⭐⭐ Alta", cls: "bg-cyan-100 text-cyan-900 border-cyan-300 dark:bg-cyan-950/80 dark:text-cyan-300 dark:border-cyan-700" };
 
   return (
     <div
@@ -103,7 +102,7 @@ export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps
       className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-slate-200/90 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/50 hover:shadow-xl dark:border-slate-800/80 dark:bg-slate-900/90 cursor-pointer"
     >
       <div>
-        {/* Top Bar: League, Country & Live Time Remaining Badge */}
+        {/* Top Bar: League, Country, Status Badge & Expand/Minimize Toggle */}
         <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3 dark:border-slate-800/80">
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="inline-flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1 text-[11px] font-black text-slate-800 dark:bg-slate-800 dark:text-slate-200">
@@ -132,6 +131,19 @@ export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps
                 {statusBadge.label}
               </span>
             ) : null}
+
+            {/* Toggle Expand / Minimize Button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsExpanded(!isExpanded);
+              }}
+              title={isExpanded ? "Minimizar tarjeta" : "Expandir tarjeta"}
+              className="flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
+            >
+              <span>{isExpanded ? "▲" : "▼"}</span>
+              <span className="hidden sm:inline">{isExpanded ? "Minimizar" : "Expandir"}</span>
+            </button>
           </div>
         </div>
 
@@ -197,11 +209,13 @@ export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps
           </div>
         </div>
 
-        {/* AI Mathematical Analysis Quote */}
-        {prediction.explanation && (
-          <p className="mt-3 text-xs text-slate-700 dark:text-slate-300 leading-relaxed italic">
-            &quot;{prediction.explanation}&quot;
-          </p>
+        {/* Collapsible Section: AI Mathematical Analysis Quote & Metrics */}
+        {isExpanded && prediction.explanation && (
+          <div className="animate-fadeIn transition-all">
+            <p className="mt-3 text-xs text-slate-700 dark:text-slate-300 leading-relaxed italic border-l-2 border-emerald-500 pl-2.5 py-0.5">
+              &quot;{prediction.explanation}&quot;
+            </p>
+          </div>
         )}
       </div>
 

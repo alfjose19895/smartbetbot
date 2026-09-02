@@ -11,6 +11,7 @@ export async function GET() {
   const supabase = await createClient();
   let displayName = identity.fullName;
   let roleName = identity.roleName || (identity.role === "admin" ? "Administrador" : "Apostador");
+  let phone = "";
 
   try {
     const { data: profile } = await supabase
@@ -18,6 +19,7 @@ export async function GET() {
       .select(`
         id,
         display_name,
+        phone,
         role,
         role_id,
         roles (
@@ -31,6 +33,7 @@ export async function GET() {
 
     if (profile) {
       displayName = profile.display_name || displayName;
+      phone = profile.phone || "";
       const rObj = Array.isArray(profile.roles) ? profile.roles[0] : profile.roles;
       if (rObj?.name) roleName = rObj.name;
     }
@@ -43,6 +46,7 @@ export async function GET() {
       id: identity.id,
       email: identity.email,
       fullName: displayName,
+      phone,
       role: identity.role,
       roleName,
       roleId: identity.roleId || (identity.role === "admin" ? 1 : 2),
@@ -58,19 +62,35 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const { fullName, email, password } = body;
+    const { fullName, email, password, phone } = body;
 
     const supabase = await createClient();
 
-    // 1. Update display name in public.profiles and auth metadata
+    // 1. Update display name & phone in public.profiles and auth metadata
+    const updatePayload: Record<string, unknown> = {};
     if (fullName && typeof fullName === "string" && fullName.trim().length >= 2) {
-      await supabase
-        .from("profiles")
-        .update({ display_name: fullName.trim() })
-        .eq("id", identity.id);
+      updatePayload.display_name = fullName.trim();
+    }
+    if (phone !== undefined && typeof phone === "string") {
+      updatePayload.phone = phone.trim();
+    }
+
+    if (Object.keys(updatePayload).length > 0) {
+      try {
+        await supabase
+          .from("profiles")
+          .update(updatePayload)
+          .eq("id", identity.id);
+      } catch (err) {
+        console.warn("Could not update profiles table:", err);
+      }
 
       await supabase.auth.updateUser({
-        data: { full_name: fullName.trim() },
+        data: {
+          full_name: fullName?.trim() || identity.fullName,
+          phone: phone?.trim(),
+          whatsapp: phone?.trim(),
+        },
       });
     }
 
@@ -92,7 +112,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: "¡Tu perfil ha sido actualizado correctamente!",
+      message: "¡Tu perfil y WhatsApp han sido actualizados correctamente!",
     });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });

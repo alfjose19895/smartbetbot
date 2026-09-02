@@ -49,7 +49,7 @@ export interface MarketOpportunity {
   impliedProbability?: number;
   edge: number;
   expectedValue: number;
-  confidence: "Muy Alta" | "Alta" | "Media" | "Baja";
+  confidence: "Muy Alta" | "Alta";
   pickBadge?: "bomba" | "valor" | "estandar";
   smartScore: number;
   explanation: string;
@@ -560,38 +560,11 @@ function generateExplanation(
   const totalXg = (hXg + aXg).toFixed(2);
   const tierContext = tier === 1 ? "Liga de Élite (Top 5 / UEFA)" : tier === 2 ? "Liga Primera División de Alta Confianza" : "Competición Oficial";
 
-  if (market.includes("Disparos a Puerta -") || market.includes("Disparos -")) {
-    return `[${tierContext}] Referente ofensivo estrella: Se proyecta que el atacante registre remates a portería con ${prob}% de certeza estadística y cuota rentable de alto valor @${odds.toFixed(2)}.`;
-  }
-  if (market.includes("Hándicap Asiático (+1.5") || market.includes("AH +1.5")) {
-    return `[${tierContext}] Margen de seguridad extraordinario (+1.5): Cobertura del ${prob}% de probabilidad, ganando incluso si el equipo pierde por un gol a cuota @${odds.toFixed(2)}.`;
-  }
-  if (market.includes("Hándicap Asiático (+0.5") || market.includes("AH +0.5")) {
-    return `[${tierContext}] Cobertura de alta precisión: Hándicap positivo (+0.5) con ${prob}% de certeza matemática, garantizando ganancia si el equipo empata o gana el partido a cuota @${odds.toFixed(2)}.`;
-  }
-  if (market.includes("Hándicap Asiático (-0.5") || market.includes("AH -0.5")) {
-    return `[${tierContext}] Dominio proyectado: Victoria requerida cubierta con ${prob}% de probabilidad según el diferencial Elo y métricas Poisson a cuota @${odds.toFixed(2)}.`;
-  }
-  if (market.includes("1X") || market.includes("Doble Oportunidad (1X)")) {
-    return `[${tierContext}] Seguridad máxima: El modelo otorga un ${prob}% de probabilidad a que ${home} sume puntos en casa (xG: ${hXg.toFixed(2)} vs ${aXg.toFixed(2)}), cubriendo victoria o empate a cuota @${odds.toFixed(2)}.`;
-  }
-  if (market.includes("X2") || market.includes("Doble Oportunidad (X2)")) {
-    return `[${tierContext}] Seguridad máxima: ${away} cuenta con un ${prob}% de probabilidad de puntuar como visitante (xG: ${aXg.toFixed(2)}), cubriendo empate o triunfo a cuota @${odds.toFixed(2)}.`;
-  }
-  if (market.includes("Over 1.5")) {
-    return `[${tierContext}] Alta tasa de acierto: Proyección ofensiva combinada de ${totalXg} goles esperados. El modelo proyecta ${prob}% de éxito para al menos 2 goles en el encuentro a cuota @${odds.toFixed(2)}.`;
-  }
   if (market.includes("Over 2.5")) {
     return `[${tierContext}] Potencial ofensivo elevado (${totalXg} xG combinado). Probabilidad matemática del ${prob}% con +${edge}% de valor (+EV) frente a la casa de apuestas @${odds.toFixed(2)}.`;
   }
-  if (market.includes("Over 3.5 Goles")) {
-    return `[${tierContext}] 💣 Pronóstico Bomba: Partido de alta producción goleadora (${totalXg} xG proyectado). Modelo cuantitativo detecta ${prob}% de probabilidad para 4 o más goles a cuota excelente @${odds.toFixed(2)}.`;
-  }
-  if (market.includes("Under 3.5")) {
-    return `[${tierContext}] Solidez defensiva proyectada: Modelo Poisson proyecta un ${prob}% de probabilidad de que el encuentro concluya con 3 o menos goles totales.`;
-  }
-  if (market.includes("Disparos a Puerta")) {
-    return `[${tierContext}] Alto volumen de remates esperados. Modelo predictivo estima ${prob}% de probabilidad de superar la línea de disparos a puerta a cuota @${odds.toFixed(2)}.`;
+  if (market.includes("Under 2.5")) {
+    return `[${tierContext}] Solidez defensiva proyectada: Modelo Poisson proyecta un ${prob}% de probabilidad de que el encuentro concluya con menos de 2.5 goles totales a cuota @${odds.toFixed(2)}.`;
   }
   if (market.includes("Tarjetas")) {
     return `[${tierContext}] Alta fricción táctica y rigor arbitral proyectado. Análisis disciplinario estima ${prob}% de probabilidad para más de 3.5 tarjetas totales a cuota @${odds.toFixed(2)}.`;
@@ -599,11 +572,14 @@ function generateExplanation(
   if (market.includes("Córners")) {
     return `[${tierContext}] Alto volumen de llegadas por bandas y disparos bloqueados. Proyección estadística de ${prob}% para más de 8.5 saques de esquina a cuota @${odds.toFixed(2)}.`;
   }
+  if (market.includes("Ambos Marcan") || market.includes("BTTS")) {
+    return `[${tierContext}] Alta probabilidad de anotación mutua (xG local ${hXg.toFixed(2)}, visitante ${aXg.toFixed(2)}). El modelo estima ${prob}% de probabilidad de que ambos equipos marquen a cuota @${odds.toFixed(2)}.`;
+  }
   if (market.includes("Local") || market.includes("1")) {
     return `[${tierContext}] Dominio estructural de ${home} (Elo superior + factor localía). Modelo Poisson proyecta ${prob}% de probabilidad de victoria directa a cuota @${odds.toFixed(2)}.`;
   }
   if (market.includes("Visitante") || market.includes("2")) {
-    return `[${tierContext}] Superioridad de ${away} reflejada en Elo y volumen ofensivo (xG: ${aXg.toFixed(2)}). Victoria esperada con ${prob}% de probabilidad.`;
+    return `[${tierContext}] Superioridad de ${away} reflejada en Elo y volumen ofensivo (xG: ${aXg.toFixed(2)}). Victoria esperada con ${prob}% de probabilidad a cuota @${odds.toFixed(2)}.`;
   }
   return `[${tierContext}] Análisis cuantitativo avanzado: ${prob}% de probabilidad estadística con valor positivo (+${edge}%) frente a la cuota del mercado @${odds.toFixed(2)}.`;
 }
@@ -860,31 +836,18 @@ export function evaluateFixturePrediction(params: {
     odds: number;
     minOddsThreshold: number;
   }[] = [
-    // Ultra-High Precision Markets (Target >= 70% Win Rate / Valor con Cuotas Rentables)
-    { market: "Doble Oportunidad (1X)", selection: "1X", prob: p1X, odds: calculated1XOdds, minOddsThreshold: 1.40 },
-    { market: "Doble Oportunidad (X2)", selection: "X2", prob: pX2, odds: calculatedX2Odds, minOddsThreshold: 1.40 },
-    { market: "Hándicap Asiático (+0.5 Local)", selection: "+0.5 1", prob: p1X, odds: calculated1XOdds, minOddsThreshold: 1.40 },
-    { market: "Hándicap Asiático (+0.5 Visitante)", selection: "+0.5 2", prob: pX2, odds: calculatedX2Odds, minOddsThreshold: 1.40 },
-    { market: "Hándicap Asiático (+1.5 Local)", selection: "+1.5 1", prob: pAhPlus15Home, odds: calculateBookmakerOdds(pAhPlus15Home, matchJuice), minOddsThreshold: 1.38 },
-    { market: "Hándicap Asiático (+1.5 Visitante)", selection: "+1.5 2", prob: pAhPlus15Away, odds: calculateBookmakerOdds(pAhPlus15Away, matchJuice), minOddsThreshold: 1.38 },
-    { market: "Hándicap Asiático (-0.5 Local)", selection: "-0.5 1", prob: pHome, odds: calculatedHomeOdds, minOddsThreshold: 1.45 },
-    { market: "Hándicap Asiático (-0.5 Visitante)", selection: "-0.5 2", prob: pAway, odds: calculatedAwayOdds, minOddsThreshold: 1.45 },
-    { market: "Over 1.5 Goles", selection: "Over 1.5", prob: pOver15, odds: calculatedOver15Odds, minOddsThreshold: 1.40 },
-    { market: "Under 3.5 Goles", selection: "Under 3.5", prob: pUnder35, odds: calculatedUnder35Odds, minOddsThreshold: 1.40 },
-
-    // Primary 1X2 & Over/Under Markets
+    // 1X2 Principal
     { market: "Gana Local", selection: "1", prob: pHome, odds: marketOdds.homeWin || calculatedHomeOdds, minOddsThreshold: 1.45 },
     { market: "Gana Visitante", selection: "2", prob: pAway, odds: marketOdds.awayWin || calculatedAwayOdds, minOddsThreshold: 1.45 },
+
+    // Over/Under 2.5 Goles & Ambos Marcan (BTTS)
     { market: "Over 2.5 Goles", selection: "Over 2.5", prob: pOver25, odds: marketOdds.over25 || calculatedOver25Odds, minOddsThreshold: 1.45 },
-    { market: "Over 3.5 Goles", selection: "Over 3.5", prob: pOver35, odds: calculatedOver35Odds, minOddsThreshold: 1.55 },
     { market: "Under 2.5 Goles", selection: "Under 2.5", prob: pUnder25, odds: marketOdds.under25 || calculatedUnder25Odds, minOddsThreshold: 1.45 },
     { market: "Ambos Marcan (BTTS)", selection: "Yes", prob: pBttsYes, odds: marketOdds.bttsYes || calculatedBttsOdds, minOddsThreshold: 1.45 },
 
-    // Corners, Cards, Shots, and Exact Player Shots Markets
+    // Corners y Tarjetas
     { market: "Over 8.5 Córners", selection: "Over 8.5", prob: pOverCorners85, odds: calculatedCornersOdds, minOddsThreshold: 1.42 },
     { market: "Over 3.5 Tarjetas", selection: "Over 3.5", prob: pOverCards35, odds: calculatedCardsOdds, minOddsThreshold: 1.42 },
-    { market: "Over 8.5 Disparos a Puerta", selection: "Over 8.5", prob: pOverShots85, odds: calculatedShotsOdds, minOddsThreshold: 1.42 },
-    { market: `Over 0.5 Disparos a Puerta - ${topStarPlayer}`, selection: `+0.5 Disparos (${topStarPlayer})`, prob: pPlayerShot05, odds: calculatedPlayerShotOdds, minOddsThreshold: 1.40 },
   ];
 
   const opportunities: MarketOpportunity[] = [];
@@ -897,25 +860,21 @@ export function evaluateFixturePrediction(params: {
     if (!item.odds || item.odds < item.minOddsThreshold) continue;
 
     const probPercent = Math.round(item.prob * 1000) / 10;
-    // Strict High-Precision Filter: Minimum Probability >= 60.0%
-    if (probPercent < 60.0) continue;
+    // Strict High-Precision Filter: Only Alta (>=68%) and Muy Alta (>=75%)!
+    if (probPercent < 68.0) continue;
 
     const fairOdds = Math.round((1 / item.prob) * 100) / 100;
     const impliedProb = Math.round((1 / item.odds) * 1000) / 10;
     const edgePercent = Math.max(1.0, Math.round((item.prob - 1 / item.odds) * 1000) / 10);
     const evPercent = Math.round((item.prob * item.odds - 1) * 1000) / 10;
 
-    let confidence: "Muy Alta" | "Alta" | "Media" | "Baja" = "Media";
-    if (probPercent >= 75.0) confidence = "Muy Alta";
-    else if (probPercent >= 68.0) confidence = "Alta";
-    else if (probPercent >= 60.0) confidence = "Media";
-    else confidence = "Baja";
+    const confidence: "Muy Alta" | "Alta" = probPercent >= 75.0 ? "Muy Alta" : "Alta";
 
-    // Bomba (High Payout / High Odds >= 2.00) or Valor (Maximum Certainty ~100% / prob >= 76%)
+    // Bomba (High Payout / High Odds >= 2.05) or Valor (Maximum Certainty ~100% / prob >= 76%)
     let pickBadge: "bomba" | "valor" | "estandar" = "estandar";
-    if (item.odds >= 2.05 || (item.market.includes("Over 3.5") && item.odds >= 1.90)) {
+    if (item.odds >= 2.05) {
       pickBadge = "bomba";
-    } else if (probPercent >= 76.0 || (confidence === "Muy Alta" && probPercent >= 74.0)) {
+    } else if (probPercent >= 76.0 || confidence === "Muy Alta") {
       pickBadge = "valor";
     }
 

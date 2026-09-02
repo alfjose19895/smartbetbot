@@ -125,11 +125,59 @@ export default function DailyParlayPage() {
   });
 
   // Sort daily picks by highest probability and value
-  const sortedDailyPicks = [...signals].sort(
-    (a, b) => b.probability - a.probability || (b.smartScore || 0) - (a.smartScore || 0) || b.odds - a.odds
-  );
+  const sortedDailyPicks = [...signals]
+    .filter((p) => p.probability >= 68 && p.odds >= 1.40)
+    .sort((a, b) => b.probability - a.probability || (b.smartScore || 0) - (a.smartScore || 0));
 
-  const selectedPicks = sortedDailyPicks.slice(0, Math.min(parlaySize, sortedDailyPicks.length));
+  // Build diversified parlay picks based on size (3, 4, 5, 8, 10)
+  // Only repeat top banker plays (>= 78% certainty), diversifying all other legs across games
+  const selectedPicks: MarketOpportunity[] = (() => {
+    if (sortedDailyPicks.length <= parlaySize) {
+      return sortedDailyPicks;
+    }
+
+    const bankers = sortedDailyPicks.filter((p) => p.probability >= 78 || p.pickBadge === "valor");
+    const others = sortedDailyPicks.filter((p) => p.probability < 78 && p.pickBadge !== "valor");
+
+    const result: MarketOpportunity[] = [];
+    const usedMatches = new Set<string>();
+
+    // Add 1 or 2 bankers depending on parlay size
+    const maxBankers = parlaySize >= 8 ? 2 : 1;
+    for (const b of bankers) {
+      if (result.length < maxBankers && !usedMatches.has(b.match)) {
+        result.push(b);
+        usedMatches.add(b.match);
+      }
+    }
+
+    // Offset rotational index to avoid giving the exact same matches across parlay sizes
+    const offsetMap: Record<number, number> = { 3: 0, 4: 2, 5: 4, 8: 1, 10: 0 };
+    const startOffset = offsetMap[parlaySize] || 0;
+
+    const pool = others.length > 0 ? others : sortedDailyPicks;
+    const poolLen = pool.length;
+
+    for (let i = 0; i < poolLen && result.length < parlaySize; i++) {
+      const idx = (startOffset + i) % poolLen;
+      const pick = pool[idx];
+      if (!usedMatches.has(pick.match)) {
+        result.push(pick);
+        usedMatches.add(pick.match);
+      }
+    }
+
+    // Fallback if not enough unique matches
+    if (result.length < parlaySize) {
+      for (const pick of sortedDailyPicks) {
+        if (!result.some((r) => r.match === pick.match && r.market === pick.market) && result.length < parlaySize) {
+          result.push(pick);
+        }
+      }
+    }
+
+    return result;
+  })();
 
   // Compute accumulated parlay odds and combined probability
   const totalOdds = selectedPicks.reduce((acc, p) => acc * p.odds, 1);

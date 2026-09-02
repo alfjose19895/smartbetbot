@@ -159,7 +159,7 @@ export interface HistoricalSettledPick {
   selection: string;
   odds: number;
   probability: number;
-  confidence: "Muy Alta" | "Alta" | "Media" | "Baja";
+  confidence: "Muy Alta" | "Alta";
   pickBadge?: "bomba" | "valor" | "estandar";
   result: "WON" | "LOST" | "VOID";
   profit: number;
@@ -222,20 +222,11 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
                 let isWon = false;
                 if (p.market === "Gana Local" || p.market === "1") isWon = hGoals > aGoals;
                 else if (p.market === "Gana Visitante" || p.market === "2") isWon = aGoals > hGoals;
-                else if (p.market === "Empate" || p.market === "X") isWon = hGoals === aGoals;
-                else if (p.market.includes("1X") || p.market.includes("Doble Oportunidad (1X)") || p.market.includes("Hándicap Asiático (+0.5 Local)")) isWon = hGoals >= aGoals;
-                else if (p.market.includes("X2") || p.market.includes("Doble Oportunidad (X2)") || p.market.includes("Hándicap Asiático (+0.5 Visitante)")) isWon = aGoals >= hGoals;
-                else if (p.market.includes("Hándicap Asiático (-0.5 Local)")) isWon = hGoals > aGoals;
-                else if (p.market.includes("Hándicap Asiático (-0.5 Visitante)")) isWon = aGoals > hGoals;
-                else if (p.market.includes("Over 1.5")) isWon = totalGoals > 1;
                 else if (p.market.includes("Over 2.5")) isWon = totalGoals > 2;
-                else if (p.market.includes("Over 3.5 Goles")) isWon = totalGoals > 3;
                 else if (p.market.includes("Under 2.5")) isWon = totalGoals < 3;
-                else if (p.market.includes("Under 3.5")) isWon = totalGoals < 4;
                 else if (p.market.includes("Ambos") || p.market.includes("BTTS")) isWon = btts;
                 else if (p.market.includes("Tarjetas")) isWon = true;
                 else if (p.market.includes("Córners")) isWon = true;
-                else if (p.market.includes("Disparos")) isWon = true;
                 else isWon = hGoals > aGoals;
 
                 p.status = isWon ? "won" : "lost";

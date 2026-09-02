@@ -72,21 +72,13 @@ export default function SignalsPage() {
   });
 
   const coreMarkets = [
-    "Doble Oportunidad (1X)",
-    "Doble Oportunidad (X2)",
-    "Hándicap Asiático (+0.5 Local)",
-    "Hándicap Asiático (+0.5 Visitante)",
-    "Over 1.5 Goles",
-    "Over 2.5 Goles",
-    "Over 3.5 Goles",
-    "Under 2.5 Goles",
-    "Under 3.5 Goles",
-    "Over 8.5 Disparos a Puerta",
-    "Over 8.5 Córners",
-    "Over 3.5 Tarjetas",
     "Gana Local",
     "Gana Visitante",
+    "Over 2.5 Goles",
+    "Under 2.5 Goles",
     "Ambos Marcan (BTTS)",
+    "Over 8.5 Córners",
+    "Over 3.5 Tarjetas",
   ];
 
   const availableMarketNames = Array.from(
@@ -101,7 +93,6 @@ export default function SignalsPage() {
   const confidenceDropdownOptions: DropdownOption[] = [
     { value: "muy_alta", label: language === "en" ? "⭐⭐⭐ Very High (≥75%)" : "⭐⭐⭐ Muy Alta (≥75%)" },
     { value: "alta", label: language === "en" ? "⭐⭐ High (68% - 74%)" : "⭐⭐ Alta (68% - 74%)" },
-    { value: "media", label: language === "en" ? "⭐ Medium (60% - 67%)" : "⭐ Media (60% - 67%)" },
   ];
 
   const now = new Date();
@@ -182,7 +173,6 @@ export default function SignalsPage() {
       const isMatch = selectedConfidence.some((c) => {
         if (c === "muy_alta") return s.confidence === "Muy Alta" || s.probability >= 75;
         if (c === "alta") return s.confidence === "Alta" || (s.probability >= 68 && s.probability < 75);
-        if (c === "media") return s.confidence === "Media" || (s.probability >= 60 && s.probability < 68);
         return false;
       });
       if (!isMatch) return false;
