@@ -552,111 +552,175 @@ export default function HistoryPage() {
                   const conf = getConfidenceBadge(item.confidence, item.probability);
                   const isExpanded = Boolean(expandedPicks[item.id]);
 
-                  return (
-                    <div
-                      key={item.id}
-                      className={`overflow-hidden rounded-3xl border transition shadow-sm ${
-                        isWon
-                          ? "border-emerald-200 bg-white dark:border-emerald-900/40 dark:bg-slate-900/90"
-                          : "border-red-200 bg-white dark:border-red-900/40 dark:bg-slate-900/90"
-                      }`}
-                    >
-                      {/* Compact Header / Row */}
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4">
-                        <div className="flex items-start sm:items-center gap-3">
+                  // 1. MINIMIZED / COMPACT ROW VIEW (Identical to Dashboard / Picks)
+                  if (!isExpanded) {
+                    return (
+                      <div
+                        key={item.id}
+                        className="group relative flex items-center justify-between gap-3 overflow-hidden rounded-2xl border border-slate-200/90 bg-white px-4 py-3 shadow-xs transition-all duration-200 hover:border-emerald-500/50 hover:shadow-md dark:border-slate-800/80 dark:bg-slate-900/90 cursor-pointer"
+                        onClick={() =>
+                          setExpandedPicks((prev) => ({ ...prev, [item.id]: true }))
+                        }
+                      >
+                        {/* Left: Result Icon, Teams & League */}
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
                           <span
-                            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-xs font-black ${
-                              isWon
-                                ? "bg-emerald-500 text-slate-950"
-                                : "bg-red-500 text-white"
+                            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-black ${
+                              isWon ? "bg-emerald-500 text-slate-950" : "bg-red-500 text-white"
                             }`}
                           >
                             {isWon ? "✓" : "✗"}
                           </span>
-
-                          <div>
-                            <div className="flex flex-wrap items-center gap-2">
-                              <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-extrabold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                                <span>🏆</span>
-                                <span>{item.league}</span>
-                                {item.country && (
-                                  <>
-                                    <span className="text-slate-400 font-normal">•</span>
-                                    <span className="text-emerald-700 dark:text-emerald-400 font-bold">{item.country}</span>
-                                  </>
-                                )}
-                              </span>
-
-                              <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
-                                📅 {item.date}
-                              </span>
-
-                              {isWon ? (
-                                <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-black text-emerald-800 border border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700">
-                                  ✓ Ganada (+{item.profit.toFixed(2)} U)
-                                </span>
-                              ) : (
-                                <span className="inline-flex items-center gap-1 rounded-md bg-red-50 px-2 py-0.5 text-[10px] font-black text-red-800 border border-red-300 dark:bg-red-950/80 dark:text-red-300 dark:border-red-700">
-                                  ✗ Perdida ({item.profit.toFixed(2)} U)
-                                </span>
-                              )}
+                          <div className="min-w-0">
+                            <div className="text-sm font-black text-slate-900 dark:text-white truncate">
+                              {item.homeTeam} <span className="text-slate-400 font-normal">vs</span> {item.awayTeam}
                             </div>
-
-                            <h3 className="mt-1 text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                              {item.homeTeam} vs {item.awayTeam}
-                            </h3>
+                            <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 truncate">
+                              🏆 {item.league} {item.country ? `(${item.country})` : ""} • 📅 {item.date}
+                            </div>
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between sm:justify-end gap-2.5 border-t sm:border-t-0 border-slate-100 pt-2 sm:pt-0 dark:border-slate-800">
-                          <div className="text-right">
-                            <span className="rounded-xl bg-emerald-50 px-2.5 py-1 text-xs font-black text-emerald-800 border border-emerald-200 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-800 block">
-                              🎯 {item.market}
-                            </span>
-                          </div>
-
-                          <span className="rounded-xl bg-sky-50 px-2.5 py-1 text-xs font-black text-sky-800 border border-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800">
+                        {/* Center: Market Badge, Odds & Real Score */}
+                        <div className="hidden md:flex items-center gap-2 shrink-0">
+                          <span className="rounded-xl bg-emerald-50 border border-emerald-300 dark:bg-emerald-950/60 dark:border-emerald-700/60 px-2.5 py-1 text-xs font-black text-emerald-800 dark:text-emerald-300">
+                            🎯 {item.market} ({item.selection})
+                          </span>
+                          <span className="rounded-xl bg-sky-600 px-2.5 py-1 text-xs font-black text-white">
                             @{item.odds.toFixed(2)}
                           </span>
-
                           <span className="rounded-xl bg-slate-100 px-2.5 py-1 text-xs font-black text-slate-900 border border-slate-200 dark:bg-slate-800 dark:text-white dark:border-slate-700">
                             {item.score}
                           </span>
+                        </div>
+
+                        {/* Right: Profit Badge & Toggle Expand Button */}
+                        <div className="flex items-center gap-2 shrink-0">
+                          {isWon ? (
+                            <span className="rounded-xl px-2.5 py-1 text-xs font-black bg-emerald-500 text-slate-950">
+                              ✓ Ganada (+{item.profit.toFixed(2)} U)
+                            </span>
+                          ) : (
+                            <span className="rounded-xl px-2.5 py-1 text-xs font-black bg-rose-600 text-white">
+                              ✗ Perdida ({item.profit.toFixed(2)} U)
+                            </span>
+                          )}
 
                           <button
-                            onClick={() =>
-                              setExpandedPicks((prev) => ({ ...prev, [item.id]: !prev[item.id] }))
-                            }
-                            className="rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setExpandedPicks((prev) => ({ ...prev, [item.id]: true }));
+                            }}
+                            title="Ampliar tarjeta completa"
+                            className="flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
                           >
-                            {isExpanded ? "▲ Menos" : "▼ Análisis"}
+                            <span>▼</span>
+                            <span className="hidden sm:inline">Ampliar</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // 2. EXPANDED FULL VIEW (Identical to Dashboard / Picks)
+                  return (
+                    <div
+                      key={item.id}
+                      className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-slate-200/90 bg-white p-5 shadow-sm transition-all duration-300 hover:border-emerald-500/50 hover:shadow-xl dark:border-slate-800/80 dark:bg-slate-900/90 space-y-4"
+                    >
+                      {/* Top Bar: League, Country, Status Badge & Toggle Minimize Button */}
+                      <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3 dark:border-slate-800/80">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="inline-flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1 text-[11px] font-black text-slate-800 dark:bg-slate-800 dark:text-slate-200">
+                            <span>🏆</span>
+                            <span>{item.league}</span>
+                            {item.country && (
+                              <>
+                                <span className="text-slate-400 font-normal">•</span>
+                                <span className="text-emerald-700 dark:text-emerald-400">{item.country}</span>
+                              </>
+                            )}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          {isWon ? (
+                            <span className="inline-flex items-center gap-1 rounded-xl px-3 py-1 text-xs font-black bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30">
+                              ✓ Ganada (+{item.profit.toFixed(2)} U)
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 rounded-xl px-3 py-1 text-xs font-black bg-rose-600 text-white shadow-md shadow-rose-600/30">
+                              ✗ Perdida ({item.profit.toFixed(2)} U)
+                            </span>
+                          )}
+
+                          {/* Toggle Minimize Button */}
+                          <button
+                            onClick={() =>
+                              setExpandedPicks((prev) => ({ ...prev, [item.id]: false }))
+                            }
+                            title="Minimizar a vista compacta"
+                            className="flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
+                          >
+                            <span>▲</span>
+                            <span className="hidden sm:inline">Minimizar</span>
                           </button>
                         </div>
                       </div>
 
-                      {/* Expanded Content */}
-                      {isExpanded && (
-                        <div className="border-t border-slate-100 bg-slate-50/70 p-4 dark:border-slate-800/80 dark:bg-slate-950/50 space-y-3">
-                          <div className="flex items-center justify-between">
-                            <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black border ${conf.cls}`}>
-                              <span>{conf.label}</span>
-                            </span>
-                            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                              Probabilidad Estimada: <strong className="text-emerald-600 dark:text-emerald-400">{item.probability}%</strong>
-                            </span>
-                          </div>
+                      {/* Date & Initial Confidence Badge */}
+                      <div className="flex items-center justify-between flex-wrap gap-2 text-xs">
+                        <span className="font-bold text-slate-600 dark:text-slate-400">
+                          📅 {item.date} (Ecuador UTC-5)
+                        </span>
+                        <div className="flex items-center gap-1.5">
+                          <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black border ${conf.cls}`}>
+                            <span>{conf.label}</span>
+                          </span>
+                          <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-black text-emerald-900 border border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700">
+                            {item.probability}%
+                          </span>
+                        </div>
+                      </div>
 
-                          {item.explanation && (
-                            <div className="rounded-2xl bg-white p-3.5 border border-slate-200 shadow-sm dark:bg-slate-900/90 dark:border-slate-800">
-                              <div className="flex items-center gap-1.5 text-xs font-black text-emerald-700 dark:text-emerald-400">
-                                <span>🧠</span>
-                                <span>Análisis Cuantitativo del Encuentro:</span>
-                              </div>
-                              <p className="mt-1.5 text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
-                                {item.explanation}
-                              </p>
-                            </div>
-                          )}
+                      {/* Teams & Real Match Score */}
+                      <div className="rounded-2xl bg-slate-50 p-3.5 border border-slate-100 dark:bg-slate-950/80 dark:border-slate-800/80 flex items-center justify-between">
+                        <div className="font-black text-slate-900 dark:text-white text-base">
+                          {item.homeTeam} <span className="text-slate-400 font-normal">vs</span> {item.awayTeam}
+                        </div>
+                        <div className="flex flex-col items-center justify-center rounded-xl bg-white px-3 py-1.5 border border-slate-200 shadow-sm dark:bg-slate-900 dark:border-slate-700 shrink-0">
+                          <span className="text-[10px] uppercase font-bold text-slate-400">Marcador Real</span>
+                          <span className="text-base font-black text-slate-900 dark:text-white">{item.score}</span>
+                        </div>
+                      </div>
+
+                      {/* Predicted Market Box */}
+                      <div className="rounded-2xl border border-slate-200/80 bg-slate-50/60 p-3.5 dark:border-slate-800 dark:bg-slate-950/50 flex items-center justify-between">
+                        <div>
+                          <div className="text-[10px] font-extrabold uppercase text-slate-500 dark:text-slate-400">
+                            Mercado Pronosticado
+                          </div>
+                          <div className="text-sm font-extrabold text-slate-900 dark:text-white mt-0.5">
+                            🎯 {item.market} ({item.selection})
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="rounded-xl bg-sky-600 px-3 py-1 text-xs font-black text-white">
+                            @{item.odds.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Tactical Analysis Box */}
+                      {item.explanation && (
+                        <div className="rounded-2xl bg-white p-3.5 border border-slate-200 shadow-sm dark:bg-slate-900/90 dark:border-slate-800 space-y-1.5">
+                          <div className="flex items-center gap-1.5 text-xs font-black text-emerald-700 dark:text-emerald-400">
+                            <span>🧠</span>
+                            <span>Análisis Cuantitativo del Encuentro:</span>
+                          </div>
+                          <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
+                            {item.explanation}
+                          </p>
                         </div>
                       )}
                     </div>
@@ -689,6 +753,58 @@ export default function HistoryPage() {
                   const isWon = parlay.result === "WON";
                   const isExpanded = Boolean(expandedParlays[parlay.id]);
 
+                  // 1. MINIMIZED / COMPACT PARLAY ROW
+                  if (!isExpanded) {
+                    return (
+                      <div
+                        key={parlay.id}
+                        className="group relative flex items-center justify-between gap-3 overflow-hidden rounded-2xl border border-slate-200/90 bg-white px-4 py-3.5 shadow-xs transition-all duration-200 hover:border-emerald-500/50 hover:shadow-md dark:border-slate-800/80 dark:bg-slate-900/90 cursor-pointer"
+                        onClick={() =>
+                          setExpandedParlays((prev) => ({ ...prev, [parlay.id]: true }))
+                        }
+                      >
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                          <span className="rounded-xl bg-emerald-100 px-2.5 py-1 text-xs font-black text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800 shrink-0">
+                            🔥 {parlay.title}
+                          </span>
+                          <div className="min-w-0">
+                            <div className="text-sm font-black text-slate-900 dark:text-white truncate">
+                              Combinada de {parlay.parlaySize} Jugadas • Cuota Total: @{parlay.totalOdds.toFixed(2)}
+                            </div>
+                            <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 truncate">
+                              📅 {parlay.date} • {parlay.legs.filter((l) => l.result === "WON").length}/{parlay.legs.length} Acertados
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                          {isWon ? (
+                            <span className="rounded-xl px-2.5 py-1 text-xs font-black bg-emerald-500 text-slate-950">
+                              ✓ GANADA (+{parlay.profit.toFixed(2)} U)
+                            </span>
+                          ) : (
+                            <span className="rounded-xl px-2.5 py-1 text-xs font-black bg-rose-600 text-white">
+                              ✗ PERDIDA (-1.00 U)
+                            </span>
+                          )}
+
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setExpandedParlays((prev) => ({ ...prev, [parlay.id]: true }));
+                            }}
+                            title="Ampliar tarjeta completa"
+                            className="flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
+                          >
+                            <span>▼</span>
+                            <span className="hidden sm:inline">Ampliar</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // 2. EXPANDED FULL PARLAY TICKET VIEW
                   return (
                     <div
                       key={parlay.id}
@@ -698,7 +814,7 @@ export default function HistoryPage() {
                           : "border-slate-200 bg-white dark:border-slate-800/80 dark:bg-slate-900/90"
                       }`}
                     >
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 sm:p-5">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800">
                         <div>
                           <div className="flex items-center gap-2">
                             <span className="rounded-xl bg-emerald-100 px-3 py-1 text-xs font-black text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800">
@@ -731,65 +847,66 @@ export default function HistoryPage() {
                             </span>
                           )}
 
+                          {/* Toggle Minimize Button */}
                           <button
                             onClick={() =>
-                              setExpandedParlays((prev) => ({ ...prev, [parlay.id]: !prev[parlay.id] }))
+                              setExpandedParlays((prev) => ({ ...prev, [parlay.id]: false }))
                             }
-                            className="rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
+                            title="Minimizar a vista compacta"
+                            className="flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
                           >
-                            {isExpanded ? "▲ Menos" : "▼ Ver Jugadas"}
+                            <span>▲</span>
+                            <span className="hidden sm:inline">Minimizar</span>
                           </button>
                         </div>
                       </div>
 
                       {/* Expanded Legs Grid */}
-                      {isExpanded && (
-                        <div className="border-t border-slate-100 bg-slate-50/60 p-4 sm:p-5 dark:border-slate-800/80 dark:bg-slate-950/40">
-                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                            {parlay.legs.map((leg, idx) => {
-                              const legWon = leg.result === "WON";
-                              return (
-                                <div
-                                  key={idx}
-                                  className={`rounded-2xl p-3.5 border text-xs ${
-                                    legWon
-                                      ? "bg-emerald-50/50 border-emerald-200 dark:bg-emerald-950/20 dark:border-emerald-900/40"
-                                      : "bg-red-50/50 border-red-200 dark:bg-red-950/20 dark:border-red-900/40"
-                                  }`}
-                                >
-                                  <div className="flex items-center justify-between gap-1 mb-1.5">
-                                    <span className="font-extrabold text-slate-600 dark:text-slate-400 text-[10px]">
-                                      #{idx + 1} • {leg.league} {leg.country ? `(${leg.country})` : ""}
+                      <div className="bg-slate-50/60 p-4 sm:p-5 dark:bg-slate-950/40">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                          {parlay.legs.map((leg, idx) => {
+                            const legWon = leg.result === "WON";
+                            return (
+                              <div
+                                key={idx}
+                                className={`rounded-2xl p-3.5 border text-xs ${
+                                  legWon
+                                    ? "bg-emerald-50/50 border-emerald-200 dark:bg-emerald-950/20 dark:border-emerald-900/40"
+                                    : "bg-red-50/50 border-red-200 dark:bg-red-950/20 dark:border-red-900/40"
+                                }`}
+                              >
+                                <div className="flex items-center justify-between gap-1 mb-1.5">
+                                  <span className="font-extrabold text-slate-600 dark:text-slate-400 text-[10px]">
+                                    #{idx + 1} • {leg.league} {leg.country ? `(${leg.country})` : ""}
+                                  </span>
+                                  {legWon ? (
+                                    <span className="text-emerald-700 dark:text-emerald-400 font-black text-[11px]">
+                                      ✓ Acierto
                                     </span>
-                                    {legWon ? (
-                                      <span className="text-emerald-700 dark:text-emerald-400 font-black text-[11px]">
-                                        ✓ Acierto
-                                      </span>
-                                    ) : (
-                                      <span className="text-red-600 dark:text-red-400 font-bold text-[11px]">
-                                        ✗ Fallo
-                                      </span>
-                                    )}
-                                  </div>
-
-                                  <div className="font-black text-slate-900 dark:text-white text-sm">
-                                    {leg.match}
-                                  </div>
-
-                                  <div className="mt-2 flex items-center justify-between border-t border-slate-200/60 pt-2 dark:border-slate-800">
-                                    <span className="font-bold text-emerald-800 dark:text-emerald-300">
-                                      🎯 {leg.market} (@{leg.odds.toFixed(2)})
+                                  ) : (
+                                    <span className="text-red-600 dark:text-red-400 font-bold text-[11px]">
+                                      ✗ Fallo
                                     </span>
-                                    <span className="rounded-lg bg-white px-2 py-0.5 font-black text-slate-900 border border-slate-200 dark:bg-slate-950 dark:text-white dark:border-slate-800">
-                                      {leg.score}
-                                    </span>
-                                  </div>
+                                  )}
                                 </div>
-                              );
-                            })}
-                          </div>
+
+                                <div className="font-black text-slate-900 dark:text-white text-sm">
+                                  {leg.match}
+                                </div>
+
+                                <div className="mt-2 flex items-center justify-between border-t border-slate-200/60 pt-2 dark:border-slate-800">
+                                  <span className="font-bold text-emerald-800 dark:text-emerald-300">
+                                    🎯 {leg.market} (@{leg.odds.toFixed(2)})
+                                  </span>
+                                  <span className="rounded-lg bg-white px-2 py-0.5 font-black text-slate-900 border border-slate-200 dark:bg-slate-950 dark:text-white dark:border-slate-800">
+                                    {leg.score}
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
-                      )}
+                      </div>
                     </div>
                   );
                 })}

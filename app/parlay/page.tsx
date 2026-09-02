@@ -414,22 +414,18 @@ export default function DailyParlayPage() {
                 const isWon = pick.status === "won";
                 const isLost = pick.status === "lost";
 
-                return (
-                  <div
-                    key={pick.id || `${pick.fixtureId}-${pick.market}`}
-                    className={`overflow-hidden rounded-3xl border transition shadow-sm ${
-                      isWon
-                        ? "border-emerald-300 bg-white dark:border-emerald-800/80 dark:bg-slate-900"
-                        : isLost
-                        ? "border-rose-300 bg-white dark:border-rose-800/80 dark:bg-slate-900"
-                        : "border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
-                    }`}
-                  >
-                    {/* Header Row (Always visible) */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4">
-                      <div className="flex items-start sm:items-center gap-3.5">
+                // 1. MINIMIZED / COMPACT ROW VIEW (Identical to Dashboard / Picks)
+                if (!isLegExpanded) {
+                  return (
+                    <div
+                      key={pick.id || `${pick.fixtureId}-${pick.market}`}
+                      onClick={() => setActiveModalPick(pick)}
+                      className="group relative flex items-center justify-between gap-3 overflow-hidden rounded-2xl border border-slate-200/90 bg-white px-4 py-3 shadow-xs transition-all duration-200 hover:border-emerald-500/50 hover:shadow-md dark:border-slate-800/80 dark:bg-slate-900/90 cursor-pointer"
+                    >
+                      {/* Left: Index, League & Teams */}
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
                         <div
-                          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl text-sm font-black border ${
+                          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-black border ${
                             isWon
                               ? "bg-emerald-500 text-slate-950 border-emerald-400 shadow-md shadow-emerald-500/20"
                               : isLost
@@ -440,94 +436,166 @@ export default function DailyParlayPage() {
                           {isWon ? "✓" : isLost ? "✗" : `#${idx + 1}`}
                         </div>
 
-                        <div>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-extrabold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                              <span>🏆</span>
-                              <span>{pick.league}</span>
-                              <span className="text-slate-400">•</span>
-                              <span className="text-emerald-700 dark:text-emerald-400 font-black">
-                                {pick.country || "Mundial"}
-                              </span>
-                            </span>
-
-                            <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600 dark:bg-slate-950 dark:text-slate-400 border border-slate-200 dark:border-slate-800">
-                              🕒 {formatKickoffTime(pick.kickoff)}
-                            </span>
-
-                            {/* Settlement Status Badge */}
-                            {isWon ? (
-                              <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2.5 py-0.5 text-[10px] font-black text-emerald-800 border border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700">
-                                ✓ Acertado {pick.actualScore ? `(${pick.actualScore})` : ""}
-                              </span>
-                            ) : isLost ? (
-                              <span className="inline-flex items-center gap-1 rounded-md bg-rose-50 px-2.5 py-0.5 text-[10px] font-black text-rose-800 border border-rose-300 dark:bg-rose-950/80 dark:text-rose-300 dark:border-rose-700">
-                                ✗ No Acertado {pick.actualScore ? `(${pick.actualScore})` : ""}
-                              </span>
-                            ) : (
-                              <span className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-black border ${timeStatus.bg}`}>
-                                {timeStatus.label}
-                              </span>
-                            )}
-                          </div>
-
-                          <h3 className="mt-1 text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                        <div className="min-w-0">
+                          <div className="text-sm font-black text-slate-900 dark:text-white truncate">
                             {pick.match}
-                          </h3>
+                          </div>
+                          <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 truncate">
+                            🏆 {pick.league} {pick.country ? `(${pick.country})` : ""} • ⏰ {formatKickoffTime(pick.kickoff)}
+                          </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between sm:justify-end gap-2 border-t sm:border-t-0 border-slate-100 pt-2 sm:pt-0 dark:border-slate-800">
-                        <div className="text-right">
-                          <span className="rounded-xl bg-emerald-50 px-2.5 py-1 text-xs font-black text-emerald-800 border border-emerald-200 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-800 block">
-                            🎯 {pick.market}
-                          </span>
-                        </div>
-
-                        <span className="rounded-xl bg-sky-50 px-3 py-1.5 text-sm font-black text-sky-800 border border-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800">
+                      {/* Center: Market Badge, Odds & Probability */}
+                      <div className="hidden md:flex items-center gap-2 shrink-0">
+                        <span className="rounded-xl bg-emerald-50 border border-emerald-300 dark:bg-emerald-950/60 dark:border-emerald-700/60 px-2.5 py-1 text-xs font-black text-emerald-800 dark:text-emerald-300">
+                          🎯 {pick.market}
+                        </span>
+                        <span className="rounded-xl bg-sky-600 px-2.5 py-1 text-xs font-black text-white">
                           @{pick.odds.toFixed(2)}
                         </span>
+                        <span className="rounded-xl bg-emerald-600 px-2.5 py-1 text-xs font-black text-white">
+                          {pick.probability}%
+                        </span>
+                      </div>
 
-                        {/* Toggle Button */}
+                      {/* Right: Settlement Status & Toggle Button */}
+                      <div className="flex items-center gap-2 shrink-0">
+                        {isWon ? (
+                          <span className="rounded-xl px-2.5 py-1 text-xs font-black bg-emerald-500 text-slate-950">
+                            ✓ {pick.actualScore ? `(${pick.actualScore})` : "Ganado"}
+                          </span>
+                        ) : isLost ? (
+                          <span className="rounded-xl px-2.5 py-1 text-xs font-black bg-rose-600 text-white">
+                            ✗ {pick.actualScore ? `(${pick.actualScore})` : "Perdido"}
+                          </span>
+                        ) : (
+                          <span className={`inline-flex items-center rounded-xl px-2 py-0.5 text-[10px] font-black border ${timeStatus.bg}`}>
+                            {timeStatus.label}
+                          </span>
+                        )}
+
                         <button
-                          onClick={() =>
-                            setExpandedLegs((prev) => ({ ...prev, [legKey]: !prev[legKey] }))
-                          }
-                          className="rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setExpandedLegs((prev) => ({ ...prev, [legKey]: true }));
+                          }}
+                          title="Ampliar tarjeta completa"
+                          className="flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
                         >
-                          {isLegExpanded ? "▲ Menos" : "▼ Análisis"}
+                          <span>▼</span>
+                          <span className="hidden sm:inline">Ampliar</span>
                         </button>
+                      </div>
+                    </div>
+                  );
+                }
 
+                // 2. EXPANDED FULL VIEW (Identical to Dashboard / Picks)
+                return (
+                  <div
+                    key={pick.id || `${pick.fixtureId}-${pick.market}`}
+                    onClick={() => setActiveModalPick(pick)}
+                    className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-slate-200/90 bg-white p-5 shadow-sm transition-all duration-300 hover:border-emerald-500/50 hover:shadow-xl dark:border-slate-800/80 dark:bg-slate-900/90 cursor-pointer space-y-4"
+                  >
+                    {/* Top Bar: League, Country, Status Badge & Toggle Minimize Button */}
+                    <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3 dark:border-slate-800/80">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-100 text-xs font-black text-emerald-800 border border-emerald-300 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800">
+                          #{idx + 1}
+                        </span>
+                        <span className="inline-flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1 text-[11px] font-black text-slate-800 dark:bg-slate-800 dark:text-slate-200">
+                          <span>🏆</span>
+                          <span>{pick.league}</span>
+                          {pick.country && (
+                            <>
+                              <span className="text-slate-400 font-normal">•</span>
+                              <span className="text-emerald-700 dark:text-emerald-400">{pick.country}</span>
+                            </>
+                          )}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {isWon ? (
+                          <span className="inline-flex items-center gap-1 rounded-xl px-3 py-1 text-xs font-black bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30">
+                            ✓ {pick.actualScore ? `(${pick.actualScore})` : "Ganado"}
+                          </span>
+                        ) : isLost ? (
+                          <span className="inline-flex items-center gap-1 rounded-xl px-3 py-1 text-xs font-black bg-rose-600 text-white shadow-md shadow-rose-600/30">
+                            ✗ {pick.actualScore ? `(${pick.actualScore})` : "Perdido"}
+                          </span>
+                        ) : (
+                          <span className={`inline-flex items-center rounded-xl px-2.5 py-1 text-[10px] font-black border ${timeStatus.bg}`}>
+                            {timeStatus.label}
+                          </span>
+                        )}
+
+                        {/* Toggle Minimize Button */}
                         <button
-                          onClick={() => setActiveModalPick(pick)}
-                          className="rounded-xl bg-slate-100 p-2 text-xs font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
-                          title="Ver H2H y últimos 5 partidos"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setExpandedLegs((prev) => ({ ...prev, [legKey]: false }));
+                          }}
+                          title="Minimizar a vista compacta"
+                          className="flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
                         >
-                          📊
+                          <span>▲</span>
+                          <span className="hidden sm:inline">Minimizar</span>
                         </button>
                       </div>
                     </div>
 
-                    {/* Expanded Content: Dynamic AI Analysis & Detailed Metrics */}
-                    {isLegExpanded && (
-                      <div className="border-t border-slate-100 bg-slate-50/70 p-4 dark:border-slate-800/80 dark:bg-slate-950/50 space-y-3">
-                        <div className="rounded-2xl bg-white p-3.5 border border-slate-200 shadow-sm dark:bg-slate-900/90 dark:border-slate-800">
-                          <div className="flex items-center gap-1.5 text-xs font-black text-emerald-700 dark:text-emerald-400">
-                            <span>🧠</span>
-                            <span>Análisis Táctico y Estadístico del Modelo:</span>
-                          </div>
-                          <p className="mt-1.5 text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
-                            {pick.explanation}
-                          </p>
-                        </div>
-
-                        <div className="flex items-center justify-between text-xs font-bold text-slate-500 dark:text-slate-400">
-                          <span>Confianza: <strong className="text-slate-800 dark:text-slate-200">{pick.confidence} ({pick.probability}%)</strong></span>
-                          <span>Valor Matemático: <strong className="text-emerald-600 dark:text-emerald-400">+{pick.edge}%</strong></span>
-                          <span>Rating Elo: <strong className="text-sky-600 dark:text-sky-400">{Math.round(pick.homeElo || 1500)} vs {Math.round(pick.awayElo || 1500)}</strong></span>
-                        </div>
+                    {/* Kickoff & Badges */}
+                    <div className="flex items-center justify-between flex-wrap gap-2 text-xs">
+                      <span className="font-bold text-slate-600 dark:text-slate-400">
+                        ⏰ {formatKickoffTime(pick.kickoff)} (Ecuador UTC-5)
+                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-black text-emerald-900 border border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700">
+                          {pick.confidence} ({pick.probability}%)
+                        </span>
                       </div>
-                    )}
+                    </div>
+
+                    {/* Match Teams Box */}
+                    <div className="rounded-2xl bg-slate-50 p-3.5 border border-slate-100 dark:bg-slate-950/80 dark:border-slate-800/80 flex items-center justify-between">
+                      <div className="font-black text-slate-900 dark:text-white text-base">
+                        {pick.match}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="rounded-xl bg-sky-600 px-3 py-1.5 text-sm font-black text-white">
+                          @{pick.odds.toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Tactical Analysis Box */}
+                    <div className="rounded-2xl bg-white p-3.5 border border-slate-200 shadow-sm dark:bg-slate-900/90 dark:border-slate-800 space-y-1.5">
+                      <div className="flex items-center gap-1.5 text-xs font-black text-emerald-700 dark:text-emerald-400">
+                        <span>🧠</span>
+                        <span>Análisis Táctico y Estadístico del Modelo:</span>
+                      </div>
+                      <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
+                        {pick.explanation}
+                      </p>
+                    </div>
+
+                    {/* Footer Action: H2H button */}
+                    <div className="flex items-center justify-between pt-1">
+                      <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                        🎯 Mercado: <strong>{pick.market}</strong> (+{pick.edge}% Valor)
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveModalPick(pick);
+                        }}
+                        className="flex items-center gap-1 rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
+                      >
+                        <span>📊 Ver H2H y Racha</span>
+                      </button>
+                    </div>
                   </div>
                 );
               })}
