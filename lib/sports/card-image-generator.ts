@@ -266,3 +266,274 @@ export async function shareCardAsImage(
     window.open(`https://t.me/share/url?url=https://smartbetbot.educandotea.com&text=${shareText}`, "_blank");
   }
 }
+
+/**
+ * Generates a high-resolution branded visual Ticket image for a complete Parlay
+ */
+export async function generateParlayCardBlob(
+  picks: MarketOpportunity[],
+  totalOdds: number,
+  combinedProb: number,
+  stake: number
+): Promise<Blob> {
+  const canvas = document.createElement("canvas");
+  const width = 850;
+  const legHeight = 72;
+  const height = 290 + picks.length * legHeight + 70;
+  canvas.width = width;
+  canvas.height = height;
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Could not get canvas context");
+
+  // Background Gradient
+  const bgGrad = ctx.createLinearGradient(0, 0, width, height);
+  bgGrad.addColorStop(0, "#080c14");
+  bgGrad.addColorStop(0.5, "#0b1324");
+  bgGrad.addColorStop(1, "#080c14");
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, width, height);
+
+  // Outer Border with Glow
+  ctx.strokeStyle = "rgba(16, 185, 129, 0.45)";
+  ctx.lineWidth = 4;
+  ctx.strokeRect(16, 16, width - 32, height - 32);
+
+  // Header Banner
+  ctx.fillStyle = "rgba(16, 185, 129, 0.15)";
+  ctx.fillRect(20, 20, width - 40, 80);
+
+  // Logo & Title
+  ctx.fillStyle = "#10b981";
+  ctx.font = "900 24px system-ui, -apple-system, sans-serif";
+  ctx.fillText("🔥 SMARTBETBOT AI", 40, 58);
+
+  ctx.fillStyle = "#f8fafc";
+  ctx.font = "900 18px system-ui, -apple-system, sans-serif";
+  ctx.fillText(`PARLEY COMBINADO DEL DÍA (${picks.length} JUGADAS)`, 40, 84);
+
+  // Date
+  const now = new Date();
+  const dateFormatted = now.toLocaleDateString("es-ES", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+  ctx.fillStyle = "#94a3b8";
+  ctx.font = "bold 15px system-ui, -apple-system, sans-serif";
+  ctx.textAlign = "right";
+  ctx.fillText(`📅 ${dateFormatted}`, width - 40, 68);
+  ctx.textAlign = "left";
+
+  // Summary Metrics Card
+  ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
+  ctx.beginPath();
+  ctx.roundRect(40, 115, width - 80, 95, 16);
+  ctx.fill();
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Metric 1: Total Odds
+  ctx.fillStyle = "#94a3b8";
+  ctx.font = "bold 12px system-ui, -apple-system, sans-serif";
+  ctx.fillText("CUOTA ACUMULADA", 65, 142);
+  ctx.fillStyle = "#38bdf8";
+  ctx.font = "900 26px system-ui, -apple-system, sans-serif";
+  ctx.fillText(`@${totalOdds.toFixed(2)}`, 65, 180);
+
+  // Metric 2: Combined Probability
+  ctx.fillStyle = "#94a3b8";
+  ctx.font = "bold 12px system-ui, -apple-system, sans-serif";
+  ctx.fillText("PROBABILIDAD COMBINADA", 290, 142);
+  ctx.fillStyle = "#34d399";
+  ctx.font = "900 26px system-ui, -apple-system, sans-serif";
+  ctx.fillText(`${combinedProb.toFixed(1)}%`, 290, 180);
+
+  // Metric 3: Potential Return
+  const potentialReturn = (stake * totalOdds).toFixed(2);
+  const profit = (stake * totalOdds - stake).toFixed(2);
+  ctx.fillStyle = "#94a3b8";
+  ctx.font = "bold 12px system-ui, -apple-system, sans-serif";
+  ctx.fillText(`RETORNO (APOSTANDO $${stake})`, 540, 142);
+  ctx.fillStyle = "#facc15";
+  ctx.font = "900 26px system-ui, -apple-system, sans-serif";
+  ctx.fillText(`$${potentialReturn} (+$${profit})`, 540, 180);
+
+  // Legs Title
+  ctx.fillStyle = "#94a3b8";
+  ctx.font = "900 13px system-ui, -apple-system, sans-serif";
+  ctx.fillText("SELECCIONES DEL TICKET:", 40, 238);
+
+  // Render Each Match Leg
+  let y = 250;
+  picks.forEach((p, idx) => {
+    // Leg Card Background
+    ctx.fillStyle = idx % 2 === 0 ? "rgba(255, 255, 255, 0.04)" : "rgba(255, 255, 255, 0.02)";
+    ctx.beginPath();
+    ctx.roundRect(40, y, width - 80, legHeight - 8, 12);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.07)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Index Number Pill
+    ctx.fillStyle = "rgba(16, 185, 129, 0.2)";
+    ctx.beginPath();
+    ctx.roundRect(50, y + 16, 32, 32, 8);
+    ctx.fill();
+    ctx.fillStyle = "#34d399";
+    ctx.font = "900 15px system-ui, -apple-system, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(`${idx + 1}`, 66, y + 38);
+    ctx.textAlign = "left";
+
+    // Match Teams & League
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "900 16px system-ui, -apple-system, sans-serif";
+    ctx.fillText(`${p.homeTeam} vs ${p.awayTeam}`, 95, y + 28);
+
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = "bold 12px system-ui, -apple-system, sans-serif";
+    ctx.fillText(`🏆 ${p.league} ${p.country ? `(${p.country})` : ""}`, 95, y + 48);
+
+    // Pick & Selection Box
+    ctx.fillStyle = "rgba(16, 185, 129, 0.15)";
+    ctx.beginPath();
+    ctx.roundRect(width - 380, y + 14, 220, 36, 10);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(16, 185, 129, 0.3)";
+    ctx.stroke();
+    ctx.fillStyle = "#10b981";
+    ctx.font = "900 13px system-ui, -apple-system, sans-serif";
+    ctx.fillText(`🎯 ${p.market} (${p.selection})`, width - 370, y + 37);
+
+    // Odds Pill
+    ctx.fillStyle = "#0284c7";
+    ctx.beginPath();
+    ctx.roundRect(width - 150, y + 14, 95, 36, 10);
+    ctx.fill();
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "900 15px system-ui, -apple-system, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(`@${p.odds.toFixed(2)}`, width - 102, y + 38);
+    ctx.textAlign = "left";
+
+    y += legHeight;
+  });
+
+  // Footer Banner
+  ctx.fillStyle = "rgba(16, 185, 129, 0.08)";
+  ctx.fillRect(20, height - 55, width - 40, 35);
+
+  ctx.fillStyle = "#10b981";
+  ctx.font = "bold 12px system-ui, -apple-system, sans-serif";
+  ctx.fillText("🔒 Ticket Oficial Inmutable de SmartBetBot AI", 40, height - 33);
+
+  ctx.fillStyle = "#94a3b8";
+  ctx.font = "bold 12px system-ui, -apple-system, sans-serif";
+  ctx.textAlign = "right";
+  ctx.fillText("🌐 smartbetbot.educandotea.com/parlay", width - 40, height - 33);
+  ctx.textAlign = "left";
+
+  return new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) resolve(blob);
+      else reject(new Error("Failed to create blob from parlay canvas"));
+    }, "image/png");
+  });
+}
+
+/**
+ * Copies the Parlay Ticket as an Image directly to the OS clipboard (Ctrl+V ready)
+ */
+export async function copyParlayCardImageToClipboard(
+  picks: MarketOpportunity[],
+  totalOdds: number,
+  combinedProb: number,
+  stake: number
+): Promise<boolean> {
+  try {
+    const blob = await generateParlayCardBlob(picks, totalOdds, combinedProb, stake);
+
+    if (navigator.clipboard && window.ClipboardItem) {
+      const item = new ClipboardItem({ "image/png": blob });
+      await navigator.clipboard.write([item]);
+      return true;
+    }
+
+    // Fallback: download if clipboard API not permitted
+    downloadParlayCardImage(picks, totalOdds, combinedProb, stake, blob);
+    return true;
+  } catch (err) {
+    console.warn("Parlay clipboard write failed, downloading image as fallback:", err);
+    try {
+      const blob = await generateParlayCardBlob(picks, totalOdds, combinedProb, stake);
+      downloadParlayCardImage(picks, totalOdds, combinedProb, stake, blob);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+}
+
+/**
+ * Downloads the Parlay Ticket as a PNG Image
+ */
+export async function downloadParlayCardImage(
+  picks: MarketOpportunity[],
+  totalOdds: number,
+  combinedProb: number,
+  stake: number,
+  existingBlob?: Blob
+) {
+  const blob = existingBlob || (await generateParlayCardBlob(picks, totalOdds, combinedProb, stake));
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `SmartBetBot-Parley-${picks.length}-Jugadas.png`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/**
+ * Shares the Parlay Ticket as an Image via Web Share API or launches WhatsApp/Telegram
+ */
+export async function shareParlayCardAsImage(
+  picks: MarketOpportunity[],
+  totalOdds: number,
+  combinedProb: number,
+  stake: number,
+  platform: "whatsapp" | "telegram"
+): Promise<void> {
+  const blob = await generateParlayCardBlob(picks, totalOdds, combinedProb, stake);
+  const file = new File([blob], `SmartBetBot-Parley-${picks.length}-Jugadas.png`, { type: "image/png" });
+
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({
+        title: `🔥 Parley Combinado del Día (${picks.length} Jugadas)`,
+        text: `🔥 Cuota Total: @${totalOdds.toFixed(2)} | Prob: ${combinedProb.toFixed(1)}%`,
+        files: [file],
+      });
+      return;
+    } catch (err) {
+      if ((err as any)?.name === "AbortError") return;
+    }
+  }
+
+  // Fallback: Copy image to clipboard and open WhatsApp / Telegram
+  await copyParlayCardImageToClipboard(picks, totalOdds, combinedProb, stake);
+  const shareText = encodeURIComponent(
+    `🔥 *PARLEY COMBINADO DEL DÍA (${picks.length} JUGADAS)*\n🎯 *Cuota Total:* @${totalOdds.toFixed(2)} | *Prob:* ${combinedProb.toFixed(1)}%\n💰 *Retorno Potencial (Stake $${stake}):* *$${(stake * totalOdds).toFixed(2)}*\n\n_(¡Tarjeta gráfica del parley copiada al portapapeles! Pégala con Ctrl+V en este chat)_\n🌐 https://smartbetbot.educandotea.com/parlay`
+  );
+
+  if (platform === "whatsapp") {
+    window.open(`https://api.whatsapp.com/send?text=${shareText}`, "_blank");
+  } else {
+    window.open(`https://t.me/share/url?url=https://smartbetbot.educandotea.com/parlay&text=${shareText}`, "_blank");
+  }
+}

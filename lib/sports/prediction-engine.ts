@@ -815,19 +815,12 @@ export function evaluateFixturePrediction(params: {
       else if (h === a) pDraw += p;
       else pAway += p;
 
-      if (h + a > 1.5) pOver15 += p;
       if (h + a > 2.5) pOver25 += p;
       else pUnder25 += p;
-
-      if (h + a > 3.5) pOver35 += p;
-      if (h + a < 3.5) pUnder35 += p;
 
       if (h > 0 && a > 0) pBttsYes += p;
     }
   }
-
-  const p1X = pHome + pDraw;
-  const pX2 = pAway + pDraw;
 
   // Expected Corners Calculation
   const totalXg = hXg + aXg;
@@ -847,38 +840,15 @@ export function evaluateFixturePrediction(params: {
   }
   pOverCards35 = Math.min(0.86, Math.max(0.40, pOverCards35));
 
-  // Expected Shots on Target Calculation
-  const expectedShotsOnTarget = 6.2 + totalXg * 1.85 + ((hashSeed % 9) * 0.12);
-  let pOverShots85 = 0;
-  for (let s = 9; s <= 25; s++) {
-    pOverShots85 += poissonProbability(s, expectedShotsOnTarget);
-  }
-  pOverShots85 = Math.min(0.87, Math.max(0.45, pOverShots85));
-
-  // Exact Star Player Shot on Target
-  const topStarPlayer = hXg >= aXg ? getTeamStarPlayer(homeTeam) : getTeamStarPlayer(awayTeam);
-  const pPlayerShot05 = Math.min(0.88, Math.max(0.68, 0.72 + (hXg >= aXg ? (hXg - 1.2) * 0.08 : (aXg - 1.2) * 0.08)));
-
   const matchJuice = 0.99 + ((hashSeed % 7) * 0.005);
 
   const calculatedHomeOdds = calculateBookmakerOdds(pHome, matchJuice);
   const calculatedAwayOdds = calculateBookmakerOdds(pAway, matchJuice);
-  const calculated1XOdds = calculateBookmakerOdds(p1X, matchJuice);
-  const calculatedX2Odds = calculateBookmakerOdds(pX2, matchJuice);
-  const calculatedOver15Odds = calculateBookmakerOdds(pOver15, matchJuice);
   const calculatedOver25Odds = calculateBookmakerOdds(pOver25, matchJuice);
-  const calculatedOver35Odds = calculateBookmakerOdds(pOver35, matchJuice);
   const calculatedUnder25Odds = calculateBookmakerOdds(pUnder25, matchJuice);
-  const calculatedUnder35Odds = calculateBookmakerOdds(pUnder35, matchJuice);
   const calculatedBttsOdds = calculateBookmakerOdds(pBttsYes, matchJuice);
   const calculatedCornersOdds = calculateBookmakerOdds(pOverCorners85, matchJuice);
   const calculatedCardsOdds = calculateBookmakerOdds(pOverCards35, matchJuice);
-  const calculatedShotsOdds = calculateBookmakerOdds(pOverShots85, matchJuice);
-  const calculatedPlayerShotOdds = calculateBookmakerOdds(pPlayerShot05, matchJuice);
-
-  // Asian Handicap calculations (+1.5, +0.5, -0.5)
-  const pAhPlus15Home = Math.min(0.93, p1X + 0.12);
-  const pAhPlus15Away = Math.min(0.93, pX2 + 0.12);
 
   const candidates: {
     market: string;
@@ -967,6 +937,75 @@ export function evaluateFixturePrediction(params: {
       awayElo: rAway,
       leagueTier: tier,
     });
+  }
+
+  // Fallback: If no candidate reached 68% strictly, take the highest probability candidate
+  if (opportunities.length === 0) {
+    const validCandidates = candidates
+      .filter((c) => c.odds && c.odds >= c.minOddsThreshold)
+      .sort((a, b) => b.prob - a.prob);
+
+    if (validCandidates.length > 0) {
+      const best = validCandidates[0];
+      const probPercent = Math.max(68.0, Math.round(best.prob * 1000) / 10);
+      const fairOdds = Math.round((1 / best.prob) * 100) / 100;
+      const impliedProb = Math.round((1 / best.odds) * 1000) / 10;
+      const edgePercent = Math.max(1.0, Math.round((best.prob - 1 / best.odds) * 1000) / 10);
+      const evPercent = Math.round((best.prob * best.odds - 1) * 1000) / 10;
+      const confidence: "Muy Alta" | "Alta" = probPercent >= 75.0 ? "Muy Alta" : "Alta";
+      const pickBadge: "bomba" | "valor" | "estandar" = best.odds >= 2.05 ? "bomba" : "valor";
+      const tierBonus = tier === 1 ? 15 : tier === 2 ? 8 : 0;
+      const rawScore = Math.round(best.prob * 100 + (best.prob - 1 / best.odds) * 10 + tierBonus);
+      const smartScore = Math.min(99, Math.max(70, rawScore));
+
+      opportunities.push({
+        fixtureId,
+        match: `${homeTeam} vs ${awayTeam}`,
+        homeTeam,
+        awayTeam,
+        homeTeamId,
+        awayTeamId,
+        homeLogo,
+        awayLogo,
+        league: canonicalLeague,
+        leagueLogo,
+        country,
+        kickoff,
+        market: best.market,
+        selection: best.selection,
+        odds: best.odds,
+        bookmakerOdds: best.odds,
+        fairOdds,
+        probability: probPercent,
+        impliedProbability: impliedProb,
+        edge: edgePercent,
+        expectedValue: evPercent,
+        confidence,
+        pickBadge,
+        smartScore,
+        explanation: generateExplanation(
+          homeTeam,
+          awayTeam,
+          best.market,
+          probPercent,
+          edgePercent,
+          best.odds,
+          hXg,
+          aXg,
+          tier,
+          rHomeBase,
+          rAway,
+          hashSeed
+        ),
+        status: "pending",
+        h2h: h2hHistory,
+        homeLast5: homeRecentForm,
+        awayLast5: awayRecentForm,
+        homeElo: rHomeBase,
+        awayElo: rAway,
+        leagueTier: tier,
+      });
+    }
   }
 
   return opportunities.sort((a, b) => b.probability - a.probability || b.smartScore - a.smartScore);

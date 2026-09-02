@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 import { useLanguage } from "@/context/LanguageContext";
+import { copyParlayCardImageToClipboard } from "@/lib/sports/card-image-generator";
 
 interface RecommendedParlayProps {
   predictions: MarketOpportunity[];
@@ -119,6 +120,27 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
     selectedPicks.reduce((acc, p) => acc * (p.probability / 100), 1) * 100;
   const potentialProfit = (stake * totalOdds - stake).toFixed(2);
   const potentialTotalReturn = (stake * totalOdds).toFixed(2);
+
+  const [copyingImage, setCopyingImage] = useState(false);
+  const [copyImageSuccess, setCopyImageSuccess] = useState(false);
+
+  const handleCopyParlayImage = async () => {
+    try {
+      setCopyingImage(true);
+      const ok = await copyParlayCardImageToClipboard(
+        selectedPicks,
+        totalOdds,
+        Number(combinedProbability.toFixed(1)),
+        stake
+      );
+      if (ok) {
+        setCopyImageSuccess(true);
+        setTimeout(() => setCopyImageSuccess(false), 3500);
+      }
+    } finally {
+      setCopyingImage(false);
+    }
+  };
 
   const handleCopyParlay = () => {
     const lines = [
@@ -298,13 +320,27 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
             </div>
           </div>
 
-          <div className="mt-5">
+          <div className="mt-5 space-y-2">
+            <button
+              onClick={handleCopyParlayImage}
+              className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 py-3 text-xs font-black text-slate-950 shadow-lg shadow-emerald-500/20 transition hover:brightness-110 cursor-pointer"
+            >
+              <span>📸</span>
+              <span>
+                {copyImageSuccess
+                  ? "✓ ¡Imagen Copiada! (Pega con Ctrl+V)"
+                  : copyingImage
+                  ? "Generando Imagen PNG..."
+                  : "📸 Copiar Parley como Imagen"}
+              </span>
+            </button>
+
             <button
               onClick={handleCopyParlay}
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 py-3 text-xs font-black text-slate-950 shadow-lg shadow-emerald-500/20 transition hover:from-emerald-400 hover:to-teal-400 hover:scale-[1.01] cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 rounded-xl bg-slate-900 py-2.5 text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800 transition cursor-pointer"
             >
-              <span>{copied ? "✓" : "📋"}</span>
-              <span>{copied ? "¡Parley Copiado al Portapapeles!" : "Copiar Parley para Telegram/WhatsApp"}</span>
+              <span>📋</span>
+              <span>{copied ? "✓ ¡Texto Copiado!" : "Copiar como Texto"}</span>
             </button>
           </div>
         </div>

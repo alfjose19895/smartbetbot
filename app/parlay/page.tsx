@@ -5,6 +5,11 @@ import { Navbar } from "@/components/Navbar";
 import { MatchDetailModal } from "@/components/MatchDetailModal";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 import { useLanguage } from "@/context/LanguageContext";
+import {
+  copyParlayCardImageToClipboard,
+  downloadParlayCardImage,
+  shareParlayCardAsImage,
+} from "@/lib/sports/card-image-generator";
 
 function formatKickoffTime(dateString: string): string {
   try {
@@ -200,6 +205,56 @@ export default function DailyParlayPage() {
     "🔒 _Pronóstico Oficial Diario de SmartBetBot - Inmutable_",
     "🔗 https://www.smartbetbot.educandotea.com/parlay",
   ].join("\n");
+
+  const [copyingImage, setCopyingImage] = useState(false);
+  const [copyImageSuccess, setCopyImageSuccess] = useState(false);
+
+  const handleCopyParlayImage = async () => {
+    try {
+      setCopyingImage(true);
+      const ok = await copyParlayCardImageToClipboard(
+        selectedPicks,
+        totalOdds,
+        Number(combinedProbability.toFixed(1)),
+        stake
+      );
+      if (ok) {
+        setCopyImageSuccess(true);
+        setTimeout(() => setCopyImageSuccess(false), 3500);
+      }
+    } finally {
+      setCopyingImage(false);
+    }
+  };
+
+  const handleDownloadParlayImage = async () => {
+    await downloadParlayCardImage(
+      selectedPicks,
+      totalOdds,
+      Number(combinedProbability.toFixed(1)),
+      stake
+    );
+  };
+
+  const handleShareParlayWhatsAppImage = async () => {
+    await shareParlayCardAsImage(
+      selectedPicks,
+      totalOdds,
+      Number(combinedProbability.toFixed(1)),
+      stake,
+      "whatsapp"
+    );
+  };
+
+  const handleShareParlayTelegramImage = async () => {
+    await shareParlayCardAsImage(
+      selectedPicks,
+      totalOdds,
+      Number(combinedProbability.toFixed(1)),
+      stake,
+      "telegram"
+    );
+  };
 
   const handleCopyParlay = () => {
     navigator.clipboard.writeText(parlayShareText);
@@ -465,32 +520,59 @@ export default function DailyParlayPage() {
                 </div>
               </div>
 
-              {/* Action Buttons: Copy, WhatsApp & Telegram Direct Share */}
-              <div className="mt-5 space-y-2">
+              {/* Action Buttons: Visual Image Copy & Direct Sharing */}
+              <div className="mt-5 space-y-2.5">
+                {/* Primary Button: Copy Ticket as Image */}
                 <button
-                  onClick={handleCopyParlay}
-                  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 py-3.5 text-xs font-black text-slate-950 shadow-lg shadow-emerald-500/25 transition hover:from-emerald-400 hover:to-teal-400 hover:scale-[1.01] cursor-pointer"
+                  onClick={handleCopyParlayImage}
+                  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 py-3.5 px-4 text-xs font-black text-slate-950 shadow-lg shadow-emerald-500/25 transition hover:brightness-110 active:scale-[0.99] cursor-pointer"
                 >
-                  <span>{copied ? "✓" : "📋"}</span>
-                  <span>{copied ? "¡Parley Copiado al Portapapeles!" : "Copiar Parley Completo"}</span>
+                  <span>📸</span>
+                  <span>
+                    {copyImageSuccess
+                      ? "✓ ¡Imagen del Parley Copiada! (Pega con Ctrl+V)"
+                      : copyingImage
+                      ? "Generando Imagen PNG..."
+                      : "📸 Copiar Parley como Imagen"}
+                  </span>
                 </button>
 
-                <div className="grid grid-cols-2 gap-2">
+                {/* Secondary Image Actions: WhatsApp, Telegram & Download */}
+                <div className="grid grid-cols-3 gap-2">
                   <button
-                    onClick={handleShareWhatsApp}
-                    className="flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 py-2.5 text-xs font-black text-white hover:bg-emerald-500 shadow-sm transition cursor-pointer"
+                    onClick={handleShareParlayWhatsAppImage}
+                    title="Compartir tarjeta gráfica en WhatsApp"
+                    className="flex items-center justify-center gap-1 rounded-xl bg-emerald-600 py-2.5 text-xs font-black text-white hover:bg-emerald-500 shadow-sm transition cursor-pointer"
                   >
                     <span>💬</span>
-                    <span>Enviar a WhatsApp</span>
+                    <span>WhatsApp</span>
                   </button>
                   <button
-                    onClick={handleShareTelegram}
-                    className="flex items-center justify-center gap-1.5 rounded-xl bg-sky-600 py-2.5 text-xs font-black text-white hover:bg-sky-500 shadow-sm transition cursor-pointer"
+                    onClick={handleShareParlayTelegramImage}
+                    title="Compartir tarjeta gráfica en Telegram"
+                    className="flex items-center justify-center gap-1 rounded-xl bg-sky-600 py-2.5 text-xs font-black text-white hover:bg-sky-500 shadow-sm transition cursor-pointer"
                   >
                     <span>✈️</span>
-                    <span>Enviar a Telegram</span>
+                    <span>Telegram</span>
+                  </button>
+                  <button
+                    onClick={handleDownloadParlayImage}
+                    title="Descargar imagen PNG del Parley"
+                    className="flex items-center justify-center gap-1 rounded-xl bg-slate-800 py-2.5 text-xs font-black text-slate-200 hover:bg-slate-700 border border-slate-700 shadow-sm transition cursor-pointer"
+                  >
+                    <span>📥</span>
+                    <span>Descargar</span>
                   </button>
                 </div>
+
+                {/* Tertiary Button: Copy as Text */}
+                <button
+                  onClick={handleCopyParlay}
+                  className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 py-2 text-[11px] font-bold text-slate-400 hover:text-slate-200 hover:bg-slate-800 border border-slate-800 transition cursor-pointer"
+                >
+                  <span>📋</span>
+                  <span>{copied ? "✓ ¡Texto Copiado!" : "Copiar como Texto"}</span>
+                </button>
               </div>
 
               <div className="mt-4 text-center">

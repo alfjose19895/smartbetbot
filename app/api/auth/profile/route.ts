@@ -14,6 +14,16 @@ export async function GET() {
   let phone = "";
 
   try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user?.user_metadata) {
+      phone = String(user.user_metadata.phone || user.user_metadata.whatsapp || "");
+      displayName = String(user.user_metadata.full_name || displayName);
+    }
+  } catch {
+    // ignore
+  }
+
+  try {
     const { data: profile } = await supabase
       .from("profiles")
       .select(`
@@ -33,7 +43,7 @@ export async function GET() {
 
     if (profile) {
       displayName = profile.display_name || displayName;
-      phone = profile.phone || "";
+      if (profile.phone) phone = profile.phone;
       const rObj = Array.isArray(profile.roles) ? profile.roles[0] : profile.roles;
       if (rObj?.name) roleName = rObj.name;
     }
@@ -66,7 +76,24 @@ export async function POST(request: Request) {
 
     const supabase = await createClient();
 
-    // 1. Update display name & phone in public.profiles and auth metadata
+    // 1. Always update Supabase Auth User metadata (persisted permanently in auth.users)
+    const userMetadataUpdate: Record<string, unknown> = {};
+    if (fullName !== undefined && typeof fullName === "string") {
+      userMetadataUpdate.full_name = fullName.trim();
+    }
+    if (phone !== undefined && typeof phone === "string") {
+      userMetadataUpdate.phone = phone.trim();
+      userMetadataUpdate.whatsapp = phone.trim();
+    }
+
+    const { error: authUpdateErr } = await supabase.auth.updateUser({
+      data: userMetadataUpdate,
+    });
+    if (authUpdateErr) {
+      console.warn("Could not update auth metadata:", authUpdateErr.message);
+    }
+
+    // 2. Also try updating public.profiles table if columns exist
     const updatePayload: Record<string, unknown> = {};
     if (fullName && typeof fullName === "string" && fullName.trim().length >= 2) {
       updatePayload.display_name = fullName.trim();
@@ -84,14 +111,6 @@ export async function POST(request: Request) {
       } catch (err) {
         console.warn("Could not update profiles table:", err);
       }
-
-      await supabase.auth.updateUser({
-        data: {
-          full_name: fullName?.trim() || identity.fullName,
-          phone: phone?.trim(),
-          whatsapp: phone?.trim(),
-        },
-      });
     }
 
     // 2. Update email if changed
