@@ -15,6 +15,7 @@ import {
 import type { AuthActionState } from "@/features/auth/types";
 import { isSupabaseConfigured, SUPABASE_CONFIGURATION_MESSAGE, getSiteUrl } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
+import { logAuditEvent } from "@/lib/audit/audit-logger";
 
 function formValue(formData: FormData, name: string): string {
   const value = formData.get(name);
@@ -84,8 +85,28 @@ export async function loginAction(
     const userEmail = (data?.user?.email || "").toLowerCase();
     const isAdmin = role === "admin" || userEmail.includes("admin") || userEmail.includes("ajhs1589");
 
+    let ip = "127.0.0.1";
+    let userAgent: string | undefined = undefined;
+    try {
+      const headerList = await headers();
+      ip = headerList.get("x-forwarded-for")?.split(",")[0]?.trim() || headerList.get("x-real-ip") || "127.0.0.1";
+      userAgent = headerList.get("user-agent") || undefined;
+    } catch {
+      // ignore
+    }
+
     if (!isAdmin) {
       if (status === "paused" || data?.user?.banned_until) {
+        await logAuditEvent({
+          userId: data?.user?.id,
+          email: parsed.data.email,
+          fullName: meta.full_name || meta.name,
+          action: "user_paused",
+          actionLabel: "Intento de Acceso - Cuenta Pausada",
+          ip,
+          userAgent,
+        });
+
         await supabase.auth.signOut({ scope: "local" });
         return {
           status: "error",
@@ -94,12 +115,35 @@ export async function loginAction(
       }
 
       if (status === "pending" || status === "pending_approval" || isApproved === false) {
+        await logAuditEvent({
+          userId: data?.user?.id,
+          email: parsed.data.email,
+          fullName: meta.full_name || meta.name,
+          action: "login_failed",
+          actionLabel: "Intento de Acceso - Cuenta Pendiente de Aprobación",
+          ip,
+          userAgent,
+        });
+
         await supabase.auth.signOut({ scope: "local" });
         return {
           status: "error",
           message: "Tu cuenta está pendiente de validación y aprobación por el administrador. Te notificaremos en cuanto tu acceso sea habilitado.",
         };
       }
+    }
+
+    // Successful login audit event
+    if (data?.user) {
+      await logAuditEvent({
+        userId: data.user.id,
+        email: data.user.email || parsed.data.email,
+        fullName: meta.full_name || meta.name || data.user.email,
+        action: "login_success",
+        actionLabel: "Inicio de Sesión Exitoso",
+        ip,
+        userAgent,
+      });
     }
   } catch {
     return unexpectedState();
