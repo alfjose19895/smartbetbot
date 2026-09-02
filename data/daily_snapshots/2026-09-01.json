@@ -598,7 +598,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "Despliegue exterior y asedio constante: Leicester y Plymouth utilizan carriles laterales y centros continuos al área rival, generando un promedio superior a 9.2 saques de esquina por encuentro. Proyección de 70.5% para superar la línea de 8.5 córners a cuota @1.42.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -712,7 +712,7 @@
     "homeElo": 1620,
     "awayElo": 1626,
     "leagueTier": 3,
-    "actualScore": "2 - 0 (10 Córners)"
+    "actualScore": "2 - 0"
   },
   {
     "fixtureId": 1563125,
@@ -741,7 +741,7 @@
     "pickBadge": "estandar",
     "smartScore": 78,
     "explanation": "Volumen de llegadas por bandas: El esquema táctico de ambos clubes favorece tiros bloqueados y desvíos a línea final. El modelo cuantitativo estima 70.3% de probabilidad de éxito para el Over 8.5 saques de esquina.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -855,7 +855,7 @@
     "homeElo": 1482,
     "awayElo": 1487,
     "leagueTier": 2,
-    "actualScore": "2 - 0 (10 Córners)"
+    "actualScore": "2 - 0"
   },
   {
     "fixtureId": 1564279,
@@ -884,7 +884,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "Volumen de llegadas por bandas: El esquema táctico de ambos clubes favorece tiros bloqueados y desvíos a línea final. El modelo cuantitativo estima 69.9% de probabilidad de éxito para el Over 8.5 saques de esquina.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -998,7 +998,7 @@
     "homeElo": 1490,
     "awayElo": 1510,
     "leagueTier": 3,
-    "actualScore": "0 - 0 (11 Córners)"
+    "actualScore": "0 - 0"
   },
   {
     "fixtureId": 1561915,
@@ -1311,7 +1311,7 @@
     "pickBadge": "valor",
     "smartScore": 74,
     "explanation": "Alta fricción táctica y rigor disciplinario: La rivalidad y el promedio de faltas tácticas cometidas entre Olympia Yerevan y Araks Ararat proyectan un encuentro de gran intensidad en la medular. El algoritmo estima un 68% de probabilidad para superar las 3.5 tarjetas a cuota @1.51.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -1425,7 +1425,7 @@
     "homeElo": 1533,
     "awayElo": 1533,
     "leagueTier": 2,
-    "actualScore": "2 - 1 (6 Tarjetas)"
+    "actualScore": "2 - 1"
   },
   {
     "fixtureId": 1585729,
@@ -2163,7 +2163,7 @@
     "pickBadge": "valor",
     "smartScore": 74,
     "explanation": "Alta fricción táctica y rigor disciplinario: La rivalidad y el promedio de faltas tácticas cometidas entre Sloga Doboj y Čelik proyectan un encuentro de gran intensidad en la medular. El algoritmo estima un 68% de probabilidad para superar las 3.5 tarjetas a cuota @1.51.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -2277,7 +2277,7 @@
     "homeElo": 1608,
     "awayElo": 1629,
     "leagueTier": 2,
-    "actualScore": "0 - 0 (4 Tarjetas)"
+    "actualScore": "0 - 0"
   },
   {
     "fixtureId": 1497674,
@@ -2305,7 +2305,7 @@
     "pickBadge": "valor",
     "smartScore": 74,
     "explanation": "Volumen de llegadas por bandas: El esquema táctico de ambos clubes favorece tiros bloqueados y desvíos a línea final. El modelo cuantitativo estima 68% de probabilidad de éxito para el Over 8.5 saques de esquina.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -2419,7 +2419,7 @@
     "homeElo": 1540,
     "awayElo": 1567,
     "leagueTier": 2,
-    "actualScore": "1 - 1 (10 Córners)"
+    "actualScore": "1 - 1"
   },
   {
     "fixtureId": 1571541,
@@ -2703,7 +2703,7 @@
     "homeElo": 1614,
     "awayElo": 1649,
     "leagueTier": 2,
-    "actualScore": "0 - 2 (3 Tarjetas)"
+    "actualScore": "0 - 2"
   },
   {
     "fixtureId": 1585735,
@@ -3441,7 +3441,7 @@
     "pickBadge": "valor",
     "smartScore": 74,
     "explanation": "Alta fricción táctica y rigor disciplinario: La rivalidad y el promedio de faltas tácticas cometidas entre Neuchatel Xamax FC y Yverdon Sport proyectan un encuentro de gran intensidad en la medular. El algoritmo estima un 68% de probabilidad para superar las 3.5 tarjetas a cuota @1.54.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -3555,7 +3555,7 @@
     "homeElo": 1493,
     "awayElo": 1531,
     "leagueTier": 2,
-    "actualScore": "1 - 2 (6 Tarjetas)"
+    "actualScore": "1 - 2"
   },
   {
     "fixtureId": 1587444,
@@ -3867,7 +3867,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Alta fricción táctica y rigor disciplinario: La rivalidad y el promedio de faltas tácticas cometidas entre FC Gutersloh y Hilden proyectan un encuentro de gran intensidad en la medular. El algoritmo estima un 68% de probabilidad para superar las 3.5 tarjetas a cuota @1.54.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -3981,7 +3981,7 @@
     "homeElo": 1526,
     "awayElo": 1536,
     "leagueTier": 4,
-    "actualScore": "6 - 0 (5 Tarjetas)"
+    "actualScore": "6 - 0"
   },
   {
     "fixtureId": 1587449,
@@ -5259,7 +5259,7 @@
     "homeElo": 1628,
     "awayElo": 1616,
     "leagueTier": 4,
-    "actualScore": "2 - 0 (3 Tarjetas)"
+    "actualScore": "2 - 0"
   },
   {
     "fixtureId": 1563721,
@@ -5997,7 +5997,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Alta fricción táctica y rigor disciplinario: La rivalidad y el promedio de faltas tácticas cometidas entre Northampton y Crawley Town proyectan un encuentro de gran intensidad en la medular. El algoritmo estima un 68% de probabilidad para superar las 3.5 tarjetas a cuota @1.54.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -6111,7 +6111,7 @@
     "homeElo": 1578,
     "awayElo": 1583,
     "leagueTier": 4,
-    "actualScore": "1 - 1 (4 Tarjetas)"
+    "actualScore": "1 - 1"
   },
   {
     "fixtureId": 1563727,
@@ -6423,7 +6423,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Alta fricción táctica y rigor disciplinario: La rivalidad y el promedio de faltas tácticas cometidas entre Swindon Town y Port Vale proyectan un encuentro de gran intensidad en la medular. El algoritmo estima un 68% de probabilidad para superar las 3.5 tarjetas a cuota @1.54.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -6537,7 +6537,7 @@
     "homeElo": 1594,
     "awayElo": 1605,
     "leagueTier": 4,
-    "actualScore": "3 - 1 (5 Tarjetas)"
+    "actualScore": "3 - 1"
   },
   {
     "fixtureId": 1563730,
@@ -6707,7 +6707,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Alta fricción táctica y rigor disciplinario: La rivalidad y el promedio de faltas tácticas cometidas entre Bradford y Cambridge United proyectan un encuentro de gran intensidad en la medular. El algoritmo estima un 68% de probabilidad para superar las 3.5 tarjetas a cuota @1.52.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -6821,7 +6821,7 @@
     "homeElo": 1564,
     "awayElo": 1583,
     "leagueTier": 3,
-    "actualScore": "1 - 2 (4 Tarjetas)"
+    "actualScore": "1 - 2"
   },
   {
     "fixtureId": 1564273,
@@ -6849,7 +6849,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Despliegue exterior y asedio constante: Bromley y Leyton Orient utilizan carriles laterales y centros continuos al área rival, generando un promedio superior a 9.2 saques de esquina por encuentro. Proyección de 68% para superar la línea de 8.5 córners a cuota @1.51.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -6963,7 +6963,7 @@
     "homeElo": 1490,
     "awayElo": 1512,
     "leagueTier": 3,
-    "actualScore": "0 - 5 (14 Córners)"
+    "actualScore": "0 - 5"
   },
   {
     "fixtureId": 1564275,
@@ -8099,7 +8099,7 @@
     "homeElo": 1620,
     "awayElo": 1649,
     "leagueTier": 2,
-    "actualScore": "0 - 0 (7 Tarjetas)"
+    "actualScore": "0 - 0 (5 Tarjetas)"
   },
   {
     "fixtureId": 1549758,

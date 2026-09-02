@@ -1141,7 +1141,7 @@
     "homeElo": 1597,
     "awayElo": 1627,
     "leagueTier": 2,
-    "actualScore": "2 - 5 (17 Córners)"
+    "actualScore": "2 - 5 (13 Córners)"
   },
   {
     "fixtureId": 1494264,
@@ -1742,7 +1742,7 @@
     "pickBadge": "estandar",
     "smartScore": 84,
     "explanation": "Alta fricción táctica y rigor disciplinario: La rivalidad y el promedio de faltas tácticas cometidas entre Lecce y AS Roma proyectan un encuentro de gran intensidad en la medular. El algoritmo estima un 69% de probabilidad para superar las 3.5 tarjetas a cuota @1.46.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-02",
@@ -1856,7 +1856,7 @@
     "homeElo": 1596,
     "awayElo": 1780,
     "leagueTier": 1,
-    "actualScore": "0 - 4 (4 Tarjetas)"
+    "actualScore": "0 - 4 (2 Tarjetas)"
   },
   {
     "fixtureId": 1569895,
@@ -1885,7 +1885,7 @@
     "pickBadge": "estandar",
     "smartScore": 77,
     "explanation": "Alta fricción táctica y rigor disciplinario: La rivalidad y el promedio de faltas tácticas cometidas entre Burgos y Real Sociedad II proyectan un encuentro de gran intensidad en la medular. El algoritmo estima un 69% de probabilidad para superar las 3.5 tarjetas a cuota @1.47.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-02",
@@ -1999,7 +1999,7 @@
     "homeElo": 1566,
     "awayElo": 1740,
     "leagueTier": 2,
-    "actualScore": "2 - 2 (4 Tarjetas)"
+    "actualScore": "2 - 2 (3 Tarjetas)"
   },
   {
     "fixtureId": 1550098,
@@ -2028,7 +2028,7 @@
     "pickBadge": "estandar",
     "smartScore": 84,
     "explanation": "Duelo disputado y cortes tácticos: Ambos conjuntos promedian interrupciones y tarjetas en fases tempranas del partido. Certeza cuantitativa del 69% para el Over 3.5 tarjetas a cuota rentable @1.48.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-02",
@@ -2142,7 +2142,7 @@
     "homeElo": 1880,
     "awayElo": 1760,
     "leagueTier": 1,
-    "actualScore": "1 - 0 (5 Tarjetas)"
+    "actualScore": "1 - 0 (1 Tarjetas)"
   },
   {
     "fixtureId": 1570354,
@@ -2285,7 +2285,7 @@
     "homeElo": 2010,
     "awayElo": 1610,
     "leagueTier": 1,
-    "actualScore": "5 - 2 (3 Tarjetas)"
+    "actualScore": "5 - 2 (1 Tarjetas)"
   },
   {
     "fixtureId": 1520844,
@@ -2314,7 +2314,7 @@
     "pickBadge": "estandar",
     "smartScore": 77,
     "explanation": "Duelo disputado y cortes tácticos: Ambos conjuntos promedian interrupciones y tarjetas en fases tempranas del partido. Certeza cuantitativa del 69% para el Over 3.5 tarjetas a cuota rentable @1.44.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-02",
@@ -2428,7 +2428,7 @@
     "homeElo": 1504,
     "awayElo": 1620,
     "leagueTier": 2,
-    "actualScore": "1 - 1 (5 Tarjetas)"
+    "actualScore": "1 - 1 (2 Tarjetas)"
   },
   {
     "fixtureId": 1505514,
@@ -6266,7 +6266,7 @@
     "homeElo": 1540,
     "awayElo": 1535,
     "leagueTier": 2,
-    "actualScore": "4 - 0 (3 Tarjetas)"
+    "actualScore": "4 - 0 (1 Tarjetas)"
   },
   {
     "fixtureId": 1497679,
@@ -7260,7 +7260,7 @@
     "homeElo": 1525,
     "awayElo": 1565,
     "leagueTier": 2,
-    "actualScore": "2 - 1 (5 Tarjetas)"
+    "actualScore": "2 - 1 (4 Tarjetas)"
   },
   {
     "fixtureId": 1551808,
@@ -7998,7 +7998,7 @@
     "pickBadge": "valor",
     "smartScore": 74,
     "explanation": "Alta fricción táctica y rigor disciplinario: La rivalidad y el promedio de faltas tácticas cometidas entre Dijon y Saint Etienne proyectan un encuentro de gran intensidad en la medular. El algoritmo estima un 68% de probabilidad para superar las 3.5 tarjetas a cuota @1.51.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-02",
@@ -8112,7 +8112,7 @@
     "homeElo": 1620,
     "awayElo": 1655,
     "leagueTier": 2,
-    "actualScore": "2 - 3 (4 Tarjetas)"
+    "actualScore": "2 - 3 (2 Tarjetas)"
   },
   {
     "fixtureId": 1557377,
@@ -8538,7 +8538,7 @@
     "homeElo": 1599,
     "awayElo": 1628,
     "leagueTier": 2,
-    "actualScore": "1 - 0 (4 Tarjetas)"
+    "actualScore": "1 - 0 (5 Tarjetas)"
   },
   {
     "fixtureId": 1548517,
@@ -8566,7 +8566,7 @@
     "pickBadge": "valor",
     "smartScore": 74,
     "explanation": "Alta fricción táctica y rigor disciplinario: La rivalidad y el promedio de faltas tácticas cometidas entre HNK Gorica y HNK Rijeka proyectan un encuentro de gran intensidad en la medular. El algoritmo estima un 68% de probabilidad para superar las 3.5 tarjetas a cuota @1.53.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-02",
@@ -8680,7 +8680,7 @@
     "homeElo": 1614,
     "awayElo": 1615,
     "leagueTier": 2,
-    "actualScore": "0 - 0 (5 Tarjetas)"
+    "actualScore": "0 - 0 (3 Tarjetas)"
   },
   {
     "fixtureId": 1569897,
@@ -8708,7 +8708,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Despliegue exterior y asedio constante: Celta de Vigo II y Castellón utilizan carriles laterales y centros continuos al área rival, generando un promedio superior a 9.2 saques de esquina por encuentro. Proyección de 68% para superar la línea de 8.5 córners a cuota @1.71.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-02",
@@ -8822,7 +8822,7 @@
     "homeElo": 1620,
     "awayElo": 1645,
     "leagueTier": 2,
-    "actualScore": "1 - 2 (13 Córners)"
+    "actualScore": "1 - 2 (6 Córners)"
   },
   {
     "fixtureId": 1498769,
@@ -9106,7 +9106,7 @@
     "homeElo": 1547,
     "awayElo": 1560,
     "leagueTier": 2,
-    "actualScore": "1 - 2 (7 Tarjetas)"
+    "actualScore": "1 - 2 (6 Tarjetas)"
   },
   {
     "fixtureId": 1498766,
@@ -9390,7 +9390,7 @@
     "homeElo": 1543,
     "awayElo": 1591,
     "leagueTier": 2,
-    "actualScore": "3 - 2 (5 Tarjetas)"
+    "actualScore": "3 - 2 (6 Tarjetas)"
   },
   {
     "fixtureId": 1601419,
@@ -9674,6 +9674,6 @@
     "homeElo": 1524,
     "awayElo": 1553,
     "leagueTier": 2,
-    "actualScore": "2 - 1 (7 Tarjetas)"
+    "actualScore": "2 - 1 (8 Tarjetas)"
   }
 ]

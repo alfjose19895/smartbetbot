@@ -461,6 +461,81 @@ class ApiFootballClient {
       timezone,
     });
   }
+
+  async getFixtureStatistics(fixtureId: number): Promise<ApiFootballFixtureStatistics[]> {
+    return this.request<ApiFootballFixtureStatistics>("fixtures/statistics", {
+      fixture: fixtureId,
+    });
+  }
+}
+
+export interface ApiFootballStatisticItem {
+  type: string;
+  value: number | string | null;
+}
+
+export interface ApiFootballFixtureStatistics {
+  team: {
+    id: number;
+    name: string;
+    logo: string;
+  };
+  statistics: ApiFootballStatisticItem[];
+}
+
+export function extractMatchDetails(stats?: ApiFootballFixtureStatistics[] | null): {
+  homeCorners: number;
+  awayCorners: number;
+  totalCorners: number;
+  homeYellowCards: number;
+  awayYellowCards: number;
+  homeRedCards: number;
+  awayRedCards: number;
+  totalCards: number;
+  hasStats: boolean;
+} {
+  if (!stats || !Array.isArray(stats) || stats.length < 2) {
+    return {
+      homeCorners: 0,
+      awayCorners: 0,
+      totalCorners: 0,
+      homeYellowCards: 0,
+      awayYellowCards: 0,
+      homeRedCards: 0,
+      awayRedCards: 0,
+      totalCards: 0,
+      hasStats: false,
+    };
+  }
+
+  const getStat = (list: ApiFootballStatisticItem[], typeName: string): number => {
+    const item = list.find((s) => s.type.toLowerCase().trim() === typeName.toLowerCase().trim());
+    if (!item || item.value === null || item.value === undefined) return 0;
+    const num = parseInt(String(item.value), 10);
+    return isNaN(num) ? 0 : num;
+  };
+
+  const homeStats = stats[0]?.statistics || [];
+  const awayStats = stats[1]?.statistics || [];
+
+  const homeCorners = getStat(homeStats, "Corner Kicks");
+  const awayCorners = getStat(awayStats, "Corner Kicks");
+  const homeYellowCards = getStat(homeStats, "Yellow Cards");
+  const awayYellowCards = getStat(awayStats, "Yellow Cards");
+  const homeRedCards = getStat(homeStats, "Red Cards");
+  const awayRedCards = getStat(awayStats, "Red Cards");
+
+  return {
+    homeCorners,
+    awayCorners,
+    totalCorners: homeCorners + awayCorners,
+    homeYellowCards,
+    awayYellowCards,
+    homeRedCards,
+    awayRedCards,
+    totalCards: homeYellowCards + awayYellowCards + homeRedCards + awayRedCards,
+    hasStats: homeStats.length > 0 || awayStats.length > 0,
+  };
 }
 
 export function extractMarketOddsFromBookmaker(oddsItem?: ApiFootballOddsItem | null): {
