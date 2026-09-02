@@ -884,7 +884,7 @@
     "pickBadge": "estandar",
     "smartScore": 79,
     "explanation": "Volumen de llegadas por bandas: El esquema táctico de ambos clubes favorece tiros bloqueados y desvíos a línea final. El modelo cuantitativo estima 71.4% de probabilidad de éxito para el Over 8.5 saques de esquina.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-02",
@@ -998,7 +998,7 @@
     "homeElo": 1550,
     "awayElo": 1569,
     "leagueTier": 2,
-    "actualScore": "2 - 0 (11 Córners)"
+    "actualScore": "2 - 0 (0 Córners)"
   },
   {
     "fixtureId": 1508529,
@@ -1313,7 +1313,7 @@
     "pickBadge": "estandar",
     "smartScore": 78,
     "explanation": "Volumen de llegadas por bandas: El esquema táctico de ambos clubes favorece tiros bloqueados y desvíos a línea final. El modelo cuantitativo estima 69.7% de probabilidad de éxito para el Over 8.5 saques de esquina.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-02",
@@ -1427,7 +1427,7 @@
     "homeElo": 1537,
     "awayElo": 1534,
     "leagueTier": 2,
-    "actualScore": "2 - 2 (16 Córners)"
+    "actualScore": "2 - 2 (0 Córners)"
   },
   {
     "fixtureId": 1508848,
@@ -1456,7 +1456,7 @@
     "pickBadge": "estandar",
     "smartScore": 78,
     "explanation": "Despliegue exterior y asedio constante: Breidablik y Stjarnan utilizan carriles laterales y centros continuos al área rival, generando un promedio superior a 9.2 saques de esquina por encuentro. Proyección de 69.6% para superar la línea de 8.5 córners a cuota @1.44.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-02",
@@ -1570,7 +1570,7 @@
     "homeElo": 1581,
     "awayElo": 1593,
     "leagueTier": 2,
-    "actualScore": "0 - 2 (10 Córners)"
+    "actualScore": "0 - 2"
   },
   {
     "fixtureId": 1585189,
@@ -2600,7 +2600,7 @@
     "pickBadge": "estandar",
     "smartScore": 76,
     "explanation": "Despliegue exterior y asedio constante: AC Oulu y SJK utilizan carriles laterales y centros continuos al área rival, generando un promedio superior a 9.2 saques de esquina por encuentro. Proyección de 68.6% para superar la línea de 8.5 córners a cuota @1.44.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-02",
@@ -2714,7 +2714,7 @@
     "homeElo": 1525,
     "awayElo": 1532,
     "leagueTier": 2,
-    "actualScore": "0 - 0 (11 Córners)"
+    "actualScore": "0 - 0"
   },
   {
     "fixtureId": 1581512,
@@ -3170,7 +3170,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Alta fricción táctica y rigor disciplinario: La rivalidad y el promedio de faltas tácticas cometidas entre Boston United y AFC Hornchurch proyectan un encuentro de gran intensidad en la medular. El algoritmo estima un 68% de probabilidad para superar las 3.5 tarjetas a cuota @1.51.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-02",
@@ -3284,7 +3284,7 @@
     "homeElo": 1498,
     "awayElo": 1498,
     "leagueTier": 5,
-    "actualScore": "2 - 3 (5 Tarjetas)"
+    "actualScore": "2 - 3"
   },
   {
     "fixtureId": 1585186,
@@ -3738,7 +3738,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Alta fricción táctica y rigor disciplinario: La rivalidad y el promedio de faltas tácticas cometidas entre Kidderminster Harriers y Barrow proyectan un encuentro de gran intensidad en la medular. El algoritmo estima un 68% de probabilidad para superar las 3.5 tarjetas a cuota @1.51.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-02",
@@ -3852,7 +3852,7 @@
     "homeElo": 1549,
     "awayElo": 1561,
     "leagueTier": 5,
-    "actualScore": "1 - 1 (5 Tarjetas)"
+    "actualScore": "1 - 1"
   },
   {
     "fixtureId": 1585192,
@@ -4022,7 +4022,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Alta fricción táctica y rigor disciplinario: La rivalidad y el promedio de faltas tácticas cometidas entre Woking y Southend proyectan un encuentro de gran intensidad en la medular. El algoritmo estima un 68% de probabilidad para superar las 3.5 tarjetas a cuota @1.52.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-02",
@@ -4136,7 +4136,7 @@
     "homeElo": 1563,
     "awayElo": 1602,
     "leagueTier": 5,
-    "actualScore": "1 - 1 (6 Tarjetas)"
+    "actualScore": "1 - 1"
   },
   {
     "fixtureId": 1585195,
@@ -4704,7 +4704,7 @@
     "homeElo": 1607,
     "awayElo": 1647,
     "leagueTier": 2,
-    "actualScore": "3 - 0 (3 Tarjetas)"
+    "actualScore": "3 - 0"
   },
   {
     "fixtureId": 1495770,
@@ -4732,7 +4732,7 @@
     "pickBadge": "valor",
     "smartScore": 74,
     "explanation": "Duelo disputado y cortes tácticos: Ambos conjuntos promedian interrupciones y tarjetas en fases tempranas del partido. Certeza cuantitativa del 68% para el Over 3.5 tarjetas a cuota rentable @1.54.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-02",
@@ -4846,7 +4846,7 @@
     "homeElo": 1484,
     "awayElo": 1494,
     "leagueTier": 2,
-    "actualScore": "1 - 1 (5 Tarjetas)"
+    "actualScore": "1 - 1"
   },
   {
     "fixtureId": 1495771,
@@ -4874,7 +4874,7 @@
     "pickBadge": "valor",
     "smartScore": 74,
     "explanation": "Alta fricción táctica y rigor disciplinario: La rivalidad y el promedio de faltas tácticas cometidas entre Ilves y HJK Helsinki proyectan un encuentro de gran intensidad en la medular. El algoritmo estima un 68% de probabilidad para superar las 3.5 tarjetas a cuota @1.54.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-02",
@@ -4988,7 +4988,7 @@
     "homeElo": 1635,
     "awayElo": 1656,
     "leagueTier": 2,
-    "actualScore": "1 - 2 (4 Tarjetas)"
+    "actualScore": "1 - 2"
   },
   {
     "fixtureId": 1495772,
@@ -5158,7 +5158,7 @@
     "pickBadge": "valor",
     "smartScore": 74,
     "explanation": "Alta fricción táctica y rigor disciplinario: La rivalidad y el promedio de faltas tácticas cometidas entre Mariehamn y FF Jaro proyectan un encuentro de gran intensidad en la medular. El algoritmo estima un 68% de probabilidad para superar las 3.5 tarjetas a cuota @1.51.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-02",
@@ -5272,7 +5272,7 @@
     "homeElo": 1494,
     "awayElo": 1508,
     "leagueTier": 2,
-    "actualScore": "2 - 0 (5 Tarjetas)"
+    "actualScore": "2 - 0"
   },
   {
     "fixtureId": 1495774,
@@ -5442,7 +5442,7 @@
     "pickBadge": "valor",
     "smartScore": 76,
     "explanation": "Volumen de llegadas por bandas: El esquema táctico de ambos clubes favorece tiros bloqueados y desvíos a línea final. El modelo cuantitativo estima 68% de probabilidad de éxito para el Over 8.5 saques de esquina.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-02",
@@ -5556,7 +5556,7 @@
     "homeElo": 1592,
     "awayElo": 1602,
     "leagueTier": 2,
-    "actualScore": "0 - 3 (14 Córners)"
+    "actualScore": "0 - 3"
   },
   {
     "fixtureId": 1555124,
@@ -6294,7 +6294,7 @@
     "pickBadge": "valor",
     "smartScore": 74,
     "explanation": "Duelo disputado y cortes tácticos: Ambos conjuntos promedian interrupciones y tarjetas en fases tempranas del partido. Certeza cuantitativa del 68% para el Over 3.5 tarjetas a cuota rentable @1.51.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-02",
@@ -6408,7 +6408,7 @@
     "homeElo": 1602,
     "awayElo": 1571,
     "leagueTier": 2,
-    "actualScore": "1 - 0 (5 Tarjetas)"
+    "actualScore": "1 - 0"
   },
   {
     "fixtureId": 1549007,
@@ -6578,7 +6578,7 @@
     "pickBadge": "valor",
     "smartScore": 74,
     "explanation": "Alta fricción táctica y rigor disciplinario: La rivalidad y el promedio de faltas tácticas cometidas entre Omonia Nicosia y Omonia Aradippou proyectan un encuentro de gran intensidad en la medular. El algoritmo estima un 68% de probabilidad para superar las 3.5 tarjetas a cuota @1.51.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-02",
@@ -6692,7 +6692,7 @@
     "homeElo": 1573,
     "awayElo": 1616,
     "leagueTier": 2,
-    "actualScore": "0 - 0 (4 Tarjetas)"
+    "actualScore": "0 - 0"
   },
   {
     "fixtureId": 1555491,
@@ -7004,7 +7004,7 @@
     "pickBadge": "valor",
     "smartScore": 74,
     "explanation": "Duelo disputado y cortes tácticos: Ambos conjuntos promedian interrupciones y tarjetas en fases tempranas del partido. Certeza cuantitativa del 68% para el Over 3.5 tarjetas a cuota rentable @1.51.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-02",
@@ -7118,7 +7118,7 @@
     "homeElo": 1598,
     "awayElo": 1650,
     "leagueTier": 2,
-    "actualScore": "1 - 1 (4 Tarjetas)"
+    "actualScore": "1 - 1"
   },
   {
     "fixtureId": 1551807,
@@ -7430,7 +7430,7 @@
     "pickBadge": "valor",
     "smartScore": 74,
     "explanation": "Duelo disputado y cortes tácticos: Ambos conjuntos promedian interrupciones y tarjetas en fases tempranas del partido. Certeza cuantitativa del 68% para el Over 3.5 tarjetas a cuota rentable @1.53.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-02",
@@ -7544,7 +7544,7 @@
     "homeElo": 1579,
     "awayElo": 1599,
     "leagueTier": 2,
-    "actualScore": "2 - 2 (4 Tarjetas)"
+    "actualScore": "2 - 2"
   },
   {
     "fixtureId": 1584385,
@@ -7856,7 +7856,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Alta fricción táctica y rigor disciplinario: La rivalidad y el promedio de faltas tácticas cometidas entre Racing Montevideo y Albion FC proyectan un encuentro de gran intensidad en la medular. El algoritmo estima un 68% de probabilidad para superar las 3.5 tarjetas a cuota @1.51.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-02",
@@ -7970,7 +7970,7 @@
     "homeElo": 1538,
     "awayElo": 1526,
     "leagueTier": 3,
-    "actualScore": "1 - 0 (5 Tarjetas)"
+    "actualScore": "1 - 0"
   },
   {
     "fixtureId": 1552452,
@@ -8850,7 +8850,7 @@
     "pickBadge": "valor",
     "smartScore": 74,
     "explanation": "Alta fricción táctica y rigor disciplinario: La rivalidad y el promedio de faltas tácticas cometidas entre Los Andes y Acassuso proyectan un encuentro de gran intensidad en la medular. El algoritmo estima un 68% de probabilidad para superar las 3.5 tarjetas a cuota @1.51.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-02",
@@ -8964,7 +8964,7 @@
     "homeElo": 1585,
     "awayElo": 1594,
     "leagueTier": 2,
-    "actualScore": "0 - 0 (7 Tarjetas)"
+    "actualScore": "0 - 0"
   },
   {
     "fixtureId": 1549757,
@@ -9134,7 +9134,7 @@
     "pickBadge": "valor",
     "smartScore": 74,
     "explanation": "Alta fricción táctica y rigor disciplinario: La rivalidad y el promedio de faltas tácticas cometidas entre Gimnasia Jujuy y Agropecuario proyectan un encuentro de gran intensidad en la medular. El algoritmo estima un 68% de probabilidad para superar las 3.5 tarjetas a cuota @1.51.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-03",
@@ -9248,7 +9248,7 @@
     "homeElo": 1596,
     "awayElo": 1649,
     "leagueTier": 2,
-    "actualScore": "1 - 1 (5 Tarjetas)"
+    "actualScore": "1 - 1"
   },
   {
     "fixtureId": 1505512,

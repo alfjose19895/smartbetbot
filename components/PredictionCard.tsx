@@ -142,8 +142,13 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
           </span>
         </div>
 
-        {/* Right: Status & Expand Button */}
+        {/* Right: Score, Status & Expand Button */}
         <div className="flex items-center gap-2 shrink-0">
+          {prediction.actualScore && (
+            <span className="rounded-xl bg-slate-900 text-emerald-400 border border-slate-700 px-2.5 py-1 text-xs font-black font-mono">
+              {prediction.actualScore}
+            </span>
+          )}
           {prediction.status === "won" ? (
             <span className="rounded-xl px-2.5 py-1 text-xs font-black bg-emerald-500 text-slate-950">
               ✓ Ganado
@@ -260,8 +265,8 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
 
           {prediction.actualScore && (
             <div className="mt-2.5 flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800/80">
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Marcador Final:</span>
-              <span className="px-2.5 py-0.5 rounded-lg bg-slate-800 text-xs font-black text-emerald-400 border border-slate-700">
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Resultado Oficial & Estadísticas:</span>
+              <span className="px-3 py-1 rounded-xl bg-slate-900 text-xs font-black text-emerald-400 border border-slate-700 font-mono">
                 {prediction.actualScore}
               </span>
             </div>

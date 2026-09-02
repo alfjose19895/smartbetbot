@@ -773,6 +773,39 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
         realScoresMap[scoreKeyWithDate] ||
         realScoresMap[scoreKeyGeneric];
 
+      // If snapshot already has a finalized status and score with statistics (e.g. "2 - 5 (13 Córners)")
+      if (p.status === "won" || p.status === "lost") {
+        const isWon = p.status === "won";
+        const scoreText = p.actualScore || (realScore ? `${realScore.home} - ${realScore.away}` : "0 - 0");
+        const matchKey = `${hNorm}-${aNorm}-${dateStr}-${p.market}`;
+        if (!processedMatchKeys.has(matchKey)) {
+          processedMatchKeys.add(matchKey);
+          settledPicks.push({
+            id: p.id || `snapshot-settled-${scoreKeyWithDate}-${p.market}`,
+            date: dateStr,
+            kickoff: p.kickoff,
+            match: p.match,
+            homeTeam: p.homeTeam,
+            awayTeam: p.awayTeam,
+            homeLogo: p.homeLogo,
+            awayLogo: p.awayLogo,
+            score: scoreText,
+            league: p.league,
+            leagueLogo: p.leagueLogo,
+            country: p.country,
+            market: p.market,
+            selection: p.selection || p.market,
+            odds: p.odds,
+            probability: p.probability,
+            confidence: p.confidence || (p.probability >= 75 ? "Muy Alta" : p.probability >= 68 ? "Alta" : "Media"),
+            result: isWon ? "WON" : "LOST",
+            profit: isWon ? Math.round((p.odds - 1) * 100) / 100 : -1,
+            explanation: p.explanation,
+          });
+        }
+        continue;
+      }
+
       if (realScore && typeof realScore.home === "number" && typeof realScore.away === "number") {
         const homeGoals = realScore.home;
         const awayGoals = realScore.away;
@@ -786,7 +819,7 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
         });
 
         const isWon = evaluation.isWon;
-        const scoreText = evaluation.actualScoreText;
+        const scoreText = p.actualScore || evaluation.actualScoreText;
 
         const matchKey = `${hNorm}-${aNorm}-${dateStr}-${p.market}`;
         if (!processedMatchKeys.has(matchKey)) {
