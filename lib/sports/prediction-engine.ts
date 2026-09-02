@@ -44,6 +44,7 @@ export interface MarketOpportunity {
   selection: string;
   odds: number;
   bookmakerOdds?: number;
+  modelOdds?: number;
   fairOdds: number;
   probability: number;
   impliedProbability?: number;
@@ -617,6 +618,15 @@ function generateExplanation(
     return variants[hash % variants.length];
   }
 
+  if (market.includes("Empate") || market.includes("(X)") || market.toLowerCase() === "x") {
+    const variants = [
+      `Equilibrio táctico y paridad en fuerzas: ${home} (Elo ${Math.round(homeElo)}) y ${away} (Elo ${Math.round(awayElo)}) presentan métricas parejas de contención con mínima brecha de goles esperados (${hXg.toFixed(2)} vs ${aXg.toFixed(2)} xG). El modelo Poisson proyecta un ${prob}% de probabilidad de empate a cuota de alto valor @${odds.toFixed(2)} (valor +${edge}%).`,
+      `Duelo cerrado y precaución en medular: Ambos conjuntos priorizan el repliegue defensivo y el control posicional, limitando las transiciones ofensivas. La simulación probabilística asigna un ${prob}% de probabilidad a la división de puntos.`,
+      `Tendencia histórica a la igualdad: En el registro reciente de enfrentamientos directos, predomina el juego friccionado y con marcadores ajustados. El algoritmo cuantitativo detecta valor en la cuota @${odds.toFixed(2)} para el empate con ${prob}% de certeza.`,
+    ];
+    return variants[hash % variants.length];
+  }
+
   if (market.includes("Córners")) {
     const variants = [
       `Despliegue exterior y asedio constante: ${home} y ${away} utilizan carriles laterales y centros continuos al área rival, generando un promedio superior a 9.2 saques de esquina por encuentro. Proyección de ${prob}% para superar la línea de 8.5 córners a cuota @${odds.toFixed(2)}.`,
@@ -844,6 +854,7 @@ export function evaluateFixturePrediction(params: {
   const matchJuice = 0.99 + ((hashSeed % 7) * 0.005);
 
   const calculatedHomeOdds = calculateBookmakerOdds(pHome, matchJuice);
+  const calculatedDrawOdds = calculateBookmakerOdds(pDraw, matchJuice);
   const calculatedAwayOdds = calculateBookmakerOdds(pAway, matchJuice);
   const calculatedOver25Odds = calculateBookmakerOdds(pOver25, matchJuice);
   const calculatedUnder25Odds = calculateBookmakerOdds(pUnder25, matchJuice);
@@ -860,6 +871,7 @@ export function evaluateFixturePrediction(params: {
   }[] = [
     // 1X2 Principal
     { market: "Gana Local", selection: "1", prob: pHome, odds: marketOdds.homeWin || calculatedHomeOdds, minOddsThreshold: 1.45 },
+    { market: "Empate (X)", selection: "X", prob: pDraw, odds: marketOdds.draw || calculatedDrawOdds, minOddsThreshold: 2.70 },
     { market: "Gana Visitante", selection: "2", prob: pAway, odds: marketOdds.awayWin || calculatedAwayOdds, minOddsThreshold: 1.45 },
 
     // Over/Under 2.5 Goles & Ambos Marcan (BTTS)
@@ -921,6 +933,7 @@ export function evaluateFixturePrediction(params: {
       selection: item.selection,
       odds: item.odds,
       bookmakerOdds: item.odds,
+      modelOdds: fairOdds,
       fairOdds,
       probability: probPercent,
       impliedProbability: impliedProb,

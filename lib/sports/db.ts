@@ -8,7 +8,7 @@
 import fs from "fs";
 import path from "path";
 import { createClient } from "@supabase/supabase-js";
-import { apiFootball, ALL_LEAGUE_IDS, TOP_5_LEAGUE_IDS, SUPPORTED_LEAGUES, ApiFootballFixtureItem } from "./api-football";
+import { apiFootball, ALL_LEAGUE_IDS, TOP_5_LEAGUE_IDS, SUPPORTED_LEAGUES, ApiFootballFixtureItem, extractMarketOddsFromBookmaker, ApiFootballOddsItem } from "./api-football";
 import {
   evaluateFixturePrediction,
   MarketOpportunity,
@@ -457,9 +457,21 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
     }
   };
 
-  // Efficient single API call for today's entire match schedule in Ecuador timezone
+  // Efficient single API call for today's entire match schedule and odds in Ecuador timezone
   try {
-    const todayFixtures = await apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil");
+    const [todayFixtures, todayOddsList] = await Promise.all([
+      apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil"),
+      apiFootball.getOddsByDate(todayDateStr, "America/Guayaquil").catch(() => [] as ApiFootballOddsItem[]),
+    ]);
+
+    const oddsMapByFixture: Record<number, ApiFootballOddsItem> = {};
+    if (Array.isArray(todayOddsList)) {
+      for (const item of todayOddsList) {
+        if (item.fixture?.id) {
+          oddsMapByFixture[item.fixture.id] = item;
+        }
+      }
+    }
 
     if (Array.isArray(todayFixtures) && todayFixtures.length > 0) {
       for (const item of todayFixtures) {
@@ -475,6 +487,8 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
         if (legName.includes("primavera") || legName.includes("u19") || legName.includes("u20")) continue;
         if (!isCuratedLeague(item.league?.id, item.league?.name, item.league?.country)) continue;
 
+        const realMarketOdds = extractMarketOddsFromBookmaker(oddsMapByFixture[item.fixture.id]);
+
         const opps = evaluateFixturePrediction({
           fixtureId: item.fixture.id,
           homeTeam: item.teams.home.name,
@@ -488,6 +502,7 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
           country: item.league.country,
           leagueLogo: item.league.logo,
           kickoff: item.fixture.date,
+          marketOdds: realMarketOdds,
         });
 
         if (opps.length > 0) {

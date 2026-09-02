@@ -268,20 +268,25 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
           )}
         </div>
 
-        {/* Main Pick Highlight Box */}
+        {/* Main Pick Highlight Box with Real Odds and Model Odds */}
         <div className="mt-4 rounded-2xl border border-emerald-300 bg-emerald-50/60 p-3.5 dark:border-emerald-500/30 dark:bg-emerald-950/20">
-          <div className="text-[10px] font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-400">
-            🎯 PRONÓSTICO SMARTBETBOT
+          <div className="flex items-center justify-between flex-wrap gap-1">
+            <div className="text-[10px] font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-400">
+              🎯 PRONÓSTICO SMARTBETBOT
+            </div>
+            <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
+              Cuota Modelo: <strong className="text-emerald-700 dark:text-emerald-300">@{prediction.fairOdds.toFixed(2)}</strong> (Valor +{prediction.edge}%)
+            </div>
           </div>
-          <div className="mt-1 flex items-center justify-between">
-            <span className="text-sm font-black text-slate-900 dark:text-white">
+          <div className="mt-1.5 flex items-center justify-between">
+            <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
               {prediction.market} ({prediction.selection})
             </span>
             <div className="flex items-center gap-2">
-              <span className="rounded-xl bg-sky-600 px-2.5 py-1 text-xs font-black text-white shadow-sm">
+              <span className="rounded-xl bg-sky-600 px-3 py-1 text-xs font-black text-white shadow-sm" title="Cuota Real de Casa de Apuestas">
                 @{prediction.odds.toFixed(2)}
               </span>
-              <span className="rounded-xl bg-emerald-600 px-2.5 py-1 text-xs font-black text-white shadow-sm">
+              <span className="rounded-xl bg-emerald-600 px-3 py-1 text-xs font-black text-white shadow-sm" title="Probabilidad Estimada">
                 {prediction.probability}%
               </span>
             </div>

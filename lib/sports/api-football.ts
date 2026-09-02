@@ -454,6 +454,88 @@ class ApiFootballClient {
     });
     return data.length > 0 ? data[0] : null;
   }
+
+  async getOddsByDate(dateStr: string, timezone: string = this.defaultTimezone): Promise<ApiFootballOddsItem[]> {
+    return this.request<ApiFootballOddsItem>("odds", {
+      date: dateStr,
+      timezone,
+    });
+  }
+}
+
+export function extractMarketOddsFromBookmaker(oddsItem?: ApiFootballOddsItem | null): {
+  homeWin?: number;
+  draw?: number;
+  awayWin?: number;
+  over25?: number;
+  under25?: number;
+  bttsYes?: number;
+  bttsNo?: number;
+} {
+  if (!oddsItem || !oddsItem.bookmakers || oddsItem.bookmakers.length === 0) {
+    return {};
+  }
+
+  // Find preferred top tier bookmakers (Bet365, Pinnacle, 1xBet, Betway, Unibet)
+  const bm =
+    oddsItem.bookmakers.find((b) => b.name.toLowerCase().includes("bet365")) ||
+    oddsItem.bookmakers.find((b) => b.name.toLowerCase().includes("pinnacle")) ||
+    oddsItem.bookmakers.find((b) => b.name.toLowerCase().includes("1xbet")) ||
+    oddsItem.bookmakers.find((b) => b.name.toLowerCase().includes("betway")) ||
+    oddsItem.bookmakers[0];
+
+  if (!bm || !bm.bets) return {};
+
+  const result: {
+    homeWin?: number;
+    draw?: number;
+    awayWin?: number;
+    over25?: number;
+    under25?: number;
+    bttsYes?: number;
+    bttsNo?: number;
+  } = {};
+
+  for (const bet of bm.bets) {
+    const betName = bet.name.toLowerCase();
+    // 1X2 Match Winner
+    if (bet.id === 1 || betName.includes("match winner") || betName.includes("1x2") || betName === "winner") {
+      for (const val of bet.values) {
+        const v = String(val.value).toLowerCase();
+        const o = parseFloat(String(val.odd));
+        if (!isNaN(o) && o > 1.0) {
+          if (v === "home" || v === "1") result.homeWin = o;
+          else if (v === "draw" || v === "x" || v === "empate") result.draw = o;
+          else if (v === "away" || v === "2") result.awayWin = o;
+        }
+      }
+    }
+    // Over / Under 2.5 Goals
+    else if (bet.id === 5 || betName.includes("goals over/under") || betName.includes("over/under")) {
+      for (const val of bet.values) {
+        const v = String(val.value).toLowerCase();
+        const o = parseFloat(String(val.odd));
+        if (!isNaN(o) && o > 1.0) {
+          if (v.includes("over 2.5") || v === "over 2.5") result.over25 = o;
+          else if (v.includes("under 2.5") || v === "under 2.5") result.under25 = o;
+        }
+      }
+    }
+    // Both Teams to Score (BTTS)
+    else if (bet.id === 8 || betName.includes("both teams score") || betName.includes("btts")) {
+      for (const val of bet.values) {
+        const v = String(val.value).toLowerCase();
+        const o = parseFloat(String(val.odd));
+        if (!isNaN(o) && o > 1.0) {
+          if (v === "yes" || v === "sí" || v === "si") result.bttsYes = o;
+          else if (v === "no") result.bttsNo = o;
+        }
+      }
+    }
+  }
+
+  return result;
 }
 
 export const apiFootball = new ApiFootballClient();
+
