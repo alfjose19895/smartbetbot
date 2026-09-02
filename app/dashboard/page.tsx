@@ -95,6 +95,7 @@ export default function DashboardPage() {
 
   const coreMarkets = [
     "Gana Local",
+    "Empate (X)",
     "Gana Visitante",
     "Over 2.5 Goles",
     "Under 2.5 Goles",

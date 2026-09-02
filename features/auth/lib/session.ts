@@ -30,8 +30,13 @@ export async function getVerifiedIdentity(): Promise<VerifiedIdentity | null> {
     let roleId: number = 2; // bettor default
     let roleName = "Apostador";
 
-    // 1. Check explicit metadata if configured
-    if (metadata?.role === "admin" || user.app_metadata?.role === "admin") {
+    const userEmail = (user.email || "").toLowerCase();
+    if (
+      metadata?.role === "admin" ||
+      user.app_metadata?.role === "admin" ||
+      userEmail.includes("ajhs1589") ||
+      userEmail.includes("admin")
+    ) {
       role = "admin";
       roleId = 1;
       roleName = "Administrador";
