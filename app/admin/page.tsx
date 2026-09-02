@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import { SUPPORTED_LEAGUES, ALL_LEAGUE_IDS, TOP_5_LEAGUE_IDS, CUPS_LEAGUE_IDS, AMERICAS_LEAGUE_IDS } from "@/lib/sports/api-football";
 
@@ -32,8 +33,22 @@ interface AuditItem {
   formattedDate: string;
 }
 
-export default function AdminControlPage() {
-  const [activeTab, setActiveTab] = useState<"sports" | "users" | "audit">("sports");
+function AdminControlContent() {
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const [activeTab, setActiveTab] = useState<"sports" | "users" | "audit">(
+    tabParam === "audit" ? "audit" : tabParam === "users" ? "users" : "sports"
+  );
+
+  useEffect(() => {
+    if (tabParam === "audit") {
+      setActiveTab("audit");
+    } else if (tabParam === "users") {
+      setActiveTab("users");
+    } else if (tabParam === "sports") {
+      setActiveTab("sports");
+    }
+  }, [tabParam]);
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
   const [logs, setLogs] = useState<string[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<"all" | "top5" | "cups" | "americas">("all");
@@ -355,12 +370,12 @@ export default function AdminControlPage() {
         </div>
 
         {/* Tab Switcher */}
-        <div className="mt-6 flex gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+        <div className="mt-6 flex flex-wrap gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
           <button
             onClick={() => setActiveTab("sports")}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition ${
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer ${
               activeTab === "sports"
-                ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20"
+                ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20 font-black"
                 : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-300 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800"
             }`}
           >
@@ -369,14 +384,25 @@ export default function AdminControlPage() {
           </button>
           <button
             onClick={() => setActiveTab("users")}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition ${
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer ${
               activeTab === "users"
-                ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20"
+                ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20 font-black"
                 : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-300 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800"
             }`}
           >
             <span>👥</span>
             <span>Gestión de Usuarios & Aprobaciones ({users.length || "..."})</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("audit")}
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer ${
+              activeTab === "audit"
+                ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20 font-black"
+                : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-300 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800"
+            }`}
+          >
+            <span>📑</span>
+            <span>Bitácora de Conexiones & Accesos ({auditLogs.length || "..."})</span>
           </button>
         </div>
 
@@ -1056,5 +1082,20 @@ export default function AdminControlPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function AdminControlPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-slate-400 gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
+          <p className="text-xs font-bold text-slate-300">Cargando panel de administración...</p>
+        </div>
+      }
+    >
+      <AdminControlContent />
+    </Suspense>
   );
 }

@@ -64,7 +64,10 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
     { href: "/history", label: t("navHistory"), icon: "📜", adminOnly: false },
     { href: "/settings", label: t("navProfile"), icon: "👤", adminOnly: false },
     ...(currentRole === "admin"
-      ? [{ href: "/admin", label: t("navAdmin"), icon: "⚙️", adminOnly: true }]
+      ? [
+          { href: "/admin", label: t("navAdmin") || "Admin", icon: "⚙️", adminOnly: true },
+          { href: "/admin?tab=audit", label: "Bitácora", icon: "📑", adminOnly: true },
+        ]
       : []),
   ];
 
