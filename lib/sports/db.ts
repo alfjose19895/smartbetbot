@@ -173,7 +173,7 @@ const HISTORY_CACHE_TTL_MS = 3 * 60 * 1000; // 3 minutes
 /**
  * Checks if a fixture's league belongs to our curated supported leagues catalog.
  */
-function isCuratedLeague(leagueId?: number, leagueName?: string, country?: string): boolean {
+export function isCuratedLeague(leagueId?: number, leagueName?: string, country?: string): boolean {
   if (leagueId && ALL_LEAGUE_IDS.includes(leagueId)) return true;
   if (!leagueName) return false;
   const norm = leagueName.toLowerCase().trim();

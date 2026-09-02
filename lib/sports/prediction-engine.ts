@@ -894,26 +894,34 @@ export function evaluateFixturePrediction(params: {
     if (!item.odds || item.odds < item.minOddsThreshold) continue;
 
     const probPercent = Math.round(item.prob * 1000) / 10;
-    // Strict High-Precision Filter: Only Alta (>=68%) and Muy Alta (>=75%)!
-    if (probPercent < 68.0) continue;
+    const isDrawMarket = item.market.includes("Empate") || item.market === "Empate (X)";
+
+    // Calibrated Precision Filter: Draws (Empate) in 3-way markets peak at 30-38%; 2-way/favorite markets >= 68%
+    const minRequiredProb = isDrawMarket ? 30.5 : 68.0;
+    if (probPercent < minRequiredProb) continue;
 
     const fairOdds = Math.round((1 / item.prob) * 100) / 100;
     const impliedProb = Math.round((1 / item.odds) * 1000) / 10;
     const edgePercent = Math.max(1.0, Math.round((item.prob - 1 / item.odds) * 1000) / 10);
     const evPercent = Math.round((item.prob * item.odds - 1) * 1000) / 10;
 
-    const confidence: "Muy Alta" | "Alta" = probPercent >= 75.0 ? "Muy Alta" : "Alta";
+    const confidence: "Muy Alta" | "Alta" =
+      (isDrawMarket ? probPercent >= 33.5 : probPercent >= 75.0) ? "Muy Alta" : "Alta";
 
     // Bomba (High Payout / High Odds >= 2.05) or Valor (Maximum Certainty ~100% / prob >= 76%)
     let pickBadge: "bomba" | "valor" | "estandar" = "estandar";
-    if (item.odds >= 2.05) {
+    if (item.odds >= 2.05 || isDrawMarket) {
       pickBadge = "bomba";
     } else if (probPercent >= 76.0 || confidence === "Muy Alta") {
       pickBadge = "valor";
     }
 
     const tierBonus = tier === 1 ? 15 : tier === 2 ? 8 : 0;
-    const rawScore = Math.round(item.prob * 100 + (item.prob - 1 / item.odds) * 10 + tierBonus);
+    const rawScore = Math.round(
+      (isDrawMarket ? (item.prob * 2.2 * 100) : (item.prob * 100)) +
+        (item.prob - 1 / item.odds) * 10 +
+        tierBonus
+    );
     const smartScore = Math.min(99, Math.max(70, rawScore));
 
     opportunities.push({
