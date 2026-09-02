@@ -8127,7 +8127,7 @@
     "pickBadge": "valor",
     "smartScore": 75,
     "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con Fortaleza FC sumando en 3 de sus últimos 5 cotejos y la vocación ofensiva de Once Caldas, el algoritmo estima un 68% de certeza para más de 2.5 goles.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -8240,6 +8240,7 @@
     ],
     "homeElo": 1505,
     "awayElo": 1585,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "1 - 2 (3 Goles)"
   }
 ]
