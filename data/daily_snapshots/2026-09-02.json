@@ -7273,7 +7273,7 @@
     "pickBadge": "bomba",
     "smartScore": 83,
     "explanation": "Jerarquía y solvencia territorial: Deportes Limache (Elo 1601) llega en gran momento con 2 victorias en sus 5 cotejos más recientes, superando a Nublense en xG (2.40 vs 0.79). El modelo Poisson proyecta un contundente 72% de probabilidad de triunfo local a cuota @2.30.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-05",
@@ -7386,7 +7386,8 @@
     ],
     "homeElo": 1601,
     "awayElo": 1588,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "2 - 0"
   },
   {
     "fixtureId": 1549842,

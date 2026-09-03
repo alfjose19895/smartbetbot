@@ -54,142 +54,132 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
   { id: 94, name: "Primeira Liga", country: "Portugal", category: "europe_mid", tier: 2 },
   { id: 95, name: "Liga Portugal 2", country: "Portugal", category: "second_divisions", tier: 2 },
 
-  // --- POLONIA (1RA Y 2DA DIVISIÓN) ---
-  { id: 106, name: "Ekstraklasa", country: "Polonia", category: "europe_mid", tier: 2 },
-  { id: 107, name: "I Liga", country: "Polonia", category: "second_divisions", tier: 2 },
+  // --- POLONIA (1RA DIVISIÓN) ---
+  { id: 106, name: "Ekstraklasa", country: "Polonia", category: "europe_mid", tier: 1 },
 
-  // --- UCRANIA (1RA Y 2DA DIVISIÓN) ---
-  { id: 333, name: "Premier League", country: "Ucrania", category: "europe_mid", tier: 2 },
-  { id: 334, name: "Persha Liga", country: "Ucrania", category: "second_divisions", tier: 2 },
+  // --- UCRANIA (1RA DIVISIÓN) ---
+  { id: 333, name: "Premier League", country: "Ucrania", category: "europe_mid", tier: 1 },
 
   // --- CROACIA (1RA DIVISIÓN) ---
-  { id: 210, name: "HNL", country: "Croacia", category: "europe_mid", tier: 2 },
+  { id: 210, name: "HNL", country: "Croacia", category: "europe_mid", tier: 1 },
 
-  // --- HUNGRÍA (1RA Y 2DA DIVISIÓN) ---
-  { id: 271, name: "NB I (OTP Bank Liga)", country: "Hungría", category: "europe_mid", tier: 2 },
-  { id: 272, name: "NB II", country: "Hungría", category: "second_divisions", tier: 2 },
+  // --- HUNGRÍA (1RA DIVISIÓN) ---
+  { id: 271, name: "NB I (OTP Bank Liga)", country: "Hungría", category: "europe_mid", tier: 1 },
 
   // --- NORUEGA (1RA Y 2DA DIVISIÓN) ---
-  { id: 103, name: "Eliteserien", country: "Noruega", category: "europe_mid", tier: 2 },
+  { id: 103, name: "Eliteserien", country: "Noruega", category: "europe_mid", tier: 1 },
   { id: 104, name: "1. Division (OBOS-ligaen)", country: "Noruega", category: "second_divisions", tier: 2 },
 
   // --- SUECIA (1RA Y 2DA DIVISIÓN) ---
-  { id: 113, name: "Allsvenskan", country: "Suecia", category: "europe_mid", tier: 2 },
+  { id: 113, name: "Allsvenskan", country: "Suecia", category: "europe_mid", tier: 1 },
   { id: 114, name: "Superettan", country: "Suecia", category: "second_divisions", tier: 2 },
 
   // --- FINLANDIA (1RA Y 2DA DIVISIÓN) ---
-  { id: 244, name: "Veikkausliiga", country: "Finlandia", category: "europe_mid", tier: 2 },
+  { id: 244, name: "Veikkausliiga", country: "Finlandia", category: "europe_mid", tier: 1 },
   { id: 245, name: "Ykkönen / Ykkösliiga", country: "Finlandia", category: "second_divisions", tier: 2 },
 
-  // --- ESTONIA (1RA Y 2DA DIVISIÓN) ---
-  { id: 329, name: "Meistriliiga (Premium Liiga)", country: "Estonia", category: "europe_mid", tier: 2 },
-  { id: 328, name: "Esiliiga A", country: "Estonia", category: "second_divisions", tier: 2 },
+  // --- ESTONIA (1RA DIVISIÓN) ---
+  { id: 329, name: "Meistriliiga (Premium Liiga)", country: "Estonia", category: "europe_mid", tier: 1 },
 
   // --- DINAMARCA (1RA Y 2DA DIVISIÓN) ---
-  { id: 119, name: "Superliga", country: "Dinamarca", category: "europe_mid", tier: 2 },
+  { id: 119, name: "Superliga", country: "Dinamarca", category: "europe_mid", tier: 1 },
   { id: 120, name: "1. Division", country: "Dinamarca", category: "second_divisions", tier: 2 },
 
   // --- SUIZA (1RA Y 2DA DIVISIÓN) ---
-  { id: 207, name: "Super League", country: "Suiza", category: "europe_mid", tier: 2 },
+  { id: 207, name: "Super League", country: "Suiza", category: "europe_mid", tier: 1 },
   { id: 208, name: "Challenge League", country: "Suiza", category: "second_divisions", tier: 2 },
 
   // --- AUSTRIA (1RA Y 2DA DIVISIÓN) ---
-  { id: 218, name: "Austrian Bundesliga", country: "Austria", category: "europe_mid", tier: 2 },
+  { id: 218, name: "Austrian Bundesliga", country: "Austria", category: "europe_mid", tier: 1 },
   { id: 219, name: "2. Liga", country: "Austria", category: "second_divisions", tier: 2 },
 
   // --- ESCOCIA (TODAS LAS DIVISIONES) ---
-  { id: 179, name: "Premiership", country: "Escocia", category: "europe_mid", tier: 2 },
+  { id: 179, name: "Premiership", country: "Escocia", category: "europe_mid", tier: 1 },
   { id: 180, name: "Championship", country: "Escocia", category: "second_divisions", tier: 2 },
   { id: 183, name: "League One", country: "Escocia", category: "nordics_others", tier: 3 },
   { id: 184, name: "League Two", country: "Escocia", category: "nordics_others", tier: 4 },
 
   // --- IRLANDA (1RA Y 2DA DIVISIÓN) ---
-  { id: 357, name: "Premier Division", country: "Irlanda", category: "europe_mid", tier: 2 },
+  { id: 357, name: "Premier Division", country: "Irlanda", category: "europe_mid", tier: 1 },
   { id: 358, name: "First Division", country: "Irlanda", category: "second_divisions", tier: 2 },
 
   // --- ISLANDIA (1RA Y 2DA DIVISIÓN) ---
-  { id: 164, name: "Úrvalsdeild (Besta deild)", country: "Islandia", category: "europe_mid", tier: 2 },
+  { id: 164, name: "Úrvalsdeild (Besta deild)", country: "Islandia", category: "europe_mid", tier: 1 },
   { id: 165, name: "1. Deild karla", country: "Islandia", category: "second_divisions", tier: 2 },
 
   // --- TURQUÍA (1RA Y 2DA DIVISIÓN) ---
-  { id: 203, name: "Süper Lig", country: "Turquía", category: "europe_mid", tier: 2 },
+  { id: 203, name: "Süper Lig", country: "Turquía", category: "europe_mid", tier: 1 },
   { id: 204, name: "1. Lig", country: "Turquía", category: "second_divisions", tier: 2 },
 
   // --- ISRAEL (1RA Y 2DA DIVISIÓN) ---
-  { id: 383, name: "Ligat Ha'al (Premier League)", country: "Israel", category: "europe_mid", tier: 2 },
+  { id: 383, name: "Ligat Ha'al (Premier League)", country: "Israel", category: "europe_mid", tier: 1 },
   { id: 382, name: "Liga Leumit (2da Div)", country: "Israel", category: "second_divisions", tier: 2 },
 
-  // --- CHIPRE (1RA Y 2DA DIVISIÓN) ---
-  { id: 318, name: "1. Division", country: "Chipre", category: "europe_mid", tier: 2 },
-  { id: 319, name: "2. Division", country: "Chipre", category: "second_divisions", tier: 2 },
+  // --- CHIPRE (1RA DIVISIÓN) ---
+  { id: 318, name: "1. Division", country: "Chipre", category: "europe_mid", tier: 1 },
 
-  // --- ESLOVENIA (1RA Y 2DA DIVISIÓN) ---
-  { id: 373, name: "1. SNL (PrvaLiga)", country: "Eslovenia", category: "europe_mid", tier: 2 },
-  { id: 374, name: "2. SNL", country: "Eslovenia", category: "second_divisions", tier: 2 },
+  // --- ESLOVENIA (1RA DIVISIÓN) ---
+  { id: 373, name: "1. SNL (PrvaLiga)", country: "Eslovenia", category: "europe_mid", tier: 1 },
 
-  // --- ESLOVAQUIA (1RA Y 2DA DIVISIÓN) ---
-  { id: 332, name: "Super Liga (Niké liga)", country: "Eslovaquia", category: "europe_mid", tier: 2 },
-  { id: 506, name: "2. Liga", country: "Eslovaquia", category: "second_divisions", tier: 2 },
+  // --- ESLOVAQUIA (1RA DIVISIÓN) ---
+  { id: 332, name: "Super Liga (Niké liga)", country: "Eslovaquia", category: "europe_mid", tier: 1 },
 
   // --- BOSNIA Y HERZEGOVINA ---
-  { id: 315, name: "Premijer Liga BiH", country: "Bosnia", category: "europe_mid", tier: 2 },
+  { id: 315, name: "Premijer Liga BiH", country: "Bosnia", category: "europe_mid", tier: 1 },
   { id: 316, name: "1st League - FBiH", country: "Bosnia", category: "second_divisions", tier: 2 },
   { id: 317, name: "1st League - RS", country: "Bosnia", category: "second_divisions", tier: 2 },
 
   // --- ARMENIA (1RA DIVISIÓN) ---
-  { id: 342, name: "Premier League", country: "Armenia", category: "europe_mid", tier: 2 },
+  { id: 342, name: "Premier League", country: "Armenia", category: "europe_mid", tier: 1 },
 
   // --- BULGARIA (1RA DIVISIÓN) ---
-  { id: 172, name: "First League", country: "Bulgaria", category: "europe_mid", tier: 2 },
+  { id: 172, name: "First League", country: "Bulgaria", category: "europe_mid", tier: 1 },
 
   // --- AUSTRALIA (TODAS SUS LIGAS & NPL) ---
-  { id: 188, name: "A-League Men", country: "Australia", category: "asia_africa", tier: 2 },
-  { id: 190, name: "A-League Women", country: "Australia", category: "asia_africa", tier: 2 },
+  { id: 188, name: "A-League Men", country: "Australia", category: "asia_africa", tier: 1 },
+  { id: 190, name: "A-League Women", country: "Australia", category: "asia_africa", tier: 1 },
   { id: 192, name: "NPL New South Wales", country: "Australia", category: "nordics_others", tier: 3 },
   { id: 191, name: "Brisbane Premier League", country: "Australia", category: "nordics_others", tier: 3 },
   { id: 481, name: "Northern NSW NPL", country: "Australia", category: "nordics_others", tier: 3 },
   { id: 189, name: "Capital Territory NPL", country: "Australia", category: "nordics_others", tier: 3 },
 
-  // --- INDIA (ISL & I-LEAGUE) ---
-  { id: 323, name: "Indian Super League", country: "India", category: "asia_africa", tier: 2 },
-  { id: 324, name: "I-League", country: "India", category: "second_divisions", tier: 2 },
+  // --- INDIA (ISL) ---
+  { id: 323, name: "Indian Super League", country: "India", category: "asia_africa", tier: 1 },
 
   // --- AMÉRICAS (1RA Y 2DA DIVISIÓN) ---
-  { id: 242, name: "Liga Pro", country: "Ecuador", category: "americas", tier: 2 },
-  { id: 71, name: "Brasileirão Série A", country: "Brasil", category: "americas", tier: 2 },
+  { id: 242, name: "Liga Pro", country: "Ecuador", category: "americas", tier: 1 },
+  { id: 71, name: "Brasileirão Série A", country: "Brasil", category: "americas", tier: 1 },
   { id: 72, name: "Brasileirão Série B", country: "Brasil", category: "second_divisions", tier: 2 },
-  { id: 128, name: "Liga Profesional Argentina", country: "Argentina", category: "americas", tier: 2 },
+  { id: 128, name: "Liga Profesional Argentina", country: "Argentina", category: "americas", tier: 1 },
   { id: 129, name: "Primera Nacional (2da Div)", country: "Argentina", category: "second_divisions", tier: 2 },
-  { id: 344, name: "Primera División", country: "Bolivia", category: "americas", tier: 2 },
-  { id: 13, name: "Copa Libertadores", country: "Sudamérica", category: "cups", tier: 2 },
-  { id: 11, name: "Copa Sudamericana", country: "Sudamérica", category: "cups", tier: 2 },
-  { id: 262, name: "Liga MX", country: "México", category: "americas", tier: 2 },
+  { id: 344, name: "Primera División", country: "Bolivia", category: "americas", tier: 1 },
+  { id: 13, name: "Copa Libertadores", country: "Sudamérica", category: "cups", tier: 1 },
+  { id: 11, name: "Copa Sudamericana", country: "Sudamérica", category: "cups", tier: 1 },
+  { id: 262, name: "Liga MX", country: "México", category: "americas", tier: 1 },
   { id: 263, name: "Liga de Expansión MX", country: "México", category: "second_divisions", tier: 2 },
-  { id: 253, name: "Major League Soccer (MLS)", country: "Estados Unidos", category: "americas", tier: 2 },
+  { id: 253, name: "Major League Soccer (MLS)", country: "Estados Unidos", category: "americas", tier: 1 },
   { id: 254, name: "USL Championship", country: "Estados Unidos", category: "second_divisions", tier: 2 },
-  { id: 239, name: "Primera A", country: "Colombia", category: "americas", tier: 2 },
-  { id: 281, name: "Liga 1", country: "Perú", category: "americas", tier: 2 },
-  { id: 265, name: "Primera División", country: "Chile", category: "americas", tier: 2 },
-  { id: 271, name: "Primera División", country: "Uruguay", category: "americas", tier: 2 },
-  { id: 250, name: "Primera División", country: "Paraguay", category: "americas", tier: 2 },
-  { id: 162, name: "Primera División (Liga FPD)", country: "Costa Rica", category: "americas", tier: 2 },
-  { id: 163, name: "Liga de Ascenso", country: "Costa Rica", category: "second_divisions", tier: 3 },
-  // --- JAPÓN (1RA, 2DA Y 3RA DIVISIÓN & COPAS) ---
+  { id: 239, name: "Primera A", country: "Colombia", category: "americas", tier: 1 },
+  { id: 281, name: "Liga 1", country: "Perú", category: "americas", tier: 1 },
+  { id: 265, name: "Primera División", country: "Chile", category: "americas", tier: 1 },
+  { id: 271, name: "Primera División", country: "Uruguay", category: "americas", tier: 1 },
+  { id: 250, name: "Primera División", country: "Paraguay", category: "americas", tier: 1 },
+  { id: 162, name: "Primera División (Liga FPD)", country: "Costa Rica", category: "americas", tier: 1 },
+
+  // --- JAPÓN (1RA, 2DA DIVISIÓN & COPAS) ---
   { id: 98, name: "J1 League", country: "Japón", category: "asia_africa", tier: 1 },
   { id: 99, name: "J2 League", country: "Japón", category: "second_divisions", tier: 2 },
-  { id: 100, name: "J3 League", country: "Japón", category: "nordics_others", tier: 3 },
-  { id: 101, name: "J-League Cup", country: "Japón", category: "cups", tier: 2 },
-  { id: 102, name: "Emperor Cup", country: "Japón", category: "cups", tier: 2 },
+  { id: 101, name: "J-League Cup", country: "Japón", category: "cups", tier: 1 },
+  { id: 102, name: "Emperor Cup", country: "Japón", category: "cups", tier: 1 },
 
-  // --- COREA DEL SUR (1RA, 2DA Y 3RA DIVISIÓN & COPAS) ---
+  // --- COREA DEL SUR (1RA, 2DA DIVISIÓN & COPAS) ---
   { id: 292, name: "K League 1", country: "Corea del Sur", category: "asia_africa", tier: 1 },
   { id: 293, name: "K League 2", country: "Corea del Sur", category: "second_divisions", tier: 2 },
-  { id: 295, name: "K3 League", country: "Corea del Sur", category: "nordics_others", tier: 3 },
-  { id: 294, name: "Korean FA Cup", country: "Corea del Sur", category: "cups", tier: 2 },
+  { id: 294, name: "Korean FA Cup", country: "Corea del Sur", category: "cups", tier: 1 },
 
   // --- CHINA ---
-  { id: 169, name: "Chinese Super League", country: "China", category: "asia_africa", tier: 2 },
-  { id: 170, name: "China League One", country: "China", category: "second_divisions", tier: 3 },
+  { id: 169, name: "Chinese Super League", country: "China", category: "asia_africa", tier: 1 },
+  { id: 170, name: "China League One", country: "China", category: "second_divisions", tier: 2 },
 ];
 
 export const ALL_LEAGUE_IDS = SUPPORTED_LEAGUES.map((l) => l.id);
