@@ -1,851 +1,5 @@
 [
   {
-    "fixtureId": 1605064,
-    "match": "Pyunik II vs Sardarapat 2",
-    "homeTeam": "Pyunik II",
-    "awayTeam": "Sardarapat 2",
-    "homeTeamId": 3696,
-    "awayTeamId": 27992,
-    "homeLogo": "https://media.api-sports.io/football/teams/3696.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/27992.png",
-    "league": "First League",
-    "leagueLogo": "https://media.api-sports.io/football/leagues/343.png",
-    "country": "Armenia",
-    "kickoff": "2026-09-02T07:00:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.48,
-    "bookmakerOdds": 1.48,
-    "fairOdds": 1.49,
-    "probability": 68,
-    "impliedProbability": 67.6,
-    "edge": 1,
-    "expectedValue": -0.4,
-    "confidence": "Alta",
-    "pickBadge": "valor",
-    "smartScore": 75,
-    "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Pyunik II con la pegada en contragolpe de Sardarapat 2 (3.80 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 68% de confianza a cuota @1.48.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-04",
-        "homeTeam": "Pyunik II",
-        "awayTeam": "Sardarapat 2",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-03-06",
-        "homeTeam": "Sardarapat 2",
-        "awayTeam": "Pyunik II",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "First League"
-      },
-      {
-        "date": "2025-09-07",
-        "homeTeam": "Pyunik II",
-        "awayTeam": "Sardarapat 2",
-        "score": "3-0",
-        "winner": "home",
-        "competition": "First League"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "1-2",
-        "result": "L",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "1-1",
-        "result": "D",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "First League"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "0-2",
-        "result": "L",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "0-0",
-        "result": "D",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "First League"
-      }
-    ],
-    "homeElo": 1578,
-    "awayElo": 1509,
-    "leagueTier": 2
-  },
-  {
-    "fixtureId": 1605060,
-    "match": "Hayq vs Ararat II",
-    "homeTeam": "Hayq",
-    "awayTeam": "Ararat II",
-    "homeTeamId": 26197,
-    "awayTeamId": 3688,
-    "homeLogo": "https://media.api-sports.io/football/teams/26197.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/3688.png",
-    "league": "First League",
-    "leagueLogo": "https://media.api-sports.io/football/leagues/343.png",
-    "country": "Armenia",
-    "kickoff": "2026-09-02T07:00:00-05:00",
-    "market": "Ambos Marcan (BTTS)",
-    "selection": "Yes",
-    "odds": 1.78,
-    "bookmakerOdds": 1.78,
-    "fairOdds": 1.8,
-    "probability": 68,
-    "impliedProbability": 56.2,
-    "edge": 1,
-    "expectedValue": -1.2,
-    "confidence": "Alta",
-    "pickBadge": "valor",
-    "smartScore": 70,
-    "explanation": "Patrón de gol recíproco y fragilidad atrás: En el seguimiento estadístico reciente, ambos clubes marcan pero también conceden ocasiones claras por partido. Proyección cuantitativa de 68% de certeza para que ambos equipos anoten (valor +1%).",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-04",
-        "homeTeam": "Hayq",
-        "awayTeam": "Ararat II",
-        "score": "1-2",
-        "winner": "away",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-03-06",
-        "homeTeam": "Ararat II",
-        "awayTeam": "Hayq",
-        "score": "2-0",
-        "winner": "home",
-        "competition": "First League"
-      },
-      {
-        "date": "2025-09-07",
-        "homeTeam": "Hayq",
-        "awayTeam": "Ararat II",
-        "score": "1-1",
-        "winner": "draw",
-        "competition": "First League"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "0-0",
-        "result": "D",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "0-0",
-        "result": "D",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "2-1",
-        "result": "W",
-        "competition": "First League"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "2-1",
-        "result": "W",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "0-2",
-        "result": "L",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "0-0",
-        "result": "D",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "First League"
-      }
-    ],
-    "homeElo": 1523,
-    "awayElo": 1541,
-    "leagueTier": 2
-  },
-  {
-    "fixtureId": 1605061,
-    "match": "Lernayin Artsakh vs Banants II",
-    "homeTeam": "Lernayin Artsakh",
-    "awayTeam": "Banants II",
-    "homeTeamId": 6281,
-    "awayTeamId": 3690,
-    "homeLogo": "https://media.api-sports.io/football/teams/6281.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/3690.png",
-    "league": "First League",
-    "leagueLogo": "https://media.api-sports.io/football/leagues/343.png",
-    "country": "Armenia",
-    "kickoff": "2026-09-02T07:00:00-05:00",
-    "market": "Gana Visitante",
-    "selection": "2",
-    "odds": 1.68,
-    "bookmakerOdds": 1.68,
-    "fairOdds": 1.69,
-    "probability": 68,
-    "impliedProbability": 59.5,
-    "edge": 1,
-    "expectedValue": -0.4,
-    "confidence": "Alta",
-    "pickBadge": "valor",
-    "smartScore": 70,
-    "explanation": "Rendimiento estelar fuera de casa: Mayor contundencia en los últimos 20 metros y mejor balance defensivo respaldan la victoria de Banants II con un 68% de certeza y valor positivo (+1%).",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-04",
-        "homeTeam": "Lernayin Artsakh",
-        "awayTeam": "Banants II",
-        "score": "1-2",
-        "winner": "away",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-03-06",
-        "homeTeam": "Banants II",
-        "awayTeam": "Lernayin Artsakh",
-        "score": "2-0",
-        "winner": "home",
-        "competition": "First League"
-      },
-      {
-        "date": "2025-09-07",
-        "homeTeam": "Lernayin Artsakh",
-        "awayTeam": "Banants II",
-        "score": "1-3",
-        "winner": "away",
-        "competition": "First League"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "1-2",
-        "result": "L",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-1",
-        "result": "D",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "First League"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "First League"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "First League"
-      }
-    ],
-    "homeElo": 1624,
-    "awayElo": 1649,
-    "leagueTier": 2
-  },
-  {
-    "fixtureId": 1590143,
-    "match": "Vukovar vs Dinamo Zagreb U21",
-    "homeTeam": "Vukovar",
-    "awayTeam": "Dinamo Zagreb U21",
-    "homeTeamId": 5730,
-    "awayTeamId": 22416,
-    "homeLogo": "https://media.api-sports.io/football/teams/5730.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/22416.png",
-    "league": "First NL (Prva NL)",
-    "leagueLogo": "https://media.api-sports.io/football/leagues/211.png",
-    "country": "Croacia",
-    "kickoff": "2026-09-02T08:30:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.55,
-    "bookmakerOdds": 1.55,
-    "fairOdds": 1.54,
-    "probability": 68,
-    "impliedProbability": 64.5,
-    "edge": 1,
-    "expectedValue": 0.7,
-    "confidence": "Alta",
-    "pickBadge": "valor",
-    "smartScore": 73,
-    "explanation": "Dinámica ofensiva y pegada en ataque: Vukovar llega con 2 victorias en sus últimos 5 compromisos y promedia 2.80 goles esperados (xG) en casa, mientras Dinamo Zagreb U21 genera 0.68 xG como visitante. El modelo cuantitativo Poisson proyecta 3.47 goles esperados conjuntos, otorgando un sólido 68% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.55 (valor +1%).",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-04",
-        "homeTeam": "Vukovar",
-        "awayTeam": "Dinamo Zagreb U21",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-03-06",
-        "homeTeam": "Dinamo Zagreb U21",
-        "awayTeam": "Vukovar",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2025-09-07",
-        "homeTeam": "Vukovar",
-        "awayTeam": "Dinamo Zagreb U21",
-        "score": "3-0",
-        "winner": "home",
-        "competition": "First NL (Prva NL)"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "0-0",
-        "result": "D",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "2-1",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "0-2",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "2-1",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "0-2",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "0-0",
-        "result": "D",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      }
-    ],
-    "homeElo": 1510,
-    "awayElo": 1491,
-    "leagueTier": 2
-  },
-  {
-    "fixtureId": 1571544,
-    "match": "Rilski Sportist vs Sportist Svoge",
-    "homeTeam": "Rilski Sportist",
-    "awayTeam": "Sportist Svoge",
-    "homeTeamId": 8547,
-    "awayTeamId": 8550,
-    "homeLogo": "https://media.api-sports.io/football/teams/8547.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/8550.png",
-    "league": "Second League",
-    "leagueLogo": "https://media.api-sports.io/football/leagues/173.png",
-    "country": "Bulgaria",
-    "kickoff": "2026-09-02T09:00:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.51,
-    "bookmakerOdds": 1.51,
-    "fairOdds": 1.49,
-    "probability": 68,
-    "impliedProbability": 66.2,
-    "edge": 1.1,
-    "expectedValue": 1.7,
-    "confidence": "Alta",
-    "pickBadge": "valor",
-    "smartScore": 75,
-    "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Rilski Sportist con la pegada en contragolpe de Sportist Svoge (3.80 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 68% de confianza a cuota @1.51.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-04",
-        "homeTeam": "Rilski Sportist",
-        "awayTeam": "Sportist Svoge",
-        "score": "1-2",
-        "winner": "away",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-03-06",
-        "homeTeam": "Sportist Svoge",
-        "awayTeam": "Rilski Sportist",
-        "score": "2-0",
-        "winner": "home",
-        "competition": "Second League"
-      },
-      {
-        "date": "2025-09-07",
-        "homeTeam": "Rilski Sportist",
-        "awayTeam": "Sportist Svoge",
-        "score": "1-1",
-        "winner": "draw",
-        "competition": "Second League"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Second League"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "1-2",
-        "result": "L",
-        "competition": "Second League"
-      }
-    ],
-    "homeElo": 1566,
-    "awayElo": 1640,
-    "leagueTier": 2
-  },
-  {
-    "fixtureId": 1571539,
-    "match": "Chernomorets 1919 Burgas vs Ludogorets II",
-    "homeTeam": "Chernomorets 1919 Burgas",
-    "awayTeam": "Ludogorets II",
-    "homeTeamId": 8530,
-    "awayTeamId": 1409,
-    "homeLogo": "https://media.api-sports.io/football/teams/8530.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/1409.png",
-    "league": "Second League",
-    "leagueLogo": "https://media.api-sports.io/football/leagues/173.png",
-    "country": "Bulgaria",
-    "kickoff": "2026-09-02T09:00:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.47,
-    "bookmakerOdds": 1.47,
-    "fairOdds": 1.49,
-    "probability": 68,
-    "impliedProbability": 68,
-    "edge": 1,
-    "expectedValue": -1,
-    "confidence": "Alta",
-    "pickBadge": "valor",
-    "smartScore": 75,
-    "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con Chernomorets 1919 Burgas sumando en 3 de sus últimos 5 cotejos y la vocación ofensiva de Ludogorets II, el algoritmo estima un 68% de certeza para más de 2.5 goles.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-04",
-        "homeTeam": "Chernomorets 1919 Burgas",
-        "awayTeam": "Ludogorets II",
-        "score": "1-2",
-        "winner": "away",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-03-06",
-        "homeTeam": "Ludogorets II",
-        "awayTeam": "Chernomorets 1919 Burgas",
-        "score": "2-0",
-        "winner": "home",
-        "competition": "Second League"
-      },
-      {
-        "date": "2025-09-07",
-        "homeTeam": "Chernomorets 1919 Burgas",
-        "awayTeam": "Ludogorets II",
-        "score": "1-3",
-        "winner": "away",
-        "competition": "Second League"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "0-0",
-        "result": "D",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "Second League"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Second League"
-      }
-    ],
-    "homeElo": 1481,
-    "awayElo": 1642,
-    "leagueTier": 2
-  },
-  {
     "fixtureId": 1585738,
     "match": "Vanspor FK vs Batman Petrolspor",
     "homeTeam": "Vanspor FK",
@@ -871,7 +25,7 @@
     "pickBadge": "valor",
     "smartScore": 75,
     "explanation": "Dinámica ofensiva y pegada en ataque: Vanspor FK llega con 2 victorias en sus últimos 5 compromisos y promedia 0.40 goles esperados (xG) en casa, mientras Batman Petrolspor genera 3.40 xG como visitante. El modelo cuantitativo Poisson proyecta 3.80 goles esperados conjuntos, otorgando un sólido 68% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.50 (valor +1%).",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -984,148 +138,8 @@
     ],
     "homeElo": 1502,
     "awayElo": 1569,
-    "leagueTier": 2
-  },
-  {
-    "fixtureId": 1571543,
-    "match": "Marek vs Nesebar",
-    "homeTeam": "Marek",
-    "awayTeam": "Nesebar",
-    "homeTeamId": 8543,
-    "awayTeamId": 1410,
-    "homeLogo": "https://media.api-sports.io/football/teams/8543.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/1410.png",
-    "league": "Second League",
-    "leagueLogo": "https://media.api-sports.io/football/leagues/173.png",
-    "country": "Bulgaria",
-    "kickoff": "2026-09-02T09:00:00-05:00",
-    "market": "Gana Visitante",
-    "selection": "2",
-    "odds": 1.59,
-    "bookmakerOdds": 1.59,
-    "fairOdds": 1.59,
-    "probability": 68,
-    "impliedProbability": 62.9,
-    "edge": 1,
-    "expectedValue": 0.1,
-    "confidence": "Alta",
-    "pickBadge": "valor",
-    "smartScore": 71,
-    "explanation": "Superioridad cualitativa y jerarquía de Nesebar: A pesar de jugar fuera, su diferencial Elo (1644) y xG de 2.06 superan con claridad la estructura de Marek. Con 2 triunfos en sus 5 salidas recientes, la victoria visitante alcanza 68% de probabilidad a cuota @1.59.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-04",
-        "homeTeam": "Marek",
-        "awayTeam": "Nesebar",
-        "score": "1-2",
-        "winner": "away",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-03-06",
-        "homeTeam": "Nesebar",
-        "awayTeam": "Marek",
-        "score": "2-0",
-        "winner": "home",
-        "competition": "Second League"
-      },
-      {
-        "date": "2025-09-07",
-        "homeTeam": "Marek",
-        "awayTeam": "Nesebar",
-        "score": "1-1",
-        "winner": "draw",
-        "competition": "Second League"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Second League"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "1-2",
-        "result": "L",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Second League"
-      }
-    ],
-    "homeElo": 1616,
-    "awayElo": 1644,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "0 - 2 (2 Goles)"
   },
   {
     "fixtureId": 1609886,
@@ -1153,7 +167,7 @@
     "pickBadge": "valor",
     "smartScore": 75,
     "explanation": "Tendencia anotadora sostenida: Tanto FK Majevica Lopare como Kozara Gradiška promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.80, la expectativa de un marcador con 3 o más tantos alcanza el 68% de probabilidad.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -1266,7 +280,8 @@
     ],
     "homeElo": 1480,
     "awayElo": 1552,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "0 - 0 (0 Goles)"
   },
   {
     "fixtureId": 1609887,
@@ -1294,7 +309,7 @@
     "pickBadge": "valor",
     "smartScore": 75,
     "explanation": "Dinámica ofensiva y pegada en ataque: Velež Nevesinje llega con 2 victorias en sus últimos 5 compromisos y promedia 3.40 goles esperados (xG) en casa, mientras Drina Zvornik genera 0.40 xG como visitante. El modelo cuantitativo Poisson proyecta 3.80 goles esperados conjuntos, otorgando un sólido 68% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.47 (valor +1%).",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -1407,7 +422,8 @@
     ],
     "homeElo": 1605,
     "awayElo": 1501,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "0 - 8 (8 Goles)"
   },
   {
     "fixtureId": 1609888,
@@ -1435,7 +451,7 @@
     "pickBadge": "valor",
     "smartScore": 75,
     "explanation": "Dinámica ofensiva y pegada en ataque: FK Romanija Pale llega con 3 victorias en sus últimos 5 compromisos y promedia 3.40 goles esperados (xG) en casa, mientras Omarska genera 0.40 xG como visitante. El modelo cuantitativo Poisson proyecta 3.80 goles esperados conjuntos, otorgando un sólido 68% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.47 (valor +1%).",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -1548,7 +564,8 @@
     ],
     "homeElo": 1780,
     "awayElo": 1658,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "3 - 2 (5 Goles)"
   },
   {
     "fixtureId": 1610030,
@@ -1576,7 +593,7 @@
     "pickBadge": "valor",
     "smartScore": 75,
     "explanation": "Tendencia anotadora sostenida: Tanto Potkozarje como Zvijezda 09 promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.80, la expectativa de un marcador con 3 o más tantos alcanza el 68% de probabilidad.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -1689,7 +706,8 @@
     ],
     "homeElo": 1645,
     "awayElo": 1556,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "3 - 2 (5 Goles)"
   },
   {
     "fixtureId": 1609885,
@@ -1717,7 +735,7 @@
     "pickBadge": "valor",
     "smartScore": 71,
     "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con Leotar sumando en 4 de sus últimos 5 cotejos y la vocación ofensiva de Rudar Prijedor, el algoritmo estima un 68% de certeza para más de 2.5 goles.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -1830,7 +848,8 @@
     ],
     "homeElo": 1555,
     "awayElo": 1593,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "3 - 0 (3 Goles)"
   },
   {
     "fixtureId": 1609884,
@@ -1999,7 +1018,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Tendencia anotadora sostenida: Tanto Slavija como Sutjeska Foča promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.21, la expectativa de un marcador con 3 o más tantos alcanza el 68% de probabilidad.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -2112,994 +1131,8 @@
     ],
     "homeElo": 1654,
     "awayElo": 1641,
-    "leagueTier": 2
-  },
-  {
-    "fixtureId": 1590140,
-    "match": "Dugopolje vs Karlovac 1919",
-    "homeTeam": "Dugopolje",
-    "awayTeam": "Karlovac 1919",
-    "homeTeamId": 1471,
-    "awayTeamId": 15295,
-    "homeLogo": "https://media.api-sports.io/football/teams/1471.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/15295.png",
-    "league": "First NL (Prva NL)",
-    "leagueLogo": "https://media.api-sports.io/football/leagues/211.png",
-    "country": "Croacia",
-    "kickoff": "2026-09-02T10:00:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.51,
-    "bookmakerOdds": 1.51,
-    "fairOdds": 1.49,
-    "probability": 68,
-    "impliedProbability": 66.2,
-    "edge": 1.1,
-    "expectedValue": 1.7,
-    "confidence": "Alta",
-    "pickBadge": "valor",
-    "smartScore": 75,
-    "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con Dugopolje sumando en 3 de sus últimos 5 cotejos y la vocación ofensiva de Karlovac 1919, el algoritmo estima un 68% de certeza para más de 2.5 goles.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-04",
-        "homeTeam": "Dugopolje",
-        "awayTeam": "Karlovac 1919",
-        "score": "1-2",
-        "winner": "away",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-03-06",
-        "homeTeam": "Karlovac 1919",
-        "awayTeam": "Dugopolje",
-        "score": "2-0",
-        "winner": "home",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2025-09-07",
-        "homeTeam": "Dugopolje",
-        "awayTeam": "Karlovac 1919",
-        "score": "1-1",
-        "winner": "draw",
-        "competition": "First NL (Prva NL)"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "0-0",
-        "result": "D",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "2-1",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "0-2",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "0-0",
-        "result": "D",
-        "competition": "First NL (Prva NL)"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      }
-    ],
-    "homeElo": 1517,
-    "awayElo": 1643,
-    "leagueTier": 2
-  },
-  {
-    "fixtureId": 1590139,
-    "match": "Croatia Zmijavci vs Bsk Bijelo Brdo",
-    "homeTeam": "Croatia Zmijavci",
-    "awayTeam": "Bsk Bijelo Brdo",
-    "homeTeamId": 6254,
-    "awayTeamId": 1487,
-    "homeLogo": "https://media.api-sports.io/football/teams/6254.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/1487.png",
-    "league": "First NL (Prva NL)",
-    "leagueLogo": "https://media.api-sports.io/football/leagues/211.png",
-    "country": "Croacia",
-    "kickoff": "2026-09-02T10:00:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.49,
-    "bookmakerOdds": 1.49,
-    "fairOdds": 1.49,
-    "probability": 68,
-    "impliedProbability": 67.1,
-    "edge": 1,
-    "expectedValue": 0.3,
-    "confidence": "Alta",
-    "pickBadge": "valor",
-    "smartScore": 75,
-    "explanation": "Tendencia anotadora sostenida: Tanto Croatia Zmijavci como Bsk Bijelo Brdo promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.80, la expectativa de un marcador con 3 o más tantos alcanza el 68% de probabilidad.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-04",
-        "homeTeam": "Croatia Zmijavci",
-        "awayTeam": "Bsk Bijelo Brdo",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-03-06",
-        "homeTeam": "Bsk Bijelo Brdo",
-        "awayTeam": "Croatia Zmijavci",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2025-09-07",
-        "homeTeam": "Croatia Zmijavci",
-        "awayTeam": "Bsk Bijelo Brdo",
-        "score": "1-1",
-        "winner": "draw",
-        "competition": "First NL (Prva NL)"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "1-2",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "1-1",
-        "result": "D",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "First NL (Prva NL)"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "1-2",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      }
-    ],
-    "homeElo": 1608,
-    "awayElo": 1560,
-    "leagueTier": 2
-  },
-  {
-    "fixtureId": 1590142,
-    "match": "Mladost Ždralovi vs Sesvete",
-    "homeTeam": "Mladost Ždralovi",
-    "awayTeam": "Sesvete",
-    "homeTeamId": 8593,
-    "awayTeamId": 1479,
-    "homeLogo": "https://media.api-sports.io/football/teams/8593.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/1479.png",
-    "league": "First NL (Prva NL)",
-    "leagueLogo": "https://media.api-sports.io/football/leagues/211.png",
-    "country": "Croacia",
-    "kickoff": "2026-09-02T10:00:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.47,
-    "bookmakerOdds": 1.47,
-    "fairOdds": 1.49,
-    "probability": 68,
-    "impliedProbability": 68,
-    "edge": 1,
-    "expectedValue": -1,
-    "confidence": "Alta",
-    "pickBadge": "valor",
-    "smartScore": 75,
-    "explanation": "Dinámica ofensiva y pegada en ataque: Mladost Ždralovi llega con 2 victorias en sus últimos 5 compromisos y promedia 3.40 goles esperados (xG) en casa, mientras Sesvete genera 0.40 xG como visitante. El modelo cuantitativo Poisson proyecta 3.80 goles esperados conjuntos, otorgando un sólido 68% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.47 (valor +1%).",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-04",
-        "homeTeam": "Mladost Ždralovi",
-        "awayTeam": "Sesvete",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-03-06",
-        "homeTeam": "Sesvete",
-        "awayTeam": "Mladost Ždralovi",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2025-09-07",
-        "homeTeam": "Mladost Ždralovi",
-        "awayTeam": "Sesvete",
-        "score": "3-0",
-        "winner": "home",
-        "competition": "First NL (Prva NL)"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "1-2",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "0-0",
-        "result": "D",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "0-2",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "0-0",
-        "result": "D",
-        "competition": "First NL (Prva NL)"
-      }
-    ],
-    "homeElo": 1570,
-    "awayElo": 1495,
-    "leagueTier": 2
-  },
-  {
-    "fixtureId": 1590145,
-    "match": "Segesta Sisak vs Kustosija",
-    "homeTeam": "Segesta Sisak",
-    "awayTeam": "Kustosija",
-    "homeTeamId": 5722,
-    "awayTeamId": 1481,
-    "homeLogo": "https://media.api-sports.io/football/teams/5722.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/1481.png",
-    "league": "First NL (Prva NL)",
-    "leagueLogo": "https://media.api-sports.io/football/leagues/211.png",
-    "country": "Croacia",
-    "kickoff": "2026-09-02T10:00:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.47,
-    "bookmakerOdds": 1.47,
-    "fairOdds": 1.49,
-    "probability": 68,
-    "impliedProbability": 68,
-    "edge": 1,
-    "expectedValue": -1,
-    "confidence": "Alta",
-    "pickBadge": "valor",
-    "smartScore": 75,
-    "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con Segesta Sisak sumando en 4 de sus últimos 5 cotejos y la vocación ofensiva de Kustosija, el algoritmo estima un 68% de certeza para más de 2.5 goles.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-04",
-        "homeTeam": "Segesta Sisak",
-        "awayTeam": "Kustosija",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-03-06",
-        "homeTeam": "Kustosija",
-        "awayTeam": "Segesta Sisak",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2025-09-07",
-        "homeTeam": "Segesta Sisak",
-        "awayTeam": "Kustosija",
-        "score": "1-1",
-        "winner": "draw",
-        "competition": "First NL (Prva NL)"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "1-1",
-        "result": "D",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "0-0",
-        "result": "D",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "2-1",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "0-2",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "0-0",
-        "result": "D",
-        "competition": "First NL (Prva NL)"
-      }
-    ],
-    "homeElo": 1655,
-    "awayElo": 1537,
-    "leagueTier": 2
-  },
-  {
-    "fixtureId": 1590141,
-    "match": "Jadran LP vs Dubrava Zagreb",
-    "homeTeam": "Jadran LP",
-    "awayTeam": "Dubrava Zagreb",
-    "homeTeamId": 5708,
-    "awayTeamId": 6255,
-    "homeLogo": "https://media.api-sports.io/football/teams/5708.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/6255.png",
-    "league": "First NL (Prva NL)",
-    "leagueLogo": "https://media.api-sports.io/football/leagues/211.png",
-    "country": "Croacia",
-    "kickoff": "2026-09-02T10:00:00-05:00",
-    "market": "Gana Visitante",
-    "selection": "2",
-    "odds": 1.79,
-    "bookmakerOdds": 1.79,
-    "fairOdds": 1.78,
-    "probability": 68,
-    "impliedProbability": 55.9,
-    "edge": 1,
-    "expectedValue": 0.8,
-    "confidence": "Alta",
-    "pickBadge": "valor",
-    "smartScore": 70,
-    "explanation": "Contragolpe letal y efectividad foránea: Dubrava Zagreb explota los espacios concedidos por Jadran LP en transiciones defensivas. El algoritmo Poisson proyecta 68% de solvencia matemática para el triunfo visitante.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-04",
-        "homeTeam": "Jadran LP",
-        "awayTeam": "Dubrava Zagreb",
-        "score": "1-2",
-        "winner": "away",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-03-06",
-        "homeTeam": "Dubrava Zagreb",
-        "awayTeam": "Jadran LP",
-        "score": "2-0",
-        "winner": "home",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2025-09-07",
-        "homeTeam": "Jadran LP",
-        "awayTeam": "Dubrava Zagreb",
-        "score": "1-1",
-        "winner": "draw",
-        "competition": "First NL (Prva NL)"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "0-0",
-        "result": "D",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "2-1",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "0-2",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "1-2",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-1",
-        "result": "D",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      }
-    ],
-    "homeElo": 1540,
-    "awayElo": 1564,
-    "leagueTier": 2
-  },
-  {
-    "fixtureId": 1590144,
-    "match": "Opatija vs Hrvace",
-    "homeTeam": "Opatija",
-    "awayTeam": "Hrvace",
-    "homeTeamId": 6246,
-    "awayTeamId": 6241,
-    "homeLogo": "https://media.api-sports.io/football/teams/6246.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/6241.png",
-    "league": "First NL (Prva NL)",
-    "leagueLogo": "https://media.api-sports.io/football/leagues/211.png",
-    "country": "Croacia",
-    "kickoff": "2026-09-02T10:30:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.5,
-    "bookmakerOdds": 1.5,
-    "fairOdds": 1.49,
-    "probability": 68,
-    "impliedProbability": 66.7,
-    "edge": 1,
-    "expectedValue": 1,
-    "confidence": "Alta",
-    "pickBadge": "valor",
-    "smartScore": 75,
-    "explanation": "Tendencia anotadora sostenida: Tanto Opatija como Hrvace promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.80, la expectativa de un marcador con 3 o más tantos alcanza el 68% de probabilidad.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-04",
-        "homeTeam": "Opatija",
-        "awayTeam": "Hrvace",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-03-06",
-        "homeTeam": "Hrvace",
-        "awayTeam": "Opatija",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2025-09-07",
-        "homeTeam": "Opatija",
-        "awayTeam": "Hrvace",
-        "score": "3-0",
-        "winner": "home",
-        "competition": "First NL (Prva NL)"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "2-1",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "0-2",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "0-0",
-        "result": "D",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      }
-    ],
-    "homeElo": 1652,
-    "awayElo": 1541,
-    "leagueTier": 2
-  },
-  {
-    "fixtureId": 1571546,
-    "match": "Yantra 2019 vs Pirin Blagoevgrad",
-    "homeTeam": "Yantra 2019",
-    "awayTeam": "Pirin Blagoevgrad",
-    "homeTeamId": 8528,
-    "awayTeamId": 1428,
-    "homeLogo": "https://media.api-sports.io/football/teams/8528.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/1428.png",
-    "league": "Second League",
-    "leagueLogo": "https://media.api-sports.io/football/leagues/173.png",
-    "country": "Bulgaria",
-    "kickoff": "2026-09-02T11:00:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.49,
-    "bookmakerOdds": 1.49,
-    "fairOdds": 1.49,
-    "probability": 68,
-    "impliedProbability": 67.1,
-    "edge": 1,
-    "expectedValue": 0.3,
-    "confidence": "Alta",
-    "pickBadge": "valor",
-    "smartScore": 75,
-    "explanation": "Tendencia anotadora sostenida: Tanto Yantra 2019 como Pirin Blagoevgrad promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.80, la expectativa de un marcador con 3 o más tantos alcanza el 68% de probabilidad.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-04",
-        "homeTeam": "Yantra 2019",
-        "awayTeam": "Pirin Blagoevgrad",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-03-06",
-        "homeTeam": "Pirin Blagoevgrad",
-        "awayTeam": "Yantra 2019",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "Second League"
-      },
-      {
-        "date": "2025-09-07",
-        "homeTeam": "Yantra 2019",
-        "awayTeam": "Pirin Blagoevgrad",
-        "score": "3-0",
-        "winner": "home",
-        "competition": "Second League"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Second League"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "0-0",
-        "result": "D",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "0-0",
-        "result": "D",
-        "competition": "Second League"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Second League"
-      }
-    ],
-    "homeElo": 1619,
-    "awayElo": 1524,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "2 - 1 (3 Goles)"
   },
   {
     "fixtureId": 1582788,
@@ -3127,7 +1160,7 @@
     "pickBadge": "valor",
     "smartScore": 72,
     "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con Velež sumando en 2 de sus últimos 5 cotejos y la vocación ofensiva de Radnik Bijeljina, el algoritmo estima un 68% de certeza para más de 2.5 goles.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -3240,7 +1273,8 @@
     ],
     "homeElo": 1538,
     "awayElo": 1577,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "1 - 1 (2 Goles)"
   },
   {
     "fixtureId": 1513602,
@@ -3268,7 +1302,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Tendencia anotadora sostenida: Tanto Flora Tallinn como Tammeka promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.28, la expectativa de un marcador con 3 o más tantos alcanza el 68% de probabilidad.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -3381,7 +1415,8 @@
     ],
     "homeElo": 1654,
     "awayElo": 1644,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "3 - 2 (5 Goles)"
   },
   {
     "fixtureId": 1586521,
@@ -3409,7 +1444,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Dinámica ofensiva y pegada en ataque: HSC Hannover llega con 1 victorias en sus últimos 5 compromisos y promedia 0.40 goles esperados (xG) en casa, mientras Phönix Lübeck genera 3.40 xG como visitante. El modelo cuantitativo Poisson proyecta 3.80 goles esperados conjuntos, otorgando un sólido 68% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.47 (valor +1%).",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -3522,7 +1557,8 @@
     ],
     "homeElo": 1487,
     "awayElo": 1570,
-    "leagueTier": 4
+    "leagueTier": 4,
+    "actualScore": "0 - 3 (3 Goles)"
   },
   {
     "fixtureId": 1561916,
@@ -3550,7 +1586,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Dinámica ofensiva y pegada en ataque: Austria Vienna llega con 2 victorias en sus últimos 5 compromisos y promedia 1.90 goles esperados (xG) en casa, mientras WSG Wattens genera 1.22 xG como visitante. El modelo cuantitativo Poisson proyecta 3.13 goles esperados conjuntos, otorgando un sólido 68% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.66 (valor +1%).",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -3663,7 +1699,8 @@
     ],
     "homeElo": 1590,
     "awayElo": 1595,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "0 - 1 (1 Goles)"
   },
   {
     "fixtureId": 1585734,
@@ -3692,7 +1729,7 @@
     "pickBadge": "estandar",
     "smartScore": 77,
     "explanation": "Tendencia anotadora sostenida: Tanto Fatih Karagümrük como Kayserispor promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.88, la expectativa de un marcador con 3 o más tantos alcanza el 68.6% de probabilidad.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -3805,7 +1842,8 @@
     ],
     "homeElo": 1524,
     "awayElo": 1580,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "1 - 1 (2 Goles)"
   },
   {
     "fixtureId": 1555481,
@@ -3833,7 +1871,7 @@
     "pickBadge": "valor",
     "smartScore": 75,
     "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Hapoel Beer Sheva con la pegada en contragolpe de Hapoel Haifa (3.80 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 68% de confianza a cuota @1.48.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -3946,7 +1984,8 @@
     ],
     "homeElo": 1590,
     "awayElo": 1506,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "2 - 2 (4 Goles)"
   },
   {
     "fixtureId": 1585736,
@@ -3974,7 +2013,7 @@
     "pickBadge": "valor",
     "smartScore": 75,
     "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Sivasspor con la pegada en contragolpe de Mardin 1969 (3.81 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 68% de confianza a cuota @1.47.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -4087,7 +2126,8 @@
     ],
     "homeElo": 1550,
     "awayElo": 1612,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "2 - 2 (4 Goles)"
   },
   {
     "fixtureId": 1551080,
@@ -4115,7 +2155,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Eficacia compartida en el último tercio: Slavia Sofia anota con regularidad como anfitrión (1 triunfos en sus últimos 5 juegos y xG de 1.31), mientras que Levski Sofia cuenta con desequilibrio en ataque (1.46 xG foráneo). El modelo Poisson estima un 68% de probabilidad de anotación mutua a cuota @1.76.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -4228,7 +2268,8 @@
     ],
     "homeElo": 1538,
     "awayElo": 1552,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "1 - 2 (Ambos Sí)"
   },
   {
     "fixtureId": 1586837,
@@ -4257,7 +2298,7 @@
     "pickBadge": "estandar",
     "smartScore": 70,
     "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con FC Carl Zeiss Jena sumando en 3 de sus últimos 5 cotejos y la vocación ofensiva de Altglienicke, el algoritmo estima un 68.2% de certeza para más de 2.5 goles.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -4370,7 +2411,8 @@
     ],
     "homeElo": 1567,
     "awayElo": 1628,
-    "leagueTier": 4
+    "leagueTier": 4,
+    "actualScore": "1 - 0 (1 Goles)"
   },
   {
     "fixtureId": 1586836,
@@ -4398,7 +2440,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Dinámica ofensiva y pegada en ataque: Hallescher FC llega con 1 victorias en sus últimos 5 compromisos y promedia 3.40 goles esperados (xG) en casa, mientras Tasmania Berlin genera 0.40 xG como visitante. El modelo cuantitativo Poisson proyecta 3.80 goles esperados conjuntos, otorgando un sólido 68% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.51 (valor +1.1%).",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -4511,7 +2553,8 @@
     ],
     "homeElo": 1588,
     "awayElo": 1490,
-    "leagueTier": 4
+    "leagueTier": 4,
+    "actualScore": "2 - 0 (2 Goles)"
   },
   {
     "fixtureId": 1587450,
@@ -4539,7 +2582,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Dinámica ofensiva y pegada en ataque: SG Wattenscheid 09 llega con 2 victorias en sus últimos 5 compromisos y promedia 3.40 goles esperados (xG) en casa, mientras SV Rodinghausen genera 0.40 xG como visitante. El modelo cuantitativo Poisson proyecta 3.80 goles esperados conjuntos, otorgando un sólido 68% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.50 (valor +1%).",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -4652,148 +2695,8 @@
     ],
     "homeElo": 1614,
     "awayElo": 1496,
-    "leagueTier": 4
-  },
-  {
-    "fixtureId": 1590138,
-    "match": "HNK Cibalia vs Orijent 1919",
-    "homeTeam": "HNK Cibalia",
-    "awayTeam": "Orijent 1919",
-    "homeTeamId": 1021,
-    "awayTeamId": 6256,
-    "homeLogo": "https://media.api-sports.io/football/teams/1021.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/6256.png",
-    "league": "First NL (Prva NL)",
-    "leagueLogo": "https://media.api-sports.io/football/leagues/211.png",
-    "country": "Croacia",
-    "kickoff": "2026-09-02T12:30:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.55,
-    "bookmakerOdds": 1.55,
-    "fairOdds": 1.53,
-    "probability": 68,
-    "impliedProbability": 64.5,
-    "edge": 1,
-    "expectedValue": 1.4,
-    "confidence": "Alta",
-    "pickBadge": "valor",
-    "smartScore": 74,
-    "explanation": "Dinámica ofensiva y pegada en ataque: HNK Cibalia llega con 2 victorias en sus últimos 5 compromisos y promedia 0.67 goles esperados (xG) en casa, mientras Orijent 1919 genera 2.83 xG como visitante. El modelo cuantitativo Poisson proyecta 3.51 goles esperados conjuntos, otorgando un sólido 68% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.55 (valor +1%).",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-04",
-        "homeTeam": "HNK Cibalia",
-        "awayTeam": "Orijent 1919",
-        "score": "1-2",
-        "winner": "away",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-03-06",
-        "homeTeam": "Orijent 1919",
-        "awayTeam": "HNK Cibalia",
-        "score": "2-0",
-        "winner": "home",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2025-09-07",
-        "homeTeam": "HNK Cibalia",
-        "awayTeam": "Orijent 1919",
-        "score": "1-3",
-        "winner": "away",
-        "competition": "First NL (Prva NL)"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "0-0",
-        "result": "D",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "2-1",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "0-2",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "0-0",
-        "result": "D",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "1-1",
-        "result": "D",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-14",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "First NL (Prva NL)"
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "First NL (Prva NL)"
-      }
-    ],
-    "homeElo": 1514,
-    "awayElo": 1555,
-    "leagueTier": 2
+    "leagueTier": 4,
+    "actualScore": "2 - 1 (3 Goles)"
   },
   {
     "fixtureId": 1587448,
@@ -4821,7 +2724,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con Sportfreunde Lotte sumando en 4 de sus últimos 5 cotejos y la vocación ofensiva de Bergisch Gladbach, el algoritmo estima un 68% de certeza para más de 2.5 goles.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -4934,7 +2837,8 @@
     ],
     "homeElo": 1513,
     "awayElo": 1653,
-    "leagueTier": 4
+    "leagueTier": 4,
+    "actualScore": "0 - 2 (2 Goles)"
   },
   {
     "fixtureId": 1587451,
@@ -4962,7 +2866,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Dinámica ofensiva y pegada en ataque: Sportfreunde Siegen llega con 2 victorias en sus últimos 5 compromisos y promedia 3.40 goles esperados (xG) en casa, mientras Paderborn II genera 0.40 xG como visitante. El modelo cuantitativo Poisson proyecta 3.80 goles esperados conjuntos, otorgando un sólido 68% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.47 (valor +1%).",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -5075,7 +2979,8 @@
     ],
     "homeElo": 1596,
     "awayElo": 1503,
-    "leagueTier": 4
+    "leagueTier": 4,
+    "actualScore": "2 - 2 (4 Goles)"
   },
   {
     "fixtureId": 1587452,
@@ -5103,7 +3008,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Tendencia anotadora sostenida: Tanto Wiedenbrück como Borussia M'gladbach II promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.80, la expectativa de un marcador con 3 o más tantos alcanza el 68% de probabilidad.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -5216,7 +3121,8 @@
     ],
     "homeElo": 1494,
     "awayElo": 1652,
-    "leagueTier": 4
+    "leagueTier": 4,
+    "actualScore": "1 - 4 (5 Goles)"
   },
   {
     "fixtureId": 1549008,
@@ -5244,7 +3150,7 @@
     "pickBadge": "valor",
     "smartScore": 73,
     "explanation": "Tendencia anotadora sostenida: Tanto Aarhus como FC Midtjylland promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.48, la expectativa de un marcador con 3 o más tantos alcanza el 68% de probabilidad.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -5357,7 +3263,8 @@
     ],
     "homeElo": 1552,
     "awayElo": 1537,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "0 - 2 (2 Goles)"
   },
   {
     "fixtureId": 1557974,
@@ -5385,7 +3292,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Vocación ofensiva mutua: Con delanteras efectivas y promedios superiores a 4 remates a portería, el algoritmo detecta un 68% de probabilidad de que tanto Aluminij como Celje se hagan presentes en el marcador.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -5498,7 +3405,8 @@
     ],
     "homeElo": 1585,
     "awayElo": 1603,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "0 - 2 (No)"
   },
   {
     "fixtureId": 1555380,
@@ -5527,7 +3435,7 @@
     "pickBadge": "estandar",
     "smartScore": 76,
     "explanation": "Tendencia anotadora sostenida: Tanto FC Thun como Lausanne promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.86, la expectativa de un marcador con 3 o más tantos alcanza el 68.3% de probabilidad.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -5640,7 +3548,8 @@
     ],
     "homeElo": 1524,
     "awayElo": 1583,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "0 - 0 (0 Goles)"
   },
   {
     "fixtureId": 1555379,
@@ -5668,7 +3577,7 @@
     "pickBadge": "valor",
     "smartScore": 76,
     "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con FC Luzern sumando en 3 de sus últimos 5 cotejos y la vocación ofensiva de FC Vaduz, el algoritmo estima un 68% de certeza para más de 2.5 goles.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -5781,7 +3690,8 @@
     ],
     "homeElo": 1569,
     "awayElo": 1631,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "2 - 1 (3 Goles)"
   },
   {
     "fixtureId": 1561917,
@@ -5809,7 +3719,7 @@
     "pickBadge": "valor",
     "smartScore": 75,
     "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con Red Bull Salzburg sumando en 3 de sus últimos 5 cotejos y la vocación ofensiva de Rapid Vienna, el algoritmo estima un 68% de certeza para más de 2.5 goles.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -5922,7 +3832,8 @@
     ],
     "homeElo": 1628,
     "awayElo": 1537,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "5 - 1 (6 Goles)"
   },
   {
     "fixtureId": 1582785,
@@ -5950,7 +3861,7 @@
     "pickBadge": "valor",
     "smartScore": 75,
     "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con Borac Banja Luka sumando en 4 de sus últimos 5 cotejos y la vocación ofensiva de Zeljeznicar Sarajevo, el algoritmo estima un 68% de certeza para más de 2.5 goles.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -6063,7 +3974,8 @@
     ],
     "homeElo": 1644,
     "awayElo": 1512,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "2 - 0 (2 Goles)"
   },
   {
     "fixtureId": 1555378,
@@ -6091,7 +4003,7 @@
     "pickBadge": "valor",
     "smartScore": 75,
     "explanation": "Tendencia anotadora sostenida: Tanto Grasshoppers como FC ST. Gallen promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.80, la expectativa de un marcador con 3 o más tantos alcanza el 68% de probabilidad.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -6204,7 +4116,8 @@
     ],
     "homeElo": 1501,
     "awayElo": 1589,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "2 - 0 (2 Goles)"
   },
   {
     "fixtureId": 1558607,
@@ -6232,7 +4145,7 @@
     "pickBadge": "valor",
     "smartScore": 75,
     "explanation": "Dinámica ofensiva y pegada en ataque: St. Truiden llega con 1 victorias en sus últimos 5 compromisos y promedia 3.40 goles esperados (xG) en casa, mientras Union St. Gilloise genera 0.40 xG como visitante. El modelo cuantitativo Poisson proyecta 3.80 goles esperados conjuntos, otorgando un sólido 68% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.49 (valor +1%).",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -6345,7 +4258,8 @@
     ],
     "homeElo": 1588,
     "awayElo": 1514,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "0 - 3 (3 Goles)"
   },
   {
     "fixtureId": 1582786,
@@ -6373,7 +4287,7 @@
     "pickBadge": "valor",
     "smartScore": 75,
     "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Siroki Brijeg con la pegada en contragolpe de FK Sarajevo (3.80 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 68% de confianza a cuota @1.48.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -6486,7 +4400,8 @@
     ],
     "homeElo": 1652,
     "awayElo": 1584,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "1 - 2 (3 Goles)"
   },
   {
     "fixtureId": 1563130,
@@ -6515,7 +4430,7 @@
     "pickBadge": "estandar",
     "smartScore": 77,
     "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con West Brom sumando en 3 de sus últimos 5 cotejos y la vocación ofensiva de Charlton, el algoritmo estima un 68.8% de certeza para más de 2.5 goles.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -6628,7 +4543,8 @@
     ],
     "homeElo": 1611,
     "awayElo": 1587,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "1 - 1 (2 Goles)"
   },
   {
     "fixtureId": 1556656,
@@ -6656,7 +4572,7 @@
     "pickBadge": "valor",
     "smartScore": 76,
     "explanation": "Tendencia anotadora sostenida: Tanto Kilmarnock como ST Mirren promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.83, la expectativa de un marcador con 3 o más tantos alcanza el 68% de probabilidad.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -6769,7 +4685,8 @@
     ],
     "homeElo": 1615,
     "awayElo": 1580,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "0 - 1 (1 Goles)"
   },
   {
     "fixtureId": 1556657,
@@ -6797,7 +4714,7 @@
     "pickBadge": "valor",
     "smartScore": 75,
     "explanation": "Tendencia anotadora sostenida: Tanto Motherwell como Dundee Utd promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.80, la expectativa de un marcador con 3 o más tantos alcanza el 68% de probabilidad.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -6910,7 +4827,8 @@
     ],
     "homeElo": 1639,
     "awayElo": 1510,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "3 - 0 (3 Goles)"
   },
   {
     "fixtureId": 1563128,
@@ -6938,7 +4856,7 @@
     "pickBadge": "valor",
     "smartScore": 75,
     "explanation": "Tendencia anotadora sostenida: Tanto Millwall como Wrexham promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.80, la expectativa de un marcador con 3 o más tantos alcanza el 68% de probabilidad.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -7051,7 +4969,8 @@
     ],
     "homeElo": 1590,
     "awayElo": 1492,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "0 - 3 (3 Goles)"
   },
   {
     "fixtureId": 1563129,
@@ -7079,7 +4998,7 @@
     "pickBadge": "valor",
     "smartScore": 75,
     "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con QPR sumando en 4 de sus últimos 5 cotejos y la vocación ofensiva de Cardiff, el algoritmo estima un 68% de certeza para más de 2.5 goles.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -7192,7 +5111,8 @@
     ],
     "homeElo": 1543,
     "awayElo": 1627,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "2 - 1 (3 Goles)"
   },
   {
     "fixtureId": 1556652,
@@ -7220,7 +5140,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Eficacia compartida en el último tercio: Celtic anota con regularidad como anfitrión (1 triunfos en sus últimos 5 juegos y xG de 1.25), mientras que Aberdeen cuenta con desequilibrio en ataque (1.33 xG foráneo). El modelo Poisson estima un 68% de probabilidad de anotación mutua a cuota @1.94.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -7333,7 +5253,8 @@
     ],
     "homeElo": 1536,
     "awayElo": 1550,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "3 - 0 (No)"
   },
   {
     "fixtureId": 1556653,
@@ -7361,7 +5282,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Rigor táctico y solidez en bloque defensivo: Dundee y ST Johnstone priorizan el orden posicional en bloque medio-bajo, con una expectativa conjunta de apenas 2.55 goles esperados. El modelo Poisson otorga un 68% de probabilidad a que el marcador se mantenga por debajo de los 2.5 goles a cuota @1.90.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -7474,7 +5395,8 @@
     ],
     "homeElo": 1537,
     "awayElo": 1551,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "1 - 1 (2 Goles)"
   },
   {
     "fixtureId": 1564271,
@@ -7502,7 +5424,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Dinámica ofensiva y pegada en ataque: Barnsley llega con 3 victorias en sus últimos 5 compromisos y promedia 3.40 goles esperados (xG) en casa, mientras Blackpool genera 0.40 xG como visitante. El modelo cuantitativo Poisson proyecta 3.80 goles esperados conjuntos, otorgando un sólido 68% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.48 (valor +1%).",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -7615,7 +5537,8 @@
     ],
     "homeElo": 1592,
     "awayElo": 1499,
-    "leagueTier": 3
+    "leagueTier": 3,
+    "actualScore": "2 - 1 (3 Goles)"
   },
   {
     "fixtureId": 1564274,
@@ -7643,7 +5566,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Tendencia anotadora sostenida: Tanto Burton Albion como AFC Wimbledon promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.80, la expectativa de un marcador con 3 o más tantos alcanza el 68% de probabilidad.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -7756,7 +5679,8 @@
     ],
     "homeElo": 1483,
     "awayElo": 1563,
-    "leagueTier": 3
+    "leagueTier": 3,
+    "actualScore": "4 - 1 (5 Goles)"
   },
   {
     "fixtureId": 1564278,
@@ -7784,7 +5708,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Tendencia anotadora sostenida: Tanto Luton como Stockport County promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.80, la expectativa de un marcador con 3 o más tantos alcanza el 68% de probabilidad.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -7897,7 +5821,8 @@
     ],
     "homeElo": 1650,
     "awayElo": 1503,
-    "leagueTier": 3
+    "leagueTier": 3,
+    "actualScore": "2 - 0 (2 Goles)"
   },
   {
     "fixtureId": 1564280,
@@ -7925,7 +5850,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Tendencia anotadora sostenida: Tanto Wigan como Milton Keynes Dons promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.80, la expectativa de un marcador con 3 o más tantos alcanza el 68% de probabilidad.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -8038,7 +5963,8 @@
     ],
     "homeElo": 1622,
     "awayElo": 1578,
-    "leagueTier": 3
+    "leagueTier": 3,
+    "actualScore": "3 - 1 (4 Goles)"
   },
   {
     "fixtureId": 1519478,
@@ -8066,7 +5992,7 @@
     "pickBadge": "valor",
     "smartScore": 75,
     "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Macara con la pegada en contragolpe de Manta FC (3.80 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 68% de confianza a cuota @1.51.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -8179,7 +6105,8 @@
     ],
     "homeElo": 1521,
     "awayElo": 1606,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "4 - 3 (7 Goles)"
   },
   {
     "fixtureId": 1556654,
@@ -8207,7 +6134,7 @@
     "pickBadge": "valor",
     "smartScore": 75,
     "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con Falkirk sumando en 3 de sus últimos 5 cotejos y la vocación ofensiva de Rangers, el algoritmo estima un 68% de certeza para más de 2.5 goles.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -8320,7 +6247,8 @@
     ],
     "homeElo": 1648,
     "awayElo": 1482,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "1 - 2 (3 Goles)"
   },
   {
     "fixtureId": 1563127,
@@ -8348,7 +6276,7 @@
     "pickBadge": "valor",
     "smartScore": 75,
     "explanation": "Dinámica ofensiva y pegada en ataque: Burnley llega con 1 victorias en sus últimos 5 compromisos y promedia 0.40 goles esperados (xG) en casa, mientras Middlesbrough genera 3.40 xG como visitante. El modelo cuantitativo Poisson proyecta 3.80 goles esperados conjuntos, otorgando un sólido 68% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.49 (valor +1%).",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -8461,7 +6389,8 @@
     ],
     "homeElo": 1497,
     "awayElo": 1573,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "1 - 1 (2 Goles)"
   },
   {
     "fixtureId": 1564282,
@@ -8489,7 +6418,7 @@
     "pickBadge": "valor",
     "smartScore": 70,
     "explanation": "Dinámica ofensiva y pegada en ataque: Reading llega con 1 victorias en sus últimos 5 compromisos y promedia 3.40 goles esperados (xG) en casa, mientras Mansfield Town genera 0.40 xG como visitante. El modelo cuantitativo Poisson proyecta 3.80 goles esperados conjuntos, otorgando un sólido 68% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.50 (valor +1%).",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -8602,7 +6531,8 @@
     ],
     "homeElo": 1638,
     "awayElo": 1591,
-    "leagueTier": 3
+    "leagueTier": 3,
+    "actualScore": "5 - 0 (5 Goles)"
   },
   {
     "fixtureId": 1519474,
@@ -8630,7 +6560,7 @@
     "pickBadge": "valor",
     "smartScore": 72,
     "explanation": "Tendencia anotadora sostenida: Tanto Deportivo Cuenca como Guayaquil City FC promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.48, la expectativa de un marcador con 3 o más tantos alcanza el 68% de probabilidad.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -8743,7 +6673,8 @@
     ],
     "homeElo": 1619,
     "awayElo": 1596,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "1 - 0 (1 Goles)"
   },
   {
     "fixtureId": 1505469,
@@ -8772,7 +6703,7 @@
     "pickBadge": "estandar",
     "smartScore": 84,
     "explanation": "Diferencial de calidad y localía (+14 Elo): Coquimbo Unido impone condiciones en posesión y presión alta ante un Universidad de Concepcion que ha sufrido 2 derrotas en sus últimas salidas. Victoria directa asignada con 74.9% de probabilidad y +11.3% de valor.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -8885,7 +6816,8 @@
     ],
     "homeElo": 1594,
     "awayElo": 1580,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "1 - 0"
   },
   {
     "fixtureId": 1492145,
@@ -8913,7 +6845,7 @@
     "pickBadge": "bomba",
     "smartScore": 75,
     "explanation": "Contragolpe letal y efectividad foránea: Mirassol explota los espacios concedidos por Flamengo en transiciones defensivas. El algoritmo Poisson proyecta 68% de solvencia matemática para el triunfo visitante.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -9026,7 +6958,8 @@
     ],
     "homeElo": 1569,
     "awayElo": 1602,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "2 - 0"
   },
   {
     "fixtureId": 1498657,
@@ -9055,7 +6988,7 @@
     "pickBadge": "bomba",
     "smartScore": 90,
     "explanation": "Contragolpe letal y efectividad foránea: Midland explota los espacios concedidos por Colegiales en transiciones defensivas. El algoritmo Poisson proyecta 77.8% de solvencia matemática para el triunfo visitante.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-04",
@@ -9168,7 +7101,8 @@
     ],
     "homeElo": 1596,
     "awayElo": 1637,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "3 - 0"
   },
   {
     "fixtureId": 1519472,
@@ -9196,7 +7130,7 @@
     "pickBadge": "valor",
     "smartScore": 75,
     "explanation": "Tendencia anotadora sostenida: Tanto Barcelona SC como Independiente del Valle promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.80, la expectativa de un marcador con 3 o más tantos alcanza el 68% de probabilidad.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-05",
@@ -9309,7 +7243,8 @@
     ],
     "homeElo": 2010,
     "awayElo": 1640,
-    "leagueTier": 2
+    "leagueTier": 2,
+    "actualScore": "2 - 1 (3 Goles)"
   },
   {
     "fixtureId": 1505479,

@@ -62,9 +62,8 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
   { id: 333, name: "Premier League", country: "Ucrania", category: "europe_mid", tier: 2 },
   { id: 334, name: "Persha Liga", country: "Ucrania", category: "second_divisions", tier: 2 },
 
-  // --- CROACIA (1RA Y 2DA DIVISIÓN) ---
+  // --- CROACIA (1RA DIVISIÓN) ---
   { id: 210, name: "HNL", country: "Croacia", category: "europe_mid", tier: 2 },
-  { id: 211, name: "First NL (Prva NL)", country: "Croacia", category: "second_divisions", tier: 2 },
 
   // --- HUNGRÍA (1RA Y 2DA DIVISIÓN) ---
   { id: 271, name: "NB I (OTP Bank Liga)", country: "Hungría", category: "europe_mid", tier: 2 },
@@ -137,13 +136,11 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
   { id: 316, name: "1st League - FBiH", country: "Bosnia", category: "second_divisions", tier: 2 },
   { id: 317, name: "1st League - RS", country: "Bosnia", category: "second_divisions", tier: 2 },
 
-  // --- ARMENIA (1RA Y 2DA DIVISIÓN) ---
+  // --- ARMENIA (1RA DIVISIÓN) ---
   { id: 342, name: "Premier League", country: "Armenia", category: "europe_mid", tier: 2 },
-  { id: 343, name: "First League", country: "Armenia", category: "second_divisions", tier: 2 },
 
-  // --- BULGARIA (1RA Y 2DA DIVISIÓN) ---
+  // --- BULGARIA (1RA DIVISIÓN) ---
   { id: 172, name: "First League", country: "Bulgaria", category: "europe_mid", tier: 2 },
-  { id: 173, name: "Second League", country: "Bulgaria", category: "second_divisions", tier: 2 },
 
   // --- AUSTRALIA (TODAS SUS LIGAS & NPL) ---
   { id: 188, name: "A-League Men", country: "Australia", category: "asia_africa", tier: 2 },
