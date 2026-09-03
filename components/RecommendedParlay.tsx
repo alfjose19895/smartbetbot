@@ -244,15 +244,20 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
                 </div>
               </div>
 
-              <div className="flex items-center justify-between sm:justify-end gap-3 border-t sm:border-t-0 border-slate-800/80 pt-2 sm:pt-0">
+              <div className="flex items-center justify-between sm:justify-end gap-2 border-t sm:border-t-0 border-slate-800/80 pt-2 sm:pt-0 flex-wrap">
                 <span className="rounded-xl bg-slate-900 px-2.5 py-1 text-xs font-bold text-emerald-400 border border-emerald-950">
                   🎯 {pick.market}
                 </span>
-                <span className="text-xs font-extrabold text-slate-300">
-                  {pick.probability.toFixed(0)}%
+                <span className="inline-flex items-center gap-1 rounded-xl bg-sky-950/80 px-2 py-1 text-xs font-black text-sky-300 border border-sky-800/60" title="Cuota de la Casa de Apuestas">
+                  <span className="text-[10px] opacity-70">Casa:</span>
+                  <span>@{pick.odds.toFixed(2)}</span>
                 </span>
-                <span className="rounded-xl bg-emerald-500/10 px-2.5 py-1 text-xs font-black text-emerald-300 border border-emerald-500/30">
-                  @{pick.odds.toFixed(2)}
+                <span className="inline-flex items-center gap-1 rounded-xl bg-indigo-950/80 px-2 py-1 text-xs font-black text-indigo-300 border border-indigo-800/60" title="Cuota Justa del Modelo">
+                  <span className="text-[10px] opacity-70">Modelo:</span>
+                  <span>@{pick.fairOdds.toFixed(2)}</span>
+                </span>
+                <span className="text-xs font-extrabold text-emerald-400 bg-emerald-950/50 px-2 py-1 rounded-xl border border-emerald-800/40">
+                  {pick.probability.toFixed(0)}%
                 </span>
               </div>
             </div>

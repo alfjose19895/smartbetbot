@@ -585,8 +585,13 @@ export default function HistoryPage() {
                           <span className="rounded-xl bg-emerald-50 border border-emerald-300 dark:bg-emerald-950/60 dark:border-emerald-700/60 px-2.5 py-1 text-xs font-black text-emerald-800 dark:text-emerald-300">
                             🎯 {item.market} ({item.selection})
                           </span>
-                          <span className="rounded-xl bg-sky-600 px-2.5 py-1 text-xs font-black text-white">
-                            @{item.odds.toFixed(2)}
+                          <span className="inline-flex items-center gap-1 rounded-xl bg-sky-600 px-2.5 py-1 text-xs font-black text-white shadow-sm" title="Cuota de la Casa de Apuestas">
+                            <span className="text-[10px] font-bold opacity-80 uppercase">Casa:</span>
+                            <span>@{item.odds.toFixed(2)}</span>
+                          </span>
+                          <span className="inline-flex items-center gap-1 rounded-xl bg-indigo-600 px-2.5 py-1 text-xs font-black text-white shadow-sm" title="Cuota Justa del Modelo Cuantitativo">
+                            <span className="text-[10px] font-bold opacity-80 uppercase">Modelo:</span>
+                            <span>@{(item.fairOdds || Math.max(1.10, Math.round((100 / (item.probability || 60)) * 100) / 100)).toFixed(2)}</span>
                           </span>
                           <span className="rounded-xl bg-slate-100 px-2.5 py-1 text-xs font-black text-slate-900 border border-slate-200 dark:bg-slate-800 dark:text-white dark:border-slate-700">
                             {item.score}
@@ -693,20 +698,63 @@ export default function HistoryPage() {
                         </div>
                       </div>
 
-                      {/* Predicted Market Box */}
-                      <div className="rounded-2xl border border-slate-200/80 bg-slate-50/60 p-3.5 dark:border-slate-800 dark:bg-slate-950/50 flex items-center justify-between">
-                        <div>
+                      {/* Predicted Market Box with Side-by-Side Odds */}
+                      <div className="rounded-2xl border border-slate-200/80 bg-slate-50/60 p-3.5 dark:border-slate-800 dark:bg-slate-950/50 space-y-3">
+                        <div className="flex items-center justify-between flex-wrap gap-1">
                           <div className="text-[10px] font-extrabold uppercase text-slate-500 dark:text-slate-400">
                             Mercado Pronosticado
                           </div>
-                          <div className="text-sm font-extrabold text-slate-900 dark:text-white mt-0.5">
-                            🎯 {item.market} ({item.selection})
-                          </div>
+                          {item.edge !== undefined && item.edge > 0 && (
+                            <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                              Valor / Ventaja: <strong className="text-emerald-700 dark:text-emerald-300">+{item.edge}%</strong>
+                            </div>
+                          )}
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="rounded-xl bg-sky-600 px-3 py-1 text-xs font-black text-white">
-                            @{item.odds.toFixed(2)}
-                          </span>
+
+                        <div className="text-sm font-extrabold text-slate-900 dark:text-white">
+                          🎯 {item.market} ({item.selection})
+                        </div>
+
+                        {/* Side-by-Side Odds Comparison Cards */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+                          {/* Casa de Apuestas */}
+                          <div className="rounded-xl bg-white p-2.5 border border-sky-200 shadow-sm dark:bg-slate-900 dark:border-sky-900/60">
+                            <div className="text-[10px] uppercase font-bold text-sky-600 dark:text-sky-400 flex items-center gap-1">
+                              <span>🏢</span> Cuota Casa
+                            </div>
+                            <div className="text-base font-black text-slate-900 dark:text-white mt-0.5">
+                              @{item.odds.toFixed(2)}
+                            </div>
+                            <div className="text-[10px] text-slate-400 leading-tight">
+                              Precio ofrecido en casa
+                            </div>
+                          </div>
+
+                          {/* Cuota Modelo */}
+                          <div className="rounded-xl bg-white p-2.5 border border-indigo-200 shadow-sm dark:bg-slate-900 dark:border-indigo-900/60">
+                            <div className="text-[10px] uppercase font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
+                              <span>🤖</span> Cuota Modelo
+                            </div>
+                            <div className="text-base font-black text-slate-900 dark:text-white mt-0.5">
+                              @{(item.fairOdds || Math.max(1.10, Math.round((100 / (item.probability || 60)) * 100) / 100)).toFixed(2)}
+                            </div>
+                            <div className="text-[10px] text-slate-400 leading-tight">
+                              Cuota justa estimada
+                            </div>
+                          </div>
+
+                          {/* Probabilidad Estimada */}
+                          <div className="rounded-xl bg-white p-2.5 border border-emerald-200 shadow-sm dark:bg-slate-900 dark:border-emerald-900/60">
+                            <div className="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                              <span>📈</span> Probabilidad
+                            </div>
+                            <div className="text-base font-black text-emerald-600 dark:text-emerald-400 mt-0.5">
+                              {item.probability}%
+                            </div>
+                            <div className="text-[10px] text-slate-400 leading-tight">
+                              Confianza {item.confidence || "Muy Alta"}
+                            </div>
+                          </div>
                         </div>
                       </div>
 

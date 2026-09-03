@@ -158,6 +158,8 @@ export interface HistoricalSettledPick {
   market: string;
   selection: string;
   odds: number;
+  fairOdds?: number;
+  edge?: number;
   probability: number;
   confidence: "Muy Alta" | "Alta";
   pickBadge?: "bomba" | "valor" | "estandar";
@@ -730,6 +732,8 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
             market: p.market,
             selection: p.selection || p.market,
             odds: p.odds,
+            fairOdds: p.fairOdds || Math.max(1.10, Math.round((100 / (p.probability || 60)) * 100) / 100),
+            edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
             probability: p.probability,
             confidence: p.confidence || (p.probability >= 75 ? "Muy Alta" : p.probability >= 68 ? "Alta" : "Media"),
             result: isWon ? "WON" : "LOST",
@@ -774,6 +778,8 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
             market: p.market,
             selection: p.selection || p.market,
             odds: p.odds,
+            fairOdds: p.fairOdds || Math.max(1.10, Math.round((100 / (p.probability || 60)) * 100) / 100),
+            edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
             probability: p.probability,
             confidence: p.confidence || (p.probability >= 75 ? "Muy Alta" : p.probability >= 68 ? "Alta" : "Media"),
             result: isWon ? "WON" : "LOST",
