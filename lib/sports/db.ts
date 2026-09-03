@@ -579,10 +579,10 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
     return b.edge - a.edge;
   });
 
-  // Daily alert strategy: 10 on weekdays (Mon-Thu), 12 on weekends (Fri-Sun)
+  // Daily alert strategy: 12 on weekdays (Mon-Thu), 15 on weekends (Fri-Sun)
   const dayOfWeek = new Date().getDay();
   const isWeekend = dayOfWeek === 0 || dayOfWeek === 6 || dayOfWeek === 5;
-  const dailyLimit = isWeekend ? 12 : 10;
+  const dailyLimit = isWeekend ? 15 : 12;
 
   const topPicks = rankedPicks.slice(0, dailyLimit);
 
@@ -613,7 +613,7 @@ export async function refreshRemainingLivePredictions(): Promise<{
   const todayDateStr = getEcuadorDateString(nowMs);
   const dayOfWeek = new Date().getDay();
   const isWeekend = dayOfWeek === 0 || dayOfWeek === 6 || dayOfWeek === 5;
-  const dailyTarget = isWeekend ? 12 : 10;
+  const dailyTarget = isWeekend ? 15 : 12;
 
   const existingSnapshot = loadDailySnapshot(todayDateStr) || [];
 
