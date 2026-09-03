@@ -4,7 +4,8 @@ import { Navbar } from "@/components/Navbar";
 import React, { useState, useEffect } from "react";
 import { PredictionCard } from "@/components/PredictionCard";
 import { MatchDetailModal } from "@/components/MatchDetailModal";
-import { MarketOpportunity } from "@/lib/sports/prediction-engine";
+import { FeaturedDailyPicks } from "@/components/FeaturedDailyPicks";
+import { MarketOpportunity, getFeaturedDailyPicks } from "@/lib/sports/prediction-engine";
 import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
 import { useLanguage } from "@/context/LanguageContext";
 import { MultiSelectDropdown, DropdownOption } from "@/components/MultiSelectDropdown";
@@ -326,6 +327,19 @@ export default function SignalsPage() {
             </div>
           </div>
         </div>
+
+        {/* Featured Daily Flagship Plays: SmartPick & Bomba del Día */}
+        {(() => {
+          const { smartPick, bombaPick } = getFeaturedDailyPicks(signals);
+          if (!smartPick && !bombaPick) return null;
+          return (
+            <FeaturedDailyPicks
+              smartPick={smartPick}
+              bombaPick={bombaPick}
+              onOpenDetail={(pick) => setActiveModalPick(pick)}
+            />
+          );
+        })()}
 
         {/* Search Input and Filter Controls Bar */}
         <div className="space-y-3">

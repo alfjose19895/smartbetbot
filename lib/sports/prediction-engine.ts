@@ -1103,3 +1103,50 @@ export const LEAGUE_ROSTERS: Record<string, string[]> = {
     "Universidad Católica", "Orense", "Mushuc Runa", "Macará", "Delfín", "El Nacional", "Técnico Universitario", "Imbabura", "Cumbayá", "Libertad"
   ]
 };
+
+/**
+ * Extracts the two premier featured plays of the day:
+ * 1. 👑 SMARTPICK DEL DÍA: Top-rated maximum confidence & probability pick.
+ * 2. 💣 BOMBA DEL DÍA: Top-rated high-yield value bomb with high odds (>= 2.00 / Draw).
+ */
+export function getFeaturedDailyPicks(predictions: MarketOpportunity[]): {
+  smartPick: MarketOpportunity | null;
+  bombaPick: MarketOpportunity | null;
+} {
+  if (!predictions || predictions.length === 0) {
+    return { smartPick: null, bombaPick: null };
+  }
+
+  // 1. Bomba del Día: Best candidate with odds >= 2.00 or pickBadge === 'bomba'
+  const bombaCandidates = [...predictions]
+    .filter((p) => p.pickBadge === "bomba" || p.odds >= 2.00 || p.market.includes("Empate"))
+    .sort((a, b) => {
+      if (b.probability !== a.probability) return b.probability - a.probability;
+      if (b.edge !== a.edge) return b.edge - a.edge;
+      return b.odds - a.odds;
+    });
+
+  const bombaPick = bombaCandidates.length > 0
+    ? { ...bombaCandidates[0], pickBadge: "bomba" as const }
+    : { ...[...predictions].sort((a, b) => b.odds - a.odds)[0], pickBadge: "bomba" as const };
+
+  // 2. SmartPick del Día: Best highest probability / highest confidence pick (excluding the match used for Bomba if possible)
+  const nonBombaCandidates = predictions.filter(
+    (p) => !bombaPick || `${p.homeTeam}-${p.awayTeam}` !== `${bombaPick.homeTeam}-${bombaPick.awayTeam}`
+  );
+
+  const smartPickCandidates = (nonBombaCandidates.length > 0 ? nonBombaCandidates : predictions).sort((a, b) => {
+    const aTier = a.leagueTier || 3;
+    const bTier = b.leagueTier || 3;
+    if (aTier !== bTier) return aTier - bTier;
+    if (b.probability !== a.probability) return b.probability - a.probability;
+    if ((b.smartScore || 0) !== (a.smartScore || 0)) return (b.smartScore || 0) - (a.smartScore || 0);
+    return b.edge - a.edge;
+  });
+
+  const smartPick = smartPickCandidates.length > 0
+    ? { ...smartPickCandidates[0], confidence: "Muy Alta" as const }
+    : null;
+
+  return { smartPick, bombaPick };
+}
