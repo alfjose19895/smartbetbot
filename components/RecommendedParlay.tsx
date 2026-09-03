@@ -193,23 +193,32 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
           </p>
         </div>
 
-        {/* Parlay Size Selector (3, 4, 5 picks) */}
-        <div className="flex items-center gap-1.5 self-start sm:self-auto rounded-2xl bg-slate-950/80 p-1.5 border border-slate-800">
-          <span className="text-xs font-bold text-slate-400 px-2">Picks:</span>
-          {([3, 4, 5] as const).map((size) => (
-            <button
-              key={size}
-              onClick={() => setParlaySize(size)}
-              disabled={candidatePicks.length < size}
-              className={`rounded-xl px-3 py-1 text-xs font-extrabold transition cursor-pointer ${
-                parlaySize === size
-                  ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30"
-                  : "text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
-              }`}
-            >
-              {size}
-            </button>
-          ))}
+        {/* Parlay Mode Selector: 3 picks vs 5 picks */}
+        <div className="flex items-center gap-1.5 self-start sm:self-auto rounded-2xl bg-slate-950/80 p-1.5 border border-slate-800 flex-wrap">
+          <button
+            onClick={() => setParlaySize(3)}
+            disabled={candidatePicks.length < 3}
+            className={`flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+              parlaySize === 3
+                ? "bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 shadow-md shadow-emerald-500/30 font-black"
+                : "text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+            }`}
+          >
+            <span>🛡️</span>
+            <span>Parley Élite (3 Picks)</span>
+          </button>
+          <button
+            onClick={() => setParlaySize(5)}
+            disabled={candidatePicks.length < 5}
+            className={`flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+              parlaySize === 5
+                ? "bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md shadow-amber-500/30 font-black"
+                : "text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+            }`}
+          >
+            <span>🚀</span>
+            <span>Parley Premium (5 Picks)</span>
+          </button>
         </div>
       </div>
 

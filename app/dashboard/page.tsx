@@ -35,6 +35,19 @@ export default function DashboardPage() {
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
 
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+
+  useEffect(() => {
+    fetch("/api/auth/profile")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.user?.role === "admin") {
+          setIsAdmin(true);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const loadSignals = async () => {
     try {
       setLoading(true);
@@ -73,6 +86,30 @@ export default function DashboardPage() {
     } finally {
       setSyncing(false);
       setTimeout(() => setSyncMessage(null), 4000);
+    }
+  };
+
+  const handleRefreshRemainingAlerts = async () => {
+    try {
+      setSyncing(true);
+      setSyncMessage("🔄 Buscando partidos restantes y cuotas activas para hoy...");
+      const res = await fetch("/api/admin/sync/predictions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refreshRemaining: true }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSyncMessage(data.message || "✓ Alertas actualizadas con éxito.");
+        await loadSignals();
+      } else {
+        setSyncMessage(`❌ ${data.error || "No se pudo actualizar"}`);
+      }
+    } catch {
+      setSyncMessage("❌ Error de conexión al buscar nuevas alertas");
+    } finally {
+      setSyncing(false);
+      setTimeout(() => setSyncMessage(null), 5000);
     }
   };
 
@@ -228,7 +265,19 @@ export default function DashboardPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+            {isAdmin && (
+              <button
+                onClick={handleRefreshRemainingAlerts}
+                disabled={syncing}
+                title="Si las alertas actuales ya finalizaron y aún quedan partidos por jugar en la jornada, busca e incorpora nuevas alertas"
+                className="flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-3.5 py-2 text-xs font-black text-white shadow-md shadow-emerald-600/30 hover:from-emerald-500 hover:to-teal-500 transition cursor-pointer disabled:opacity-50"
+              >
+                <span>🔄</span>
+                <span>{syncing ? "Buscando..." : "Buscar Nuevas Alertas (Admin)"}</span>
+              </button>
+            )}
+
             <div className="rounded-2xl bg-white px-3.5 py-2 sm:px-4 sm:py-2.5 border border-slate-200 text-center shadow-sm dark:bg-slate-900/80 dark:border-slate-800">
               <span className="text-[10px] uppercase text-slate-600 block font-bold dark:text-slate-400">
                 Alertas del Día

@@ -33,25 +33,63 @@ export default function SignalsPage() {
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
   const [minProbability, setMinProbability] = useState<number>(50);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [syncing, setSyncing] = useState<boolean>(false);
+  const [syncMessage, setSyncMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchSignals = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch("/api/signals");
-        const json = await res.json();
-        if (json.signals) {
-          setSignals(json.signals);
+    fetch("/api/auth/profile")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.user?.role === "admin") {
+          setIsAdmin(true);
         }
-      } catch (err) {
-        console.error("Error fetching signals:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+      })
+      .catch(() => {});
+  }, []);
 
+  const fetchSignals = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/signals");
+      const json = await res.json();
+      if (json.signals) {
+        setSignals(json.signals);
+      }
+    } catch (err) {
+      console.error("Error fetching signals:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchSignals();
   }, []);
+
+  const handleRefreshRemainingAlerts = async () => {
+    try {
+      setSyncing(true);
+      setSyncMessage("🔄 Buscando partidos restantes y cuotas activas para hoy...");
+      const res = await fetch("/api/admin/sync/predictions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refreshRemaining: true }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSyncMessage(data.message || "✓ Alertas actualizadas con éxito.");
+        await fetchSignals();
+      } else {
+        setSyncMessage(`❌ ${data.error || "No se pudo actualizar"}`);
+      }
+    } catch {
+      setSyncMessage("❌ Error de conexión al buscar nuevas alertas");
+    } finally {
+      setSyncing(false);
+      setTimeout(() => setSyncMessage(null), 5000);
+    }
+  };
 
   // Build classified league options grouped by Country
   const leagueDropdownOptions: DropdownOption[] = SUPPORTED_LEAGUES.map((l) => ({
@@ -221,6 +259,19 @@ export default function SignalsPage() {
       <Navbar />
 
       <main className="mx-auto max-w-7xl px-3.5 py-6 sm:px-6 sm:py-8 lg:px-8 space-y-6">
+        {/* Sync feedback notification */}
+        {syncMessage && (
+          <div
+            className={`rounded-2xl p-3 text-center text-xs font-bold shadow-sm ${
+              syncMessage.includes("✓")
+                ? "bg-emerald-50 border border-emerald-300 text-emerald-900 dark:bg-emerald-950/80 dark:border-emerald-700 dark:text-emerald-300"
+                : "bg-red-50 border border-red-300 text-red-900 dark:bg-red-950/80 dark:border-red-700 dark:text-red-300"
+            }`}
+          >
+            {syncMessage}
+          </div>
+        )}
+
         {/* Title & Stats Bar */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pt-2">
           <div>
@@ -236,7 +287,19 @@ export default function SignalsPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+            {isAdmin && (
+              <button
+                onClick={handleRefreshRemainingAlerts}
+                disabled={syncing}
+                title="Si las alertas actuales ya finalizaron y aún quedan partidos por jugar en la jornada, busca e incorpora nuevas alertas"
+                className="flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-3.5 py-2 text-xs font-black text-white shadow-md shadow-emerald-600/30 hover:from-emerald-500 hover:to-teal-500 transition cursor-pointer disabled:opacity-50"
+              >
+                <span>🔄</span>
+                <span>{syncing ? "Buscando..." : "Buscar Nuevas Alertas (Admin)"}</span>
+              </button>
+            )}
+
             <div className="rounded-2xl bg-white px-3.5 py-2 sm:px-4 sm:py-2.5 border border-slate-200 text-center shadow-sm dark:bg-slate-900/80 dark:border-slate-800">
               <span className="text-[10px] uppercase text-slate-600 block font-bold dark:text-slate-400">
                 Alertas Filtradas
