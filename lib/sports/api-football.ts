@@ -43,6 +43,8 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
   { id: 358, name: "First Division", country: "Irlanda", category: "second_divisions", tier: 2 },
   { id: 165, name: "1. Deild karla", country: "Islandia", category: "second_divisions", tier: 2 },
   { id: 382, name: "Liga Leumit (2da Div)", country: "Israel", category: "second_divisions", tier: 2 },
+  { id: 316, name: "1st League - FBiH", country: "Bosnia", category: "second_divisions", tier: 2 },
+  { id: 317, name: "1st League - RS", country: "Bosnia", category: "second_divisions", tier: 2 },
 
   // --- LIGAS PRINCIPALES DE EUROPA (1RA DIVISIÓN) ---
   { id: 88, name: "Eredivisie", country: "Países Bajos", category: "europe_mid", tier: 1 },
@@ -63,6 +65,8 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
   { id: 357, name: "Premier Division", country: "Irlanda", category: "europe_mid", tier: 1 },
   { id: 164, name: "Úrvalsdeild (Besta deild)", country: "Islandia", category: "europe_mid", tier: 1 },
   { id: 383, name: "Ligat Ha'al (Premier League)", country: "Israel", category: "europe_mid", tier: 1 },
+  { id: 172, name: "First League", country: "Bulgaria", category: "europe_mid", tier: 1 },
+  { id: 315, name: "Premijer Liga BiH", country: "Bosnia", category: "europe_mid", tier: 1 },
 
   // --- AMÉRICAS (1RA, 2DA DIVISIÓN & COPAS CONMEBOL) ---
   { id: 242, name: "Liga Pro", country: "Ecuador", category: "americas", tier: 1 },
