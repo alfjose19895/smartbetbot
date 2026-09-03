@@ -538,10 +538,14 @@ export default function HistoryPage() {
               </div>
             ) : filteredHistory.length === 0 ? (
               <div className="rounded-3xl border border-slate-200 bg-white p-12 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900/40">
-                <span className="text-4xl">🔍</span>
-                <h3 className="mt-3 text-lg font-bold text-slate-900 dark:text-white">Sin registros para esta búsqueda</h3>
+                <span className="text-4xl">🚀</span>
+                <h3 className="mt-3 text-lg font-bold text-slate-900 dark:text-white">
+                  {historyItems.length === 0 ? "Historial Listo para Mañana" : "Sin registros para esta búsqueda"}
+                </h3>
                 <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                  No hay apuestas liquidadas que coincidan con los filtros seleccionados.
+                  {historyItems.length === 0
+                    ? "El registro oficial de rendimiento, auditoría y pronósticos liquidados inicia desde cero a partir de mañana (3 de Septiembre)."
+                    : "No hay apuestas liquidadas que coincidan con los filtros seleccionados."}
                 </p>
               </div>
             ) : (
@@ -788,10 +792,14 @@ export default function HistoryPage() {
               </div>
             ) : filteredParlays.length === 0 ? (
               <div className="rounded-3xl border border-slate-200 bg-white p-12 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900/40">
-                <span className="text-4xl">🔍</span>
-                <h3 className="mt-3 text-lg font-bold text-slate-900 dark:text-white">Sin parleys liquidados</h3>
+                <span className="text-4xl">🚀</span>
+                <h3 className="mt-3 text-lg font-bold text-slate-900 dark:text-white">
+                  {parlayItems.length === 0 ? "Historial de Parleys Listo para Mañana" : "Sin parleys liquidados"}
+                </h3>
                 <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                  No se encontraron parleys históricos que coincidan con la búsqueda.
+                  {parlayItems.length === 0
+                    ? "Las combinadas oficiales auditadas comenzarán a registrarse a partir de mañana (3 de Septiembre)."
+                    : "No se encontraron parleys históricos que coincidan con la búsqueda."}
                 </p>
               </div>
             ) : (

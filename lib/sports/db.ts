@@ -50,7 +50,7 @@ function getAdminClient() {
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const SNAPSHOTS_DIR = path.join(process.cwd(), "data", "daily_snapshots");
-export const HISTORY_START_DATE = "2026-08-31"; // Official history tracking starts strictly from today
+export const HISTORY_START_DATE = "2026-09-03"; // Official history tracking starts strictly from tomorrow (September 3, 2026)
 
 function ensureSnapshotsDir() {
   try {
