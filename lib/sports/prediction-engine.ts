@@ -882,6 +882,22 @@ export function evaluateFixturePrediction(params: {
   const calculatedUnder25Odds = calculateBookmakerOdds(pUnder25, matchJuice);
   const calculatedBttsOdds = calculateBookmakerOdds(pBttsYes, matchJuice);
 
+  // Safeguard: Sanitize raw bookmaker odds to eliminate aberrant feed spikes or inverted handicap lines
+  const sanitizeOdds = (raw: number | undefined, calc: number, marketType: "1X2" | "DRAW" | "2WAY") => {
+    if (!raw || typeof raw !== "number" || isNaN(raw) || raw <= 1.0) return calc;
+    if (marketType === "2WAY" && (raw > 3.20 || raw < 1.15)) return calc;
+    if (marketType === "1X2" && (raw > 8.00 || raw < 1.08)) return calc;
+    if (marketType === "DRAW" && (raw > 5.50 || raw < 2.30)) return calc;
+    return Math.round(raw * 100) / 100;
+  };
+
+  const resolvedHomeOdds = sanitizeOdds(marketOdds.homeWin, calculatedHomeOdds, "1X2");
+  const resolvedDrawOdds = sanitizeOdds(marketOdds.draw, calculatedDrawOdds, "DRAW");
+  const resolvedAwayOdds = sanitizeOdds(marketOdds.awayWin, calculatedAwayOdds, "1X2");
+  const resolvedOver25Odds = sanitizeOdds(marketOdds.over25, calculatedOver25Odds, "2WAY");
+  const resolvedUnder25Odds = sanitizeOdds(marketOdds.under25, calculatedUnder25Odds, "2WAY");
+  const resolvedBttsOdds = sanitizeOdds(marketOdds.bttsYes, calculatedBttsOdds, "2WAY");
+
   const candidates: {
     market: string;
     selection: string;
@@ -890,14 +906,14 @@ export function evaluateFixturePrediction(params: {
     minOddsThreshold: number;
   }[] = [
     // 1X2 Principal
-    { market: "Gana Local", selection: "1", prob: pHome, odds: marketOdds.homeWin || calculatedHomeOdds, minOddsThreshold: 1.45 },
-    { market: "Empate (X)", selection: "X", prob: pDraw, odds: marketOdds.draw || calculatedDrawOdds, minOddsThreshold: 2.70 },
-    { market: "Gana Visitante", selection: "2", prob: pAway, odds: marketOdds.awayWin || calculatedAwayOdds, minOddsThreshold: 1.45 },
+    { market: "Gana Local", selection: "1", prob: pHome, odds: resolvedHomeOdds, minOddsThreshold: 1.45 },
+    { market: "Empate (X)", selection: "X", prob: pDraw, odds: resolvedDrawOdds, minOddsThreshold: 2.70 },
+    { market: "Gana Visitante", selection: "2", prob: pAway, odds: resolvedAwayOdds, minOddsThreshold: 1.45 },
 
     // Over/Under 2.5 Goles & Ambos Marcan (BTTS)
-    { market: "Over 2.5 Goles", selection: "Over 2.5", prob: pOver25, odds: marketOdds.over25 || calculatedOver25Odds, minOddsThreshold: 1.45 },
-    { market: "Under 2.5 Goles", selection: "Under 2.5", prob: pUnder25, odds: marketOdds.under25 || calculatedUnder25Odds, minOddsThreshold: 1.45 },
-    { market: "Ambos Marcan (BTTS)", selection: "Yes", prob: pBttsYes, odds: marketOdds.bttsYes || calculatedBttsOdds, minOddsThreshold: 1.45 },
+    { market: "Over 2.5 Goles", selection: "Over 2.5", prob: pOver25, odds: resolvedOver25Odds, minOddsThreshold: 1.45 },
+    { market: "Under 2.5 Goles", selection: "Under 2.5", prob: pUnder25, odds: resolvedUnder25Odds, minOddsThreshold: 1.45 },
+    { market: "Ambos Marcan (BTTS)", selection: "Yes", prob: pBttsYes, odds: resolvedBttsOdds, minOddsThreshold: 1.45 },
   ];
 
   const opportunities: MarketOpportunity[] = [];

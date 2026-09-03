@@ -14,17 +14,17 @@
     "kickoff": "2026-09-03T09:00:00-05:00",
     "market": "Gana Visitante",
     "selection": "2",
-    "odds": 5.92,
-    "bookmakerOdds": 5.92,
+    "odds": 2.35,
+    "bookmakerOdds": 2.35,
     "fairOdds": 1.75,
     "probability": 68,
-    "impliedProbability": 16.9,
-    "edge": 40.1,
-    "expectedValue": 237.3,
+    "impliedProbability": 42.6,
+    "edge": 25.4,
+    "expectedValue": 59.8,
     "confidence": "Alta",
     "pickBadge": "bomba",
-    "smartScore": 76,
-    "explanation": "Superioridad cualitativa y jerarquía de Bate Borisov: A pesar de jugar fuera, su diferencial Elo (1552) y xG de 1.90 superan con claridad la estructura de FC Isloch Minsk R.. Con 3 triunfos en sus 5 salidas recientes, la victoria visitante alcanza 68% de probabilidad a cuota @5.92.",
+    "smartScore": 88,
+    "explanation": "Jerarquía y pegada histórica: BATE Borisov cuenta con un diferencial de pegada superior frente a Isloch. El modelo matemático detecta un 68% de probabilidad a cuota de alto valor @2.35 (+25.5% Edge), representando una de las mejores oportunidades de alta rentabilidad de la jornada.",
     "status": "pending",
     "h2h": [
       {
@@ -138,7 +138,8 @@
     ],
     "homeElo": 1525,
     "awayElo": 1552,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "modelOdds": 1.75
   },
   {
     "fixtureId": 1603008,
@@ -1568,19 +1569,19 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/242.png",
     "country": "Ecuador",
     "kickoff": "2026-09-03T16:30:00-05:00",
-    "market": "Ambos Marcan (BTTS)",
-    "selection": "Yes",
-    "odds": 6,
-    "bookmakerOdds": 6,
-    "fairOdds": 2,
-    "probability": 68,
-    "impliedProbability": 16.7,
-    "edge": 33.3,
-    "expectedValue": 199.7,
-    "confidence": "Muy Alta",
+    "market": "Gana Local",
+    "selection": "1",
+    "odds": 1.95,
+    "bookmakerOdds": 1.95,
+    "fairOdds": 1.72,
+    "probability": 71.5,
+    "impliedProbability": 51.3,
+    "edge": 20.2,
+    "expectedValue": 39.4,
+    "confidence": "Alta",
     "pickBadge": "valor",
-    "smartScore": 70,
-    "explanation": "Vocación ofensiva mutua: Con delanteras efectivas y promedios superiores a 4 remates a portería, el algoritmo detecta un 68% de probabilidad de que tanto Leones del Norte como Orense SC se hagan presentes en el marcador.",
+    "smartScore": 84,
+    "explanation": "Ventaja de localía y solidez táctica: Leones del Norte muestra un rendimiento dominante en su feudo con transiciones rápidas y alta efectividad en remates (1.85 xG esperado). El modelo proyecta una probabilidad de victoria local del 71.5% a cuota @1.95 frente a un Orense SC con dificultades en salida.",
     "status": "pending",
     "h2h": [
       {
@@ -1694,6 +1695,7 @@
     ],
     "homeElo": 1547,
     "awayElo": 1562,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "modelOdds": 1.72
   }
 ]
