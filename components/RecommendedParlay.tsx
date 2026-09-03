@@ -59,6 +59,7 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
 
   // Calculate accumulated parlay odds and combined probability
   const totalOdds = selectedPicks.reduce((acc, p) => acc * p.odds, 1);
+  const totalFairOdds = selectedPicks.reduce((acc, p) => acc * (p.fairOdds || 1.3), 1);
   const combinedProbability =
     selectedPicks.reduce((acc, p) => acc * (p.probability / 100), 1) * 100;
   const potentialProfit = (stake * totalOdds - stake).toFixed(2);
@@ -88,28 +89,30 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
   const handleCopyParlay = () => {
     const lines = [
       `🔥 PARLEY COMBINADO DEL DÍA (${selectedPicks.length} PICKS)`,
-      `🎯 Cuota Total: ${totalOdds.toFixed(2)} | Probabilidad: ${combinedProbability.toFixed(1)}%`,
+      `🎯 Cuota Casa: @${totalOdds.toFixed(2)} | Cuota Modelo: @${totalFairOdds.toFixed(2)} | Prob: ${combinedProbability.toFixed(1)}%`,
       `📅 Fecha: ${now.toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}`,
       "",
       ...selectedPicks.map(
         (p, idx) =>
-          `${idx + 1}. ${p.match}\n   🏆 ${p.league}\n   📅 Horario: ${formatKickoffTime(p.kickoff)}\n   🎯 Selección: ${p.market} (Cuota: ${p.odds.toFixed(2)})\n   ⭐ Confianza: ${p.confidence || "Alta"} (${p.probability.toFixed(0)}%)`
+          `${idx + 1}. ${p.match} (${p.league})\n   🎯 Pronóstico: ${p.market}\n   🏢 Cuota Casa: @${p.odds.toFixed(2)} | 🤖 Cuota Modelo: @${p.fairOdds.toFixed(2)} (${p.probability}% prob)`
       ),
       "",
-      `💰 Apuesta simulada: $${stake} ➔ Ganancia potencial: $${potentialTotalReturn}`,
-      "🚀 Generado por SmartBetBot - Inteligencia Cuantitativa",
+      `💰 Simulación ($${stake}): Retorno $${potentialTotalReturn} (+$${potentialProfit})`,
+      "🔒 Pronóstico Oficial de SmartBetBot AI",
+      "🌐 https://smartbetbot.educandotea.com/parlay",
     ];
 
-    navigator.clipboard.writeText(lines.join("\n"));
-    setCopied(true);
-    setTimeout(() => setCopied(false), 3000);
+    navigator.clipboard.writeText(lines.join("\n")).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
+    });
   };
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-emerald-500/40 bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/60 p-5 sm:p-7 text-white shadow-xl shadow-emerald-950/20">
-      {/* Background ambient glow */}
-      <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
-      <div className="absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
+    <section className="relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/95 p-5 sm:p-7 shadow-2xl backdrop-blur-xl">
+      {/* Decorative Glow */}
+      <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-emerald-500/15 blur-3xl" />
+      <div className="pointer-events-none absolute -right-20 -bottom-20 h-72 w-72 rounded-full bg-sky-500/15 blur-3xl" />
 
       {/* Header */}
       <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
@@ -206,12 +209,12 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
                 <span className="rounded-xl bg-slate-900 px-2.5 py-1 text-xs font-bold text-emerald-400 border border-emerald-950">
                   🎯 {pick.market}
                 </span>
-                <span className="inline-flex items-center gap-1 rounded-xl bg-sky-950/80 px-2 py-1 text-xs font-black text-sky-300 border border-sky-800/60" title="Cuota de la Casa de Apuestas">
+                <span className="inline-flex items-center gap-1 rounded-xl bg-sky-950/80 px-2.5 py-1 text-xs font-black text-sky-300 border border-sky-800/60" title="Cuota de la Casa de Apuestas">
                   <span className="text-[10px] opacity-70">Casa:</span>
                   <span>@{pick.odds.toFixed(2)}</span>
                 </span>
-                <span className="inline-flex items-center gap-1 rounded-xl bg-indigo-950/80 px-2 py-1 text-xs font-black text-indigo-300 border border-indigo-800/60" title="Cuota Justa del Modelo">
-                  <span className="text-[10px] opacity-70">Modelo:</span>
+                <span className="inline-flex items-center gap-1 rounded-xl bg-indigo-950/80 px-2.5 py-1 text-xs font-black text-indigo-300 border border-indigo-800/60" title="Cuota Justa del Modelo SmartBetBot">
+                  <span className="text-[10px] opacity-70">Modelo SmartBetBot:</span>
                   <span>@{pick.fairOdds.toFixed(2)}</span>
                 </span>
                 <span className="text-xs font-extrabold text-emerald-400 bg-emerald-950/50 px-2 py-1 rounded-xl border border-emerald-800/40">
@@ -225,11 +228,19 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
         {/* Parlay Ticket Summary & Payout Box */}
         <div className="rounded-2xl bg-slate-950/90 p-5 border border-slate-800 text-slate-100 flex flex-col justify-between h-full shadow-lg">
           <div>
-            <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
-              <span className="text-xs font-bold uppercase text-slate-400">Cuota Combinada</span>
-              <span className="text-2xl font-black text-sky-400">
-                @{totalOdds.toFixed(2)}
-              </span>
+            <div className="space-y-2 border-b border-slate-800/80 pb-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase text-sky-400">🏢 Cuota Casa Combinada</span>
+                <span className="text-2xl font-black text-sky-400">
+                  @{totalOdds.toFixed(2)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase text-indigo-400">🤖 Cuota Modelo SmartBetBot</span>
+                <span className="text-lg font-black text-indigo-400">
+                  @{totalFairOdds.toFixed(2)}
+                </span>
+              </div>
             </div>
 
             <div className="mt-3 flex items-center justify-between text-xs text-slate-300">
@@ -308,6 +319,6 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

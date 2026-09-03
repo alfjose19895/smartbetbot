@@ -137,6 +137,7 @@ export default function DailyParlayPage() {
 
   // Compute accumulated parlay odds and combined probability
   const totalOdds = selectedPicks.reduce((acc, p) => acc * p.odds, 1);
+  const totalFairOdds = selectedPicks.reduce((acc, p) => acc * (p.fairOdds || 1.3), 1);
   const combinedProbability =
     selectedPicks.reduce((acc, p) => acc * (p.probability / 100), 1) * 100;
   const potentialProfit = (stake * totalOdds - stake).toFixed(2);
@@ -394,13 +395,18 @@ export default function DailyParlayPage() {
                         </div>
                       </div>
 
-                      {/* Center: Market Badge, Odds & Probability */}
-                      <div className="hidden md:flex items-center gap-2 shrink-0">
+                      {/* Center: Market Badge, Casa vs Modelo Odds & Probability */}
+                      <div className="hidden md:flex items-center gap-2 shrink-0 flex-wrap">
                         <span className="rounded-xl bg-emerald-50 border border-emerald-300 dark:bg-emerald-950/60 dark:border-emerald-700/60 px-2.5 py-1 text-xs font-black text-emerald-800 dark:text-emerald-300">
                           🎯 {pick.market}
                         </span>
-                        <span className="rounded-xl bg-sky-600 px-2.5 py-1 text-xs font-black text-white">
-                          @{pick.odds.toFixed(2)}
+                        <span className="inline-flex items-center gap-1 rounded-xl bg-sky-950/80 px-2.5 py-1 text-xs font-black text-sky-300 border border-sky-800/60" title="Cuota de la Casa de Apuestas">
+                          <span className="text-[10px] opacity-70">Casa:</span>
+                          <span>@{pick.odds.toFixed(2)}</span>
+                        </span>
+                        <span className="inline-flex items-center gap-1 rounded-xl bg-indigo-950/80 px-2.5 py-1 text-xs font-black text-indigo-300 border border-indigo-800/60" title="Cuota Justa del Modelo SmartBetBot">
+                          <span className="text-[10px] opacity-70">Modelo SmartBetBot:</span>
+                          <span>@{pick.fairOdds.toFixed(2)}</span>
                         </span>
                         <span className="rounded-xl bg-emerald-600 px-2.5 py-1 text-xs font-black text-white">
                           {pick.probability}%
@@ -507,14 +513,36 @@ export default function DailyParlayPage() {
                     </div>
 
                     {/* Match Teams Box */}
-                    <div className="rounded-2xl bg-slate-50 p-3.5 border border-slate-100 dark:bg-slate-950/80 dark:border-slate-800/80 flex items-center justify-between">
+                    <div className="rounded-2xl bg-slate-50 p-3.5 border border-slate-100 dark:bg-slate-950/80 dark:border-slate-800/80">
                       <div className="font-black text-slate-900 dark:text-white text-base">
                         {pick.match}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="rounded-xl bg-sky-600 px-3 py-1.5 text-sm font-black text-white">
-                          @{pick.odds.toFixed(2)}
-                        </span>
+                    </div>
+
+                    {/* Odds Comparison: Casa vs Modelo SmartBetBot */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                      <div className="flex flex-col justify-center rounded-2xl bg-sky-50 p-3 border border-sky-200 dark:bg-sky-950/60 dark:border-sky-800/60">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-black uppercase text-sky-800 dark:text-sky-300">🏢 Cuota Casa</span>
+                          <span className="text-base font-black text-sky-900 dark:text-sky-200">@{pick.odds.toFixed(2)}</span>
+                        </div>
+                        <span className="text-[9px] text-sky-600 dark:text-sky-400 mt-0.5">Precio ofrecido en casa</span>
+                      </div>
+
+                      <div className="flex flex-col justify-center rounded-2xl bg-indigo-50 p-3 border border-indigo-200 dark:bg-indigo-950/60 dark:border-indigo-800/60">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-black uppercase text-indigo-800 dark:text-indigo-300">🤖 Cuota Modelo</span>
+                          <span className="text-base font-black text-indigo-900 dark:text-indigo-200">@{pick.fairOdds.toFixed(2)}</span>
+                        </div>
+                        <span className="text-[9px] text-indigo-600 dark:text-indigo-400 mt-0.5">Cuota justa SmartBetBot</span>
+                      </div>
+
+                      <div className="col-span-2 sm:col-span-1 flex flex-col justify-center rounded-2xl bg-emerald-50 p-3 border border-emerald-200 dark:bg-emerald-950/60 dark:border-emerald-800/60">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-black uppercase text-emerald-800 dark:text-emerald-300">📈 Probabilidad</span>
+                          <span className="text-base font-black text-emerald-900 dark:text-emerald-200">{pick.probability}%</span>
+                        </div>
+                        <span className="text-[9px] text-emerald-600 dark:text-emerald-400 mt-0.5">Confianza {pick.confidence || "Alta"} (+{pick.edge}% Valor)</span>
                       </div>
                     </div>
 
@@ -579,11 +607,19 @@ export default function DailyParlayPage() {
                     {parlayTierDescriptions[parlaySize].title}
                   </span>
                 </div>
-                <div className="text-right">
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Cuota Total</span>
-                  <span className="text-2xl sm:text-3xl font-black text-sky-400">
-                    @{totalOdds.toFixed(2)}
-                  </span>
+                <div className="text-right space-y-1">
+                  <div>
+                    <span className="text-[9px] uppercase font-bold text-sky-400 block">🏢 Cuota Casa</span>
+                    <span className="text-2xl sm:text-3xl font-black text-sky-400">
+                      @{totalOdds.toFixed(2)}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[9px] uppercase font-bold text-indigo-400 block">🤖 Cuota Modelo</span>
+                    <span className="text-sm font-black text-indigo-400">
+                      @{totalFairOdds.toFixed(2)}
+                    </span>
+                  </div>
                 </div>
               </div>
 
