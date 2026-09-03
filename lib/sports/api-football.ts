@@ -29,10 +29,20 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
   { id: 141, name: "La Liga 2 (Segunda División)", country: "España", category: "second_divisions", tier: 2 },
   { id: 136, name: "Serie B", country: "Italia", category: "second_divisions", tier: 2 },
   { id: 79, name: "2. Bundesliga", country: "Alemania", category: "second_divisions", tier: 2 },
+  { id: 80, name: "3. Liga", country: "Alemania", category: "nordics_others", tier: 3 },
   { id: 62, name: "Ligue 2", country: "Francia", category: "second_divisions", tier: 2 },
   { id: 89, name: "Eerste Divisie (2da Div)", country: "Países Bajos", category: "second_divisions", tier: 2 },
   { id: 95, name: "Liga Portugal 2", country: "Portugal", category: "second_divisions", tier: 2 },
   { id: 145, name: "Challenger Pro League (2da Div)", country: "Bélgica", category: "second_divisions", tier: 2 },
+  { id: 104, name: "1. Division (OBOS-ligaen)", country: "Noruega", category: "second_divisions", tier: 2 },
+  { id: 114, name: "Superettan", country: "Suecia", category: "second_divisions", tier: 2 },
+  { id: 120, name: "1. Division", country: "Dinamarca", category: "second_divisions", tier: 2 },
+  { id: 208, name: "Challenge League", country: "Suiza", category: "second_divisions", tier: 2 },
+  { id: 219, name: "2. Liga", country: "Austria", category: "second_divisions", tier: 2 },
+  { id: 204, name: "1. Lig", country: "Turquía", category: "second_divisions", tier: 2 },
+  { id: 358, name: "First Division", country: "Irlanda", category: "second_divisions", tier: 2 },
+  { id: 165, name: "1. Deild karla", country: "Islandia", category: "second_divisions", tier: 2 },
+  { id: 382, name: "Liga Leumit (2da Div)", country: "Israel", category: "second_divisions", tier: 2 },
 
   // --- LIGAS PRINCIPALES DE EUROPA (1RA DIVISIÓN) ---
   { id: 88, name: "Eredivisie", country: "Países Bajos", category: "europe_mid", tier: 1 },
@@ -51,6 +61,7 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
   { id: 271, name: "NB I (OTP Bank Liga)", country: "Hungría", category: "europe_mid", tier: 1 },
   { id: 244, name: "Veikkausliiga", country: "Finlandia", category: "europe_mid", tier: 1 },
   { id: 357, name: "Premier Division", country: "Irlanda", category: "europe_mid", tier: 1 },
+  { id: 164, name: "Úrvalsdeild (Besta deild)", country: "Islandia", category: "europe_mid", tier: 1 },
   { id: 383, name: "Ligat Ha'al (Premier League)", country: "Israel", category: "europe_mid", tier: 1 },
 
   // --- AMÉRICAS (1RA, 2DA DIVISIÓN & COPAS CONMEBOL) ---
