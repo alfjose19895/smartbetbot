@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 import { useLanguage } from "@/context/LanguageContext";
 import { copyParlayCardImageToClipboard } from "@/lib/sports/card-image-generator";
+import { buildDualExclusiveParlays } from "@/lib/sports/parlay-generator";
 
 interface RecommendedParlayProps {
   predictions: MarketOpportunity[];
@@ -46,73 +47,15 @@ function formatKickoffTime(dateString: string): string {
 
 export function RecommendedParlay({ predictions, onSelectPrediction }: RecommendedParlayProps) {
   const { language } = useLanguage();
-  const [parlaySize, setParlaySize] = useState<3 | 4 | 5>(3);
+  const [parlaySize, setParlaySize] = useState<3 | 5>(3);
   const [stake, setStake] = useState<number>(10);
   const [copied, setCopied] = useState<boolean>(false);
 
-  // Local calendar date helper (YYYY-MM-DD in local time)
-  const getLocalDateStr = (d: Date | string) => {
-    const dateObj = typeof d === "string" ? new Date(d) : d;
-    const year = dateObj.getFullYear();
-    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-    const day = String(dateObj.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
-
   const now = new Date();
-  const todayStr = getLocalDateStr(now);
 
-  // Strictly filter for today's matches with high quality (prob >= 55% & odds >= 1.35)
-  const todayPicks = [...predictions]
-    .filter((p) => {
-      const isToday = getLocalDateStr(p.kickoff) === todayStr;
-      return isToday && p.probability >= 55 && p.odds >= 1.35;
-    })
-    .sort((a, b) => b.probability - a.probability || (b.smartScore || 0) - (a.smartScore || 0));
-
-  // If today's list has at least 3 matches, use strictly today's matches.
-  // If late at night and fewer than 3 matches left today, fallback to closest upcoming matches in next 24h
-  const candidatePicks =
-    todayPicks.length >= 3
-      ? todayPicks
-      : [...predictions]
-          .filter((p) => p.probability >= 55 && p.odds >= 1.35)
-          .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime())
-  const selectedPicks: MarketOpportunity[] = (() => {
-    if (candidatePicks.length <= parlaySize) {
-      return candidatePicks;
-    }
-
-    const bankers = candidatePicks.filter((p) => p.probability >= 78 || p.pickBadge === "valor");
-    const others = candidatePicks.filter((p) => p.probability < 78 && p.pickBadge !== "valor");
-
-    const result: MarketOpportunity[] = [];
-    const usedMatches = new Set<string>();
-
-    const maxBankers = 1;
-    for (const b of bankers) {
-      if (result.length < maxBankers && !usedMatches.has(b.match)) {
-        result.push(b);
-        usedMatches.add(b.match);
-      }
-    }
-
-    const offsetMap: Record<number, number> = { 3: 0, 4: 2, 5: 5 };
-    const startOffset = offsetMap[parlaySize] || 0;
-    const pool = others.length > 0 ? others : candidatePicks;
-    const poolLen = pool.length;
-
-    for (let i = 0; i < poolLen && result.length < parlaySize; i++) {
-      const idx = (startOffset + i) % poolLen;
-      const pick = pool[idx];
-      if (!usedMatches.has(pick.match)) {
-        result.push(pick);
-        usedMatches.add(pick.match);
-      }
-    }
-
-    return result;
-  })();
+  // Generate dual mutually exclusive parlays with diversified markets
+  const { elite3, premium5 } = buildDualExclusiveParlays(predictions);
+  const selectedPicks: MarketOpportunity[] = parlaySize === 5 ? premium5 : elite3;
 
   // Calculate accumulated parlay odds and combined probability
   const totalOdds = selectedPicks.reduce((acc, p) => acc * p.odds, 1);
@@ -171,25 +114,31 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
       {/* Header */}
       <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full bg-emerald-950/80 px-3 py-1 text-xs font-black tracking-wider text-emerald-400 border border-emerald-500/40 uppercase">
-            <span>🔥</span>
-            <span>
-              {todayPicks.length >= 3
-                ? language === "en"
-                  ? "Today's Recommended Parlay"
-                  : "Parley Recomendado del Día de Hoy"
-                : language === "en"
-                ? "Next 24h Recommended Parlay"
-                : "Parley Recomendado de la Jornada"}
-            </span>
+          <div className="flex flex-col gap-2">
+            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-950/80 px-3 py-1 text-xs font-black tracking-wider text-emerald-400 border border-emerald-500/40 uppercase">
+              <span>🎯</span>
+              <span>
+                {language === "en" ? "Official Daily Parlays" : "Parleys Oficiales del Día"}
+              </span>
+            </div>
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/10 px-3 py-0.5 text-[11px] font-extrabold text-indigo-300 border border-indigo-500/30">
+              <span>✨</span>
+              <span>Sin Repetición de Partidos • Mercados Diversificados</span>
+            </div>
           </div>
           <h2 className="mt-2 text-xl sm:text-2xl font-black tracking-tight text-white">
-            {language === "en" ? "Top Daily Combination" : "Combinada Élite del Día Actual"}
+            {parlaySize === 3
+              ? language === "en"
+                ? "🛡️ Elite Parlay (3 High-Probability Picks)"
+                : "🛡️ Parley Élite (3 Selecciones de Máxima Probabilidad)"
+              : language === "en"
+              ? "🚀 Premium Parlay (5 High-Yield Picks)"
+              : "🚀 Parley Premium (5 Selecciones de Gran Rentabilidad)"}
           </h2>
           <p className="mt-0.5 text-xs text-slate-400">
-            {language === "en"
-              ? "Algorithmic multi-match combination strictly from today's matches"
-              : "Selección matemática multi-partido del día actual para maximizar cuota y valor esperado"}
+            {parlaySize === 3
+              ? "Picks independientes de máxima probabilidad (1X2, Doble Oportunidad, Over/Under y BTTS) para un crecimiento seguro del capital."
+              : "5 selecciones totalmente distintas al Parley Élite para multiplicar exponencialmente el beneficio con cuotas de alto valor."}
           </p>
         </div>
 
@@ -197,7 +146,7 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
         <div className="flex items-center gap-1.5 self-start sm:self-auto rounded-2xl bg-slate-950/80 p-1.5 border border-slate-800 flex-wrap">
           <button
             onClick={() => setParlaySize(3)}
-            disabled={candidatePicks.length < 3}
+            disabled={elite3.length < 3}
             className={`flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
               parlaySize === 3
                 ? "bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 shadow-md shadow-emerald-500/30 font-black"
@@ -209,7 +158,7 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
           </button>
           <button
             onClick={() => setParlaySize(5)}
-            disabled={candidatePicks.length < 5}
+            disabled={premium5.length < 5}
             className={`flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
               parlaySize === 5
                 ? "bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md shadow-amber-500/30 font-black"

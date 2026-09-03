@@ -10,6 +10,7 @@ import {
   downloadParlayCardImage,
   shareParlayCardAsImage,
 } from "@/lib/sports/card-image-generator";
+import { buildDualExclusiveParlays } from "@/lib/sports/parlay-generator";
 
 function formatKickoffTime(dateString: string): string {
   try {
@@ -97,7 +98,7 @@ export default function DailyParlayPage() {
   const { language } = useLanguage();
   const [signals, setSignals] = useState<MarketOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
-  const [parlaySize, setParlaySize] = useState<3 | 4 | 5 | 8 | 10>(3);
+  const [parlaySize, setParlaySize] = useState<3 | 5>(3);
   const [stake, setStake] = useState<number>(10);
   const [copied, setCopied] = useState<boolean>(false);
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
@@ -130,60 +131,9 @@ export default function DailyParlayPage() {
     year: "numeric",
   });
 
-  // Sort daily picks by highest probability and value
-  const sortedDailyPicks = [...signals]
-    .filter((p) => p.probability >= 68 && p.odds >= 1.40)
-    .sort((a, b) => b.probability - a.probability || (b.smartScore || 0) - (a.smartScore || 0));
-
-  // Build diversified parlay picks based on size (3, 4, 5, 8, 10)
-  // Only repeat top banker plays (>= 78% certainty), diversifying all other legs across games
-  const selectedPicks: MarketOpportunity[] = (() => {
-    if (sortedDailyPicks.length <= parlaySize) {
-      return sortedDailyPicks;
-    }
-
-    const bankers = sortedDailyPicks.filter((p) => p.probability >= 78 || p.pickBadge === "valor");
-    const others = sortedDailyPicks.filter((p) => p.probability < 78 && p.pickBadge !== "valor");
-
-    const result: MarketOpportunity[] = [];
-    const usedMatches = new Set<string>();
-
-    // Add 1 or 2 bankers depending on parlay size
-    const maxBankers = parlaySize >= 8 ? 2 : 1;
-    for (const b of bankers) {
-      if (result.length < maxBankers && !usedMatches.has(b.match)) {
-        result.push(b);
-        usedMatches.add(b.match);
-      }
-    }
-
-    // Offset rotational index to avoid giving the exact same matches across parlay sizes
-    const offsetMap: Record<number, number> = { 3: 0, 4: 2, 5: 5, 8: 9, 10: 0 };
-    const startOffset = offsetMap[parlaySize] || 0;
-
-    const pool = others.length > 0 ? others : sortedDailyPicks;
-    const poolLen = pool.length;
-
-    for (let i = 0; i < poolLen && result.length < parlaySize; i++) {
-      const idx = (startOffset + i) % poolLen;
-      const pick = pool[idx];
-      if (!usedMatches.has(pick.match)) {
-        result.push(pick);
-        usedMatches.add(pick.match);
-      }
-    }
-
-    // Fallback if not enough unique matches
-    if (result.length < parlaySize) {
-      for (const pick of sortedDailyPicks) {
-        if (!result.some((r) => r.match === pick.match && r.market === pick.market) && result.length < parlaySize) {
-          result.push(pick);
-        }
-      }
-    }
-
-    return result;
-  })();
+  // Generate dual mutually exclusive parlays with diversified markets
+  const { elite3, premium5 } = buildDualExclusiveParlays(signals);
+  const selectedPicks: MarketOpportunity[] = parlaySize === 5 ? premium5 : elite3;
 
   // Compute accumulated parlay odds and combined probability
   const totalOdds = selectedPicks.reduce((acc, p) => acc * p.odds, 1);
@@ -273,31 +223,16 @@ export default function DailyParlayPage() {
     window.open(url, "_blank");
   };
 
-  const parlayTierDescriptions: Record<3 | 4 | 5 | 8 | 10, { title: string; desc: string; icon: string }> = {
+  const parlayTierDescriptions: Record<3 | 5, { title: string; desc: string; icon: string }> = {
     3: {
-      title: "Trío Élite (3 Jugadas)",
-      desc: "Combinación de máxima seguridad y probabilidad matemática para rentabilidad consistente.",
-      icon: "🥉",
-    },
-    4: {
-      title: "Cuarteta Pro (4 Jugadas)",
-      desc: "Excelente balance entre cuota atractiva y probabilidad sólida de éxito.",
-      icon: "🥈",
+      title: "🛡️ Parley Élite (3 Jugadas de Máxima Seguridad)",
+      desc: "3 picks con la probabilidad más alta y menor dispersión de varianza (1X2, Doble Oportunidad, Over/Under y BTTS).",
+      icon: "🛡️",
     },
     5: {
-      title: "Quíntuple Estrella (5 Jugadas)",
-      desc: "Multiplicador de cuota de alto valor para retornos sustanciales.",
-      icon: "🥇",
-    },
-    8: {
-      title: "Mega Parley (8 Jugadas)",
-      desc: "Combinada de alto impacto para multiplicar exponencialmente el capital.",
-      icon: "💎",
-    },
-    10: {
-      title: "Deca Parley Gigante (10 Jugadas)",
-      desc: "La mayor combinación del día para premios extraordinarios con los 10 mejores pronósticos.",
-      icon: "👑",
+      title: "🚀 Parley Premium (5 Jugadas - Gran Multiplicador)",
+      desc: "5 selecciones totalmente distintas al Parley Élite (sin partidos repetidos) para multiplicar la rentabilidad de la jornada.",
+      icon: "🚀",
     },
   };
 
@@ -309,55 +244,68 @@ export default function DailyParlayPage() {
         {/* Header & Immutable Notice */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-1 text-xs font-extrabold text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30">
-              <span>🔥</span>
-              <span className="capitalize">{todayFormatted} • Módulo Exclusivo</span>
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-1 text-xs font-extrabold text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30">
+                <span>🔥</span>
+                <span className="capitalize">{todayFormatted} • Módulo Exclusivo</span>
+              </div>
+              <div className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-50 px-3 py-1 text-xs font-extrabold text-indigo-900 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-800">
+                <span>✨</span>
+                <span>100% Sin Repetición entre Parleys • Mercados Diversificados</span>
+              </div>
             </div>
             <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
-              Parley Recomendado del Día
+              Parleys Oficiales del Día
             </h1>
             <p className="mt-1 text-xs text-slate-700 sm:text-sm dark:text-slate-400">
-              Selecciones oficiales inmutables para garantizar trazabilidad y máxima precisión cuantitativa
+              Dos combinadas cuantitativas independientes sin partidos duplicados para diversificar el riesgo de forma óptima
             </p>
           </div>
 
           <div className="inline-flex items-center gap-2 rounded-2xl bg-sky-50 px-4 py-2 text-xs font-black text-sky-900 border border-sky-300 dark:bg-sky-950/80 dark:text-sky-300 dark:border-sky-800">
             <span>🔒</span>
-            <span>Pronósticos Congelados (Trazabilidad 100%)</span>
+            <span>Pronósticos Inmutables (Trazabilidad 100%)</span>
           </div>
         </div>
 
-        {/* Parlay Combinations Selector (3, 4, 5, 8, 10 Jugadas) */}
+        {/* Parlay Combinations Selector (3 Jugadas vs 5 Jugadas) */}
         <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-400">
-              Selecciona el Número de Jugadas:
+              Selecciona el Tipo de Parley:
             </span>
             <span className="text-xs font-extrabold text-emerald-600 dark:text-emerald-400">
               {parlayTierDescriptions[parlaySize].title}
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
-            {([3, 4, 5, 8, 10] as const).map((size) => {
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {([3, 5] as const).map((size) => {
               const info = parlayTierDescriptions[size];
               const isSelected = parlaySize === size;
+              const disabled = size === 3 ? elite3.length < 3 : premium5.length < 5;
               return (
                 <button
                   key={size}
                   onClick={() => setParlaySize(size)}
-                  disabled={sortedDailyPicks.length < size}
-                  className={`flex flex-col items-center justify-center p-3 rounded-2xl border transition text-center cursor-pointer ${
+                  disabled={disabled}
+                  className={`flex items-center gap-4 p-4 rounded-2xl border transition text-left cursor-pointer ${
                     isSelected
-                      ? "border-emerald-500 bg-emerald-50 text-emerald-950 shadow-md shadow-emerald-500/20 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-500 font-black"
+                      ? size === 3
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-950 shadow-md shadow-emerald-500/20 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-500 font-black ring-2 ring-emerald-500/30"
+                        : "border-amber-500 bg-amber-50 text-amber-950 shadow-md shadow-amber-500/20 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-500 font-black ring-2 ring-amber-500/30"
                       : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400 dark:hover:bg-slate-800"
                   } disabled:opacity-30 disabled:cursor-not-allowed`}
                 >
-                  <span className="text-xl">{info.icon}</span>
-                  <span className="text-sm font-black mt-1">{size} Jugadas</span>
-                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mt-0.5">
-                    {size === 3 ? "Trío" : size === 4 ? "Cuarteta" : size === 5 ? "Quíntuple" : size === 8 ? "Mega" : "Deca"}
-                  </span>
+                  <span className="text-3xl">{info.icon}</span>
+                  <div>
+                    <div className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                      {size === 3 ? "🛡️ Parley Élite (3 Picks)" : "🚀 Parley Premium (5 Picks)"}
+                    </div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-normal">
+                      {info.desc}
+                    </div>
+                  </div>
                 </button>
               );
             })}
