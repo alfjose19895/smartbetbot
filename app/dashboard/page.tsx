@@ -213,13 +213,13 @@ export default function DashboardPage() {
           <div>
             <div className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-1 text-xs font-extrabold text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30">
               <span>🎯</span>
-              <span className="capitalize">{formattedToday} • Alertas de Alta Precisión (≥85% Win Rate Target)</span>
+              <span className="capitalize">{formattedToday} • Alertas de Alta Precisión (≥70% Probabilidad)</span>
             </div>
             <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
               {t("dashboardTitle")}
             </h1>
             <p className="mt-1 text-xs text-slate-700 sm:text-sm dark:text-slate-400">
-              Pronósticos altamente filtrados priorizando Ligas Top y Ligas Europeas de élite
+              Pronósticos altamente filtrados con cuotas justas y valor matemático
             </p>
           </div>
 
