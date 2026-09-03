@@ -13,7 +13,7 @@ export interface SupportedLeague {
 }
 
 export const SUPPORTED_LEAGUES: SupportedLeague[] = [
-  // --- TOP 5 LIGAS EUROPEAS & COPAS UEFA ---
+  // --- TOP 5 LIGAS EUROPEAS, COPAS UEFA & CONCACAF ---
   { id: 39, name: "Premier League", country: "Inglaterra", category: "top5", tier: 1 },
   { id: 140, name: "La Liga", country: "España", category: "top5", tier: 1 },
   { id: 135, name: "Serie A", country: "Italia", category: "top5", tier: 1 },
@@ -23,9 +23,19 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
   { id: 3, name: "UEFA Europa League", country: "Europa", category: "cups", tier: 1 },
   { id: 848, name: "UEFA Europa Conference League", country: "Europa", category: "cups", tier: 1 },
   { id: 5, name: "UEFA Nations League", country: "Europa", category: "cups", tier: 1 },
+  { id: 525, name: "UEFA Champions League Women", country: "Europa", category: "cups", tier: 1 },
+  { id: 772, name: "Leagues Cup", country: "Norteamérica", category: "cups", tier: 1 },
+  { id: 16, name: "CONCACAF Champions League", country: "Norteamérica", category: "cups", tier: 1 },
+
+  // --- INGLATERRA (TODAS LAS DIVISIONES) ---
+  { id: 40, name: "Championship", country: "Inglaterra", category: "second_divisions", tier: 2 },
+  { id: 41, name: "League One", country: "Inglaterra", category: "nordics_others", tier: 3 },
+  { id: 42, name: "League Two", country: "Inglaterra", category: "nordics_others", tier: 4 },
+  { id: 43, name: "National League", country: "Inglaterra", category: "nordics_others", tier: 5 },
+  { id: 44, name: "National League - North", country: "Inglaterra", category: "nordics_others", tier: 6 },
+  { id: 45, name: "National League - South", country: "Inglaterra", category: "nordics_others", tier: 6 },
 
   // --- GRANDES SEGUNDAS DIVISIONES DE EUROPA ---
-  { id: 40, name: "Championship", country: "Inglaterra", category: "second_divisions", tier: 2 },
   { id: 141, name: "La Liga 2 (Segunda División)", country: "España", category: "second_divisions", tier: 2 },
   { id: 136, name: "Serie B", country: "Italia", category: "second_divisions", tier: 2 },
   { id: 79, name: "2. Bundesliga", country: "Alemania", category: "second_divisions", tier: 2 },
@@ -34,6 +44,7 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
   { id: 89, name: "Eerste Divisie (2da Div)", country: "Países Bajos", category: "second_divisions", tier: 2 },
   { id: 95, name: "Liga Portugal 2", country: "Portugal", category: "second_divisions", tier: 2 },
   { id: 145, name: "Challenger Pro League (2da Div)", country: "Bélgica", category: "second_divisions", tier: 2 },
+  { id: 180, name: "Championship", country: "Escocia", category: "second_divisions", tier: 2 },
   { id: 104, name: "1. Division (OBOS-ligaen)", country: "Noruega", category: "second_divisions", tier: 2 },
   { id: 114, name: "Superettan", country: "Suecia", category: "second_divisions", tier: 2 },
   { id: 120, name: "1. Division", country: "Dinamarca", category: "second_divisions", tier: 2 },
@@ -46,7 +57,8 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
   { id: 316, name: "1st League - FBiH", country: "Bosnia", category: "second_divisions", tier: 2 },
   { id: 317, name: "1st League - RS", country: "Bosnia", category: "second_divisions", tier: 2 },
 
-  // --- LIGAS PRINCIPALES DE EUROPA (1RA DIVISIÓN) ---
+  // --- LIGAS PRINCIPALES DE EUROPA (1RA DIVISIÓN & FEMENINA) ---
+  { id: 142, name: "Primera División Femenina (Liga F)", country: "España", category: "europe_mid", tier: 1 },
   { id: 88, name: "Eredivisie", country: "Países Bajos", category: "europe_mid", tier: 1 },
   { id: 94, name: "Primeira Liga", country: "Portugal", category: "europe_mid", tier: 1 },
   { id: 144, name: "Jupiler Pro League", country: "Bélgica", category: "europe_mid", tier: 1 },
@@ -67,6 +79,11 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
   { id: 383, name: "Ligat Ha'al (Premier League)", country: "Israel", category: "europe_mid", tier: 1 },
   { id: 172, name: "First League", country: "Bulgaria", category: "europe_mid", tier: 1 },
   { id: 315, name: "Premijer Liga BiH", country: "Bosnia", category: "europe_mid", tier: 1 },
+  { id: 332, name: "Super Liga (Niké liga)", country: "Eslovaquia", category: "europe_mid", tier: 1 },
+  { id: 373, name: "1. SNL (PrvaLiga)", country: "Eslovenia", category: "europe_mid", tier: 1 },
+  { id: 286, name: "Super Liga", country: "Serbia", category: "europe_mid", tier: 1 },
+  { id: 345, name: "Czech Liga", country: "República Checa", category: "europe_mid", tier: 1 },
+  { id: 116, name: "Premier League", country: "Bielorrusia", category: "europe_mid", tier: 1 },
 
   // --- AMÉRICAS (1RA, 2DA DIVISIÓN & COPAS CONMEBOL) ---
   { id: 242, name: "Liga Pro", country: "Ecuador", category: "americas", tier: 1 },
@@ -88,7 +105,8 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
   { id: 250, name: "Primera División", country: "Paraguay", category: "americas", tier: 1 },
   { id: 162, name: "Primera División (Liga FPD)", country: "Costa Rica", category: "americas", tier: 1 },
 
-  // --- ASIA & OCEANÍA (JAPÓN, COREA DEL SUR, AUSTRALIA & CHINA) ---
+  // --- ASIA, MEDIO ORIENTE & OCEANÍA ---
+  { id: 307, name: "Saudi Pro League", country: "Arabia Saudita", category: "asia_africa", tier: 1 },
   { id: 98, name: "J1 League", country: "Japón", category: "asia_africa", tier: 1 },
   { id: 99, name: "J2 League", country: "Japón", category: "second_divisions", tier: 2 },
   { id: 101, name: "J-League Cup", country: "Japón", category: "cups", tier: 1 },
@@ -96,8 +114,15 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
   { id: 292, name: "K League 1", country: "Corea del Sur", category: "asia_africa", tier: 1 },
   { id: 293, name: "K League 2", country: "Corea del Sur", category: "second_divisions", tier: 2 },
   { id: 294, name: "Korean FA Cup", country: "Corea del Sur", category: "cups", tier: 1 },
-  { id: 188, name: "A-League Men", country: "Australia", category: "asia_africa", tier: 1 },
   { id: 169, name: "Chinese Super League", country: "China", category: "asia_africa", tier: 1 },
+  { id: 188, name: "A-League Men", country: "Australia", category: "asia_africa", tier: 1 },
+  { id: 190, name: "A-League Women", country: "Australia", category: "asia_africa", tier: 1 },
+  { id: 192, name: "New South Wales NPL", country: "Australia", category: "nordics_others", tier: 3 },
+  { id: 191, name: "Brisbane Premier League", country: "Australia", category: "nordics_others", tier: 3 },
+  { id: 481, name: "Northern NSW NPL", country: "Australia", category: "nordics_others", tier: 3 },
+  { id: 189, name: "Capital Territory NPL", country: "Australia", category: "nordics_others", tier: 3 },
+  { id: 193, name: "Northern Territory Premier League", country: "Australia", category: "nordics_others", tier: 3 },
+  { id: 194, name: "South Australia NPL", country: "Australia", category: "nordics_others", tier: 3 },
 ];
 
 export const ALL_LEAGUE_IDS = SUPPORTED_LEAGUES.map((l) => l.id);

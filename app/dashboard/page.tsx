@@ -30,6 +30,7 @@ export default function DashboardPage() {
 
   // Filters (exclusively for Today's Alertas)
   const [matchStatusFilter, setMatchStatusFilter] = useState<"ALL" | "VALOR" | "BOMBA" | "WON" | "LOST" | "SCHEDULED" | "IN_PLAY" | "FINISHED">("ALL");
+  const [minProbability, setMinProbability] = useState<number>(50);
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
@@ -183,6 +184,10 @@ export default function DashboardPage() {
         );
       });
       if (!match) return false;
+    }
+
+    if (p.probability < minProbability) {
+      return false;
     }
 
     return true;
@@ -344,11 +349,25 @@ export default function DashboardPage() {
 
         {/* Filters Toolbar */}
         <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800/80 dark:bg-slate-900/80">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
-              <span>💎</span>
-              <span>Partidos Analizados de Máxima Seguridad de la Jornada</span>
+          {/* Probability Slider */}
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
+              {language === "en" ? "Min. Probability:" : "Probabilidad Mínima:"}
             </span>
+            <div className="flex items-center gap-2">
+              <input
+                type="range"
+                min="50"
+                max="90"
+                step="5"
+                value={minProbability}
+                onChange={(e) => setMinProbability(Number(e.target.value))}
+                className="h-2 w-28 cursor-pointer accent-emerald-500"
+              />
+              <span className="rounded-lg bg-emerald-50 px-2 py-0.5 text-xs font-extrabold text-emerald-700 border border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800">
+                {minProbability}%
+              </span>
+            </div>
           </div>
 
           {/* Multi-Select Dropdowns */}
