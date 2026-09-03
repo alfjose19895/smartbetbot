@@ -135,43 +135,43 @@ export async function generatePredictionCardBlob(prediction: MarketOpportunity):
   ctx.font = "900 20px system-ui, -apple-system, sans-serif";
   ctx.fillText(`${prediction.market} (${prediction.selection})`, 60, 385);
 
-  // Cuota Casa Badge
+  // Cuota Casa de Apuestas Badge
   ctx.fillStyle = "#0284c7";
   ctx.beginPath();
-  ctx.roundRect(width - 370, 335, 100, 65, 14);
+  ctx.roundRect(width - 390, 335, 115, 65, 14);
   ctx.fill();
   ctx.fillStyle = "#e0f2fe";
-  ctx.font = "bold 10px system-ui, -apple-system, sans-serif";
+  ctx.font = "bold 9px system-ui, -apple-system, sans-serif";
   ctx.textAlign = "center";
-  ctx.fillText("CUOTA CASA", width - 320, 355);
+  ctx.fillText("CASA DE APUESTAS", width - 332, 355);
   ctx.fillStyle = "#ffffff";
   ctx.font = "900 20px system-ui, -apple-system, sans-serif";
-  ctx.fillText(`@${prediction.odds.toFixed(2)}`, width - 320, 385);
+  ctx.fillText(`@${prediction.odds.toFixed(2)}`, width - 332, 385);
 
   // Cuota Modelo SmartBetBot Badge
   ctx.fillStyle = "#4f46e5";
   ctx.beginPath();
-  ctx.roundRect(width - 260, 335, 110, 65, 14);
+  ctx.roundRect(width - 265, 335, 125, 65, 14);
   ctx.fill();
   ctx.fillStyle = "#e0e7ff";
-  ctx.font = "bold 10px system-ui, -apple-system, sans-serif";
+  ctx.font = "bold 9px system-ui, -apple-system, sans-serif";
   ctx.textAlign = "center";
-  ctx.fillText("CUOTA MODELO", width - 205, 355);
+  ctx.fillText("MODELO SMARTBETBOT", width - 202, 355);
   ctx.fillStyle = "#ffffff";
   ctx.font = "900 20px system-ui, -apple-system, sans-serif";
-  ctx.fillText(`@${(prediction.fairOdds || 1.35).toFixed(2)}`, width - 205, 385);
+  ctx.fillText(`@${(prediction.fairOdds || 1.35).toFixed(2)}`, width - 202, 385);
 
   // Probabilidad Badge
   ctx.fillStyle = "#059669";
   ctx.beginPath();
-  ctx.roundRect(width - 140, 335, 100, 65, 14);
+  ctx.roundRect(width - 130, 335, 90, 65, 14);
   ctx.fill();
   ctx.fillStyle = "#d1fae5";
-  ctx.font = "bold 10px system-ui, -apple-system, sans-serif";
-  ctx.fillText("PROB. ÉLITE", width - 90, 355);
+  ctx.font = "bold 9px system-ui, -apple-system, sans-serif";
+  ctx.fillText("PROB. ÉLITE", width - 85, 355);
   ctx.fillStyle = "#ffffff";
   ctx.font = "900 20px system-ui, -apple-system, sans-serif";
-  ctx.fillText(`${prediction.probability}%`, width - 90, 385);
+  ctx.fillText(`${prediction.probability}%`, width - 85, 385);
   ctx.textAlign = "left";
 
   // Footer Explanation / Watermark
@@ -352,37 +352,37 @@ export async function generateParlayCardBlob(
 
   // Metric 1: Total Odds Casa
   ctx.fillStyle = "#94a3b8";
-  ctx.font = "bold 11px system-ui, -apple-system, sans-serif";
-  ctx.fillText("🏢 CUOTA CASA", 55, 142);
+  ctx.font = "bold 10px system-ui, -apple-system, sans-serif";
+  ctx.fillText("🏢 CUOTA CASA DE APUESTAS", 50, 142);
   ctx.fillStyle = "#38bdf8";
   ctx.font = "900 24px system-ui, -apple-system, sans-serif";
-  ctx.fillText(`@${totalOdds.toFixed(2)}`, 55, 180);
+  ctx.fillText(`@${totalOdds.toFixed(2)}`, 50, 180);
 
   // Metric 2: Total Fair Odds Modelo
   ctx.fillStyle = "#94a3b8";
-  ctx.font = "bold 11px system-ui, -apple-system, sans-serif";
-  ctx.fillText("🤖 CUOTA MODELO", 235, 142);
+  ctx.font = "bold 10px system-ui, -apple-system, sans-serif";
+  ctx.fillText("🤖 CUOTA MODELO SMARTBETBOT", 260, 142);
   ctx.fillStyle = "#818cf8";
   ctx.font = "900 24px system-ui, -apple-system, sans-serif";
-  ctx.fillText(`@${totalFairOdds.toFixed(2)}`, 235, 180);
+  ctx.fillText(`@${totalFairOdds.toFixed(2)}`, 260, 180);
 
   // Metric 3: Combined Probability
   ctx.fillStyle = "#94a3b8";
-  ctx.font = "bold 11px system-ui, -apple-system, sans-serif";
-  ctx.fillText("📈 PROB. ESTIMADA", 435, 142);
+  ctx.font = "bold 10px system-ui, -apple-system, sans-serif";
+  ctx.fillText("📈 PROB. ESTIMADA", 490, 142);
   ctx.fillStyle = "#34d399";
   ctx.font = "900 24px system-ui, -apple-system, sans-serif";
-  ctx.fillText(`${combinedProb.toFixed(1)}%`, 435, 180);
+  ctx.fillText(`${combinedProb.toFixed(1)}%`, 490, 180);
 
   // Metric 4: Potential Return
   const potentialReturn = (stake * totalOdds).toFixed(2);
   const profit = (stake * totalOdds - stake).toFixed(2);
   ctx.fillStyle = "#94a3b8";
-  ctx.font = "bold 11px system-ui, -apple-system, sans-serif";
-  ctx.fillText(`💰 RETORNO ($${stake})`, 635, 142);
+  ctx.font = "bold 10px system-ui, -apple-system, sans-serif";
+  ctx.fillText(`💰 RETORNO ($${stake})`, 670, 142);
   ctx.fillStyle = "#facc15";
   ctx.font = "900 24px system-ui, -apple-system, sans-serif";
-  ctx.fillText(`$${potentialReturn}`, 635, 180);
+  ctx.fillText(`$${potentialReturn}`, 670, 180);
 
   // Legs Title
   ctx.fillStyle = "#94a3b8";
@@ -424,37 +424,37 @@ export async function generateParlayCardBlob(
     // Pick & Selection Box
     ctx.fillStyle = "rgba(16, 185, 129, 0.15)";
     ctx.beginPath();
-    ctx.roundRect(width - 450, y + 14, 180, 36, 10);
+    ctx.roundRect(width - 490, y + 14, 160, 36, 10);
     ctx.fill();
     ctx.strokeStyle = "rgba(16, 185, 129, 0.3)";
     ctx.stroke();
     ctx.fillStyle = "#10b981";
     ctx.font = "900 12px system-ui, -apple-system, sans-serif";
-    ctx.fillText(`🎯 ${p.market}`, width - 440, y + 36);
+    ctx.fillText(`🎯 ${p.market}`, width - 480, y + 36);
 
     // Cuota Casa Pill
     ctx.fillStyle = "#0284c7";
     ctx.beginPath();
-    ctx.roundRect(width - 260, y + 14, 115, 36, 10);
+    ctx.roundRect(width - 320, y + 14, 140, 36, 10);
     ctx.fill();
     ctx.fillStyle = "#e0f2fe";
-    ctx.font = "bold 10px system-ui, -apple-system, sans-serif";
-    ctx.fillText("Casa", width - 250, y + 36);
+    ctx.font = "bold 9px system-ui, -apple-system, sans-serif";
+    ctx.fillText("Casa Apuestas", width - 312, y + 36);
     ctx.fillStyle = "#ffffff";
     ctx.font = "900 14px system-ui, -apple-system, sans-serif";
-    ctx.fillText(`@${p.odds.toFixed(2)}`, width - 215, y + 36);
+    ctx.fillText(`@${p.odds.toFixed(2)}`, width - 230, y + 36);
 
     // Cuota Modelo Pill
     ctx.fillStyle = "#4f46e5";
     ctx.beginPath();
-    ctx.roundRect(width - 135, y + 14, 125, 36, 10);
+    ctx.roundRect(width - 170, y + 14, 160, 36, 10);
     ctx.fill();
     ctx.fillStyle = "#e0e7ff";
-    ctx.font = "bold 10px system-ui, -apple-system, sans-serif";
-    ctx.fillText("Modelo", width - 125, y + 36);
+    ctx.font = "bold 9px system-ui, -apple-system, sans-serif";
+    ctx.fillText("Modelo SmartBetBot", width - 162, y + 36);
     ctx.fillStyle = "#ffffff";
     ctx.font = "900 14px system-ui, -apple-system, sans-serif";
-    ctx.fillText(`@${(p.fairOdds || 1.35).toFixed(2)}`, width - 80, y + 36);
+    ctx.fillText(`@${(p.fairOdds || 1.35).toFixed(2)}`, width - 50, y + 36);
 
     y += legHeight;
   });

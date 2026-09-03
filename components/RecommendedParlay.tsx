@@ -210,7 +210,7 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
                   🎯 {pick.market}
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-xl bg-sky-950/80 px-2.5 py-1 text-xs font-black text-sky-300 border border-sky-800/60" title="Cuota de la Casa de Apuestas">
-                  <span className="text-[10px] opacity-70">Casa:</span>
+                  <span className="text-[10px] opacity-70">Casa de Apuestas:</span>
                   <span>@{pick.odds.toFixed(2)}</span>
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-xl bg-indigo-950/80 px-2.5 py-1 text-xs font-black text-indigo-300 border border-indigo-800/60" title="Cuota Justa del Modelo SmartBetBot">
@@ -230,7 +230,7 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
           <div>
             <div className="space-y-2 border-b border-slate-800/80 pb-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase text-sky-400">🏢 Cuota Casa Combinada</span>
+                <span className="text-xs font-bold uppercase text-sky-400">🏢 Cuota Casa de Apuestas Combinada</span>
                 <span className="text-2xl font-black text-sky-400">
                   @{totalOdds.toFixed(2)}
                 </span>
