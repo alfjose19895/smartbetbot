@@ -71,7 +71,7 @@ export default function SignalsPage() {
   const handleRefreshRemainingAlerts = async () => {
     try {
       setSyncing(true);
-      setSyncMessage("🔄 Buscando partidos restantes y cuotas activas para hoy...");
+      setSyncMessage("🔄 Analizando mercado y buscando nuevas alertas de confianza muy alta...");
       const res = await fetch("/api/admin/sync/predictions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -80,7 +80,11 @@ export default function SignalsPage() {
       const data = await res.json();
       if (data.success) {
         setSyncMessage(data.message || "✓ Alertas actualizadas con éxito.");
-        await fetchSignals();
+        if (data.predictions && Array.isArray(data.predictions)) {
+          setSignals(data.predictions);
+        } else {
+          await fetchSignals();
+        }
       } else {
         setSyncMessage(`❌ ${data.error || "No se pudo actualizar"}`);
       }
@@ -88,7 +92,7 @@ export default function SignalsPage() {
       setSyncMessage("❌ Error de conexión al buscar nuevas alertas");
     } finally {
       setSyncing(false);
-      setTimeout(() => setSyncMessage(null), 5000);
+      setTimeout(() => setSyncMessage(null), 6000);
     }
   };
 

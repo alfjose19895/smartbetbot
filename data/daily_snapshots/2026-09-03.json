@@ -25,7 +25,7 @@
     "pickBadge": "valor",
     "smartScore": 89,
     "explanation": "Solidez y contundencia como local: FC Isloch Minsk R. llega en un momento de forma superior con un promedio de 2.10 xG como local y alta presión en campo rival. El modelo cuantitativo proyecta un 71.8% de probabilidad de victoria local a cuota @1.50 frente a un BATE Borisov vulnerable defensivamente.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-05",
@@ -139,7 +139,8 @@
     "homeElo": 1525,
     "awayElo": 1552,
     "leagueTier": 1,
-    "modelOdds": 1.44
+    "modelOdds": 1.44,
+    "actualScore": "2 - 0"
   },
   {
     "fixtureId": 1553144,
@@ -168,7 +169,7 @@
     "pickBadge": "estandar",
     "smartScore": 84,
     "explanation": "Dinámica ofensiva y pegada en ataque: Raków Częstochowa llega con 2 victorias en sus últimos 5 compromisos y promedia 3.40 goles esperados (xG) en casa, mientras Gornik Zabrze genera 0.47 xG como visitante. El modelo cuantitativo Poisson proyecta 3.87 goles esperados conjuntos, otorgando un sólido 68.4% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.48 (valor +1%).",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-05",
@@ -281,7 +282,8 @@
     ],
     "homeElo": 1522,
     "awayElo": 1492,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "1 - 2 (3 Goles)"
   },
   {
     "fixtureId": 1603009,
@@ -310,7 +312,7 @@
     "pickBadge": "estandar",
     "smartScore": 84,
     "explanation": "Tendencia anotadora sostenida: Tanto NEOM como Al Khaleej Saihat promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.90, la expectativa de un marcador con 3 o más tantos alcanza el 68.9% de probabilidad.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-05",
@@ -423,7 +425,8 @@
     ],
     "homeElo": 1603,
     "awayElo": 1571,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "3 - 0 (3 Goles)"
   },
   {
     "fixtureId": 1549009,
@@ -452,7 +455,7 @@
     "pickBadge": "estandar",
     "smartScore": 84,
     "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con FC Copenhagen sumando en 4 de sus últimos 5 cotejos y la vocación ofensiva de FC Nordsjaelland, el algoritmo estima un 68.8% de certeza para más de 2.5 goles.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-05",
@@ -565,7 +568,8 @@
     ],
     "homeElo": 1585,
     "awayElo": 1554,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "2 - 0 (2 Goles)"
   },
   {
     "fixtureId": 1530112,
@@ -594,7 +598,7 @@
     "pickBadge": "bomba",
     "smartScore": 86,
     "explanation": "Duelo de alta verticalidad ofensiva: Tanto Gent como OH Leuven presentan promedios superiores a 1.70 xG y reciben gol en el 80% de sus compromisos recientes. El modelo detecta un 68% de probabilidad a cuota bomba @2.25 (+23.6% de valor).",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-06-10",
@@ -699,7 +703,8 @@
     ],
     "homeElo": 1680,
     "awayElo": 1590,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "1 - 0 (No)"
   },
   {
     "fixtureId": 1555382,
@@ -728,7 +733,7 @@
     "pickBadge": "estandar",
     "smartScore": 84,
     "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con FC Lugano sumando en 4 de sus últimos 5 cotejos y la vocación ofensiva de Servette FC, el algoritmo estima un 68.8% de certeza para más de 2.5 goles.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-05",
@@ -841,7 +846,8 @@
     ],
     "homeElo": 1543,
     "awayElo": 1599,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "1 - 0 (1 Goles)"
   },
   {
     "fixtureId": 1553140,
@@ -869,7 +875,7 @@
     "pickBadge": "valor",
     "smartScore": 82,
     "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con Lech Poznan sumando en 4 de sus últimos 5 cotejos y la vocación ofensiva de Jagiellonia, el algoritmo estima un 68% de certeza para más de 2.5 goles.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-05",
@@ -982,7 +988,8 @@
     ],
     "homeElo": 1622,
     "awayElo": 1519,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "2 - 1 (3 Goles)"
   },
   {
     "fixtureId": 1552754,
@@ -1010,7 +1017,7 @@
     "pickBadge": "valor",
     "smartScore": 82,
     "explanation": "Tendencia anotadora sostenida: Tanto Toulouse como Lille promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.80, la expectativa de un marcador con 3 o más tantos alcanza el 68% de probabilidad.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-05",
@@ -1123,7 +1130,8 @@
     ],
     "homeElo": 1624,
     "awayElo": 1800,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "0 - 1 (1 Goles)"
   },
   {
     "fixtureId": 1519479,
@@ -1152,7 +1160,7 @@
     "pickBadge": "estandar",
     "smartScore": 90,
     "explanation": "Jerarquía y solvencia territorial: Universidad Catolica (Elo 1550) llega en gran momento con 3 victorias en sus 5 cotejos más recientes, superando a Aucas en xG (2.32 vs 0.68). El modelo Poisson proyecta un contundente 73.3% de probabilidad de triunfo local a cuota @1.90.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-05",
@@ -1265,7 +1273,8 @@
     ],
     "homeElo": 1550,
     "awayElo": 1540,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "1 - 1"
   },
   {
     "fixtureId": 1570392,
@@ -1293,7 +1302,7 @@
     "pickBadge": "valor",
     "smartScore": 82,
     "explanation": "Tendencia anotadora sostenida: Tanto Real Sociedad como Celta Vigo promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.80, la expectativa de un marcador con 3 o más tantos alcanza el 68% de probabilidad.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-05",
@@ -1406,7 +1415,8 @@
     ],
     "homeElo": 1740,
     "awayElo": 1620,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "0 - 0 (0 Goles)"
   },
   {
     "fixtureId": 1549763,
@@ -1434,7 +1444,7 @@
     "pickBadge": "valor",
     "smartScore": 82,
     "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de America de Cali con la pegada en contragolpe de Alianza Valledupar (3.80 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 68% de confianza a cuota @1.51.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-05",
@@ -1547,7 +1557,8 @@
     ],
     "homeElo": 1552,
     "awayElo": 1636,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "3 - 0 (3 Goles)"
   },
   {
     "fixtureId": 1519476,
@@ -1575,7 +1586,7 @@
     "pickBadge": "valor",
     "smartScore": 84,
     "explanation": "Ventaja de localía y solidez táctica: Leones del Norte muestra un rendimiento dominante en su feudo con transiciones rápidas y alta efectividad en remates (1.85 xG esperado). El modelo proyecta una probabilidad de victoria local del 71.5% a cuota @1.95 frente a un Orense SC con dificultades en salida.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-05",
@@ -1689,6 +1700,433 @@
     "homeElo": 1547,
     "awayElo": 1562,
     "leagueTier": 1,
-    "modelOdds": 1.72
+    "modelOdds": 1.72,
+    "actualScore": "1 - 0"
+  },
+  {
+    "fixtureId": 1492754,
+    "match": "Shamrock Rovers vs Shelbourne",
+    "homeTeam": "Shamrock Rovers",
+    "awayTeam": "Shelbourne",
+    "homeTeamId": 652,
+    "awayTeamId": 3854,
+    "homeLogo": "https://media.api-sports.io/football/teams/652.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/3854.png",
+    "league": "Premier Division",
+    "leagueLogo": "https://media.api-sports.io/football/leagues/357.png",
+    "country": "Irlanda",
+    "kickoff": "2026-09-04T14:00:00-05:00",
+    "market": "Gana Visitante",
+    "selection": "2",
+    "odds": 4.1,
+    "bookmakerOdds": 4.1,
+    "modelOdds": 1.17,
+    "fairOdds": 1.17,
+    "probability": 85.8,
+    "impliedProbability": 24.4,
+    "edge": 61.4,
+    "expectedValue": 251.6,
+    "confidence": "Muy Alta",
+    "pickBadge": "bomba",
+    "smartScore": 99,
+    "explanation": "Superioridad cualitativa y jerarquía de Shelbourne: A pesar de jugar fuera, su diferencial Elo (1627) y xG de 3.40 superan con claridad la estructura de Shamrock Rovers. Con 1 triunfos en sus 5 salidas recientes, la victoria visitante alcanza 85.8% de probabilidad a cuota @4.10.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-06",
+        "homeTeam": "Shamrock Rovers",
+        "awayTeam": "Shelbourne",
+        "score": "1-2",
+        "winner": "away",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-03-08",
+        "homeTeam": "Shelbourne",
+        "awayTeam": "Shamrock Rovers",
+        "score": "2-0",
+        "winner": "home",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2025-09-09",
+        "homeTeam": "Shamrock Rovers",
+        "awayTeam": "Shelbourne",
+        "score": "1-1",
+        "winner": "draw",
+        "competition": "Premier Division"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-08-31",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "1-3",
+        "result": "L",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-26",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-21",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-16",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-11",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Premier Division"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-08-31",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-26",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-21",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-16",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "1-2",
+        "result": "L",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-11",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Premier Division"
+      }
+    ],
+    "homeElo": 1537,
+    "awayElo": 1627,
+    "leagueTier": 1
+  },
+  {
+    "fixtureId": 1493109,
+    "match": "Belgrano Cordoba vs Huracan",
+    "homeTeam": "Belgrano Cordoba",
+    "awayTeam": "Huracan",
+    "homeTeamId": 440,
+    "awayTeamId": 445,
+    "homeLogo": "https://media.api-sports.io/football/teams/440.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/445.png",
+    "league": "Liga Profesional Argentina",
+    "leagueLogo": "https://media.api-sports.io/football/leagues/128.png",
+    "country": "Argentina",
+    "kickoff": "2026-09-04T17:00:00-05:00",
+    "market": "Gana Visitante",
+    "selection": "2",
+    "odds": 2.3,
+    "bookmakerOdds": 2.3,
+    "modelOdds": 1.17,
+    "fairOdds": 1.17,
+    "probability": 85.8,
+    "impliedProbability": 43.5,
+    "edge": 42.3,
+    "expectedValue": 97.2,
+    "confidence": "Muy Alta",
+    "pickBadge": "bomba",
+    "smartScore": 99,
+    "explanation": "Contragolpe letal y efectividad foránea: Huracan explota los espacios concedidos por Belgrano Cordoba en transiciones defensivas. El algoritmo Poisson proyecta 85.8% de solvencia matemática para el triunfo visitante.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-06",
+        "homeTeam": "Belgrano Cordoba",
+        "awayTeam": "Huracan",
+        "score": "1-2",
+        "winner": "away",
+        "competition": "Liga Profesional Argentina"
+      },
+      {
+        "date": "2026-03-08",
+        "homeTeam": "Huracan",
+        "awayTeam": "Belgrano Cordoba",
+        "score": "2-0",
+        "winner": "home",
+        "competition": "Liga Profesional Argentina"
+      },
+      {
+        "date": "2025-09-09",
+        "homeTeam": "Belgrano Cordoba",
+        "awayTeam": "Huracan",
+        "score": "1-1",
+        "winner": "draw",
+        "competition": "Liga Profesional Argentina"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-08-31",
+        "opponent": "Rival A",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Liga Profesional Argentina"
+      },
+      {
+        "date": "2026-08-26",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Liga Profesional Argentina"
+      },
+      {
+        "date": "2026-08-21",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Liga Profesional Argentina"
+      },
+      {
+        "date": "2026-08-16",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Liga Profesional Argentina"
+      },
+      {
+        "date": "2026-08-11",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "1-2",
+        "result": "L",
+        "competition": "Liga Profesional Argentina"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-08-31",
+        "opponent": "Rival A",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Liga Profesional Argentina"
+      },
+      {
+        "date": "2026-08-26",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Liga Profesional Argentina"
+      },
+      {
+        "date": "2026-08-21",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Liga Profesional Argentina"
+      },
+      {
+        "date": "2026-08-16",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Liga Profesional Argentina"
+      },
+      {
+        "date": "2026-08-11",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Liga Profesional Argentina"
+      }
+    ],
+    "homeElo": 1580,
+    "awayElo": 1646,
+    "leagueTier": 1
+  },
+  {
+    "fixtureId": 1490436,
+    "match": "New York City FC vs Nashville SC",
+    "homeTeam": "New York City FC",
+    "awayTeam": "Nashville SC",
+    "homeTeamId": 1604,
+    "awayTeamId": 9569,
+    "homeLogo": "https://media.api-sports.io/football/teams/1604.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/9569.png",
+    "league": "Major League Soccer (MLS)",
+    "leagueLogo": "https://media.api-sports.io/football/leagues/253.png",
+    "country": "Estados Unidos",
+    "kickoff": "2026-09-04T18:30:00-05:00",
+    "market": "Gana Local",
+    "selection": "1",
+    "odds": 2.5,
+    "bookmakerOdds": 2.5,
+    "modelOdds": 1.17,
+    "fairOdds": 1.17,
+    "probability": 85.8,
+    "impliedProbability": 40,
+    "edge": 45.8,
+    "expectedValue": 114.4,
+    "confidence": "Muy Alta",
+    "pickBadge": "bomba",
+    "smartScore": 99,
+    "explanation": "Jerarquía y solvencia territorial: New York City FC (Elo 1581) llega en gran momento con 2 victorias en sus 5 cotejos más recientes, superando a Nashville SC en xG (3.40 vs 0.40). El modelo Poisson proyecta un contundente 85.8% de probabilidad de triunfo local a cuota @2.50.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-06",
+        "homeTeam": "New York City FC",
+        "awayTeam": "Nashville SC",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "Major League Soccer (MLS)"
+      },
+      {
+        "date": "2026-03-08",
+        "homeTeam": "Nashville SC",
+        "awayTeam": "New York City FC",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "Major League Soccer (MLS)"
+      },
+      {
+        "date": "2025-09-09",
+        "homeTeam": "New York City FC",
+        "awayTeam": "Nashville SC",
+        "score": "3-0",
+        "winner": "home",
+        "competition": "Major League Soccer (MLS)"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-08-31",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Major League Soccer (MLS)"
+      },
+      {
+        "date": "2026-08-26",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "1-2",
+        "result": "L",
+        "competition": "Major League Soccer (MLS)"
+      },
+      {
+        "date": "2026-08-21",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Major League Soccer (MLS)"
+      },
+      {
+        "date": "2026-08-16",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Major League Soccer (MLS)"
+      },
+      {
+        "date": "2026-08-11",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Major League Soccer (MLS)"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-08-31",
+        "opponent": "Rival A",
+        "isHome": true,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Major League Soccer (MLS)"
+      },
+      {
+        "date": "2026-08-26",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Major League Soccer (MLS)"
+      },
+      {
+        "date": "2026-08-21",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Major League Soccer (MLS)"
+      },
+      {
+        "date": "2026-08-16",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "1-3",
+        "result": "L",
+        "competition": "Major League Soccer (MLS)"
+      },
+      {
+        "date": "2026-08-11",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Major League Soccer (MLS)"
+      }
+    ],
+    "homeElo": 1581,
+    "awayElo": 1516,
+    "leagueTier": 1
   }
 ]

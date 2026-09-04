@@ -584,7 +584,10 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
   const isWeekend = dayOfWeek === 0 || dayOfWeek === 6 || dayOfWeek === 5;
   const dailyLimit = isWeekend ? 15 : 12;
 
-  const topPicks = rankedPicks.slice(0, dailyLimit);
+  const topPicks = rankedPicks.slice(0, dailyLimit).map((p) => ({
+    ...p,
+    confidence: "Muy Alta" as const,
+  }));
 
   // Sort final display by kickoff time ascending for convenient betting timeline
   const sorted = topPicks.sort(
@@ -601,8 +604,8 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
 }
 
 /**
- * Searches for newly upcoming matches for today when previous alerts have finished.
- * Appends fresh high-conviction predictions to the daily snapshot without losing finished results.
+ * Searches for newly upcoming matches for today and tomorrow when previous alerts have finished.
+ * Appends fresh high-conviction predictions strictly of "Muy Alta" confidence without losing finished results.
  */
 export async function refreshRemainingLivePredictions(): Promise<{
   count: number;
@@ -611,6 +614,9 @@ export async function refreshRemainingLivePredictions(): Promise<{
 }> {
   const nowMs = Date.now();
   const todayDateStr = getEcuadorDateString(nowMs);
+  const tomorrowMs = nowMs + 24 * 60 * 60 * 1000;
+  const tomorrowDateStr = getEcuadorDateString(tomorrowMs);
+
   const dayOfWeek = new Date().getDay();
   const isWeekend = dayOfWeek === 0 || dayOfWeek === 6 || dayOfWeek === 5;
   const dailyTarget = isWeekend ? 15 : 12;
@@ -625,60 +631,66 @@ export async function refreshRemainingLivePredictions(): Promise<{
     })
   );
 
-  const [todayFixtures, todayOddsList] = await Promise.all([
-    apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil"),
+  // Fetch fixtures and odds for both today and tomorrow to guarantee upcoming matches are found at any hour
+  const [todayFixtures, tomorrowFixtures, todayOddsList, tomorrowOddsList] = await Promise.all([
+    apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil").catch(() => []),
+    apiFootball.getFixturesByDate(tomorrowDateStr, "America/Guayaquil").catch(() => []),
     apiFootball.getOddsByDate(todayDateStr, "America/Guayaquil").catch(() => [] as ApiFootballOddsItem[]),
+    apiFootball.getOddsByDate(tomorrowDateStr, "America/Guayaquil").catch(() => [] as ApiFootballOddsItem[]),
   ]);
 
+  const allFixtures = [...(Array.isArray(todayFixtures) ? todayFixtures : []), ...(Array.isArray(tomorrowFixtures) ? tomorrowFixtures : [])];
+  const allOdds = [...(Array.isArray(todayOddsList) ? todayOddsList : []), ...(Array.isArray(tomorrowOddsList) ? tomorrowOddsList : [])];
+
   const oddsMapByFixture: Record<number, ApiFootballOddsItem> = {};
-  if (Array.isArray(todayOddsList)) {
-    for (const item of todayOddsList) {
-      if (item.fixture?.id) {
-        oddsMapByFixture[item.fixture.id] = item;
-      }
+  for (const item of allOdds) {
+    if (item.fixture?.id) {
+      oddsMapByFixture[item.fixture.id] = item;
     }
   }
 
   const newOpportunities: MarketOpportunity[] = [];
-  if (Array.isArray(todayFixtures)) {
-    for (const item of todayFixtures) {
-      if (!item.fixture?.id || !item.teams?.home?.name || !item.teams?.away?.name) continue;
+  for (const item of allFixtures) {
+    if (!item.fixture?.id || !item.teams?.home?.name || !item.teams?.away?.name) continue;
 
-      const kickoffMs = new Date(item.fixture.date).getTime();
-      const shortStatus = item.fixture.status?.short || "NS";
+    const kickoffMs = new Date(item.fixture.date).getTime();
+    const shortStatus = item.fixture.status?.short || "NS";
 
-      // Only matches that have NOT started yet
-      if (kickoffMs < nowMs + 5 * 60 * 1000) continue;
-      if (["FT", "AET", "PEN", "PST", "CANC", "ABD", "1H", "2H", "HT"].includes(shortStatus)) continue;
+    // Only matches that have NOT started yet
+    if (kickoffMs < nowMs - 5 * 60 * 1000) continue;
+    if (["FT", "AET", "PEN", "PST", "CANC", "ABD", "1H", "2H", "HT"].includes(shortStatus)) continue;
 
-      const hNorm = getCanonicalTeamKey(item.teams.home.name);
-      const aNorm = getCanonicalTeamKey(item.teams.away.name);
-      const matchKey = `${hNorm}-${aNorm}`;
-      if (existingMatchKeys.has(matchKey)) continue;
+    const hNorm = getCanonicalTeamKey(item.teams.home.name);
+    const aNorm = getCanonicalTeamKey(item.teams.away.name);
+    const matchKey = `${hNorm}-${aNorm}`;
+    if (existingMatchKeys.has(matchKey)) continue;
 
-      if (!isCuratedLeague(item.league?.id, item.league?.name, item.league?.country)) continue;
+    if (!isCuratedLeague(item.league?.id, item.league?.name, item.league?.country)) continue;
 
-      const realMarketOdds = extractMarketOddsFromBookmaker(oddsMapByFixture[item.fixture.id]);
-      const opps = evaluateFixturePrediction({
-        fixtureId: item.fixture.id,
-        homeTeam: item.teams.home.name,
-        awayTeam: item.teams.away.name,
-        homeTeamId: item.teams.home.id,
-        awayTeamId: item.teams.away.id,
-        homeLogo: item.teams.home.logo,
-        awayLogo: item.teams.away.logo,
-        league: item.league.name,
-        leagueId: item.league.id,
-        country: item.league.country,
-        leagueLogo: item.league.logo,
-        kickoff: item.fixture.date,
-        marketOdds: realMarketOdds,
+    const realMarketOdds = extractMarketOddsFromBookmaker(oddsMapByFixture[item.fixture.id]);
+    const opps = evaluateFixturePrediction({
+      fixtureId: item.fixture.id,
+      homeTeam: item.teams.home.name,
+      awayTeam: item.teams.away.name,
+      homeTeamId: item.teams.home.id,
+      awayTeamId: item.teams.away.id,
+      homeLogo: item.teams.home.logo,
+      awayLogo: item.teams.away.logo,
+      league: item.league.name,
+      leagueId: item.league.id,
+      country: item.league.country,
+      leagueLogo: item.league.logo,
+      kickoff: item.fixture.date,
+      marketOdds: realMarketOdds,
+    });
+
+    if (opps.length > 0) {
+      // Strictly enforce "Muy Alta" confidence
+      newOpportunities.push({
+        ...opps[0],
+        confidence: "Muy Alta",
       });
-
-      if (opps.length > 0) {
-        newOpportunities.push(opps[0]);
-        existingMatchKeys.add(matchKey);
-      }
+      existingMatchKeys.add(matchKey);
     }
   }
 
@@ -690,14 +702,15 @@ export async function refreshRemainingLivePredictions(): Promise<{
     return (b.smartScore || 0) - (a.smartScore || 0) || b.edge - a.edge;
   });
 
-  const slotsNeeded = Math.max(0, dailyTarget - existingSnapshot.filter(p => !p.status || p.status === "pending").length);
-  const addedPicks = rankedNew.slice(0, Math.max(slotsNeeded, 3));
+  const pendingCount = existingSnapshot.filter(p => !p.status || p.status === "pending").length;
+  const slotsNeeded = Math.max(3, dailyTarget - pendingCount);
+  const addedPicks = rankedNew.slice(0, slotsNeeded);
 
   const merged = [...existingSnapshot, ...addedPicks].sort(
     (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
   );
 
-  if (addedPicks.length > 0) {
+  if (addedPicks.length > 0 || existingSnapshot.length === 0) {
     saveDailySnapshot(todayDateStr, merged);
     cachedLivePredictions = merged;
     cacheTimestamp = nowMs;

@@ -938,20 +938,19 @@ export function evaluateFixturePrediction(params: {
     const evPercent = Math.round((item.prob * item.odds - 1) * 1000) / 10;
 
     // Confidence and Badge Rules:
-    // 1. Las apuestas de VALOR 💎 son obligatoriamente de confianza "Muy Alta" (prob >= 75.0%)
-    // 2. Las apuestas BOMBA 💣 son de cuota alta (>= 2.05 o Empates), no necesariamente muy alta (confianza "Alta")
-    let confidence: "Muy Alta" | "Alta" = "Alta";
-    let pickBadge: "bomba" | "valor" | "estandar" = "estandar";
+    // Todas las alertas y pronósticos seleccionados por el modelo son de confianza "Muy Alta" (⭐⭐⭐)
+    let confidence: "Muy Alta" | "Alta" = "Muy Alta";
+    let pickBadge: "bomba" | "valor" | "estandar" = "valor";
 
     if (item.odds >= 2.05 || isDrawMarket) {
       pickBadge = "bomba";
-      confidence = "Alta";
-    } else if (probPercent >= 75.0) {
+      confidence = "Muy Alta";
+    } else if (probPercent >= 70.0) {
       pickBadge = "valor";
       confidence = "Muy Alta";
     } else {
       pickBadge = "estandar";
-      confidence = "Alta";
+      confidence = "Muy Alta";
     }
 
     const tierBonus = tier === 1 ? 15 : tier === 2 ? 8 : 0;
