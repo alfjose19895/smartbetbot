@@ -893,8 +893,8 @@ export function evaluateFixturePrediction(params: {
     .reduce((acc, char) => acc + char.charCodeAt(0), 0);
   const varFactor = ((hashSeed % 100) - 50) / 400.0;
 
-  const expDiffHome = Math.exp(0.024 * diff);
-  const expDiffAway = Math.exp(-0.024 * diff);
+  const expDiffHome = Math.exp(0.0038 * diff);
+  const expDiffAway = Math.exp(-0.0038 * diff);
 
   let hXg = Math.max(0.40, Math.min(3.40, (profile.baseHomeXg + varFactor) * expDiffHome));
   let aXg = Math.max(0.40, Math.min(3.40, (profile.baseAwayXg - varFactor * 0.5) * expDiffAway));
@@ -985,22 +985,17 @@ export function evaluateFixturePrediction(params: {
     minOddsThreshold: number;
     minProbThreshold: number;
   }[] = [
-    // Double Chance (Ultra-High Certainty >= 70% with viable odds >= 1.35)
-    { market: "Doble Oportunidad 1X", selection: "1X", prob: pDouble1X, odds: resolvedDouble1XOdds, minOddsThreshold: 1.35, minProbThreshold: 0.70 },
-    { market: "Doble Oportunidad X2", selection: "X2", prob: pDoubleX2, odds: resolvedDoubleX2Odds, minOddsThreshold: 1.35, minProbThreshold: 0.70 },
-    { market: "Doble Oportunidad 12", selection: "12", prob: pDouble12, odds: resolvedDouble12Odds, minOddsThreshold: 1.35, minProbThreshold: 0.70 },
+    // 1X2 Match Winner (Ganador Local & Ganador Visitante)
+    { market: "Ganador Local", selection: "1", prob: pHome, odds: resolvedHomeOdds, minOddsThreshold: 1.35, minProbThreshold: 0.50 },
+    { market: "Ganador Visitante", selection: "2", prob: pAway, odds: resolvedAwayOdds, minOddsThreshold: 1.35, minProbThreshold: 0.45 },
+    { market: "Empate (X)", selection: "X", prob: pDraw, odds: resolvedDrawOdds, minOddsThreshold: 2.70, minProbThreshold: 0.28 },
 
+    // Over / Under 2.5 Goles
+    { market: "Over 2.5 Goles", selection: "Over 2.5", prob: pOver25, odds: resolvedOver25Odds, minOddsThreshold: 1.40, minProbThreshold: 0.50 },
+    { market: "Under 2.5 Goles", selection: "Under 2.5", prob: pUnder25, odds: resolvedUnder25Odds, minOddsThreshold: 1.40, minProbThreshold: 0.50 },
 
-
-    // 1X2 Principal (>= 58% for favorites, >= 28% for Draw Bomba)
-    { market: "Gana Local", selection: "1", prob: pHome, odds: resolvedHomeOdds, minOddsThreshold: 1.35, minProbThreshold: 0.58 },
-    { market: "Gana Visitante", selection: "2", prob: pAway, odds: resolvedAwayOdds, minOddsThreshold: 1.35, minProbThreshold: 0.58 },
-    { market: "Empate (X)", selection: "X", prob: pDraw, odds: resolvedDrawOdds, minOddsThreshold: 2.60, minProbThreshold: 0.28 },
-
-    // Over/Under 2.5 Goles & BTTS (>= 58%)
-    { market: "Over 2.5 Goles", selection: "Over 2.5", prob: pOver25, odds: resolvedOver25Odds, minOddsThreshold: 1.35, minProbThreshold: 0.58 },
-    { market: "Under 2.5 Goles", selection: "Under 2.5", prob: pUnder25, odds: resolvedUnder25Odds, minOddsThreshold: 1.35, minProbThreshold: 0.58 },
-    { market: "Ambos Marcan (BTTS)", selection: "Yes", prob: pBttsYes, odds: resolvedBttsOdds, minOddsThreshold: 1.35, minProbThreshold: 0.58 },
+    // Ambos Equipos Anotan (BTTS)
+    { market: "Ambos Equipos Anotan", selection: "Sí", prob: pBttsYes, odds: resolvedBttsOdds, minOddsThreshold: 1.45, minProbThreshold: 0.50 },
   ];
 
   const opportunities: MarketOpportunity[] = [];
@@ -1024,7 +1019,7 @@ export function evaluateFixturePrediction(params: {
     if (item.odds >= 2.10 || isDrawMarket) {
       pickBadge = "bomba";
       confidence = "Muy Alta";
-    } else if (probPercent >= 72.0) {
+    } else if (probPercent >= 65.0) {
       pickBadge = "valor";
       confidence = "Muy Alta";
     } else {
@@ -1036,6 +1031,7 @@ export function evaluateFixturePrediction(params: {
     const tierBonus = isEuroPriority
       ? (tier === 1 ? 25 : tier === 2 ? 18 : 12)
       : (tier === 1 ? 8 : tier === 2 ? 4 : 0);
+
     const rawScore = Math.round(
       (isDrawMarket ? (item.prob * 2.2 * 100) : (item.prob * 100)) +
         (item.prob - 1 / item.odds) * 10 +

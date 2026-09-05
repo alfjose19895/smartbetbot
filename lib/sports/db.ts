@@ -1066,6 +1066,7 @@ export function selectPrioritizedOpportunities(
   opportunities: MarketOpportunity[],
   targetCount: number = 15
 ): MarketOpportunity[] {
+  // 1. Separate into European Priority and Global candidates
   const europeanPicks: MarketOpportunity[] = [];
   const globalPicks: MarketOpportunity[] = [];
 
@@ -1077,15 +1078,93 @@ export function selectPrioritizedOpportunities(
     }
   }
 
-  europeanPicks.sort((a, b) => b.smartScore - a.smartScore || b.probability - a.probability || b.expectedValue - a.expectedValue);
-  globalPicks.sort((a, b) => b.smartScore - a.smartScore || b.probability - a.probability || b.expectedValue - a.expectedValue);
+  // Helper to pick with market diversity (Winners, Totals, BTTS, Bomba)
+  const pickDiverse = (pool: MarketOpportunity[], maxCount: number): MarketOpportunity[] => {
+    const winners: MarketOpportunity[] = [];
+    const totals: MarketOpportunity[] = [];
+    const btts: MarketOpportunity[] = [];
+    const bombas: MarketOpportunity[] = [];
 
-  const selected = [...europeanPicks.slice(0, targetCount)];
-  if (selected.length < targetCount) {
-    const remaining = targetCount - selected.length;
-    selected.push(...globalPicks.slice(0, remaining));
+    for (const p of pool) {
+      if (p.pickBadge === "bomba" || p.odds >= 2.10 || p.market.includes("Empate")) {
+        bombas.push(p);
+      } else if (p.market.includes("Ganador") || p.market.includes("Gana")) {
+        winners.push(p);
+      } else if (p.market.includes("Over") || p.market.includes("Under")) {
+        totals.push(p);
+      } else if (p.market.includes("Ambos")) {
+        btts.push(p);
+      } else {
+        winners.push(p);
+      }
+    }
+
+    const sortFn = (a: MarketOpportunity, b: MarketOpportunity) =>
+      b.smartScore - a.smartScore || b.probability - a.probability || b.expectedValue - a.expectedValue;
+
+    winners.sort(sortFn);
+    totals.sort(sortFn);
+    btts.sort(sortFn);
+    bombas.sort(sortFn);
+
+    const result: MarketOpportunity[] = [];
+    const seenMatches = new Set<string>();
+
+    const addUnique = (item?: MarketOpportunity) => {
+      if (!item) return false;
+      const key = item.match.toLowerCase();
+      if (seenMatches.has(key)) return false;
+      seenMatches.add(key);
+      result.push(item);
+      return true;
+    };
+
+    // Allocate balanced slots
+    // 1. Best 6-7 Match Winners
+    for (const w of winners) {
+      if (result.length >= Math.ceil(maxCount * 0.45)) break;
+      addUnique(w);
+    }
+    // 2. Best 4-5 Totals (Over / Under 2.5)
+    for (const t of totals) {
+      if (result.length >= Math.ceil(maxCount * 0.75)) break;
+      addUnique(t);
+    }
+    // 3. Best 2-3 BTTS
+    for (const b of btts) {
+      if (result.length >= Math.ceil(maxCount * 0.90)) break;
+      addUnique(b);
+    }
+    // 4. Bomba (High Value / Draw)
+    for (const bm of bombas) {
+      if (result.length >= maxCount) break;
+      addUnique(bm);
+    }
+    // 5. Fill any remaining with best overall
+    const remainingPool = [...pool].sort(sortFn);
+    for (const p of remainingPool) {
+      if (result.length >= maxCount) break;
+      addUnique(p);
+    }
+
+    return result;
+  };
+
+  const selectedEuro = pickDiverse(europeanPicks, targetCount);
+  const result = [...selectedEuro];
+
+  if (result.length < targetCount) {
+    const remainingNeeded = targetCount - result.length;
+    const selectedGlobal = pickDiverse(globalPicks, remainingNeeded);
+    for (const g of selectedGlobal) {
+      const key = g.match.toLowerCase();
+      if (!result.some((r) => r.match.toLowerCase() === key)) {
+        result.push(g);
+      }
+      if (result.length >= targetCount) break;
+    }
   }
 
-  selected.sort((a, b) => b.smartScore - a.smartScore || b.probability - a.probability);
-  return selected;
+  result.sort((a, b) => b.smartScore - a.smartScore || b.probability - a.probability);
+  return result;
 }

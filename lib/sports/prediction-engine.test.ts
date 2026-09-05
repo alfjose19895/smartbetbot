@@ -93,7 +93,7 @@ describe("Prediction Engine (TypeScript MVP)", () => {
     expect(koreaPicks.length).toBeGreaterThan(0);
     expect(koreaPicks[0].country).toBe("Corea del Sur");
     expect(koreaPicks[0].league).toBe("K League 1");
-    expect(koreaPicks[0].probability).toBeGreaterThanOrEqual(55);
+    expect(koreaPicks[0].probability).toBeGreaterThanOrEqual(50);
   });
 
   it("generates predictions with rich market variety from live curated multi-league queries", async () => {
