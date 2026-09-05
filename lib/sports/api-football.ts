@@ -52,10 +52,7 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
   { id: 219, name: "2. Liga", country: "Austria", category: "second_divisions", tier: 2 },
   { id: 204, name: "1. Lig", country: "Turquía", category: "second_divisions", tier: 2 },
   { id: 358, name: "First Division", country: "Irlanda", category: "second_divisions", tier: 2 },
-  { id: 165, name: "1. Deild karla", country: "Islandia", category: "second_divisions", tier: 2 },
   { id: 382, name: "Liga Leumit (2da Div)", country: "Israel", category: "second_divisions", tier: 2 },
-  { id: 316, name: "1st League - FBiH", country: "Bosnia", category: "second_divisions", tier: 2 },
-  { id: 317, name: "1st League - RS", country: "Bosnia", category: "second_divisions", tier: 2 },
 
   // --- LIGAS PRINCIPALES DE EUROPA (1RA DIVISIÓN & FEMENINA) ---
   { id: 142, name: "Primera División Femenina (Liga F)", country: "España", category: "europe_mid", tier: 1 },
@@ -116,12 +113,6 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
   { id: 169, name: "Chinese Super League", country: "China", category: "asia_africa", tier: 1 },
   { id: 188, name: "A-League Men", country: "Australia", category: "asia_africa", tier: 1 },
   { id: 190, name: "A-League Women", country: "Australia", category: "asia_africa", tier: 1 },
-  { id: 192, name: "New South Wales NPL", country: "Australia", category: "nordics_others", tier: 3 },
-  { id: 191, name: "Brisbane Premier League", country: "Australia", category: "nordics_others", tier: 3 },
-  { id: 481, name: "Northern NSW NPL", country: "Australia", category: "nordics_others", tier: 3 },
-  { id: 189, name: "Capital Territory NPL", country: "Australia", category: "nordics_others", tier: 3 },
-  { id: 193, name: "Northern Territory Premier League", country: "Australia", category: "nordics_others", tier: 3 },
-  { id: 194, name: "South Australia NPL", country: "Australia", category: "nordics_others", tier: 3 },
 ];
 
 export const ALL_LEAGUE_IDS = SUPPORTED_LEAGUES.map((l) => l.id);

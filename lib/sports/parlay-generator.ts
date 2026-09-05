@@ -1,3 +1,17 @@
+export function getEcuadorDateString(d: Date | number | string = Date.now()): string {
+  try {
+    const dateObj = typeof d === "string" ? new Date(d) : typeof d === "number" ? new Date(d) : d;
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone: "America/Guayaquil",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(dateObj);
+  } catch {
+    return "today";
+  }
+}
+
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 
 export interface DualParlays {
@@ -29,25 +43,12 @@ export function getMarketCategory(marketName: string): string {
  * - Market diversity (mix of 1X2, Doble Oportunidad, Over/Under, BTTS).
  */
 export function buildDualExclusiveParlays(predictions: MarketOpportunity[]): DualParlays {
-  // Local calendar date helper (YYYY-MM-DD)
-  const getLocalDateStr = (d: Date | string) => {
-    try {
-      const dateObj = typeof d === "string" ? new Date(d) : d;
-      const year = dateObj.getFullYear();
-      const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-      const day = String(dateObj.getDate()).padStart(2, "0");
-      return `${year}-${month}-${day}`;
-    } catch {
-      return "today";
-    }
-  };
-
-  const todayStr = getLocalDateStr(new Date());
+  const todayStr = getEcuadorDateString(Date.now());
 
   // Filter high-conviction candidate picks (prioritize today)
   const todayPicks = [...predictions]
     .filter((p) => {
-      const isToday = getLocalDateStr(p.kickoff) === todayStr;
+      const isToday = getEcuadorDateString(new Date(p.kickoff)) === todayStr;
       return isToday && p.probability >= 55 && p.odds >= 1.35;
     })
     .sort((a, b) => b.probability - a.probability || (b.smartScore || 0) - (a.smartScore || 0));
