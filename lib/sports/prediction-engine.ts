@@ -989,9 +989,7 @@ export function evaluateFixturePrediction(params: {
     { market: "Doble Oportunidad X2", selection: "X2", prob: pDoubleX2, odds: resolvedDoubleX2Odds, minOddsThreshold: 1.35, minProbThreshold: 0.70 },
     { market: "Doble Oportunidad 12", selection: "12", prob: pDouble12, odds: resolvedDouble12Odds, minOddsThreshold: 1.35, minProbThreshold: 0.70 },
 
-    // Over 1.5 & Under 3.5 (High Certainty >= 70% with viable odds >= 1.35)
-    { market: "Over 1.5 Goles", selection: "Over 1.5", prob: pOver15, odds: resolvedOver15Odds, minOddsThreshold: 1.35, minProbThreshold: 0.70 },
-    { market: "Under 3.5 Goles", selection: "Under 3.5", prob: pUnder35, odds: resolvedUnder35Odds, minOddsThreshold: 1.35, minProbThreshold: 0.70 },
+
 
     // 1X2 Principal (>= 58% for favorites, >= 28% for Draw Bomba)
     { market: "Gana Local", selection: "1", prob: pHome, odds: resolvedHomeOdds, minOddsThreshold: 1.35, minProbThreshold: 0.58 },
