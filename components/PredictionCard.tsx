@@ -8,7 +8,6 @@ import { shareCardAsImage, copyCardImageToClipboard, downloadCardImage } from "@
 interface PredictionCardProps {
   prediction: MarketOpportunity;
   onOpenDetail?: (prediction: MarketOpportunity) => void;
-  defaultExpanded?: boolean;
 }
 
 function getMatchLiveStatusBadge(kickoff: string) {
@@ -43,9 +42,8 @@ function getMatchLiveStatusBadge(kickoff: string) {
   };
 }
 
-export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = false }: PredictionCardProps) {
+export function PredictionCard({ prediction, onOpenDetail }: PredictionCardProps) {
   const { language } = useLanguage();
-  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [copyingImage, setCopyingImage] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
 
@@ -97,101 +95,13 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
       ? { label: "⭐⭐⭐ Muy Alta", cls: "bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700" }
       : { label: "⭐⭐ Alta", cls: "bg-cyan-100 text-cyan-900 border-cyan-300 dark:bg-cyan-950/80 dark:text-cyan-300 dark:border-cyan-700" };
 
-  // 1. MINIMIZED / COMPACT ROW VIEW (Reduces card size drastically so user can scan effortlessly)
-  if (!isExpanded) {
-    return (
-      <div
-        onClick={() => onOpenDetail?.(prediction)}
-        className="group relative flex items-center justify-between gap-3 overflow-hidden rounded-2xl border border-slate-200/90 bg-white px-4 py-3 shadow-xs transition-all duration-200 hover:border-emerald-500/50 hover:shadow-md dark:border-slate-800/80 dark:bg-slate-900/90 cursor-pointer"
-      >
-        {/* Left: League & Teams */}
-        <div className="flex items-center gap-3 min-w-0 flex-1">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-sm font-black text-slate-800 dark:bg-slate-800 dark:text-slate-200 shrink-0">
-            🏆
-          </span>
-          <div className="min-w-0">
-            <div className="text-sm font-black text-slate-900 dark:text-white truncate">
-              {prediction.homeTeam} <span className="text-slate-400 font-normal">vs</span> {prediction.awayTeam}
-            </div>
-            <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 truncate">
-              {prediction.league} {prediction.country ? `(${prediction.country})` : ""} • ⏰ {formattedTime}
-            </div>
-          </div>
-        </div>
-
-        {/* Center: Pick Market, Odds & Badges */}
-        <div className="hidden md:flex items-center gap-2 shrink-0">
-          {prediction.pickBadge === "bomba" && (
-            <span className="rounded-lg px-2 py-0.5 text-[10px] font-black bg-rose-500 text-white animate-pulse">
-              💣 BOMBA
-            </span>
-          )}
-          {prediction.pickBadge === "valor" && (
-            <span className="rounded-lg px-2 py-0.5 text-[10px] font-black bg-emerald-500 text-slate-950 font-extrabold">
-              💎 VALOR
-            </span>
-          )}
-          <span className="rounded-xl bg-emerald-50 border border-emerald-300 dark:bg-emerald-950/60 dark:border-emerald-700/60 px-2.5 py-1 text-xs font-black text-emerald-800 dark:text-emerald-300">
-            🎯 {prediction.market} ({prediction.selection})
-          </span>
-          <span className="inline-flex items-center gap-1 rounded-xl bg-sky-600 px-2.5 py-1 text-xs font-black text-white shadow-sm" title="Cuota de la Casa de Apuestas">
-            <span className="text-[10px] font-bold opacity-80 uppercase">Casa de Apuestas:</span>
-            <span>@{prediction.odds.toFixed(2)}</span>
-          </span>
-          <span className="inline-flex items-center gap-1 rounded-xl bg-indigo-600 px-2.5 py-1 text-xs font-black text-white shadow-sm" title="Cuota Justa del Modelo SmartBetBot">
-            <span className="text-[10px] font-bold opacity-80 uppercase">Modelo SmartBetBot:</span>
-            <span>@{prediction.fairOdds.toFixed(2)}</span>
-          </span>
-          <span className="rounded-xl bg-emerald-600 px-2 py-1 text-xs font-black text-white" title="Probabilidad Estimada">
-            {prediction.probability}%
-          </span>
-        </div>
-
-        {/* Right: Score, Status & Expand Button */}
-        <div className="flex items-center gap-2 shrink-0">
-          {prediction.actualScore && (
-            <span className="rounded-xl bg-slate-900 text-emerald-400 border border-slate-700 px-2.5 py-1 text-xs font-black font-mono">
-              {prediction.actualScore}
-            </span>
-          )}
-          {prediction.status === "won" ? (
-            <span className="rounded-xl px-2.5 py-1 text-xs font-black bg-emerald-500 text-slate-950">
-              ✓ Ganado
-            </span>
-          ) : prediction.status === "lost" ? (
-            <span className="rounded-xl px-2.5 py-1 text-xs font-black bg-rose-600 text-white">
-              ✗ Perdido
-            </span>
-          ) : statusBadge ? (
-            <span className={`inline-flex items-center rounded-xl px-2 py-0.5 text-[10px] font-black border ${statusBadge.cls}`}>
-              {statusBadge.label}
-            </span>
-          ) : null}
-
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsExpanded(true);
-            }}
-            title="Ampliar tarjeta completa"
-            className="flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
-          >
-            <span>▼</span>
-            <span className="hidden sm:inline">Ampliar</span>
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // 2. EXPANDED FULL VIEW
   return (
     <div
       onClick={() => onOpenDetail?.(prediction)}
-      className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-slate-200/90 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/50 hover:shadow-xl dark:border-slate-800/80 dark:bg-slate-900/90 cursor-pointer"
+      className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-slate-200/90 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/50 hover:shadow-xl dark:border-slate-800/80 dark:bg-slate-900/90 cursor-pointer w-full"
     >
       <div>
-        {/* Top Bar: League, Country, Status Badge & Expand/Minimize Toggle */}
+        {/* Top Bar: League, Country & Status Badge */}
         <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3 dark:border-slate-800/80">
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="inline-flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1 text-[11px] font-black text-slate-800 dark:bg-slate-800 dark:text-slate-200">
@@ -220,19 +130,6 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
                 {statusBadge.label}
               </span>
             ) : null}
-
-            {/* Toggle Minimize Button */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsExpanded(false);
-              }}
-              title="Minimizar a vista compacta"
-              className="flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
-            >
-              <span>▲</span>
-              <span className="hidden sm:inline">Minimizar</span>
-            </button>
           </div>
         </div>
 
@@ -270,7 +167,7 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
 
           {prediction.actualScore && (
             <div className="mt-2.5 flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800/80">
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Resultado Oficial & Estadísticas:</span>
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Resultado Oficial:</span>
               <span className="px-3 py-1 rounded-xl bg-slate-900 text-xs font-black text-emerald-400 border border-slate-700 font-mono">
                 {prediction.actualScore}
               </span>
@@ -294,43 +191,43 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
           </div>
 
           {/* Side-by-Side Odds Comparison Cards with Descriptions */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+          <div className="grid grid-cols-3 gap-2 pt-1">
             {/* Casa de Apuestas */}
             <div className="rounded-xl bg-white p-2.5 border border-sky-200 shadow-sm dark:bg-slate-900 dark:border-sky-900/60">
               <div className="text-[10px] uppercase font-bold text-sky-600 dark:text-sky-400 flex items-center gap-1">
-                <span>🏢</span> Cuota Casa de Apuestas
+                <span>🏢</span> Casa
               </div>
               <div className="text-base font-black text-slate-900 dark:text-white mt-0.5">
                 @{prediction.odds.toFixed(2)}
               </div>
-              <div className="text-[10px] text-slate-400 leading-tight">
-                Precio en casa de apuestas
+              <div className="text-[9px] text-slate-400 leading-tight truncate">
+                Cuota Casa
               </div>
             </div>
 
             {/* Cuota Modelo SmartBetBot */}
             <div className="rounded-xl bg-white p-2.5 border border-indigo-200 shadow-sm dark:bg-slate-900 dark:border-indigo-900/60">
               <div className="text-[10px] uppercase font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
-                <span>🤖</span> Cuota Modelo SmartBetBot
+                <span>🧠</span> Modelo
               </div>
               <div className="text-base font-black text-slate-900 dark:text-white mt-0.5">
                 @{prediction.fairOdds.toFixed(2)}
               </div>
-              <div className="text-[10px] text-slate-400 leading-tight">
-                Cuota justa SmartBetBot
+              <div className="text-[9px] text-slate-400 leading-tight truncate">
+                Cuota Justa
               </div>
             </div>
 
-            {/* Probabilidad Estimada */}
+            {/* Probabilidad */}
             <div className="rounded-xl bg-white p-2.5 border border-emerald-200 shadow-sm dark:bg-slate-900 dark:border-emerald-900/60">
               <div className="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                <span>📈</span> Probabilidad Estimada
+                <span>📊</span> Prob.
               </div>
               <div className="text-base font-black text-emerald-700 dark:text-emerald-400 mt-0.5">
                 {prediction.probability}%
               </div>
-              <div className="text-[10px] text-slate-400 leading-tight">
-                Confianza {prediction.confidence || "Muy Alta"}
+              <div className="text-[9px] text-slate-400 leading-tight truncate">
+                Conf. {prediction.confidence || "Alta"}
               </div>
             </div>
           </div>
@@ -346,7 +243,7 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
         )}
       </div>
 
-      {/* Action Footer: Visual Image Sharing Buttons (WhatsApp, Telegram, Copiar Imagen) */}
+      {/* Action Footer: Visual Image Sharing Buttons & Detail Trigger */}
       <div className="mt-5 border-t border-slate-100 pt-3 dark:border-slate-800/80 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-1.5">
           {/* Share as Image to WhatsApp */}
@@ -372,11 +269,11 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
           {/* Copy Card Image Directly */}
           <button
             onClick={handleCopyImage}
-            title="Copiar imagen de la tarjeta al portapapeles (para pegar con Ctrl+V)"
+            title="Copiar imagen de la tarjeta al portapapeles"
             className="flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1.5 text-[11px] font-black text-slate-800 hover:bg-slate-200 border border-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 transition cursor-pointer"
           >
             <span>📸</span>
-            <span>{copySuccess ? "✓ ¡Copiada!" : copyingImage ? "Generando..." : "Copiar Imagen"}</span>
+            <span>{copySuccess ? "✓ ¡Copiada!" : copyingImage ? "..." : "Copiar"}</span>
           </button>
 
           {/* Download Image */}
