@@ -704,6 +704,10 @@ export async function refreshRemainingLivePredictions(): Promise<{
   for (const item of allFixtures) {
     if (!item.fixture?.id || !item.teams?.home?.name || !item.teams?.away?.name) continue;
 
+    const kickoff = item.fixture.date;
+    // Strict date check: Only matches for today
+    if (!kickoff || !kickoff.startsWith(todayDateStr)) continue;
+
     const shortStatus = item.fixture.status?.short || "NS";
     // Only matches that have NOT started yet
     if (["FT", "AET", "PEN", "PST", "CANC", "ABD", "1H", "2H", "HT"].includes(shortStatus)) continue;
