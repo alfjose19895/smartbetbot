@@ -954,27 +954,25 @@ export function evaluateFixturePrediction(params: {
   const calculatedUnder35Odds = calculateBookmakerOdds(pUnder35, matchJuice);
   const calculatedBttsOdds = calculateBookmakerOdds(pBttsYes, matchJuice);
 
-  // Safeguard: Sanitize raw bookmaker odds
-  const sanitizeOdds = (raw: number | undefined, calc: number, marketType: "1X2" | "DRAW" | "2WAY" | "DOUBLE") => {
-    if (!raw || typeof raw !== "number" || isNaN(raw) || raw <= 1.0) return calc;
-    if (marketType === "DOUBLE" && (raw > 2.50 || raw < 1.08)) return calc;
-    if (marketType === "2WAY" && (raw > 3.50 || raw < 1.10)) return calc;
-    if (marketType === "1X2" && (raw > 9.00 || raw < 1.05)) return calc;
-    if (marketType === "DRAW" && (raw > 6.00 || raw < 2.20)) return calc;
-    return Math.round(raw * 100) / 100;
+  // Safeguard: Sanitize raw bookmaker odds - always preserve genuine bookmaker odds
+  const sanitizeOdds = (raw: number | undefined, calc: number) => {
+    if (typeof raw === "number" && !isNaN(raw) && raw >= 1.01 && raw <= 50.0) {
+      return Math.round(raw * 100) / 100;
+    }
+    return Math.round(calc * 100) / 100;
   };
 
-  const resolvedHomeOdds = sanitizeOdds(marketOdds.homeWin, calculatedHomeOdds, "1X2");
-  const resolvedDrawOdds = sanitizeOdds(marketOdds.draw, calculatedDrawOdds, "DRAW");
-  const resolvedAwayOdds = sanitizeOdds(marketOdds.awayWin, calculatedAwayOdds, "1X2");
-  const resolvedDouble1XOdds = sanitizeOdds(marketOdds.doubleChance1X, calculatedDouble1XOdds, "DOUBLE");
-  const resolvedDoubleX2Odds = sanitizeOdds(marketOdds.doubleChanceX2, calculatedDoubleX2Odds, "DOUBLE");
-  const resolvedDouble12Odds = sanitizeOdds(marketOdds.doubleChance12, calculatedDouble12Odds, "DOUBLE");
-  const resolvedOver15Odds = sanitizeOdds(marketOdds.over15, calculatedOver15Odds, "2WAY");
-  const resolvedOver25Odds = sanitizeOdds(marketOdds.over25, calculatedOver25Odds, "2WAY");
-  const resolvedUnder25Odds = sanitizeOdds(marketOdds.under25, calculatedUnder25Odds, "2WAY");
-  const resolvedUnder35Odds = sanitizeOdds(marketOdds.under35, calculatedUnder35Odds, "2WAY");
-  const resolvedBttsOdds = sanitizeOdds(marketOdds.bttsYes, calculatedBttsOdds, "2WAY");
+  const resolvedHomeOdds = sanitizeOdds(marketOdds.homeWin, calculatedHomeOdds);
+  const resolvedDrawOdds = sanitizeOdds(marketOdds.draw, calculatedDrawOdds);
+  const resolvedAwayOdds = sanitizeOdds(marketOdds.awayWin, calculatedAwayOdds);
+  const resolvedDouble1XOdds = sanitizeOdds(marketOdds.doubleChance1X, calculatedDouble1XOdds);
+  const resolvedDoubleX2Odds = sanitizeOdds(marketOdds.doubleChanceX2, calculatedDoubleX2Odds);
+  const resolvedDouble12Odds = sanitizeOdds(marketOdds.doubleChance12, calculatedDouble12Odds);
+  const resolvedOver15Odds = sanitizeOdds(marketOdds.over15, calculatedOver15Odds);
+  const resolvedOver25Odds = sanitizeOdds(marketOdds.over25, calculatedOver25Odds);
+  const resolvedUnder25Odds = sanitizeOdds(marketOdds.under25, calculatedUnder25Odds);
+  const resolvedUnder35Odds = sanitizeOdds(marketOdds.under35, calculatedUnder35Odds);
+  const resolvedBttsOdds = sanitizeOdds(marketOdds.bttsYes, calculatedBttsOdds);
 
   // Calibrate Model Probabilities with Market Implied Probabilities when Bookmaker Odds are available
   if (marketOdds.homeWin && marketOdds.draw && marketOdds.awayWin) {

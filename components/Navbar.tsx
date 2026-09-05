@@ -131,6 +131,13 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
       subtitle: language === "es" ? "Gestión de usuarios y sincronización" : "User management & sync",
       adminOnly: true,
     });
+    navLinks.push({
+      href: "/admin?tab=mcp",
+      label: language === "es" ? "Agente MCP" : "MCP Agent",
+      icon: "🤖",
+      subtitle: language === "es" ? "Buscador de pronósticos por país" : "Country prediction search agent",
+      adminOnly: true,
+    });
   }
 
   const activeLink = navLinks.find((l) => l.href === pathname);

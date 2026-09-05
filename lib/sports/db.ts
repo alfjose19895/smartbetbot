@@ -348,6 +348,30 @@ export function evaluateMarketResult(
   return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
 }
 
+
+async function enrichCandidateFixturesWithOdds(
+  candidateFixtures: ApiFootballFixtureItem[],
+  oddsMap: Record<number, ApiFootballOddsItem>
+) {
+  const missing = candidateFixtures.filter((f) => f.fixture?.id && !oddsMap[f.fixture.id]);
+  const chunkSize = 6;
+  for (let i = 0; i < missing.length && i < 40; i += chunkSize) {
+    const chunk = missing.slice(i, i + chunkSize);
+    await Promise.all(
+      chunk.map(async (f) => {
+        try {
+          const oddsItem = await apiFootball.getOddsByFixture(f.fixture.id);
+          if (oddsItem && oddsItem.bookmakers && oddsItem.bookmakers.length > 0) {
+            oddsMap[f.fixture.id] = oddsItem;
+          }
+        } catch {
+          // ignore
+        }
+      })
+    );
+  }
+}
+
 export async function generatePredictionsForUpcoming(targetLeagueIds?: number[]): Promise<MarketOpportunity[]> {
   const nowMs = Date.now();
   const todayDateStr = getEcuadorDateString(nowMs);
@@ -468,6 +492,16 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
     }
 
     if (Array.isArray(todayFixtures) && todayFixtures.length > 0) {
+      const candidates = todayFixtures.filter((item) => {
+        if (!item.fixture?.id || !item.teams?.home?.name || !item.teams?.away?.name) return false;
+        const legName = (item.league?.name || "").toLowerCase();
+        if (legName.includes("primavera") || legName.includes("u19") || legName.includes("u20")) return false;
+        return isCuratedLeague(item.league?.id, item.league?.name, item.league?.country);
+      });
+
+      // Enrich candidate matches with real bookmaker odds directly from API-Football
+      await enrichCandidateFixturesWithOdds(candidates, oddsMapByFixture);
+
       for (const item of todayFixtures) {
         if (!item.fixture?.id || !item.teams?.home?.name || !item.teams?.away?.name) continue;
 
@@ -699,6 +733,16 @@ export async function refreshRemainingLivePredictions(): Promise<{
       oddsMapByFixture[item.fixture.id] = item;
     }
   }
+
+  const candidates = allFixtures.filter((item) => {
+    if (!item.fixture?.id || !item.teams?.home?.name || !item.teams?.away?.name) return false;
+    const legName = (item.league?.name || "").toLowerCase();
+    if (legName.includes("primavera") || legName.includes("u19") || legName.includes("u20")) return false;
+    return isCuratedLeague(item.league?.id, item.league?.name, item.league?.country);
+  });
+
+  // Enrich candidate matches with real bookmaker odds
+  await enrichCandidateFixturesWithOdds(candidates, oddsMapByFixture);
 
   const newOpportunities: MarketOpportunity[] = [];
   for (const item of allFixtures) {
