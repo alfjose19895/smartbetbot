@@ -50,7 +50,7 @@ function getAdminClient() {
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const SNAPSHOTS_DIR = path.join(process.cwd(), "data", "daily_snapshots");
-export const HISTORY_START_DATE = "2026-09-03"; // Official history tracking starts strictly from tomorrow (September 3, 2026)
+export const HISTORY_START_DATE = "2026-09-05"; // Official history tracking starts strictly from tomorrow (September 3, 2026)
 
 function ensureSnapshotsDir() {
   try {
@@ -611,6 +611,7 @@ export async function refreshRemainingLivePredictions(): Promise<{
   count: number;
   totalAlerts: number;
   predictions: MarketOpportunity[];
+  message?: string;
 }> {
   const nowMs = Date.now();
   const todayDateStr = getEcuadorDateString(nowMs);
@@ -623,6 +624,17 @@ export async function refreshRemainingLivePredictions(): Promise<{
 
   const existingSnapshot = loadDailySnapshot(todayDateStr) || [];
 
+  // Check if there are still pending matches today
+  const pendingMatches = existingSnapshot.filter(p => !p.status || p.status === "pending");
+  if (pendingMatches.length > 0) {
+    return {
+      count: 0,
+      totalAlerts: existingSnapshot.length,
+      predictions: existingSnapshot,
+      message: `Aún hay ${pendingMatches.length} partidos pendientes hoy. Las nuevas alertas se habilitarán automáticamente cuando todos los partidos finalicen.`,
+    };
+  }
+
   const existingMatchKeys = new Set(
     existingSnapshot.map((p) => {
       const h = getCanonicalTeamKey(p.homeTeam);
@@ -631,7 +643,7 @@ export async function refreshRemainingLivePredictions(): Promise<{
     })
   );
 
-  // Fetch fixtures and odds for both today and tomorrow to guarantee upcoming matches are found at any hour
+  // Fetch upcoming fixtures and odds for today & tomorrow
   const [todayFixtures, tomorrowFixtures, todayOddsList, tomorrowOddsList] = await Promise.all([
     apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil").catch(() => []),
     apiFootball.getFixturesByDate(tomorrowDateStr, "America/Guayaquil").catch(() => []),
@@ -685,7 +697,6 @@ export async function refreshRemainingLivePredictions(): Promise<{
     });
 
     if (opps.length > 0) {
-      // Strictly enforce "Muy Alta" confidence
       newOpportunities.push({
         ...opps[0],
         confidence: "Muy Alta",
@@ -702,8 +713,7 @@ export async function refreshRemainingLivePredictions(): Promise<{
     return (b.smartScore || 0) - (a.smartScore || 0) || b.edge - a.edge;
   });
 
-  const pendingCount = existingSnapshot.filter(p => !p.status || p.status === "pending").length;
-  const slotsNeeded = Math.max(3, dailyTarget - pendingCount);
+  const slotsNeeded = Math.max(3, dailyTarget);
   const addedPicks = rankedNew.slice(0, slotsNeeded);
 
   const merged = [...existingSnapshot, ...addedPicks].sort(
@@ -720,13 +730,10 @@ export async function refreshRemainingLivePredictions(): Promise<{
     count: addedPicks.length,
     totalAlerts: merged.length,
     predictions: merged,
+    message: addedPicks.length > 0 ? `✓ Se agregaron ${addedPicks.length} nuevas alertas de alta precisión.` : "No hay nuevos partidos disponibles con alta precisión por ahora.",
   };
 }
 
-/**
- * Returns authentic settled predictions (history) strictly for all daily predictions made starting from HISTORY_START_DATE onwards.
- * Preserves day-by-day accumulation permanently across all dates.
- */
 export async function getHistoricalSettledPredictions(): Promise<HistoricalSettledPick[]> {
   const nowMs = Date.now();
   const todayDateStr = getEcuadorDateString(nowMs);

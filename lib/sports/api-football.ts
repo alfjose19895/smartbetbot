@@ -490,6 +490,11 @@ export function extractMarketOddsFromBookmaker(oddsItem?: ApiFootballOddsItem | 
   homeWin?: number;
   draw?: number;
   awayWin?: number;
+  doubleChance1X?: number;
+  doubleChanceX2?: number;
+  doubleChance12?: number;
+  over15?: number;
+  under35?: number;
   over25?: number;
   under25?: number;
   bttsYes?: number;
@@ -513,6 +518,11 @@ export function extractMarketOddsFromBookmaker(oddsItem?: ApiFootballOddsItem | 
     homeWin?: number;
     draw?: number;
     awayWin?: number;
+    doubleChance1X?: number;
+    doubleChanceX2?: number;
+    doubleChance12?: number;
+    over15?: number;
+    under35?: number;
     over25?: number;
     under25?: number;
     bttsYes?: number;
@@ -533,14 +543,28 @@ export function extractMarketOddsFromBookmaker(oddsItem?: ApiFootballOddsItem | 
         }
       }
     }
-    // Over / Under 2.5 Goals
+    // Double Chance
+    else if (bet.id === 12 || betName.includes("double chance") || betName.includes("doble oportunidad")) {
+      for (const val of bet.values) {
+        const v = String(val.value).toLowerCase();
+        const o = parseFloat(String(val.odd));
+        if (!isNaN(o) && o > 1.0) {
+          if (v.includes("home/draw") || v === "1x" || v.includes("local/empate")) result.doubleChance1X = o;
+          else if (v.includes("draw/away") || v === "x2" || v.includes("empate/visitante")) result.doubleChanceX2 = o;
+          else if (v.includes("home/away") || v === "12" || v.includes("local/visitante")) result.doubleChance12 = o;
+        }
+      }
+    }
+    // Over / Under Goals (1.5, 2.5, 3.5)
     else if (bet.id === 5 || betName.includes("goals over/under") || betName.includes("over/under")) {
       for (const val of bet.values) {
         const v = String(val.value).toLowerCase();
         const o = parseFloat(String(val.odd));
         if (!isNaN(o) && o > 1.0) {
-          if (v.includes("over 2.5") || v === "over 2.5") result.over25 = o;
+          if (v.includes("over 1.5") || v === "over 1.5") result.over15 = o;
+          else if (v.includes("over 2.5") || v === "over 2.5") result.over25 = o;
           else if (v.includes("under 2.5") || v === "under 2.5") result.under25 = o;
+          else if (v.includes("under 3.5") || v === "under 3.5") result.under35 = o;
         }
       }
     }

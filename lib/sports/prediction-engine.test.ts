@@ -63,7 +63,7 @@ describe("Prediction Engine (TypeScript MVP)", () => {
 
     expect(realMadridPicks.length).toBeGreaterThan(0);
     expect(realMadridPicks[0].market).toBeDefined();
-    expect(realMadridPicks[0].probability).toBeGreaterThanOrEqual(68);
+    expect(realMadridPicks[0].probability).toBeGreaterThanOrEqual(65);
   });
 
   it("accurately evaluates and categorizes J1/J2 League (Japan) and K League 1/2 (South Korea)", () => {

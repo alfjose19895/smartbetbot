@@ -628,9 +628,58 @@ function generateExplanation(
   const homeUnbeaten = homeForm ? homeForm.filter((m) => m.result !== "L").length : 4;
   const awayLosses = awayForm ? awayForm.filter((m) => m.result === "L").length : 2;
 
+  // 1. Doble Oportunidad: 1X
+  if (market.includes("1X") || market.includes("Doble Oportunidad 1X")) {
+    const variants = [
+      `Doble cobertura y solidez de ${home}: Con ${homeWins} victorias en sus 5 cotejos más recientes y xG de ${hXg.toFixed(2)}, el modelo Poisson proyecta una probabilidad contundente del ${prob}% de que el local sume (victoria o empate) frente a ${away} a cuota @${odds.toFixed(2)}.`,
+      `Inexpugnable como local: ${home} sostiene una regularidad defensiva de primer nivel y ${away} acumula ${awayLosses} tropiezos a domicilio. El algoritmo cuantitativo estima un ${prob}% de solvencia matemática para la opción 1X.`,
+      `Superioridad posicional y resguardo: El diferencial Elo (+${eloDiff}) y el control del mediocampo aseguran una probabilidad del ${prob}% para el 1X con valor positivo (+${edge}%).`,
+    ];
+    return variants[hash % variants.length];
+  }
+
+  // 2. Doble Oportunidad: X2
+  if (market.includes("X2") || market.includes("Doble Oportunidad X2")) {
+    const variants = [
+      `Jerarquía y solvencia visitante: ${away} exhibe mayor pegada ofensiva (${aXg.toFixed(2)} xG foráneo) y llega con ${awayWins} triunfos recientes. El modelo proyecta un ${prob}% de probabilidad de que ${away} rescate al menos un punto o gane a cuota @${odds.toFixed(2)}.`,
+      `Efectividad en transición de ${away}: Frente a las desatenciones defensivas de ${home}, el algoritmo Poisson respalda la Doble Oportunidad X2 con un ${prob}% de certeza matemática.`,
+      `Contragolpe letal y balance táctico: Con ${away} sumando en la mayoría de sus salidas, la opción X2 presenta un sólido ${prob}% de confianza y valor positivo (+${edge}%).`,
+    ];
+    return variants[hash % variants.length];
+  }
+
+  // 3. Doble Oportunidad: 12 (Sin Empate)
+  if (market.includes("12") || market.includes("Doble Oportunidad 12")) {
+    const variants = [
+      `Duelo de ataque sin especulación: Tanto ${home} como ${away} presentan propuestas verticales con alta frecuencia de gol (${totalXg} xG global) y mínima propensión al empate. El algoritmo estima un ${prob}% de probabilidad de definición clara de un ganador a cuota @${odds.toFixed(2)}.`,
+      `Propensión al quiebre de marcador: Con ambas escuadras obligadas a buscar los 3 puntos, la simulación Poisson asigna un ${prob}% de probabilidad matemática a que el partido no termine en tablas.`,
+    ];
+    return variants[hash % variants.length];
+  }
+
+  // 4. Over 1.5 Goles
+  if (market.includes("Over 1.5") || market.includes("+1.5")) {
+    const variants = [
+      `Alta expectativa anotadora: La producción combinada de ${home} (${hXg.toFixed(2)} xG) y ${away} (${aXg.toFixed(2)} xG) proyecta ${totalXg} goles esperados. El modelo cuantitativo otorga un ${prob}% de certeza para que se marquen al menos 2 goles a cuota @${odds.toFixed(2)}.`,
+      `Vocación ofensiva y transiciones dinámicas: Con promedios superiores a 4 remates a puerta por bando, la simulación Poisson respalda la línea de Más de 1.5 goles con un ${prob}% de probabilidad y valor +${edge}%.`,
+      `Frecuencia goleadora comprobada: Ambos clubes han superado la línea de 1.5 goles en más del 80% de sus compromisos recientes. Certeza matemática del ${prob}% para el Over 1.5.`,
+    ];
+    return variants[hash % variants.length];
+  }
+
+  // 5. Under 3.5 Goles
+  if (market.includes("Under 3.5") || market.includes("-3.5")) {
+    const variants = [
+      `Control de ritmo y disciplina táctica: Con un xG combinado contenido de ${totalXg} goles, el modelo cuantitativo Poisson estima un ${prob}% de probabilidad de que el encuentro se mantenga por debajo de los 3.5 goles a cuota @${odds.toFixed(2)}.`,
+      `Límite defensivo y pocos espacios: Ambas escuadras destacan por su orden en repliegue posicional, proyectando un choque cerrado con ${prob}% de certeza para Menos de 3.5 goles.`,
+    ];
+    return variants[hash % variants.length];
+  }
+
+  // 6. Over 2.5 Goles
   if (market.includes("Over 2.5")) {
     const variants = [
-      `Dinámica ofensiva y pegada en ataque: ${home} llega con ${homeWins} victorias en sus últimos 5 compromisos y promedia ${hXg.toFixed(2)} goles esperados (xG) en casa, mientras ${away} genera ${aXg.toFixed(2)} xG como visitante. El modelo cuantitativo Poisson proyecta ${totalXg} goles esperados conjuntos, otorgando un sólido ${prob}% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @${odds.toFixed(2)} (valor +${edge}%).`,
+      `Dinámica ofensiva y pegada en ataque: ${home} llega con ${homeWins} victorias en sus últimos 5 compromisos y promedia ${hXg.toFixed(2)} xG en casa, mientras ${away} genera ${aXg.toFixed(2)} xG como visitante. El modelo cuantitativo Poisson proyecta ${totalXg} goles esperados conjuntos, otorgando un sólido ${prob}% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @${odds.toFixed(2)} (valor +${edge}%).`,
       `Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con ${home} sumando en ${homeUnbeaten} de sus últimos 5 cotejos y la vocación ofensiva de ${away}, el algoritmo estima un ${prob}% de certeza para más de 2.5 goles.`,
       `Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de ${home} con la pegada en contragolpe de ${away} (${totalXg} xG acumulado). El análisis probabilístico respalda el Over 2.5 con ${prob}% de confianza a cuota @${odds.toFixed(2)}.`,
       `Tendencia anotadora sostenida: Tanto ${home} como ${away} promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de ${totalXg}, la expectativa de un marcador con 3 o más tantos alcanza el ${prob}% de probabilidad.`,
@@ -638,6 +687,7 @@ function generateExplanation(
     return variants[hash % variants.length];
   }
 
+  // 7. Under 2.5 Goles
   if (market.includes("Under 2.5")) {
     const variants = [
       `Rigor táctico y solidez en bloque defensivo: ${home} y ${away} priorizan el orden posicional en bloque medio-bajo, con una expectativa conjunta de apenas ${totalXg} goles esperados. El modelo Poisson otorga un ${prob}% de probabilidad a que el marcador se mantenga por debajo de los 2.5 goles a cuota @${odds.toFixed(2)}.`,
@@ -647,6 +697,7 @@ function generateExplanation(
     return variants[hash % variants.length];
   }
 
+  // 8. Ambos Marcan (BTTS)
   if (market.includes("Ambos Marcan") || market.includes("BTTS")) {
     const variants = [
       `Eficacia compartida en el último tercio: ${home} anota con regularidad como anfitrión (${homeWins} triunfos en sus últimos 5 juegos y xG de ${hXg.toFixed(2)}), mientras que ${away} cuenta con desequilibrio en ataque (${aXg.toFixed(2)} xG foráneo). El modelo Poisson estima un ${prob}% de probabilidad de anotación mutua a cuota @${odds.toFixed(2)}.`,
@@ -656,6 +707,7 @@ function generateExplanation(
     return variants[hash % variants.length];
   }
 
+  // 9. Gana Local (1)
   if (market.includes("Local") || market.includes("1")) {
     const variants = [
       `Jerarquía y solvencia territorial: ${home} (Elo ${Math.round(homeElo)}) llega en gran momento con ${homeWins} victorias en sus 5 cotejos más recientes, superando a ${away} en xG (${hXg.toFixed(2)} vs ${aXg.toFixed(2)}). El modelo Poisson proyecta un contundente ${prob}% de probabilidad de triunfo local a cuota @${odds.toFixed(2)}.`,
@@ -665,6 +717,7 @@ function generateExplanation(
     return variants[hash % variants.length];
   }
 
+  // 10. Gana Visitante (2)
   if (market.includes("Visitante") || market.includes("2")) {
     const variants = [
       `Superioridad cualitativa y jerarquía de ${away}: A pesar de jugar fuera, su diferencial Elo (${Math.round(awayElo)}) y xG de ${aXg.toFixed(2)} superan con claridad la estructura de ${home}. Con ${awayWins} triunfos en sus 5 salidas recientes, la victoria visitante alcanza ${prob}% de probabilidad a cuota @${odds.toFixed(2)}.`,
@@ -674,6 +727,7 @@ function generateExplanation(
     return variants[hash % variants.length];
   }
 
+  // 11. Empate (X)
   if (market.includes("Empate") || market.includes("(X)") || market.toLowerCase() === "x") {
     const variants = [
       `Equilibrio táctico y paridad en fuerzas: ${home} (Elo ${Math.round(homeElo)}) y ${away} (Elo ${Math.round(awayElo)}) presentan métricas parejas de contención con mínima brecha de goles esperados (${hXg.toFixed(2)} vs ${aXg.toFixed(2)} xG). El modelo Poisson proyecta un ${prob}% de probabilidad de empate a cuota de alto valor @${odds.toFixed(2)} (valor +${edge}%).`,
@@ -790,6 +844,11 @@ export function evaluateFixturePrediction(params: {
     homeWin?: number;
     draw?: number;
     awayWin?: number;
+    doubleChance1X?: number;
+    doubleChanceX2?: number;
+    doubleChance12?: number;
+    over15?: number;
+    under35?: number;
     over25?: number;
     under25?: number;
     bttsYes?: number;
@@ -866,54 +925,83 @@ export function evaluateFixturePrediction(params: {
       else if (h === a) pDraw += p;
       else pAway += p;
 
+      if (h + a > 1.5) pOver15 += p;
       if (h + a > 2.5) pOver25 += p;
-      else pUnder25 += p;
+      if (h + a > 3.5) pOver35 += p;
+      if (h + a <= 2.5) pUnder25 += p;
+      if (h + a <= 3.5) pUnder35 += p;
 
       if (h > 0 && a > 0) pBttsYes += p;
     }
   }
+
+  const pDouble1X = pHome + pDraw;
+  const pDoubleX2 = pAway + pDraw;
+  const pDouble12 = pHome + pAway;
 
   const matchJuice = 0.99 + ((hashSeed % 7) * 0.005);
 
   const calculatedHomeOdds = calculateBookmakerOdds(pHome, matchJuice);
   const calculatedDrawOdds = calculateBookmakerOdds(pDraw, matchJuice);
   const calculatedAwayOdds = calculateBookmakerOdds(pAway, matchJuice);
+  const calculatedDouble1XOdds = calculateBookmakerOdds(pDouble1X, matchJuice);
+  const calculatedDoubleX2Odds = calculateBookmakerOdds(pDoubleX2, matchJuice);
+  const calculatedDouble12Odds = calculateBookmakerOdds(pDouble12, matchJuice);
+  const calculatedOver15Odds = calculateBookmakerOdds(pOver15, matchJuice);
   const calculatedOver25Odds = calculateBookmakerOdds(pOver25, matchJuice);
   const calculatedUnder25Odds = calculateBookmakerOdds(pUnder25, matchJuice);
+  const calculatedUnder35Odds = calculateBookmakerOdds(pUnder35, matchJuice);
   const calculatedBttsOdds = calculateBookmakerOdds(pBttsYes, matchJuice);
 
-  // Safeguard: Sanitize raw bookmaker odds to eliminate aberrant feed spikes or inverted handicap lines
-  const sanitizeOdds = (raw: number | undefined, calc: number, marketType: "1X2" | "DRAW" | "2WAY") => {
+  // Safeguard: Sanitize raw bookmaker odds
+  const sanitizeOdds = (raw: number | undefined, calc: number, marketType: "1X2" | "DRAW" | "2WAY" | "DOUBLE") => {
     if (!raw || typeof raw !== "number" || isNaN(raw) || raw <= 1.0) return calc;
-    if (marketType === "2WAY" && (raw > 3.20 || raw < 1.15)) return calc;
-    if (marketType === "1X2" && (raw > 8.00 || raw < 1.08)) return calc;
-    if (marketType === "DRAW" && (raw > 5.50 || raw < 2.30)) return calc;
+    if (marketType === "DOUBLE" && (raw > 2.50 || raw < 1.08)) return calc;
+    if (marketType === "2WAY" && (raw > 3.50 || raw < 1.10)) return calc;
+    if (marketType === "1X2" && (raw > 9.00 || raw < 1.05)) return calc;
+    if (marketType === "DRAW" && (raw > 6.00 || raw < 2.20)) return calc;
     return Math.round(raw * 100) / 100;
   };
 
   const resolvedHomeOdds = sanitizeOdds(marketOdds.homeWin, calculatedHomeOdds, "1X2");
   const resolvedDrawOdds = sanitizeOdds(marketOdds.draw, calculatedDrawOdds, "DRAW");
   const resolvedAwayOdds = sanitizeOdds(marketOdds.awayWin, calculatedAwayOdds, "1X2");
+  const resolvedDouble1XOdds = sanitizeOdds(marketOdds.doubleChance1X, calculatedDouble1XOdds, "DOUBLE");
+  const resolvedDoubleX2Odds = sanitizeOdds(marketOdds.doubleChanceX2, calculatedDoubleX2Odds, "DOUBLE");
+  const resolvedDouble12Odds = sanitizeOdds(marketOdds.doubleChance12, calculatedDouble12Odds, "DOUBLE");
+  const resolvedOver15Odds = sanitizeOdds(marketOdds.over15, calculatedOver15Odds, "2WAY");
   const resolvedOver25Odds = sanitizeOdds(marketOdds.over25, calculatedOver25Odds, "2WAY");
   const resolvedUnder25Odds = sanitizeOdds(marketOdds.under25, calculatedUnder25Odds, "2WAY");
+  const resolvedUnder35Odds = sanitizeOdds(marketOdds.under35, calculatedUnder35Odds, "2WAY");
   const resolvedBttsOdds = sanitizeOdds(marketOdds.bttsYes, calculatedBttsOdds, "2WAY");
 
+  // Calibrated Precision Filter Matrix (Ensuring viable bet return >= 1.35 and mathematical edge)
   const candidates: {
     market: string;
     selection: string;
     prob: number;
     odds: number;
     minOddsThreshold: number;
+    minProbThreshold: number;
   }[] = [
-    // 1X2 Principal
-    { market: "Gana Local", selection: "1", prob: pHome, odds: resolvedHomeOdds, minOddsThreshold: 1.45 },
-    { market: "Empate (X)", selection: "X", prob: pDraw, odds: resolvedDrawOdds, minOddsThreshold: 2.70 },
-    { market: "Gana Visitante", selection: "2", prob: pAway, odds: resolvedAwayOdds, minOddsThreshold: 1.45 },
+    // Double Chance (Ultra-High Certainty >= 70% with viable odds >= 1.35)
+    { market: "Doble Oportunidad 1X", selection: "1X", prob: pDouble1X, odds: resolvedDouble1XOdds, minOddsThreshold: 1.35, minProbThreshold: 0.70 },
+    { market: "Doble Oportunidad X2", selection: "X2", prob: pDoubleX2, odds: resolvedDoubleX2Odds, minOddsThreshold: 1.35, minProbThreshold: 0.70 },
+    { market: "Doble Oportunidad 12", selection: "12", prob: pDouble12, odds: resolvedDouble12Odds, minOddsThreshold: 1.35, minProbThreshold: 0.70 },
 
-    // Over/Under 2.5 Goles & Ambos Marcan (BTTS)
-    { market: "Over 2.5 Goles", selection: "Over 2.5", prob: pOver25, odds: resolvedOver25Odds, minOddsThreshold: 1.45 },
-    { market: "Under 2.5 Goles", selection: "Under 2.5", prob: pUnder25, odds: resolvedUnder25Odds, minOddsThreshold: 1.45 },
-    { market: "Ambos Marcan (BTTS)", selection: "Yes", prob: pBttsYes, odds: resolvedBttsOdds, minOddsThreshold: 1.45 },
+    // Over 1.5 & Under 3.5 (High Certainty >= 70% with viable odds >= 1.35)
+    { market: "Over 1.5 Goles", selection: "Over 1.5", prob: pOver15, odds: resolvedOver15Odds, minOddsThreshold: 1.35, minProbThreshold: 0.70 },
+    { market: "Under 3.5 Goles", selection: "Under 3.5", prob: pUnder35, odds: resolvedUnder35Odds, minOddsThreshold: 1.35, minProbThreshold: 0.70 },
+
+    // 1X2 Principal (>= 58% for favorites, >= 28% for Draw Bomba)
+    { market: "Gana Local", selection: "1", prob: pHome, odds: resolvedHomeOdds, minOddsThreshold: 1.35, minProbThreshold: 0.58 },
+    { market: "Gana Visitante", selection: "2", prob: pAway, odds: resolvedAwayOdds, minOddsThreshold: 1.35, minProbThreshold: 0.58 },
+    { market: "Empate (X)", selection: "X", prob: pDraw, odds: resolvedDrawOdds, minOddsThreshold: 2.60, minProbThreshold: 0.28 },
+
+    // Over/Under 2.5 Goles & BTTS (>= 58%)
+    { market: "Over 2.5 Goles", selection: "Over 2.5", prob: pOver25, odds: resolvedOver25Odds, minOddsThreshold: 1.35, minProbThreshold: 0.58 },
+    { market: "Under 2.5 Goles", selection: "Under 2.5", prob: pUnder25, odds: resolvedUnder25Odds, minOddsThreshold: 1.35, minProbThreshold: 0.58 },
+    { market: "Ambos Marcan (BTTS)", selection: "Yes", prob: pBttsYes, odds: resolvedBttsOdds, minOddsThreshold: 1.35, minProbThreshold: 0.58 },
   ];
 
   const opportunities: MarketOpportunity[] = [];
@@ -922,30 +1010,22 @@ export function evaluateFixturePrediction(params: {
   const awayRecentForm = generateTeamRecentForm(awayTeam, canonicalLeague, rAway, kickoff);
   const h2hHistory = generateH2HClashes(homeTeam, awayTeam, canonicalLeague, rHomeBase, rAway, kickoff);
 
-  for (const item of candidates) {
-    if (!item.odds || item.odds < item.minOddsThreshold) continue;
-
+  const buildOpportunity = (item: { market: string; selection: string; prob: number; odds: number }): MarketOpportunity => {
     const probPercent = Math.round(item.prob * 1000) / 10;
     const isDrawMarket = item.market.includes("Empate") || item.market === "Empate (X)";
-
-    // Calibrated Precision Filter: Draws (Empate) in 3-way markets peak at 30-38%; 2-way/favorite markets >= 68%
-    const minRequiredProb = isDrawMarket ? 30.5 : 68.0;
-    if (probPercent < minRequiredProb) continue;
 
     const fairOdds = Math.round((1 / item.prob) * 100) / 100;
     const impliedProb = Math.round((1 / item.odds) * 1000) / 10;
     const edgePercent = Math.max(1.0, Math.round((item.prob - 1 / item.odds) * 1000) / 10);
     const evPercent = Math.round((item.prob * item.odds - 1) * 1000) / 10;
 
-    // Confidence and Badge Rules:
-    // Todas las alertas y pronósticos seleccionados por el modelo son de confianza "Muy Alta" (⭐⭐⭐)
     let confidence: "Muy Alta" | "Alta" = "Muy Alta";
     let pickBadge: "bomba" | "valor" | "estandar" = "valor";
 
-    if (item.odds >= 2.05 || isDrawMarket) {
+    if (item.odds >= 2.10 || isDrawMarket) {
       pickBadge = "bomba";
       confidence = "Muy Alta";
-    } else if (probPercent >= 70.0) {
+    } else if (probPercent >= 72.0) {
       pickBadge = "valor";
       confidence = "Muy Alta";
     } else {
@@ -959,9 +1039,9 @@ export function evaluateFixturePrediction(params: {
         (item.prob - 1 / item.odds) * 10 +
         tierBonus
     );
-    const smartScore = Math.min(99, Math.max(70, rawScore));
+    const smartScore = Math.min(99, Math.max(72, rawScore));
 
-    opportunities.push({
+    return {
       fixtureId,
       match: `${homeTeam} vs ${awayTeam}`,
       homeTeam,
@@ -1010,77 +1090,27 @@ export function evaluateFixturePrediction(params: {
       homeElo: rHomeBase,
       awayElo: rAway,
       leagueTier: tier,
-    });
+    };
+  };
+
+  for (const item of candidates) {
+    if (!item.odds || item.odds < item.minOddsThreshold) continue;
+    if (item.prob < item.minProbThreshold) continue;
+
+    const evPercent = Math.round((item.prob * item.odds - 1) * 1000) / 10;
+    if (item.odds >= 2.10 && evPercent < 1.0) continue;
+
+    opportunities.push(buildOpportunity(item));
   }
 
-  // Fallback: If no candidate reached 68% strictly, take the highest probability candidate
+  // Fallback: If no candidate passed all strict filters, select the single most probable candidate from valid lines
   if (opportunities.length === 0) {
-    const validCandidates = candidates
-      .filter((c) => c.odds && c.odds >= c.minOddsThreshold)
+    const sortedCandidates = [...candidates]
+      .filter((c) => c.odds >= 1.35 && c.prob > 0.30)
       .sort((a, b) => b.prob - a.prob);
 
-    if (validCandidates.length > 0) {
-      const best = validCandidates[0];
-      const probPercent = Math.max(68.0, Math.round(best.prob * 1000) / 10);
-      const fairOdds = Math.round((1 / best.prob) * 100) / 100;
-      const impliedProb = Math.round((1 / best.odds) * 1000) / 10;
-      const edgePercent = Math.max(1.0, Math.round((best.prob - 1 / best.odds) * 1000) / 10);
-      const evPercent = Math.round((best.prob * best.odds - 1) * 1000) / 10;
-      const confidence: "Muy Alta" | "Alta" = probPercent >= 75.0 ? "Muy Alta" : "Alta";
-      const pickBadge: "bomba" | "valor" | "estandar" = best.odds >= 2.05 ? "bomba" : "valor";
-      const tierBonus = tier === 1 ? 15 : tier === 2 ? 8 : 0;
-      const rawScore = Math.round(best.prob * 100 + (best.prob - 1 / best.odds) * 10 + tierBonus);
-      const smartScore = Math.min(99, Math.max(70, rawScore));
-
-      opportunities.push({
-        fixtureId,
-        match: `${homeTeam} vs ${awayTeam}`,
-        homeTeam,
-        awayTeam,
-        homeTeamId,
-        awayTeamId,
-        homeLogo,
-        awayLogo,
-        league: canonicalLeague,
-        leagueLogo,
-        country,
-        kickoff,
-        market: best.market,
-        selection: best.selection,
-        odds: best.odds,
-        bookmakerOdds: best.odds,
-        fairOdds,
-        probability: probPercent,
-        impliedProbability: impliedProb,
-        edge: edgePercent,
-        expectedValue: evPercent,
-        confidence,
-        pickBadge,
-        smartScore,
-        explanation: generateExplanation(
-          homeTeam,
-          awayTeam,
-          best.market,
-          probPercent,
-          edgePercent,
-          best.odds,
-          hXg,
-          aXg,
-          tier,
-          rHomeBase,
-          rAway,
-          hashSeed,
-          homeRecentForm,
-          awayRecentForm
-        ),
-        status: "pending",
-        h2h: h2hHistory,
-        homeLast5: homeRecentForm,
-        awayLast5: awayRecentForm,
-        homeElo: rHomeBase,
-        awayElo: rAway,
-        leagueTier: tier,
-      });
+    if (sortedCandidates.length > 0) {
+      opportunities.push(buildOpportunity(sortedCandidates[0]));
     }
   }
 
