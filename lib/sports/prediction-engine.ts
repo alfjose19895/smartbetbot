@@ -6,7 +6,7 @@
  * Badges: 💣 Bomba (High Payout / High Odds), 💎 Valor (Maximum Certainty ~100%).
  */
 
-import { SUPPORTED_LEAGUES } from "./api-football";
+import { SUPPORTED_LEAGUES, isPriorityEuropeanLeague } from "./api-football";
 
 export interface H2HMatch {
   date: string;
@@ -37,6 +37,7 @@ export interface MarketOpportunity {
   homeLogo?: string;
   awayLogo?: string;
   league: string;
+  leagueId?: number;
   leagueLogo?: string;
   country?: string;
   kickoff: string;
@@ -1031,7 +1032,10 @@ export function evaluateFixturePrediction(params: {
       confidence = "Muy Alta";
     }
 
-    const tierBonus = tier === 1 ? 15 : tier === 2 ? 8 : 0;
+    const isEuroPriority = isPriorityEuropeanLeague(leagueId, canonicalLeague, country);
+    const tierBonus = isEuroPriority
+      ? (tier === 1 ? 25 : tier === 2 ? 18 : 12)
+      : (tier === 1 ? 8 : tier === 2 ? 4 : 0);
     const rawScore = Math.round(
       (isDrawMarket ? (item.prob * 2.2 * 100) : (item.prob * 100)) +
         (item.prob - 1 / item.odds) * 10 +
@@ -1049,6 +1053,7 @@ export function evaluateFixturePrediction(params: {
       homeLogo,
       awayLogo,
       league: canonicalLeague,
+      leagueId,
       leagueLogo,
       country,
       kickoff,

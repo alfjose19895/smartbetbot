@@ -117,6 +117,49 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
 
 export const ALL_LEAGUE_IDS = SUPPORTED_LEAGUES.map((l) => l.id);
 export const TOP_5_LEAGUE_IDS = [39, 140, 135, 78, 61];
+export const PRIORITY_EUROPEAN_LEAGUE_IDS = [
+  39, 40, 45, 48, // England
+  140, 141, 143, // Spain
+  135, 136, 137, // Italy
+  78, 79, 81, // Germany
+  61, 62, 66, // France
+  88, 89, 90, // Netherlands
+  94, 95, 96, // Portugal
+  2, 3, 848, 5, // UEFA
+  144, 145, // Belgium
+  179, 180, // Scotland
+  207, // Switzerland
+  218, 219, // Austria
+  203, 204, // Turkey
+];
+
+export function isPriorityEuropeanLeague(leagueId?: number, leagueName?: string, country?: string): boolean {
+  if (leagueId && PRIORITY_EUROPEAN_LEAGUE_IDS.includes(leagueId)) return true;
+  const normCountry = (country || "").toLowerCase().trim();
+  const priorityCountries = [
+    "españa", "spain",
+    "inglaterra", "england",
+    "italia", "italy",
+    "alemania", "germany",
+    "francia", "france",
+    "países bajos", "netherlands", "holland",
+    "portugal",
+    "bélgica", "belgium",
+    "escocia", "scotland",
+    "suiza", "switzerland",
+    "austria",
+    "turquía", "turkey",
+    "europa", "europe"
+  ];
+  if (priorityCountries.some(c => normCountry.includes(c) || c.includes(normCountry))) return true;
+
+  if (leagueName) {
+    const normName = leagueName.toLowerCase();
+    if (normName.includes("premier league") && !normName.includes("egipto") && !normName.includes("kuwait") && !normName.includes("ucrania") && !normName.includes("ghana")) return true;
+    if (normName.includes("la liga") || normName.includes("laliga") || normName.includes("serie a") || normName.includes("bundesliga") || normName.includes("ligue 1") || normName.includes("eredivisie") || normName.includes("primeira liga") || normName.includes("champions league") || normName.includes("europa league") || normName.includes("nations league")) return true;
+  }
+  return false;
+}
 export const CUPS_LEAGUE_IDS = [2, 3, 848, 5, 13, 11];
 export const AMERICAS_LEAGUE_IDS = [242, 71, 72, 128, 344, 262, 263, 253, 254, 239, 281, 265, 271, 250];
 

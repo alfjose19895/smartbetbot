@@ -8,7 +8,7 @@
 import fs from "fs";
 import path from "path";
 import { createClient } from "@supabase/supabase-js";
-import { apiFootball, ALL_LEAGUE_IDS, TOP_5_LEAGUE_IDS, SUPPORTED_LEAGUES, ApiFootballFixtureItem, extractMarketOddsFromBookmaker, ApiFootballOddsItem, extractMatchDetails } from "./api-football";
+import { apiFootball, ALL_LEAGUE_IDS, TOP_5_LEAGUE_IDS, PRIORITY_EUROPEAN_LEAGUE_IDS, isPriorityEuropeanLeague, SUPPORTED_LEAGUES, ApiFootballFixtureItem, extractMarketOddsFromBookmaker, ApiFootballOddsItem, extractMatchDetails } from "./api-football";
 import {
   evaluateFixturePrediction,
   MarketOpportunity,
@@ -1057,4 +1057,35 @@ export async function syncUpcomingFixtures(leagueIds: number[] = ALL_LEAGUE_IDS,
 
 export async function syncLeaguesAndTeams(leagueIds: number[] = ALL_LEAGUE_IDS): Promise<{ leaguesSaved: number; teamsSaved: number }> {
   return { leaguesSaved: leagueIds.length, teamsSaved: leagueIds.length * 20 };
+}
+
+/**
+ * Selects opportunities giving fixed reservation priority to European leagues (Spain, England, Italy, Germany, France, Netherlands, Portugal, UEFA)
+ */
+export function selectPrioritizedOpportunities(
+  opportunities: MarketOpportunity[],
+  targetCount: number = 15
+): MarketOpportunity[] {
+  const europeanPicks: MarketOpportunity[] = [];
+  const globalPicks: MarketOpportunity[] = [];
+
+  for (const opp of opportunities) {
+    if (isPriorityEuropeanLeague(opp.leagueId, opp.league, opp.country)) {
+      europeanPicks.push(opp);
+    } else {
+      globalPicks.push(opp);
+    }
+  }
+
+  europeanPicks.sort((a, b) => b.smartScore - a.smartScore || b.probability - a.probability || b.expectedValue - a.expectedValue);
+  globalPicks.sort((a, b) => b.smartScore - a.smartScore || b.probability - a.probability || b.expectedValue - a.expectedValue);
+
+  const selected = [...europeanPicks.slice(0, targetCount)];
+  if (selected.length < targetCount) {
+    const remaining = targetCount - selected.length;
+    selected.push(...globalPicks.slice(0, remaining));
+  }
+
+  selected.sort((a, b) => b.smartScore - a.smartScore || b.probability - a.probability);
+  return selected;
 }
