@@ -1017,7 +1017,7 @@ export function evaluateFixturePrediction(params: {
     minProbThreshold: number;
   }[] = [
     // 1X2 Match Winner (Ganador Local & Ganador Visitante)
-    { market: "Ganador Local", selection: "1", prob: pHome, odds: resolvedHomeOdds, minOddsThreshold: 1.30, minProbThreshold: 0.55 },
+    { market: "Ganador Local", selection: "1", prob: pHome, odds: resolvedHomeOdds, minOddsThreshold: 1.35, minProbThreshold: 0.55 },
     { market: "Ganador Visitante", selection: "2", prob: pAway, odds: resolvedAwayOdds, minOddsThreshold: 1.35, minProbThreshold: 0.55 },
     { market: "Empate (X)", selection: "X", prob: pDraw, odds: resolvedDrawOdds, minOddsThreshold: 2.70, minProbThreshold: 0.30 },
 
