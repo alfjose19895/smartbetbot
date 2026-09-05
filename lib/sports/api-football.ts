@@ -90,7 +90,6 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
   { id: 71, name: "Brasileirão Série A", country: "Brasil", category: "americas", tier: 1 },
   { id: 72, name: "Brasileirão Série B", country: "Brasil", category: "second_divisions", tier: 2 },
   { id: 128, name: "Liga Profesional Argentina", country: "Argentina", category: "americas", tier: 1 },
-  { id: 129, name: "Primera Nacional (2da Div)", country: "Argentina", category: "second_divisions", tier: 2 },
   { id: 344, name: "Primera División", country: "Bolivia", category: "americas", tier: 1 },
   { id: 13, name: "Copa Libertadores", country: "Sudamérica", category: "cups", tier: 1 },
   { id: 11, name: "Copa Sudamericana", country: "Sudamérica", category: "cups", tier: 1 },
@@ -128,7 +127,7 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
 export const ALL_LEAGUE_IDS = SUPPORTED_LEAGUES.map((l) => l.id);
 export const TOP_5_LEAGUE_IDS = [39, 140, 135, 78, 61];
 export const CUPS_LEAGUE_IDS = [2, 3, 848, 5, 13, 11];
-export const AMERICAS_LEAGUE_IDS = [242, 71, 72, 128, 129, 344, 262, 263, 253, 254, 239, 281, 265, 271, 250];
+export const AMERICAS_LEAGUE_IDS = [242, 71, 72, 128, 344, 262, 263, 253, 254, 239, 281, 265, 271, 250];
 
 export interface ApiFootballLeague {
   id: number;
