@@ -90,6 +90,18 @@ function AdminControlContent() {
     averageOdds: string;
     highConfidenceCount: number;
   } | null>(null);
+  const [mcpAiAnalysis, setMcpAiAnalysis] = useState<{
+    intent: string;
+    summary: string;
+    insights: string[];
+    recommendation: string;
+    parlayRecommendation?: {
+      totalOdds: string;
+      combinedProbability: string;
+      selectionsCount: number;
+      legs: Array<{ match: string; market: string; selection: string; odds: number }>;
+    };
+  } | null>(null);
   const [mcpSearched, setMcpSearched] = useState(false);
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
 
@@ -128,6 +140,7 @@ function AdminControlContent() {
         const data = await res.json();
         setMcpResults(data.predictions || []);
         setMcpMetrics(data.metrics || null);
+        setMcpAiAnalysis(data.aiAnalysis || null);
       }
     } catch (err) {
       console.error("MCP Admin search error:", err);
@@ -822,6 +835,249 @@ function AdminControlContent() {
           </div>
         )}
 
+        {/* TAB 4: AGENTE MCP DE PRONÓSTICOS (AI INTERNAL AGENT) */}
+        {activeTab === "mcp" && (
+          <div className="mt-6 space-y-6">
+            {/* AI Agent Header & Command Center */}
+            <div className="relative overflow-hidden rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-slate-900 via-slate-950 to-emerald-950/40 p-6 shadow-2xl text-white">
+              <div className="absolute top-0 right-0 -mt-8 -mr-8 h-48 w-48 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
+              
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+                <div className="flex items-center gap-3.5">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-emerald-500 to-cyan-400 text-2xl shadow-lg shadow-emerald-500/30">
+                    🤖
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-lg sm:text-xl font-black tracking-tight text-white">
+                        Agente MCP de Inteligencia Cuantitativa
+                      </h3>
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-black text-emerald-300 border border-emerald-500/30 uppercase tracking-wider">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        IA Activa
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      Escribe lo que necesitas en lenguaje natural: el agente interpretará tu instrucción y aplicará el algoritmo cuantitativo en tiempo real.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleMcpSearch(mcpQuery, mcpCountry)}
+                    disabled={mcpLoading}
+                    className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2.5 text-xs font-black text-slate-950 shadow-lg shadow-emerald-500/25 hover:bg-emerald-400 transition cursor-pointer disabled:opacity-50"
+                  >
+                    {mcpLoading ? (
+                      <>
+                        <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-slate-950 border-t-transparent" />
+                        <span>Analizando...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>⚡</span>
+                        <span>Ejecutar Consulta IA</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Natural Language Prompt Bar */}
+              <div className="mt-5 space-y-3">
+                <div className="relative flex items-center">
+                  <span className="absolute left-4 text-lg text-emerald-400 pointer-events-none">💬</span>
+                  <input
+                    type="text"
+                    value={mcpQuery}
+                    onChange={(e) => setMcpQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleMcpSearch(mcpQuery, mcpCountry);
+                      }
+                    }}
+                    placeholder="Ejemplo: 'busca partidos de Costa Rica con cuota mayor a 1.80' o 'analiza Alajuelense vs Saprissa' o 'dame un parley de 3 partidos'..."
+                    className="w-full rounded-2xl border border-slate-700 bg-slate-900/90 pl-12 pr-28 py-3.5 text-sm text-white placeholder-slate-400 shadow-inner outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition"
+                  />
+                  <button
+                    onClick={() => handleMcpSearch(mcpQuery, mcpCountry)}
+                    disabled={mcpLoading}
+                    className="absolute right-2 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-black text-slate-950 hover:bg-emerald-400 transition cursor-pointer disabled:opacity-50"
+                  >
+                    Enviar
+                  </button>
+                </div>
+
+                {/* Quick Prompt Suggestion Chips */}
+                <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                  <span className="text-[11px] font-bold text-slate-400 mr-1">Sugerencias rápidas:</span>
+                  {[
+                    { label: "🇨🇷 Alajuelense vs Saprissa", query: "analiza el clásico LD Alajuelense vs Deportivo Saprissa", country: "costa rica" },
+                    { label: "🇪🇸 La Liga Española", query: "mejores pronósticos de La Liga española para hoy", country: "españa" },
+                    { label: "🔥 Probabilidad > 65%", query: "busca los partidos con probabilidad mayor al 65%", country: "" },
+                    { label: "⚽ Ambos Equipos Anotan", query: "partidos con Ambos Equipos Anotan y cuota mayor a 1.70", country: "" },
+                    { label: "💣 Bombas Cuota > 2.00", query: "encuentra bombas del día con cuota mayor a 2.00", country: "" },
+                    { label: "🎲 Parley de 3 Partidos", query: "genera un parley de 3 selecciones de alta confianza", country: "" },
+                    { label: "🇪🇨 Ecuador Liga Pro", query: "pronósticos de la Liga Pro de Ecuador", country: "ecuador" },
+                    { label: "🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra Over 2.5", query: "partidos de ligas de Inglaterra con Over 2.5 goles", country: "inglaterra" },
+                  ].map((chip, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setMcpQuery(chip.query);
+                        setMcpCountry(chip.country || "españa");
+                        handleMcpSearch(chip.query, chip.country);
+                      }}
+                      className="rounded-lg bg-slate-800/80 px-2.5 py-1 text-[11px] font-bold text-slate-300 hover:bg-emerald-500/20 hover:text-emerald-300 border border-slate-700/60 transition cursor-pointer"
+                    >
+                      {chip.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* AI Reasoning & Briefing Card */}
+            {mcpAiAnalysis && (
+              <div className="rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-white via-emerald-50/20 to-white p-5 sm:p-6 shadow-sm dark:border-emerald-900/40 dark:from-slate-900 dark:via-slate-900/90 dark:to-slate-950">
+                <div className="flex items-center gap-2.5 border-b border-slate-200 dark:border-slate-800 pb-3.5">
+                  <span className="text-xl">🧠</span>
+                  <div>
+                    <h4 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
+                      Informe Ejecutivo del Agente de Inteligencia
+                    </h4>
+                    <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                      Objetivo: {mcpAiAnalysis.intent}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-3.5 space-y-3 text-xs text-slate-700 dark:text-slate-300">
+                  <p className="font-medium leading-relaxed text-sm text-slate-900 dark:text-slate-100 bg-emerald-50/60 dark:bg-emerald-950/40 p-3 rounded-2xl border border-emerald-200/60 dark:border-emerald-800/40">
+                    {mcpAiAnalysis.summary}
+                  </p>
+
+                  {mcpAiAnalysis.insights && mcpAiAnalysis.insights.length > 0 && (
+                    <div className="space-y-1.5 pt-1">
+                      <span className="text-[11px] font-black uppercase text-slate-500 dark:text-slate-400 block tracking-wider">
+                        Factores Clave & Hallazgos Estadísticos:
+                      </span>
+                      <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {mcpAiAnalysis.insights.map((insight, i) => (
+                          <li key={i} className="flex items-start gap-2 bg-slate-50 dark:bg-slate-850 p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800">
+                            <span className="text-emerald-500 font-bold shrink-0">✦</span>
+                            <span className="text-[11px] leading-snug">{insight}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Parlay Recommendation Card */}
+                  {mcpAiAnalysis.parlayRecommendation && (
+                    <div className="mt-3 rounded-2xl border-2 border-emerald-500/40 bg-gradient-to-br from-emerald-500/10 to-transparent p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">🎲</span>
+                          <span className="font-black text-slate-900 dark:text-white text-sm">
+                            Combinada Sugerida ({mcpAiAnalysis.parlayRecommendation.selectionsCount} Selecciones)
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-slate-500 dark:text-slate-400 font-bold">Cuota Acumulada:</span>
+                          <span className="text-base font-black text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950 px-2 py-0.5 rounded-lg">
+                            @{mcpAiAnalysis.parlayRecommendation.totalOdds}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="mt-2.5 divide-y divide-slate-200 dark:divide-slate-800 text-[11px]">
+                        {mcpAiAnalysis.parlayRecommendation.legs.map((leg, li) => (
+                          <div key={li} className="py-1.5 flex items-center justify-between">
+                            <span className="font-bold text-slate-800 dark:text-slate-200">{leg.match}</span>
+                            <span className="text-slate-600 dark:text-slate-400">
+                              {leg.market} ({leg.selection}) <strong className="text-emerald-600 dark:text-emerald-400">@{leg.odds.toFixed(2)}</strong>
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="pt-2 flex items-center gap-2 text-[11px] font-bold text-slate-600 dark:text-slate-400">
+                    <span>💡 Recomendación Operativa:</span>
+                    <span className="text-emerald-700 dark:text-emerald-300">{mcpAiAnalysis.recommendation}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Quick Metrics Header */}
+            {mcpMetrics && (
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
+                  <span className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 block">Partidos Coincidentes</span>
+                  <span className="mt-0.5 text-2xl font-black text-slate-900 dark:text-white">{mcpMetrics.totalMatches}</span>
+                </div>
+                <div className="rounded-2xl border border-emerald-300 bg-emerald-50/60 p-4 shadow-sm dark:border-emerald-700/60 dark:bg-emerald-950/30">
+                  <span className="text-[10px] font-bold uppercase text-emerald-800 dark:text-emerald-300 block">Probabilidad Promedio</span>
+                  <span className="mt-0.5 text-2xl font-black text-emerald-800 dark:text-emerald-400">{mcpMetrics.averageProbability}</span>
+                </div>
+                <div className="rounded-2xl border border-cyan-300 bg-cyan-50/60 p-4 shadow-sm dark:border-cyan-700/60 dark:bg-cyan-950/30">
+                  <span className="text-[10px] font-bold uppercase text-cyan-800 dark:text-cyan-300 block">Cuota Promedio Real</span>
+                  <span className="mt-0.5 text-2xl font-black text-cyan-800 dark:text-cyan-400">{mcpMetrics.averageOdds}</span>
+                </div>
+                <div className="rounded-2xl border border-amber-300 bg-amber-50/60 p-4 shadow-sm dark:border-amber-700/60 dark:bg-amber-950/30">
+                  <span className="text-[10px] font-bold uppercase text-amber-800 dark:text-amber-300 block">Alta / Muy Alta Confianza</span>
+                  <span className="mt-0.5 text-2xl font-black text-amber-800 dark:text-amber-400">{mcpMetrics.highConfidenceCount}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Results Grid */}
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <h4 className="text-base font-black text-slate-900 dark:text-white">
+                    Pronósticos Analizados por el Algoritmo ({mcpResults.length})
+                  </h4>
+                  {mcpLoading && (
+                    <div className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
+                  )}
+                </div>
+              </div>
+
+              {mcpLoading ? (
+                <div className="py-16 text-center text-slate-500 rounded-3xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+                  <div className="inline-block h-8 w-8 animate-spin rounded-full border-3 border-emerald-500 border-t-transparent" />
+                  <p className="mt-3 text-sm font-bold text-slate-800 dark:text-slate-200">
+                    Ejecutando algoritmos cuantitativos y analizando líneas de apuestas...
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1">Calculando xG, probabilidades Poisson y valor esperado</p>
+                </div>
+              ) : mcpResults.length === 0 ? (
+                <div className="py-16 text-center text-slate-500 rounded-3xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+                  <span className="text-3xl block mb-2">🔍</span>
+                  <p className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                    No se encontraron partidos que cumplan exactamente los criterios de tu búsqueda.
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1">Prueba con un país diferente o una condición de cuota más amplia.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {mcpResults.map((opp) => (
+                    <PredictionCard
+                      key={opp.fixtureId}
+                      prediction={opp}
+                      onOpenDetail={(pick) => setActiveModalPick(pick)}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* TAB 3: AUDIT LOG (BITÁCORA DE CONEXIONES) */}
         {activeTab === "audit" && (
           <div className="mt-6 space-y-6">
@@ -1049,6 +1305,12 @@ function AdminControlContent() {
         </div>
       </main>
 
+      {activeModalPick && (
+        <MatchDetailModal
+          prediction={activeModalPick}
+          onClose={() => setActiveModalPick(null)}
+        />
+      )}
       {/* EDIT USER MODAL */}
       {editingUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm">
