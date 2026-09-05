@@ -69,7 +69,7 @@ function loadDailySnapshot(dateStr: string): MarketOpportunity[] | null {
     if (fs.existsSync(filePath)) {
       const data = fs.readFileSync(filePath, "utf-8");
       const picks = JSON.parse(data);
-      if (Array.isArray(picks) && picks.length > 0) {
+      if (Array.isArray(picks)) {
         return picks;
       }
     }
@@ -350,6 +350,13 @@ export function evaluateMarketResult(
 export async function generatePredictionsForUpcoming(targetLeagueIds?: number[]): Promise<MarketOpportunity[]> {
   const nowMs = Date.now();
   const todayDateStr = getEcuadorDateString(nowMs);
+
+  // Clean slate: if today is before HISTORY_START_DATE (2026-09-05), keep platform 100% clean with 0 picks for today
+  if (todayDateStr < HISTORY_START_DATE) {
+    cachedLivePredictions = [];
+    cacheTimestamp = nowMs;
+    return [];
+  }
 
   // 1. If a frozen snapshot exists for today, update finished match scores & statuses and return it
   const existingSnapshot = loadDailySnapshot(todayDateStr);
