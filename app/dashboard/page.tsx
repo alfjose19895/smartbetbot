@@ -4,8 +4,7 @@ import { Navbar } from "@/components/Navbar";
 import React, { useState, useEffect } from "react";
 import { PredictionCard } from "@/components/PredictionCard";
 import { MatchDetailModal } from "@/components/MatchDetailModal";
-import { FeaturedDailyPicks } from "@/components/FeaturedDailyPicks";
-import { MarketOpportunity, getFeaturedDailyPicks } from "@/lib/sports/prediction-engine";
+import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
 import { useLanguage } from "@/context/LanguageContext";
 import { MultiSelectDropdown, DropdownOption } from "@/components/MultiSelectDropdown";
@@ -316,18 +315,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Featured Daily Flagship Plays: SmartPick & Bomba del Día */}
-        {(() => {
-          const { smartPick, bombaPick } = getFeaturedDailyPicks(predictions);
-          if (!smartPick && !bombaPick) return null;
-          return (
-            <FeaturedDailyPicks
-              smartPick={smartPick}
-              bombaPick={bombaPick}
-              onOpenDetail={(pick) => setActiveModalPick(pick)}
-            />
-          );
-        })()}
+
 
         {/* Match Status Filter Buttons */}
         <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800/80 dark:bg-slate-900/80">

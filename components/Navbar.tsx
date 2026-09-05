@@ -58,6 +58,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
 
   const navLinks = [
     { href: "/dashboard", label: t("navDashboard"), icon: "📊", adminOnly: false },
+    { href: "/featured", label: t("navFeatured") || "👑 Picks del Día", icon: "👑", adminOnly: false },
     { href: "/signals", label: t("navPicks"), icon: "🎯", adminOnly: false },
     { href: "/parlay", label: t("navParlay") || "Parley del Día", icon: "🔥", adminOnly: false },
     { href: "/reports", label: t("navReports") || "Reportes", icon: "📈", adminOnly: false },
