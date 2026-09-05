@@ -4,7 +4,6 @@ import { Navbar } from "@/components/Navbar";
 import React, { useState, useEffect } from "react";
 import { PredictionCard } from "@/components/PredictionCard";
 import { MatchDetailModal } from "@/components/MatchDetailModal";
-import { McpCountryAgentModal } from "@/components/McpCountryAgentModal";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
 import { useLanguage } from "@/context/LanguageContext";
@@ -28,7 +27,6 @@ export default function DashboardPage() {
   const [syncing, setSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
-  const [isMcpModalOpen, setIsMcpModalOpen] = useState<boolean>(false);
 
   // Filters (exclusively for Today's Alertas)
   const [matchStatusFilter, setMatchStatusFilter] = useState<"ALL" | "VALOR" | "BOMBA" | "WON" | "LOST" | "SCHEDULED" | "IN_PLAY" | "FINISHED">("ALL");
@@ -481,15 +479,7 @@ export default function DashboardPage() {
             ))}
           </div>
         )}
-        <McpCountryAgentModal
-        isOpen={isMcpModalOpen}
-        onClose={() => setIsMcpModalOpen(false)}
-        onSelectPrediction={(pred) => {
-          setIsMcpModalOpen(false);
-          setActiveModalPick(pred);
-        }}
-      />
-    </main>
+        </main>
 
       {/* Match Detail Modal */}
       {activeModalPick && (

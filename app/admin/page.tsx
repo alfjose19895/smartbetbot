@@ -3,6 +3,9 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
+import { PredictionCard } from "@/components/PredictionCard";
+import { MatchDetailModal } from "@/components/MatchDetailModal";
+import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 import { SUPPORTED_LEAGUES, ALL_LEAGUE_IDS, TOP_5_LEAGUE_IDS, CUPS_LEAGUE_IDS, AMERICAS_LEAGUE_IDS } from "@/lib/sports/api-football";
 
 interface UserItem {
@@ -36,12 +39,14 @@ interface AuditItem {
 function AdminControlContent() {
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
-  const [activeTab, setActiveTab] = useState<"sports" | "users" | "audit">(
-    tabParam === "audit" ? "audit" : tabParam === "users" ? "users" : "sports"
+  const [activeTab, setActiveTab] = useState<"sports" | "users" | "audit" | "mcp">(
+    tabParam === "mcp" ? "mcp" : tabParam === "audit" ? "audit" : tabParam === "users" ? "users" : "sports"
   );
 
   useEffect(() => {
-    if (tabParam === "audit") {
+    if (tabParam === "mcp") {
+      setActiveTab("mcp");
+    } else if (tabParam === "audit") {
       setActiveTab("audit");
     } else if (tabParam === "users") {
       setActiveTab("users");
@@ -74,6 +79,69 @@ function AdminControlContent() {
   const [savingEdit, setSavingEdit] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [userFilter, setUserFilter] = useState<"all" | "pending" | "approved" | "paused">("all");
+  // MCP Agent State (Admin Exclusive)
+  const [mcpQuery, setMcpQuery] = useState("");
+  const [mcpCountry, setMcpCountry] = useState("españa");
+  const [mcpLoading, setMcpLoading] = useState(false);
+  const [mcpResults, setMcpResults] = useState<MarketOpportunity[]>([]);
+  const [mcpMetrics, setMcpMetrics] = useState<{
+    totalMatches: number;
+    averageProbability: string;
+    averageOdds: string;
+    highConfidenceCount: number;
+  } | null>(null);
+  const [mcpSearched, setMcpSearched] = useState(false);
+  const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
+
+  const QUICK_COUNTRIES = [
+    { id: "españa", label: "España", flag: "🇪🇸" },
+    { id: "inglaterra", label: "Inglaterra", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
+    { id: "alemania", label: "Alemania", flag: "🇩🇪" },
+    { id: "italia", label: "Italia", flag: "🇮🇹" },
+    { id: "francia", label: "Francia", flag: "🇫🇷" },
+    { id: "portugal", label: "Portugal", flag: "🇵🇹" },
+    { id: "ecuador", label: "Ecuador", flag: "🇪🇨" },
+    { id: "mexico", label: "México", flag: "🇲🇽" },
+    { id: "costa rica", label: "Costa Rica", flag: "🇨🇷" },
+    { id: "brasil", label: "Brasil", flag: "🇧🇷" },
+    { id: "argentina", label: "Argentina", flag: "🇦🇷" },
+    { id: "colombia", label: "Colombia", flag: "🇨🇴" },
+  ];
+
+  const handleMcpSearch = async (customQuery?: string, countryParam?: string) => {
+    const activeQuery = customQuery !== undefined ? customQuery : mcpQuery;
+    const activeCountry = countryParam !== undefined ? countryParam : mcpCountry;
+
+    setMcpLoading(true);
+    setMcpSearched(true);
+    try {
+      const res = await fetch("/api/mcp/predictions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: activeQuery,
+          country: activeCountry,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setMcpResults(data.predictions || []);
+        setMcpMetrics(data.metrics || null);
+      }
+    } catch (err) {
+      console.error("MCP Admin search error:", err);
+    } finally {
+      setMcpLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === "mcp" && mcpResults.length === 0 && !mcpSearched) {
+      handleMcpSearch("Pronósticos de España para hoy", "españa");
+    }
+  }, [activeTab]);
+
 
   const addLog = (msg: string) => {
     setLogs((prev) => [`[${new Date().toLocaleTimeString()}] ${msg}`, ...prev.slice(0, 49)]);

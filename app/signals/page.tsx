@@ -4,7 +4,6 @@ import { Navbar } from "@/components/Navbar";
 import React, { useState, useEffect } from "react";
 import { PredictionCard } from "@/components/PredictionCard";
 import { MatchDetailModal } from "@/components/MatchDetailModal";
-import { McpCountryAgentModal } from "@/components/McpCountryAgentModal";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
 import { useLanguage } from "@/context/LanguageContext";
@@ -26,7 +25,6 @@ export default function SignalsPage() {
   const [signals, setSignals] = useState<MarketOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
-  const [isMcpModalOpen, setIsMcpModalOpen] = useState<boolean>(false);
 
   // Search & Filters
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -515,15 +513,7 @@ export default function SignalsPage() {
             ))}
           </div>
         )}
-        <McpCountryAgentModal
-        isOpen={isMcpModalOpen}
-        onClose={() => setIsMcpModalOpen(false)}
-        onSelectPrediction={(pred) => {
-          setIsMcpModalOpen(false);
-          setActiveModalPick(pred);
-        }}
-      />
-    </main>
+        </main>
 
       {/* Detail Modal */}
       {activeModalPick && (
