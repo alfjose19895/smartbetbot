@@ -39,14 +39,14 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@supabase/ssr": "^0.12.4",
-    "@supabase/supabase-js": "^2.112.3",
+    "@supabase/ssr": "^0.12.5",
+    "@supabase/supabase-js": "^2.114.0",
     "firebase": "^12.18.0",
     "html-to-image": "^1.11.13",
-    "next": "16.2.11",
+    "next": "16.3.4",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "zod": "^4.4.3"
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.0",
@@ -54,9 +54,9 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "eslint": "^9.0.0",
-    "eslint-config-next": "16.2.11",
+    "eslint-config-next": "16.3.4",
     "postcss": "^8.5.0",
-    "supabase": "^2.115.0",
+    "supabase": "^2.116.0",
     "tailwindcss": "^4.1.0",
     "typescript": "^5.9.0",
     "vitest": "^4.1.11"
