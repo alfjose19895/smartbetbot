@@ -350,16 +350,14 @@ export function evaluateMarketResult(
 export async function generatePredictionsForUpcoming(targetLeagueIds?: number[]): Promise<MarketOpportunity[]> {
   const nowMs = Date.now();
   const todayDateStr = getEcuadorDateString(nowMs);
+  const tomorrowMs = nowMs + 24 * 60 * 60 * 1000;
+  const tomorrowDateStr = getEcuadorDateString(tomorrowMs);
 
-  // Clean slate: if today is before HISTORY_START_DATE (2026-09-05), keep platform 100% clean with 0 picks for today
-  if (todayDateStr < HISTORY_START_DATE) {
-    cachedLivePredictions = [];
-    cacheTimestamp = nowMs;
-    return [];
-  }
+  // Active target date: if today is before HISTORY_START_DATE, serve the prepared official start slate (2026-09-05)
+  const activeDateStr = todayDateStr >= HISTORY_START_DATE ? todayDateStr : HISTORY_START_DATE;
 
-  // 1. If a frozen snapshot exists for today, update finished match scores & statuses and return it
-  const existingSnapshot = loadDailySnapshot(todayDateStr);
+  // 1. If a frozen snapshot exists for active date (or tomorrow), update finished match scores & statuses and return it
+  const existingSnapshot = loadDailySnapshot(activeDateStr) || (activeDateStr !== tomorrowDateStr ? loadDailySnapshot(tomorrowDateStr) : null);
   if (existingSnapshot && existingSnapshot.length > 0) {
     try {
       const allTodayFixtures = await apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil");
