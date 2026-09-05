@@ -1019,7 +1019,7 @@
     "pickBadge": "valor",
     "smartScore": 93,
     "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con Sevilla W sumando en 3 de sus últimos 5 cotejos y la vocación ofensiva de Barcelona W, el algoritmo estima un 68% de certeza para más de 2.5 goles.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-07",
@@ -1132,7 +1132,8 @@
     ],
     "homeElo": 1690,
     "awayElo": 2010,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "0 - 4 (4 Goles)"
   },
   {
     "fixtureId": 1550950,
@@ -2449,7 +2450,7 @@
     "pickBadge": "estandar",
     "smartScore": 88,
     "explanation": "Jerarquía y solvencia territorial: Standard Liege (Elo 1555) llega en gran momento con 2 victorias en sus 5 cotejos más recientes, superando a Antwerp en xG (2.11 vs 0.98). El modelo Poisson proyecta un contundente 62.7% de probabilidad de triunfo local a cuota @1.59.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-07",
@@ -2562,6 +2563,7 @@
     ],
     "homeElo": 1555,
     "awayElo": 1497,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "1 - 0"
   }
 ]
