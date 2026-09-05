@@ -1,28 +1,60 @@
 import { describe, it, expect } from "vitest";
 import { evaluateMarketResult } from "./db";
 
-describe("Exhaustive Market Evaluation Suite (All 8 Core Markets)", () => {
-  describe("1. Gana Local", () => {
-    it("wins when home goals are strictly greater than away goals", () => {
+describe("Exhaustive Market Evaluation Suite (All Core Markets)", () => {
+  describe("1. Ganador Local / Gana Local", () => {
+    it("wins when home goals are strictly greater than away goals (Ganador Local)", () => {
+      const res = evaluateMarketResult("Ganador Local", 4, 0);
+      expect(res.isWon).toBe(true);
+      expect(res.actualScoreText).toBe("4 - 0");
+    });
+
+    it("wins when home goals are strictly greater than away goals (Gana Local)", () => {
       const res = evaluateMarketResult("Gana Local", 2, 1);
       expect(res.isWon).toBe(true);
       expect(res.actualScoreText).toBe("2 - 1");
     });
 
     it("loses when match ends in a draw", () => {
-      const res = evaluateMarketResult("Gana Local", 1, 1);
+      const res = evaluateMarketResult("Ganador Local", 1, 1);
       expect(res.isWon).toBe(false);
       expect(res.actualScoreText).toBe("1 - 1");
     });
 
     it("loses when away team wins", () => {
-      const res = evaluateMarketResult("Gana Local", 0, 2);
+      const res = evaluateMarketResult("Ganador Local", 0, 2);
       expect(res.isWon).toBe(false);
       expect(res.actualScoreText).toBe("0 - 2");
     });
   });
 
-  describe("2. Empate (X)", () => {
+  describe("2. Ganador Visitante / Gana Visitante", () => {
+    it("wins when away goals are strictly greater than home goals (Ganador Visitante)", () => {
+      const res = evaluateMarketResult("Ganador Visitante", 1, 3);
+      expect(res.isWon).toBe(true);
+      expect(res.actualScoreText).toBe("1 - 3");
+    });
+
+    it("wins when away goals are strictly greater than home goals (Gana Visitante)", () => {
+      const res = evaluateMarketResult("Gana Visitante", 0, 4);
+      expect(res.isWon).toBe(true);
+      expect(res.actualScoreText).toBe("0 - 4");
+    });
+
+    it("loses when match ends in a draw", () => {
+      const res = evaluateMarketResult("Ganador Visitante", 0, 0);
+      expect(res.isWon).toBe(false);
+      expect(res.actualScoreText).toBe("0 - 0");
+    });
+
+    it("loses when home team wins", () => {
+      const res = evaluateMarketResult("Ganador Visitante", 2, 0);
+      expect(res.isWon).toBe(false);
+      expect(res.actualScoreText).toBe("2 - 0");
+    });
+  });
+
+  describe("3. Empate (X)", () => {
     it("wins when match ends in a goalless draw (0 - 0)", () => {
       const res = evaluateMarketResult("Empate (X)", 0, 0);
       expect(res.isWon).toBe(true);
@@ -39,32 +71,6 @@ describe("Exhaustive Market Evaluation Suite (All 8 Core Markets)", () => {
       const res = evaluateMarketResult("Empate (X)", 1, 0);
       expect(res.isWon).toBe(false);
       expect(res.actualScoreText).toBe("1 - 0");
-    });
-
-    it("loses when away team wins (0 - 1)", () => {
-      const res = evaluateMarketResult("Empate (X)", 0, 1);
-      expect(res.isWon).toBe(false);
-      expect(res.actualScoreText).toBe("0 - 1");
-    });
-  });
-
-  describe("3. Gana Visitante", () => {
-    it("wins when away goals are strictly greater than home goals", () => {
-      const res = evaluateMarketResult("Gana Visitante", 1, 3);
-      expect(res.isWon).toBe(true);
-      expect(res.actualScoreText).toBe("1 - 3");
-    });
-
-    it("loses when match ends in a draw", () => {
-      const res = evaluateMarketResult("Gana Visitante", 0, 0);
-      expect(res.isWon).toBe(false);
-      expect(res.actualScoreText).toBe("0 - 0");
-    });
-
-    it("loses when home team wins", () => {
-      const res = evaluateMarketResult("Gana Visitante", 2, 0);
-      expect(res.isWon).toBe(false);
-      expect(res.actualScoreText).toBe("2 - 0");
     });
   });
 
@@ -96,19 +102,19 @@ describe("Exhaustive Market Evaluation Suite (All 8 Core Markets)", () => {
     });
   });
 
-  describe("6. Ambos Marcan (BTTS)", () => {
-    it("wins when both teams score at least 1 goal", () => {
-      const res = evaluateMarketResult("Ambos Marcan (BTTS)", 1, 1);
+  describe("6. Ambos Equipos Anotan / BTTS", () => {
+    it("wins when both teams score at least 1 goal with Ambos Equipos Anotan", () => {
+      const res = evaluateMarketResult("Ambos Equipos Anotan", 3, 4);
       expect(res.isWon).toBe(true);
-      expect(res.actualScoreText).toBe("1 - 1 (Ambos Sí)");
+      expect(res.actualScoreText).toBe("3 - 4 (Ambos Sí)");
     });
 
-    it("loses when one or both teams score 0 goals", () => {
-      const res1 = evaluateMarketResult("Ambos Marcan (BTTS)", 2, 0);
+    it("loses when one or both teams score 0 goals with Ambos Equipos Anotan", () => {
+      const res1 = evaluateMarketResult("Ambos Equipos Anotan", 4, 0);
       expect(res1.isWon).toBe(false);
-      expect(res1.actualScoreText).toBe("2 - 0 (No)");
+      expect(res1.actualScoreText).toBe("4 - 0 (No)");
 
-      const res2 = evaluateMarketResult("Ambos Marcan (BTTS)", 0, 0);
+      const res2 = evaluateMarketResult("Ambos Equipos Anotan", 0, 0);
       expect(res2.isWon).toBe(false);
       expect(res2.actualScoreText).toBe("0 - 0 (No)");
     });

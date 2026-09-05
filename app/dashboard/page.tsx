@@ -270,17 +270,15 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-            {isAdmin && (
-              <button
-                onClick={handleRefreshRemainingAlerts}
-                disabled={syncing}
-                title="Si las alertas actuales ya finalizaron y aún quedan partidos por jugar en la jornada, busca e incorpora nuevas alertas"
-                className="flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-3.5 py-2 text-xs font-black text-white shadow-md shadow-emerald-600/30 hover:from-emerald-500 hover:to-teal-500 transition cursor-pointer disabled:opacity-50"
-              >
-                <span>🔄</span>
-                <span>{syncing ? "Buscando..." : "Buscar Nuevas Alertas (Admin)"}</span>
-              </button>
-            )}
+            <button
+              onClick={handleRefreshRemainingAlerts}
+              disabled={syncing}
+              title="Actualiza marcadores y busca nuevas alertas para los partidos restantes del día"
+              className="flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-3.5 py-2 text-xs font-black text-white shadow-md shadow-emerald-600/30 hover:from-emerald-500 hover:to-teal-500 transition cursor-pointer disabled:opacity-50"
+            >
+              <span>🔄</span>
+              <span>{syncing ? "Buscando alertas..." : "Buscar Más Alertas"}</span>
+            </button>
 
             <div className="rounded-2xl bg-white px-3.5 py-2 sm:px-4 sm:py-2.5 border border-slate-200 text-center shadow-sm dark:bg-slate-900/80 dark:border-slate-800">
               <span className="text-[10px] uppercase text-slate-600 block font-bold dark:text-slate-400">

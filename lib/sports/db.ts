@@ -219,37 +219,41 @@ export function evaluateMarketResult(
   const btts = homeGoals > 0 && awayGoals > 0;
   const mLower = market.toLowerCase().trim();
 
-  // 1. Gana Local / 1
+  // 1. Ganador Local / 1 / Home Win
   if (
     mLower === "gana local" ||
+    mLower === "ganador local" ||
     mLower === "1" ||
     mLower === "home" ||
     mLower.startsWith("gana local") ||
-    mLower.includes("local gana")
+    mLower.startsWith("ganador local") ||
+    (mLower.includes("local") && (mLower.includes("gana") || mLower.includes("ganador")))
   ) {
     const isWon = homeGoals > awayGoals;
     return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
   }
 
-  // 2. Gana Visitante / 2
+  // 2. Ganador Visitante / 2 / Away Win
   if (
     mLower === "gana visitante" ||
+    mLower === "ganador visitante" ||
     mLower === "2" ||
     mLower === "away" ||
     mLower.startsWith("gana visitante") ||
-    mLower.includes("visitante gana")
+    mLower.startsWith("ganador visitante") ||
+    (mLower.includes("visitante") && (mLower.includes("gana") || mLower.includes("ganador")))
   ) {
     const isWon = awayGoals > homeGoals;
     return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
   }
 
-  // 3. Empate / X
-  if (mLower === "empate" || mLower === "x" || mLower === "draw" || mLower.includes("empate")) {
+  // 3. Empate / X / Draw
+  if (mLower === "empate" || mLower === "x" || mLower === "draw" || mLower.includes("empate") || mLower.includes("(x)")) {
     const isWon = homeGoals === awayGoals;
     return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
   }
 
-  // 4. Over Goals (Over 0.5, Over 1.5, Over 2.5, Over 3.5, Over 4.5, Más de X goles)
+  // 4. Over Goals (Over 0.5, 1.5, 2.5, 3.5, 4.5, Más de X goles)
   if (
     (mLower.includes("over") || mLower.includes("más de") || mLower.includes("mas de")) &&
     (mLower.includes("gol") || mLower.includes("goal") || mLower.includes("goles"))
@@ -265,7 +269,7 @@ export function evaluateMarketResult(
     return { isWon, actualScoreText: `${homeGoals} - ${awayGoals} (${totalGoals} Goles)` };
   }
 
-  // 5. Under Goals (Under 0.5, Under 1.5, Under 2.5, Under 3.5, Under 4.5, Menos de X goles)
+  // 5. Under Goals (Under 0.5, 1.5, 2.5, 3.5, 4.5, Menos de X goles)
   if (
     (mLower.includes("under") || mLower.includes("menos de")) &&
     (mLower.includes("gol") || mLower.includes("goal") || mLower.includes("goles"))
@@ -283,7 +287,8 @@ export function evaluateMarketResult(
 
   // 6. Ambos Marcan (BTTS)
   if (mLower.includes("ambos") || mLower.includes("btts")) {
-    if (mLower.includes("no")) {
+    const isNoMarket = mLower.includes(" no") || mLower.includes("ambos no") || mLower.includes("btts no") || mLower.endsWith(" no") || mLower.includes("no anotan");
+    if (isNoMarket) {
       const isWon = !btts;
       return { isWon, actualScoreText: btts ? `${homeGoals} - ${awayGoals} (Ambos Sí)` : `${homeGoals} - ${awayGoals} (Ambos No)` };
     } else {
@@ -314,7 +319,7 @@ export function evaluateMarketResult(
     }
   }
 
-  // 8. Hándicap Asiático / Handicap
+  // 8. Hándicap Asiático
   if (mLower.includes("handicap") || mLower.includes("hándicap")) {
     if (mLower.includes("+1.5") && mLower.includes("visitante")) {
       const isWon = (awayGoals + 1.5) > homeGoals;
@@ -343,10 +348,6 @@ export function evaluateMarketResult(
   return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
 }
 
-/**
- * Generates verified, ultra-high-precision predictions dynamically without arbitrary pick limits.
- * Exclusively processes matches from our curated league catalog.
- */
 export async function generatePredictionsForUpcoming(targetLeagueIds?: number[]): Promise<MarketOpportunity[]> {
   const nowMs = Date.now();
   const todayDateStr = getEcuadorDateString(nowMs);
@@ -627,17 +628,50 @@ export async function refreshRemainingLivePredictions(): Promise<{
   const isWeekend = dayOfWeek === 0 || dayOfWeek === 6 || dayOfWeek === 5;
   const dailyTarget = isWeekend ? 15 : 12;
 
-  const existingSnapshot = loadDailySnapshot(todayDateStr) || [];
+  let existingSnapshot = loadDailySnapshot(todayDateStr) || [];
 
-  // Check if there are still pending matches today
-  const pendingMatches = existingSnapshot.filter(p => !p.status || p.status === "pending");
-  if (pendingMatches.length > 0) {
-    return {
-      count: 0,
-      totalAlerts: existingSnapshot.length,
-      predictions: existingSnapshot,
-      message: `Aún hay ${pendingMatches.length} partidos pendientes hoy. Las nuevas alertas se habilitarán automáticamente cuando todos los partidos finalicen.`,
-    };
+  // 1. First ensure all finished matches in the existing snapshot are settled with real scores
+  try {
+    const allTodayFixtures = await apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil").catch(() => []);
+    if (Array.isArray(allTodayFixtures) && allTodayFixtures.length > 0) {
+      let snapshotUpdated = false;
+      for (const item of allTodayFixtures) {
+        const s = item.fixture?.status?.short;
+        const isFinished = ["FT", "AET", "PEN", "120", "POST"].includes(s) || (typeof item.goals?.home === "number" && typeof item.goals?.away === "number" && !["NS", "1H", "2H", "HT"].includes(s));
+        if (isFinished) {
+          const hGoals = item.goals?.home ?? item.score?.fulltime?.home;
+          const aGoals = item.goals?.away ?? item.score?.fulltime?.away;
+          if (typeof hGoals === "number" && typeof aGoals === "number") {
+            const hNorm = getCanonicalTeamKey(item.teams?.home?.name || "");
+            const aNorm = getCanonicalTeamKey(item.teams?.away?.name || "");
+            const fixId = Number(item.fixture?.id);
+
+            for (const p of existingSnapshot) {
+              const pFixId = Number(p.fixtureId);
+              const pHNorm = getCanonicalTeamKey(p.homeTeam);
+              const pANorm = getCanonicalTeamKey(p.awayTeam);
+              const isMatch = (pFixId && fixId && pFixId === fixId) || (hNorm === pHNorm && aNorm === pANorm) || (hNorm.length > 3 && pHNorm.length > 3 && (hNorm.includes(pHNorm) || pHNorm.includes(hNorm)) && (aNorm.includes(pANorm) || pANorm.includes(aNorm)));
+
+              if (isMatch) {
+                const evalRes = evaluateMarketResult(p.market, hGoals, aGoals);
+                const targetStatus = evalRes.isWon ? "won" : "lost";
+                if (p.status !== targetStatus || p.actualScore !== evalRes.actualScoreText) {
+                  p.status = targetStatus;
+                  p.actualScore = evalRes.actualScoreText;
+                  snapshotUpdated = true;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      if (snapshotUpdated) {
+        saveDailySnapshot(todayDateStr, existingSnapshot);
+      }
+    }
+  } catch (err) {
+    console.warn("Could not refresh finished match scores:", err);
   }
 
   const existingMatchKeys = new Set(
@@ -648,7 +682,7 @@ export async function refreshRemainingLivePredictions(): Promise<{
     })
   );
 
-  // Fetch upcoming fixtures and odds for today & tomorrow
+  // 2. Fetch upcoming fixtures and odds for today & tomorrow
   const [todayFixtures, tomorrowFixtures, todayOddsList, tomorrowOddsList] = await Promise.all([
     apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil").catch(() => []),
     apiFootball.getFixturesByDate(tomorrowDateStr, "America/Guayaquil").catch(() => []),
@@ -670,11 +704,8 @@ export async function refreshRemainingLivePredictions(): Promise<{
   for (const item of allFixtures) {
     if (!item.fixture?.id || !item.teams?.home?.name || !item.teams?.away?.name) continue;
 
-    const kickoffMs = new Date(item.fixture.date).getTime();
     const shortStatus = item.fixture.status?.short || "NS";
-
     // Only matches that have NOT started yet
-    if (kickoffMs < nowMs - 5 * 60 * 1000) continue;
     if (["FT", "AET", "PEN", "PST", "CANC", "ABD", "1H", "2H", "HT"].includes(shortStatus)) continue;
 
     const hNorm = getCanonicalTeamKey(item.teams.home.name);
@@ -705,6 +736,7 @@ export async function refreshRemainingLivePredictions(): Promise<{
       newOpportunities.push({
         ...opps[0],
         confidence: "Muy Alta",
+        status: "pending",
       });
       existingMatchKeys.add(matchKey);
     }
@@ -729,13 +761,16 @@ export async function refreshRemainingLivePredictions(): Promise<{
     saveDailySnapshot(todayDateStr, merged);
     cachedLivePredictions = merged;
     cacheTimestamp = nowMs;
+    cachedSettledHistory = []; // Invalidate history cache so settled matches reflect immediately
   }
 
   return {
     count: addedPicks.length,
     totalAlerts: merged.length,
     predictions: merged,
-    message: addedPicks.length > 0 ? `✓ Se agregaron ${addedPicks.length} nuevas alertas de alta precisión.` : "No hay nuevos partidos disponibles con alta precisión por ahora.",
+    message: addedPicks.length > 0
+      ? `✓ Se agregaron ${addedPicks.length} nuevas alertas de alta precisión. Total de alertas hoy: ${merged.length}.`
+      : `✓ El mercado actual está al día con ${merged.length} alertas.`,
   };
 }
 

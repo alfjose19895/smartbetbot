@@ -976,6 +976,37 @@ export function evaluateFixturePrediction(params: {
   const resolvedUnder35Odds = sanitizeOdds(marketOdds.under35, calculatedUnder35Odds, "2WAY");
   const resolvedBttsOdds = sanitizeOdds(marketOdds.bttsYes, calculatedBttsOdds, "2WAY");
 
+  // Calibrate Model Probabilities with Market Implied Probabilities when Bookmaker Odds are available
+  if (marketOdds.homeWin && marketOdds.draw && marketOdds.awayWin) {
+    const margin1X2 = (1 / marketOdds.homeWin) + (1 / marketOdds.draw) + (1 / marketOdds.awayWin);
+    const mHomeProb = (1 / marketOdds.homeWin) / margin1X2;
+    const mDrawProb = (1 / marketOdds.draw) / margin1X2;
+    const mAwayProb = (1 / marketOdds.awayWin) / margin1X2;
+
+    pHome = 0.65 * mHomeProb + 0.35 * pHome;
+    pDraw = 0.65 * mDrawProb + 0.35 * pDraw;
+    pAway = 0.65 * mAwayProb + 0.35 * pAway;
+  }
+
+  if (marketOdds.over25 && marketOdds.under25) {
+    const marginOU = (1 / marketOdds.over25) + (1 / marketOdds.under25);
+    const mOverProb = (1 / marketOdds.over25) / marginOU;
+    const mUnderProb = (1 / marketOdds.under25) / marginOU;
+
+    pOver25 = 0.65 * mOverProb + 0.35 * pOver25;
+    pUnder25 = 0.65 * mUnderProb + 0.35 * pUnder25;
+  }
+
+  if (marketOdds.bttsYes && marketOdds.bttsNo) {
+    const marginBTTS = (1 / marketOdds.bttsYes) + (1 / marketOdds.bttsNo);
+    const mBttsProb = (1 / marketOdds.bttsYes) / marginBTTS;
+    pBttsYes = 0.65 * mBttsProb + 0.35 * pBttsYes;
+  }
+
+  const isDefensiveLeague = ["serie b", "la liga 2", "segunda", "liga profesional argentina", "ligue 2"].some((dl) =>
+    normLeg.includes(dl)
+  );
+
   // Calibrated Precision Filter Matrix (Ensuring viable bet return >= 1.35 and mathematical edge)
   const candidates: {
     market: string;
@@ -986,16 +1017,18 @@ export function evaluateFixturePrediction(params: {
     minProbThreshold: number;
   }[] = [
     // 1X2 Match Winner (Ganador Local & Ganador Visitante)
-    { market: "Ganador Local", selection: "1", prob: pHome, odds: resolvedHomeOdds, minOddsThreshold: 1.35, minProbThreshold: 0.50 },
-    { market: "Ganador Visitante", selection: "2", prob: pAway, odds: resolvedAwayOdds, minOddsThreshold: 1.35, minProbThreshold: 0.45 },
-    { market: "Empate (X)", selection: "X", prob: pDraw, odds: resolvedDrawOdds, minOddsThreshold: 2.70, minProbThreshold: 0.28 },
+    { market: "Ganador Local", selection: "1", prob: pHome, odds: resolvedHomeOdds, minOddsThreshold: 1.30, minProbThreshold: 0.55 },
+    { market: "Ganador Visitante", selection: "2", prob: pAway, odds: resolvedAwayOdds, minOddsThreshold: 1.35, minProbThreshold: 0.55 },
+    { market: "Empate (X)", selection: "X", prob: pDraw, odds: resolvedDrawOdds, minOddsThreshold: 2.70, minProbThreshold: 0.30 },
 
-    // Over / Under 2.5 Goles
-    { market: "Over 2.5 Goles", selection: "Over 2.5", prob: pOver25, odds: resolvedOver25Odds, minOddsThreshold: 1.40, minProbThreshold: 0.50 },
-    { market: "Under 2.5 Goles", selection: "Under 2.5", prob: pUnder25, odds: resolvedUnder25Odds, minOddsThreshold: 1.40, minProbThreshold: 0.50 },
+    // Over 2.5 Goles (Filtered out from defensive low-scoring leagues)
+    ...(isDefensiveLeague ? [] : [{ market: "Over 2.5 Goles", selection: "Over 2.5", prob: pOver25, odds: resolvedOver25Odds, minOddsThreshold: 1.40, minProbThreshold: 0.55 }]),
+
+    // Under 2.5 Goles (Strong value in defensive leagues)
+    { market: "Under 2.5 Goles", selection: "Under 2.5", prob: pUnder25, odds: resolvedUnder25Odds, minOddsThreshold: 1.40, minProbThreshold: isDefensiveLeague ? 0.52 : 0.56 },
 
     // Ambos Equipos Anotan (BTTS)
-    { market: "Ambos Equipos Anotan", selection: "Sí", prob: pBttsYes, odds: resolvedBttsOdds, minOddsThreshold: 1.45, minProbThreshold: 0.50 },
+    { market: "Ambos Equipos Anotan", selection: "Sí", prob: pBttsYes, odds: resolvedBttsOdds, minOddsThreshold: 1.45, minProbThreshold: 0.54 },
   ];
 
   const opportunities: MarketOpportunity[] = [];
