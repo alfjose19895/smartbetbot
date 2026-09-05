@@ -4,6 +4,7 @@ import { Navbar } from "@/components/Navbar";
 import React, { useState, useEffect } from "react";
 import { PredictionCard } from "@/components/PredictionCard";
 import { MatchDetailModal } from "@/components/MatchDetailModal";
+import { McpCountryAgentModal } from "@/components/McpCountryAgentModal";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
 import { useLanguage } from "@/context/LanguageContext";
@@ -25,6 +26,7 @@ export default function SignalsPage() {
   const [signals, setSignals] = useState<MarketOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
+  const [isMcpModalOpen, setIsMcpModalOpen] = useState<boolean>(false);
 
   // Search & Filters
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -114,12 +116,10 @@ export default function SignalsPage() {
   });
 
   const coreMarkets = [
-    "Gana Local",
-    "Empate (X)",
-    "Gana Visitante",
+    "Ganador Local",
+    "Ganador Visitante",
     "Over 2.5 Goles",
-    "Under 2.5 Goles",
-    "Ambos Marcan (BTTS)",
+    "Ambos Equipos Anotan",
   ];
 
   const availableMarketNames = Array.from(
@@ -132,8 +132,8 @@ export default function SignalsPage() {
   }));
 
   const confidenceDropdownOptions: DropdownOption[] = [
-    { value: "muy_alta", label: language === "en" ? "⭐⭐⭐ Very High (≥75%)" : "⭐⭐⭐ Muy Alta (≥75%)" },
-    { value: "alta", label: language === "en" ? "⭐⭐ High (68% - 74%)" : "⭐⭐ Alta (68% - 74%)" },
+    { value: "muy_alta", label: language === "en" ? "⭐⭐⭐ Very High (≥70%)" : "⭐⭐⭐ Muy Alta (≥70%)" },
+    { value: "alta", label: language === "en" ? "⭐⭐ High (55% - 69%)" : "⭐⭐ Alta (55% - 69%)" },
   ];
 
   const now = new Date();
@@ -212,8 +212,8 @@ export default function SignalsPage() {
     // 5. Confidence filter
     if (selectedConfidence.length > 0) {
       const isMatch = selectedConfidence.some((c) => {
-        if (c === "muy_alta") return s.confidence === "Muy Alta" || s.probability >= 75;
-        if (c === "alta") return s.confidence === "Alta" || (s.probability >= 68 && s.probability < 75);
+        if (c === "muy_alta") return s.confidence === "Muy Alta" || s.probability >= 70;
+        if (c === "alta") return s.confidence === "Alta" || (s.probability >= 55 && s.probability < 70);
         return false;
       });
       if (!isMatch) return false;
@@ -515,7 +515,15 @@ export default function SignalsPage() {
             ))}
           </div>
         )}
-      </main>
+        <McpCountryAgentModal
+        isOpen={isMcpModalOpen}
+        onClose={() => setIsMcpModalOpen(false)}
+        onSelectPrediction={(pred) => {
+          setIsMcpModalOpen(false);
+          setActiveModalPick(pred);
+        }}
+      />
+    </main>
 
       {/* Detail Modal */}
       {activeModalPick && (

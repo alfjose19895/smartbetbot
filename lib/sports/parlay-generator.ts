@@ -26,7 +26,7 @@ export function getMarketCategory(marketName: string): string {
   const m = (marketName || "").toLowerCase().trim();
   if (m.includes("ambos") || m.includes("btts")) return "BTTS";
   if (m.includes("doble") || m.includes("1x") || m.includes("x2") || m.includes("12")) return "DOUBLE_CHANCE";
-  if (m.includes("gana local") || m.includes("gana visitante") || m.includes("1x2") || m.startsWith("gana")) return "MONEYLINE";
+  if (m.includes("ganador local") || m.includes("ganador visitante") || m.includes("gana local") || m.includes("gana visitante") || m.includes("1x2") || m.startsWith("gana") || m.startsWith("ganador")) return "MONEYLINE";
   if (m.includes("under") || m.includes("menos")) return "GOALS_UNDER";
   if (m.includes("over") || m.includes("más") || m.includes("mas")) return "GOALS_OVER";
   if (m.includes("handicap") || m.includes("hándicap")) return "HANDICAP";

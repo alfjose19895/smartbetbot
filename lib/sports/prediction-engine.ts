@@ -1007,7 +1007,7 @@ export function evaluateFixturePrediction(params: {
     normLeg.includes(dl)
   );
 
-  // Calibrated Precision Filter Matrix (Ensuring viable bet return >= 1.35 and mathematical edge)
+    // Calibrated Precision Filter Matrix (ONLY 4 Standard Core Winning Markets)
   const candidates: {
     market: string;
     selection: string;
@@ -1016,18 +1016,16 @@ export function evaluateFixturePrediction(params: {
     minOddsThreshold: number;
     minProbThreshold: number;
   }[] = [
-    // 1X2 Match Winner (Ganador Local & Ganador Visitante)
+    // 1. Ganador Local
     { market: "Ganador Local", selection: "1", prob: pHome, odds: resolvedHomeOdds, minOddsThreshold: 1.35, minProbThreshold: 0.55 },
-    { market: "Ganador Visitante", selection: "2", prob: pAway, odds: resolvedAwayOdds, minOddsThreshold: 1.35, minProbThreshold: 0.55 },
-    { market: "Empate (X)", selection: "X", prob: pDraw, odds: resolvedDrawOdds, minOddsThreshold: 2.70, minProbThreshold: 0.30 },
 
-    // Over 2.5 Goles (Filtered out from defensive low-scoring leagues)
+    // 2. Ganador Visitante
+    { market: "Ganador Visitante", selection: "2", prob: pAway, odds: resolvedAwayOdds, minOddsThreshold: 1.35, minProbThreshold: 0.55 },
+
+    // 3. Over 2.5 Goles (Filtered out from defensive low-scoring leagues)
     ...(isDefensiveLeague ? [] : [{ market: "Over 2.5 Goles", selection: "Over 2.5", prob: pOver25, odds: resolvedOver25Odds, minOddsThreshold: 1.40, minProbThreshold: 0.55 }]),
 
-    // Under 2.5 Goles (Strong value in defensive leagues)
-    { market: "Under 2.5 Goles", selection: "Under 2.5", prob: pUnder25, odds: resolvedUnder25Odds, minOddsThreshold: 1.40, minProbThreshold: isDefensiveLeague ? 0.52 : 0.56 },
-
-    // Ambos Equipos Anotan (BTTS)
+    // 4. Ambos Equipos Anotan (BTTS)
     { market: "Ambos Equipos Anotan", selection: "Sí", prob: pBttsYes, odds: resolvedBttsOdds, minOddsThreshold: 1.45, minProbThreshold: 0.54 },
   ];
 
@@ -1037,27 +1035,25 @@ export function evaluateFixturePrediction(params: {
   const awayRecentForm = generateTeamRecentForm(awayTeam, canonicalLeague, rAway, kickoff);
   const h2hHistory = generateH2HClashes(homeTeam, awayTeam, canonicalLeague, rHomeBase, rAway, kickoff);
 
-  const buildOpportunity = (item: { market: string; selection: string; prob: number; odds: number }): MarketOpportunity => {
+    const buildOpportunity = (item: { market: string; selection: string; prob: number; odds: number }): MarketOpportunity => {
     const probPercent = Math.round(item.prob * 1000) / 10;
-    const isDrawMarket = item.market.includes("Empate") || item.market === "Empate (X)";
-
     const fairOdds = Math.round((1 / item.prob) * 100) / 100;
     const impliedProb = Math.round((1 / item.odds) * 1000) / 10;
     const edgePercent = Math.max(1.0, Math.round((item.prob - 1 / item.odds) * 1000) / 10);
     const evPercent = Math.round((item.prob * item.odds - 1) * 1000) / 10;
 
-    let confidence: "Muy Alta" | "Alta" = "Muy Alta";
-    let pickBadge: "bomba" | "valor" | "estandar" = "valor";
+    // Strict mathematical confidence calibration:
+    // "Muy Alta" when probability >= 70.0%
+    // "Alta" when probability is between 55.0% and 69.9%
+    const confidence: "Muy Alta" | "Alta" = probPercent >= 70.0 ? "Muy Alta" : "Alta";
+    let pickBadge: "bomba" | "valor" | "estandar" = "estandar";
 
-    if (item.odds >= 2.10 || isDrawMarket) {
+    if (item.odds >= 2.00 && edgePercent >= 2.0) {
       pickBadge = "bomba";
-      confidence = "Muy Alta";
-    } else if (probPercent >= 65.0) {
+    } else if (probPercent >= 68.0 && edgePercent >= 3.0) {
       pickBadge = "valor";
-      confidence = "Muy Alta";
     } else {
       pickBadge = "estandar";
-      confidence = "Muy Alta";
     }
 
     const isEuroPriority = isPriorityEuropeanLeague(leagueId, canonicalLeague, country);
@@ -1066,9 +1062,7 @@ export function evaluateFixturePrediction(params: {
       : (tier === 1 ? 8 : tier === 2 ? 4 : 0);
 
     const rawScore = Math.round(
-      (isDrawMarket ? (item.prob * 2.2 * 100) : (item.prob * 100)) +
-        (item.prob - 1 / item.odds) * 10 +
-        tierBonus
+      item.prob * 100 + (item.prob - 1 / item.odds) * 10 + tierBonus
     );
     const smartScore = Math.min(99, Math.max(72, rawScore));
 

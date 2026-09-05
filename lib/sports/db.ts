@@ -739,7 +739,7 @@ export async function refreshRemainingLivePredictions(): Promise<{
     if (opps.length > 0) {
       newOpportunities.push({
         ...opps[0],
-        confidence: "Muy Alta",
+        
         status: "pending",
       });
       existingMatchKeys.add(matchKey);

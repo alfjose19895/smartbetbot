@@ -82,12 +82,10 @@ export default function HistoryPage() {
   });
 
   const coreMarkets = [
-    "Gana Local",
-    "Empate (X)",
-    "Gana Visitante",
+    "Ganador Local",
+    "Ganador Visitante",
     "Over 2.5 Goles",
-    "Under 2.5 Goles",
-    "Ambos Marcan (BTTS)",
+    "Ambos Equipos Anotan",
   ];
 
   const availableMarkets = Array.from(

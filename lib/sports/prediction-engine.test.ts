@@ -35,7 +35,7 @@ describe("Prediction Engine (TypeScript MVP)", () => {
     expect(picks.length).toBeGreaterThan(0);
     const markets = picks.map((p) => p.market);
     console.log("CHELSEA vs BRIGHTON AVAILABLE MARKETS:", markets);
-    expect(picks.some((p) => p.market.includes("Gana") || p.market.includes("Empate") || p.market.includes("Goles") || p.market.includes("Ambos"))).toBe(true);
+    expect(picks.some((p) => p.market.includes("Ganador") || p.market.includes("Goles") || p.market.includes("Ambos"))).toBe(true);
   });
 
   it("strictly differentiates Egyptian Premier League from English Premier League and assigns star players", () => {
