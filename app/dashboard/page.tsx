@@ -2,6 +2,7 @@
 
 import { Navbar } from "@/components/Navbar";
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { PredictionCard } from "@/components/PredictionCard";
 import { MatchDetailModal } from "@/components/MatchDetailModal";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
@@ -20,6 +21,27 @@ function getMatchLiveStatus(kickoff: string): "SCHEDULED" | "IN_PLAY" | "FINISHE
   return "FINISHED";
 }
 
+function matchesStatusBadgeFilter(
+  p: MarketOpportunity,
+  filter: "ALL" | "VALOR" | "BOMBA" | "WON" | "LOST" | "SCHEDULED" | "IN_PLAY" | "FINISHED"
+): boolean {
+  if (filter === "ALL") return true;
+  if (filter === "VALOR") return p.pickBadge === "valor";
+  if (filter === "BOMBA") return p.pickBadge === "bomba";
+  if (filter === "WON") return p.status === "won";
+  if (filter === "LOST") return p.status === "lost";
+  if (filter === "IN_PLAY") {
+    return p.matchTiming === "live" || Boolean(p.currentScore) || getMatchLiveStatus(p.kickoff) === "IN_PLAY";
+  }
+  if (filter === "SCHEDULED") {
+    return p.matchTiming === "prematch" || (!p.currentScore && getMatchLiveStatus(p.kickoff) === "SCHEDULED");
+  }
+  if (filter === "FINISHED") {
+    return (getMatchLiveStatus(p.kickoff) === "FINISHED" && p.matchTiming !== "live") || p.status === "won" || p.status === "lost";
+  }
+  return true;
+}
+
 export default function DashboardPage() {
   const { language, t } = useLanguage();
   const [predictions, setPredictions] = useState<MarketOpportunity[]>([]);
@@ -30,7 +52,7 @@ export default function DashboardPage() {
 
   // Filters (exclusively for Today's Alertas)
   const [matchStatusFilter, setMatchStatusFilter] = useState<"ALL" | "VALOR" | "BOMBA" | "WON" | "LOST" | "SCHEDULED" | "IN_PLAY" | "FINISHED">("ALL");
-  const [minProbability, setMinProbability] = useState<number>(50);
+  const [minProbability, setMinProbability] = useState<number>(35);
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
@@ -70,7 +92,7 @@ export default function DashboardPage() {
   const handleSyncPredictions = async () => {
     try {
       setSyncing(true);
-      setSyncMessage("⚡ Consultando los mejores partidos y cuotas del día en API-Football (Ecuador UTC-5)...");
+      setSyncMessage("⚡ Consultando los mejores partidos y cuotas del día en API-Football...");
       const res = await fetch("/api/admin/sync/predictions", {
         method: "POST",
       });
@@ -164,36 +186,22 @@ export default function DashboardPage() {
     year: "numeric",
   });
 
-  // Count matches by status & badge
-  const scheduledCount = predictions.filter((p) => getMatchLiveStatus(p.kickoff) === "SCHEDULED").length;
-  const inPlayCount = predictions.filter((p) => getMatchLiveStatus(p.kickoff) === "IN_PLAY").length;
-  const finishedCount = predictions.filter((p) => getMatchLiveStatus(p.kickoff) === "FINISHED").length;
-  const wonCount = predictions.filter((p) => p.status === "won").length;
-  const lostCount = predictions.filter((p) => p.status === "lost").length;
-  const valorCount = predictions.filter((p) => p.pickBadge === "valor" || p.probability >= 76).length;
-  const bombaCount = predictions.filter((p) => p.pickBadge === "bomba" || p.odds >= 2.05).length;
+  // Count matches strictly matching status/badge filters
+  const scheduledCount = predictions.filter((p) => matchesStatusBadgeFilter(p, "SCHEDULED")).length;
+  const inPlayCount = predictions.filter((p) => matchesStatusBadgeFilter(p, "IN_PLAY")).length;
+  const finishedCount = predictions.filter((p) => matchesStatusBadgeFilter(p, "FINISHED")).length;
+  const wonCount = predictions.filter((p) => matchesStatusBadgeFilter(p, "WON")).length;
+  const lostCount = predictions.filter((p) => matchesStatusBadgeFilter(p, "LOST")).length;
+  const valorCount = predictions.filter((p) => matchesStatusBadgeFilter(p, "VALOR")).length;
+  const bombaCount = predictions.filter((p) => matchesStatusBadgeFilter(p, "BOMBA")).length;
 
   const filteredPredictions = predictions.filter((p) => {
-    // Result, Badge & Status Filter (Valor, Bomba, Ganadas, Perdidas, En Juego, Por Comenzar, Finalizadas, Todas)
-    if (matchStatusFilter === "VALOR") {
-      if (p.pickBadge !== "valor" && p.probability < 76) return false;
-    } else if (matchStatusFilter === "BOMBA") {
-      if (p.pickBadge !== "bomba" && p.odds < 2.05) return false;
-    } else if (matchStatusFilter === "WON") {
-      if (p.status !== "won") return false;
-    } else if (matchStatusFilter === "LOST") {
-      if (p.status !== "lost") return false;
-    } else if (matchStatusFilter === "IN_PLAY") {
-      const isLiveMatch = p.matchTiming === "live" || Boolean(p.currentScore) || getMatchLiveStatus(p.kickoff) === "IN_PLAY";
-      if (!isLiveMatch) return false;
-    } else if (matchStatusFilter === "SCHEDULED") {
-      const isPreMatch = p.matchTiming === "prematch" || (!p.currentScore && getMatchLiveStatus(p.kickoff) === "SCHEDULED");
-      if (!isPreMatch) return false;
-    } else if (matchStatusFilter !== "ALL") {
-      const status = getMatchLiveStatus(p.kickoff);
-      if (status !== matchStatusFilter) return false;
+    // 1. Result, Badge & Status Filter
+    if (!matchesStatusBadgeFilter(p, matchStatusFilter)) {
+      return false;
     }
 
+    // 2. League filter
     if (selectedLeagues.length > 0) {
       const normLeague = (p.league || "").toLowerCase().trim();
       const normCountry = (p.country || "").toLowerCase().trim();
@@ -209,6 +217,7 @@ export default function DashboardPage() {
       if (!matched) return false;
     }
 
+    // 3. Confidence filter
     if (selectedConfidence.length > 0) {
       const isMatch = selectedConfidence.some((c) => {
         if (c === "muy_alta") return p.confidence === "Muy Alta" || p.probability >= 70;
@@ -218,19 +227,20 @@ export default function DashboardPage() {
       if (!isMatch) return false;
     }
 
+    // 4. Market filter
     if (selectedMarkets.length > 0) {
       const match = selectedMarkets.some((m) => {
         const normSelected = m.toLowerCase().replace(/[^a-z0-9]/g, "");
         const normActual = p.market.toLowerCase().replace(/[^a-z0-9]/g, "");
         return (
           normActual.includes(normSelected) ||
-          normSelected.includes(normActual) ||
-          (m.includes("BTTS") && (p.market.includes("Ambos") || p.market.includes("BTTS")))
+          normSelected.includes(normActual)
         );
       });
       if (!match) return false;
     }
 
+    // 5. Min probability filter
     if (p.probability < minProbability) {
       return false;
     }
@@ -238,105 +248,141 @@ export default function DashboardPage() {
     return true;
   });
 
-  const displayPicks = filteredPredictions;
+  const avgOdds = predictions.length > 0
+    ? (predictions.reduce((acc, p) => acc + p.odds, 0) / predictions.length).toFixed(2)
+    : "—";
+
+  const avgProb = predictions.length > 0
+    ? (predictions.reduce((acc, p) => acc + p.probability, 0) / predictions.length).toFixed(1)
+    : "—";
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100 overflow-x-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
       <Navbar onSync={handleSyncPredictions} syncing={syncing} />
 
-      <main className="mx-auto max-w-7xl px-3.5 py-6 sm:px-6 sm:py-8 lg:px-8 space-y-6">
-        {/* Sync feedback notification */}
-        {syncMessage && (
-          <div
-            className={`rounded-2xl p-3 text-center text-xs font-bold shadow-sm ${
-              syncMessage.includes("✓")
-                ? "bg-emerald-50 border border-emerald-300 text-emerald-900 dark:bg-emerald-950/80 dark:border-emerald-700 dark:text-emerald-300"
-                : "bg-red-50 border border-red-300 text-red-900 dark:bg-red-950/80 dark:border-red-700 dark:text-red-300"
-            }`}
-          >
-            {syncMessage}
-          </div>
-        )}
-
-        {/* Dashboard Title & KPIs */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pt-2">
+      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
+        {/* Top Header Strip with Live Status & Title */}
+        <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-5 dark:border-slate-800">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-1 text-xs font-extrabold text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30">
-              <span>🎯</span>
-              <span className="capitalize">{formattedToday} • Alertas de Alta Precisión (≥70% Probabilidad)</span>
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
+                🎯
+              </span>
+              <span className="text-[11px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400">
+                {t("dashboardKicker")}
+              </span>
+              <span className="inline-flex items-center rounded-full bg-slate-200 px-2.5 py-0.5 text-[10px] font-black text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                📅 {formattedToday}
+              </span>
             </div>
-            <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
               {t("dashboardTitle")}
             </h1>
-            <p className="mt-1 text-xs text-slate-700 sm:text-sm dark:text-slate-400">
-              Pronósticos altamente filtrados con cuotas justas y valor matemático
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-2xl">
+              {t("dashboardSubtitle")}
             </p>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-            <button
-              onClick={handleRefreshRemainingAlerts}
-              disabled={syncing}
-              title="Actualiza marcadores y busca nuevas alertas para los partidos restantes del día"
-              className="flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-3.5 py-2 text-xs font-black text-white shadow-md shadow-emerald-600/30 hover:from-emerald-500 hover:to-teal-500 transition cursor-pointer disabled:opacity-50"
+          <div className="flex flex-wrap items-center gap-2.5">
+            {/* Live Alerts Direct Button */}
+            <Link
+              href="/live"
+              className="inline-flex items-center gap-2 rounded-2xl border border-rose-500/30 bg-rose-500/10 px-3.5 py-2 text-xs font-black text-rose-600 hover:bg-rose-500/20 transition dark:text-rose-400 cursor-pointer"
             >
-              <span>🔄</span>
-              <span>{syncing ? "Buscando alertas..." : "Buscar Más Alertas"}</span>
-            </button>
+              <span className="h-2 w-2 rounded-full bg-rose-500 animate-ping" />
+              <span>Módulo En Vivo ({inPlayCount})</span>
+            </Link>
 
-            <div className="rounded-2xl bg-white px-3.5 py-2 sm:px-4 sm:py-2.5 border border-slate-200 text-center shadow-sm dark:bg-slate-900/80 dark:border-slate-800">
-              <span className="text-[10px] uppercase text-slate-600 block font-bold dark:text-slate-400">
-                Alertas del Día
+            {isAdmin && (
+              <button
+                onClick={handleRefreshRemainingAlerts}
+                disabled={syncing}
+                className="inline-flex items-center gap-1.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-2 text-xs font-black text-emerald-700 hover:bg-emerald-500/20 transition dark:text-emerald-400 cursor-pointer disabled:opacity-50"
+                title="Buscar nuevas oportunidades de alta confianza"
+              >
+                <span>🔄</span>
+                <span>Buscar Nuevas Alertas</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Sync Message Alert */}
+        {syncMessage && (
+          <div className="mb-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 p-3.5 text-xs font-black text-emerald-700 dark:text-emerald-300 flex items-center justify-between animate-in fade-in">
+            <span>{syncMessage}</span>
+            <button onClick={() => setSyncMessage(null)} className="text-emerald-500 hover:text-emerald-700">✕</button>
+          </div>
+        )}
+
+        {/* Stats Row */}
+        <div className="mb-6 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              {t("statActivePicks")}
+            </span>
+            <div className="mt-1 flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+                {predictions.length}
               </span>
-              <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                {displayPicks.length}
-              </span>
+              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">hoy</span>
             </div>
-            <div className="rounded-2xl bg-white px-3.5 py-2 sm:px-4 sm:py-2.5 border border-slate-200 text-center shadow-sm dark:bg-slate-900/80 dark:border-slate-800">
-              <span className="text-[10px] uppercase text-slate-600 block font-bold dark:text-slate-400">
-                {t("statAvgOdds")}
+          </div>
+
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              {t("statAvgOdds")}
+            </span>
+            <div className="mt-1 flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+                @{avgOdds}
               </span>
-              <span className="text-sm sm:text-base font-black text-sky-700 dark:text-sky-400">
-                {(
-                  displayPicks.reduce((acc, p) => acc + p.odds, 0) /
-                  (displayPicks.length || 1)
-                ).toFixed(2)}
-              </span>
+              <span className="text-xs font-bold text-slate-500">cuota</span>
             </div>
-            <div className="rounded-2xl bg-white px-3.5 py-2 sm:px-4 sm:py-2.5 border border-slate-200 text-center shadow-sm dark:bg-slate-900/80 dark:border-slate-800">
-              <span className="text-[10px] uppercase text-slate-600 block font-bold dark:text-slate-400">
-                {t("statAvgProb")}
+          </div>
+
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              {t("statAvgProb")}
+            </span>
+            <div className="mt-1 flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+                {avgProb}%
               </span>
-              <span className="text-sm sm:text-base font-black text-emerald-700 dark:text-emerald-400">
-                {(
-                  displayPicks.reduce((acc, p) => acc + p.probability, 0) /
-                  (displayPicks.length || 1)
-                ).toFixed(0)}%
+              <span className="text-xs font-bold text-slate-500">media</span>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              En Juego (Live)
+            </span>
+            <div className="mt-1 flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-black text-rose-600 dark:text-rose-400">
+                {inPlayCount}
               </span>
+              <span className="text-xs font-bold text-rose-500">en vivo</span>
             </div>
           </div>
         </div>
 
-
-
-        {/* Match Status Filter Buttons */}
-        <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800/80 dark:bg-slate-900/80">
-          <span className="text-xs font-bold text-slate-600 mr-1 dark:text-slate-400">Estado del Partido:</span>
+        {/* Status / Category Filter Pills */}
+        <div className="mb-4 flex flex-wrap items-center gap-1.5 sm:gap-2">
           <button
             onClick={() => setMatchStatusFilter("ALL")}
             className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
               matchStatusFilter === "ALL"
-                ? "bg-slate-900 text-white dark:bg-slate-700"
+                ? "bg-slate-900 text-white shadow-sm dark:bg-slate-100 dark:text-slate-950"
                 : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
             }`}
           >
-            🌟 Todos ({predictions.length})
+            🌐 Todas ({predictions.length})
           </button>
           <button
             onClick={() => setMatchStatusFilter("VALOR")}
             className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
               matchStatusFilter === "VALOR"
-                ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black shadow-md shadow-emerald-500/30 border border-emerald-400"
+                ? "bg-emerald-600 text-white shadow-sm"
                 : "bg-emerald-50 text-emerald-900 border border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800 dark:hover:bg-emerald-900"
             }`}
           >
@@ -351,26 +397,6 @@ export default function DashboardPage() {
             }`}
           >
             💣 Bomba ({bombaCount})
-          </button>
-          <button
-            onClick={() => setMatchStatusFilter("WON")}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
-              matchStatusFilter === "WON"
-                ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30"
-                : "bg-emerald-50 text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:hover:bg-emerald-900"
-            }`}
-          >
-            ✓ Ganadas ({wonCount})
-          </button>
-          <button
-            onClick={() => setMatchStatusFilter("LOST")}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
-              matchStatusFilter === "LOST"
-                ? "bg-rose-600 text-white shadow-md shadow-rose-600/30"
-                : "bg-rose-50 text-rose-800 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-rose-300 dark:hover:bg-rose-900"
-            }`}
-          >
-            ✗ Perdidas ({lostCount})
           </button>
           <button
             onClick={() => setMatchStatusFilter("IN_PLAY")}
@@ -394,6 +420,26 @@ export default function DashboardPage() {
             📋 Pre-Match ({scheduledCount})
           </button>
           <button
+            onClick={() => setMatchStatusFilter("WON")}
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+              matchStatusFilter === "WON"
+                ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30"
+                : "bg-emerald-50 text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:hover:bg-emerald-900"
+            }`}
+          >
+            ✓ Ganadas ({wonCount})
+          </button>
+          <button
+            onClick={() => setMatchStatusFilter("LOST")}
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+              matchStatusFilter === "LOST"
+                ? "bg-rose-600 text-white shadow-md shadow-rose-600/30"
+                : "bg-rose-50 text-rose-800 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-rose-300 dark:hover:bg-rose-900"
+            }`}
+          >
+            ✗ Perdidas ({lostCount})
+          </button>
+          <button
             onClick={() => setMatchStatusFilter("FINISHED")}
             className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
               matchStatusFilter === "FINISHED"
@@ -406,87 +452,100 @@ export default function DashboardPage() {
         </div>
 
         {/* Filters Toolbar */}
-        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800/80 dark:bg-slate-900/80">
-          {/* Probability Slider */}
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-              {language === "en" ? "Min. Probability:" : "Probabilidad Mínima:"}
-            </span>
-            <div className="flex items-center gap-2">
-              <input
-                type="range"
-                min="50"
-                max="90"
-                step="5"
-                value={minProbability}
-                onChange={(e) => setMinProbability(Number(e.target.value))}
-                className="h-2 w-28 cursor-pointer accent-emerald-500"
-              />
-              <span className="rounded-lg bg-emerald-50 px-2 py-0.5 text-xs font-extrabold text-emerald-700 border border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800">
-                {minProbability}%
-              </span>
-            </div>
-          </div>
-
-          {/* Multi-Select Dropdowns */}
-          <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-xs dark:border-slate-800/80 dark:bg-slate-900/80 mb-6">
+          <div className="flex flex-wrap items-center gap-2">
             <MultiSelectDropdown
-              label="Ligas por País"
-              icon="🏆"
+              label={t("filterLeagueLabel").replace(":", "")}
               options={leagueDropdownOptions}
               selected={selectedLeagues}
               onChange={setSelectedLeagues}
-              placeholderAll={t("allLeagues")}
+              
+              
+              
             />
 
+            {marketDropdownOptions.length > 0 && (
+              <MultiSelectDropdown
+                label={t("filterMarketLabel").replace(":", "")}
+                options={marketDropdownOptions}
+                selected={selectedMarkets}
+                onChange={setSelectedMarkets}
+                
+                
+              />
+            )}
+
             <MultiSelectDropdown
-              label="Nivel de Confianza"
-              icon="⭐"
+              label={t("filterConfidenceLabel").replace(":", "")}
               options={confidenceDropdownOptions}
               selected={selectedConfidence}
               onChange={setSelectedConfidence}
-              placeholderAll={language === "en" ? "All Confidence Levels" : "Todas las Confianzas"}
+              
+              
             />
 
-            <MultiSelectDropdown
-              label="Mercados"
-              icon="🎯"
-              options={marketDropdownOptions}
-              selected={selectedMarkets}
-              onChange={setSelectedMarkets}
-              placeholderAll={t("allMarkets")}
-            />
+            {/* Min probability control */}
+            <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+              <span>Prob. ≥</span>
+              <select
+                value={minProbability}
+                onChange={(e) => setMinProbability(Number(e.target.value))}
+                aria-label="Filtrar por probabilidad mínima"
+                className="bg-transparent font-black text-emerald-600 dark:text-emerald-400 outline-none cursor-pointer"
+              >
+                <option value={35} className="dark:bg-slate-900">35% (Todas)</option>
+                <option value={50} className="dark:bg-slate-900">50%</option>
+                <option value={60} className="dark:bg-slate-900">60%</option>
+                <option value={70} className="dark:bg-slate-900">70% (Muy Alta)</option>
+              </select>
+            </div>
+
+            {(selectedLeagues.length > 0 || selectedMarkets.length > 0 || selectedConfidence.length > 0 || minProbability > 35) && (
+              <button
+                onClick={() => {
+                  setSelectedLeagues([]);
+                  setSelectedMarkets([]);
+                  setSelectedConfidence([]);
+                  setMinProbability(35);
+                }}
+                className="rounded-xl border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs font-extrabold text-slate-600 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 cursor-pointer"
+              >
+                Limpiar
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Grid of Prediction Cards */}
+        {/* Predictions Grid */}
         {loading ? (
-          <div className="py-20 text-center text-slate-600">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-emerald-600 border-t-transparent dark:border-emerald-500" />
-            <p className="mt-3 text-sm font-semibold">{t("loadingSignals")}</p>
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent mb-4" />
+            <span className="text-sm font-bold text-slate-600 dark:text-slate-400">
+              {t("loadingSignals")}
+            </span>
           </div>
-        ) : displayPicks.length === 0 ? (
-          <div className="rounded-3xl border border-slate-200 bg-white p-12 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900/40">
-            <span className="text-4xl">🔍</span>
-            <h3 className="mt-3 text-lg font-bold text-slate-900 dark:text-white">
+        ) : filteredPredictions.length === 0 ? (
+          <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300 bg-white/50 p-12 text-center dark:border-slate-800 dark:bg-slate-900/30">
+            <span className="text-4xl mb-3">🔍</span>
+            <h3 className="text-base font-black text-slate-900 dark:text-white">
               {t("noPicksFound")}
             </h3>
-            <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm">
               {t("noPicksHint")}
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
-            {displayPicks.map((pred) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {filteredPredictions.map((pred) => (
               <PredictionCard
                 key={pred.id || `${pred.fixtureId}-${pred.market}`}
                 prediction={pred}
-                onOpenDetail={(p) => setActiveModalPick(p)}
+                onOpenDetail={setActiveModalPick}
               />
             ))}
           </div>
         )}
-        </main>
+      </main>
 
       {/* Match Detail Modal */}
       {activeModalPick && (

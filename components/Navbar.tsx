@@ -20,6 +20,7 @@ interface NavLinkItem {
   icon: string;
   subtitle: string;
   adminOnly?: boolean;
+  isLive?: boolean;
 }
 
 export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarProps = {}) {
@@ -114,9 +115,10 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
   };
 
   const navLinks: NavLinkItem[] = [
-    { href: "/dashboard", label: t("navDashboard"), icon: "📊", subtitle: language === "es" ? "Resumen y pronósticos del día" : "Overview & daily predictions" },
+    { href: "/dashboard", label: t("navDashboard"), icon: "📊", subtitle: language === "es" ? "Resumen y pronósticos cuantitativos" : "Overview & quantitative predictions" },
+    { href: "/live", label: t("navLive"), icon: "⚡", subtitle: language === "es" ? "Partidos en juego y cuotas live" : "In-play matches & dynamic live odds", isLive: true },
+    { href: "/signals", label: t("navSignals"), icon: "📋", subtitle: language === "es" ? "Pronósticos antes del inicio" : "Upcoming pre-match predictions" },
     { href: "/featured", label: language === "es" ? "Destacados" : "Featured", icon: "⭐", subtitle: language === "es" ? "SmartPick y Bomba del Día" : "SmartPick & Bomb of the Day" },
-    { href: "/signals", label: t("navSignals"), icon: "🔔", subtitle: language === "es" ? "Alertas en tiempo real" : "Real-time alerts" },
     { href: "/parlay", label: t("navParlay"), icon: "🎲", subtitle: language === "es" ? "Combinadas inteligentes" : "Smart accumulator parlays" },
     { href: "/history", label: t("navHistory"), icon: "📜", subtitle: language === "es" ? "Resultados y balance" : "Past results & track record" },
     { href: "/reports", label: t("navReports"), icon: "📈", subtitle: language === "es" ? "Métricas y rendimiento" : "Analytics & win rate stats" },
@@ -135,7 +137,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
       href: "/admin?tab=mcp",
       label: language === "es" ? "Agente MCP" : "MCP Agent",
       icon: "🤖",
-      subtitle: language === "es" ? "Buscador de pronósticos por país" : "Country prediction search agent",
+      subtitle: language === "es" ? "Buscador de pronósticos con IA interna" : "AI Sports Intelligence search agent",
       adminOnly: true,
     });
   }
@@ -168,79 +170,188 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
             <div className="hidden lg:flex items-center gap-1.5 ml-2 pl-3 border-l border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
               <span>{activeLink.icon}</span>
               <span className="text-slate-900 dark:text-white font-extrabold">{activeLink.label}</span>
+              {activeLink.isLive && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/20 px-2 py-0.2 text-[10px] font-black text-rose-500 animate-pulse">
+                  <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+                  LIVE
+                </span>
+              )}
             </div>
           )}
         </div>
 
-        {/* Right Controls Bar (Desktop vs Mobile) */}
-        <div className="flex items-center gap-2 sm:gap-2.5">
-          {/* Desktop Language Switcher */}
-          <button
-            onClick={toggleLanguage}
-            className="hidden md:flex items-center gap-1 rounded-xl border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-700 shadow-xs transition hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 cursor-pointer"
-            title={language === "es" ? "Switch to English" : "Cambiar a Español"}
+        {/* Center: Desktop Fast Direct Navigation */}
+        <nav className="hidden md:flex items-center gap-1 lg:gap-1.5 bg-slate-100/80 dark:bg-slate-900/80 p-1 rounded-2xl border border-slate-200/60 dark:border-slate-800/60">
+          <Link
+            href="/dashboard"
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer ${
+              pathname === "/dashboard"
+                ? "bg-white text-emerald-700 shadow-sm dark:bg-slate-800 dark:text-emerald-400"
+                : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+            }`}
           >
-            <span>{language === "es" ? "🇪🇸" : "🇺🇸"}</span>
-            <span className="text-[11px] font-extrabold uppercase">{language}</span>
-          </button>
+            <span>📊</span>
+            <span>Dashboard</span>
+          </Link>
 
-          {/* Desktop Theme Switcher */}
-          <div className="hidden md:flex">
-            <ThemeToggle />
-          </div>
+          <Link
+            href="/live"
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer relative ${
+              pathname === "/live"
+                ? "bg-gradient-to-r from-rose-600 to-red-600 text-white shadow-sm shadow-rose-600/30"
+                : "text-rose-600 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300"
+            }`}
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+            </span>
+            <span>Alertas en Vivo</span>
+          </Link>
 
+          <Link
+            href="/signals"
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer ${
+              pathname === "/signals"
+                ? "bg-white text-emerald-700 shadow-sm dark:bg-slate-800 dark:text-emerald-400"
+                : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+            }`}
+          >
+            <span>📋</span>
+            <span>Pre-Match</span>
+          </Link>
+
+          <Link
+            href="/featured"
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer ${
+              pathname === "/featured"
+                ? "bg-white text-emerald-700 shadow-sm dark:bg-slate-800 dark:text-emerald-400"
+                : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+            }`}
+          >
+            <span>⭐</span>
+            <span className="hidden xl:inline">Destacados</span>
+          </Link>
+
+          <Link
+            href="/parlay"
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer ${
+              pathname === "/parlay"
+                ? "bg-white text-emerald-700 shadow-sm dark:bg-slate-800 dark:text-emerald-400"
+                : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+            }`}
+          >
+            <span>🎲</span>
+            <span>Parlay</span>
+          </Link>
+
+          <Link
+            href="/history"
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer ${
+              pathname === "/history"
+                ? "bg-white text-emerald-700 shadow-sm dark:bg-slate-800 dark:text-emerald-400"
+                : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+            }`}
+          >
+            <span>📜</span>
+            <span className="hidden xl:inline">Historial</span>
+          </Link>
+
+          {currentRole === "admin" && (
+            <Link
+              href="/admin?tab=mcp"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer ${
+                pathname === "/admin"
+                  ? "bg-purple-600 text-white shadow-sm"
+                  : "text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300"
+              }`}
+            >
+              <span>🤖</span>
+              <span>Agente MCP</span>
+            </Link>
+          )}
+        </nav>
+
+        {/* Right: Actions (Desktop) */}
+        <div className="hidden md:flex items-center gap-2.5">
           {/* Admin Sync Button */}
           {currentRole === "admin" && (
             <button
               onClick={handleAdminSync}
               disabled={syncing || syncingInternal}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-50 px-2.5 sm:px-3 py-1.5 text-xs font-extrabold text-emerald-800 hover:bg-emerald-500 hover:text-slate-950 transition-all shadow-xs active:scale-95 dark:border-emerald-500/30 dark:bg-emerald-950/60 dark:text-emerald-400 dark:hover:bg-emerald-500 dark:hover:text-slate-950 cursor-pointer shrink-0"
-              title="Actualizar pronósticos en vivo (Exclusivo Administradores)"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs font-extrabold text-emerald-700 transition hover:bg-emerald-500/20 dark:text-emerald-400 cursor-pointer disabled:opacity-50"
+              title="Sincronizar partidos y cuotas cuantitativas"
             >
-              <span className={(syncing || syncingInternal) ? "animate-spin" : ""}>🔄</span>
-              <span className="hidden sm:inline">{(syncing || syncingInternal) ? t("navSyncing") : t("navSync")}</span>
+              <span className={syncing || syncingInternal ? "animate-spin" : ""}>⚡</span>
+              <span>{syncing || syncingInternal ? t("navSyncing") : t("navSync")}</span>
             </button>
           )}
 
-          {/* Desktop Collapsed Menu Toggle Button (Visible ONLY on Desktop md:) */}
+          {/* Language Selector */}
+          <button
+            onClick={toggleLanguage}
+            className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-bold text-slate-700 transition hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 cursor-pointer"
+            title="Cambiar idioma / Switch language"
+          >
+            <span>{language === "es" ? "🇪🇸" : "🇺🇸"}</span>
+            <span className="uppercase text-[11px] font-black">{language}</span>
+          </button>
+
+          {/* Theme Toggle */}
+          <ThemeToggle />
+
+          {/* Desktop "Módulos" Mega-Menu Toggle Button */}
           <button
             data-desktop-menu-toggle="true"
             onClick={() => setDesktopMenuOpen(!desktopMenuOpen)}
-            aria-label="Abrir menú de navegación"
-            className={`hidden md:flex items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-black transition-all cursor-pointer shadow-sm ${
+            className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-black transition cursor-pointer ${
               desktopMenuOpen
-                ? "bg-slate-900 text-white dark:bg-white dark:text-slate-950 shadow-md ring-2 ring-emerald-500/50"
-                : "bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-500 hover:to-teal-500 shadow-emerald-600/20"
+                ? "border-emerald-500 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400"
+                : "border-slate-200 bg-slate-50 text-slate-800 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
             }`}
+            title="Abrir menú de navegación de módulos"
           >
-            <span className="text-sm font-black">{desktopMenuOpen ? "✕" : "☰"}</span>
-            <span className="text-xs font-black uppercase tracking-wide">
-              {desktopMenuOpen ? (language === "es" ? "Cerrar" : "Close") : (language === "es" ? "Menú" : "Menu")}
+            <span>☰</span>
+            <span>Módulos</span>
+            <span className={`text-[9px] transition-transform duration-200 ${desktopMenuOpen ? "rotate-180" : ""}`}>
+              ▼
             </span>
           </button>
+        </div>
 
-          {/* Mobile Classic Hamburger Toggle (Visible ONLY on Mobile < md) */}
+        {/* Mobile Hamburger Button */}
+        <div className="flex md:hidden items-center gap-2">
+          {currentRole === "admin" && (
+            <button
+              onClick={handleAdminSync}
+              disabled={syncing || syncingInternal}
+              className="inline-flex items-center rounded-xl bg-emerald-500/10 p-2 text-xs font-black text-emerald-600 dark:text-emerald-400"
+            >
+              <span className={syncing || syncingInternal ? "animate-spin" : ""}>⚡</span>
+            </button>
+          )}
+
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Abrir menú de navegación móvil"
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-300 bg-slate-100 text-slate-800 md:hidden dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 shrink-0 cursor-pointer"
+            className="flex items-center justify-center rounded-xl border border-slate-200 bg-slate-100 p-2 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 cursor-pointer"
+            aria-label="Abrir menú"
           >
             {mobileMenuOpen ? "✕" : "☰"}
           </button>
         </div>
       </div>
 
-      {/* 1. Desktop Collapsed Dropdown Panel (ONLY md:) */}
+      {/* 1. Desktop Mega-Menu Dropdown Panel (When clicking "Módulos") */}
       {desktopMenuOpen && (
         <div
           ref={desktopMenuRef}
-          className="hidden md:block border-t border-slate-200 bg-white/98 px-6 py-5 shadow-2xl backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/98 animate-in fade-in slide-in-from-top-2 duration-200"
+          className="hidden md:block border-t border-slate-200/90 bg-white/98 shadow-2xl backdrop-blur-2xl dark:border-slate-800/90 dark:bg-slate-950/98 animate-in fade-in slide-in-from-top-2 duration-150"
         >
-          <div className="mx-auto max-w-7xl">
-            {/* User Profile Info Banner */}
-            <div className="mb-4 flex items-center justify-between border-b border-slate-200 pb-3.5 text-xs text-slate-600 dark:border-slate-800 dark:text-slate-400">
-              <div className="flex items-center gap-2">
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100 text-sm font-bold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+            {/* Header with User Info & Role */}
+            <div className="mb-4 flex items-center justify-between border-b border-slate-200 pb-3 dark:border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-base shadow-xs">
                   {currentRole === "admin" ? "👑" : "👤"}
                 </span>
                 <div>
@@ -270,7 +381,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
               </div>
             </div>
 
-            {/* Navigation Grid (Organized in 3 to 4 columns on Web) */}
+            {/* Navigation Grid (Organized in 4 columns on Web) */}
             <div className="text-[11px] font-black uppercase tracking-wider text-slate-400 mb-2">
               Módulos del Sistema
             </div>
@@ -296,7 +407,12 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
                         <span className={`text-xs font-black truncate ${isActive ? "text-emerald-700 dark:text-emerald-400" : "text-slate-900 dark:text-white"}`}>
                           {link.label}
                         </span>
-                        {isActive && (
+                        {link.isLive && (
+                          <span className="rounded-full bg-rose-500 px-1.5 py-0.2 text-[9px] font-black text-white animate-pulse">
+                            LIVE
+                          </span>
+                        )}
+                        {isActive && !link.isLive && (
                           <span className="rounded-full bg-emerald-500 px-1.5 py-0.2 text-[9px] font-black text-slate-950">
                             Activo
                           </span>
@@ -319,7 +435,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
         </div>
       )}
 
-      {/* 2. Mobile Slide-down Navigation Drawer (Classic original format for < md) */}
+      {/* 2. Mobile Slide-down Navigation Drawer */}
       {mobileMenuOpen && (
         <div className="border-t border-slate-200 bg-white/98 px-4 py-4 shadow-2xl backdrop-blur-xl md:hidden dark:border-slate-800 dark:bg-slate-950/98 animate-in fade-in slide-in-from-top-2 duration-150">
           {currentEmail && (
@@ -350,6 +466,9 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
                 >
                   <span className="text-base">{link.icon}</span>
                   <span className="truncate">{link.label}</span>
+                  {link.isLive && (
+                    <span className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-ping ml-auto" />
+                  )}
                 </Link>
               );
             })}

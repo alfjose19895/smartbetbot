@@ -105,6 +105,129 @@ function AdminControlContent() {
   const [mcpSearched, setMcpSearched] = useState(false);
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
   const [publishingMcp, setPublishingMcp] = useState(false);
+
+  const [templateTargetLeague, setTemplateTargetLeague] = useState("Major League Soccer (MLS)");
+  const [templateTargetCountry, setTemplateTargetCountry] = useState("estados_unidos");
+  const [copiedTemplateId, setCopiedTemplateId] = useState<string | null>(null);
+  const [activeTemplateCategory, setActiveTemplateCategory] = useState<"all" | "live" | "prematch" | "bomba" | "parlay" | "tactical">("all");
+  const [customLeagueInput, setCustomLeagueInput] = useState("");
+
+  const leagueTemplatePresets = [
+    { name: "Major League Soccer (MLS)", country: "estados_unidos", flag: "🇺🇸" },
+    { name: "La Liga (España)", country: "españa", flag: "🇪🇸" },
+    { name: "Premier League (Inglaterra)", country: "inglaterra", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
+    { name: "Liga Pro (Ecuador)", country: "ecuador", flag: "🇪🇨" },
+    { name: "Primera División (Costa Rica)", country: "costa rica", flag: "🇨🇷" },
+    { name: "Serie A (Italia)", country: "italia", flag: "🇮🇹" },
+    { name: "Bundesliga (Alemania)", country: "alemania", flag: "🇩🇪" },
+    { name: "Liga MX (México)", country: "mexico", flag: "🇲🇽" },
+    { name: "Brasileirão (Brasil)", country: "brasil", flag: "🇧🇷" },
+    { name: "Champions League", country: "europa", flag: "🏆" },
+  ];
+
+  const promptTemplatesList = [
+    {
+      id: "live-1",
+      category: "live",
+      categoryName: "⚡ Alertas en Vivo (Live)",
+      badgeColor: "bg-rose-500/10 text-rose-400 border-rose-500/30",
+      title: "Oportunidad de Gol In-Play en Próximos 15 Min",
+      templateText: (league: string) => `Busca alertas en vivo con partidos en juego donde haya alta probabilidad de gol en los próximos 15 minutos en ${league}`,
+    },
+    {
+      id: "live-2",
+      category: "live",
+      categoryName: "⚡ Alertas en Vivo (Live)",
+      badgeColor: "bg-rose-500/10 text-rose-400 border-rose-500/30",
+      title: "Empates en 2do Tiempo con Cuota de Ganador",
+      templateText: (league: string) => `Analiza partidos en vivo en ${league} que vayan empatados al segundo tiempo y tengan cuota rentable de ganador o Over 1.5/2.5`,
+    },
+    {
+      id: "live-3",
+      category: "live",
+      categoryName: "⚡ Alertas en Vivo (Live)",
+      badgeColor: "bg-rose-500/10 text-rose-400 border-rose-500/30",
+      title: "Partidos Abiertos con Presión de Ataque",
+      templateText: (league: string) => `Encuentra oportunidades en vivo de Over 2.5 o Over 3.5 en partidos abiertos y con alta presión de ataque en ${league}`,
+    },
+    {
+      id: "prematch-1",
+      category: "prematch",
+      categoryName: "📋 Pre-Match & Mercados",
+      badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+      title: "Over 2.5 Goles Más Rentables",
+      templateText: (league: string) => `Busca cuotas de over 2.5 mas rentables con los partidos de la ${league} que estan por comenzar`,
+    },
+    {
+      id: "prematch-2",
+      category: "prematch",
+      categoryName: "📋 Pre-Match & Mercados",
+      badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+      title: "Ganador Local con Probabilidad > 65%",
+      templateText: (league: string) => `Encuentra pronósticos de Ganador Local con probabilidad superior al 65% y cuota de valor en ${league}`,
+    },
+    {
+      id: "prematch-3",
+      category: "prematch",
+      categoryName: "📋 Pre-Match & Mercados",
+      badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+      title: "Ambos Equipos Anotan (BTTS)",
+      templateText: (league: string) => `Analiza partidos de ${league} donde Ambos Equipos Anotan (BTTS) tenga alta probabilidad y cuota superior a @1.65`,
+    },
+    {
+      id: "bomba-1",
+      category: "bomba",
+      categoryName: "💣 Bombas & Alto Valor",
+      badgeColor: "bg-orange-500/10 text-orange-400 border-orange-500/30",
+      title: "Picks Bomba Cuota @2.10+ con Valor Esperado",
+      templateText: (league: string) => `Encuentra picks bomba con cuotas superiores a @2.10 y valor matemático positivo (EV+) en ${league}`,
+    },
+    {
+      id: "bomba-2",
+      category: "bomba",
+      categoryName: "💣 Bombas & Alto Valor",
+      badgeColor: "bg-orange-500/10 text-orange-400 border-orange-500/30",
+      title: "Sorpresas con Alta Efectividad",
+      templateText: (league: string) => `Busca sorpresas con cuota alta y alta efectividad en los partidos de hoy de ${league}`,
+    },
+    {
+      id: "parlay-1",
+      category: "parlay",
+      categoryName: "🎲 Parlays & Combinadas",
+      badgeColor: "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
+      title: "Combinada de 3 Selecciones de Alta Confianza",
+      templateText: (league: string) => `Genera una combinada o parley de 3 selecciones de alta confianza con cuota total entre @2.50 y @4.00 combinando ${league} y ligas principales`,
+    },
+    {
+      id: "tactical-1",
+      category: "tactical",
+      categoryName: "🏆 Clásicos & Análisis Táctico",
+      badgeColor: "bg-purple-500/10 text-purple-400 border-purple-500/30",
+      title: "Análisis Profundo de Clásicos / Partidos Estelares",
+      templateText: (league: string) => `Analiza en profundidad el próximo clásico o partido estelar de ${league} evaluando H2H, forma reciente y cuota con mayor valor`,
+    },
+    {
+      id: "tactical-2",
+      category: "tactical",
+      categoryName: "🏆 Clásicos & Análisis Táctico",
+      badgeColor: "bg-purple-500/10 text-purple-400 border-purple-500/30",
+      title: "Top 3 Oportunidades con Mayor Rentabilidad",
+      templateText: (league: string) => `Identifica las 3 selecciones con mayor valor esperado y rentabilidad en la jornada de hoy de ${league}`,
+    },
+  ];
+
+  const handleCopyPromptText = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedTemplateId(id);
+    setTimeout(() => setCopiedTemplateId(null), 2500);
+  };
+
+  const handleUsePromptInAgent = (text: string, country: string) => {
+    setMcpQuery(text);
+    setMcpCountry(country);
+    window.scrollTo({ top: 180, behavior: "smooth" });
+  };
+
   const [publishFeedback, setPublishFeedback] = useState<{ text: string; type: "success" | "error" } | null>(null);
   const [publishedFixtureKeys, setPublishedFixtureKeys] = useState<Set<string>>(new Set());
 
@@ -134,7 +257,7 @@ function AdminControlContent() {
     if (!picksToPublish || picksToPublish.length === 0) return;
     try {
       setPublishingMcp(true);
-      setPublishFeedback({ text: "Publicando alertas en el Dashboard y Alertas del Día...", type: "success" });
+      setPublishFeedback({ text: "Publicando alertas en el Dashboard y Alertas Pre-Match...", type: "success" });
       const res = await fetch("/api/mcp/predictions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -157,7 +280,7 @@ function AdminControlContent() {
           text: data.message || `✓ Se agregaron ${data.addedCount || picksToPublish.length} alertas al Dashboard.`,
           type: "success",
         });
-        addLog(`✓ ${picksToPublish.length} alertas publicadas al Dashboard y Alertas del Día (Total activo: ${data.totalAlerts || "actualizado"})`);
+        addLog(`✓ ${picksToPublish.length} alertas publicadas al Dashboard y Alertas Pre-Match (Total activo: ${data.totalAlerts || "actualizado"})`);
       } else {
         setPublishFeedback({ text: `✗ Error: ${data.error || "No se pudieron publicar las alertas"}`, type: "error" });
       }
@@ -219,7 +342,7 @@ function AdminControlContent() {
           });
           setPublishFeedback({
             type: "success",
-            text: `✓ ${predictions.length} pronósticos encontrados y publicados automáticamente en el Dashboard y Alertas del Día con la etiqueta 🤖 Agente MCP.`,
+            text: `✓ ${predictions.length} pronósticos encontrados y publicados automáticamente en el Dashboard y Alertas Pre-Match con la etiqueta 🤖 Agente MCP.`,
           });
           setTimeout(() => setPublishFeedback(null), 8000);
         }
@@ -1020,6 +1143,144 @@ function AdminControlContent() {
                 </div>
               </div>
             </div>
+
+            
+            {/* BIBLIOTECA DE PROMPTS Y TEXTOS PREDETERMINADOS LISTOS PARA COPIAR */}
+            <div className="rounded-3xl border border-slate-700/80 bg-gradient-to-br from-slate-900 via-slate-900/90 to-slate-950 p-5 sm:p-6 shadow-xl text-white">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">💡</span>
+                    <h4 className="text-base font-black text-white tracking-tight">
+                      Biblioteca de Prompts y Textos Predeterminados para el Agente MCP
+                    </h4>
+                    <span className="rounded-md bg-emerald-500/20 px-2 py-0.5 text-[10px] font-black text-emerald-400 border border-emerald-500/30">
+                      1-Clic Copiar & Usar
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Selecciona una liga/competición o personaliza el nombre para adaptar automáticamente todos los prompts:
+                  </p>
+                </div>
+
+                {/* Category Filter for Prompts */}
+                <div className="flex flex-wrap items-center gap-1.5 bg-slate-800/80 p-1 rounded-xl border border-slate-700">
+                  {[
+                    { id: "all", label: "Todos" },
+                    { id: "live", label: "⚡ En Vivo" },
+                    { id: "prematch", label: "📋 Pre-Match" },
+                    { id: "bomba", label: "💣 Bombas" },
+                    { id: "parlay", label: "🎲 Parlays" },
+                    { id: "tactical", label: "🏆 Clásicos" },
+                  ].map((cat) => (
+                    <button
+                      key={cat.id}
+                      onClick={() => setActiveTemplateCategory(cat.id as any)}
+                      className={`rounded-lg px-2.5 py-1 text-[11px] font-extrabold transition cursor-pointer ${
+                        activeTemplateCategory === cat.id
+                          ? "bg-emerald-500 text-slate-950 font-black shadow-xs"
+                          : "text-slate-400 hover:text-white"
+                      }`}
+                    >
+                      {cat.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* League / Country Selector Pills */}
+              <div className="mt-4">
+                <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 block mb-2">
+                  Liga o Torneo Seleccionado para los Prompts:
+                </span>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {leagueTemplatePresets.map((lp, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setTemplateTargetLeague(lp.name);
+                        setTemplateTargetCountry(lp.country);
+                        setCustomLeagueInput("");
+                      }}
+                      className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer border ${
+                        templateTargetLeague === lp.name
+                          ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 border-emerald-400 shadow-sm font-black"
+                          : "bg-slate-800/80 text-slate-300 border-slate-700/70 hover:bg-slate-750 hover:text-white"
+                      }`}
+                    >
+                      <span>{lp.flag}</span>
+                      <span>{lp.name}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Custom League input */}
+                <div className="mt-3 flex items-center gap-2 max-w-md">
+                  <span className="text-xs text-slate-400 font-bold shrink-0">O escribe otra liga:</span>
+                  <input
+                    type="text"
+                    value={customLeagueInput}
+                    onChange={(e) => {
+                      setCustomLeagueInput(e.target.value);
+                      if (e.target.value.trim().length > 0) {
+                        setTemplateTargetLeague(e.target.value.trim());
+                      }
+                    }}
+                    placeholder="Ej. Copa Libertadores, Liga de Bélgica..."
+                    className="flex-1 rounded-xl border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-white placeholder-slate-500 outline-none focus:border-emerald-400"
+                  />
+                </div>
+              </div>
+
+              {/* Grid of Prompt Cards */}
+              <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                {promptTemplatesList
+                  .filter((pt) => activeTemplateCategory === "all" || pt.category === activeTemplateCategory)
+                  .map((pt) => {
+                    const fullPromptText = pt.templateText(templateTargetLeague);
+                    const isCopied = copiedTemplateId === pt.id;
+                    return (
+                      <div
+                        key={pt.id}
+                        className="flex flex-col justify-between rounded-2xl border border-slate-800 bg-slate-950/70 p-4 transition hover:border-slate-700 hover:bg-slate-950/90 shadow-sm"
+                      >
+                        <div>
+                          <div className="flex items-center justify-between gap-2 mb-2">
+                            <span className={`rounded-md border px-2 py-0.5 text-[10px] font-black uppercase tracking-wider ${pt.badgeColor}`}>
+                              {pt.categoryName}
+                            </span>
+                            <span className="text-[11px] font-extrabold text-slate-400 truncate">
+                              {pt.title}
+                            </span>
+                          </div>
+                          <p className="text-xs font-mono font-medium text-emerald-300/90 bg-slate-900 p-3 rounded-xl border border-slate-800/80 leading-relaxed select-all">
+                            "{fullPromptText}"
+                          </p>
+                        </div>
+
+                        <div className="mt-3 flex items-center justify-end gap-2 border-t border-slate-800/60 pt-2.5">
+                          <button
+                            onClick={() => handleCopyPromptText(fullPromptText, pt.id)}
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/90 px-3 py-1.5 text-xs font-bold text-slate-200 hover:bg-slate-700 hover:text-white transition cursor-pointer"
+                          >
+                            <span>{isCopied ? "✓" : "📋"}</span>
+                            <span>{isCopied ? "¡Copiado!" : "Copiar Prompt"}</span>
+                          </button>
+
+                          <button
+                            onClick={() => handleUsePromptInAgent(fullPromptText, templateTargetCountry)}
+                            className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 px-3.5 py-1.5 text-xs font-black text-slate-950 shadow-md shadow-emerald-500/20 hover:from-emerald-400 hover:to-teal-300 transition cursor-pointer"
+                          >
+                            <span>⚡</span>
+                            <span>Usar en el Agente</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+
 
             {/* AI Reasoning & Briefing Card */}
             {mcpAiAnalysis && (

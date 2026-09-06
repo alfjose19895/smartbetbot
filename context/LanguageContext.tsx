@@ -14,14 +14,15 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
   es: {
     // Navigation
     navDashboard: "Dashboard",
-    navFeatured: "👑 Picks del Día",
-    navPicks: "Alertas del Día",
-    navSignals: "Alertas del Día",
-    navSettings: "Configuración",
-    navParlay: "Parley del Día",
+    navFeatured: "⭐ Destacados",
+    navSignals: "Alertas Pre-Match",
+    navLive: "Alertas en Vivo",
+    navPicks: "Alertas Pre-Match",
+    navParlay: "Parlay del Día",
     navReports: "Reportes",
     navHistory: "Historial",
     navProfile: "Mi Perfil",
+    navSettings: "Ajustes",
     navAdmin: "Admin",
     navSync: "Actualizar",
     navSyncing: "Sincronizando...",
@@ -32,12 +33,12 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
 
     // Dashboard
     dashboardKicker: "Panel Principal",
-    dashboardTitle: "Inteligencia Deportiva en Tiempo Real",
-    dashboardSubtitle: "Predicciones fundamentadas con modelos matemáticos y cálculo de cuotas justas",
-    statActivePicks: "Picks Activos",
+    dashboardTitle: "Alertas y Pronósticos Cuantitativos",
+    dashboardSubtitle: "Predicciones fundamentadas con modelos matemáticos Poisson, ratings ELO y cálculo de cuotas justas",
+    statActivePicks: "Alertas Activas",
     statAvgOdds: "Cuota Promedio",
     statAvgProb: "Probabilidad Media",
-    filterTimeAll: "📅 Todos",
+    filterTimeAll: "📅 Todas",
     filterTimeToday: "🔥 Hoy",
     filterTimeTomorrow: "⏰ Mañana",
     filterTimeWeek: "📆 Esta Semana",
@@ -50,7 +51,20 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     allMarkets: "Todos los Mercados",
     loadingSignals: "Analizando oportunidades con cuotas actualizadas...",
     noPicksFound: "No se encontraron pronósticos para este filtro",
-    noPicksHint: "Prueba seleccionando 'Todos' o haz clic en '⚡ Actualizar' en el menú superior.",
+    noPicksHint: "Prueba seleccionando 'Todas' o haz clic en '⚡ Actualizar' en el menú superior.",
+
+    // Live Module
+    liveKicker: "Tiempo Real",
+    liveTitle: "Alertas en Vivo",
+    liveSubtitle: "Monitoreo en tiempo real minuto a minuto, marcadores en vivo y oportunidades dinámicas de alto valor",
+    livePolling: "Actualización en vivo cada 15s",
+    noLiveMatches: "No hay partidos en juego en este momento",
+    noLiveMatchesHint: "Consulta las Alertas Pre-Match para ver los próximos partidos programados.",
+
+    // Pre-Match Module
+    signalsKicker: "Pronósticos Pre-Partido",
+    signalsTitle: "Alertas Pre-Match",
+    signalsSubtitle: "Algoritmo Cuantitativo Pre-Partido & Modelos Poisson / ELO con valor matemático positivo",
 
     // Prediction Card
     matchLabel: "Partido",
@@ -123,12 +137,15 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
   en: {
     // Navigation
     navDashboard: "Dashboard",
-    navFeatured: "👑 Featured Picks",
-    navPicks: "Alertas del Día",
-    navParlay: "Parley del Día",
+    navFeatured: "⭐ Featured",
+    navSignals: "Pre-Match Alerts",
+    navLive: "Live Alerts",
+    navPicks: "Pre-Match Alerts",
+    navParlay: "Daily Parlay",
     navReports: "Reports",
     navHistory: "History",
     navProfile: "My Profile",
+    navSettings: "Settings",
     navAdmin: "Admin",
     navSync: "Update",
     navSyncing: "Syncing...",
@@ -139,9 +156,9 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
 
     // Dashboard
     dashboardKicker: "Main Dashboard",
-    dashboardTitle: "Real-Time Sports Intelligence",
-    dashboardSubtitle: "Mathematical Poisson models & fair-odds value betting predictions",
-    statActivePicks: "Active Picks",
+    dashboardTitle: "Quantitative Predictions & Alerts",
+    dashboardSubtitle: "Mathematical Poisson models, ELO ratings & fair-odds value betting predictions",
+    statActivePicks: "Active Alerts",
     statAvgOdds: "Average Odds",
     statAvgProb: "Average Probability",
     filterTimeAll: "📅 All",
@@ -158,6 +175,19 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     loadingSignals: "Analyzing betting opportunities with live odds...",
     noPicksFound: "No predictions found for this filter",
     noPicksHint: "Try selecting 'All' or click '⚡ Update' in the top navigation bar.",
+
+    // Live Module
+    liveKicker: "Real-Time In-Play",
+    liveTitle: "Live Alerts",
+    liveSubtitle: "Real-time in-play match tracking, dynamic odds & live scoring opportunities",
+    livePolling: "Live polling every 15s",
+    noLiveMatches: "No matches in play right now",
+    noLiveMatchesHint: "Check Pre-Match Alerts to view scheduled upcoming matches.",
+
+    // Pre-Match Module
+    signalsKicker: "Pre-Game Intelligence",
+    signalsTitle: "Pre-Match Alerts",
+    signalsSubtitle: "Pre-match quantitative Poisson models & positive expected value opportunities",
 
     // Prediction Card
     matchLabel: "Match",
