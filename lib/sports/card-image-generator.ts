@@ -133,7 +133,8 @@ export async function generatePredictionCardBlob(prediction: MarketOpportunity):
 
   ctx.fillStyle = "#ffffff";
   ctx.font = "900 20px system-ui, -apple-system, sans-serif";
-  ctx.fillText(`${prediction.market} (${prediction.selection})`, 60, 385);
+  const resolvedSel = (prediction.market.includes("Local") || prediction.market.includes("gana local")) ? "1" : (prediction.market.includes("Visitante") || prediction.market.includes("gana visitante")) ? "2" : prediction.selection;
+  ctx.fillText(`${prediction.market} (${resolvedSel})`, 60, 385);
 
   // Cuota Casa de Apuestas Badge
   ctx.fillStyle = "#0284c7";
@@ -270,7 +271,7 @@ export async function shareCardAsImage(
   // Fallback for Desktop Browsers: Copy image to clipboard & download, then launch WhatsApp / Telegram
   await copyCardImageToClipboard(prediction);
   const shareText = encodeURIComponent(
-    `🎯 *SmartBetBot AI Pronóstico Oficial*\n🏆 ${prediction.league} ${prediction.country ? `(${prediction.country})` : ""}\n⚽ *${prediction.homeTeam} vs ${prediction.awayTeam}*\n🎯 Pronóstico: *${prediction.market}* (${prediction.selection})\n💰 Cuota: *@${prediction.odds.toFixed(2)}* | Prob: *${prediction.probability}%*\n⭐ Confianza: *${prediction.confidence || "Muy Alta"}*\n\n_(¡Tarjeta gráfica copiada al portapapeles! Pégala con Ctrl+V)_\n🌐 https://smartbetbot.educandotea.com`
+    `🎯 *SmartBetBot AI Pronóstico Oficial*\n🏆 ${prediction.league} ${prediction.country ? `(${prediction.country})` : ""}\n⚽ *${prediction.homeTeam} vs ${prediction.awayTeam}*\n🎯 Pronóstico: *${prediction.market}* (${(prediction.market.includes("Local") || prediction.market.includes("gana local")) ? "1" : (prediction.market.includes("Visitante") || prediction.market.includes("gana visitante")) ? "2" : prediction.selection})\n💰 Cuota: *@${prediction.odds.toFixed(2)}* | Prob: *${prediction.probability}%*\n⭐ Confianza: *${prediction.confidence || "Muy Alta"}*\n\n_(¡Tarjeta gráfica copiada al portapapeles! Pégala con Ctrl+V)_\n🌐 https://smartbetbot.educandotea.com`
   );
 
   if (platform === "whatsapp") {

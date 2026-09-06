@@ -26,7 +26,8 @@
     "explanation": "Análisis cuantitativo de alta precisión para FC Kharkiv vs Obolon'-Brovar en Premier League.",
     "status": "won",
     "actualScore": "5 - 0",
-    "modelOdds": 1.38
+    "modelOdds": 1.38,
+    "pick": "FC Kharkiv"
   },
   {
     "id": "pred-20260905-holsteinkiel-1fcnrnberg",
@@ -55,7 +56,8 @@
     "explanation": "Análisis cuantitativo de alta precisión para Holstein Kiel vs 1. FC Nürnberg en 2. Bundesliga.",
     "status": "lost",
     "actualScore": "2 - 2",
-    "modelOdds": 1.22
+    "modelOdds": 1.22,
+    "pick": "Holstein Kiel"
   },
   {
     "id": "pred-20260905-newcastle-bournemouth",
@@ -84,7 +86,8 @@
     "explanation": "Análisis cuantitativo de alta precisión para Newcastle vs Bournemouth en Premier League.",
     "status": "lost",
     "actualScore": "2 - 2",
-    "modelOdds": 1.34
+    "modelOdds": 1.34,
+    "pick": "Newcastle"
   },
   {
     "id": "pred-20260905-southend-yeoviltown",
@@ -113,7 +116,8 @@
     "explanation": "Análisis cuantitativo de alta precisión para Southend vs Yeovil Town en National League.",
     "status": "won",
     "actualScore": "3 - 2",
-    "modelOdds": 1.34
+    "modelOdds": 1.34,
+    "pick": "Southend"
   },
   {
     "id": "pred-20260905-fleetwoodtown-shrewsbury",
@@ -142,7 +146,8 @@
     "explanation": "Análisis cuantitativo de alta precisión para Fleetwood Town vs Shrewsbury en League Two.",
     "status": "won",
     "actualScore": "2 - 0",
-    "modelOdds": 1.37
+    "modelOdds": 1.37,
+    "pick": "Fleetwood Town"
   },
   {
     "id": "pred-20260905-lincoln-southampton",
@@ -171,7 +176,8 @@
     "explanation": "Análisis cuantitativo de alta precisión para Lincoln vs Southampton en Championship.",
     "status": "lost",
     "actualScore": "1 - 1 (2 Goles)",
-    "modelOdds": 1.57
+    "modelOdds": 1.57,
+    "pick": "Over 2.5 Goles"
   },
   {
     "id": "pred-20260905-wigan-stockportcounty",
@@ -200,7 +206,8 @@
     "explanation": "Análisis cuantitativo de alta precisión para Wigan vs Stockport County en League One.",
     "status": "won",
     "actualScore": "0 - 4 (4 Goles)",
-    "modelOdds": 1.59
+    "modelOdds": 1.59,
+    "pick": "Over 2.5 Goles"
   },
   {
     "id": "pred-20260905-torpedozhodino-fcgomel",
@@ -229,7 +236,8 @@
     "explanation": "Análisis cuantitativo de alta precisión para Torpedo Zhodino vs FC Gomel en Premier League.",
     "status": "won",
     "actualScore": "1 - 2 (Ambos Sí)",
-    "modelOdds": 1.82
+    "modelOdds": 1.82,
+    "pick": "Ambos Anotan"
   },
   {
     "id": "pred-20260905-fiorentina-torino",
@@ -258,7 +266,8 @@
     "explanation": "Análisis cuantitativo de alta precisión para Fiorentina vs Torino en Serie A.",
     "status": "lost",
     "actualScore": "1 - 2",
-    "modelOdds": 1.45
+    "modelOdds": 1.45,
+    "pick": "Fiorentina"
   },
   {
     "id": "pred-20260905-sudtirol-catanzaro",
@@ -287,7 +296,8 @@
     "explanation": "Ventaja táctica local en Serie B: Sudtirol impone condiciones en Druso Stadium. Cuota real Bet365/Pinnacle @2.30 con valor positivo detectado.",
     "status": "won",
     "actualScore": "2 - 0",
-    "modelOdds": 2.1
+    "modelOdds": 2.1,
+    "pick": "Sudtirol"
   },
   {
     "id": "pred-20260905-bayerleverkusen-unionberlin",
@@ -316,7 +326,8 @@
     "explanation": "Análisis cuantitativo de alta precisión para Bayer Leverkusen vs Union Berlin en Bundesliga.",
     "status": "won",
     "actualScore": "4 - 0",
-    "modelOdds": 1.17
+    "modelOdds": 1.17,
+    "pick": "Bayer Leverkusen"
   },
   {
     "id": "pred-20260905-werderbremen-rbleipzig",
@@ -345,7 +356,8 @@
     "explanation": "Análisis cuantitativo de alta precisión para Werder Bremen vs RB Leipzig en Bundesliga.",
     "status": "lost",
     "actualScore": "3 - 1",
-    "modelOdds": 1.34
+    "modelOdds": 1.34,
+    "pick": "RB Leipzig"
   },
   {
     "id": "pred-20260905-borussiamnchengladbach-svelversberg",
@@ -374,7 +386,8 @@
     "explanation": "Análisis cuantitativo de alta precisión para Borussia Mönchengladbach vs SV Elversberg en Bundesliga.",
     "status": "won",
     "actualScore": "3 - 4 (Ambos Sí)",
-    "modelOdds": 1.76
+    "modelOdds": 1.76,
+    "pick": "Ambos Anotan"
   },
   {
     "fixtureId": 1573574,
@@ -518,7 +531,8 @@
     "homeElo": 1690,
     "awayElo": 2010,
     "leagueTier": 1,
-    "actualScore": "0 - 4 (4 Goles)"
+    "actualScore": "0 - 4 (4 Goles)",
+    "pick": "Over 2.5 Goles"
   },
   {
     "fixtureId": 1552748,
@@ -662,7 +676,8 @@
     "homeElo": 1651,
     "awayElo": 1551,
     "leagueTier": 1,
-    "actualScore": "1 - 2"
+    "actualScore": "1 - 2",
+    "pick": "Le Havre"
   },
   {
     "fixtureId": 1558620,
@@ -806,7 +821,8 @@
     "homeElo": 1555,
     "awayElo": 1497,
     "leagueTier": 1,
-    "actualScore": "1 - 0"
+    "actualScore": "1 - 0",
+    "pick": "Standard Liege"
   },
   {
     "fixtureId": 1570372,
@@ -950,7 +966,8 @@
     "homeElo": 1760,
     "awayElo": 1489,
     "leagueTier": 1,
-    "actualScore": "2 - 3 (5 Goles)"
+    "actualScore": "2 - 3 (5 Goles)",
+    "pick": "Over 2.5 Goles"
   },
   {
     "fixtureId": 1548523,
@@ -1094,7 +1111,8 @@
     "homeElo": 1615,
     "awayElo": 1558,
     "leagueTier": 1,
-    "actualScore": "4 - 1"
+    "actualScore": "4 - 1",
+    "pick": "HNK Rijeka"
   },
   {
     "fixtureId": 1575489,
@@ -1238,7 +1256,8 @@
     "homeElo": 1860,
     "awayElo": 1565,
     "leagueTier": 1,
-    "actualScore": "2 - 0 (2 Goles)"
+    "actualScore": "2 - 0 (2 Goles)",
+    "pick": "Over 2.5 Goles"
   },
   {
     "fixtureId": 1505516,
@@ -1382,7 +1401,8 @@
     "homeElo": 1640,
     "awayElo": 1543,
     "leagueTier": 1,
-    "actualScore": "0 - 1 (No)"
+    "actualScore": "0 - 1 (No)",
+    "pick": "Ambos Anotan"
   },
   {
     "fixtureId": 1492368,
@@ -1526,7 +1546,8 @@
     "homeElo": 1596,
     "awayElo": 1880,
     "leagueTier": 1,
-    "actualScore": "2 - 0 (No)"
+    "actualScore": "2 - 0 (No)",
+    "pick": "Ambos Anotan"
   },
   {
     "fixtureId": 1519484,
@@ -1670,7 +1691,8 @@
     "homeElo": 1640,
     "awayElo": 1521,
     "leagueTier": 1,
-    "actualScore": "3 - 1"
+    "actualScore": "3 - 1",
+    "pick": "Independiente del Valle"
   },
   {
     "fixtureId": 1551678,
@@ -1814,7 +1836,8 @@
     "homeElo": 1590,
     "awayElo": 1491,
     "leagueTier": 1,
-    "actualScore": "2 - 3"
+    "actualScore": "2 - 3",
+    "pick": "CS Herediano"
   },
   {
     "fixtureId": 1550950,
@@ -1958,7 +1981,8 @@
     "homeElo": 1880,
     "awayElo": 1599,
     "leagueTier": 1,
-    "actualScore": "0 - 3 (3 Goles)"
+    "actualScore": "0 - 3 (3 Goles)",
+    "pick": "Over 2.5 Goles"
   },
   {
     "fixtureId": 1549474,
@@ -2102,7 +2126,8 @@
     "homeElo": 1629,
     "awayElo": 1506,
     "leagueTier": 1,
-    "actualScore": "2 - 0 (2 Goles)"
+    "actualScore": "2 - 0 (2 Goles)",
+    "pick": "Over 2.5 Goles"
   },
   {
     "fixtureId": 1549772,
@@ -2246,7 +2271,8 @@
     "homeElo": 1646,
     "awayElo": 1505,
     "leagueTier": 1,
-    "actualScore": "2 - 2"
+    "actualScore": "2 - 2",
+    "pick": "Santa Fe"
   },
   {
     "fixtureId": 1490438,
@@ -2390,7 +2416,8 @@
     "homeElo": 1634,
     "awayElo": 1583,
     "leagueTier": 1,
-    "actualScore": "2 - 0"
+    "actualScore": "2 - 0",
+    "pick": "Philadelphia Union"
   },
   {
     "fixtureId": 1490437,
@@ -2536,7 +2563,8 @@
     "leagueTier": 1,
     "isMcpPick": true,
     "source": "mcp",
-    "actualScore": "3 - 1"
+    "actualScore": "2 - 2 (4 Goles)",
+    "pick": "Over 2.5 Goles"
   },
   {
     "fixtureId": 1490439,
@@ -2682,7 +2710,8 @@
     "leagueTier": 1,
     "isMcpPick": true,
     "source": "mcp",
-    "actualScore": "2 - 1"
+    "actualScore": "2 - 1",
+    "pick": "FC Cincinnati"
   },
   {
     "fixtureId": 1490440,
@@ -2828,7 +2857,8 @@
     "leagueTier": 1,
     "isMcpPick": true,
     "source": "mcp",
-    "actualScore": "1 - 0"
+    "actualScore": "1 - 0",
+    "pick": "Orlando City SC"
   },
   {
     "fixtureId": 1490441,
@@ -2974,7 +3004,8 @@
     "leagueTier": 1,
     "isMcpPick": true,
     "source": "mcp",
-    "actualScore": "3 - 0"
+    "actualScore": "3 - 0",
+    "pick": "Columbus Crew"
   },
   {
     "fixtureId": 1490442,
@@ -3120,7 +3151,8 @@
     "leagueTier": 1,
     "isMcpPick": true,
     "source": "mcp",
-    "actualScore": "4 - 4"
+    "actualScore": "4 - 4",
+    "pick": "Toronto FC"
   },
   {
     "fixtureId": 1490443,
@@ -3266,7 +3298,8 @@
     "leagueTier": 1,
     "isMcpPick": true,
     "source": "mcp",
-    "actualScore": "0 - 0"
+    "actualScore": "0 - 0",
+    "pick": "Houston Dynamo"
   },
   {
     "fixtureId": 1490444,
@@ -3447,7 +3480,7 @@
     "pickBadge": "mcp",
     "smartScore": 72,
     "explanation": "Selección identificada por el Agente MCP: Tendencia de ataque en MLS con cuota @1.42 y 44.5% de probabilidad.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-08",
@@ -3567,7 +3600,8 @@
     "livePeriod": "2H",
     "liveMinute": "82'",
     "currentScore": "2 - 1",
-    "pick": "FC Dallas"
+    "pick": "FC Dallas",
+    "actualScore": "4 - 3"
   },
   {
     "fixtureId": 1490446,
@@ -3584,7 +3618,7 @@
     "country": "Estados Unidos",
     "kickoff": "2026-09-05T19:30:00-05:00",
     "market": "Over 2.5 Goles",
-    "selection": "1",
+    "selection": "Over 2.5",
     "odds": 2.1,
     "bookmakerOdds": 2.1,
     "modelOdds": 2.38,
@@ -3735,7 +3769,7 @@
     "country": "Estados Unidos",
     "kickoff": "2026-09-05T20:30:00-05:00",
     "market": "Ganador Visitante",
-    "selection": "1",
+    "selection": "2",
     "odds": 1.7,
     "bookmakerOdds": 1.7,
     "modelOdds": 2.44,
@@ -3885,7 +3919,7 @@
     "country": "Estados Unidos",
     "kickoff": "2026-09-05T20:30:00-05:00",
     "market": "Ganador Local",
-    "selection": "2",
+    "selection": "1",
     "odds": 1.55,
     "bookmakerOdds": 1.55,
     "modelOdds": 2.32,
@@ -4035,7 +4069,7 @@
     "country": "Costa Rica",
     "kickoff": "2026-09-05T21:00:00-05:00",
     "market": "Over 0.5 Goles",
-    "selection": "1",
+    "selection": "Over 0.5",
     "odds": 1.68,
     "bookmakerOdds": 1.68,
     "modelOdds": 2.25,
@@ -4312,7 +4346,8 @@
     "leagueTier": 1,
     "isMcpPick": true,
     "source": "mcp",
-    "matchTiming": "prematch"
+    "matchTiming": "prematch",
+    "pick": "Over 2.5 Goles"
   },
   {
     "fixtureId": 1490450,
@@ -4458,6 +4493,7 @@
     "leagueTier": 1,
     "isMcpPick": true,
     "source": "mcp",
-    "matchTiming": "prematch"
+    "matchTiming": "prematch",
+    "pick": "Portland Timbers"
   }
 ]

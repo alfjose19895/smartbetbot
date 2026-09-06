@@ -23,7 +23,7 @@ export function FeaturedDailyPicks({ smartPick, bombaPick, onOpenDetail }: Featu
       `⭐ ${title} ⭐`,
       `🏆 ${pick.league} ${pick.country ? `(${pick.country})` : ""}`,
       `⚽ ${pick.homeTeam} vs ${pick.awayTeam}`,
-      `🎯 Pronóstico Oficial: ${pick.market} (${pick.selection})`,
+      `🎯 Pronóstico Oficial: ${pick.market} (${(pick.market.includes("Local") || pick.market.includes("1")) ? "1" : (pick.market.includes("Visitante") || pick.market.includes("2")) ? "2" : pick.selection})`,
       `🏢 Cuota Casa de Apuestas: @${pick.odds.toFixed(2)}`,
       `🤖 Cuota Modelo SmartBetBot: @${pick.fairOdds.toFixed(2)}`,
       `📈 Probabilidad Estimada: ${pick.probability}% (+${pick.edge}% Valor)`,

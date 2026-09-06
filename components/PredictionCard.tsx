@@ -45,6 +45,36 @@ function getMatchLiveStatusBadge(kickoff: string) {
   };
 }
 
+
+export function getDisplayMarketSelection(market: string, selection?: string): string {
+  const normM = (market || "").toLowerCase().trim();
+  if (normM.includes("ganador local") || normM.includes("gana local")) {
+    return `${market} (1)`;
+  }
+  if (normM.includes("ganador visitante") || normM.includes("gana visitante")) {
+    return `${market} (2)`;
+  }
+  if (normM.includes("empate") || normM.includes("draw")) {
+    return `${market} (X)`;
+  }
+  if (normM.includes("over 0.5") || normM.includes("más de 0.5")) {
+    return `${market} (Over 0.5)`;
+  }
+  if (normM.includes("over 1.5") || normM.includes("más de 1.5")) {
+    return `${market} (Over 1.5)`;
+  }
+  if (normM.includes("over 2.5") || normM.includes("más de 2.5")) {
+    return `${market} (Over 2.5)`;
+  }
+  if (normM.includes("ambos equipos") || normM.includes("btts")) {
+    return `${market} (Sí)`;
+  }
+  if (selection && selection !== market && !market.includes(selection)) {
+    return `${market} (${selection})`;
+  }
+  return market;
+}
+
 export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = false, onPublishAlert, isPublished = false }: PredictionCardProps) {
   const { language } = useLanguage();
   const [isMobileExpanded, setIsMobileExpanded] = useState(defaultExpanded);
@@ -258,7 +288,7 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
                 </div>
 
                 <div className="text-xs font-black text-slate-900 dark:text-white">
-                  {prediction.market} ({prediction.selection})
+                  {getDisplayMarketSelection(prediction.market, prediction.selection)}
                 </div>
 
                 {/* Odds 3-cards Grid */}
@@ -456,7 +486,7 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
             </div>
 
             <div className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-              {prediction.market} ({prediction.selection})
+              {getDisplayMarketSelection(prediction.market, prediction.selection)}
             </div>
 
             {/* Side-by-Side Odds Comparison Cards with Descriptions */}
