@@ -104,6 +104,70 @@ function AdminControlContent() {
   } | null>(null);
   const [mcpSearched, setMcpSearched] = useState(false);
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
+  const [publishingMcp, setPublishingMcp] = useState(false);
+  const [publishFeedback, setPublishFeedback] = useState<{ text: string; type: "success" | "error" } | null>(null);
+  const [publishedFixtureKeys, setPublishedFixtureKeys] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    async function loadPublishedKeys() {
+      try {
+        const res = await fetch("/api/signals");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.signals && Array.isArray(data.signals)) {
+            const keys = new Set<string>();
+            for (const s of data.signals) {
+              if (s.fixtureId) keys.add(String(s.fixtureId));
+              keys.add(`${s.homeTeam}-${s.awayTeam}`);
+            }
+            setPublishedFixtureKeys(keys);
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+    loadPublishedKeys();
+  }, []);
+
+  const handlePublishMcpPicks = async (picksToPublish: MarketOpportunity[]) => {
+    if (!picksToPublish || picksToPublish.length === 0) return;
+    try {
+      setPublishingMcp(true);
+      setPublishFeedback({ text: "Publicando alertas en el Dashboard y Alertas del Día...", type: "success" });
+      const res = await fetch("/api/mcp/predictions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "publish",
+          picks: picksToPublish,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setPublishedFixtureKeys((prev) => {
+          const next = new Set(prev);
+          for (const p of picksToPublish) {
+            if (p.fixtureId) next.add(String(p.fixtureId));
+            next.add(`${p.homeTeam}-${p.awayTeam}`);
+          }
+          return next;
+        });
+        setPublishFeedback({
+          text: data.message || `✓ Se agregaron ${data.addedCount || picksToPublish.length} alertas al Dashboard.`,
+          type: "success",
+        });
+        addLog(`✓ ${picksToPublish.length} alertas publicadas al Dashboard y Alertas del Día (Total activo: ${data.totalAlerts || "actualizado"})`);
+      } else {
+        setPublishFeedback({ text: `✗ Error: ${data.error || "No se pudieron publicar las alertas"}`, type: "error" });
+      }
+    } catch (err) {
+      setPublishFeedback({ text: `✗ Fallo de conexión: ${String(err)}`, type: "error" });
+    } finally {
+      setPublishingMcp(false);
+      setTimeout(() => setPublishFeedback(null), 6000);
+    }
+  };
 
   const QUICK_COUNTRIES = [
     { id: "españa", label: "España", flag: "🇪🇸" },
@@ -1036,7 +1100,7 @@ function AdminControlContent() {
 
             {/* Results Grid */}
             <div>
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                 <div className="flex items-center gap-2">
                   <h4 className="text-base font-black text-slate-900 dark:text-white">
                     Pronósticos Analizados por el Algoritmo ({mcpResults.length})
@@ -1045,7 +1109,40 @@ function AdminControlContent() {
                     <div className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
                   )}
                 </div>
+
+                {mcpResults.length > 0 && (
+                  <button
+                    onClick={() => handlePublishMcpPicks(mcpResults)}
+                    disabled={publishingMcp || mcpLoading}
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-2 text-xs font-black text-slate-950 shadow-md shadow-emerald-500/20 hover:brightness-110 transition cursor-pointer disabled:opacity-50"
+                  >
+                    <span>{publishingMcp ? "⏳" : "📥"}</span>
+                    <span>
+                      {publishingMcp
+                        ? "Publicando..."
+                        : `Publicar Todas estas Alertas (${mcpResults.length}) en el Dashboard`}
+                    </span>
+                  </button>
+                )}
               </div>
+
+              {publishFeedback && (
+                <div
+                  className={`mb-4 p-3.5 rounded-2xl text-xs font-bold flex items-center justify-between shadow-sm ${
+                    publishFeedback.type === "success"
+                      ? "bg-emerald-50 border border-emerald-300 text-emerald-800 dark:bg-emerald-950/80 dark:border-emerald-700 dark:text-emerald-300"
+                      : "bg-red-50 border border-red-300 text-red-800 dark:bg-red-950/80 dark:border-red-700 dark:text-red-300"
+                  }`}
+                >
+                  <span>{publishFeedback.text}</span>
+                  <button
+                    onClick={() => setPublishFeedback(null)}
+                    className="text-slate-400 hover:text-slate-600 font-bold ml-2 cursor-pointer"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
 
               {mcpLoading ? (
                 <div className="py-16 text-center text-slate-500 rounded-3xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
@@ -1070,6 +1167,11 @@ function AdminControlContent() {
                       key={opp.fixtureId}
                       prediction={opp}
                       onOpenDetail={(pick) => setActiveModalPick(pick)}
+                      onPublishAlert={(pick) => handlePublishMcpPicks([pick])}
+                      isPublished={
+                        publishedFixtureKeys.has(String(opp.fixtureId)) ||
+                        publishedFixtureKeys.has(`${opp.homeTeam}-${opp.awayTeam}`)
+                      }
                     />
                   ))}
                 </div>

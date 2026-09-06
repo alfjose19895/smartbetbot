@@ -9,6 +9,8 @@ interface PredictionCardProps {
   prediction: MarketOpportunity;
   onOpenDetail?: (prediction: MarketOpportunity) => void;
   defaultExpanded?: boolean;
+  onPublishAlert?: (prediction: MarketOpportunity) => void;
+  isPublished?: boolean;
 }
 
 function getMatchLiveStatusBadge(kickoff: string) {
@@ -43,7 +45,7 @@ function getMatchLiveStatusBadge(kickoff: string) {
   };
 }
 
-export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = false }: PredictionCardProps) {
+export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = false, onPublishAlert, isPublished = false }: PredictionCardProps) {
   const { language } = useLanguage();
   const [isMobileExpanded, setIsMobileExpanded] = useState(defaultExpanded);
   const [copyingImage, setCopyingImage] = useState(false);
@@ -291,6 +293,23 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
                 >
                   {copySuccess ? "✓ Copiada" : "📸 Copiar"}
                 </button>
+
+                {onPublishAlert && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onPublishAlert(prediction);
+                    }}
+                    disabled={isPublished}
+                    className={`rounded-lg px-2 py-1 text-[10px] font-black transition cursor-pointer ${
+                      isPublished
+                        ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
+                        : "bg-emerald-500 text-slate-950 font-black"
+                    }`}
+                  >
+                    {isPublished ? "✓ En App" : "📥 Publicar"}
+                  </button>
+                )}
               </div>
 
               <button

@@ -647,6 +647,65 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
  * Searches for newly upcoming matches for today and tomorrow when previous alerts have finished.
  * Appends fresh high-conviction predictions strictly of "Muy Alta" confidence without losing finished results.
  */
+
+/**
+ * Adds new predictions discovered by the MCP Agent or search directly into the daily snapshot.
+ * Eliminates artificial caps, allowing seamless expansion beyond the initial 15 alerts.
+ */
+export function addPredictionsToDailySnapshot(newPicks: MarketOpportunity[]): {
+  addedCount: number;
+  totalAlerts: number;
+  predictions: MarketOpportunity[];
+} {
+  const nowMs = Date.now();
+  const todayDateStr = getEcuadorDateString(nowMs);
+  const activeDateStr = todayDateStr >= HISTORY_START_DATE ? todayDateStr : HISTORY_START_DATE;
+
+  let existingSnapshot = loadDailySnapshot(activeDateStr) || [];
+  const existingKeys = new Set(
+    existingSnapshot.map((p) => {
+      const h = getCanonicalTeamKey(p.homeTeam);
+      const a = getCanonicalTeamKey(p.awayTeam);
+      const fixId = Number(p.fixtureId) || 0;
+      return `${fixId}-${h}-${a}`;
+    })
+  );
+
+  let addedCount = 0;
+  for (const pick of newPicks) {
+    const h = getCanonicalTeamKey(pick.homeTeam);
+    const a = getCanonicalTeamKey(pick.awayTeam);
+    const fixId = Number(pick.fixtureId) || 0;
+    const key = `${fixId}-${h}-${a}`;
+    const keyAlt = `0-${h}-${a}`;
+
+    if (!existingKeys.has(key) && !existingKeys.has(keyAlt)) {
+      existingKeys.add(key);
+      existingSnapshot.push({
+        ...pick,
+        status: pick.status || "pending",
+      });
+      addedCount++;
+    }
+  }
+
+  if (addedCount > 0) {
+    // Sort chronologically by kickoff time
+    existingSnapshot.sort(
+      (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
+    );
+    saveDailySnapshot(activeDateStr, existingSnapshot);
+    cachedLivePredictions = existingSnapshot;
+    cacheTimestamp = nowMs;
+  }
+
+  return {
+    addedCount,
+    totalAlerts: existingSnapshot.length,
+    predictions: existingSnapshot,
+  };
+}
+
 export async function refreshRemainingLivePredictions(): Promise<{
   count: number;
   totalAlerts: number;

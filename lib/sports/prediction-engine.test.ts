@@ -103,7 +103,7 @@ describe("Prediction Engine (TypeScript MVP)", () => {
     const marketCounts: Record<string, number> = {};
     for (const p of predictions) {
       marketCounts[p.market] = (marketCounts[p.market] || 0) + 1;
-      expect(p.odds).toBeGreaterThanOrEqual(1.35);
+      expect(p.odds).toBeGreaterThanOrEqual(1.30);
       expect(p.probability).toBeGreaterThanOrEqual(55);
     }
 

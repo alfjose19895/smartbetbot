@@ -435,578 +435,6 @@
     "modelOdds": 1.76
   },
   {
-    "fixtureId": 1551677,
-    "match": "LD Alajuelense vs Deportivo Saprissa",
-    "homeTeam": "LD Alajuelense",
-    "awayTeam": "Deportivo Saprissa",
-    "homeTeamId": 822,
-    "awayTeamId": 816,
-    "homeLogo": "https://media.api-sports.io/football/teams/822.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/816.png",
-    "league": "Primera División (Liga FPD)",
-    "leagueId": 162,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/162.png",
-    "country": "Costa Rica",
-    "kickoff": "2026-09-05T21:00:00-05:00",
-    "market": "Ganador Local",
-    "selection": "1",
-    "odds": 2.5,
-    "bookmakerOdds": 2.5,
-    "modelOdds": 2.25,
-    "fairOdds": 2.25,
-    "probability": 58.5,
-    "impliedProbability": 40,
-    "edge": 18.5,
-    "expectedValue": 0.8,
-    "confidence": "Alta",
-    "pickBadge": "valor",
-    "smartScore": 82,
-    "explanation": "Clásico Nacional de Costa Rica: LD Alajuelense se hace fuerte en el Estadio Alejandro Morera Soto. Las casas de apuestas (Bet365 / Pinnacle) cotizan la victoria local a una excelente cuota @2.50 (+18.5% de valor sobre modelo cuantitativo).",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-08",
-        "homeTeam": "LD Alajuelense",
-        "awayTeam": "Deportivo Saprissa",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "Primera División (Liga FPD)"
-      },
-      {
-        "date": "2026-03-10",
-        "homeTeam": "Deportivo Saprissa",
-        "awayTeam": "LD Alajuelense",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "Primera División (Liga FPD)"
-      },
-      {
-        "date": "2025-09-11",
-        "homeTeam": "LD Alajuelense",
-        "awayTeam": "Deportivo Saprissa",
-        "score": "3-0",
-        "winner": "home",
-        "competition": "Primera División (Liga FPD)"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-02",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Primera División (Liga FPD)"
-      },
-      {
-        "date": "2026-08-28",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Primera División (Liga FPD)"
-      },
-      {
-        "date": "2026-08-23",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Primera División (Liga FPD)"
-      },
-      {
-        "date": "2026-08-18",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Primera División (Liga FPD)"
-      },
-      {
-        "date": "2026-08-13",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Primera División (Liga FPD)"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-02",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Primera División (Liga FPD)"
-      },
-      {
-        "date": "2026-08-28",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "0-0",
-        "result": "D",
-        "competition": "Primera División (Liga FPD)"
-      },
-      {
-        "date": "2026-08-23",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Primera División (Liga FPD)"
-      },
-      {
-        "date": "2026-08-18",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "Primera División (Liga FPD)"
-      },
-      {
-        "date": "2026-08-13",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "0-0",
-        "result": "D",
-        "competition": "Primera División (Liga FPD)"
-      }
-    ],
-    "homeElo": 1610,
-    "awayElo": 1506,
-    "leagueTier": 1
-  },
-  {
-    "fixtureId": 1505516,
-    "match": "Everton de Vina vs U. Catolica",
-    "homeTeam": "Everton de Vina",
-    "awayTeam": "U. Catolica",
-    "homeTeamId": 2325,
-    "awayTeamId": 2994,
-    "homeLogo": "https://media.api-sports.io/football/teams/2325.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/2994.png",
-    "league": "Primera División",
-    "leagueId": 265,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/265.png",
-    "country": "Chile",
-    "kickoff": "2026-09-05T16:30:00-05:00",
-    "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
-    "odds": 1.75,
-    "bookmakerOdds": 1.75,
-    "modelOdds": 1.65,
-    "fairOdds": 1.65,
-    "probability": 60.5,
-    "impliedProbability": 57.5,
-    "edge": 1.7,
-    "expectedValue": 1.6,
-    "confidence": "Alta",
-    "pickBadge": "estandar",
-    "smartScore": 80,
-    "explanation": "Duelo ofensivo parejo en Primera División de Chile: Everton de Vina y U. Catolica con promedio de 1.5 goles por partido. Cuota de mercado @1.75 para Ambos Equipos Anotan.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-07",
-        "homeTeam": "Everton de Vina",
-        "awayTeam": "U. Catolica",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "Primera División"
-      },
-      {
-        "date": "2026-03-09",
-        "homeTeam": "U. Catolica",
-        "awayTeam": "Everton de Vina",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "Primera División"
-      },
-      {
-        "date": "2025-09-10",
-        "homeTeam": "Everton de Vina",
-        "awayTeam": "U. Catolica",
-        "score": "3-0",
-        "winner": "home",
-        "competition": "Primera División"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-01",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Primera División"
-      },
-      {
-        "date": "2026-08-27",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Primera División"
-      },
-      {
-        "date": "2026-08-22",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Primera División"
-      },
-      {
-        "date": "2026-08-17",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Primera División"
-      },
-      {
-        "date": "2026-08-12",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Primera División"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-01",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "0-0",
-        "result": "D",
-        "competition": "Primera División"
-      },
-      {
-        "date": "2026-08-27",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Primera División"
-      },
-      {
-        "date": "2026-08-22",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "Primera División"
-      },
-      {
-        "date": "2026-08-17",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "0-0",
-        "result": "D",
-        "competition": "Primera División"
-      },
-      {
-        "date": "2026-08-12",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Primera División"
-      }
-    ],
-    "homeElo": 1640,
-    "awayElo": 1543,
-    "leagueTier": 1
-  },
-  {
-    "fixtureId": 1519484,
-    "match": "Independiente del Valle vs Macara",
-    "homeTeam": "Independiente del Valle",
-    "awayTeam": "Macara",
-    "homeTeamId": 1153,
-    "awayTeamId": 1155,
-    "homeLogo": "https://media.api-sports.io/football/teams/1153.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/1155.png",
-    "league": "Liga Pro",
-    "leagueId": 242,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/242.png",
-    "country": "Ecuador",
-    "kickoff": "2026-09-05T18:00:00-05:00",
-    "market": "Ganador Local",
-    "selection": "1",
-    "odds": 1.33,
-    "bookmakerOdds": 1.33,
-    "modelOdds": 1.28,
-    "fairOdds": 1.28,
-    "probability": 78.1,
-    "impliedProbability": 64.5,
-    "edge": 5.5,
-    "expectedValue": 1.3,
-    "confidence": "Muy Alta",
-    "pickBadge": "estandar",
-    "smartScore": 77,
-    "explanation": "Jerarquía y solvencia territorial: Independiente del Valle llega en gran momento superando a Macara en xG. Cuota real Bet365/Pinnacle @1.33 con 78.1% de probabilidad de triunfo local.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-07",
-        "homeTeam": "Independiente del Valle",
-        "awayTeam": "Macara",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "Liga Pro"
-      },
-      {
-        "date": "2026-03-09",
-        "homeTeam": "Macara",
-        "awayTeam": "Independiente del Valle",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "Liga Pro"
-      },
-      {
-        "date": "2025-09-10",
-        "homeTeam": "Independiente del Valle",
-        "awayTeam": "Macara",
-        "score": "1-1",
-        "winner": "draw",
-        "competition": "Liga Pro"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-01",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Liga Pro"
-      },
-      {
-        "date": "2026-08-27",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Liga Pro"
-      },
-      {
-        "date": "2026-08-22",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Liga Pro"
-      },
-      {
-        "date": "2026-08-17",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Liga Pro"
-      },
-      {
-        "date": "2026-08-12",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Liga Pro"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-01",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Liga Pro"
-      },
-      {
-        "date": "2026-08-27",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Liga Pro"
-      },
-      {
-        "date": "2026-08-22",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "0-0",
-        "result": "D",
-        "competition": "Liga Pro"
-      },
-      {
-        "date": "2026-08-17",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Liga Pro"
-      },
-      {
-        "date": "2026-08-12",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "Liga Pro"
-      }
-    ],
-    "homeElo": 1640,
-    "awayElo": 1521,
-    "leagueTier": 1
-  },
-  {
-    "fixtureId": 1551678,
-    "match": "CS Herediano vs Perez Zeledon",
-    "homeTeam": "CS Herediano",
-    "awayTeam": "Perez Zeledon",
-    "homeTeamId": 815,
-    "awayTeamId": 819,
-    "homeLogo": "https://media.api-sports.io/football/teams/815.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/819.png",
-    "league": "Primera División (Liga FPD)",
-    "leagueId": 162,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/162.png",
-    "country": "Costa Rica",
-    "kickoff": "2026-09-05T18:00:00-05:00",
-    "market": "Ganador Local",
-    "selection": "1",
-    "odds": 1.48,
-    "bookmakerOdds": 1.48,
-    "modelOdds": 1.4,
-    "fairOdds": 1.4,
-    "probability": 71.4,
-    "impliedProbability": 67.6,
-    "edge": 1.8,
-    "expectedValue": 2.1,
-    "confidence": "Muy Alta",
-    "pickBadge": "estandar",
-    "smartScore": 76,
-    "explanation": "Dominio estadístico de CS Herediano en casa frente a Perez Zeledon. Cuota real Bet365 @1.48 con 71.4% de probabilidad de victoria.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-07",
-        "homeTeam": "CS Herediano",
-        "awayTeam": "Perez Zeledon",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "Primera División (Liga FPD)"
-      },
-      {
-        "date": "2026-03-09",
-        "homeTeam": "Perez Zeledon",
-        "awayTeam": "CS Herediano",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "Primera División (Liga FPD)"
-      },
-      {
-        "date": "2025-09-10",
-        "homeTeam": "CS Herediano",
-        "awayTeam": "Perez Zeledon",
-        "score": "1-1",
-        "winner": "draw",
-        "competition": "Primera División (Liga FPD)"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-01",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Primera División (Liga FPD)"
-      },
-      {
-        "date": "2026-08-27",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Primera División (Liga FPD)"
-      },
-      {
-        "date": "2026-08-22",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Primera División (Liga FPD)"
-      },
-      {
-        "date": "2026-08-17",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Primera División (Liga FPD)"
-      },
-      {
-        "date": "2026-08-12",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Primera División (Liga FPD)"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-01",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Primera División (Liga FPD)"
-      },
-      {
-        "date": "2026-08-27",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Primera División (Liga FPD)"
-      },
-      {
-        "date": "2026-08-22",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "0-0",
-        "result": "D",
-        "competition": "Primera División (Liga FPD)"
-      },
-      {
-        "date": "2026-08-17",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Primera División (Liga FPD)"
-      },
-      {
-        "date": "2026-08-12",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "Primera División (Liga FPD)"
-      }
-    ],
-    "homeElo": 1590,
-    "awayElo": 1491,
-    "leagueTier": 1
-  },
-  {
     "fixtureId": 1573574,
     "match": "Sevilla W vs Barcelona W",
     "homeTeam": "Sevilla W",
@@ -1149,580 +577,6 @@
     "awayElo": 2010,
     "leagueTier": 1,
     "actualScore": "0 - 4 (4 Goles)"
-  },
-  {
-    "fixtureId": 1550950,
-    "match": "Atletico San Luis vs Guadalajara Chivas",
-    "homeTeam": "Atletico San Luis",
-    "awayTeam": "Guadalajara Chivas",
-    "homeTeamId": 2314,
-    "awayTeamId": 2278,
-    "homeLogo": "https://media.api-sports.io/football/teams/2314.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/2278.png",
-    "league": "Liga MX",
-    "leagueId": 262,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/262.png",
-    "country": "México",
-    "kickoff": "2026-09-05T18:00:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.82,
-    "bookmakerOdds": 1.82,
-    "modelOdds": 1.68,
-    "fairOdds": 1.68,
-    "probability": 59.5,
-    "impliedProbability": 54.9,
-    "edge": 4.6,
-    "expectedValue": 2.1,
-    "confidence": "Alta",
-    "pickBadge": "estandar",
-    "smartScore": 76,
-    "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Atletico San Luis con la pegada en contragolpe de Guadalajara Chivas (3.82 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 67.6% de confianza a cuota @1.51.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-07",
-        "homeTeam": "Atletico San Luis",
-        "awayTeam": "Guadalajara Chivas",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "Liga MX"
-      },
-      {
-        "date": "2026-03-09",
-        "homeTeam": "Guadalajara Chivas",
-        "awayTeam": "Atletico San Luis",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "Liga MX"
-      },
-      {
-        "date": "2025-09-10",
-        "homeTeam": "Atletico San Luis",
-        "awayTeam": "Guadalajara Chivas",
-        "score": "3-0",
-        "winner": "home",
-        "competition": "Liga MX"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-01",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "0-1",
-        "result": "L",
-        "competition": "Liga MX"
-      },
-      {
-        "date": "2026-08-27",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "2-0",
-        "result": "W",
-        "competition": "Liga MX"
-      },
-      {
-        "date": "2026-08-22",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "3-1",
-        "result": "W",
-        "competition": "Liga MX"
-      },
-      {
-        "date": "2026-08-17",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-2",
-        "result": "L",
-        "competition": "Liga MX"
-      },
-      {
-        "date": "2026-08-12",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Liga MX"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-01",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Liga MX"
-      },
-      {
-        "date": "2026-08-27",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Liga MX"
-      },
-      {
-        "date": "2026-08-22",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Liga MX"
-      },
-      {
-        "date": "2026-08-17",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Liga MX"
-      },
-      {
-        "date": "2026-08-12",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Liga MX"
-      }
-    ],
-    "homeElo": 1880,
-    "awayElo": 1599,
-    "leagueTier": 1
-  },
-  {
-    "fixtureId": 1570372,
-    "match": "Villarreal vs Deportivo La Coruna",
-    "homeTeam": "Villarreal",
-    "awayTeam": "Deportivo La Coruna",
-    "homeTeamId": 533,
-    "awayTeamId": 544,
-    "homeLogo": "https://media.api-sports.io/football/teams/533.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/544.png",
-    "league": "La Liga",
-    "leagueId": 140,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/140.png",
-    "country": "España",
-    "kickoff": "2026-09-05T14:00:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.72,
-    "bookmakerOdds": 1.72,
-    "modelOdds": 1.64,
-    "fairOdds": 1.64,
-    "probability": 61,
-    "impliedProbability": 58.1,
-    "edge": 2.9,
-    "expectedValue": 0.3,
-    "confidence": "Alta",
-    "pickBadge": "estandar",
-    "smartScore": 92,
-    "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con Villarreal sumando en 3 de sus últimos 5 cotejos y la vocación ofensiva de Deportivo La Coruna, el algoritmo estima un 67.3% de certeza para más de 2.5 goles.",
-    "status": "won",
-    "h2h": [
-      {
-        "date": "2026-07-07",
-        "homeTeam": "Villarreal",
-        "awayTeam": "Deportivo La Coruna",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "La Liga"
-      },
-      {
-        "date": "2026-03-09",
-        "homeTeam": "Deportivo La Coruna",
-        "awayTeam": "Villarreal",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "La Liga"
-      },
-      {
-        "date": "2025-09-10",
-        "homeTeam": "Villarreal",
-        "awayTeam": "Deportivo La Coruna",
-        "score": "3-0",
-        "winner": "home",
-        "competition": "La Liga"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-01",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "0-1",
-        "result": "L",
-        "competition": "La Liga"
-      },
-      {
-        "date": "2026-08-27",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "2-0",
-        "result": "W",
-        "competition": "La Liga"
-      },
-      {
-        "date": "2026-08-22",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "3-1",
-        "result": "W",
-        "competition": "La Liga"
-      },
-      {
-        "date": "2026-08-17",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-2",
-        "result": "L",
-        "competition": "La Liga"
-      },
-      {
-        "date": "2026-08-12",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "La Liga"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-01",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "La Liga"
-      },
-      {
-        "date": "2026-08-27",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "0-2",
-        "result": "L",
-        "competition": "La Liga"
-      },
-      {
-        "date": "2026-08-22",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "0-0",
-        "result": "D",
-        "competition": "La Liga"
-      },
-      {
-        "date": "2026-08-17",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "La Liga"
-      },
-      {
-        "date": "2026-08-12",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "La Liga"
-      }
-    ],
-    "homeElo": 1760,
-    "awayElo": 1489,
-    "leagueTier": 1,
-    "actualScore": "2 - 3 (5 Goles)"
-  },
-  {
-    "fixtureId": 1575489,
-    "match": "Sporting CP vs Nacional",
-    "homeTeam": "Sporting CP",
-    "awayTeam": "Nacional",
-    "homeTeamId": 228,
-    "awayTeamId": 225,
-    "homeLogo": "https://media.api-sports.io/football/teams/228.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/225.png",
-    "league": "Primeira Liga",
-    "leagueId": 94,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/94.png",
-    "country": "Portugal",
-    "kickoff": "2026-09-05T14:30:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.55,
-    "bookmakerOdds": 1.55,
-    "modelOdds": 1.46,
-    "fairOdds": 1.46,
-    "probability": 68.5,
-    "impliedProbability": 64.5,
-    "edge": 4,
-    "expectedValue": 0.3,
-    "confidence": "Alta",
-    "pickBadge": "valor",
-    "smartScore": 92,
-    "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Sporting CP con la pegada en contragolpe de Nacional (3.80 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 67.3% de confianza a cuota @1.49.",
-    "status": "lost",
-    "h2h": [
-      {
-        "date": "2026-07-07",
-        "homeTeam": "Sporting CP",
-        "awayTeam": "Nacional",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "Primeira Liga"
-      },
-      {
-        "date": "2026-03-09",
-        "homeTeam": "Nacional",
-        "awayTeam": "Sporting CP",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "Primeira Liga"
-      },
-      {
-        "date": "2025-09-10",
-        "homeTeam": "Sporting CP",
-        "awayTeam": "Nacional",
-        "score": "1-1",
-        "winner": "draw",
-        "competition": "Primeira Liga"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-01",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "2-0",
-        "result": "W",
-        "competition": "Primeira Liga"
-      },
-      {
-        "date": "2026-08-27",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "3-1",
-        "result": "W",
-        "competition": "Primeira Liga"
-      },
-      {
-        "date": "2026-08-22",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Primeira Liga"
-      },
-      {
-        "date": "2026-08-17",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "3-1",
-        "result": "W",
-        "competition": "Primeira Liga"
-      },
-      {
-        "date": "2026-08-12",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "2-0",
-        "result": "W",
-        "competition": "Primeira Liga"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-01",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Primeira Liga"
-      },
-      {
-        "date": "2026-08-27",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Primeira Liga"
-      },
-      {
-        "date": "2026-08-22",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Primeira Liga"
-      },
-      {
-        "date": "2026-08-17",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Primeira Liga"
-      },
-      {
-        "date": "2026-08-12",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Primeira Liga"
-      }
-    ],
-    "homeElo": 1860,
-    "awayElo": 1565,
-    "leagueTier": 1,
-    "actualScore": "2 - 0 (2 Goles)"
-  },
-  {
-    "fixtureId": 1490438,
-    "match": "Philadelphia Union vs CF Montreal",
-    "homeTeam": "Philadelphia Union",
-    "awayTeam": "CF Montreal",
-    "homeTeamId": 1599,
-    "awayTeamId": 1614,
-    "homeLogo": "https://media.api-sports.io/football/teams/1599.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/1614.png",
-    "league": "Major League Soccer (MLS)",
-    "leagueId": 253,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/253.png",
-    "country": "Estados Unidos",
-    "kickoff": "2026-09-05T18:30:00-05:00",
-    "market": "Ganador Local",
-    "selection": "1",
-    "odds": 1.42,
-    "bookmakerOdds": 1.42,
-    "modelOdds": 1.38,
-    "fairOdds": 1.38,
-    "probability": 72.5,
-    "impliedProbability": 60.6,
-    "edge": 4.4,
-    "expectedValue": -6,
-    "confidence": "Muy Alta",
-    "pickBadge": "estandar",
-    "smartScore": 74,
-    "explanation": "Solidez de local en MLS: Philadelphia Union promedia más de 2 goles por partido ante CF Montreal. Cuota real Bet365 @1.42 con 72.5% de probabilidad.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-07",
-        "homeTeam": "Philadelphia Union",
-        "awayTeam": "CF Montreal",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-03-09",
-        "homeTeam": "CF Montreal",
-        "awayTeam": "Philadelphia Union",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2025-09-10",
-        "homeTeam": "Philadelphia Union",
-        "awayTeam": "CF Montreal",
-        "score": "3-0",
-        "winner": "home",
-        "competition": "Major League Soccer (MLS)"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-01",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-27",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-22",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "1-2",
-        "result": "L",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-17",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-12",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Major League Soccer (MLS)"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-01",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-27",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-22",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-17",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-12",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Major League Soccer (MLS)"
-      }
-    ],
-    "homeElo": 1634,
-    "awayElo": 1583,
-    "leagueTier": 1
   },
   {
     "fixtureId": 1552748,
@@ -1869,269 +723,126 @@
     "actualScore": "1 - 2"
   },
   {
-    "fixtureId": 1549474,
-    "match": "Cusco vs UCV Moquegua",
-    "homeTeam": "Cusco",
-    "awayTeam": "UCV Moquegua",
-    "homeTeamId": 10013,
-    "awayTeamId": 22489,
-    "homeLogo": "https://media.api-sports.io/football/teams/10013.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/22489.png",
-    "league": "Liga 1",
-    "leagueId": 281,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/281.png",
-    "country": "Perú",
-    "kickoff": "2026-09-05T18:00:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.58,
-    "bookmakerOdds": 1.58,
-    "modelOdds": 1.56,
-    "fairOdds": 1.56,
-    "probability": 64.1,
-    "impliedProbability": 63.3,
-    "edge": 1,
-    "expectedValue": 1.3,
-    "confidence": "Alta",
-    "pickBadge": "estandar",
-    "smartScore": 72,
-    "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Cusco con la pegada en contragolpe de UCV Moquegua (3.40 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 64.1% de confianza a cuota @1.58.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-07",
-        "homeTeam": "Cusco",
-        "awayTeam": "UCV Moquegua",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "Liga 1"
-      },
-      {
-        "date": "2026-03-09",
-        "homeTeam": "UCV Moquegua",
-        "awayTeam": "Cusco",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "Liga 1"
-      },
-      {
-        "date": "2025-09-10",
-        "homeTeam": "Cusco",
-        "awayTeam": "UCV Moquegua",
-        "score": "3-0",
-        "winner": "home",
-        "competition": "Liga 1"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-01",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Liga 1"
-      },
-      {
-        "date": "2026-08-27",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Liga 1"
-      },
-      {
-        "date": "2026-08-22",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Liga 1"
-      },
-      {
-        "date": "2026-08-17",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Liga 1"
-      },
-      {
-        "date": "2026-08-12",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Liga 1"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-01",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Liga 1"
-      },
-      {
-        "date": "2026-08-27",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "0-0",
-        "result": "D",
-        "competition": "Liga 1"
-      },
-      {
-        "date": "2026-08-22",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Liga 1"
-      },
-      {
-        "date": "2026-08-17",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "Liga 1"
-      },
-      {
-        "date": "2026-08-12",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "0-0",
-        "result": "D",
-        "competition": "Liga 1"
-      }
-    ],
-    "homeElo": 1629,
-    "awayElo": 1506,
-    "leagueTier": 1
-  },
-  {
-    "fixtureId": 1549772,
-    "match": "Santa Fe vs Fortaleza FC",
-    "homeTeam": "Santa Fe",
-    "awayTeam": "Fortaleza FC",
-    "homeTeamId": 1139,
-    "awayTeamId": 1147,
-    "homeLogo": "https://media.api-sports.io/football/teams/1139.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/1147.png",
-    "league": "Primera A",
-    "leagueId": 239,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/239.png",
-    "country": "Colombia",
-    "kickoff": "2026-09-05T18:25:00-05:00",
+    "fixtureId": 1558620,
+    "match": "Standard Liege vs Antwerp",
+    "homeTeam": "Standard Liege",
+    "awayTeam": "Antwerp",
+    "homeTeamId": 733,
+    "awayTeamId": 740,
+    "homeLogo": "https://media.api-sports.io/football/teams/733.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/740.png",
+    "league": "Jupiler Pro League",
+    "leagueId": 144,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/144.png",
+    "country": "Bélgica",
+    "kickoff": "2026-09-05T13:45:00-05:00",
     "market": "Ganador Local",
     "selection": "1",
-    "odds": 1.8,
-    "bookmakerOdds": 1.8,
-    "modelOdds": 1.7,
-    "fairOdds": 1.7,
-    "probability": 58.8,
-    "impliedProbability": 54.1,
-    "edge": 4,
-    "expectedValue": 0.8,
+    "odds": 2,
+    "bookmakerOdds": 2,
+    "modelOdds": 1.9,
+    "fairOdds": 1.9,
+    "probability": 55.5,
+    "impliedProbability": 62.9,
+    "edge": 1,
+    "expectedValue": -0.2,
     "confidence": "Alta",
-    "pickBadge": "estandar",
-    "smartScore": 72,
-    "explanation": "Localía en Bogotá: Santa Fe impone ritmo ante Fortaleza FC en Primera A de Colombia. Cuota real Bet365 @1.80.",
-    "status": "pending",
+    "pickBadge": "valor",
+    "smartScore": 88,
+    "explanation": "Fuerza en Maurice Dufrasne: Standard Liege ante Antwerp en Jupiler Pro League. Cuota real de mercado @2.00.",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-07",
-        "homeTeam": "Santa Fe",
-        "awayTeam": "Fortaleza FC",
+        "homeTeam": "Standard Liege",
+        "awayTeam": "Antwerp",
         "score": "2-1",
         "winner": "home",
-        "competition": "Primera A"
+        "competition": "Jupiler Pro League"
       },
       {
         "date": "2026-03-09",
-        "homeTeam": "Fortaleza FC",
-        "awayTeam": "Santa Fe",
+        "homeTeam": "Antwerp",
+        "awayTeam": "Standard Liege",
         "score": "0-2",
         "winner": "away",
-        "competition": "Primera A"
+        "competition": "Jupiler Pro League"
       },
       {
         "date": "2025-09-10",
-        "homeTeam": "Santa Fe",
-        "awayTeam": "Fortaleza FC",
-        "score": "3-0",
-        "winner": "home",
-        "competition": "Primera A"
+        "homeTeam": "Standard Liege",
+        "awayTeam": "Antwerp",
+        "score": "1-1",
+        "winner": "draw",
+        "competition": "Jupiler Pro League"
       }
     ],
     "homeLast5": [
       {
         "date": "2026-09-01",
         "opponent": "Rival A",
-        "isHome": true,
+        "isHome": false,
         "score": "1-1",
         "result": "D",
-        "competition": "Primera A"
+        "competition": "Jupiler Pro League"
       },
       {
         "date": "2026-08-27",
         "opponent": "Rival B",
-        "isHome": false,
-        "score": "1-0",
+        "isHome": true,
+        "score": "2-1",
         "result": "W",
-        "competition": "Primera A"
+        "competition": "Jupiler Pro League"
       },
       {
         "date": "2026-08-22",
         "opponent": "Rival C",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Primera A"
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Jupiler Pro League"
       },
       {
         "date": "2026-08-17",
         "opponent": "Rival D",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Primera A"
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Jupiler Pro League"
       },
       {
         "date": "2026-08-12",
         "opponent": "Rival E",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Primera A"
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Jupiler Pro League"
       }
     ],
     "awayLast5": [
       {
         "date": "2026-09-01",
         "opponent": "Rival A",
-        "isHome": false,
-        "score": "0-0",
-        "result": "D",
-        "competition": "Primera A"
-      },
-      {
-        "date": "2026-08-27",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Primera A"
-      },
-      {
-        "date": "2026-08-22",
-        "opponent": "Rival C",
         "isHome": false,
         "score": "1-3",
         "result": "L",
-        "competition": "Primera A"
+        "competition": "Jupiler Pro League"
+      },
+      {
+        "date": "2026-08-27",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Jupiler Pro League"
+      },
+      {
+        "date": "2026-08-22",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Jupiler Pro League"
       },
       {
         "date": "2026-08-17",
@@ -2139,7 +850,7 @@
         "isHome": true,
         "score": "0-2",
         "result": "L",
-        "competition": "Primera A"
+        "competition": "Jupiler Pro League"
       },
       {
         "date": "2026-08-12",
@@ -2147,155 +858,157 @@
         "isHome": false,
         "score": "0-0",
         "result": "D",
-        "competition": "Primera A"
+        "competition": "Jupiler Pro League"
       }
     ],
-    "homeElo": 1646,
-    "awayElo": 1505,
-    "leagueTier": 1
+    "homeElo": 1555,
+    "awayElo": 1497,
+    "leagueTier": 1,
+    "actualScore": "1 - 0"
   },
   {
-    "fixtureId": 1492368,
-    "match": "Sao Paulo vs Atletico-MG",
-    "homeTeam": "Sao Paulo",
-    "awayTeam": "Atletico-MG",
-    "homeTeamId": 126,
-    "awayTeamId": 1062,
-    "homeLogo": "https://media.api-sports.io/football/teams/126.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/1062.png",
-    "league": "Brasileirão Série A",
-    "leagueId": 71,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/71.png",
-    "country": "Brasil",
-    "kickoff": "2026-09-05T16:30:00-05:00",
-    "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
-    "odds": 1.85,
-    "bookmakerOdds": 1.85,
-    "modelOdds": 1.74,
-    "fairOdds": 1.74,
-    "probability": 57.5,
-    "impliedProbability": 54.1,
-    "edge": 3.4,
-    "expectedValue": -1,
+    "fixtureId": 1570372,
+    "match": "Villarreal vs Deportivo La Coruna",
+    "homeTeam": "Villarreal",
+    "awayTeam": "Deportivo La Coruna",
+    "homeTeamId": 533,
+    "awayTeamId": 544,
+    "homeLogo": "https://media.api-sports.io/football/teams/533.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/544.png",
+    "league": "La Liga",
+    "leagueId": 140,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/140.png",
+    "country": "España",
+    "kickoff": "2026-09-05T14:00:00-05:00",
+    "market": "Over 2.5 Goles",
+    "selection": "Over 2.5",
+    "odds": 1.72,
+    "bookmakerOdds": 1.72,
+    "modelOdds": 1.64,
+    "fairOdds": 1.64,
+    "probability": 61,
+    "impliedProbability": 58.1,
+    "edge": 2.9,
+    "expectedValue": 0.3,
     "confidence": "Alta",
     "pickBadge": "estandar",
-    "smartScore": 72,
-    "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Sao Paulo con la pegada en contragolpe de Atletico-MG (3.39 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 63.1% de confianza a cuota @1.57.",
-    "status": "pending",
+    "smartScore": 92,
+    "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con Villarreal sumando en 3 de sus últimos 5 cotejos y la vocación ofensiva de Deportivo La Coruna, el algoritmo estima un 67.3% de certeza para más de 2.5 goles.",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-07",
-        "homeTeam": "Sao Paulo",
-        "awayTeam": "Atletico-MG",
-        "score": "1-2",
-        "winner": "away",
-        "competition": "Brasileirão Série A"
+        "homeTeam": "Villarreal",
+        "awayTeam": "Deportivo La Coruna",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "La Liga"
       },
       {
         "date": "2026-03-09",
-        "homeTeam": "Atletico-MG",
-        "awayTeam": "Sao Paulo",
-        "score": "2-0",
-        "winner": "home",
-        "competition": "Brasileirão Série A"
+        "homeTeam": "Deportivo La Coruna",
+        "awayTeam": "Villarreal",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "La Liga"
       },
       {
         "date": "2025-09-10",
-        "homeTeam": "Sao Paulo",
-        "awayTeam": "Atletico-MG",
-        "score": "1-1",
-        "winner": "draw",
-        "competition": "Brasileirão Série A"
+        "homeTeam": "Villarreal",
+        "awayTeam": "Deportivo La Coruna",
+        "score": "3-0",
+        "winner": "home",
+        "competition": "La Liga"
       }
     ],
     "homeLast5": [
       {
         "date": "2026-09-01",
         "opponent": "Rival A",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Brasileirão Série A"
-      },
-      {
-        "date": "2026-08-27",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Brasileirão Série A"
-      },
-      {
-        "date": "2026-08-22",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Brasileirão Série A"
-      },
-      {
-        "date": "2026-08-17",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Brasileirão Série A"
-      },
-      {
-        "date": "2026-08-12",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Brasileirão Série A"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-01",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "3-1",
-        "result": "W",
-        "competition": "Brasileirão Série A"
-      },
-      {
-        "date": "2026-08-27",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "2-0",
-        "result": "W",
-        "competition": "Brasileirão Série A"
-      },
-      {
-        "date": "2026-08-22",
-        "opponent": "Rival C",
         "isHome": true,
         "score": "0-1",
         "result": "L",
-        "competition": "Brasileirão Série A"
+        "competition": "La Liga"
+      },
+      {
+        "date": "2026-08-27",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "2-0",
+        "result": "W",
+        "competition": "La Liga"
+      },
+      {
+        "date": "2026-08-22",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "3-1",
+        "result": "W",
+        "competition": "La Liga"
       },
       {
         "date": "2026-08-17",
         "opponent": "Rival D",
         "isHome": false,
-        "score": "2-0",
-        "result": "W",
-        "competition": "Brasileirão Série A"
+        "score": "1-2",
+        "result": "L",
+        "competition": "La Liga"
       },
       {
         "date": "2026-08-12",
         "opponent": "Rival E",
         "isHome": true,
-        "score": "3-1",
-        "result": "W",
-        "competition": "Brasileirão Série A"
+        "score": "1-1",
+        "result": "D",
+        "competition": "La Liga"
       }
     ],
-    "homeElo": 1596,
-    "awayElo": 1880,
-    "leagueTier": 1
+    "awayLast5": [
+      {
+        "date": "2026-09-01",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "1-3",
+        "result": "L",
+        "competition": "La Liga"
+      },
+      {
+        "date": "2026-08-27",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "0-2",
+        "result": "L",
+        "competition": "La Liga"
+      },
+      {
+        "date": "2026-08-22",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "0-0",
+        "result": "D",
+        "competition": "La Liga"
+      },
+      {
+        "date": "2026-08-17",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "1-0",
+        "result": "W",
+        "competition": "La Liga"
+      },
+      {
+        "date": "2026-08-12",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "1-3",
+        "result": "L",
+        "competition": "La Liga"
+      }
+    ],
+    "homeElo": 1760,
+    "awayElo": 1489,
+    "leagueTier": 1,
+    "actualScore": "2 - 3 (5 Goles)"
   },
   {
     "fixtureId": 1548523,
@@ -2442,58 +1155,58 @@
     "actualScore": "4 - 1"
   },
   {
-    "fixtureId": 1558620,
-    "match": "Standard Liege vs Antwerp",
-    "homeTeam": "Standard Liege",
-    "awayTeam": "Antwerp",
-    "homeTeamId": 733,
-    "awayTeamId": 740,
-    "homeLogo": "https://media.api-sports.io/football/teams/733.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/740.png",
-    "league": "Jupiler Pro League",
-    "leagueId": 144,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/144.png",
-    "country": "Bélgica",
-    "kickoff": "2026-09-05T13:45:00-05:00",
-    "market": "Ganador Local",
-    "selection": "1",
-    "odds": 2,
-    "bookmakerOdds": 2,
-    "modelOdds": 1.9,
-    "fairOdds": 1.9,
-    "probability": 55.5,
-    "impliedProbability": 62.9,
-    "edge": 1,
-    "expectedValue": -0.2,
+    "fixtureId": 1575489,
+    "match": "Sporting CP vs Nacional",
+    "homeTeam": "Sporting CP",
+    "awayTeam": "Nacional",
+    "homeTeamId": 228,
+    "awayTeamId": 225,
+    "homeLogo": "https://media.api-sports.io/football/teams/228.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/225.png",
+    "league": "Primeira Liga",
+    "leagueId": 94,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/94.png",
+    "country": "Portugal",
+    "kickoff": "2026-09-05T14:30:00-05:00",
+    "market": "Over 2.5 Goles",
+    "selection": "Over 2.5",
+    "odds": 1.55,
+    "bookmakerOdds": 1.55,
+    "modelOdds": 1.46,
+    "fairOdds": 1.46,
+    "probability": 68.5,
+    "impliedProbability": 64.5,
+    "edge": 4,
+    "expectedValue": 0.3,
     "confidence": "Alta",
     "pickBadge": "valor",
-    "smartScore": 88,
-    "explanation": "Fuerza en Maurice Dufrasne: Standard Liege ante Antwerp en Jupiler Pro League. Cuota real de mercado @2.00.",
-    "status": "won",
+    "smartScore": 92,
+    "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Sporting CP con la pegada en contragolpe de Nacional (3.80 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 67.3% de confianza a cuota @1.49.",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-07",
-        "homeTeam": "Standard Liege",
-        "awayTeam": "Antwerp",
+        "homeTeam": "Sporting CP",
+        "awayTeam": "Nacional",
         "score": "2-1",
         "winner": "home",
-        "competition": "Jupiler Pro League"
+        "competition": "Primeira Liga"
       },
       {
         "date": "2026-03-09",
-        "homeTeam": "Antwerp",
-        "awayTeam": "Standard Liege",
+        "homeTeam": "Nacional",
+        "awayTeam": "Sporting CP",
         "score": "0-2",
         "winner": "away",
-        "competition": "Jupiler Pro League"
+        "competition": "Primeira Liga"
       },
       {
         "date": "2025-09-10",
-        "homeTeam": "Standard Liege",
-        "awayTeam": "Antwerp",
+        "homeTeam": "Sporting CP",
+        "awayTeam": "Nacional",
         "score": "1-1",
         "winner": "draw",
-        "competition": "Jupiler Pro League"
+        "competition": "Primeira Liga"
       }
     ],
     "homeLast5": [
@@ -2501,41 +1214,41 @@
         "date": "2026-09-01",
         "opponent": "Rival A",
         "isHome": false,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Jupiler Pro League"
+        "score": "2-0",
+        "result": "W",
+        "competition": "Primeira Liga"
       },
       {
         "date": "2026-08-27",
         "opponent": "Rival B",
         "isHome": true,
-        "score": "2-1",
+        "score": "3-1",
         "result": "W",
-        "competition": "Jupiler Pro League"
+        "competition": "Primeira Liga"
       },
       {
         "date": "2026-08-22",
         "opponent": "Rival C",
         "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Jupiler Pro League"
+        "score": "1-1",
+        "result": "D",
+        "competition": "Primeira Liga"
       },
       {
         "date": "2026-08-17",
         "opponent": "Rival D",
         "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Jupiler Pro League"
+        "score": "3-1",
+        "result": "W",
+        "competition": "Primeira Liga"
       },
       {
         "date": "2026-08-12",
         "opponent": "Rival E",
         "isHome": false,
-        "score": "1-0",
+        "score": "2-0",
         "result": "W",
-        "competition": "Jupiler Pro League"
+        "competition": "Primeira Liga"
       }
     ],
     "awayLast5": [
@@ -2543,25 +1256,1033 @@
         "date": "2026-09-01",
         "opponent": "Rival A",
         "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "Jupiler Pro League"
+        "score": "1-1",
+        "result": "D",
+        "competition": "Primeira Liga"
       },
       {
         "date": "2026-08-27",
         "opponent": "Rival B",
         "isHome": true,
-        "score": "0-0",
-        "result": "D",
-        "competition": "Jupiler Pro League"
+        "score": "2-1",
+        "result": "W",
+        "competition": "Primeira Liga"
       },
       {
         "date": "2026-08-22",
         "opponent": "Rival C",
         "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Primeira Liga"
+      },
+      {
+        "date": "2026-08-17",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Primeira Liga"
+      },
+      {
+        "date": "2026-08-12",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Primeira Liga"
+      }
+    ],
+    "homeElo": 1860,
+    "awayElo": 1565,
+    "leagueTier": 1,
+    "actualScore": "2 - 0 (2 Goles)"
+  },
+  {
+    "fixtureId": 1505516,
+    "match": "Everton de Vina vs U. Catolica",
+    "homeTeam": "Everton de Vina",
+    "awayTeam": "U. Catolica",
+    "homeTeamId": 2325,
+    "awayTeamId": 2994,
+    "homeLogo": "https://media.api-sports.io/football/teams/2325.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/2994.png",
+    "league": "Primera División",
+    "leagueId": 265,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/265.png",
+    "country": "Chile",
+    "kickoff": "2026-09-05T16:30:00-05:00",
+    "market": "Ambos Equipos Anotan",
+    "selection": "Sí",
+    "odds": 1.75,
+    "bookmakerOdds": 1.75,
+    "modelOdds": 1.65,
+    "fairOdds": 1.65,
+    "probability": 60.5,
+    "impliedProbability": 57.5,
+    "edge": 1.7,
+    "expectedValue": 1.6,
+    "confidence": "Alta",
+    "pickBadge": "estandar",
+    "smartScore": 80,
+    "explanation": "Duelo ofensivo parejo en Primera División de Chile: Everton de Vina y U. Catolica con promedio de 1.5 goles por partido. Cuota de mercado @1.75 para Ambos Equipos Anotan.",
+    "status": "lost",
+    "h2h": [
+      {
+        "date": "2026-07-07",
+        "homeTeam": "Everton de Vina",
+        "awayTeam": "U. Catolica",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "Primera División"
+      },
+      {
+        "date": "2026-03-09",
+        "homeTeam": "U. Catolica",
+        "awayTeam": "Everton de Vina",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "Primera División"
+      },
+      {
+        "date": "2025-09-10",
+        "homeTeam": "Everton de Vina",
+        "awayTeam": "U. Catolica",
+        "score": "3-0",
+        "winner": "home",
+        "competition": "Primera División"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-01",
+        "opponent": "Rival A",
+        "isHome": true,
         "score": "2-1",
         "result": "W",
-        "competition": "Jupiler Pro League"
+        "competition": "Primera División"
+      },
+      {
+        "date": "2026-08-27",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Primera División"
+      },
+      {
+        "date": "2026-08-22",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Primera División"
+      },
+      {
+        "date": "2026-08-17",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Primera División"
+      },
+      {
+        "date": "2026-08-12",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Primera División"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-01",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Primera División"
+      },
+      {
+        "date": "2026-08-27",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Primera División"
+      },
+      {
+        "date": "2026-08-22",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "1-3",
+        "result": "L",
+        "competition": "Primera División"
+      },
+      {
+        "date": "2026-08-17",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Primera División"
+      },
+      {
+        "date": "2026-08-12",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Primera División"
+      }
+    ],
+    "homeElo": 1640,
+    "awayElo": 1543,
+    "leagueTier": 1,
+    "actualScore": "0 - 1 (No)"
+  },
+  {
+    "fixtureId": 1492368,
+    "match": "Sao Paulo vs Atletico-MG",
+    "homeTeam": "Sao Paulo",
+    "awayTeam": "Atletico-MG",
+    "homeTeamId": 126,
+    "awayTeamId": 1062,
+    "homeLogo": "https://media.api-sports.io/football/teams/126.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/1062.png",
+    "league": "Brasileirão Série A",
+    "leagueId": 71,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/71.png",
+    "country": "Brasil",
+    "kickoff": "2026-09-05T16:30:00-05:00",
+    "market": "Ambos Equipos Anotan",
+    "selection": "Sí",
+    "odds": 1.85,
+    "bookmakerOdds": 1.85,
+    "modelOdds": 1.74,
+    "fairOdds": 1.74,
+    "probability": 57.5,
+    "impliedProbability": 54.1,
+    "edge": 3.4,
+    "expectedValue": -1,
+    "confidence": "Alta",
+    "pickBadge": "estandar",
+    "smartScore": 72,
+    "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Sao Paulo con la pegada en contragolpe de Atletico-MG (3.39 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 63.1% de confianza a cuota @1.57.",
+    "status": "lost",
+    "h2h": [
+      {
+        "date": "2026-07-07",
+        "homeTeam": "Sao Paulo",
+        "awayTeam": "Atletico-MG",
+        "score": "1-2",
+        "winner": "away",
+        "competition": "Brasileirão Série A"
+      },
+      {
+        "date": "2026-03-09",
+        "homeTeam": "Atletico-MG",
+        "awayTeam": "Sao Paulo",
+        "score": "2-0",
+        "winner": "home",
+        "competition": "Brasileirão Série A"
+      },
+      {
+        "date": "2025-09-10",
+        "homeTeam": "Sao Paulo",
+        "awayTeam": "Atletico-MG",
+        "score": "1-1",
+        "winner": "draw",
+        "competition": "Brasileirão Série A"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-01",
+        "opponent": "Rival A",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Brasileirão Série A"
+      },
+      {
+        "date": "2026-08-27",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Brasileirão Série A"
+      },
+      {
+        "date": "2026-08-22",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Brasileirão Série A"
+      },
+      {
+        "date": "2026-08-17",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Brasileirão Série A"
+      },
+      {
+        "date": "2026-08-12",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Brasileirão Série A"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-01",
+        "opponent": "Rival A",
+        "isHome": true,
+        "score": "3-1",
+        "result": "W",
+        "competition": "Brasileirão Série A"
+      },
+      {
+        "date": "2026-08-27",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "2-0",
+        "result": "W",
+        "competition": "Brasileirão Série A"
+      },
+      {
+        "date": "2026-08-22",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "0-1",
+        "result": "L",
+        "competition": "Brasileirão Série A"
+      },
+      {
+        "date": "2026-08-17",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "2-0",
+        "result": "W",
+        "competition": "Brasileirão Série A"
+      },
+      {
+        "date": "2026-08-12",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "3-1",
+        "result": "W",
+        "competition": "Brasileirão Série A"
+      }
+    ],
+    "homeElo": 1596,
+    "awayElo": 1880,
+    "leagueTier": 1,
+    "actualScore": "2 - 0 (No)"
+  },
+  {
+    "fixtureId": 1519484,
+    "match": "Independiente del Valle vs Macara",
+    "homeTeam": "Independiente del Valle",
+    "awayTeam": "Macara",
+    "homeTeamId": 1153,
+    "awayTeamId": 1155,
+    "homeLogo": "https://media.api-sports.io/football/teams/1153.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/1155.png",
+    "league": "Liga Pro",
+    "leagueId": 242,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/242.png",
+    "country": "Ecuador",
+    "kickoff": "2026-09-05T18:00:00-05:00",
+    "market": "Ganador Local",
+    "selection": "1",
+    "odds": 1.33,
+    "bookmakerOdds": 1.33,
+    "modelOdds": 1.28,
+    "fairOdds": 1.28,
+    "probability": 78.1,
+    "impliedProbability": 64.5,
+    "edge": 5.5,
+    "expectedValue": 1.3,
+    "confidence": "Muy Alta",
+    "pickBadge": "estandar",
+    "smartScore": 77,
+    "explanation": "Jerarquía y solvencia territorial: Independiente del Valle llega en gran momento superando a Macara en xG. Cuota real Bet365/Pinnacle @1.33 con 78.1% de probabilidad de triunfo local.",
+    "status": "won",
+    "h2h": [
+      {
+        "date": "2026-07-07",
+        "homeTeam": "Independiente del Valle",
+        "awayTeam": "Macara",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "Liga Pro"
+      },
+      {
+        "date": "2026-03-09",
+        "homeTeam": "Macara",
+        "awayTeam": "Independiente del Valle",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "Liga Pro"
+      },
+      {
+        "date": "2025-09-10",
+        "homeTeam": "Independiente del Valle",
+        "awayTeam": "Macara",
+        "score": "1-1",
+        "winner": "draw",
+        "competition": "Liga Pro"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-01",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Liga Pro"
+      },
+      {
+        "date": "2026-08-27",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Liga Pro"
+      },
+      {
+        "date": "2026-08-22",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Liga Pro"
+      },
+      {
+        "date": "2026-08-17",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Liga Pro"
+      },
+      {
+        "date": "2026-08-12",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Liga Pro"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-01",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Liga Pro"
+      },
+      {
+        "date": "2026-08-27",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Liga Pro"
+      },
+      {
+        "date": "2026-08-22",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Liga Pro"
+      },
+      {
+        "date": "2026-08-17",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Liga Pro"
+      },
+      {
+        "date": "2026-08-12",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "1-3",
+        "result": "L",
+        "competition": "Liga Pro"
+      }
+    ],
+    "homeElo": 1640,
+    "awayElo": 1521,
+    "leagueTier": 1,
+    "actualScore": "3 - 1"
+  },
+  {
+    "fixtureId": 1551678,
+    "match": "CS Herediano vs Perez Zeledon",
+    "homeTeam": "CS Herediano",
+    "awayTeam": "Perez Zeledon",
+    "homeTeamId": 815,
+    "awayTeamId": 819,
+    "homeLogo": "https://media.api-sports.io/football/teams/815.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/819.png",
+    "league": "Primera División (Liga FPD)",
+    "leagueId": 162,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/162.png",
+    "country": "Costa Rica",
+    "kickoff": "2026-09-05T18:00:00-05:00",
+    "market": "Ganador Local",
+    "selection": "1",
+    "odds": 1.48,
+    "bookmakerOdds": 1.48,
+    "modelOdds": 1.4,
+    "fairOdds": 1.4,
+    "probability": 71.4,
+    "impliedProbability": 67.6,
+    "edge": 1.8,
+    "expectedValue": 2.1,
+    "confidence": "Muy Alta",
+    "pickBadge": "estandar",
+    "smartScore": 76,
+    "explanation": "Dominio estadístico de CS Herediano en casa frente a Perez Zeledon. Cuota real Bet365 @1.48 con 71.4% de probabilidad de victoria.",
+    "status": "lost",
+    "h2h": [
+      {
+        "date": "2026-07-07",
+        "homeTeam": "CS Herediano",
+        "awayTeam": "Perez Zeledon",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "Primera División (Liga FPD)"
+      },
+      {
+        "date": "2026-03-09",
+        "homeTeam": "Perez Zeledon",
+        "awayTeam": "CS Herediano",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "Primera División (Liga FPD)"
+      },
+      {
+        "date": "2025-09-10",
+        "homeTeam": "CS Herediano",
+        "awayTeam": "Perez Zeledon",
+        "score": "1-1",
+        "winner": "draw",
+        "competition": "Primera División (Liga FPD)"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-01",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Primera División (Liga FPD)"
+      },
+      {
+        "date": "2026-08-27",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Primera División (Liga FPD)"
+      },
+      {
+        "date": "2026-08-22",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Primera División (Liga FPD)"
+      },
+      {
+        "date": "2026-08-17",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Primera División (Liga FPD)"
+      },
+      {
+        "date": "2026-08-12",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Primera División (Liga FPD)"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-01",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Primera División (Liga FPD)"
+      },
+      {
+        "date": "2026-08-27",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Primera División (Liga FPD)"
+      },
+      {
+        "date": "2026-08-22",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Primera División (Liga FPD)"
+      },
+      {
+        "date": "2026-08-17",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Primera División (Liga FPD)"
+      },
+      {
+        "date": "2026-08-12",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "1-3",
+        "result": "L",
+        "competition": "Primera División (Liga FPD)"
+      }
+    ],
+    "homeElo": 1590,
+    "awayElo": 1491,
+    "leagueTier": 1,
+    "actualScore": "2 - 3"
+  },
+  {
+    "fixtureId": 1550950,
+    "match": "Atletico San Luis vs Guadalajara Chivas",
+    "homeTeam": "Atletico San Luis",
+    "awayTeam": "Guadalajara Chivas",
+    "homeTeamId": 2314,
+    "awayTeamId": 2278,
+    "homeLogo": "https://media.api-sports.io/football/teams/2314.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/2278.png",
+    "league": "Liga MX",
+    "leagueId": 262,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/262.png",
+    "country": "México",
+    "kickoff": "2026-09-05T18:00:00-05:00",
+    "market": "Over 2.5 Goles",
+    "selection": "Over 2.5",
+    "odds": 1.82,
+    "bookmakerOdds": 1.82,
+    "modelOdds": 1.68,
+    "fairOdds": 1.68,
+    "probability": 59.5,
+    "impliedProbability": 54.9,
+    "edge": 4.6,
+    "expectedValue": 2.1,
+    "confidence": "Alta",
+    "pickBadge": "estandar",
+    "smartScore": 76,
+    "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Atletico San Luis con la pegada en contragolpe de Guadalajara Chivas (3.82 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 67.6% de confianza a cuota @1.51.",
+    "status": "won",
+    "h2h": [
+      {
+        "date": "2026-07-07",
+        "homeTeam": "Atletico San Luis",
+        "awayTeam": "Guadalajara Chivas",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "Liga MX"
+      },
+      {
+        "date": "2026-03-09",
+        "homeTeam": "Guadalajara Chivas",
+        "awayTeam": "Atletico San Luis",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "Liga MX"
+      },
+      {
+        "date": "2025-09-10",
+        "homeTeam": "Atletico San Luis",
+        "awayTeam": "Guadalajara Chivas",
+        "score": "3-0",
+        "winner": "home",
+        "competition": "Liga MX"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-01",
+        "opponent": "Rival A",
+        "isHome": true,
+        "score": "0-1",
+        "result": "L",
+        "competition": "Liga MX"
+      },
+      {
+        "date": "2026-08-27",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "2-0",
+        "result": "W",
+        "competition": "Liga MX"
+      },
+      {
+        "date": "2026-08-22",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "3-1",
+        "result": "W",
+        "competition": "Liga MX"
+      },
+      {
+        "date": "2026-08-17",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "1-2",
+        "result": "L",
+        "competition": "Liga MX"
+      },
+      {
+        "date": "2026-08-12",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Liga MX"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-01",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Liga MX"
+      },
+      {
+        "date": "2026-08-27",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Liga MX"
+      },
+      {
+        "date": "2026-08-22",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Liga MX"
+      },
+      {
+        "date": "2026-08-17",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Liga MX"
+      },
+      {
+        "date": "2026-08-12",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Liga MX"
+      }
+    ],
+    "homeElo": 1880,
+    "awayElo": 1599,
+    "leagueTier": 1,
+    "actualScore": "0 - 3 (3 Goles)"
+  },
+  {
+    "fixtureId": 1549474,
+    "match": "Cusco vs UCV Moquegua",
+    "homeTeam": "Cusco",
+    "awayTeam": "UCV Moquegua",
+    "homeTeamId": 10013,
+    "awayTeamId": 22489,
+    "homeLogo": "https://media.api-sports.io/football/teams/10013.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/22489.png",
+    "league": "Liga 1",
+    "leagueId": 281,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/281.png",
+    "country": "Perú",
+    "kickoff": "2026-09-05T18:00:00-05:00",
+    "market": "Over 2.5 Goles",
+    "selection": "Over 2.5",
+    "odds": 1.58,
+    "bookmakerOdds": 1.58,
+    "modelOdds": 1.56,
+    "fairOdds": 1.56,
+    "probability": 64.1,
+    "impliedProbability": 63.3,
+    "edge": 1,
+    "expectedValue": 1.3,
+    "confidence": "Alta",
+    "pickBadge": "estandar",
+    "smartScore": 72,
+    "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Cusco con la pegada en contragolpe de UCV Moquegua (3.40 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 64.1% de confianza a cuota @1.58.",
+    "status": "lost",
+    "h2h": [
+      {
+        "date": "2026-07-07",
+        "homeTeam": "Cusco",
+        "awayTeam": "UCV Moquegua",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-03-09",
+        "homeTeam": "UCV Moquegua",
+        "awayTeam": "Cusco",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2025-09-10",
+        "homeTeam": "Cusco",
+        "awayTeam": "UCV Moquegua",
+        "score": "3-0",
+        "winner": "home",
+        "competition": "Liga 1"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-01",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-08-27",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-08-22",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-08-17",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-08-12",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Liga 1"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-01",
+        "opponent": "Rival A",
+        "isHome": true,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-08-27",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-08-22",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-08-17",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "1-3",
+        "result": "L",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-08-12",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Liga 1"
+      }
+    ],
+    "homeElo": 1629,
+    "awayElo": 1506,
+    "leagueTier": 1,
+    "actualScore": "2 - 0 (2 Goles)"
+  },
+  {
+    "fixtureId": 1549772,
+    "match": "Santa Fe vs Fortaleza FC",
+    "homeTeam": "Santa Fe",
+    "awayTeam": "Fortaleza FC",
+    "homeTeamId": 1139,
+    "awayTeamId": 1147,
+    "homeLogo": "https://media.api-sports.io/football/teams/1139.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/1147.png",
+    "league": "Primera A",
+    "leagueId": 239,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/239.png",
+    "country": "Colombia",
+    "kickoff": "2026-09-05T18:25:00-05:00",
+    "market": "Ganador Local",
+    "selection": "1",
+    "odds": 1.8,
+    "bookmakerOdds": 1.8,
+    "modelOdds": 1.7,
+    "fairOdds": 1.7,
+    "probability": 58.8,
+    "impliedProbability": 54.1,
+    "edge": 4,
+    "expectedValue": 0.8,
+    "confidence": "Alta",
+    "pickBadge": "estandar",
+    "smartScore": 72,
+    "explanation": "Localía en Bogotá: Santa Fe impone ritmo ante Fortaleza FC en Primera A de Colombia. Cuota real Bet365 @1.80.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-07",
+        "homeTeam": "Santa Fe",
+        "awayTeam": "Fortaleza FC",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "Primera A"
+      },
+      {
+        "date": "2026-03-09",
+        "homeTeam": "Fortaleza FC",
+        "awayTeam": "Santa Fe",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "Primera A"
+      },
+      {
+        "date": "2025-09-10",
+        "homeTeam": "Santa Fe",
+        "awayTeam": "Fortaleza FC",
+        "score": "3-0",
+        "winner": "home",
+        "competition": "Primera A"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-01",
+        "opponent": "Rival A",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Primera A"
+      },
+      {
+        "date": "2026-08-27",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Primera A"
+      },
+      {
+        "date": "2026-08-22",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Primera A"
+      },
+      {
+        "date": "2026-08-17",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Primera A"
+      },
+      {
+        "date": "2026-08-12",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Primera A"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-01",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Primera A"
+      },
+      {
+        "date": "2026-08-27",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Primera A"
+      },
+      {
+        "date": "2026-08-22",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "1-3",
+        "result": "L",
+        "competition": "Primera A"
       },
       {
         "date": "2026-08-17",
@@ -2569,7 +2290,7 @@
         "isHome": true,
         "score": "0-2",
         "result": "L",
-        "competition": "Jupiler Pro League"
+        "competition": "Primera A"
       },
       {
         "date": "2026-08-12",
@@ -2577,12 +2298,297 @@
         "isHome": false,
         "score": "0-0",
         "result": "D",
-        "competition": "Jupiler Pro League"
+        "competition": "Primera A"
       }
     ],
-    "homeElo": 1555,
-    "awayElo": 1497,
-    "leagueTier": 1,
-    "actualScore": "1 - 0"
+    "homeElo": 1646,
+    "awayElo": 1505,
+    "leagueTier": 1
+  },
+  {
+    "fixtureId": 1490438,
+    "match": "Philadelphia Union vs CF Montreal",
+    "homeTeam": "Philadelphia Union",
+    "awayTeam": "CF Montreal",
+    "homeTeamId": 1599,
+    "awayTeamId": 1614,
+    "homeLogo": "https://media.api-sports.io/football/teams/1599.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/1614.png",
+    "league": "Major League Soccer (MLS)",
+    "leagueId": 253,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/253.png",
+    "country": "Estados Unidos",
+    "kickoff": "2026-09-05T18:30:00-05:00",
+    "market": "Ganador Local",
+    "selection": "1",
+    "odds": 1.42,
+    "bookmakerOdds": 1.42,
+    "modelOdds": 1.38,
+    "fairOdds": 1.38,
+    "probability": 72.5,
+    "impliedProbability": 60.6,
+    "edge": 4.4,
+    "expectedValue": -6,
+    "confidence": "Muy Alta",
+    "pickBadge": "estandar",
+    "smartScore": 74,
+    "explanation": "Solidez de local en MLS: Philadelphia Union promedia más de 2 goles por partido ante CF Montreal. Cuota real Bet365 @1.42 con 72.5% de probabilidad.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-07",
+        "homeTeam": "Philadelphia Union",
+        "awayTeam": "CF Montreal",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "Major League Soccer (MLS)"
+      },
+      {
+        "date": "2026-03-09",
+        "homeTeam": "CF Montreal",
+        "awayTeam": "Philadelphia Union",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "Major League Soccer (MLS)"
+      },
+      {
+        "date": "2025-09-10",
+        "homeTeam": "Philadelphia Union",
+        "awayTeam": "CF Montreal",
+        "score": "3-0",
+        "winner": "home",
+        "competition": "Major League Soccer (MLS)"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-01",
+        "opponent": "Rival A",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Major League Soccer (MLS)"
+      },
+      {
+        "date": "2026-08-27",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Major League Soccer (MLS)"
+      },
+      {
+        "date": "2026-08-22",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "1-2",
+        "result": "L",
+        "competition": "Major League Soccer (MLS)"
+      },
+      {
+        "date": "2026-08-17",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Major League Soccer (MLS)"
+      },
+      {
+        "date": "2026-08-12",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Major League Soccer (MLS)"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-01",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Major League Soccer (MLS)"
+      },
+      {
+        "date": "2026-08-27",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Major League Soccer (MLS)"
+      },
+      {
+        "date": "2026-08-22",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Major League Soccer (MLS)"
+      },
+      {
+        "date": "2026-08-17",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Major League Soccer (MLS)"
+      },
+      {
+        "date": "2026-08-12",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Major League Soccer (MLS)"
+      }
+    ],
+    "homeElo": 1634,
+    "awayElo": 1583,
+    "leagueTier": 1
+  },
+  {
+    "fixtureId": 1551677,
+    "match": "LD Alajuelense vs Deportivo Saprissa",
+    "homeTeam": "LD Alajuelense",
+    "awayTeam": "Deportivo Saprissa",
+    "homeTeamId": 822,
+    "awayTeamId": 816,
+    "homeLogo": "https://media.api-sports.io/football/teams/822.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/816.png",
+    "league": "Primera División (Liga FPD)",
+    "leagueId": 162,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/162.png",
+    "country": "Costa Rica",
+    "kickoff": "2026-09-05T21:00:00-05:00",
+    "market": "Ganador Local",
+    "selection": "1",
+    "odds": 2.5,
+    "bookmakerOdds": 2.5,
+    "modelOdds": 2.25,
+    "fairOdds": 2.25,
+    "probability": 58.5,
+    "impliedProbability": 40,
+    "edge": 18.5,
+    "expectedValue": 0.8,
+    "confidence": "Alta",
+    "pickBadge": "valor",
+    "smartScore": 82,
+    "explanation": "Clásico Nacional de Costa Rica: LD Alajuelense se hace fuerte en el Estadio Alejandro Morera Soto. Las casas de apuestas (Bet365 / Pinnacle) cotizan la victoria local a una excelente cuota @2.50 (+18.5% de valor sobre modelo cuantitativo).",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-08",
+        "homeTeam": "LD Alajuelense",
+        "awayTeam": "Deportivo Saprissa",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "Primera División (Liga FPD)"
+      },
+      {
+        "date": "2026-03-10",
+        "homeTeam": "Deportivo Saprissa",
+        "awayTeam": "LD Alajuelense",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "Primera División (Liga FPD)"
+      },
+      {
+        "date": "2025-09-11",
+        "homeTeam": "LD Alajuelense",
+        "awayTeam": "Deportivo Saprissa",
+        "score": "3-0",
+        "winner": "home",
+        "competition": "Primera División (Liga FPD)"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Primera División (Liga FPD)"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Primera División (Liga FPD)"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Primera División (Liga FPD)"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Primera División (Liga FPD)"
+      },
+      {
+        "date": "2026-08-13",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Primera División (Liga FPD)"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival A",
+        "isHome": true,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Primera División (Liga FPD)"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Primera División (Liga FPD)"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Primera División (Liga FPD)"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "1-3",
+        "result": "L",
+        "competition": "Primera División (Liga FPD)"
+      },
+      {
+        "date": "2026-08-13",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Primera División (Liga FPD)"
+      }
+    ],
+    "homeElo": 1610,
+    "awayElo": 1506,
+    "leagueTier": 1
   }
 ]

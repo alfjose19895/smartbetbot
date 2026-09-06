@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { generatePredictionsForUpcoming, getEcuadorDateString } from "@/lib/sports/db";
+import { generatePredictionsForUpcoming, getEcuadorDateString, addPredictionsToDailySnapshot } from "@/lib/sports/db";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 
 const COUNTRY_SYNONYMS: Record<string, string[]> = {
@@ -39,8 +39,25 @@ export interface AiAgentAnalysis {
 
 export async function POST(req: Request) {
   try {
+
     const body = await req.json();
-    const { query = "", country = "", minProb, minOdds, maxOdds, market = "" } = body;
+    const { action, picks, pick, query = "", country = "", minProb, minOdds, maxOdds, market = "" } = body;
+
+    // Direct publish action: Add MCP-discovered alerts to active daily dashboard and signals
+    if (action === "publish" || action === "addPicks") {
+      const picksToPublish = Array.isArray(picks) ? picks : pick ? [pick] : [];
+      const result = addPredictionsToDailySnapshot(picksToPublish);
+      return NextResponse.json({
+        success: true,
+        addedCount: result.addedCount,
+        totalAlerts: result.totalAlerts,
+        message: result.addedCount > 0
+          ? `✓ Se agregaron ${result.addedCount} alertas al Dashboard y Alertas del Día. Total activo: ${result.totalAlerts} alertas.`
+          : `✓ Las alertas seleccionadas ya se encuentran publicadas en el Dashboard. Total: ${result.totalAlerts} alertas.`,
+        predictions: result.predictions,
+      });
+    }
+
 
     const allPredictions = await generatePredictionsForUpcoming();
     const todayStr = getEcuadorDateString(Date.now());
