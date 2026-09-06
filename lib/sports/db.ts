@@ -83,7 +83,54 @@ function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
   try {
     ensureSnapshotsDir();
     const filePath = path.join(SNAPSHOTS_DIR, `${dateStr}.json`);
-    fs.writeFileSync(filePath, JSON.stringify(picks, null, 2), "utf-8");
+
+    // Load existing picks if file already exists so we NEVER delete previously given alerts
+    let existingPicks: MarketOpportunity[] = [];
+    if (fs.existsSync(filePath)) {
+      try {
+        const raw = fs.readFileSync(filePath, "utf-8");
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) existingPicks = parsed;
+      } catch {}
+    }
+
+    const mergedMap = new Map<string, MarketOpportunity>();
+
+    // Put all existing picks first (preserving their settled status, scores, odds, badges)
+    for (const p of existingPicks) {
+      const hNorm = getCanonicalTeamKey(p.homeTeam);
+      const aNorm = getCanonicalTeamKey(p.awayTeam);
+      const fixId = p.fixtureId || 0;
+      const key = `${fixId}-${hNorm}-${aNorm}-${p.market}`;
+      mergedMap.set(key, p);
+    }
+
+    // Merge incoming picks
+    for (const p of picks) {
+      const hNorm = getCanonicalTeamKey(p.homeTeam);
+      const aNorm = getCanonicalTeamKey(p.awayTeam);
+      const fixId = p.fixtureId || 0;
+      const key = `${fixId}-${hNorm}-${aNorm}-${p.market}`;
+
+      if (mergedMap.has(key)) {
+        const existing = mergedMap.get(key)!;
+        mergedMap.set(key, {
+          ...p,
+          status: existing.status !== "pending" ? existing.status : p.status,
+          actualScore: existing.actualScore || p.actualScore,
+          pickBadge: existing.pickBadge || p.pickBadge,
+          isMcpPick: existing.isMcpPick || p.isMcpPick,
+          explanation: existing.explanation || p.explanation,
+        });
+      } else {
+        mergedMap.set(key, p);
+      }
+    }
+
+    const mergedPicks = Array.from(mergedMap.values());
+    mergedPicks.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
+
+    fs.writeFileSync(filePath, JSON.stringify(mergedPicks, null, 2), "utf-8");
   } catch (err) {
     console.warn(`Could not save daily snapshot for ${dateStr}:`, err);
   }
