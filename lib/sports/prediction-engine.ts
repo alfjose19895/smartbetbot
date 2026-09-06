@@ -1054,99 +1054,132 @@ export function evaluateFixturePrediction(params: {
     minProbThreshold: number;
   }[] = [];
 
-  if (isLive) {
-    // === DYNAMIC LIVE IN-PLAY MARKET EVALUATION ===
-    const remLambda = Math.max(0.35, (hXg + aXg) * remainingRatio);
-    const prob1MoreGoal = 1 - Math.exp(-remLambda);
-    const prob2MoreGoals = Math.max(0.20, 1 - Math.exp(-remLambda) - remLambda * Math.exp(-remLambda));
-
-    const nextLine = totalCurrentGoals + 0.5; // Next goal threshold (e.g., if 2-1 (3 goals), line is 3.5)
-    const upperLine = totalCurrentGoals + 1.5; // Upper goal threshold (e.g. 4.5)
-
-    // 1. Next Goal Line
-    const nextLineOdds = calculateBookmakerOdds(prob1MoreGoal, 0.95);
-    candidates.push({
-      market: "Over " + nextLine + " Goles",
-      selection: "Over " + nextLine,
-      prob: Math.min(0.85, Math.max(0.50, prob1MoreGoal)),
-      odds: Math.max(1.35, Math.min(3.50, nextLineOdds)),
-      minOddsThreshold: 1.35,
-      minProbThreshold: 0.50,
-    });
-
-    // 2. Upper Line if high conviction
-    if (prob2MoreGoals >= 0.40) {
-      const upperLineOdds = calculateBookmakerOdds(prob2MoreGoals, 0.95);
-      candidates.push({
-        market: "Over " + upperLine + " Goles",
-        selection: "Over " + upperLine,
-        prob: prob2MoreGoals,
-        odds: Math.max(1.65, Math.min(4.50, upperLineOdds)),
-        minOddsThreshold: 1.65,
-        minProbThreshold: 0.42,
-      });
-    }
-
-    // 3. Live 1X2 with current score advantage
-    if (currentH > currentA) {
-      const probHoldWin = Math.min(0.88, pHome + (currentH - currentA) * 0.15);
-      const liveHomeOdds = calculateBookmakerOdds(probHoldWin, 0.95);
-      candidates.push({
-        market: "Ganador Local",
-        selection: "1",
-        prob: probHoldWin,
-        odds: Math.max(1.25, Math.min(2.50, liveHomeOdds)),
-        minOddsThreshold: 1.25,
-        minProbThreshold: 0.52,
-      });
-    } else if (currentA > currentH) {
-      const probHoldAway = Math.min(0.88, pAway + (currentA - currentH) * 0.15);
-      const liveAwayOdds = calculateBookmakerOdds(probHoldAway, 0.95);
-      candidates.push({
-        market: "Ganador Visitante",
-        selection: "2",
-        prob: probHoldAway,
-        odds: Math.max(1.25, Math.min(2.50, liveAwayOdds)),
-        minOddsThreshold: 1.25,
-        minProbThreshold: 0.52,
-      });
+    if (isLive) {
+    // === DYNAMIC LIVE IN-PLAY STRATEGY (Minute >= 50', Odds >= 1.50) ===
+    // If the match has not reached minute 50 yet, hold until 2H / 50'+
+    if (elapsed < 50) {
+      candidates = [];
     } else {
-      if (pHome >= pAway) {
-        candidates.push({
-          market: "Ganador Local",
-          selection: "1",
-          prob: Math.max(0.52, pHome),
-          odds: Math.max(1.40, resolvedHomeOdds),
-          minOddsThreshold: 1.35,
-          minProbThreshold: 0.50,
-        });
-      } else {
-        candidates.push({
-          market: "Ganador Visitante",
-          selection: "2",
-          prob: Math.max(0.52, pAway),
-          odds: Math.max(1.40, resolvedAwayOdds),
-          minOddsThreshold: 1.35,
-          minProbThreshold: 0.50,
-        });
-      }
-    }
+      const remLambda = Math.max(0.35, (hXg + aXg) * remainingRatio);
+      const prob1MoreGoal = 1 - Math.exp(-remLambda);
+      const prob2MoreGoals = Math.max(0.20, 1 - Math.exp(-remLambda) - remLambda * Math.exp(-remLambda));
 
-    // 4. Ambos Equipos Anotan (if only one team has scored so far)
-    if ((currentH > 0 && currentA === 0) || (currentA > 0 && currentH === 0)) {
-      const neededTeamXg = currentH > 0 ? aXg * remainingRatio : hXg * remainingRatio;
-      const probNeededGoal = 1 - Math.exp(-neededTeamXg);
-      if (probNeededGoal >= 0.45) {
-        const liveBttsOdds = calculateBookmakerOdds(probNeededGoal, 0.95);
-        candidates.push({
-          market: "Ambos Equipos Anotan",
-          selection: "Sí",
-          prob: probNeededGoal,
-          odds: Math.max(1.45, Math.min(3.20, liveBttsOdds)),
-          minOddsThreshold: 1.40,
-          minProbThreshold: 0.45,
-        });
+      // 1. Over 0.5 Goles (when totalCurrentGoals === 0 and match >= min 50)
+      if (totalCurrentGoals === 0) {
+        const probOver05 = Math.min(0.88, Math.max(0.55, prob1MoreGoal));
+        const oddsOver05 = calculateBookmakerOdds(probOver05, 0.95);
+        const effectiveOdds = Math.max(1.50, Math.min(2.80, oddsOver05));
+        if (effectiveOdds >= 1.50 && probOver05 >= 0.50) {
+          candidates.push({
+            market: "Over 0.5 Goles",
+            selection: "Over 0.5",
+            prob: probOver05,
+            odds: effectiveOdds,
+            minOddsThreshold: 1.50,
+            minProbThreshold: 0.50,
+          });
+        }
       }
+
+      // 2. Over 1.5 Goles (when totalCurrentGoals <= 1 and match >= min 50)
+      if (totalCurrentGoals <= 1) {
+        const neededGoals = 2 - totalCurrentGoals;
+        const probOver15 = neededGoals === 1 ? prob1MoreGoal : prob2MoreGoals;
+        const oddsOver15 = calculateBookmakerOdds(probOver15, 0.95);
+        const effectiveOdds = Math.max(1.50, Math.min(3.50, oddsOver15));
+        if (effectiveOdds >= 1.50 && probOver15 >= 0.48) {
+          candidates.push({
+            market: "Over 1.5 Goles",
+            selection: "Over 1.5",
+            prob: probOver15,
+            odds: effectiveOdds,
+            minOddsThreshold: 1.50,
+            minProbThreshold: 0.48,
+          });
+        }
+      }
+
+      // 3. Next Goal Line (Over 2.5, 3.5, etc.) if totalCurrentGoals >= 2
+      if (totalCurrentGoals >= 2) {
+        const nextLine = totalCurrentGoals + 0.5;
+        const nextLineOdds = calculateBookmakerOdds(prob1MoreGoal, 0.95);
+        const effectiveOdds = Math.max(1.50, Math.min(3.50, nextLineOdds));
+        if (effectiveOdds >= 1.50 && prob1MoreGoal >= 0.50) {
+          candidates.push({
+            market: `Over ${nextLine} Goles`,
+            selection: `Over ${nextLine}`,
+            prob: Math.min(0.85, Math.max(0.50, prob1MoreGoal)),
+            odds: effectiveOdds,
+            minOddsThreshold: 1.50,
+            minProbThreshold: 0.50,
+          });
+        }
+      }
+
+      // 4. Ganador Local (Gana Local) -> only if odds >= 1.50 and prob >= 50%
+      if (currentH > currentA) {
+        const probHoldWin = Math.min(0.85, pHome + (currentH - currentA) * 0.12);
+        const liveHomeOdds = calculateBookmakerOdds(probHoldWin, 0.95);
+        const effectiveOdds = Math.max(1.50, Math.min(2.60, liveHomeOdds));
+        if (effectiveOdds >= 1.50 && probHoldWin >= 0.52) {
+          candidates.push({
+            market: "Ganador Local",
+            selection: "1",
+            prob: probHoldWin,
+            odds: effectiveOdds,
+            minOddsThreshold: 1.50,
+            minProbThreshold: 0.52,
+          });
+        }
+      } else if (currentH === currentA && pHome >= 0.48) {
+        const probPushWin = Math.min(0.75, pHome + 0.05);
+        const liveHomeOdds = calculateBookmakerOdds(probPushWin, 0.95);
+        const effectiveOdds = Math.max(1.55, Math.min(2.80, liveHomeOdds));
+        if (effectiveOdds >= 1.50 && probPushWin >= 0.50) {
+          candidates.push({
+            market: "Ganador Local",
+            selection: "1",
+            prob: probPushWin,
+            odds: effectiveOdds,
+            minOddsThreshold: 1.50,
+            minProbThreshold: 0.50,
+          });
+        }
+      }
+
+      // 5. Ganador Visitante (Gana Visitante) -> only if odds >= 1.50 and prob >= 50%
+      if (currentA > currentH) {
+        const probHoldAway = Math.min(0.85, pAway + (currentA - currentH) * 0.12);
+        const liveAwayOdds = calculateBookmakerOdds(probHoldAway, 0.95);
+        const effectiveOdds = Math.max(1.50, Math.min(2.60, liveAwayOdds));
+        if (effectiveOdds >= 1.50 && probHoldAway >= 0.52) {
+          candidates.push({
+            market: "Ganador Visitante",
+            selection: "2",
+            prob: probHoldAway,
+            odds: effectiveOdds,
+            minOddsThreshold: 1.50,
+            minProbThreshold: 0.52,
+          });
+        }
+      } else if (currentA === currentH && pAway >= 0.48) {
+        const probPushAway = Math.min(0.75, pAway + 0.05);
+        const liveAwayOdds = calculateBookmakerOdds(probPushAway, 0.95);
+        const effectiveOdds = Math.max(1.55, Math.min(2.80, liveAwayOdds));
+        if (effectiveOdds >= 1.50 && probPushAway >= 0.50) {
+          candidates.push({
+            market: "Ganador Visitante",
+            selection: "2",
+            prob: probPushAway,
+            odds: effectiveOdds,
+            minOddsThreshold: 1.50,
+            minProbThreshold: 0.50,
+          });
+        }
+      }
+
+      // Strictly enforce strategy filters: odds >= 1.50
+      candidates = candidates.filter((c) => c.odds >= 1.50 && c.prob >= 0.48);
     }
   } else {
     // === PRE-MATCH MARKET EVALUATION ===

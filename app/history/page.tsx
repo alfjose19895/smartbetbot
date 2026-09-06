@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import { Navbar } from "@/components/Navbar";
 import { useLanguage } from "@/context/LanguageContext";
 import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
@@ -605,24 +604,18 @@ export default function HistoryPage() {
                       </span>
 
                       <div className="flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-2 truncate">
-                          {item.homeLogo ? (
-                            <Image src={item.homeLogo} alt={item.homeTeam} width={24} height={24} className="h-6 w-6 object-contain shrink-0" />
-                          ) : null}
+                        <div className="truncate">
                           <span className="font-black text-slate-900 dark:text-white text-sm truncate">
                             {item.homeTeam}
                           </span>
                         </div>
 
-                        <span className="text-xs font-extrabold text-slate-400">vs</span>
+                        <span className="text-xs font-extrabold text-slate-400 shrink-0">vs</span>
 
-                        <div className="flex items-center gap-2 truncate justify-end">
-                          <span className="font-black text-slate-900 dark:text-white text-sm truncate text-right">
+                        <div className="truncate text-right">
+                          <span className="font-black text-slate-900 dark:text-white text-sm truncate">
                             {item.awayTeam}
                           </span>
-                          {item.awayLogo ? (
-                            <Image src={item.awayLogo} alt={item.awayTeam} width={24} height={24} className="h-6 w-6 object-contain shrink-0" />
-                          ) : null}
                         </div>
                       </div>
 
