@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { Navbar } from "@/components/Navbar";
 import { useLanguage } from "@/context/LanguageContext";
 import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
@@ -35,11 +36,13 @@ export default function HistoryPage() {
 
   // Search & Filters
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [timingFilter, setTimingFilter] = useState<"ALL" | "PREMATCH" | "LIVE" | "MCP" | "BOMBA">("ALL");
   const [filterResult, setFilterResult] = useState<"ALL" | "WON" | "LOST">("ALL");
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
   const [selectedDateFilter, setSelectedDateFilter] = useState<"all" | "today" | "yesterday" | "week" | "month" | "custom">("all");
   const [customDate, setCustomDate] = useState<string>("");
+  const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -117,28 +120,29 @@ export default function HistoryPage() {
 
   // Filter Individual Picks
   const filteredHistory = historyItems.filter((item) => {
+    // 1. Search Query
     if (searchQuery.trim().length > 0) {
       const q = searchQuery.toLowerCase().trim();
-      const matchText = (item.match || "").toLowerCase();
-      const homeText = (item.homeTeam || "").toLowerCase();
-      const awayText = (item.awayTeam || "").toLowerCase();
-      const leagueText = (item.league || "").toLowerCase();
-      const countryText = (item.country || "").toLowerCase();
-      const marketText = (item.market || "").toLowerCase();
-
-      const matched =
-        matchText.includes(q) ||
-        homeText.includes(q) ||
-        awayText.includes(q) ||
-        leagueText.includes(q) ||
-        countryText.includes(q) ||
-        marketText.includes(q);
-
-      if (!matched) return false;
+      const matchText = `${item.match} ${item.homeTeam} ${item.awayTeam} ${item.league} ${item.market} ${item.country || ""}`.toLowerCase();
+      if (!matchText.includes(q)) return false;
     }
 
-    if (filterResult !== "ALL" && item.result !== filterResult) return false;
+    // 2. Timing / Modality Filter (Pre-Match, Live, MCP, Bomba)
+    if (timingFilter === "PREMATCH") {
+      if (item.isLive || item.matchTiming === "live") return false;
+    } else if (timingFilter === "LIVE") {
+      if (!item.isLive && item.matchTiming !== "live") return false;
+    } else if (timingFilter === "MCP") {
+      if (!item.isMcp && item.pickBadge !== "mcp") return false;
+    } else if (timingFilter === "BOMBA") {
+      if (item.pickBadge !== "bomba" && item.odds < 2.05) return false;
+    }
 
+    // 3. Result Filter (WON / LOST)
+    if (filterResult === "WON" && item.result !== "WON") return false;
+    if (filterResult === "LOST" && item.result !== "LOST") return false;
+
+    // 4. League Multi-Select
     if (selectedLeagues.length > 0) {
       const normLeague = (item.league || "").toLowerCase().trim();
       const normCountry = (item.country || "").toLowerCase().trim();
@@ -154,32 +158,32 @@ export default function HistoryPage() {
       if (!matched) return false;
     }
 
+    // 5. Market Multi-Select
     if (selectedMarkets.length > 0) {
       const match = selectedMarkets.some((m) => {
         const normSelected = m.toLowerCase().replace(/[^a-z0-9]/g, "");
         const normActual = item.market.toLowerCase().replace(/[^a-z0-9]/g, "");
-        return (
-          normActual.includes(normSelected) ||
-          normSelected.includes(normActual) ||
-          (m.includes("BTTS") && (item.market.includes("Ambos") || item.market.includes("BTTS")))
-        );
+        return normActual.includes(normSelected) || normSelected.includes(normActual);
       });
       if (!match) return false;
     }
 
-    const itemDateStr = item.date || getLocalDateStr(item.kickoff);
-    const itemTimeMs = new Date(item.kickoff || item.date).getTime();
-
+    // 6. Date Filter
     if (selectedDateFilter === "today") {
-      if (itemDateStr !== todayStr) return false;
+      const itemDate = item.date || (item.kickoff ? getLocalDateStr(item.kickoff) : "");
+      if (itemDate !== todayStr) return false;
     } else if (selectedDateFilter === "yesterday") {
-      if (itemDateStr !== yesterdayStr) return false;
+      const itemDate = item.date || (item.kickoff ? getLocalDateStr(item.kickoff) : "");
+      if (itemDate !== yesterdayStr) return false;
     } else if (selectedDateFilter === "week") {
-      if (itemTimeMs < sevenDaysAgoMs) return false;
+      const itemTime = new Date(item.kickoff || item.date).getTime();
+      if (isNaN(itemTime) || itemTime < sevenDaysAgoMs) return false;
     } else if (selectedDateFilter === "month") {
-      if (itemTimeMs < thirtyDaysAgoMs) return false;
+      const itemTime = new Date(item.kickoff || item.date).getTime();
+      if (isNaN(itemTime) || itemTime < thirtyDaysAgoMs) return false;
     } else if (selectedDateFilter === "custom" && customDate) {
-      if (itemDateStr !== customDate) return false;
+      const itemDate = item.date || (item.kickoff ? getLocalDateStr(item.kickoff) : "");
+      if (itemDate !== customDate) return false;
     }
 
     return true;
@@ -187,785 +191,626 @@ export default function HistoryPage() {
 
   // Filter Parlays
   const filteredParlays = parlayItems.filter((p) => {
+    if (filterResult === "WON" && p.result !== "WON") return false;
+    if (filterResult === "LOST" && p.result !== "LOST") return false;
     if (searchQuery.trim().length > 0) {
       const q = searchQuery.toLowerCase().trim();
-      const matchInLegs = p.legs.some(
-        (l) =>
-          l.match.toLowerCase().includes(q) ||
-          l.league.toLowerCase().includes(q) ||
-          (l.country || "").toLowerCase().includes(q)
-      );
-      if (!matchInLegs && !p.title.toLowerCase().includes(q)) return false;
+      const matchText = `${p.legs.map((l) => `${l.match} ${l.league}`).join(" ")}`.toLowerCase();
+      if (!matchText.includes(q)) return false;
     }
-
-    if (filterResult !== "ALL" && p.result !== filterResult) return false;
-
-    if (selectedDateFilter === "today") {
-      if (p.date !== todayStr) return false;
-    } else if (selectedDateFilter === "yesterday") {
-      if (p.date !== yesterdayStr) return false;
-    } else if (selectedDateFilter === "week") {
-      const pTime = new Date(p.date).getTime();
-      if (pTime < sevenDaysAgoMs) return false;
-    } else if (selectedDateFilter === "month") {
-      const pTime = new Date(p.date).getTime();
-      if (pTime < thirtyDaysAgoMs) return false;
-    } else if (selectedDateFilter === "custom" && customDate) {
-      if (p.date !== customDate) return false;
-    }
-
     return true;
   });
 
-  const [expandedPicks, setExpandedPicks] = useState<Record<string, boolean>>({});
-  const [expandedParlays, setExpandedParlays] = useState<Record<string, boolean>>({});
+  // Exact Counts for Badges
+  const prematchCount = historyItems.filter((h) => !h.isLive && h.matchTiming !== "live").length;
+  const liveCount = historyItems.filter((h) => h.isLive || h.matchTiming === "live").length;
+  const mcpCount = historyItems.filter((h) => h.isMcp || h.pickBadge === "mcp").length;
+  const bombaCount = historyItems.filter((h) => h.pickBadge === "bomba" || h.odds >= 2.05).length;
+  const wonCount = historyItems.filter((h) => h.result === "WON").length;
+  const lostCount = historyItems.filter((h) => h.result === "LOST").length;
 
-  // Statistics for Current Tab
-  const isPicksTab = historyType === "picks";
-  const totalCount = isPicksTab ? filteredHistory.length : filteredParlays.length;
-  const wonCount = isPicksTab
-    ? filteredHistory.filter((i) => i.result === "WON").length
-    : filteredParlays.filter((p) => p.result === "WON").length;
-  const lostCount = isPicksTab
-    ? filteredHistory.filter((i) => i.result === "LOST").length
-    : filteredParlays.filter((p) => p.result === "LOST").length;
-  const winRate = totalCount > 0 ? ((wonCount / totalCount) * 100).toFixed(1) : "0.0";
-  const netProfit = isPicksTab
-    ? filteredHistory.reduce((acc, i) => acc + (i.profit || 0), 0).toFixed(2)
-    : filteredParlays.reduce((acc, p) => acc + (p.profit || 0), 0).toFixed(2);
-  const avgOdds = isPicksTab
-    ? totalCount > 0
-      ? (filteredHistory.reduce((acc, i) => acc + (i.odds || 0), 0) / totalCount).toFixed(2)
-      : "0.00"
-    : totalCount > 0
-    ? (filteredParlays.reduce((acc, p) => acc + (p.totalOdds || 0), 0) / totalCount).toFixed(2)
-    : "0.00";
+  // Overall Statistics from Filtered Items
+  const totalSettled = filteredHistory.length;
+  const totalWon = filteredHistory.filter((i) => i.result === "WON").length;
+  const winRate = totalSettled > 0 ? (totalWon / totalSettled) * 100 : 0;
+  const netProfit = filteredHistory.reduce((acc, i) => acc + (i.profit || 0), 0);
+  const avgOdds = totalSettled > 0
+    ? (filteredHistory.reduce((acc, i) => acc + (i.odds || 0), 0) / totalSettled).toFixed(2)
+    : "—";
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100 overflow-x-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
       <Navbar />
 
-      <main className="mx-auto max-w-7xl px-3.5 py-6 sm:px-6 sm:py-8 lg:px-8 space-y-6">
-        {/* Title & History Type Switcher */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
+        {/* Header Strip with Title */}
+        <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-5 dark:border-slate-800">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-1 text-xs font-extrabold text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30">
-              <span>📜</span>
-              <span>{t("historyKicker")}</span>
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
+                📜
+              </span>
+              <span className="text-[11px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400">
+                {t("historyKicker")}
+              </span>
             </div>
-            <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
-              Historial de Pronósticos & Trazabilidad Oficial
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+              {t("historyTitle")}
             </h1>
-            <p className="mt-1 text-xs text-slate-700 sm:text-sm dark:text-slate-400">
-              Auditoría oficial de picks individuales y parleys recomendados evaluados con marcadores reales
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-2xl">
+              {t("historySubtitle")}
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              onClick={() => {
-                if (isPicksTab) {
-                  const allExp = filteredHistory.every((p) => expandedPicks[p.id]);
-                  const nextState: Record<string, boolean> = {};
-                  filteredHistory.forEach((p) => {
-                    nextState[p.id] = !allExp;
-                  });
-                  setExpandedPicks(nextState);
-                } else {
-                  const allExp = filteredParlays.every((p) => expandedParlays[p.id]);
-                  const nextState: Record<string, boolean> = {};
-                  filteredParlays.forEach((p) => {
-                    nextState[p.id] = !allExp;
-                  });
-                  setExpandedParlays(nextState);
-                }
-              }}
-              className="rounded-xl bg-white px-3 py-2 text-xs font-black text-slate-700 hover:text-slate-900 border border-slate-200 shadow-sm dark:bg-slate-900 dark:border-slate-800 dark:text-slate-300 dark:hover:text-white transition cursor-pointer"
-            >
-              {isPicksTab
-                ? filteredHistory.every((p) => expandedPicks[p.id])
-                  ? "▲ Minimizar Todo"
-                  : "▼ Expandir Todo"
-                : filteredParlays.every((p) => expandedParlays[p.id])
-                ? "▲ Minimizar Todo"
-                : "▼ Expandir Todo"}
-            </button>
-          </div>
-
-          {/* Module Switcher */}
-          <div className="flex items-center gap-2 self-start sm:self-auto rounded-2xl bg-white p-1.5 border border-slate-200 shadow-sm dark:bg-slate-900 dark:border-slate-800">
+          {/* Type Toggle: Individual Picks vs Parlays */}
+          <div className="flex items-center gap-1.5 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xs dark:border-slate-800 dark:bg-slate-900">
             <button
               onClick={() => setHistoryType("picks")}
-              className={`rounded-xl px-4 py-2 text-xs font-black transition cursor-pointer ${
+              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black transition cursor-pointer ${
                 historyType === "picks"
-                  ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/25 dark:bg-emerald-500 dark:text-slate-950"
+                  ? "bg-slate-900 text-white shadow-xs dark:bg-slate-100 dark:text-slate-950"
                   : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
               }`}
             >
-              🎯 Picks Individuales ({historyItems.length})
+              <span>🎯</span>
+              <span>Pronósticos ({historyItems.length})</span>
             </button>
             <button
               onClick={() => setHistoryType("parlays")}
-              className={`rounded-xl px-4 py-2 text-xs font-black transition cursor-pointer ${
+              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black transition cursor-pointer ${
                 historyType === "parlays"
-                  ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/25 dark:bg-emerald-500 dark:text-slate-950"
+                  ? "bg-slate-900 text-white shadow-xs dark:bg-slate-100 dark:text-slate-950"
                   : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
               }`}
             >
-              🔥 Historial Parleys ({parlayItems.length})
+              <span>🎲</span>
+              <span>Parlays ({parlayItems.length})</span>
             </button>
           </div>
         </div>
 
-        {/* Search Input Bar */}
-        <div className="relative">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="🔍 Buscar por equipo o liga en el historial (ej. Real Madrid, Chelsea, Arsenal, Serie A)..."
-            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs sm:text-sm font-semibold text-slate-800 shadow-sm focus:border-emerald-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900/80 dark:text-white"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery("")}
-              className="absolute right-3.5 top-3 text-xs font-bold text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer"
-            >
-              ✕ Limpiar
-            </button>
-          )}
-        </div>
-
-        {/* Date Filter Bar & Specific Date Picker */}
-        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3.5 shadow-sm dark:border-slate-800/80 dark:bg-slate-900/80">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-xs font-bold text-slate-600 mr-1 dark:text-slate-400">Período / Fecha:</span>
-            <button
-              onClick={() => { setSelectedDateFilter("all"); setCustomDate(""); }}
-              className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
-                selectedDateFilter === "all"
-                  ? "bg-emerald-600 text-white shadow-sm dark:bg-emerald-500 dark:text-slate-950"
-                  : "bg-slate-100 text-slate-800 hover:bg-slate-200 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
-              }`}
-            >
-              🌟 Todo
-            </button>
-            <button
-              onClick={() => { setSelectedDateFilter("today"); setCustomDate(""); }}
-              className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
-                selectedDateFilter === "today"
-                  ? "bg-emerald-600 text-white shadow-sm dark:bg-emerald-500 dark:text-slate-950"
-                  : "bg-slate-100 text-slate-800 hover:bg-slate-200 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
-              }`}
-            >
-              📅 Hoy
-            </button>
-            <button
-              onClick={() => { setSelectedDateFilter("yesterday"); setCustomDate(""); }}
-              className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
-                selectedDateFilter === "yesterday"
-                  ? "bg-emerald-600 text-white shadow-sm dark:bg-emerald-500 dark:text-slate-950"
-                  : "bg-slate-100 text-slate-800 hover:bg-slate-200 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
-              }`}
-            >
-              ⏪ Ayer
-            </button>
-            <button
-              onClick={() => { setSelectedDateFilter("week"); setCustomDate(""); }}
-              className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
-                selectedDateFilter === "week"
-                  ? "bg-emerald-600 text-white shadow-sm dark:bg-emerald-500 dark:text-slate-950"
-                  : "bg-slate-100 text-slate-800 hover:bg-slate-200 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
-              }`}
-            >
-              🗓️ 7 Días
-            </button>
-            <button
-              onClick={() => { setSelectedDateFilter("month"); setCustomDate(""); }}
-              className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
-                selectedDateFilter === "month"
-                  ? "bg-emerald-600 text-white shadow-sm dark:bg-emerald-500 dark:text-slate-950"
-                  : "bg-slate-100 text-slate-800 hover:bg-slate-200 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
-              }`}
-            >
-              📊 30 Días
-            </button>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-slate-600 dark:text-slate-400">Fecha Exacta:</span>
-            <input
-              type="date"
-              value={customDate}
-              onChange={(e) => {
-                setCustomDate(e.target.value);
-                if (e.target.value) {
-                  setSelectedDateFilter("custom");
-                } else {
-                  setSelectedDateFilter("all");
-                }
-              }}
-              className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-800 shadow-sm focus:border-emerald-500 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-white"
-            />
-          </div>
-        </div>
-
-        {/* Dynamic Accuracy & Performance KPIs */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
-          <div className="rounded-2xl bg-white p-4 border border-slate-200 shadow-sm text-center dark:bg-slate-900/80 dark:border-slate-800">
-            <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block">
-              % Acierto (Win Rate)
+        {/* Top KPIs Summary Bar */}
+        <div className="mb-6 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              {t("historyEvaluated")}
             </span>
-            <p className="mt-1 text-2xl font-black text-emerald-700 dark:text-emerald-400">
-              {winRate}%
-            </p>
+            <div className="mt-1 flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+                {totalSettled}
+              </span>
+              <span className="text-xs font-bold text-slate-500">resueltos</span>
+            </div>
           </div>
 
-          <div className="rounded-2xl bg-white p-4 border border-slate-200 shadow-sm text-center dark:bg-slate-900/80 dark:border-slate-800">
-            <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block">
-              Total {isPicksTab ? "Picks" : "Parleys"}
+          <div className="rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-50 to-white p-4 shadow-xs dark:from-emerald-950/20 dark:to-slate-900 dark:border-emerald-900/40">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              {t("historyWinRate")}
             </span>
-            <p className="mt-1 text-2xl font-black text-slate-900 dark:text-white">
-              {totalCount}
-            </p>
+            <div className="mt-1 flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+                {winRate.toFixed(1)}%
+              </span>
+              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                {totalWon}W - {totalSettled - totalWon}L
+              </span>
+            </div>
           </div>
 
-          <div className="rounded-2xl bg-white p-4 border border-slate-200 shadow-sm text-center dark:bg-slate-900/80 dark:border-slate-800">
-            <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block">
-              Ganadas (WON)
+          <div className="rounded-2xl border border-cyan-500/20 bg-gradient-to-br from-cyan-50 to-white p-4 shadow-xs dark:from-cyan-950/20 dark:to-slate-900 dark:border-cyan-900/40">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-cyan-600 dark:text-cyan-400">
+              {t("historyProfit")}
             </span>
-            <p className="mt-1 text-2xl font-black text-emerald-600 dark:text-emerald-400">
-              {wonCount}
-            </p>
+            <div className="mt-1 flex items-baseline gap-2">
+              <span className={`text-2xl sm:text-3xl font-black ${netProfit >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                {netProfit >= 0 ? `+${netProfit.toFixed(2)}` : netProfit.toFixed(2)} u
+              </span>
+              <span className="text-xs font-bold text-slate-500">unidades</span>
+            </div>
           </div>
 
-          <div className="rounded-2xl bg-white p-4 border border-slate-200 shadow-sm text-center dark:bg-slate-900/80 dark:border-slate-800">
-            <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block">
-              Perdidas (LOST)
-            </span>
-            <p className="mt-1 text-2xl font-black text-red-600 dark:text-red-400">
-              {lostCount}
-            </p>
-          </div>
-
-          <div className="rounded-2xl bg-white p-4 border border-slate-200 shadow-sm text-center dark:bg-slate-900/80 dark:border-slate-800">
-            <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Cuota Promedio
             </span>
-            <p className="mt-1 text-2xl font-black text-sky-700 dark:text-sky-400">
-              {avgOdds}
-            </p>
-          </div>
-
-          <div className="rounded-2xl bg-white p-4 border border-slate-200 shadow-sm text-center dark:bg-slate-900/80 dark:border-slate-800">
-            <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block">
-              Beneficio Neto
-            </span>
-            <p className={`mt-1 text-2xl font-black ${Number(netProfit) >= 0 ? "text-emerald-700 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
-              {Number(netProfit) >= 0 ? `+${netProfit}` : netProfit} U
-            </p>
+            <div className="mt-1 flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+                @{avgOdds}
+              </span>
+              <span className="text-xs font-bold text-slate-500">global</span>
+            </div>
           </div>
         </div>
 
-        {/* Secondary Filter Controls */}
-        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800/80 dark:bg-slate-900/80">
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs font-bold text-slate-600 mr-1 dark:text-slate-400">Resultado:</span>
+        {/* Modality & Result Filter Pills */}
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2.5">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            {/* Timing Modality Filters (Pre-Match vs Live vs All vs MCP) */}
+            <button
+              onClick={() => setTimingFilter("ALL")}
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+                timingFilter === "ALL"
+                  ? "bg-slate-900 text-white shadow-sm dark:bg-slate-100 dark:text-slate-950"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+              }`}
+            >
+              🌐 Todas ({historyItems.length})
+            </button>
+
+            <button
+              onClick={() => setTimingFilter("PREMATCH")}
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+                timingFilter === "PREMATCH"
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800"
+              }`}
+            >
+              📋 Pre-Match ({prematchCount})
+            </button>
+
+            <button
+              onClick={() => setTimingFilter("LIVE")}
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
+                timingFilter === "LIVE"
+                  ? "bg-gradient-to-r from-rose-600 to-red-600 text-white shadow-md shadow-rose-600/30 border border-rose-500"
+                  : "bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800"
+              }`}
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-ping" />
+              <span>⚡ Alertas en Vivo ({liveCount})</span>
+            </button>
+
+            <button
+              onClick={() => setTimingFilter("MCP")}
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+                timingFilter === "MCP"
+                  ? "bg-purple-600 text-white shadow-sm"
+                  : "bg-purple-50 text-purple-800 border border-purple-200 hover:bg-purple-100 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800"
+              }`}
+            >
+              🤖 Agente MCP ({mcpCount})
+            </button>
+
+            <button
+              onClick={() => setTimingFilter("BOMBA")}
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+                timingFilter === "BOMBA"
+                  ? "bg-gradient-to-r from-orange-500 to-rose-500 text-white font-black shadow-md border border-orange-400"
+                  : "bg-orange-50 text-orange-900 border border-orange-200 hover:bg-orange-100 dark:bg-orange-950/60 dark:text-orange-300 dark:border-orange-800"
+              }`}
+            >
+              💣 Bomba ({bombaCount})
+            </button>
+
+            <span className="h-4 w-px bg-slate-300 dark:bg-slate-700 mx-1 hidden sm:inline-block" />
+
+            {/* Result Filters */}
             <button
               onClick={() => setFilterResult("ALL")}
               className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
                 filterResult === "ALL"
-                  ? "bg-slate-900 text-white dark:bg-slate-700"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+                  ? "bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900"
+                  : "text-slate-500 hover:text-slate-800 dark:hover:text-white"
               }`}
             >
-              Todos ({totalCount})
+              {t("filterAll")}
             </button>
             <button
               onClick={() => setFilterResult("WON")}
               className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
                 filterResult === "WON"
                   ? "bg-emerald-600 text-white shadow-sm"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+                  : "bg-emerald-50 text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300"
               }`}
             >
-              ✓ Ganadas ({wonCount})
+              {t("filterWon")} ({wonCount})
             </button>
             <button
               onClick={() => setFilterResult("LOST")}
               className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
                 filterResult === "LOST"
-                  ? "bg-red-600 text-white shadow-sm"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+                  ? "bg-rose-600 text-white shadow-sm"
+                  : "bg-rose-50 text-rose-800 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-rose-300"
               }`}
             >
-              ✗ Perdidas ({lostCount})
+              {t("filterLost")} ({lostCount})
             </button>
           </div>
 
-          {isPicksTab && (
-            <div className="flex flex-wrap items-center gap-2.5">
-              <MultiSelectDropdown
-                label="Ligas por País"
-                icon="🏆"
-                options={leagueDropdownOptions}
-                selected={selectedLeagues}
-                onChange={setSelectedLeagues}
-                placeholderAll="Todas las Ligas"
-              />
+          {/* View Mode Toggle: Cards vs Table */}
+          <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1 dark:border-slate-800 dark:bg-slate-900 shrink-0">
+            <button
+              onClick={() => setViewMode("cards")}
+              className={`rounded-lg px-2.5 py-1 text-xs font-black transition cursor-pointer ${
+                viewMode === "cards"
+                  ? "bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
+                  : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+              }`}
+            >
+              🗂️ {t("viewCards")}
+            </button>
+            <button
+              onClick={() => setViewMode("table")}
+              className={`rounded-lg px-2.5 py-1 text-xs font-black transition cursor-pointer ${
+                viewMode === "table"
+                  ? "bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
+                  : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+              }`}
+            >
+              📊 {t("viewTable")}
+            </button>
+          </div>
+        </div>
 
+        {/* Filters Toolbar */}
+        <div className="mb-6 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-xs dark:border-slate-800/80 dark:bg-slate-900/80">
+          {/* Search bar */}
+          <div className="relative flex-1 min-w-[200px]">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400">🔍</span>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Buscar por equipo o liga..."
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pl-9 pr-8 text-xs font-bold text-slate-800 placeholder-slate-400 outline-none focus:border-emerald-500 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <MultiSelectDropdown
+              label={t("filterLeagueLabel").replace(":", "")}
+              options={leagueDropdownOptions}
+              selected={selectedLeagues}
+              onChange={setSelectedLeagues}
+            />
+
+            {marketDropdownOptions.length > 0 && (
               <MultiSelectDropdown
-                label="Mercados"
-                icon="🎯"
+                label={t("filterMarketLabel").replace(":", "")}
                 options={marketDropdownOptions}
                 selected={selectedMarkets}
                 onChange={setSelectedMarkets}
-                placeholderAll="Todos los Mercados"
               />
+            )}
+
+            {/* Date Preset Selector */}
+            <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+              <span>📅</span>
+              <select
+                value={selectedDateFilter}
+                onChange={(e) => setSelectedDateFilter(e.target.value as any)}
+                aria-label="Filtrar por período de fecha"
+                className="bg-transparent font-black text-slate-800 dark:text-white outline-none cursor-pointer"
+              >
+                <option value="all" className="dark:bg-slate-900">Histórico Completo</option>
+                <option value="today" className="dark:bg-slate-900">Solo Hoy</option>
+                <option value="yesterday" className="dark:bg-slate-900">Ayer</option>
+                <option value="week" className="dark:bg-slate-900">Últimos 7 días</option>
+                <option value="month" className="dark:bg-slate-900">Últimos 30 días</option>
+              </select>
             </div>
-          )}
+
+            {(selectedLeagues.length > 0 || selectedMarkets.length > 0 || timingFilter !== "ALL" || filterResult !== "ALL" || selectedDateFilter !== "all" || searchQuery) && (
+              <button
+                onClick={() => {
+                  setSelectedLeagues([]);
+                  setSelectedMarkets([]);
+                  setTimingFilter("ALL");
+                  setFilterResult("ALL");
+                  setSelectedDateFilter("all");
+                  setSearchQuery("");
+                }}
+                className="rounded-xl border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs font-extrabold text-slate-600 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 cursor-pointer"
+              >
+                Limpiar
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* TAB 1: INDIVIDUAL PICKS WITH ENHANCED CARDS */}
-        {isPicksTab && (
-          <>
-            {loading ? (
-              <div className="py-20 text-center text-slate-500">
-                <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent" />
-                <p className="mt-3 text-sm font-semibold">Cargando historial de apuestas liquidadas...</p>
-              </div>
-            ) : filteredHistory.length === 0 ? (
-              <div className="rounded-3xl border border-slate-200 bg-white p-12 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900/40">
-                <span className="text-4xl">🚀</span>
-                <h3 className="mt-3 text-lg font-bold text-slate-900 dark:text-white">
-                  {historyItems.length === 0 ? "Historial Listo para Mañana" : "Sin registros para esta búsqueda"}
-                </h3>
-                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                  {historyItems.length === 0
-                    ? "El registro oficial de rendimiento, auditoría y pronósticos liquidados inicia desde cero a partir de mañana (3 de Septiembre)."
-                    : "No hay apuestas liquidadas que coincidan con los filtros seleccionados."}
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {filteredHistory.map((item) => {
-                  const isWon = item.result === "WON";
-                  const conf = getConfidenceBadge(item.confidence, item.probability);
-                  const isExpanded = Boolean(expandedPicks[item.id]);
+        {/* Content View: Picks or Parlays */}
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent mb-4" />
+            <span className="text-sm font-bold text-slate-600 dark:text-slate-400">
+              Cargando historial verificado y marcadores oficiales...
+            </span>
+          </div>
+        ) : historyType === "picks" ? (
+          filteredHistory.length === 0 ? (
+            <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300 bg-white/50 p-12 text-center dark:border-slate-800 dark:bg-slate-900/30">
+              <span className="text-4xl mb-3">🔍</span>
+              <h3 className="text-base font-black text-slate-900 dark:text-white">
+                No se encontraron registros para estos filtros
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm">
+                Prueba ajustando los filtros de fecha, liga o modalidad de alerta.
+              </p>
+            </div>
+          ) : viewMode === "cards" ? (
+            /* Cards Grid View */
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {filteredHistory.map((item) => {
+                const isWon = item.result === "WON";
+                const isLive = item.isLive || item.matchTiming === "live";
+                const conf = getConfidenceBadge(item.confidence, item.probability);
 
-                  // 1. MINIMIZED / COMPACT ROW VIEW (Identical to Dashboard / Picks)
-                  if (!isExpanded) {
-                    return (
-                      <div
-                        key={item.id}
-                        className="group relative flex items-center justify-between gap-3 overflow-hidden rounded-2xl border border-slate-200/90 bg-white px-4 py-3 shadow-xs transition-all duration-200 hover:border-emerald-500/50 hover:shadow-md dark:border-slate-800/80 dark:bg-slate-900/90 cursor-pointer"
-                        onClick={() =>
-                          setExpandedPicks((prev) => ({ ...prev, [item.id]: true }))
-                        }
+                return (
+                  <div
+                    key={item.id}
+                    className={`relative flex flex-col justify-between overflow-hidden rounded-3xl border bg-white p-5 shadow-xs transition hover:shadow-md dark:bg-slate-900 ${
+                      isWon
+                        ? "border-emerald-500/30 dark:border-emerald-500/20"
+                        : "border-rose-500/30 dark:border-rose-500/20"
+                    }`}
+                  >
+                    {/* Top Badges Strip */}
+                    <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3 dark:border-slate-800">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        {/* Live vs Pre-Match Badge */}
+                        {isLive ? (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/10 px-2.5 py-0.5 text-[10px] font-black text-rose-600 dark:text-rose-400 border border-rose-500/30">
+                            <span className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-ping" />
+                            <span>⚡ EN VIVO</span>
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                            <span>🕒 PRE-MATCH</span>
+                          </span>
+                        )}
+
+                        {/* MCP Agent Badge */}
+                        {(item.isMcp || item.pickBadge === "mcp") && (
+                          <span className="inline-flex items-center gap-1 rounded-md bg-purple-100 px-2 py-0.5 text-[10px] font-black text-purple-800 dark:bg-purple-950 dark:text-purple-300 border border-purple-300 dark:border-purple-800">
+                            <span>🤖 MCP</span>
+                          </span>
+                        )}
+
+                        {/* Bomba Badge */}
+                        {item.pickBadge === "bomba" && (
+                          <span className="inline-flex items-center gap-1 rounded-md bg-gradient-to-r from-orange-500 to-rose-500 px-2 py-0.5 text-[10px] font-black text-white shadow-xs">
+                            <span>💣 BOMBA</span>
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Result Pill */}
+                      <span
+                        className={`inline-flex items-center gap-1 rounded-xl px-2.5 py-1 text-xs font-black shadow-xs ${
+                          isWon
+                            ? "bg-emerald-600 text-white"
+                            : "bg-rose-600 text-white"
+                        }`}
                       >
-                        {/* Left: Result Icon, Teams & League */}
-                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <span>{isWon ? "✓" : "✗"}</span>
+                        <span>{isWon ? t("wonBadge") : t("lostBadge")}</span>
+                        <span className="text-[10px] font-bold opacity-90">
+                          ({item.profit >= 0 ? `+${item.profit.toFixed(2)}` : item.profit.toFixed(2)}u)
+                        </span>
+                      </span>
+                    </div>
+
+                    {/* Match & Score */}
+                    <div className="my-3.5">
+                      <span className="text-[11px] font-bold text-slate-400 block mb-1">
+                        {item.league} {item.country ? `• ${item.country}` : ""}
+                      </span>
+
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2 truncate">
+                          {item.homeLogo ? (
+                            <Image src={item.homeLogo} alt={item.homeTeam} width={24} height={24} className="h-6 w-6 object-contain shrink-0" />
+                          ) : null}
+                          <span className="font-black text-slate-900 dark:text-white text-sm truncate">
+                            {item.homeTeam}
+                          </span>
+                        </div>
+
+                        <span className="text-xs font-extrabold text-slate-400">vs</span>
+
+                        <div className="flex items-center gap-2 truncate justify-end">
+                          <span className="font-black text-slate-900 dark:text-white text-sm truncate text-right">
+                            {item.awayTeam}
+                          </span>
+                          {item.awayLogo ? (
+                            <Image src={item.awayLogo} alt={item.awayTeam} width={24} height={24} className="h-6 w-6 object-contain shrink-0" />
+                          ) : null}
+                        </div>
+                      </div>
+
+                      {/* Official Score Strip */}
+                      <div className="mt-3 flex items-center justify-between rounded-xl bg-slate-50 p-2.5 border border-slate-200 dark:bg-slate-950/60 dark:border-slate-800">
+                        <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                          {t("colScore")}:
+                        </span>
+                        <span className="text-sm font-black text-slate-900 dark:text-white tracking-wide">
+                          {item.score}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Market, Selection, Odds & Confidence */}
+                    <div className="space-y-2 border-t border-slate-100 pt-3 dark:border-slate-800 text-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500 font-semibold">{t("marketLabel")}:</span>
+                        <span className="font-black text-slate-900 dark:text-white">{item.market}</span>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500 font-semibold">Selección:</span>
+                        <span className="font-bold text-emerald-700 dark:text-emerald-400">{item.selection}</span>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500 font-semibold">{t("oddsLabel")}:</span>
+                        <span className="text-base font-black text-slate-900 dark:text-white">@{item.odds.toFixed(2)}</span>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-1">
+                        <span className={`rounded-md border px-2 py-0.5 text-[10px] font-bold ${conf.cls}`}>
+                          {conf.label}
+                        </span>
+                        <span className="text-[11px] font-extrabold text-slate-500 dark:text-slate-400">
+                          Prob: {item.probability}%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            /* Table View */
+            <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-xs dark:border-slate-800 dark:bg-slate-900">
+              <table className="w-full text-left text-xs">
+                <thead className="border-b border-slate-200 bg-slate-50 text-[11px] font-black uppercase tracking-wider text-slate-500 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400">
+                  <tr>
+                    <th className="p-3.5">Modalidad</th>
+                    <th className="p-3.5">{t("colDate")}</th>
+                    <th className="p-3.5">{t("colMatch")}</th>
+                    <th className="p-3.5">{t("colScore")}</th>
+                    <th className="p-3.5">{t("colMarket")}</th>
+                    <th className="p-3.5">{t("colOdds")}</th>
+                    <th className="p-3.5">{t("colProb")}</th>
+                    <th className="p-3.5">{t("colResult")}</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
+                  {filteredHistory.map((item) => {
+                    const isWon = item.result === "WON";
+                    const isLive = item.isLive || item.matchTiming === "live";
+
+                    return (
+                      <tr key={item.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition">
+                        <td className="p-3.5 whitespace-nowrap">
+                          {isLive ? (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/10 px-2 py-0.5 text-[10px] font-black text-rose-600 dark:text-rose-400 border border-rose-500/30">
+                              <span className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-ping" />
+                              <span>LIVE</span>
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                              <span>PRE</span>
+                            </span>
+                          )}
+                          {item.isMcp && (
+                            <span className="ml-1 text-[10px] font-black text-purple-600 dark:text-purple-400">🤖 MCP</span>
+                          )}
+                        </td>
+                        <td className="p-3.5 whitespace-nowrap font-medium text-slate-500 dark:text-slate-400">
+                          {item.date}
+                        </td>
+                        <td className="p-3.5 font-bold text-slate-900 dark:text-white">
+                          <div>{item.match}</div>
+                          <div className="text-[10px] font-medium text-slate-400">{item.league}</div>
+                        </td>
+                        <td className="p-3.5 font-black text-slate-900 dark:text-white whitespace-nowrap">
+                          {item.score}
+                        </td>
+                        <td className="p-3.5 font-semibold text-slate-700 dark:text-slate-300">
+                          <div>{item.market}</div>
+                          <div className="text-[10px] text-emerald-600 dark:text-emerald-400">{item.selection}</div>
+                        </td>
+                        <td className="p-3.5 font-black text-slate-900 dark:text-white whitespace-nowrap">
+                          @{item.odds.toFixed(2)}
+                        </td>
+                        <td className="p-3.5 font-bold text-slate-500 whitespace-nowrap">
+                          {item.probability}%
+                        </td>
+                        <td className="p-3.5 whitespace-nowrap">
                           <span
-                            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-black ${
-                              isWon ? "bg-emerald-500 text-slate-950" : "bg-red-500 text-white"
+                            className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-black ${
+                              isWon
+                                ? "bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-300"
+                                : "bg-rose-100 text-rose-900 dark:bg-rose-950 dark:text-rose-300"
                             }`}
                           >
-                            {isWon ? "✓" : "✗"}
+                            <span>{isWon ? "✓" : "✗"}</span>
+                            <span>{isWon ? t("wonBadge") : t("lostBadge")}</span>
                           </span>
-                          <div className="min-w-0">
-                            <div className="text-sm font-black text-slate-900 dark:text-white truncate">
-                              {item.homeTeam} <span className="text-slate-400 font-normal">vs</span> {item.awayTeam}
-                            </div>
-                            <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 truncate">
-                              🏆 {item.league} {item.country ? `(${item.country})` : ""} • 📅 {item.date}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Center: Market Badge, Odds & Real Score */}
-                        <div className="hidden md:flex items-center gap-2 shrink-0">
-                          <span className="rounded-xl bg-emerald-50 border border-emerald-300 dark:bg-emerald-950/60 dark:border-emerald-700/60 px-2.5 py-1 text-xs font-black text-emerald-800 dark:text-emerald-300">
-                            🎯 {item.market} ({item.selection})
-                          </span>
-                          <span className="inline-flex items-center gap-1 rounded-xl bg-sky-600 px-2.5 py-1 text-xs font-black text-white shadow-sm" title="Cuota de la Casa de Apuestas">
-                            <span className="text-[10px] font-bold opacity-80 uppercase">Casa de Apuestas:</span>
-                            <span>@{item.odds.toFixed(2)}</span>
-                          </span>
-                          <span className="inline-flex items-center gap-1 rounded-xl bg-indigo-600 px-2.5 py-1 text-xs font-black text-white shadow-sm" title="Cuota Justa del Modelo SmartBetBot">
-                            <span className="text-[10px] font-bold opacity-80 uppercase">Modelo SmartBetBot:</span>
-                            <span>@{(item.fairOdds || Math.max(1.10, Math.round((100 / (item.probability || 60)) * 100) / 100)).toFixed(2)}</span>
-                          </span>
-                          <span className="rounded-xl bg-slate-100 px-2.5 py-1 text-xs font-black text-slate-900 border border-slate-200 dark:bg-slate-800 dark:text-white dark:border-slate-700">
-                            {item.score}
-                          </span>
-                        </div>
-
-                        {/* Right: Profit Badge & Toggle Expand Button */}
-                        <div className="flex items-center gap-2 shrink-0">
-                          {isWon ? (
-                            <span className="rounded-xl px-2.5 py-1 text-xs font-black bg-emerald-500 text-slate-950">
-                              ✓ Ganada (+{item.profit.toFixed(2)} U)
-                            </span>
-                          ) : (
-                            <span className="rounded-xl px-2.5 py-1 text-xs font-black bg-rose-600 text-white">
-                              ✗ Perdida ({item.profit.toFixed(2)} U)
-                            </span>
-                          )}
-
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setExpandedPicks((prev) => ({ ...prev, [item.id]: true }));
-                            }}
-                            title="Ampliar tarjeta completa"
-                            className="flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
-                          >
-                            <span>▼</span>
-                            <span className="hidden sm:inline">Ampliar</span>
-                          </button>
-                        </div>
-                      </div>
+                        </td>
+                      </tr>
                     );
-                  }
-
-                  // 2. EXPANDED FULL VIEW (Identical to Dashboard / Picks)
-                  return (
-                    <div
-                      key={item.id}
-                      className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-slate-200/90 bg-white p-5 shadow-sm transition-all duration-300 hover:border-emerald-500/50 hover:shadow-xl dark:border-slate-800/80 dark:bg-slate-900/90 space-y-4"
-                    >
-                      {/* Top Bar: League, Country, Status Badge & Toggle Minimize Button */}
-                      <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3 dark:border-slate-800/80">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="inline-flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1 text-[11px] font-black text-slate-800 dark:bg-slate-800 dark:text-slate-200">
-                            <span>🏆</span>
-                            <span>{item.league}</span>
-                            {item.country && (
-                              <>
-                                <span className="text-slate-400 font-normal">•</span>
-                                <span className="text-emerald-700 dark:text-emerald-400">{item.country}</span>
-                              </>
-                            )}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          {isWon ? (
-                            <span className="inline-flex items-center gap-1 rounded-xl px-3 py-1 text-xs font-black bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30">
-                              ✓ Ganada (+{item.profit.toFixed(2)} U)
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 rounded-xl px-3 py-1 text-xs font-black bg-rose-600 text-white shadow-md shadow-rose-600/30">
-                              ✗ Perdida ({item.profit.toFixed(2)} U)
-                            </span>
-                          )}
-
-                          {/* Toggle Minimize Button */}
-                          <button
-                            onClick={() =>
-                              setExpandedPicks((prev) => ({ ...prev, [item.id]: false }))
-                            }
-                            title="Minimizar a vista compacta"
-                            className="flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
-                          >
-                            <span>▲</span>
-                            <span className="hidden sm:inline">Minimizar</span>
-                          </button>
-                        </div>
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )
+        ) : (
+          /* Parlays View */
+          filteredParlays.length === 0 ? (
+            <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300 bg-white/50 p-12 text-center dark:border-slate-800 dark:bg-slate-900/30">
+              <span className="text-4xl mb-3">🎲</span>
+              <h3 className="text-base font-black text-slate-900 dark:text-white">
+                No hay parlays registrados para este filtro
+              </h3>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {filteredParlays.map((parlay) => {
+                const isWon = parlay.result === "WON";
+                return (
+                  <div
+                    key={parlay.id}
+                    className={`rounded-3xl border bg-white p-5 shadow-xs dark:bg-slate-900 ${
+                      isWon
+                        ? "border-emerald-500/30 dark:border-emerald-500/20"
+                        : "border-rose-500/30 dark:border-rose-500/20"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
+                      <div>
+                        <span className="text-xs font-extrabold text-slate-400 block">{parlay.date}</span>
+                        <h4 className="text-sm font-black text-slate-900 dark:text-white">{parlay.title}</h4>
                       </div>
-
-                      {/* Date & Initial Confidence Badge */}
-                      <div className="flex items-center justify-between flex-wrap gap-2 text-xs">
-                        <span className="font-bold text-slate-600 dark:text-slate-400">
-                          📅 {item.date} (Ecuador UTC-5)
-                        </span>
-                        <div className="flex items-center gap-1.5">
-                          <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black border ${conf.cls}`}>
-                            <span>{conf.label}</span>
-                          </span>
-                          <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-black text-emerald-900 border border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700">
-                            {item.probability}%
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Teams & Real Match Score */}
-                      <div className="rounded-2xl bg-slate-50 p-3.5 border border-slate-100 dark:bg-slate-950/80 dark:border-slate-800/80 flex items-center justify-between">
-                        <div className="font-black text-slate-900 dark:text-white text-base">
-                          {item.homeTeam} <span className="text-slate-400 font-normal">vs</span> {item.awayTeam}
-                        </div>
-                        <div className="flex flex-col items-center justify-center rounded-xl bg-white px-3 py-1.5 border border-slate-200 shadow-sm dark:bg-slate-900 dark:border-slate-700 shrink-0">
-                          <span className="text-[10px] uppercase font-bold text-slate-400">Marcador Real</span>
-                          <span className="text-base font-black text-slate-900 dark:text-white">{item.score}</span>
-                        </div>
-                      </div>
-
-                      {/* Predicted Market Box with Side-by-Side Odds */}
-                      <div className="rounded-2xl border border-slate-200/80 bg-slate-50/60 p-3.5 dark:border-slate-800 dark:bg-slate-950/50 space-y-3">
-                        <div className="flex items-center justify-between flex-wrap gap-1">
-                          <div className="text-[10px] font-extrabold uppercase text-slate-500 dark:text-slate-400">
-                            Mercado Pronosticado
-                          </div>
-                          {item.edge !== undefined && item.edge > 0 && (
-                            <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
-                              Valor / Ventaja: <strong className="text-emerald-700 dark:text-emerald-300">+{item.edge}%</strong>
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="text-sm font-extrabold text-slate-900 dark:text-white">
-                          🎯 {item.market} ({item.selection})
-                        </div>
-
-                        {/* Side-by-Side Odds Comparison Cards */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
-                          {/* Casa de Apuestas */}
-                          <div className="rounded-xl bg-white p-2.5 border border-sky-200 shadow-sm dark:bg-slate-900 dark:border-sky-900/60">
-                            <div className="text-[10px] uppercase font-bold text-sky-600 dark:text-sky-400 flex items-center gap-1">
-                              <span>🏢</span> Cuota Casa de Apuestas
-                            </div>
-                            <div className="text-base font-black text-slate-900 dark:text-white mt-0.5">
-                              @{item.odds.toFixed(2)}
-                            </div>
-                            <div className="text-[10px] text-slate-400 leading-tight">
-                              Precio en casa de apuestas
-                            </div>
-                          </div>
-
-                          {/* Cuota Modelo SmartBetBot */}
-                          <div className="rounded-xl bg-white p-2.5 border border-indigo-200 shadow-sm dark:bg-slate-900 dark:border-indigo-900/60">
-                            <div className="text-[10px] uppercase font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
-                              <span>🤖</span> Cuota Modelo SmartBetBot
-                            </div>
-                            <div className="text-base font-black text-slate-900 dark:text-white mt-0.5">
-                              @{(item.fairOdds || Math.max(1.10, Math.round((100 / (item.probability || 60)) * 100) / 100)).toFixed(2)}
-                            </div>
-                            <div className="text-[10px] text-slate-400 leading-tight">
-                              Cuota justa SmartBetBot
-                            </div>
-                          </div>
-
-                          {/* Probabilidad Estimada */}
-                          <div className="rounded-xl bg-white p-2.5 border border-emerald-200 shadow-sm dark:bg-slate-900 dark:border-emerald-900/60">
-                            <div className="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                              <span>📈</span> Probabilidad Estimada
-                            </div>
-                            <div className="text-base font-black text-emerald-700 dark:text-emerald-400 mt-0.5">
-                              {item.probability}%
-                            </div>
-                            <div className="text-[10px] text-slate-400 leading-tight">
-                              Confianza {item.confidence || "Muy Alta"}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Tactical Analysis Box */}
-                      {item.explanation && (
-                        <div className="rounded-2xl bg-white p-3.5 border border-slate-200 shadow-sm dark:bg-slate-900/90 dark:border-slate-800 space-y-1.5">
-                          <div className="flex items-center gap-1.5 text-xs font-black text-emerald-700 dark:text-emerald-400">
-                            <span>🧠</span>
-                            <span>Análisis Cuantitativo del Encuentro:</span>
-                          </div>
-                          <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
-                            {item.explanation}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </>
-        )}
-
-        {/* TAB 2: PARLAYS DEL DÍA HISTÓRICOS */}
-        {!isPicksTab && (
-          <>
-            {loading ? (
-              <div className="py-20 text-center text-slate-500">
-                <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent" />
-                <p className="mt-3 text-sm font-semibold">Cargando historial de combinadas liquidadas...</p>
-              </div>
-            ) : filteredParlays.length === 0 ? (
-              <div className="rounded-3xl border border-slate-200 bg-white p-12 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900/40">
-                <span className="text-4xl">🚀</span>
-                <h3 className="mt-3 text-lg font-bold text-slate-900 dark:text-white">
-                  {parlayItems.length === 0 ? "Historial de Parleys Listo para Mañana" : "Sin parleys liquidados"}
-                </h3>
-                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                  {parlayItems.length === 0
-                    ? "Las combinadas oficiales auditadas comenzarán a registrarse a partir de mañana (3 de Septiembre)."
-                    : "No se encontraron parleys históricos que coincidan con la búsqueda."}
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {filteredParlays.map((parlay) => {
-                  const isWon = parlay.result === "WON";
-                  const isExpanded = Boolean(expandedParlays[parlay.id]);
-
-                  // 1. MINIMIZED / COMPACT PARLAY ROW
-                  if (!isExpanded) {
-                    return (
-                      <div
-                        key={parlay.id}
-                        className="group relative flex items-center justify-between gap-3 overflow-hidden rounded-2xl border border-slate-200/90 bg-white px-4 py-3.5 shadow-xs transition-all duration-200 hover:border-emerald-500/50 hover:shadow-md dark:border-slate-800/80 dark:bg-slate-900/90 cursor-pointer"
-                        onClick={() =>
-                          setExpandedParlays((prev) => ({ ...prev, [parlay.id]: true }))
-                        }
+                      <span
+                        className={`rounded-xl px-2.5 py-1 text-xs font-black ${
+                          isWon ? "bg-emerald-600 text-white" : "bg-rose-600 text-white"
+                        }`}
                       >
-                        <div className="flex items-center gap-3 min-w-0 flex-1">
-                          <span className="rounded-xl bg-emerald-100 px-2.5 py-1 text-xs font-black text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800 shrink-0">
-                            🔥 {parlay.title}
-                          </span>
-                          <div className="min-w-0">
-                            <div className="text-sm font-black text-slate-900 dark:text-white truncate">
-                              Combinada de {parlay.parlaySize} Jugadas • Cuota Total: @{parlay.totalOdds.toFixed(2)}
-                            </div>
-                            <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 truncate">
-                              📅 {parlay.date} • {parlay.legs.filter((l) => l.result === "WON").length}/{parlay.legs.length} Acertados
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2 shrink-0">
-                          {isWon ? (
-                            <span className="rounded-xl px-2.5 py-1 text-xs font-black bg-emerald-500 text-slate-950">
-                              ✓ GANADA (+{parlay.profit.toFixed(2)} U)
-                            </span>
-                          ) : (
-                            <span className="rounded-xl px-2.5 py-1 text-xs font-black bg-rose-600 text-white">
-                              ✗ PERDIDA (-1.00 U)
-                            </span>
-                          )}
-
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setExpandedParlays((prev) => ({ ...prev, [parlay.id]: true }));
-                            }}
-                            title="Ampliar tarjeta completa"
-                            className="flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
-                          >
-                            <span>▼</span>
-                            <span className="hidden sm:inline">Ampliar</span>
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  }
-
-                  // 2. EXPANDED FULL PARLAY TICKET VIEW
-                  return (
-                    <div
-                      key={parlay.id}
-                      className={`overflow-hidden rounded-3xl border transition shadow-sm ${
-                        isWon
-                          ? "border-emerald-300 bg-white dark:border-emerald-900/50 dark:bg-slate-900/90"
-                          : "border-slate-200 bg-white dark:border-slate-800/80 dark:bg-slate-900/90"
-                      }`}
-                    >
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="rounded-xl bg-emerald-100 px-3 py-1 text-xs font-black text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800">
-                              🔥 {parlay.title}
-                            </span>
-                            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                              📅 {parlay.date}
-                            </span>
-                          </div>
-                          <h3 className="mt-1.5 text-base font-black text-slate-900 dark:text-white">
-                            Combinada de {parlay.parlaySize} Jugadas • Cuota Acumulada: @{parlay.totalOdds.toFixed(2)}
-                          </h3>
-                        </div>
-
-                        <div className="flex items-center gap-3">
-                          <div className="text-right">
-                            <span className="text-[10px] font-bold uppercase text-slate-400 block">Cuota Total</span>
-                            <span className="text-lg sm:text-xl font-black text-sky-600 dark:text-sky-400">
-                              @{parlay.totalOdds.toFixed(2)}
-                            </span>
-                          </div>
-
-                          {isWon ? (
-                            <span className="rounded-2xl bg-emerald-500 px-3 py-1.5 text-xs font-black text-slate-950 shadow-md shadow-emerald-500/20">
-                              ✓ GANADA (+{parlay.profit.toFixed(2)} U)
-                            </span>
-                          ) : (
-                            <span className="rounded-2xl bg-slate-100 px-3 py-1.5 text-xs font-bold text-red-600 border border-red-200 dark:bg-slate-800 dark:text-red-400 dark:border-red-900/50">
-                              ✗ PERDIDA (-1.00 U)
-                            </span>
-                          )}
-
-                          {/* Toggle Minimize Button */}
-                          <button
-                            onClick={() =>
-                              setExpandedParlays((prev) => ({ ...prev, [parlay.id]: false }))
-                            }
-                            title="Minimizar a vista compacta"
-                            className="flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
-                          >
-                            <span>▲</span>
-                            <span className="hidden sm:inline">Minimizar</span>
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Expanded Legs Grid */}
-                      <div className="bg-slate-50/60 p-4 sm:p-5 dark:bg-slate-950/40">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                          {parlay.legs.map((leg, idx) => {
-                            const legWon = leg.result === "WON";
-                            return (
-                              <div
-                                key={idx}
-                                className={`rounded-2xl p-3.5 border text-xs ${
-                                  legWon
-                                    ? "bg-emerald-50/50 border-emerald-200 dark:bg-emerald-950/20 dark:border-emerald-900/40"
-                                    : "bg-red-50/50 border-red-200 dark:bg-red-950/20 dark:border-red-900/40"
-                                }`}
-                              >
-                                <div className="flex items-center justify-between gap-1 mb-1.5">
-                                  <span className="font-extrabold text-slate-600 dark:text-slate-400 text-[10px]">
-                                    #{idx + 1} • {leg.league} {leg.country ? `(${leg.country})` : ""}
-                                  </span>
-                                  {legWon ? (
-                                    <span className="text-emerald-700 dark:text-emerald-400 font-black text-[11px]">
-                                      ✓ Acierto
-                                    </span>
-                                  ) : (
-                                    <span className="text-red-600 dark:text-red-400 font-bold text-[11px]">
-                                      ✗ Fallo
-                                    </span>
-                                  )}
-                                </div>
-
-                                <div className="font-black text-slate-900 dark:text-white text-sm">
-                                  {leg.match}
-                                </div>
-
-                                <div className="mt-2 flex items-center justify-between border-t border-slate-200/60 pt-2 dark:border-slate-800">
-                                  <span className="font-bold text-emerald-800 dark:text-emerald-300">
-                                    🎯 {leg.market} (@{leg.odds.toFixed(2)})
-                                  </span>
-                                  <span className="rounded-lg bg-white px-2 py-0.5 font-black text-slate-900 border border-slate-200 dark:bg-slate-950 dark:text-white dark:border-slate-800">
-                                    {leg.score}
-                                  </span>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
+                        {isWon ? "✓ PARLAY GANADO" : "✗ PARLAY PERDIDO"}
+                      </span>
                     </div>
-                  );
-                })}
-              </div>
-            )}
-          </>
+
+                    <div className="my-3 space-y-2">
+                      {parlay.legs.map((leg, li) => (
+                        <div
+                          key={li}
+                          className="flex items-center justify-between rounded-xl bg-slate-50 p-2 text-xs dark:bg-slate-950/60"
+                        >
+                          <div>
+                            <div className="font-bold text-slate-900 dark:text-white">{leg.match}</div>
+                            <div className="text-[10px] text-slate-500">{leg.market} • {leg.league}</div>
+                          </div>
+                          <div className="text-right">
+                            <span className="font-black text-slate-900 dark:text-white">@{leg.odds}</span>
+                            <span className={`block text-[10px] font-bold ${leg.result === "WON" ? "text-emerald-600" : "text-rose-600"}`}>
+                              {leg.result === "WON" ? "✓" : "✗"} ({leg.score})
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-xs dark:border-slate-800">
+                      <span className="font-bold text-slate-500">Cuota Total: @{parlay.totalOdds}</span>
+                      <span className={`font-black ${isWon ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                        Beneficio: {parlay.profit >= 0 ? `+${parlay.profit.toFixed(2)}` : parlay.profit.toFixed(2)} u
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )
         )}
       </main>
     </div>

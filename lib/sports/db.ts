@@ -162,7 +162,12 @@ export interface HistoricalSettledPick {
   edge?: number;
   probability: number;
   confidence: "Muy Alta" | "Alta";
-  pickBadge?: "bomba" | "valor" | "estandar";
+  pickBadge?: "bomba" | "valor" | "estandar" | "mcp";
+  matchTiming?: "prematch" | "live";
+  isLive?: boolean;
+  isMcp?: boolean;
+  livePeriod?: string;
+  liveMinute?: string | number;
   result: "WON" | "LOST" | "VOID";
   profit: number;
   explanation: string;
@@ -997,10 +1002,13 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
         realScoresMap[scoreKeyWithDate] ||
         realScoresMap[scoreKeyGeneric];
 
+      const isLiveMatch = p.matchTiming === "live" || Boolean(p.currentScore) || Boolean(p.livePeriod);
+      const isMcpPick = p.pickBadge === "mcp" || Boolean(p.explanation?.includes("MCP")) || Boolean(p.explanation?.includes("Agente MCP"));
+
       // If snapshot already has a finalized status and score with statistics (e.g. "2 - 5 (13 Córners)")
       if (p.status === "won" || p.status === "lost") {
         const isWon = p.status === "won";
-        const scoreText = p.actualScore || (realScore ? `${realScore.home} - ${realScore.away}` : "0 - 0");
+        const scoreText = p.actualScore || (realScore ? `${realScore.home} - ${realScore.away}` : (p.currentScore || "0 - 0"));
         const matchKey = `${hNorm}-${aNorm}-${dateStr}-${p.market}`;
         if (!processedMatchKeys.has(matchKey)) {
           processedMatchKeys.add(matchKey);
@@ -1024,6 +1032,12 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
             edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
             probability: p.probability,
             confidence: p.confidence || (p.probability >= 75 ? "Muy Alta" : p.probability >= 68 ? "Alta" : "Media"),
+            pickBadge: p.pickBadge,
+            matchTiming: isLiveMatch ? "live" : "prematch",
+            isLive: isLiveMatch,
+            isMcp: isMcpPick,
+            livePeriod: p.livePeriod,
+            liveMinute: p.liveMinute ? String(p.liveMinute) : undefined,
             result: isWon ? "WON" : "LOST",
             profit: isWon ? Math.round((p.odds - 1) * 100) / 100 : -1,
             explanation: p.explanation,
@@ -1032,6 +1046,7 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
         continue;
       }
 
+      // If realScore exists from API-Football/Supabase
       if (realScore && typeof realScore.home === "number" && typeof realScore.away === "number") {
         const homeGoals = realScore.home;
         const awayGoals = realScore.away;
@@ -1070,10 +1085,71 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
             edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
             probability: p.probability,
             confidence: p.confidence || (p.probability >= 75 ? "Muy Alta" : p.probability >= 68 ? "Alta" : "Media"),
+            pickBadge: p.pickBadge,
+            matchTiming: isLiveMatch ? "live" : "prematch",
+            isLive: isLiveMatch,
+            isMcp: isMcpPick,
+            livePeriod: p.livePeriod,
+            liveMinute: p.liveMinute ? String(p.liveMinute) : undefined,
             result: isWon ? "WON" : "LOST",
             profit: isWon ? Math.round((p.odds - 1) * 100) / 100 : -1,
             explanation: p.explanation,
           });
+        }
+        continue;
+      }
+
+      // If in-play match has currentScore (e.g. "1 - 0", "2 - 1", "1 - 1", "0 - 1")
+      if (p.currentScore && p.currentScore.includes("-")) {
+        const parts = p.currentScore.split("-").map(s => parseInt(s.trim(), 10));
+        if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+          const homeGoals = parts[0];
+          const awayGoals = parts[1];
+          const evaluation = evaluateMarketResult(p.market, homeGoals, awayGoals, {
+            league: p.league,
+            country: p.country,
+            homeTeam: p.homeTeam,
+            awayTeam: p.awayTeam,
+            probability: p.probability,
+          });
+
+          const isWon = evaluation.isWon;
+          const scoreText = p.actualScore || `${p.currentScore} (${p.liveMinute || p.livePeriod || "En Juego"})`;
+
+          const matchKey = `${hNorm}-${aNorm}-${dateStr}-${p.market}`;
+          if (!processedMatchKeys.has(matchKey)) {
+            processedMatchKeys.add(matchKey);
+            settledPicks.push({
+              id: p.id || `snapshot-settled-${scoreKeyWithDate}-${p.market}`,
+              date: dateStr,
+              kickoff: p.kickoff,
+              match: p.match,
+              homeTeam: p.homeTeam,
+              awayTeam: p.awayTeam,
+              homeLogo: p.homeLogo,
+              awayLogo: p.awayLogo,
+              score: scoreText,
+              league: p.league,
+              leagueLogo: p.leagueLogo,
+              country: p.country,
+              market: p.market,
+              selection: p.selection || p.market,
+              odds: p.odds,
+              fairOdds: p.fairOdds || Math.max(1.10, Math.round((100 / (p.probability || 60)) * 100) / 100),
+              edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
+              probability: p.probability,
+              confidence: p.confidence || (p.probability >= 75 ? "Muy Alta" : p.probability >= 68 ? "Alta" : "Media"),
+              pickBadge: p.pickBadge,
+              matchTiming: "live",
+              isLive: true,
+              isMcp: isMcpPick,
+              livePeriod: p.livePeriod,
+              liveMinute: p.liveMinute ? String(p.liveMinute) : undefined,
+              result: isWon ? "WON" : "LOST",
+              profit: isWon ? Math.round((p.odds - 1) * 100) / 100 : -1,
+              explanation: p.explanation,
+            });
+          }
         }
       }
     }
