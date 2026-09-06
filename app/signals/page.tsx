@@ -183,6 +183,12 @@ export default function SignalsPage() {
       if (s.status !== "won") return false;
     } else if (matchStatusFilter === "LOST") {
       if (s.status !== "lost") return false;
+    } else if (matchStatusFilter === "IN_PLAY") {
+      const isLiveMatch = s.matchTiming === "live" || Boolean(s.currentScore) || getMatchLiveStatus(s.kickoff) === "IN_PLAY";
+      if (!isLiveMatch) return false;
+    } else if (matchStatusFilter === "SCHEDULED") {
+      const isPreMatch = s.matchTiming === "prematch" || (!s.currentScore && getMatchLiveStatus(s.kickoff) === "SCHEDULED");
+      if (!isPreMatch) return false;
     } else if (matchStatusFilter !== "ALL") {
       const status = getMatchLiveStatus(s.kickoff);
       if (status !== matchStatusFilter) return false;

@@ -123,6 +123,15 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
 
             {/* Right: Badges, Status & Expand Button */}
             <div className="flex items-center gap-1.5 shrink-0">
+              {(prediction.matchTiming === "live" || prediction.currentScore || ["1H", "HT", "2H"].includes(prediction.status)) ? (
+                <span className="rounded-lg px-1.5 py-0.5 text-[9px] font-black bg-rose-600 text-white animate-pulse shadow-sm flex items-center gap-0.5">
+                  ⚡ VIVO {prediction.currentScore ? `(${prediction.currentScore})` : ""}
+                </span>
+              ) : (
+                <span className="rounded-lg px-1.5 py-0.5 text-[9px] font-bold bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                  🕒 PRE
+                </span>
+              )}
               {(prediction.pickBadge === "mcp" || prediction.isMcpPick || prediction.source === "mcp") && (
                 <span className="rounded-lg px-1.5 py-0.5 text-[9px] font-black bg-purple-600 text-white shadow-sm border border-purple-400 flex items-center gap-0.5">
                   🤖 MCP
@@ -378,9 +387,20 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
 
           {/* Kickoff Date/Time & Badges (Bomba / Valor / Confidence) */}
           <div className="mt-3 flex items-center justify-between flex-wrap gap-2">
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
-              ⏰ {formattedTime}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                ⏰ {formattedTime}
+              </span>
+              {(prediction.matchTiming === "live" || prediction.currentScore || ["1H", "HT", "2H"].includes(prediction.status)) ? (
+                <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-rose-600 text-white animate-pulse shadow-md shadow-rose-600/30">
+                  ⚡ ALERTA EN VIVO {prediction.currentScore ? `• Marcador: ${prediction.currentScore}` : ""}
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                  🕒 PRE-MATCH
+                </span>
+              )}
+            </div>
 
             <div className="flex items-center gap-1.5 flex-wrap">
               {(prediction.pickBadge === "mcp" || prediction.isMcpPick || prediction.source === "mcp") && (

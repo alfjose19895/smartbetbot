@@ -183,6 +183,12 @@ export default function DashboardPage() {
       if (p.status !== "won") return false;
     } else if (matchStatusFilter === "LOST") {
       if (p.status !== "lost") return false;
+    } else if (matchStatusFilter === "IN_PLAY") {
+      const isLiveMatch = p.matchTiming === "live" || Boolean(p.currentScore) || getMatchLiveStatus(p.kickoff) === "IN_PLAY";
+      if (!isLiveMatch) return false;
+    } else if (matchStatusFilter === "SCHEDULED") {
+      const isPreMatch = p.matchTiming === "prematch" || (!p.currentScore && getMatchLiveStatus(p.kickoff) === "SCHEDULED");
+      if (!isPreMatch) return false;
     } else if (matchStatusFilter !== "ALL") {
       const status = getMatchLiveStatus(p.kickoff);
       if (status !== matchStatusFilter) return false;
@@ -367,24 +373,25 @@ export default function DashboardPage() {
             ✗ Perdidas ({lostCount})
           </button>
           <button
+            onClick={() => setMatchStatusFilter("IN_PLAY")}
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
+              matchStatusFilter === "IN_PLAY"
+                ? "bg-gradient-to-r from-rose-600 to-red-600 text-white shadow-md shadow-rose-600/30 border border-rose-500 animate-pulse"
+                : "bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800"
+            }`}
+          >
+            <span className="h-2 w-2 rounded-full bg-rose-400 animate-ping" />
+            <span>⚡ Alertas en Vivo ({inPlayCount})</span>
+          </button>
+          <button
             onClick={() => setMatchStatusFilter("SCHEDULED")}
             className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
               matchStatusFilter === "SCHEDULED"
-                ? "bg-emerald-600 text-white shadow-sm"
+                ? "bg-slate-900 text-white shadow-sm dark:bg-slate-700"
                 : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
             }`}
           >
-            ⏳ Por Comenzar ({scheduledCount})
-          </button>
-          <button
-            onClick={() => setMatchStatusFilter("IN_PLAY")}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
-              matchStatusFilter === "IN_PLAY"
-                ? "bg-amber-600 text-white shadow-sm"
-                : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
-            }`}
-          >
-            🔴 En Juego ({inPlayCount})
+            📋 Pre-Match ({scheduledCount})
           </button>
           <button
             onClick={() => setMatchStatusFilter("FINISHED")}

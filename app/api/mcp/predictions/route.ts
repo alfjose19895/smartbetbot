@@ -104,7 +104,7 @@ export async function POST(req: Request) {
         addedCount: result.addedCount,
         totalAlerts: result.totalAlerts,
         message: result.addedCount > 0
-          ? `✓ Se agregaron ${result.addedCount} alertas de Primera División al Dashboard y Alertas del Día con la etiqueta 🤖 Agente MCP. Total activo: ${result.totalAlerts} alertas.`
+          ? `✓ Se agregaron ${result.addedCount} alertas al Dashboard y Alertas del Día con la etiqueta 🤖 Agente MCP. Total activo: ${result.totalAlerts} alertas.`
           : `✓ Las alertas seleccionadas ya se encuentran publicadas en el Dashboard. Total: ${result.totalAlerts} alertas.`,
         predictions: result.predictions,
       });
@@ -281,10 +281,12 @@ export async function POST(req: Request) {
           for (const f of liveMatchingFixtures.slice(0, 10)) {
             const oddsRaw = await apiFootball.getOddsByFixture(f.fixture.id);
             const marketOdds = extractMarketOddsFromBookmaker(oddsRaw);
-            const currentScore =
-              f.goals?.home !== null && f.goals?.away !== null && f.goals?.home !== undefined && f.goals?.away !== undefined
-                ? `${f.goals.home} - ${f.goals.away}`
-                : undefined;
+            const statusShort = f.fixture.status.short || "NS";
+            const isFixtureLive = ["1H", "HT", "2H", "ET", "P"].includes(statusShort);
+            const elapsed = f.fixture.status.elapsed || (statusShort === "HT" ? 45 : statusShort === "2H" ? 65 : 30);
+            const homeGoals = typeof f.goals?.home === "number" ? f.goals.home : 0;
+            const awayGoals = typeof f.goals?.away === "number" ? f.goals.away : 0;
+            const currentScore = isFixtureLive ? `${homeGoals} - ${awayGoals}` : undefined;
 
             const opps = evaluateFixturePrediction({
               fixtureId: f.fixture.id,
@@ -300,12 +302,19 @@ export async function POST(req: Request) {
               leagueLogo: f.league.logo,
               kickoff: f.fixture.date,
               marketOdds,
+              liveContext: isFixtureLive ? {
+                isLive: true,
+                statusShort,
+                elapsed,
+                homeGoals,
+                awayGoals,
+              } : undefined,
             });
 
             if (opps && opps.length > 0) {
               for (const opp of opps) {
                 if (currentScore) {
-                  opp.actualScore = currentScore;
+                  opp.currentScore = currentScore;
                 }
                 dynamicallyEvaluated.push(opp);
               }
@@ -328,7 +337,7 @@ export async function POST(req: Request) {
     } else if (qLower.includes("ambos marcan") || qLower.includes("ambos anotan") || qLower.includes("btts") || qLower.includes("ambos")) {
       requestedMarket = "ambos";
     } else if (qLower.includes("over 2.5") || qLower.includes("más de 2.5") || qLower.includes("mas de 2.5") || qLower.includes("over") || qLower.includes("goles")) {
-      requestedMarket = "over 2.5";
+      requestedMarket = "over";
     } else if (qLower.includes("gana visitante") || qLower.includes("victoria visitante") || qLower.includes("ganador visitante")) {
       requestedMarket = "visitante";
     } else if (qLower.includes("gana local") || qLower.includes("victoria local") || qLower.includes("triunfo local") || qLower.includes("ganador local")) {
@@ -336,7 +345,13 @@ export async function POST(req: Request) {
     }
 
     if (requestedMarket) {
-      const matchMarket = filtered.filter((p) => p.market.toLowerCase().includes(requestedMarket));
+      const matchMarket = filtered.filter((p) => {
+        const pMarket = p.market.toLowerCase();
+        if (requestedMarket === "over") {
+          return pMarket.includes("over") || pMarket.includes("goles");
+        }
+        return pMarket.includes(requestedMarket);
+      });
       if (matchMarket.length > 0) {
         filtered = matchMarket;
       }
@@ -463,7 +478,7 @@ export async function POST(req: Request) {
         : matchedByTeam
         ? `Análisis Táctico Específico: ${topPick?.homeTeam} vs ${topPick?.awayTeam}`
         : isLiveRequest
-        ? `Análisis en Vivo (Partidos en Juego)`
+        ? `Análisis Dinámico en Vivo (Partidos en Juego)`
         : isMlsRequest
         ? "Búsqueda Oficial: Major League Soccer (MLS - 1ª División)"
         : targetCountryTerms.length > 0
@@ -474,11 +489,11 @@ export async function POST(req: Request) {
         : isParlayRequest
         ? `Se generó una combinada de ${parlayData?.selectionsCount} selecciones de alta compatibilidad estadística, con una cuota acumulada de @${parlayData?.totalOdds} y probabilidad conjunta calculada de ${parlayData?.combinedProbability}.`
         : isLiveRequest
-        ? `Se analizaron los partidos en directo en curso. El algoritmo evaluó las probabilidades dinámicas y seleccionó ${filtered.length} oportunidades en vivo con probabilidad promedio del ${avgProb}%.`
+        ? `Se procesaron los datos dinámicos en directo para partidos en juego. El algoritmo evaluó el avance del partido y seleccionó ${filtered.length} oportunidades en vivo con probabilidad promedio del ${avgProb}% y cuota promedio de @${avgOdds}. Las alertas se han publicado en la sección ⚡ Alertas en Vivo con la etiqueta 🤖 Agente MCP.`
         : `Se procesaron los datos en vivo para tu solicitud "${query || "pronósticos generales"}". El algoritmo seleccionó ${filtered.length} partidos de ${leagueDisplayName} con un promedio de probabilidad del ${avgProb}% y cuota promedio de @${avgOdds}. Las alertas se han publicado automáticamente en el Dashboard y Alertas del Día con la etiqueta 🤖 Agente MCP.`,
       insights: [
         topPick ? `Poco margen de error: ${topPick.homeTeam} vs ${topPick.awayTeam} lidera en ${topPick.league} con SmartScore de ${topPick.smartScore}/100 y cuota @${topPick.odds}.` : "Filtros aplicados con rigor estadístico.",
-        isLiveRequest ? `Monitoreo en vivo: Marcadores y tiempos actualizados en tiempo real.` : `Filtro Estricto de 1ª División: Se excluyen filiales, reservas y ligas de desarrollo. Solo equipos oficiales de Primera División.`,
+        isLiveRequest ? `Evaluación dinámica de líneas: Si un umbral de goles ya fue superado por el marcador actual, el modelo calcula automáticamente el siguiente escalón rentable.` : `Filtro Estricto de 1ª División: Se excluyen filiales, reservas y ligas de desarrollo. Solo equipos oficiales de Primera División.`,
         `Calibración de cuotas: 100% integradas directamente con líneas de casas de apuestas (Bet365 / Pinnacle) sin distorsión de modelos sintéticos.`,
         effectiveMinOdds > 0 ? `Restricción de cuota mínima: Se aseguraron selecciones con cuota >= @${effectiveMinOdds}.` : `Distribución diversificada en mercados de alto valor (${filtered.map(p => p.market).slice(0, 2).join(", ")}).`,
       ],

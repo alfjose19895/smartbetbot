@@ -55,6 +55,10 @@ export interface MarketOpportunity {
   pickBadge?: "bomba" | "valor" | "estandar" | "mcp";
   isMcpPick?: boolean;
   source?: "algorithm" | "mcp" | "manual";
+  matchTiming?: "prematch" | "live";
+  livePeriod?: "1H" | "HT" | "2H" | "ET";
+  liveMinute?: number;
+  currentScore?: string;
   smartScore: number;
   explanation: string;
   status: "pending" | "won" | "lost" | "void";
@@ -843,6 +847,14 @@ export function generateH2HClashes(home: string, away: string, league: string, h
   ];
 }
 
+export interface LiveMatchContext {
+  isLive?: boolean;
+  statusShort?: string; // "1H" | "HT" | "2H" | "ET"
+  elapsed?: number;
+  homeGoals?: number;
+  awayGoals?: number;
+}
+
 export function evaluateFixturePrediction(params: {
   fixtureId: number | string;
   homeTeam: string;
@@ -870,6 +882,7 @@ export function evaluateFixturePrediction(params: {
     bttsYes?: number;
     bttsNo?: number;
   };
+  liveContext?: LiveMatchContext;
 }): MarketOpportunity[] {
   const {
     fixtureId,
@@ -885,6 +898,7 @@ export function evaluateFixturePrediction(params: {
     leagueLogo,
     kickoff,
     marketOdds = {},
+    liveContext,
   } = params;
 
   const { canonicalLeague, country, tier } = normalizeLeagueInfo(league, rawCountry, leagueId);
@@ -1020,27 +1034,129 @@ export function evaluateFixturePrediction(params: {
     normLeg.includes(dl)
   );
 
-    // Calibrated Precision Filter Matrix (ONLY 4 Standard Core Winning Markets)
-  const candidates: {
+  const isLive = Boolean(
+    liveContext?.isLive ||
+    (liveContext?.statusShort && ["1H", "HT", "2H", "ET"].includes(liveContext.statusShort))
+  );
+  const currentH = typeof liveContext?.homeGoals === "number" ? liveContext.homeGoals : 0;
+  const currentA = typeof liveContext?.awayGoals === "number" ? liveContext.awayGoals : 0;
+  const totalCurrentGoals = currentH + currentA;
+  const elapsed = liveContext?.elapsed || (liveContext?.statusShort === "HT" ? 45 : liveContext?.statusShort === "2H" ? 65 : 30);
+  const remainingMins = Math.max(10, 90 - elapsed);
+  const remainingRatio = remainingMins / 90.0;
+
+  let candidates: {
     market: string;
     selection: string;
     prob: number;
     odds: number;
     minOddsThreshold: number;
     minProbThreshold: number;
-  }[] = [
-    // 1. Ganador Local
-    { market: "Ganador Local", selection: "1", prob: pHome, odds: resolvedHomeOdds, minOddsThreshold: 1.35, minProbThreshold: 0.55 },
+  }[] = [];
 
-    // 2. Ganador Visitante
-    { market: "Ganador Visitante", selection: "2", prob: pAway, odds: resolvedAwayOdds, minOddsThreshold: 1.35, minProbThreshold: 0.55 },
+  if (isLive) {
+    // === DYNAMIC LIVE IN-PLAY MARKET EVALUATION ===
+    const remLambda = Math.max(0.35, (hXg + aXg) * remainingRatio);
+    const prob1MoreGoal = 1 - Math.exp(-remLambda);
+    const prob2MoreGoals = Math.max(0.20, 1 - Math.exp(-remLambda) - remLambda * Math.exp(-remLambda));
 
-    // 3. Over 2.5 Goles (Filtered out from defensive low-scoring leagues)
-    ...(isDefensiveLeague ? [] : [{ market: "Over 2.5 Goles", selection: "Over 2.5", prob: pOver25, odds: resolvedOver25Odds, minOddsThreshold: 1.40, minProbThreshold: 0.55 }]),
+    const nextLine = totalCurrentGoals + 0.5; // Next goal threshold (e.g., if 2-1 (3 goals), line is 3.5)
+    const upperLine = totalCurrentGoals + 1.5; // Upper goal threshold (e.g. 4.5)
 
-    // 4. Ambos Equipos Anotan (BTTS)
-    { market: "Ambos Equipos Anotan", selection: "Sí", prob: pBttsYes, odds: resolvedBttsOdds, minOddsThreshold: 1.45, minProbThreshold: 0.54 },
-  ];
+    // 1. Next Goal Line
+    const nextLineOdds = calculateBookmakerOdds(prob1MoreGoal, 0.95);
+    candidates.push({
+      market: "Over " + nextLine + " Goles",
+      selection: "Over " + nextLine,
+      prob: Math.min(0.85, Math.max(0.50, prob1MoreGoal)),
+      odds: Math.max(1.35, Math.min(3.50, nextLineOdds)),
+      minOddsThreshold: 1.35,
+      minProbThreshold: 0.50,
+    });
+
+    // 2. Upper Line if high conviction
+    if (prob2MoreGoals >= 0.40) {
+      const upperLineOdds = calculateBookmakerOdds(prob2MoreGoals, 0.95);
+      candidates.push({
+        market: "Over " + upperLine + " Goles",
+        selection: "Over " + upperLine,
+        prob: prob2MoreGoals,
+        odds: Math.max(1.65, Math.min(4.50, upperLineOdds)),
+        minOddsThreshold: 1.65,
+        minProbThreshold: 0.42,
+      });
+    }
+
+    // 3. Live 1X2 with current score advantage
+    if (currentH > currentA) {
+      const probHoldWin = Math.min(0.88, pHome + (currentH - currentA) * 0.15);
+      const liveHomeOdds = calculateBookmakerOdds(probHoldWin, 0.95);
+      candidates.push({
+        market: "Ganador Local",
+        selection: "1",
+        prob: probHoldWin,
+        odds: Math.max(1.25, Math.min(2.50, liveHomeOdds)),
+        minOddsThreshold: 1.25,
+        minProbThreshold: 0.52,
+      });
+    } else if (currentA > currentH) {
+      const probHoldAway = Math.min(0.88, pAway + (currentA - currentH) * 0.15);
+      const liveAwayOdds = calculateBookmakerOdds(probHoldAway, 0.95);
+      candidates.push({
+        market: "Ganador Visitante",
+        selection: "2",
+        prob: probHoldAway,
+        odds: Math.max(1.25, Math.min(2.50, liveAwayOdds)),
+        minOddsThreshold: 1.25,
+        minProbThreshold: 0.52,
+      });
+    } else {
+      if (pHome >= pAway) {
+        candidates.push({
+          market: "Ganador Local",
+          selection: "1",
+          prob: Math.max(0.52, pHome),
+          odds: Math.max(1.40, resolvedHomeOdds),
+          minOddsThreshold: 1.35,
+          minProbThreshold: 0.50,
+        });
+      } else {
+        candidates.push({
+          market: "Ganador Visitante",
+          selection: "2",
+          prob: Math.max(0.52, pAway),
+          odds: Math.max(1.40, resolvedAwayOdds),
+          minOddsThreshold: 1.35,
+          minProbThreshold: 0.50,
+        });
+      }
+    }
+
+    // 4. Ambos Equipos Anotan (if only one team has scored so far)
+    if ((currentH > 0 && currentA === 0) || (currentA > 0 && currentH === 0)) {
+      const neededTeamXg = currentH > 0 ? aXg * remainingRatio : hXg * remainingRatio;
+      const probNeededGoal = 1 - Math.exp(-neededTeamXg);
+      if (probNeededGoal >= 0.45) {
+        const liveBttsOdds = calculateBookmakerOdds(probNeededGoal, 0.95);
+        candidates.push({
+          market: "Ambos Equipos Anotan",
+          selection: "Sí",
+          prob: probNeededGoal,
+          odds: Math.max(1.45, Math.min(3.20, liveBttsOdds)),
+          minOddsThreshold: 1.40,
+          minProbThreshold: 0.45,
+        });
+      }
+    }
+  } else {
+    // === PRE-MATCH MARKET EVALUATION ===
+    candidates = [
+      { market: "Ganador Local", selection: "1", prob: pHome, odds: resolvedHomeOdds, minOddsThreshold: 1.35, minProbThreshold: 0.55 },
+      { market: "Ganador Visitante", selection: "2", prob: pAway, odds: resolvedAwayOdds, minOddsThreshold: 1.35, minProbThreshold: 0.55 },
+      ...(isDefensiveLeague ? [] : [{ market: "Over 2.5 Goles", selection: "Over 2.5", prob: pOver25, odds: resolvedOver25Odds, minOddsThreshold: 1.40, minProbThreshold: 0.55 }]),
+      { market: "Ambos Equipos Anotan", selection: "Sí", prob: pBttsYes, odds: resolvedBttsOdds, minOddsThreshold: 1.45, minProbThreshold: 0.54 },
+    ];
+  }
 
   const opportunities: MarketOpportunity[] = [];
 
