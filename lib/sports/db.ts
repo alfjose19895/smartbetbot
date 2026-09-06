@@ -495,7 +495,11 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
       const candidates = todayFixtures.filter((item) => {
         if (!item.fixture?.id || !item.teams?.home?.name || !item.teams?.away?.name) return false;
         const legName = (item.league?.name || "").toLowerCase();
-        if (legName.includes("primavera") || legName.includes("u19") || legName.includes("u20")) return false;
+        const hName = (item.teams?.home?.name || "").toLowerCase();
+        const aName = (item.teams?.away?.name || "").toLowerCase();
+        if (legName.includes("primavera") || legName.includes("u19") || legName.includes("u20") || legName.includes("u21") || legName.includes("next pro") || legName.includes("reserve")) return false;
+        if (hName.endsWith(" ii") || hName.endsWith(" 2") || hName.endsWith(" b") || aName.endsWith(" ii") || aName.endsWith(" 2") || aName.endsWith(" b")) return false;
+        if (hName.includes("the town") || aName.includes("the town") || hName.includes("tacoma defiance") || aName.includes("tacoma defiance")) return false;
         return isCuratedLeague(item.league?.id, item.league?.name, item.league?.country);
       });
 

@@ -13,6 +13,26 @@ import {
   extractMarketOddsFromBookmaker,
 } from "@/lib/sports/api-football";
 
+const OFFICIAL_MLS_TEAMS = [
+  "atlanta united", "austin", "cf montreal", "montreal", "charlotte", "chicago fire",
+  "colorado rapids", "columbus crew", "dc united", "cincinnati", "fc cincinnati",
+  "fc dallas", "dallas", "houston dynamo", "inter miami", "los angeles fc", "lafc",
+  "los angeles galaxy", "la galaxy", "minnesota united", "nashville", "new england revolution",
+  "new york city", "nycfc", "new york red bulls", "red bulls", "orlando city",
+  "philadelphia union", "portland timbers", "real salt lake", "san diego", "san jose earthquakes",
+  "seattle sounders", "sporting kansas city", "sporting kc", "st. louis city", "toronto fc",
+  "vancouver whitecaps", "vancouver"
+];
+
+const FORBIDDEN_RESERVE_TEAMS = [
+  "the town", "tacoma defiance", "ventura county", "ventura", "carolina core", "chattanooga",
+  "crown legacy", "huntsville", "north texas", "whitecaps 2", "timbers 2", "monarchs",
+  "union ii", "red bulls ii", "chicago fire ii", "colorado rapids ii", "columbus crew 2",
+  "fc cincinnati 2", "houston dynamo 2", "inter miami ii", "los angeles fc ii", "minnesota united ii",
+  "new england revolution ii", "new york city fc ii", "orlando city b", "philadelphia union ii",
+  "sporting kc ii", "st. louis city 2", "toronto fc ii"
+];
+
 const COUNTRY_SYNONYMS: Record<string, string[]> = {
   españa: ["españa", "spain", "la liga", "primera división", "villarreal", "leganes", "barcelona", "madrid", "sevilla", "betis", "oviedo", "tenerife"],
   inglaterra: ["inglaterra", "england", "premier league", "southampton", "portsmouth", "fleetwood", "wigan", "southend", "shrewsbury"],
@@ -31,32 +51,11 @@ const COUNTRY_SYNONYMS: Record<string, string[]> = {
   holanda: ["holanda", "países bajos", "paises bajos", "netherlands", "eredivisie", "ajax", "psv", "feyenoord"],
   belgica: ["bélgica", "belgica", "belgium", "jupiler pro league", "standard liege", "antwerp", "brujas", "anderlecht"],
   estados_unidos: [
-    "estados unidos",
-    "usa",
-    "mls",
-    "major league soccer",
-    "inter miami",
-    "philadelphia",
-    "montreal",
-    "vancouver",
-    "cincinnati",
-    "dc united",
-    "real salt lake",
-    "los angeles fc",
-    "la galaxy",
-    "portland",
-    "seattle sounders",
-    "columbus crew",
-    "austin",
-    "san jose earthquakes",
-    "fc dallas",
-    "sporting kansas city",
-    "orlando city",
-    "colorado rapids",
-    "toronto fc",
-    "chicago fire",
-    "charlotte",
-    "houston dynamo",
+    "estados unidos", "usa", "mls", "major league soccer", "inter miami", "philadelphia",
+    "montreal", "vancouver", "cincinnati", "dc united", "real salt lake", "los angeles fc",
+    "la galaxy", "portland", "seattle sounders", "columbus crew", "austin", "san jose earthquakes",
+    "fc dallas", "sporting kansas city", "orlando city", "colorado rapids", "toronto fc",
+    "chicago fire", "charlotte", "houston dynamo"
   ],
   ucrania: ["ucrania", "ukraine", "premier league ucrania", "kharkiv", "shakhtar", "dynamo kyiv"],
   croacia: ["croacia", "croatia", "hnl", "rijeka", "osijek", "dinamo zagreb", "hajduk"],
@@ -84,19 +83,29 @@ export async function POST(req: Request) {
     if (action === "publish" || action === "addPicks") {
       const picksToPublish = Array.isArray(picks) ? picks : pick ? [pick] : [];
       // Tag all published picks as MCP
-      const taggedPicks = picksToPublish.map((p) => ({
-        ...p,
-        pickBadge: (p.pickBadge || "mcp") as "bomba" | "valor" | "estandar" | "mcp",
-        isMcpPick: true,
-        source: "mcp" as const,
-      }));
+      const taggedPicks = picksToPublish
+        .filter((p) => {
+          const h = (p.homeTeam || "").toLowerCase();
+          const a = (p.awayTeam || "").toLowerCase();
+          const l = (p.league || "").toLowerCase();
+          if (FORBIDDEN_RESERVE_TEAMS.some((t) => h.includes(t) || a.includes(t))) return false;
+          if (l.includes("next pro") || l.includes("reserve") || h.endsWith(" ii") || a.endsWith(" ii")) return false;
+          return true;
+        })
+        .map((p) => ({
+          ...p,
+          pickBadge: (p.pickBadge || "mcp") as "bomba" | "valor" | "estandar" | "mcp",
+          isMcpPick: true,
+          source: "mcp" as const,
+        }));
+
       const result = addPredictionsToDailySnapshot(taggedPicks);
       return NextResponse.json({
         success: true,
         addedCount: result.addedCount,
         totalAlerts: result.totalAlerts,
         message: result.addedCount > 0
-          ? `✓ Se agregaron ${result.addedCount} alertas al Dashboard y Alertas del Día con la etiqueta 🤖 Agente MCP. Total activo: ${result.totalAlerts} alertas.`
+          ? `✓ Se agregaron ${result.addedCount} alertas de Primera División al Dashboard y Alertas del Día con la etiqueta 🤖 Agente MCP. Total activo: ${result.totalAlerts} alertas.`
           : `✓ Las alertas seleccionadas ya se encuentran publicadas en el Dashboard. Total: ${result.totalAlerts} alertas.`,
         predictions: result.predictions,
       });
@@ -113,6 +122,7 @@ export async function POST(req: Request) {
       const a = (p.awayTeam || "").toLowerCase();
 
       // Exclude reserve development leagues & reserve teams
+      if (FORBIDDEN_RESERVE_TEAMS.some((t) => h.includes(t) || a.includes(t))) return false;
       if (leg.includes("next pro") || leg.includes("primavera") || leg.includes("reserve")) return false;
       if (h.endsWith(" ii") || h.endsWith(" 2") || a.endsWith(" ii") || a.endsWith(" 2")) return false;
 
@@ -204,8 +214,9 @@ export async function POST(req: Request) {
           const h = (f.teams.home.name || "").toLowerCase();
           const a = (f.teams.away.name || "").toLowerCase();
 
-          // STRICTLY EXCLUDE MLS 2 / MLS NEXT PRO / RESERVAS / SEGUNDA DIVISION
+          // STRICTLY REJECT RESERVES & DEVELOPMENT LEAGUES
           if (
+            FORBIDDEN_RESERVE_TEAMS.some((t) => h.includes(t) || a.includes(t)) ||
             l.includes("next pro") ||
             l.includes("reserve") ||
             l.includes("primavera") ||
@@ -226,11 +237,9 @@ export async function POST(req: Request) {
 
           if (isMlsRequest) {
             // STRICTLY Primera División de USA: Major League Soccer (League 253)
-            return (
-              f.league.id === 253 ||
-              l === "major league soccer" ||
-              l === "major league soccer (mls)"
-            );
+            const isHomeMls = OFFICIAL_MLS_TEAMS.some((t) => h.includes(t));
+            const isAwayMls = OFFICIAL_MLS_TEAMS.some((t) => a.includes(t));
+            return (f.league.id === 253 || l.includes("major league soccer")) && isHomeMls && isAwayMls;
           }
 
           return targetCountryTerms.some((term) =>

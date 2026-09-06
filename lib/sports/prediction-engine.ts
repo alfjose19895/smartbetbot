@@ -400,8 +400,21 @@ export function normalizeLeagueInfo(
   if (norm.includes("liga mx") || normCountry.includes("mexico")) {
     return { canonicalLeague: "Liga MX", country: "México", tier: 2 };
   }
-  if (norm.includes("mls") || norm.includes("major league soccer") || normCountry.includes("usa") || normCountry.includes("estados unidos")) {
-    return { canonicalLeague: "Major League Soccer (MLS)", country: "Estados Unidos", tier: 2 };
+  // USA Competitions differentiation
+  if (norm.includes("next pro")) {
+    return { canonicalLeague: "MLS Next Pro", country: "Estados Unidos", tier: 4 };
+  }
+  if (norm.includes("usl championship")) {
+    return { canonicalLeague: "USL Championship", country: "Estados Unidos", tier: 3 };
+  }
+  if (norm.includes("usl league one")) {
+    return { canonicalLeague: "USL League One", country: "Estados Unidos", tier: 4 };
+  }
+  if (norm.includes("nwsl")) {
+    return { canonicalLeague: "NWSL Femenina", country: "Estados Unidos", tier: 2 };
+  }
+  if (leagueId === 253 || norm === "major league soccer" || norm === "major league soccer (mls)" || (norm.includes("major league") && !norm.includes("next pro"))) {
+    return { canonicalLeague: "Major League Soccer (MLS)", country: "Estados Unidos", tier: 1 };
   }
   if (norm.includes("libertadores")) {
     return { canonicalLeague: "Copa Libertadores", country: "Sudamérica", tier: 2 };

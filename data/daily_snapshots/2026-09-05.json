@@ -29,35 +29,6 @@
     "modelOdds": 1.38
   },
   {
-    "id": "pred-20260905-tondela-fcportob",
-    "fixtureId": 1576483,
-    "match": "Tondela vs FC Porto B",
-    "homeTeam": "Tondela",
-    "awayTeam": "FC Porto B",
-    "homeLogo": "https://media.api-sports.io/football/teams/218.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/243.png",
-    "league": "Liga Portugal 2",
-    "country": "Portugal",
-    "leagueLogo": "https://media.api-sports.io/football/leagues/95.png",
-    "kickoff": "2026-09-05T05:00:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.83,
-    "bookmakerOdds": 1.83,
-    "fairOdds": 1.64,
-    "probability": 60.9,
-    "impliedProbability": 54.6,
-    "edge": 6.3,
-    "expectedValue": 11.4,
-    "confidence": "Alta",
-    "pickBadge": "estandar",
-    "smartScore": 66,
-    "explanation": "Análisis cuantitativo de alta precisión para Tondela vs FC Porto B en Liga Portugal 2.",
-    "status": "won",
-    "actualScore": "3 - 0 (3 Goles)",
-    "modelOdds": 1.64
-  },
-  {
     "id": "pred-20260905-holsteinkiel-1fcnrnberg",
     "fixtureId": 1576165,
     "match": "Holstein Kiel vs 1. FC Nürnberg",
@@ -2739,7 +2710,7 @@
     "pickBadge": "mcp",
     "smartScore": 72,
     "explanation": "Selección identificada por el Agente MCP: Tendencia de ataque en MLS con cuota @2.2 y 44.9% de probabilidad.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-07",
@@ -2854,7 +2825,8 @@
     "awayElo": 1570,
     "leagueTier": 1,
     "isMcpPick": true,
-    "source": "mcp"
+    "source": "mcp",
+    "actualScore": "1 - 0"
   },
   {
     "fixtureId": 1490441,
@@ -2884,7 +2856,7 @@
     "pickBadge": "mcp",
     "smartScore": 72,
     "explanation": "Selección identificada por el Agente MCP: Tendencia de ataque en MLS con cuota @2.25 y 43.6% de probabilidad.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-07",
@@ -2999,7 +2971,8 @@
     "awayElo": 1502,
     "leagueTier": 1,
     "isMcpPick": true,
-    "source": "mcp"
+    "source": "mcp",
+    "actualScore": "3 - 0"
   },
   {
     "fixtureId": 1490442,
@@ -4448,151 +4421,6 @@
     "homeElo": 1634,
     "awayElo": 1620,
     "leagueTier": 1,
-    "isMcpPick": true,
-    "source": "mcp"
-  },
-  {
-    "fixtureId": 1513339,
-    "match": "The Town vs Tacoma Defiance",
-    "homeTeam": "The Town",
-    "awayTeam": "Tacoma Defiance",
-    "homeTeamId": 18816,
-    "awayTeamId": 4020,
-    "homeLogo": "https://media.api-sports.io/football/teams/18816.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/4020.png",
-    "league": "Major League Soccer (MLS)",
-    "leagueId": 909,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/909.png",
-    "country": "Estados Unidos",
-    "kickoff": "2026-09-05T21:30:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.44,
-    "bookmakerOdds": 1.44,
-    "modelOdds": 1.6,
-    "fairOdds": 1.6,
-    "probability": 62.6,
-    "impliedProbability": 69.4,
-    "edge": 1,
-    "expectedValue": -9.8,
-    "confidence": "Alta",
-    "pickBadge": "mcp",
-    "smartScore": 72,
-    "explanation": "Selección identificada por el Agente MCP: Tendencia de ataque en MLS con cuota @1.44 y 62.6% de probabilidad.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-08",
-        "homeTeam": "The Town",
-        "awayTeam": "Tacoma Defiance",
-        "score": "1-2",
-        "winner": "away",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-03-10",
-        "homeTeam": "Tacoma Defiance",
-        "awayTeam": "The Town",
-        "score": "2-0",
-        "winner": "home",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2025-09-11",
-        "homeTeam": "The Town",
-        "awayTeam": "Tacoma Defiance",
-        "score": "1-3",
-        "winner": "away",
-        "competition": "Major League Soccer (MLS)"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-02",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "0-0",
-        "result": "D",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-28",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-23",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-18",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-13",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "0-0",
-        "result": "D",
-        "competition": "Major League Soccer (MLS)"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-02",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-28",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-23",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-18",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-13",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Major League Soccer (MLS)"
-      }
-    ],
-    "homeElo": 1505,
-    "awayElo": 1632,
-    "leagueTier": 2,
     "isMcpPick": true,
     "source": "mcp"
   }
