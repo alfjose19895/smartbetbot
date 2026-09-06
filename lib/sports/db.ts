@@ -1421,7 +1421,7 @@ export async function getLiveInPlayPredictions(): Promise<MarketOpportunity[]> {
       // Condition 2: Fetch original live bookmaker odds
       let realOdds: ApiFootballOddsItem | null = null;
       try {
-        realOdds = await apiFootball.getOddsByFixture(fixtureId);
+        realOdds = await apiFootball.getLiveOddsByFixture(fixtureId);
       } catch {
         // Fallback to null if API odds endpoint is busy
       }

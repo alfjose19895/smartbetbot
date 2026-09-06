@@ -875,10 +875,12 @@ export function evaluateFixturePrediction(params: {
     doubleChance1X?: number;
     doubleChanceX2?: number;
     doubleChance12?: number;
+    over05?: number;
     over15?: number;
     under35?: number;
     over25?: number;
     under25?: number;
+    over35?: number;
     bttsYes?: number;
     bttsNo?: number;
   };
@@ -1054,8 +1056,8 @@ export function evaluateFixturePrediction(params: {
     minProbThreshold: number;
   }[] = [];
 
-    if (isLive) {
-    // === DYNAMIC LIVE IN-PLAY STRATEGY (Minute >= 50', Odds >= 1.50) ===
+      if (isLive) {
+    // === DYNAMIC LIVE IN-PLAY STRATEGY (Minute >= 50', Original Bookmaker Odds >= 1.50) ===
     // If the match has not reached minute 50 yet, hold until 2H / 50'+
     if (elapsed < 50) {
       candidates = [];
@@ -1067,14 +1069,15 @@ export function evaluateFixturePrediction(params: {
       // 1. Over 0.5 Goles (when totalCurrentGoals === 0 and match >= min 50)
       if (totalCurrentGoals === 0) {
         const probOver05 = Math.min(0.88, Math.max(0.55, prob1MoreGoal));
-        const oddsOver05 = calculateBookmakerOdds(probOver05, 0.95);
-        const effectiveOdds = Math.max(1.50, Math.min(2.80, oddsOver05));
-        if (effectiveOdds >= 1.50 && probOver05 >= 0.50) {
+        // Use exact bookmaker odds if available, otherwise fair bookmaker margin
+        const realOver05 = marketOdds?.over05;
+        const liveOdds = realOver05 && realOver05 >= 1.05 ? realOver05 : calculateBookmakerOdds(probOver05, 0.95);
+        if (liveOdds >= 1.50 && probOver05 >= 0.50) {
           candidates.push({
             market: "Over 0.5 Goles",
             selection: "Over 0.5",
             prob: probOver05,
-            odds: effectiveOdds,
+            odds: liveOdds,
             minOddsThreshold: 1.50,
             minProbThreshold: 0.50,
           });
@@ -1085,93 +1088,108 @@ export function evaluateFixturePrediction(params: {
       if (totalCurrentGoals <= 1) {
         const neededGoals = 2 - totalCurrentGoals;
         const probOver15 = neededGoals === 1 ? prob1MoreGoal : prob2MoreGoals;
-        const oddsOver15 = calculateBookmakerOdds(probOver15, 0.95);
-        const effectiveOdds = Math.max(1.50, Math.min(3.50, oddsOver15));
-        if (effectiveOdds >= 1.50 && probOver15 >= 0.48) {
+        const realOver15 = marketOdds?.over15;
+        const liveOdds = realOver15 && realOver15 >= 1.05 ? realOver15 : calculateBookmakerOdds(probOver15, 0.95);
+        if (liveOdds >= 1.50 && probOver15 >= 0.48) {
           candidates.push({
             market: "Over 1.5 Goles",
             selection: "Over 1.5",
             prob: probOver15,
-            odds: effectiveOdds,
+            odds: liveOdds,
             minOddsThreshold: 1.50,
             minProbThreshold: 0.48,
           });
         }
       }
 
-      // 3. Next Goal Line (Over 2.5, 3.5, etc.) if totalCurrentGoals >= 2
-      if (totalCurrentGoals >= 2) {
+      // 3. Next Goal Line (Over 2.5 / 3.5) if totalCurrentGoals >= 2
+      if (totalCurrentGoals === 2) {
+        const probOver25 = prob1MoreGoal;
+        const realOver25 = marketOdds?.over25;
+        const liveOdds = realOver25 && realOver25 >= 1.05 ? realOver25 : calculateBookmakerOdds(probOver25, 0.95);
+        if (liveOdds >= 1.50 && probOver25 >= 0.50) {
+          candidates.push({
+            market: "Over 2.5 Goles",
+            selection: "Over 2.5",
+            prob: probOver25,
+            odds: liveOdds,
+            minOddsThreshold: 1.50,
+            minProbThreshold: 0.50,
+          });
+        }
+      } else if (totalCurrentGoals >= 3) {
         const nextLine = totalCurrentGoals + 0.5;
-        const nextLineOdds = calculateBookmakerOdds(prob1MoreGoal, 0.95);
-        const effectiveOdds = Math.max(1.50, Math.min(3.50, nextLineOdds));
-        if (effectiveOdds >= 1.50 && prob1MoreGoal >= 0.50) {
+        const probOverNext = prob1MoreGoal;
+        const realOverNext = totalCurrentGoals === 3 ? marketOdds?.over35 : undefined;
+        const liveOdds = realOverNext && realOverNext >= 1.05 ? realOverNext : calculateBookmakerOdds(probOverNext, 0.95);
+        if (liveOdds >= 1.50 && probOverNext >= 0.50) {
           candidates.push({
             market: `Over ${nextLine} Goles`,
             selection: `Over ${nextLine}`,
-            prob: Math.min(0.85, Math.max(0.50, prob1MoreGoal)),
-            odds: effectiveOdds,
+            prob: Math.min(0.85, Math.max(0.50, probOverNext)),
+            odds: liveOdds,
             minOddsThreshold: 1.50,
             minProbThreshold: 0.50,
           });
         }
       }
 
-      // 4. Ganador Local (Gana Local) -> only if odds >= 1.50 and prob >= 50%
+      // 4. Ganador Local (Gana Local) -> strictly use original bookmaker live odds if available
       if (currentH > currentA) {
         const probHoldWin = Math.min(0.85, pHome + (currentH - currentA) * 0.12);
-        const liveHomeOdds = calculateBookmakerOdds(probHoldWin, 0.95);
-        const effectiveOdds = Math.max(1.50, Math.min(2.60, liveHomeOdds));
-        if (effectiveOdds >= 1.50 && probHoldWin >= 0.52) {
+        const realHomeOdds = marketOdds?.homeWin;
+        const liveOdds = realHomeOdds && realHomeOdds >= 1.05 ? realHomeOdds : calculateBookmakerOdds(probHoldWin, 0.95);
+        if (liveOdds >= 1.50 && probHoldWin >= 0.52) {
           candidates.push({
             market: "Ganador Local",
             selection: "1",
             prob: probHoldWin,
-            odds: effectiveOdds,
+            odds: liveOdds,
             minOddsThreshold: 1.50,
             minProbThreshold: 0.52,
           });
         }
       } else if (currentH === currentA && pHome >= 0.48) {
         const probPushWin = Math.min(0.75, pHome + 0.05);
-        const liveHomeOdds = calculateBookmakerOdds(probPushWin, 0.95);
-        const effectiveOdds = Math.max(1.55, Math.min(2.80, liveHomeOdds));
-        if (effectiveOdds >= 1.50 && probPushWin >= 0.50) {
+        const realHomeOdds = marketOdds?.homeWin;
+        const liveOdds = realHomeOdds && realHomeOdds >= 1.05 ? realHomeOdds : calculateBookmakerOdds(probPushWin, 0.95);
+        if (liveOdds >= 1.50 && probPushWin >= 0.50) {
           candidates.push({
             market: "Ganador Local",
             selection: "1",
             prob: probPushWin,
-            odds: effectiveOdds,
+            odds: liveOdds,
             minOddsThreshold: 1.50,
             minProbThreshold: 0.50,
           });
         }
       }
 
-      // 5. Ganador Visitante (Gana Visitante) -> only if odds >= 1.50 and prob >= 50%
+      // 5. Ganador Visitante (Gana Visitante) -> strictly use original bookmaker live odds if available
       if (currentA > currentH) {
         const probHoldAway = Math.min(0.85, pAway + (currentA - currentH) * 0.12);
-        const liveAwayOdds = calculateBookmakerOdds(probHoldAway, 0.95);
-        const effectiveOdds = Math.max(1.50, Math.min(2.60, liveAwayOdds));
-        if (effectiveOdds >= 1.50 && probHoldAway >= 0.52) {
+        const realAwayOdds = marketOdds?.awayWin;
+        const liveOdds = realAwayOdds && realAwayOdds >= 1.05 ? realAwayOdds : calculateBookmakerOdds(probHoldAway, 0.95);
+        if (liveOdds >= 1.50 && probHoldAway >= 0.52) {
           candidates.push({
             market: "Ganador Visitante",
             selection: "2",
             prob: probHoldAway,
-            odds: effectiveOdds,
+            odds: liveOdds,
             minOddsThreshold: 1.50,
             minProbThreshold: 0.52,
           });
         }
       } else if (currentA === currentH && pAway >= 0.48) {
         const probPushAway = Math.min(0.75, pAway + 0.05);
-        const liveAwayOdds = calculateBookmakerOdds(probPushAway, 0.95);
-        const effectiveOdds = Math.max(1.55, Math.min(2.80, liveAwayOdds));
-        if (effectiveOdds >= 1.50 && probPushAway >= 0.50) {
+        const realAwayOdds = marketOdds?.awayWin;
+        const liveOdds = realAwayOdds && realAwayOdds >= 1.05 ? realAwayOdds : calculateBookmakerOdds(probPushAway, 0.95);
+        if (liveOdds >= 1.50 && probPushAway >= 0.50) {
           candidates.push({
             market: "Ganador Visitante",
             selection: "2",
             prob: probPushAway,
-            odds: effectiveOdds,
+            odds: liveOdds,
             minOddsThreshold: 1.50,
             minProbThreshold: 0.50,
           });

@@ -429,6 +429,16 @@ class ApiFootballClient {
     return null;
   }
 
+  async getLiveOddsByFixture(fixtureId: number): Promise<ApiFootballOddsItem | null> {
+    try {
+      const liveData = await this.request<ApiFootballOddsItem>("odds/live", { fixture: fixtureId });
+      if (liveData && liveData.length > 0) return liveData[0];
+    } catch {
+      // Fallback to standard odds endpoint
+    }
+    return this.getOddsByFixture(fixtureId);
+  }
+
   async getOddsByFixture(fixtureId: number): Promise<ApiFootballOddsItem | null> {
     const data = await this.request<ApiFootballOddsItem>("odds", {
       fixture: fixtureId,
