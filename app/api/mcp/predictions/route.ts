@@ -82,7 +82,6 @@ export async function POST(req: Request) {
     // Direct publish action: Add MCP-discovered alerts to active daily dashboard and signals
     if (action === "publish" || action === "addPicks") {
       const picksToPublish = Array.isArray(picks) ? picks : pick ? [pick] : [];
-      // Tag all published picks as MCP
       const taggedPicks = picksToPublish
         .filter((p) => {
           const h = (p.homeTeam || "").toLowerCase();
@@ -135,6 +134,24 @@ export async function POST(req: Request) {
 
     const qLower = (query || "").toLowerCase().trim();
     const cLower = (country || "").toLowerCase().trim();
+
+    // Natural Language Timing Intent: Live in-play vs Pre-match
+    const isLiveRequest =
+      qLower.includes("en vivo") ||
+      qLower.includes("en directo") ||
+      qLower.includes("iniciado") ||
+      qLower.includes("comenzado") ||
+      qLower.includes("en juego") ||
+      qLower.includes("minuto") ||
+      qLower.includes("live");
+
+    const isPreMatchRequest =
+      qLower.includes("por comenzar") ||
+      qLower.includes("proximo") ||
+      qLower.includes("próximo") ||
+      qLower.includes("antes de iniciar") ||
+      qLower.includes("prematch") ||
+      qLower.includes("pre-match");
 
     // 1. Natural Language Intent Parsing: Country synonyms
     let targetCountryTerms: string[] = [];
@@ -197,7 +214,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // 4. If query requests MLS / specific league or country and snapshot has few/no matches, fetch directly from live API-Football!
+    // 4. Live API-Football Query (for MLS or live matches or specific country searches)
     const isMlsRequest =
       qLower.includes("mls") ||
       qLower.includes("major league soccer") ||
@@ -205,7 +222,7 @@ export async function POST(req: Request) {
       qLower.includes("usa") ||
       targetCountryTerms.some((t) => t === "mls" || t === "major league soccer");
 
-    if ((isMlsRequest || (targetCountryTerms.length > 0 && filtered.length <= 1)) && !matchedByTeam) {
+    if ((isMlsRequest || isLiveRequest || (targetCountryTerms.length > 0 && filtered.length <= 1)) && !matchedByTeam) {
       try {
         const liveFixtures = await apiFootball.getFixturesByDate(todayStr);
         const liveMatchingFixtures = liveFixtures.filter((f) => {
@@ -213,6 +230,18 @@ export async function POST(req: Request) {
           const c = (f.league.country || "").toLowerCase();
           const h = (f.teams.home.name || "").toLowerCase();
           const a = (f.teams.away.name || "").toLowerCase();
+          const statusShort = f.fixture.status.short || "NS";
+
+          // Strict status filter depending on user prompt
+          if (isLiveRequest && !["1H", "HT", "2H", "ET", "P"].includes(statusShort)) {
+            return false;
+          }
+          if (isPreMatchRequest && statusShort !== "NS") {
+            return false;
+          }
+          if (["FT", "AET", "PEN", "PST", "CANC", "ABD"].includes(statusShort)) {
+            return false;
+          }
 
           // STRICTLY REJECT RESERVES & DEVELOPMENT LEAGUES
           if (
@@ -252,6 +281,11 @@ export async function POST(req: Request) {
           for (const f of liveMatchingFixtures.slice(0, 10)) {
             const oddsRaw = await apiFootball.getOddsByFixture(f.fixture.id);
             const marketOdds = extractMarketOddsFromBookmaker(oddsRaw);
+            const currentScore =
+              f.goals?.home !== null && f.goals?.away !== null && f.goals?.home !== undefined && f.goals?.away !== undefined
+                ? `${f.goals.home} - ${f.goals.away}`
+                : undefined;
+
             const opps = evaluateFixturePrediction({
               fixtureId: f.fixture.id,
               homeTeam: f.teams.home.name,
@@ -267,8 +301,14 @@ export async function POST(req: Request) {
               kickoff: f.fixture.date,
               marketOdds,
             });
+
             if (opps && opps.length > 0) {
-              dynamicallyEvaluated.push(...opps);
+              for (const opp of opps) {
+                if (currentScore) {
+                  opp.actualScore = currentScore;
+                }
+                dynamicallyEvaluated.push(opp);
+              }
             }
           }
           if (dynamicallyEvaluated.length > 0) {
@@ -382,7 +422,6 @@ export async function POST(req: Request) {
     }));
 
     // 8. AUTOMATIC PUBLISH: Directly merge MCP picks into the Daily Snapshot & Cache
-    // This satisfies the requirement that MCP findings automatically appear on the Dashboard & Signals
     let autoPublishResult = { addedCount: 0, totalAlerts: 0 };
     try {
       autoPublishResult = addPredictionsToDailySnapshot(filtered);
@@ -423,6 +462,8 @@ export async function POST(req: Request) {
         ? "Combinada / Parlay Inteligente"
         : matchedByTeam
         ? `Análisis Táctico Específico: ${topPick?.homeTeam} vs ${topPick?.awayTeam}`
+        : isLiveRequest
+        ? `Análisis en Vivo (Partidos en Juego)`
         : isMlsRequest
         ? "Búsqueda Oficial: Major League Soccer (MLS - 1ª División)"
         : targetCountryTerms.length > 0
@@ -432,10 +473,12 @@ export async function POST(req: Request) {
         ? `El motor analizó el encuentro ${topPick.homeTeam} vs ${topPick.awayTeam} en ${topPick.league}. El modelo Poisson y las líneas de Bet365/Pinnacle determinan que la mejor oportunidad es '${topPick.market}' con una cuota real de @${topPick.odds} y un ${topPick.probability}% de certeza matemática.`
         : isParlayRequest
         ? `Se generó una combinada de ${parlayData?.selectionsCount} selecciones de alta compatibilidad estadística, con una cuota acumulada de @${parlayData?.totalOdds} y probabilidad conjunta calculada de ${parlayData?.combinedProbability}.`
+        : isLiveRequest
+        ? `Se analizaron los partidos en directo en curso. El algoritmo evaluó las probabilidades dinámicas y seleccionó ${filtered.length} oportunidades en vivo con probabilidad promedio del ${avgProb}%.`
         : `Se procesaron los datos en vivo para tu solicitud "${query || "pronósticos generales"}". El algoritmo seleccionó ${filtered.length} partidos de ${leagueDisplayName} con un promedio de probabilidad del ${avgProb}% y cuota promedio de @${avgOdds}. Las alertas se han publicado automáticamente en el Dashboard y Alertas del Día con la etiqueta 🤖 Agente MCP.`,
       insights: [
         topPick ? `Poco margen de error: ${topPick.homeTeam} vs ${topPick.awayTeam} lidera en ${topPick.league} con SmartScore de ${topPick.smartScore}/100 y cuota @${topPick.odds}.` : "Filtros aplicados con rigor estadístico.",
-        `Filtro Estricto de 1ª División: Se excluyen filiales, reservas y ligas de desarrollo (MLS Next Pro / USL). Solo equipos oficiales de Primera División.`,
+        isLiveRequest ? `Monitoreo en vivo: Marcadores y tiempos actualizados en tiempo real.` : `Filtro Estricto de 1ª División: Se excluyen filiales, reservas y ligas de desarrollo. Solo equipos oficiales de Primera División.`,
         `Calibración de cuotas: 100% integradas directamente con líneas de casas de apuestas (Bet365 / Pinnacle) sin distorsión de modelos sintéticos.`,
         effectiveMinOdds > 0 ? `Restricción de cuota mínima: Se aseguraron selecciones con cuota >= @${effectiveMinOdds}.` : `Distribución diversificada en mercados de alto valor (${filtered.map(p => p.market).slice(0, 2).join(", ")}).`,
       ],
