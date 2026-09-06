@@ -1390,3 +1390,87 @@ export function selectPrioritizedOpportunities(
   result.sort((a, b) => b.smartScore - a.smartScore || b.probability - a.probability);
   return result;
 }
+
+
+export async function getLiveInPlayPredictions(): Promise<MarketOpportunity[]> {
+  try {
+    const liveFixtures = await apiFootball.getLiveFixtures("America/Guayaquil");
+    if (!Array.isArray(liveFixtures) || liveFixtures.length === 0) {
+      return [];
+    }
+
+    const livePredictions: MarketOpportunity[] = [];
+
+    for (const item of liveFixtures) {
+      const fixtureId = item.fixture?.id;
+      const statusShort = item.fixture?.status?.short;
+      const elapsed = item.fixture?.status?.elapsed || (statusShort === "2H" ? 65 : 30);
+
+      // Condition 1: Match must strictly be >= minute 50
+      if (!elapsed || elapsed < 50) {
+        continue;
+      }
+
+      const homeTeam = item.teams?.home?.name;
+      const awayTeam = item.teams?.away?.name;
+      if (!homeTeam || !awayTeam || !fixtureId) continue;
+
+      const homeGoals = typeof item.goals?.home === "number" ? item.goals.home : 0;
+      const awayGoals = typeof item.goals?.away === "number" ? item.goals.away : 0;
+
+      // Condition 2: Fetch original live bookmaker odds
+      let realOdds: ApiFootballOddsItem | null = null;
+      try {
+        realOdds = await apiFootball.getOddsByFixture(fixtureId);
+      } catch {
+        // Fallback to null if API odds endpoint is busy
+      }
+
+      const bookmakerOdds = extractMarketOddsFromBookmaker(realOdds);
+
+      const opps = evaluateFixturePrediction({
+        fixtureId,
+        homeTeam,
+        awayTeam,
+        homeTeamId: item.teams?.home?.id,
+        awayTeamId: item.teams?.away?.id,
+        homeLogo: item.teams?.home?.logo,
+        awayLogo: item.teams?.away?.logo,
+        league: item.league?.name || "Competición Oficial",
+        leagueId: item.league?.id,
+        leagueLogo: item.league?.logo,
+        country: item.league?.country || "Internacional",
+        kickoff: item.fixture?.date || new Date().toISOString(),
+        liveContext: {
+          isLive: true,
+          statusShort,
+          elapsed,
+          homeGoals,
+          awayGoals,
+        },
+        marketOdds: bookmakerOdds,
+      });
+
+      // Condition 3: Filter opportunities with odds >= 1.50
+      if (Array.isArray(opps)) {
+        for (const p of opps) {
+          if (p.odds >= 1.50) {
+            livePredictions.push({
+              ...p,
+              matchTiming: "live",
+              liveMinute: elapsed,
+              livePeriod: (statusShort as "2H" | "1H" | "HT" | "ET") || "2H",
+              currentScore: `${homeGoals} - ${awayGoals}`,
+              pickBadge: "mcp",
+            });
+          }
+        }
+      }
+    }
+
+    return livePredictions;
+  } catch (err) {
+    console.error("[getLiveInPlayPredictions] Error:", err);
+    return [];
+  }
+}

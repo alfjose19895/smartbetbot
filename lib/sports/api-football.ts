@@ -526,10 +526,12 @@ export function extractMarketOddsFromBookmaker(oddsItem?: ApiFootballOddsItem | 
   doubleChance1X?: number;
   doubleChanceX2?: number;
   doubleChance12?: number;
+  over05?: number;
   over15?: number;
   under35?: number;
   over25?: number;
   under25?: number;
+  over35?: number;
   bttsYes?: number;
   bttsNo?: number;
 } {
@@ -554,10 +556,12 @@ export function extractMarketOddsFromBookmaker(oddsItem?: ApiFootballOddsItem | 
     doubleChance1X?: number;
     doubleChanceX2?: number;
     doubleChance12?: number;
+    over05?: number;
     over15?: number;
     under35?: number;
     over25?: number;
     under25?: number;
+    over35?: number;
     bttsYes?: number;
     bttsNo?: number;
   } = {};
@@ -594,10 +598,12 @@ export function extractMarketOddsFromBookmaker(oddsItem?: ApiFootballOddsItem | 
         const v = String(val.value).toLowerCase();
         const o = parseFloat(String(val.odd));
         if (!isNaN(o) && o > 1.0) {
-          if (v.includes("over 1.5") || v === "over 1.5") result.over15 = o;
+          if (v.includes("over 0.5") || v === "over 0.5") result.over05 = o;
+          else if (v.includes("over 1.5") || v === "over 1.5") result.over15 = o;
           else if (v.includes("over 2.5") || v === "over 2.5") result.over25 = o;
           else if (v.includes("under 2.5") || v === "under 2.5") result.under25 = o;
           else if (v.includes("under 3.5") || v === "under 3.5") result.under35 = o;
+          else if (v.includes("over 3.5") || v === "over 3.5") result.over35 = o;
         }
       }
     }

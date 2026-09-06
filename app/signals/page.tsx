@@ -319,17 +319,6 @@ export default function SignalsPage() {
             💣 Bomba ({bombaCount})
           </button>
           <button
-            onClick={() => setMatchStatusFilter("IN_PLAY")}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
-              matchStatusFilter === "IN_PLAY"
-                ? "bg-rose-600 text-white shadow-sm animate-pulse"
-                : "bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800"
-            }`}
-          >
-            <span className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-ping" />
-            <span>⚡ En Vivo ({inPlayCount})</span>
-          </button>
-          <button
             onClick={() => setMatchStatusFilter("WON")}
             className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
               matchStatusFilter === "WON"

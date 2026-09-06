@@ -38,7 +38,7 @@ export default function LiveAlertsPage() {
   const loadLiveSignals = useCallback(async (isInitial = false) => {
     try {
       if (isInitial) setLoading(true);
-      const res = await fetch("/api/signals");
+      const res = await fetch("/api/live");
       const json = await res.json();
       if (json.signals && Array.isArray(json.signals)) {
         setPredictions(json.signals);

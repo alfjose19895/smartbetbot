@@ -57,7 +57,7 @@ export interface MarketOpportunity {
   source?: "algorithm" | "mcp" | "manual";
   matchTiming?: "prematch" | "live";
   livePeriod?: "1H" | "HT" | "2H" | "ET";
-  liveMinute?: number;
+  liveMinute?: number | string;
   currentScore?: string;
   smartScore: number;
   explanation: string;

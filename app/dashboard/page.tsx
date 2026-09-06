@@ -286,6 +286,14 @@ export default function DashboardPage() {
           <div className="flex flex-wrap items-center gap-2.5">
             {/* Live Alerts Direct Button */}
             <Link
+              href="/signals"
+              className="inline-flex items-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-2 text-xs font-black text-emerald-600 hover:bg-emerald-500/20 transition dark:text-emerald-400 cursor-pointer"
+            >
+              <span>📋</span>
+              <span>Módulo Pre-Match ({scheduledCount})</span>
+            </Link>
+
+            <Link
               href="/live"
               className="inline-flex items-center gap-2 rounded-2xl border border-rose-500/30 bg-rose-500/10 px-3.5 py-2 text-xs font-black text-rose-600 hover:bg-rose-500/20 transition dark:text-rose-400 cursor-pointer"
             >
