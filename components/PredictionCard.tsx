@@ -123,6 +123,11 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
 
             {/* Right: Badges, Status & Expand Button */}
             <div className="flex items-center gap-1.5 shrink-0">
+              {(prediction.pickBadge === "mcp" || prediction.isMcpPick || prediction.source === "mcp") && (
+                <span className="rounded-lg px-1.5 py-0.5 text-[9px] font-black bg-purple-600 text-white shadow-sm border border-purple-400 flex items-center gap-0.5">
+                  🤖 MCP
+                </span>
+              )}
               {prediction.pickBadge === "bomba" && (
                 <span className="rounded-lg px-1.5 py-0.5 text-[9px] font-black bg-rose-500 text-white animate-pulse">
                   💣
@@ -193,6 +198,11 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
                     </span>
                   ) : null}
 
+                  {(prediction.pickBadge === "mcp" || prediction.isMcpPick || prediction.source === "mcp") && (
+                    <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black bg-gradient-to-r from-purple-600 to-indigo-600 text-white border border-purple-400 shadow-sm">
+                      🤖 Agente MCP
+                    </span>
+                  )}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -373,6 +383,11 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
             </span>
 
             <div className="flex items-center gap-1.5 flex-wrap">
+              {(prediction.pickBadge === "mcp" || prediction.isMcpPick || prediction.source === "mcp") && (
+                <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-sm border border-purple-400">
+                  🤖 Agente MCP
+                </span>
+              )}
               {prediction.pickBadge === "bomba" && (
                 <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-rose-500 text-white animate-pulse shadow-sm shadow-rose-500/30">
                   💣 BOMBA

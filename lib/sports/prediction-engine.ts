@@ -52,7 +52,9 @@ export interface MarketOpportunity {
   edge: number;
   expectedValue: number;
   confidence: "Muy Alta" | "Alta";
-  pickBadge?: "bomba" | "valor" | "estandar";
+  pickBadge?: "bomba" | "valor" | "estandar" | "mcp";
+  isMcpPick?: boolean;
+  source?: "algorithm" | "mcp" | "manual";
   smartScore: number;
   explanation: string;
   status: "pending" | "won" | "lost" | "void";

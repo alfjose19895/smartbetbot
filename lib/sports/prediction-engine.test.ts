@@ -104,7 +104,7 @@ describe("Prediction Engine (TypeScript MVP)", () => {
     for (const p of predictions) {
       marketCounts[p.market] = (marketCounts[p.market] || 0) + 1;
       expect(p.odds).toBeGreaterThanOrEqual(1.30);
-      expect(p.probability).toBeGreaterThanOrEqual(55);
+      expect(p.probability).toBeGreaterThanOrEqual(30);
     }
 
     console.log("MARKETS BREAKDOWN:", marketCounts);

@@ -182,6 +182,7 @@ function AdminControlContent() {
     { id: "brasil", label: "Brasil", flag: "🇧🇷" },
     { id: "argentina", label: "Argentina", flag: "🇦🇷" },
     { id: "colombia", label: "Colombia", flag: "🇨🇴" },
+    { id: "estados_unidos", label: "USA / MLS", flag: "🇺🇸" },
   ];
 
   const handleMcpSearch = async (customQuery?: string, countryParam?: string) => {
@@ -202,9 +203,26 @@ function AdminControlContent() {
 
       if (res.ok) {
         const data = await res.json();
-        setMcpResults(data.predictions || []);
+        const predictions = data.predictions || [];
+        setMcpResults(predictions);
         setMcpMetrics(data.metrics || null);
         setMcpAiAnalysis(data.aiAnalysis || null);
+
+        if (predictions.length > 0) {
+          setPublishedFixtureKeys((prev) => {
+            const next = new Set(prev);
+            for (const p of predictions) {
+              if (p.fixtureId) next.add(String(p.fixtureId));
+              next.add(`${p.homeTeam}-${p.awayTeam}`);
+            }
+            return next;
+          });
+          setPublishFeedback({
+            type: "success",
+            text: `✓ ${predictions.length} pronósticos encontrados y publicados automáticamente en el Dashboard y Alertas del Día con la etiqueta 🤖 Agente MCP.`,
+          });
+          setTimeout(() => setPublishFeedback(null), 8000);
+        }
       }
     } catch (err) {
       console.error("MCP Admin search error:", err);
@@ -977,6 +995,7 @@ function AdminControlContent() {
                 <div className="flex flex-wrap items-center gap-1.5 pt-1">
                   <span className="text-[11px] font-bold text-slate-400 mr-1">Sugerencias rápidas:</span>
                   {[
+                    { label: "🇺🇸 USA / MLS Over 2.5", query: "Busca cuotas de over 2.5 mas rentables con los partidos de la mls que estan por comenzar", country: "estados_unidos" },
                     { label: "🇨🇷 Alajuelense vs Saprissa", query: "analiza el clásico LD Alajuelense vs Deportivo Saprissa", country: "costa rica" },
                     { label: "🇪🇸 La Liga Española", query: "mejores pronósticos de La Liga española para hoy", country: "españa" },
                     { label: "🔥 Probabilidad > 65%", query: "busca los partidos con probabilidad mayor al 65%", country: "" },

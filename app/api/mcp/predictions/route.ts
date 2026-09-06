@@ -1,6 +1,17 @@
 import { NextResponse } from "next/server";
-import { generatePredictionsForUpcoming, getEcuadorDateString, addPredictionsToDailySnapshot } from "@/lib/sports/db";
-import { MarketOpportunity } from "@/lib/sports/prediction-engine";
+import {
+  generatePredictionsForUpcoming,
+  getEcuadorDateString,
+  addPredictionsToDailySnapshot,
+} from "@/lib/sports/db";
+import {
+  MarketOpportunity,
+  evaluateFixturePrediction,
+} from "@/lib/sports/prediction-engine";
+import {
+  apiFootball,
+  extractMarketOddsFromBookmaker,
+} from "@/lib/sports/api-football";
 
 const COUNTRY_SYNONYMS: Record<string, string[]> = {
   españa: ["españa", "spain", "la liga", "segunda", "copa del rey", "liga f", "villarreal", "leganes", "barcelona", "madrid", "sevilla", "betis", "oviedo", "tenerife"],
@@ -19,7 +30,7 @@ const COUNTRY_SYNONYMS: Record<string, string[]> = {
   chile: ["chile", "primera división chile", "campeonato nacional", "everton", "catolica", "colo colo", "u de chile"],
   holanda: ["holanda", "países bajos", "paises bajos", "netherlands", "eredivisie", "ajax", "psv", "feyenoord"],
   belgica: ["bélgica", "belgica", "belgium", "jupiler pro league", "standard liege", "antwerp", "brujas", "anderlecht"],
-  estados_unidos: ["estados unidos", "usa", "mls", "major league soccer", "us open cup", "philadelphia", "montreal", "inter miami"],
+  estados_unidos: ["estados unidos", "usa", "mls", "major league soccer", "us open cup", "usl", "philadelphia", "montreal", "inter miami", "vancouver", "cincinnati", "dc united"],
   ucrania: ["ucrania", "ukraine", "premier league ucrania", "kharkiv", "shakhtar", "dynamo kyiv"],
   croacia: ["croacia", "croatia", "hnl", "rijeka", "osijek", "dinamo zagreb", "hajduk"],
 };
@@ -39,30 +50,35 @@ export interface AiAgentAnalysis {
 
 export async function POST(req: Request) {
   try {
-
     const body = await req.json();
     const { action, picks, pick, query = "", country = "", minProb, minOdds, maxOdds, market = "" } = body;
 
     // Direct publish action: Add MCP-discovered alerts to active daily dashboard and signals
     if (action === "publish" || action === "addPicks") {
       const picksToPublish = Array.isArray(picks) ? picks : pick ? [pick] : [];
-      const result = addPredictionsToDailySnapshot(picksToPublish);
+      // Tag all published picks as MCP
+      const taggedPicks = picksToPublish.map((p) => ({
+        ...p,
+        pickBadge: (p.pickBadge || "mcp") as "bomba" | "valor" | "estandar" | "mcp",
+        isMcpPick: true,
+        source: "mcp" as const,
+      }));
+      const result = addPredictionsToDailySnapshot(taggedPicks);
       return NextResponse.json({
         success: true,
         addedCount: result.addedCount,
         totalAlerts: result.totalAlerts,
         message: result.addedCount > 0
-          ? `✓ Se agregaron ${result.addedCount} alertas al Dashboard y Alertas del Día. Total activo: ${result.totalAlerts} alertas.`
+          ? `✓ Se agregaron ${result.addedCount} alertas al Dashboard y Alertas del Día con la etiqueta 🤖 Agente MCP. Total activo: ${result.totalAlerts} alertas.`
           : `✓ Las alertas seleccionadas ya se encuentran publicadas en el Dashboard. Total: ${result.totalAlerts} alertas.`,
         predictions: result.predictions,
       });
     }
 
-
     const allPredictions = await generatePredictionsForUpcoming();
     const todayStr = getEcuadorDateString(Date.now());
 
-    // Filter strictly today
+    // Base candidate pool from today's snapshot
     let pool = allPredictions.filter((p) => {
       const pDate = getEcuadorDateString(new Date(p.kickoff));
       return pDate === todayStr;
@@ -119,8 +135,9 @@ export async function POST(req: Request) {
       const countryMatches = filtered.filter((p) => {
         const pCountry = (p.country || "").toLowerCase();
         const pLeague = (p.league || "").toLowerCase();
-        const pHome = p.homeTeam.toLowerCase();
-        const pAway = p.awayTeam.toLowerCase();
+        const pHome = (p.homeTeam || "").toLowerCase();
+        const pAway = (p.awayTeam || "").toLowerCase();
+
         return targetCountryTerms.some(
           (term) =>
             pCountry.includes(term) ||
@@ -135,14 +152,66 @@ export async function POST(req: Request) {
       }
     }
 
-    // 4. Market Filter from natural language
+    // 4. If query requests MLS / specific league or country and snapshot has few/no matches, fetch directly from live API-Football!
+    const isMlsRequest = qLower.includes("mls") || qLower.includes("major league") || targetCountryTerms.some(t => t === "mls" || t === "major league soccer");
+    if ((isMlsRequest || (targetCountryTerms.length > 0 && filtered.length <= 1)) && !matchedByTeam) {
+      try {
+        const liveFixtures = await apiFootball.getFixturesByDate(todayStr);
+        const liveMatchingFixtures = liveFixtures.filter((f) => {
+          const l = (f.league.name || "").toLowerCase();
+          const c = (f.league.country || "").toLowerCase();
+          const h = (f.teams.home.name || "").toLowerCase();
+          const a = (f.teams.away.name || "").toLowerCase();
+
+          if (isMlsRequest) {
+            return l.includes("mls") || l.includes("major league") || (c.includes("usa") && (l.includes("mls") || l.includes("usl") || l.includes("next pro") || l.includes("open cup")));
+          }
+          return targetCountryTerms.some((term) =>
+            l.includes(term) || c.includes(term) || h.includes(term) || a.includes(term)
+          );
+        });
+
+        if (liveMatchingFixtures.length > 0) {
+          const dynamicallyEvaluated: MarketOpportunity[] = [];
+          for (const f of liveMatchingFixtures.slice(0, 10)) {
+            const oddsRaw = await apiFootball.getOddsByFixture(f.fixture.id);
+            const marketOdds = extractMarketOddsFromBookmaker(oddsRaw);
+            const opps = evaluateFixturePrediction({
+              fixtureId: f.fixture.id,
+              homeTeam: f.teams.home.name,
+              awayTeam: f.teams.away.name,
+              homeTeamId: f.teams.home.id,
+              awayTeamId: f.teams.away.id,
+              homeLogo: f.teams.home.logo,
+              awayLogo: f.teams.away.logo,
+              league: f.league.name,
+              leagueId: f.league.id,
+              country: f.league.country,
+              leagueLogo: f.league.logo,
+              kickoff: f.fixture.date,
+              marketOdds,
+            });
+            if (opps && opps.length > 0) {
+              dynamicallyEvaluated.push(...opps);
+            }
+          }
+          if (dynamicallyEvaluated.length > 0) {
+            filtered = dynamicallyEvaluated;
+          }
+        }
+      } catch (err) {
+        console.warn("[McpAgentApi] Live fixture query error:", err);
+      }
+    }
+
+    // 5. Market Filter from natural language
     const mLower = (market || "").toLowerCase().trim();
     let requestedMarket = "";
     if (mLower) {
       requestedMarket = mLower;
     } else if (qLower.includes("ambos marcan") || qLower.includes("ambos anotan") || qLower.includes("btts") || qLower.includes("ambos")) {
       requestedMarket = "ambos";
-    } else if (qLower.includes("over 2.5") || qLower.includes("más de 2.5") || qLower.includes("mas de 2.5") || qLower.includes("over")) {
+    } else if (qLower.includes("over 2.5") || qLower.includes("más de 2.5") || qLower.includes("mas de 2.5") || qLower.includes("over") || qLower.includes("goles")) {
       requestedMarket = "over 2.5";
     } else if (qLower.includes("gana visitante") || qLower.includes("victoria visitante") || qLower.includes("ganador visitante")) {
       requestedMarket = "visitante";
@@ -157,7 +226,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // 5. Odds filtering (minOdds / maxOdds / natural language)
+    // 6. Odds filtering (minOdds / maxOdds / natural language)
     let effectiveMinOdds = minOdds || 0;
     let effectiveMaxOdds = maxOdds || 99;
 
@@ -188,7 +257,7 @@ export async function POST(req: Request) {
       if (oddsFiltered.length > 0) filtered = oddsFiltered;
     }
 
-    // 6. Probability / Confidence filtering
+    // 7. Probability / Confidence filtering
     let effectiveMinProb = minProb || 0;
     const probMatch = qLower.match(/probabilidad(?:\s*de)?\s*(?:mayor(?:es)?\s*(?:a|de)?|>|>=)\s*([0-9]+)%?/);
     if (probMatch) {
@@ -208,10 +277,44 @@ export async function POST(req: Request) {
       filtered = pool.slice(0, 5);
     }
 
+    // Deduplicate by fixture to avoid duplicate cards for same match
+    const seenFixtures = new Set<string>();
+    const deduplicated: MarketOpportunity[] = [];
+    for (const item of filtered) {
+      const key = `${item.fixtureId}-${item.market}`;
+      if (!seenFixtures.has(key)) {
+        seenFixtures.add(key);
+        deduplicated.push(item);
+      }
+    }
+    filtered = deduplicated;
+
     // Sort by best statistical conviction
     filtered.sort((a, b) => b.probability - a.probability || (b.smartScore || 0) - (a.smartScore || 0));
 
-    // 7. Parlay Generation if requested
+    // Limit to top 6 best picks for the response
+    if (filtered.length > 6) {
+      filtered = filtered.slice(0, 6);
+    }
+
+    // Tag every discovered prediction with MCP origin
+    filtered = filtered.map((p) => ({
+      ...p,
+      pickBadge: "mcp" as const,
+      isMcpPick: true,
+      source: "mcp" as const,
+    }));
+
+    // 8. AUTOMATIC PUBLISH: Directly merge MCP picks into the Daily Snapshot & Cache
+    // This satisfies the requirement that MCP findings automatically appear on the Dashboard & Signals
+    let autoPublishResult = { addedCount: 0, totalAlerts: 0 };
+    try {
+      autoPublishResult = addPredictionsToDailySnapshot(filtered);
+    } catch (publishErr) {
+      console.warn("[McpAgentApi] Auto-publishing snapshot error:", publishErr);
+    }
+
+    // 9. Parlay Generation if requested
     const isParlayRequest = qLower.includes("parlay") || qLower.includes("combinada") || qLower.includes("acumulada");
     let parlayData = undefined;
     if (isParlayRequest && filtered.length >= 2) {
@@ -229,11 +332,10 @@ export async function POST(req: Request) {
           odds: l.odds,
         })),
       };
-      // For a parlay request, present the legs directly
       filtered = legs;
     }
 
-    // 8. Generate Dynamic AI Reasoning & Briefing
+    // 10. Generate Dynamic AI Reasoning & Briefing
     const topPick = filtered[0];
     const avgProb = filtered.length > 0 ? Math.round(filtered.reduce((acc, p) => acc + p.probability, 0) / filtered.length) : 0;
     const avgOdds = filtered.length > 0 ? (filtered.reduce((acc, p) => acc + p.odds, 0) / filtered.length).toFixed(2) : "0.00";
@@ -250,12 +352,12 @@ export async function POST(req: Request) {
         ? `El motor analizó el encuentro ${topPick.homeTeam} vs ${topPick.awayTeam} en ${topPick.league}. El modelo Poisson y las líneas de Bet365/Pinnacle determinan que la mejor oportunidad es '${topPick.market}' con una cuota real de @${topPick.odds} y un ${topPick.probability}% de certeza matemática.`
         : isParlayRequest
         ? `Se generó una combinada de ${parlayData?.selectionsCount} selecciones de alta compatibilidad estadística, con una cuota acumulada de @${parlayData?.totalOdds} y probabilidad conjunta calculada de ${parlayData?.combinedProbability}.`
-        : `Se procesaron los datos en vivo para tu solicitud "${query || "pronósticos generales"}". El algoritmo seleccionó ${filtered.length} partidos de alta precisión con un promedio de probabilidad del ${avgProb}% y cuota promedio de @${avgOdds}.`,
+        : `Se procesaron los datos en vivo para tu solicitud "${query || "pronósticos generales"}". El algoritmo seleccionó ${filtered.length} partidos de alta precisión con un promedio de probabilidad del ${avgProb}% y cuota promedio de @${avgOdds}. Las alertas se han publicado automáticamente en el Dashboard y Alertas del Día con la etiqueta 🤖 Agente MCP.`,
       insights: [
         topPick ? `Poco margen de error: ${topPick.homeTeam} vs ${topPick.awayTeam} lidera con SmartScore de ${topPick.smartScore}/100 y cuota @${topPick.odds}.` : "Filtros aplicados con rigor estadístico.",
         `Calibración de cuotas: 100% integradas directamente con líneas de casas de apuestas (Bet365 / Pinnacle) sin distorsión de modelos sintéticos.`,
         effectiveMinOdds > 0 ? `Restricción de cuota mínima: Se aseguraron selecciones con cuota >= @${effectiveMinOdds}.` : `Distribución diversificada en mercados de alto valor (${filtered.map(p => p.market).slice(0, 2).join(", ")}).`,
-        `Fórmula de Edge: Valor positivo promedio del +${(filtered.reduce((a, b) => a + (b.edge || 0), 0) / (filtered.length || 1)).toFixed(1)}% sobre las probabilidades implícitas del mercado.`,
+        `Publicación Automática: Se incorporaron ${filtered.length} picks al flujo diario de alertas para consulta inmediata en web y móvil.`,
       ],
       recommendation: isParlayRequest
         ? `Estrategia Parlay: Asignar Stake 1 (1-2% del bankroll) para maximizar el retorno de la cuota @${parlayData?.totalOdds}.`
@@ -269,6 +371,8 @@ export async function POST(req: Request) {
       success: true,
       count: filtered.length,
       countryDetected: targetCountryTerms.length > 0 ? targetCountryTerms[0] : "Global",
+      autoPublished: true,
+      autoPublishResult,
       aiAnalysis,
       metrics: {
         totalMatches: filtered.length,
