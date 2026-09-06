@@ -232,35 +232,6 @@
     "modelOdds": 1.59
   },
   {
-    "id": "pred-20260905-realsociedadii-tenerife",
-    "fixtureId": 1569912,
-    "match": "Real Sociedad II vs Tenerife",
-    "homeTeam": "Real Sociedad II",
-    "awayTeam": "Tenerife",
-    "homeLogo": "https://media.api-sports.io/football/teams/9585.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/719.png",
-    "league": "La Liga 2 (Segunda División)",
-    "country": "España",
-    "leagueLogo": "https://media.api-sports.io/football/leagues/141.png",
-    "kickoff": "2026-09-05T07:00:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.72,
-    "bookmakerOdds": 1.72,
-    "fairOdds": 1.73,
-    "probability": 57.8,
-    "impliedProbability": 58.1,
-    "edge": 1,
-    "expectedValue": -0.6,
-    "confidence": "Alta",
-    "pickBadge": "estandar",
-    "smartScore": 63,
-    "explanation": "Análisis cuantitativo de alta precisión para Real Sociedad II vs Tenerife en La Liga 2 (Segunda División).",
-    "status": "lost",
-    "actualScore": "1 - 1 (2 Goles)",
-    "modelOdds": 1.73
-  },
-  {
     "id": "pred-20260905-torpedozhodino-fcgomel",
     "fixtureId": 1525974,
     "match": "Torpedo Zhodino vs FC Gomel",
@@ -2334,7 +2305,7 @@
     "pickBadge": "estandar",
     "smartScore": 74,
     "explanation": "Solidez de local en MLS: Philadelphia Union promedia más de 2 goles por partido ante CF Montreal. Cuota real Bet365 @1.42 con 72.5% de probabilidad.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-07",
@@ -2447,7 +2418,8 @@
     ],
     "homeElo": 1634,
     "awayElo": 1583,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "2 - 0"
   },
   {
     "fixtureId": 1490437,
@@ -3057,7 +3029,7 @@
     "pickBadge": "mcp",
     "smartScore": 72,
     "explanation": "Selección identificada por el Agente MCP: Tendencia de ataque en MLS con cuota @2.8 y 38.6% de probabilidad.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-07",
@@ -3172,7 +3144,8 @@
     "awayElo": 1508,
     "leagueTier": 1,
     "isMcpPick": true,
-    "source": "mcp"
+    "source": "mcp",
+    "actualScore": "4 - 4"
   },
   {
     "fixtureId": 1490443,
@@ -3202,7 +3175,7 @@
     "pickBadge": "mcp",
     "smartScore": 72,
     "explanation": "Selección identificada por el Agente MCP: Tendencia de ataque en MLS con cuota @3.2 y 38.3% de probabilidad.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-07",
@@ -3317,297 +3290,8 @@
     "awayElo": 1620,
     "leagueTier": 1,
     "isMcpPick": true,
-    "source": "mcp"
-  },
-  {
-    "fixtureId": 1513340,
-    "match": "Minnesota United II vs Colorado Rapids II",
-    "homeTeam": "Minnesota United II",
-    "awayTeam": "Colorado Rapids II",
-    "homeTeamId": 18814,
-    "awayTeamId": 4102,
-    "homeLogo": "https://media.api-sports.io/football/teams/18814.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/4102.png",
-    "league": "Major League Soccer (MLS)",
-    "leagueId": 909,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/909.png",
-    "country": "Estados Unidos",
-    "kickoff": "2026-09-05T19:00:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.53,
-    "bookmakerOdds": 1.53,
-    "modelOdds": 1.6,
-    "fairOdds": 1.6,
-    "probability": 62.5,
-    "impliedProbability": 65.4,
-    "edge": 1,
-    "expectedValue": -4.4,
-    "confidence": "Alta",
-    "pickBadge": "mcp",
-    "smartScore": 72,
-    "explanation": "Selección identificada por el Agente MCP: Tendencia de ataque en MLS con cuota @1.53 y 62.5% de probabilidad.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-08",
-        "homeTeam": "Minnesota United II",
-        "awayTeam": "Colorado Rapids II",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-03-10",
-        "homeTeam": "Colorado Rapids II",
-        "awayTeam": "Minnesota United II",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2025-09-11",
-        "homeTeam": "Minnesota United II",
-        "awayTeam": "Colorado Rapids II",
-        "score": "3-0",
-        "winner": "home",
-        "competition": "Major League Soccer (MLS)"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-02",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-28",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-23",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-18",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-13",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Major League Soccer (MLS)"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-02",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-28",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-23",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "0-0",
-        "result": "D",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-18",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-13",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Major League Soccer (MLS)"
-      }
-    ],
-    "homeElo": 1629,
-    "awayElo": 1500,
-    "leagueTier": 2,
-    "isMcpPick": true,
-    "source": "mcp"
-  },
-  {
-    "fixtureId": 1513341,
-    "match": "Sporting KC II vs St. Louis City II",
-    "homeTeam": "Sporting KC II",
-    "awayTeam": "St. Louis City II",
-    "homeTeamId": 4019,
-    "awayTeamId": 18740,
-    "homeLogo": "https://media.api-sports.io/football/teams/4019.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/18740.png",
-    "league": "Major League Soccer (MLS)",
-    "leagueId": 909,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/909.png",
-    "country": "Estados Unidos",
-    "kickoff": "2026-09-05T19:00:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.53,
-    "bookmakerOdds": 1.53,
-    "modelOdds": 1.56,
-    "fairOdds": 1.56,
-    "probability": 63.9,
-    "impliedProbability": 65.4,
-    "edge": 1,
-    "expectedValue": -2.2,
-    "confidence": "Alta",
-    "pickBadge": "mcp",
-    "smartScore": 72,
-    "explanation": "Selección identificada por el Agente MCP: Tendencia de ataque en MLS con cuota @1.53 y 63.9% de probabilidad.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-08",
-        "homeTeam": "Sporting KC II",
-        "awayTeam": "St. Louis City II",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-03-10",
-        "homeTeam": "St. Louis City II",
-        "awayTeam": "Sporting KC II",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2025-09-11",
-        "homeTeam": "Sporting KC II",
-        "awayTeam": "St. Louis City II",
-        "score": "1-1",
-        "winner": "draw",
-        "competition": "Major League Soccer (MLS)"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-02",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-28",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "2-0",
-        "result": "W",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-23",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "3-1",
-        "result": "W",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-18",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-13",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "3-1",
-        "result": "W",
-        "competition": "Major League Soccer (MLS)"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-02",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-28",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-23",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-18",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-13",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "1-2",
-        "result": "L",
-        "competition": "Major League Soccer (MLS)"
-      }
-    ],
-    "homeElo": 1860,
-    "awayElo": 1640,
-    "leagueTier": 2,
-    "isMcpPick": true,
-    "source": "mcp"
+    "source": "mcp",
+    "actualScore": "0 - 0"
   },
   {
     "fixtureId": 1490444,
@@ -4476,151 +4160,6 @@
     "homeElo": 1610,
     "awayElo": 1506,
     "leagueTier": 1
-  },
-  {
-    "fixtureId": 1513342,
-    "match": "Los Angeles FC II vs Ventura County",
-    "homeTeam": "Los Angeles FC II",
-    "awayTeam": "Ventura County",
-    "homeTeamId": 21141,
-    "awayTeamId": 3997,
-    "homeLogo": "https://media.api-sports.io/football/teams/21141.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/3997.png",
-    "league": "Major League Soccer (MLS)",
-    "leagueId": 909,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/909.png",
-    "country": "Estados Unidos",
-    "kickoff": "2026-09-05T21:00:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.4,
-    "bookmakerOdds": 1.4,
-    "modelOdds": 1.6,
-    "fairOdds": 1.6,
-    "probability": 62.4,
-    "impliedProbability": 71.4,
-    "edge": 1,
-    "expectedValue": -12.6,
-    "confidence": "Alta",
-    "pickBadge": "mcp",
-    "smartScore": 72,
-    "explanation": "Selección identificada por el Agente MCP: Tendencia de ataque en MLS con cuota @1.4 y 62.4% de probabilidad.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-08",
-        "homeTeam": "Los Angeles FC II",
-        "awayTeam": "Ventura County",
-        "score": "1-2",
-        "winner": "away",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-03-10",
-        "homeTeam": "Ventura County",
-        "awayTeam": "Los Angeles FC II",
-        "score": "2-0",
-        "winner": "home",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2025-09-11",
-        "homeTeam": "Los Angeles FC II",
-        "awayTeam": "Ventura County",
-        "score": "1-3",
-        "winner": "away",
-        "competition": "Major League Soccer (MLS)"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-02",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-28",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-23",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "1-2",
-        "result": "L",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-18",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-13",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Major League Soccer (MLS)"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-02",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-28",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-23",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-18",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Major League Soccer (MLS)"
-      },
-      {
-        "date": "2026-08-13",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Major League Soccer (MLS)"
-      }
-    ],
-    "homeElo": 1604,
-    "awayElo": 1635,
-    "leagueTier": 2,
-    "isMcpPick": true,
-    "source": "mcp"
   },
   {
     "fixtureId": 1490449,

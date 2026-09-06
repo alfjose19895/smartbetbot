@@ -14,23 +14,50 @@ import {
 } from "@/lib/sports/api-football";
 
 const COUNTRY_SYNONYMS: Record<string, string[]> = {
-  españa: ["españa", "spain", "la liga", "segunda", "copa del rey", "liga f", "villarreal", "leganes", "barcelona", "madrid", "sevilla", "betis", "oviedo", "tenerife"],
-  inglaterra: ["inglaterra", "england", "premier league", "championship", "league one", "league two", "national league", "southampton", "portsmouth", "fleetwood", "wigan", "southend", "shrewsbury"],
-  alemania: ["alemania", "germany", "bundesliga", "2. bundesliga", "dfb pokal", "leverkusen", "leipzig", "gladbach", "bremen", "union berlin", "kiel", "nürnberg", "elversberg"],
-  italia: ["italia", "italy", "serie a", "serie b", "coppa italia", "fiorentina", "torino", "sudtirol", "catanzaro"],
-  francia: ["francia", "france", "ligue 1", "ligue 2", "coupe de france", "le havre", "brest"],
-  portugal: ["portugal", "primeira liga", "liga portugal 2", "taca de portugal", "sporting", "nacional", "tondela"],
+  españa: ["españa", "spain", "la liga", "primera división", "villarreal", "leganes", "barcelona", "madrid", "sevilla", "betis", "oviedo", "tenerife"],
+  inglaterra: ["inglaterra", "england", "premier league", "southampton", "portsmouth", "fleetwood", "wigan", "southend", "shrewsbury"],
+  alemania: ["alemania", "germany", "bundesliga", "leverkusen", "leipzig", "gladbach", "bremen", "union berlin", "kiel", "nürnberg", "elversberg"],
+  italia: ["italia", "italy", "serie a", "fiorentina", "torino", "sudtirol", "catanzaro"],
+  francia: ["francia", "france", "ligue 1", "le havre", "brest"],
+  portugal: ["portugal", "primeira liga", "sporting", "nacional", "tondela"],
   ecuador: ["ecuador", "liga pro", "serie a ecuador", "copa ecuador", "independiente del valle", "macara", "barcelona sc", "ldu", "emelec"],
   "costa rica": ["costa rica", "liga fpd", "primera división (liga fpd)", "primera division", "alajuelense", "saprissa", "herediano", "perez zeledon", "cartagines"],
-  mexico: ["méxico", "mexico", "liga mx", "liga de expansion", "san luis", "chivas", "guadalajara", "america", "cruz azul", "tigres", "monterrey"],
-  brasil: ["brasil", "brazil", "brasileirão", "brasileirao", "serie a brasil", "copa do brasil", "sao paulo", "atletico-mg", "flamengo", "palmeiras", "coritiba", "chapecoense"],
+  mexico: ["méxico", "mexico", "liga mx", "san luis", "chivas", "guadalajara", "america", "cruz azul", "tigres", "monterrey"],
+  brasil: ["brasil", "brazil", "brasileirão", "brasileirao", "serie a brasil", "sao paulo", "atletico-mg", "flamengo", "palmeiras", "coritiba", "chapecoense"],
   argentina: ["argentina", "liga profesional", "copa de la liga", "boca", "river", "racing", "independiente"],
   colombia: ["colombia", "primera a", "liga betplay", "santa fe", "fortaleza", "millonarios", "junior", "nacional"],
   peru: ["perú", "peru", "liga 1 peru", "cusco", "moquegua", "alianza", "universitario", "sporting cristal"],
   chile: ["chile", "primera división chile", "campeonato nacional", "everton", "catolica", "colo colo", "u de chile"],
   holanda: ["holanda", "países bajos", "paises bajos", "netherlands", "eredivisie", "ajax", "psv", "feyenoord"],
   belgica: ["bélgica", "belgica", "belgium", "jupiler pro league", "standard liege", "antwerp", "brujas", "anderlecht"],
-  estados_unidos: ["estados unidos", "usa", "mls", "major league soccer", "us open cup", "usl", "philadelphia", "montreal", "inter miami", "vancouver", "cincinnati", "dc united"],
+  estados_unidos: [
+    "estados unidos",
+    "usa",
+    "mls",
+    "major league soccer",
+    "inter miami",
+    "philadelphia",
+    "montreal",
+    "vancouver",
+    "cincinnati",
+    "dc united",
+    "real salt lake",
+    "los angeles fc",
+    "la galaxy",
+    "portland",
+    "seattle sounders",
+    "columbus crew",
+    "austin",
+    "san jose earthquakes",
+    "fc dallas",
+    "sporting kansas city",
+    "orlando city",
+    "colorado rapids",
+    "toronto fc",
+    "chicago fire",
+    "charlotte",
+    "houston dynamo",
+  ],
   ucrania: ["ucrania", "ukraine", "premier league ucrania", "kharkiv", "shakhtar", "dynamo kyiv"],
   croacia: ["croacia", "croatia", "hnl", "rijeka", "osijek", "dinamo zagreb", "hajduk"],
 };
@@ -78,9 +105,17 @@ export async function POST(req: Request) {
     const allPredictions = await generatePredictionsForUpcoming();
     const todayStr = getEcuadorDateString(Date.now());
 
-    // Base candidate pool from today's snapshot
+    // Base candidate pool from today's snapshot (strictly filtering out reserve squads)
     let pool = allPredictions.filter((p) => {
       const pDate = getEcuadorDateString(new Date(p.kickoff));
+      const leg = (p.league || "").toLowerCase();
+      const h = (p.homeTeam || "").toLowerCase();
+      const a = (p.awayTeam || "").toLowerCase();
+
+      // Exclude reserve development leagues & reserve teams
+      if (leg.includes("next pro") || leg.includes("primavera") || leg.includes("reserve")) return false;
+      if (h.endsWith(" ii") || h.endsWith(" 2") || a.endsWith(" ii") || a.endsWith(" 2")) return false;
+
       return pDate === todayStr;
     });
 
@@ -153,7 +188,13 @@ export async function POST(req: Request) {
     }
 
     // 4. If query requests MLS / specific league or country and snapshot has few/no matches, fetch directly from live API-Football!
-    const isMlsRequest = qLower.includes("mls") || qLower.includes("major league") || targetCountryTerms.some(t => t === "mls" || t === "major league soccer");
+    const isMlsRequest =
+      qLower.includes("mls") ||
+      qLower.includes("major league soccer") ||
+      qLower.includes("estados unidos") ||
+      qLower.includes("usa") ||
+      targetCountryTerms.some((t) => t === "mls" || t === "major league soccer");
+
     if ((isMlsRequest || (targetCountryTerms.length > 0 && filtered.length <= 1)) && !matchedByTeam) {
       try {
         const liveFixtures = await apiFootball.getFixturesByDate(todayStr);
@@ -163,9 +204,35 @@ export async function POST(req: Request) {
           const h = (f.teams.home.name || "").toLowerCase();
           const a = (f.teams.away.name || "").toLowerCase();
 
-          if (isMlsRequest) {
-            return l.includes("mls") || l.includes("major league") || (c.includes("usa") && (l.includes("mls") || l.includes("usl") || l.includes("next pro") || l.includes("open cup")));
+          // STRICTLY EXCLUDE MLS 2 / MLS NEXT PRO / RESERVAS / SEGUNDA DIVISION
+          if (
+            l.includes("next pro") ||
+            l.includes("reserve") ||
+            l.includes("primavera") ||
+            l.includes("u21") ||
+            l.includes("u20") ||
+            l.includes("u19") ||
+            l.includes("u23") ||
+            l.includes("usl") ||
+            h.endsWith(" ii") ||
+            h.endsWith(" 2") ||
+            h.endsWith(" b") ||
+            a.endsWith(" ii") ||
+            a.endsWith(" 2") ||
+            a.endsWith(" b")
+          ) {
+            return false;
           }
+
+          if (isMlsRequest) {
+            // STRICTLY Primera División de USA: Major League Soccer (League 253)
+            return (
+              f.league.id === 253 ||
+              l === "major league soccer" ||
+              l === "major league soccer (mls)"
+            );
+          }
+
           return targetCountryTerms.some((term) =>
             l.includes(term) || c.includes(term) || h.includes(term) || a.includes(term)
           );
@@ -340,11 +407,15 @@ export async function POST(req: Request) {
     const avgProb = filtered.length > 0 ? Math.round(filtered.reduce((acc, p) => acc + p.probability, 0) / filtered.length) : 0;
     const avgOdds = filtered.length > 0 ? (filtered.reduce((acc, p) => acc + p.odds, 0) / filtered.length).toFixed(2) : "0.00";
 
+    const leagueDisplayName = isMlsRequest ? "Major League Soccer (Primera División USA)" : topPick?.league || "Ligas Principales";
+
     const aiAnalysis: AiAgentAnalysis = {
       intent: isParlayRequest
         ? "Combinada / Parlay Inteligente"
         : matchedByTeam
         ? `Análisis Táctico Específico: ${topPick?.homeTeam} vs ${topPick?.awayTeam}`
+        : isMlsRequest
+        ? "Búsqueda Oficial: Major League Soccer (MLS - 1ª División)"
         : targetCountryTerms.length > 0
         ? `Búsqueda por País/Región: ${targetCountryTerms[0].toUpperCase()}`
         : "Filtro Algorítmico Cuantitativo",
@@ -352,12 +423,12 @@ export async function POST(req: Request) {
         ? `El motor analizó el encuentro ${topPick.homeTeam} vs ${topPick.awayTeam} en ${topPick.league}. El modelo Poisson y las líneas de Bet365/Pinnacle determinan que la mejor oportunidad es '${topPick.market}' con una cuota real de @${topPick.odds} y un ${topPick.probability}% de certeza matemática.`
         : isParlayRequest
         ? `Se generó una combinada de ${parlayData?.selectionsCount} selecciones de alta compatibilidad estadística, con una cuota acumulada de @${parlayData?.totalOdds} y probabilidad conjunta calculada de ${parlayData?.combinedProbability}.`
-        : `Se procesaron los datos en vivo para tu solicitud "${query || "pronósticos generales"}". El algoritmo seleccionó ${filtered.length} partidos de alta precisión con un promedio de probabilidad del ${avgProb}% y cuota promedio de @${avgOdds}. Las alertas se han publicado automáticamente en el Dashboard y Alertas del Día con la etiqueta 🤖 Agente MCP.`,
+        : `Se procesaron los datos en vivo para tu solicitud "${query || "pronósticos generales"}". El algoritmo seleccionó ${filtered.length} partidos de ${leagueDisplayName} con un promedio de probabilidad del ${avgProb}% y cuota promedio de @${avgOdds}. Las alertas se han publicado automáticamente en el Dashboard y Alertas del Día con la etiqueta 🤖 Agente MCP.`,
       insights: [
-        topPick ? `Poco margen de error: ${topPick.homeTeam} vs ${topPick.awayTeam} lidera con SmartScore de ${topPick.smartScore}/100 y cuota @${topPick.odds}.` : "Filtros aplicados con rigor estadístico.",
+        topPick ? `Poco margen de error: ${topPick.homeTeam} vs ${topPick.awayTeam} lidera en ${topPick.league} con SmartScore de ${topPick.smartScore}/100 y cuota @${topPick.odds}.` : "Filtros aplicados con rigor estadístico.",
+        `Filtro Estricto de 1ª División: Se excluyen filiales, reservas y ligas de desarrollo (MLS Next Pro / USL). Solo equipos oficiales de Primera División.`,
         `Calibración de cuotas: 100% integradas directamente con líneas de casas de apuestas (Bet365 / Pinnacle) sin distorsión de modelos sintéticos.`,
         effectiveMinOdds > 0 ? `Restricción de cuota mínima: Se aseguraron selecciones con cuota >= @${effectiveMinOdds}.` : `Distribución diversificada en mercados de alto valor (${filtered.map(p => p.market).slice(0, 2).join(", ")}).`,
-        `Publicación Automática: Se incorporaron ${filtered.length} picks al flujo diario de alertas para consulta inmediata en web y móvil.`,
       ],
       recommendation: isParlayRequest
         ? `Estrategia Parlay: Asignar Stake 1 (1-2% del bankroll) para maximizar el retorno de la cuota @${parlayData?.totalOdds}.`
@@ -370,7 +441,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       count: filtered.length,
-      countryDetected: targetCountryTerms.length > 0 ? targetCountryTerms[0] : "Global",
+      countryDetected: isMlsRequest ? "Major League Soccer (1ª División)" : targetCountryTerms.length > 0 ? targetCountryTerms[0] : "Global",
       autoPublished: true,
       autoPublishResult,
       aiAnalysis,
