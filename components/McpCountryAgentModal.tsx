@@ -33,11 +33,12 @@ const QUICK_CHIPS = [
   { id: "sudamericana", label: "Copa Sudamericana", query: "Pronósticos de Copa Sudamericana hoy", icon: "🌎" },
   { id: "local_value", label: "Ganador Local (+60%)", query: "Pronósticos de Ganador Local con probabilidad superior al 60% y cuota de valor", icon: "🎯" },
   { id: "parlay_top", label: "Parlay del Día", query: "Crea una combinada parlay segura de 2 o 3 partidos con cuota de valor", icon: "🔥" },
+  { id: "inglaterra", label: "Inglaterra (League Cup)", query: "Pronósticos de Inglaterra League Cup hoy", icon: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
   { id: "españa", label: "España", query: "Pronósticos de España La Liga hoy", icon: "🇪🇸" },
-  { id: "inglaterra", label: "Inglaterra", query: "Pronósticos de Inglaterra Premier League", icon: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
   { id: "alemania", label: "Alemania", query: "Pronósticos de Alemania Bundesliga", icon: "🇩🇪" },
   { id: "italia", label: "Italia", query: "Pronósticos de Italia Serie A", icon: "🇮🇹" },
   { id: "francia", label: "Francia", query: "Pronósticos de Francia Ligue 1", icon: "🇫🇷" },
+  { id: "saudi", label: "Arabia Saudita", query: "Pronósticos de Saudi Pro League hoy", icon: "🇸🇦" },
   { id: "brasil", label: "Brasil", query: "Pronósticos de Brasil Brasileirão", icon: "🇧🇷" },
   { id: "argentina", label: "Argentina", query: "Pronósticos de Argentina Liga Profesional", icon: "🇦🇷" },
 ];
@@ -55,10 +56,12 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
     highConfidenceCount: number;
   } | null>(null);
   const [searched, setSearched] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [publishSuccessMessage, setPublishSuccessMessage] = useState<string | null>(null);
+  const [publishedIds, setPublishedIds] = useState<Set<string | number>>(new Set());
 
   useEffect(() => {
     if (isOpen) {
-      // Auto-load top Champions League / High Value picks on open
       handleSearch("Pronósticos de Champions League y cuotas de valor hoy", "champions");
     }
   }, [isOpen]);
@@ -69,6 +72,8 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
 
     setLoading(true);
     setSearched(true);
+    setPublishSuccessMessage(null);
+
     try {
       const res = await fetch("/api/mcp/predictions", {
         method: "POST",
@@ -97,7 +102,55 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
     handleSearch(chip.query, chip.id);
   };
 
+  const handlePublishPicks = async (picksToPublish: MarketOpportunity[], customMsg?: string) => {
+    if (picksToPublish.length === 0) return;
+    setPublishing(true);
+    try {
+      const res = await fetch("/api/mcp/predictions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "publish",
+          picks: picksToPublish,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const msg = customMsg || `✓ ¡Se publicaron ${picksToPublish.length} pronóstico(s) exitosamente en el Dashboard y la Sección Parlay!`;
+        setPublishSuccessMessage(msg);
+
+        // Mark published IDs
+        setPublishedIds((prev) => {
+          const next = new Set(prev);
+          picksToPublish.forEach((p) => next.add(p.fixtureId || p.id || `${p.homeTeam}-${p.awayTeam}`));
+          return next;
+        });
+
+        // Notify other components & pages
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new Event("storage"));
+          window.dispatchEvent(new CustomEvent("predictions-updated", { detail: { picks: picksToPublish } }));
+        }
+
+        setTimeout(() => {
+          setPublishSuccessMessage(null);
+        }, 5000);
+      }
+    } catch (err) {
+      console.error("Error publishing picks:", err);
+    } finally {
+      setPublishing(false);
+    }
+  };
+
+  const handlePublishSinglePick = (prediction: MarketOpportunity) => {
+    handlePublishPicks([prediction], `✓ ¡Pronóstico ${prediction.homeTeam} vs ${prediction.awayTeam} publicado en el Dashboard!`);
+  };
+
   if (!isOpen) return null;
+
+  const isParlayActive = Boolean(aiAnalysis?.parlayRecommendation);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-2 sm:p-4 backdrop-blur-md animate-in fade-in duration-200">
@@ -114,7 +167,7 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
                   Agente MCP de Inteligencia Cuantitativa
                 </h3>
                 <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-black text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-700">
-                  ⚡ Gemini AI + Cuotas Reales
+                  ⚡ Gemini AI + Cuotas Reales Bet365
                 </span>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -130,6 +183,22 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
             ✕
           </button>
         </div>
+
+        {/* Success Banner Notification */}
+        {publishSuccessMessage && (
+          <div className="bg-emerald-600 px-5 py-2.5 text-xs font-black text-white flex items-center justify-between shadow-md animate-in slide-in-from-top duration-300">
+            <span className="flex items-center gap-2">
+              <span>🚀</span>
+              <span>{publishSuccessMessage}</span>
+            </span>
+            <button
+              onClick={() => setPublishSuccessMessage(null)}
+              className="text-white/80 hover:text-white font-bold text-sm"
+            >
+              ✕
+            </button>
+          </div>
+        )}
 
         {/* Content Area */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
@@ -226,7 +295,7 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
             </div>
           )}
 
-          {/* AI Executive Reasoning Card (Powered by Gemini / Claude) */}
+          {/* AI Executive Reasoning Card (Powered by Gemini / Quantitative Engine) */}
           {aiAnalysis && (
             <div className="rounded-2xl border border-indigo-200/80 bg-gradient-to-br from-indigo-50/70 via-slate-50 to-teal-50/50 p-4 dark:border-indigo-900/60 dark:from-indigo-950/40 dark:via-slate-900 dark:to-teal-950/30 space-y-3 shadow-sm">
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-indigo-100 pb-2 dark:border-indigo-900/40">
@@ -294,24 +363,40 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
                 </div>
               )}
 
-              {/* Parlay Preview if requested */}
+              {/* Parlay Preview & Publishing Action Button */}
               {aiAnalysis.parlayRecommendation && (
-                <div className="rounded-xl bg-slate-900 text-white p-3 border border-slate-800 space-y-2">
+                <div className="rounded-2xl bg-slate-900 text-white p-4 border border-slate-800 space-y-3 shadow-xl">
                   <div className="flex items-center justify-between text-xs font-black">
-                    <span className="text-amber-400 flex items-center gap-1.5">
-                      <span>🔥</span> Combinada Parlay Recomendada
+                    <span className="text-amber-400 flex items-center gap-1.5 text-sm">
+                      <span>🔥</span> Combinada Parlay Descubierta
                     </span>
-                    <span className="bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-lg border border-amber-500/30">
+                    <span className="bg-amber-500/20 text-amber-300 px-3 py-1 rounded-xl border border-amber-500/40 text-sm font-black">
                       Cuota Total: @{aiAnalysis.parlayRecommendation.totalOdds}
                     </span>
                   </div>
-                  <div className="space-y-1 text-xs">
+
+                  <div className="space-y-1.5 text-xs">
                     {aiAnalysis.parlayRecommendation.legs.map((l, i) => (
-                      <div key={i} className="flex items-center justify-between text-slate-300 py-0.5 border-b border-slate-800/60 last:border-none">
-                        <span>• {l.match} ({l.market})</span>
-                        <span className="font-bold text-emerald-400">@{l.odds}</span>
+                      <div key={i} className="flex items-center justify-between text-slate-200 py-1 border-b border-slate-800/80 last:border-none">
+                        <span className="font-bold">• {l.match} <span className="text-slate-400 font-normal">({l.market})</span></span>
+                        <span className="font-black text-emerald-400">@{l.odds}</span>
                       </div>
                     ))}
+                  </div>
+
+                  <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between gap-3">
+                    <div className="text-[11px] text-slate-400">
+                      Probabilidad combinada: <span className="text-emerald-400 font-black">{aiAnalysis.parlayRecommendation.combinedProbability}</span>
+                    </div>
+
+                    <button
+                      onClick={() => handlePublishPicks(results, `✓ ¡Combinada Parlay de ${results.length} selecciones (@${aiAnalysis?.parlayRecommendation?.totalOdds}) publicada en el Dashboard y la Sección Parlay!`)}
+                      disabled={publishing}
+                      className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 px-4 py-2.5 text-xs font-black text-slate-950 hover:brightness-110 shadow-lg shadow-amber-500/30 transition cursor-pointer disabled:opacity-50"
+                    >
+                      <span>{publishing ? "⏳" : "🚀"}</span>
+                      <span>{publishing ? "Publicando..." : "Publicar Parlay en Dashboard"}</span>
+                    </button>
                   </div>
                 </div>
               )}
@@ -326,18 +411,34 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
             </div>
           ) : results.length > 0 ? (
             <div className="space-y-3">
-              <div className="flex items-center justify-between text-xs font-bold text-slate-500">
-                <span>Pronósticos con cuotas reales de Bet365/Pinnacle ({results.length}):</span>
-                <span className="text-emerald-600 dark:text-emerald-400">Ordenados por Probabilidad y Cuota Justa</span>
+              <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-slate-500">
+                <span>Pronósticos descubiertos con cuotas reales Bet365 ({results.length}):</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handlePublishPicks(results)}
+                    disabled={publishing}
+                    className="flex items-center gap-1.5 rounded-xl bg-emerald-600/10 hover:bg-emerald-600 px-3 py-1.5 text-xs font-black text-emerald-700 hover:text-white dark:text-emerald-300 dark:hover:text-white border border-emerald-500/30 transition cursor-pointer disabled:opacity-50"
+                  >
+                    <span>📤</span>
+                    <span>{publishing ? "Publicando..." : "Publicar Todo al Dashboard"}</span>
+                  </button>
+                  <span className="text-emerald-600 dark:text-emerald-400 hidden sm:inline">100% Cuotas Reales</span>
+                </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {results.map((pick) => (
-                  <PredictionCard
-                    key={pick.id || pick.fixtureId}
-                    prediction={pick}
-                    onOpenDetail={onSelectPrediction}
-                  />
-                ))}
+                {results.map((pick) => {
+                  const pickKey = pick.fixtureId || pick.id || `${pick.homeTeam}-${pick.awayTeam}`;
+                  const isAlreadyPublished = publishedIds.has(pickKey);
+                  return (
+                    <PredictionCard
+                      key={pickKey}
+                      prediction={pick}
+                      onOpenDetail={onSelectPrediction}
+                      onPublishAlert={handlePublishSinglePick}
+                      isPublished={isAlreadyPublished}
+                    />
+                  );
+                })}
               </div>
             </div>
           ) : searched ? (
@@ -358,12 +459,23 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
           <span className="text-[11px] font-bold text-slate-500">
             SmartBetBot MCP Assistant • 100% Cuotas Reales Bet365/Pinnacle
           </span>
-          <button
-            onClick={onClose}
-            className="rounded-xl bg-slate-900 px-4 py-2 text-xs font-black text-white hover:bg-emerald-600 dark:bg-white dark:text-slate-950 dark:hover:bg-emerald-400 transition cursor-pointer"
-          >
-            Cerrar
-          </button>
+          <div className="flex items-center gap-2">
+            {results.length > 0 && !isParlayActive && (
+              <button
+                onClick={() => handlePublishPicks(results)}
+                disabled={publishing}
+                className="rounded-xl bg-emerald-600 px-4 py-2 text-xs font-black text-white hover:bg-emerald-500 transition cursor-pointer disabled:opacity-50 shadow-md shadow-emerald-600/20"
+              >
+                {publishing ? "Publicando..." : "Publicar Alertas"}
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className="rounded-xl bg-slate-900 px-4 py-2 text-xs font-black text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200 transition cursor-pointer"
+            >
+              Cerrar
+            </button>
+          </div>
         </div>
       </div>
     </div>

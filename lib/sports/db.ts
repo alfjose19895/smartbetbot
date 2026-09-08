@@ -1682,16 +1682,43 @@ export async function searchLiveMarketDynamic(params: {
         return false;
       }
 
-      // Check query match (team, league, country)
+      // Smart semantic token and league matching from user prompt
       if (qLower) {
-        if (hName.includes(qLower) || qLower.includes(hName) || aName.includes(qLower) || qLower.includes(aName)) return true;
-        if (legName.includes(qLower) || qLower.includes(legName)) return true;
-        if (countryName.includes(qLower) || qLower.includes(countryName)) return true;
-        if (qLower.includes("champions") && (legName.includes("champions") || legName.includes("uefa"))) return true;
-        if (qLower.includes("sudamericana") && (legName.includes("sudamericana") || legName.includes("conmebol"))) return true;
-        if (qLower.includes("libertadores") && (legName.includes("libertadores") || legName.includes("conmebol"))) return true;
-        if (qLower.includes("inglaterra") && (countryName.includes("england") || legName.includes("cup") || legName.includes("league"))) return true;
-        if (qLower.includes("españa") && (countryName.includes("spain") || countryName.includes("españa") || legName.includes("la liga") || legName.includes("copa del rey"))) return true;
+        // League keyword matching
+        const leagueKeywords: Record<string, string[]> = {
+          champions: ["champions", "ucl", "uefa champions league"],
+          europa: ["europa league", "uel"],
+          sudamericana: ["sudamericana", "conmebol sudamericana", "copa sudamericana"],
+          libertadores: ["libertadores", "conmebol libertadores", "copa libertadores"],
+          premier: ["premier", "inglaterra", "league cup", "efl cup", "fa cup"],
+          laliga: ["la liga", "laliga", "españa", "copa del rey"],
+          seriea: ["serie a", "italia"],
+          bundesliga: ["bundesliga", "alemania"],
+          ligue1: ["ligue 1", "francia"],
+          saudi: ["saudi", "pro league", "arabia"],
+          brasil: ["brasileirao", "brasileirão", "brasil"],
+          argentina: ["argentina", "liga profesional"],
+          finland: ["veikkausliiga", "finlandia"],
+          korea: ["k league", "corea"],
+        };
+
+        for (const keywords of Object.values(leagueKeywords)) {
+          if (keywords.some((kw) => qLower.includes(kw))) {
+            if (keywords.some((kw) => legName.includes(kw) || countryName.includes(kw))) {
+              return true;
+            }
+          }
+        }
+
+        // Significant token match for team names
+        const tokens = qLower.split(/[\s,.;:!?]+/).filter((t) => t.length >= 4 && !["pronosticos", "pronósticos", "partidos", "ganador", "cuota", "valor", "superior", "probabilidad"].includes(t));
+        for (const tok of tokens) {
+          if (hName.includes(tok) || aName.includes(tok)) {
+            return true;
+          }
+        }
+
+        if (countryName && qLower.includes(countryName)) return true;
       }
 
       if (cLower && (countryName.includes(cLower) || legName.includes(cLower))) return true;
