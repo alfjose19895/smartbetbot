@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import {
   generatePredictionsForUpcoming,
   getEcuadorDateString,
+  getStoredPredictions,
   addPredictionsToDailySnapshot,
 } from "@/lib/sports/db";
 import {
@@ -34,23 +35,42 @@ const FORBIDDEN_RESERVE_TEAMS = [
   "sporting kc ii", "st. louis city 2", "toronto fc ii"
 ];
 
+const LEAGUE_KEYWORDS: Record<string, string[]> = {
+  "champions": ["champions", "ucl", "champions league", "uefa champions league"],
+  "europa": ["europa league", "uel", "europa"],
+  "libertadores": ["libertadores", "conmebol libertadores", "copa libertadores"],
+  "sudamericana": ["sudamericana", "conmebol sudamericana", "copa sudamericana"],
+  "premier": ["premier league", "premier", "inglaterra"],
+  "la liga": ["la liga", "primera división españa", "laliga", "españa"],
+  "serie a": ["serie a", "italia"],
+  "bundesliga": ["bundesliga", "alemania"],
+  "ligue 1": ["ligue 1", "francia"],
+  "championship": ["championship", "segunda inglaterra"],
+  "eredivisie": ["eredivisie", "holanda", "paises bajos", "países bajos"],
+  "mls": ["mls", "major league soccer", "estados unidos", "usa"],
+  "k league": ["k league", "corea", "korea"],
+  "veikkausliiga": ["veikkausliiga", "finlandia"],
+  "brasileirao": ["brasileirão", "brasileirao", "brasil", "serie a brasil", "serie b brasil"],
+  "argentina": ["liga profesional", "argentina", "copa de la liga"],
+};
+
 const COUNTRY_SYNONYMS: Record<string, string[]> = {
   españa: ["españa", "spain", "la liga", "primera división", "villarreal", "leganes", "barcelona", "madrid", "sevilla", "betis", "oviedo", "tenerife"],
-  inglaterra: ["inglaterra", "england", "premier league", "southampton", "portsmouth", "fleetwood", "wigan", "southend", "shrewsbury"],
-  alemania: ["alemania", "germany", "bundesliga", "leverkusen", "leipzig", "gladbach", "bremen", "union berlin", "kiel", "nürnberg", "elversberg"],
-  italia: ["italia", "italy", "serie a", "fiorentina", "torino", "sudtirol", "catanzaro"],
-  francia: ["francia", "france", "ligue 1", "le havre", "brest"],
-  portugal: ["portugal", "primeira liga", "sporting", "nacional", "tondela"],
+  inglaterra: ["inglaterra", "england", "premier league", "southampton", "portsmouth", "fleetwood", "wigan", "southend", "shrewsbury", "bolton", "west ham"],
+  alemania: ["alemania", "germany", "bundesliga", "leverkusen", "leipzig", "gladbach", "bremen", "union berlin", "kiel", "nürnberg", "elversberg", "dortmund"],
+  italia: ["italia", "italy", "serie a", "fiorentina", "torino", "sudtirol", "catanzaro", "inter"],
+  francia: ["francia", "france", "ligue 1", "le havre", "brest", "lille"],
+  portugal: ["portugal", "primeira liga", "sporting", "nacional", "tondela", "porto"],
   ecuador: ["ecuador", "liga pro", "serie a ecuador", "copa ecuador", "independiente del valle", "macara", "barcelona sc", "ldu", "emelec"],
   "costa rica": ["costa rica", "liga fpd", "primera división (liga fpd)", "primera division", "alajuelense", "saprissa", "herediano", "perez zeledon", "cartagines"],
   mexico: ["méxico", "mexico", "liga mx", "san luis", "chivas", "guadalajara", "america", "cruz azul", "tigres", "monterrey"],
-  brasil: ["brasil", "brazil", "brasileirão", "brasileirao", "serie a brasil", "sao paulo", "atletico-mg", "flamengo", "palmeiras", "coritiba", "chapecoense"],
-  argentina: ["argentina", "liga profesional", "copa de la liga", "boca", "river", "racing", "independiente"],
+  brasil: ["brasil", "brazil", "brasileirão", "brasileirao", "serie a brasil", "sao paulo", "atletico-mg", "flamengo", "palmeiras", "coritiba", "chapecoense", "cuiaba", "criciuma", "juventude"],
+  argentina: ["argentina", "liga profesional", "copa de la liga", "boca", "river", "racing", "independiente", "boca juniors"],
   colombia: ["colombia", "primera a", "liga betplay", "santa fe", "fortaleza", "millonarios", "junior", "nacional"],
   peru: ["perú", "peru", "liga 1 peru", "cusco", "moquegua", "alianza", "universitario", "sporting cristal"],
   chile: ["chile", "primera división chile", "campeonato nacional", "everton", "catolica", "colo colo", "u de chile"],
-  holanda: ["holanda", "países bajos", "paises bajos", "netherlands", "eredivisie", "ajax", "psv", "feyenoord"],
-  belgica: ["bélgica", "belgica", "belgium", "jupiler pro league", "standard liege", "antwerp", "brujas", "anderlecht"],
+  holanda: ["holanda", "países bajos", "paises bajos", "netherlands", "eredivisie", "ajax", "psv", "feyenoord", "nec nijmegen", "excelsior", "utrecht"],
+  belgica: ["bélgica", "belgica", "belgium", "jupiler pro league", "standard liege", "antwerp", "brujas", "anderlecht", "club brugge"],
   estados_unidos: [
     "estados unidos", "usa", "mls", "major league soccer", "inter miami", "philadelphia",
     "montreal", "vancouver", "cincinnati", "dc united", "real salt lake", "los angeles fc",
@@ -111,7 +131,10 @@ export async function POST(req: Request) {
       });
     }
 
-    const allPredictions = await generatePredictionsForUpcoming();
+    let allPredictions = getStoredPredictions();
+    if (allPredictions.length === 0) {
+      allPredictions = await generatePredictionsForUpcoming();
+    }
     const todayStr = getEcuadorDateString(Date.now());
 
     // Base candidate pool from today's snapshot (strictly filtering out reserve squads)
@@ -128,8 +151,6 @@ export async function POST(req: Request) {
 
       return pDate === todayStr;
     });
-
-    // pool strictly stays limited to today's matches
 
     const qLower = (query || "").toLowerCase().trim();
     const cLower = (country || "").toLowerCase().trim();
@@ -152,23 +173,27 @@ export async function POST(req: Request) {
       qLower.includes("prematch") ||
       qLower.includes("pre-match");
 
-    // 1. Natural Language Intent Parsing: Country synonyms
-    let targetCountryTerms: string[] = [];
-    if (cLower) {
-      targetCountryTerms = COUNTRY_SYNONYMS[cLower] || [cLower];
-    } else {
-      for (const [countryKey, synonyms] of Object.entries(COUNTRY_SYNONYMS)) {
-        if (synonyms.some((syn) => qLower.includes(syn))) {
-          targetCountryTerms = synonyms;
+    let filtered = pool;
+
+    // 1. League Filter Recognition from Prompt
+    let matchedByLeague = false;
+    for (const [leagueKey, keywords] of Object.entries(LEAGUE_KEYWORDS)) {
+      if (keywords.some((kw) => qLower.includes(kw))) {
+        const leagueMatches = pool.filter((p) => {
+          const l = p.league.toLowerCase();
+          return keywords.some((kw) => l.includes(kw) || kw.includes(l));
+        });
+        if (leagueMatches.length > 0) {
+          filtered = leagueMatches;
+          matchedByLeague = true;
           break;
         }
       }
     }
 
-    // 2. Team Name Search
+    // 2. Team Name Search (only if not a broad natural language sentence without exact team name)
     let matchedByTeam = false;
-    let filtered = pool;
-    if (qLower.length > 2) {
+    if (!matchedByLeague && qLower.length > 2 && qLower.length < 35) {
       const teamMatches = pool.filter((p) => {
         const h = p.homeTeam.toLowerCase();
         const a = p.awayTeam.toLowerCase();
@@ -176,12 +201,7 @@ export async function POST(req: Request) {
           qLower.includes(h) ||
           h.includes(qLower) ||
           qLower.includes(a) ||
-          a.includes(qLower) ||
-          (qLower.includes("alajuelense") && (h.includes("alajuel") || a.includes("alajuel"))) ||
-          (qLower.includes("saprissa") && (h.includes("sapriss") || a.includes("sapriss"))) ||
-          (qLower.includes("independiente") && (h.includes("independiente") || a.includes("independiente"))) ||
-          (qLower.includes("everton") && (h.includes("everton") || a.includes("everton"))) ||
-          (qLower.includes("herediano") && (h.includes("heredia") || a.includes("heredia")))
+          a.includes(qLower)
         );
       });
 
@@ -191,8 +211,20 @@ export async function POST(req: Request) {
       }
     }
 
-    // 3. Country / Region Filter (if not already matched by specific team)
-    if (!matchedByTeam && targetCountryTerms.length > 0) {
+    // 3. Country / Region Filter
+    let targetCountryTerms: string[] = [];
+    if (cLower) {
+      targetCountryTerms = COUNTRY_SYNONYMS[cLower] || [cLower];
+    } else if (!matchedByLeague && !matchedByTeam) {
+      for (const [countryKey, synonyms] of Object.entries(COUNTRY_SYNONYMS)) {
+        if (synonyms.some((syn) => qLower.includes(syn))) {
+          targetCountryTerms = synonyms;
+          break;
+        }
+      }
+    }
+
+    if (!matchedByTeam && !matchedByLeague && targetCountryTerms.length > 0) {
       const countryMatches = filtered.filter((p) => {
         const pCountry = (p.country || "").toLowerCase();
         const pLeague = (p.league || "").toLowerCase();
@@ -213,122 +245,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // 4. Live API-Football Query (for MLS or live matches or specific country searches)
-    const isMlsRequest =
-      qLower.includes("mls") ||
-      qLower.includes("major league soccer") ||
-      qLower.includes("estados unidos") ||
-      qLower.includes("usa") ||
-      targetCountryTerms.some((t) => t === "mls" || t === "major league soccer");
-
-    if ((isMlsRequest || isLiveRequest || (targetCountryTerms.length > 0 && filtered.length <= 1)) && !matchedByTeam) {
-      try {
-        const liveFixtures = await apiFootball.getFixturesByDate(todayStr, "America/Guayaquil");
-        const liveMatchingFixtures = liveFixtures.filter((f) => {
-          const l = (f.league.name || "").toLowerCase();
-          const c = (f.league.country || "").toLowerCase();
-          const h = (f.teams.home.name || "").toLowerCase();
-          const a = (f.teams.away.name || "").toLowerCase();
-          const statusShort = f.fixture.status.short || "NS";
-
-          // Strict status filter depending on user prompt
-          if (isLiveRequest && !["1H", "HT", "2H", "ET", "P"].includes(statusShort)) {
-            return false;
-          }
-          if (isPreMatchRequest && statusShort !== "NS") {
-            return false;
-          }
-          if (["FT", "AET", "PEN", "PST", "CANC", "ABD"].includes(statusShort)) {
-            return false;
-          }
-
-          // STRICTLY REJECT RESERVES & DEVELOPMENT LEAGUES
-          if (
-            FORBIDDEN_RESERVE_TEAMS.some((t) => h.includes(t) || a.includes(t)) ||
-            l.includes("next pro") ||
-            l.includes("reserve") ||
-            l.includes("primavera") ||
-            l.includes("u21") ||
-            l.includes("u20") ||
-            l.includes("u19") ||
-            l.includes("u23") ||
-            l.includes("usl") ||
-            h.endsWith(" ii") ||
-            h.endsWith(" 2") ||
-            h.endsWith(" b") ||
-            a.endsWith(" ii") ||
-            a.endsWith(" 2") ||
-            a.endsWith(" b")
-          ) {
-            return false;
-          }
-
-          if (isMlsRequest) {
-            // STRICTLY Primera División de USA: Major League Soccer (League 253)
-            const isHomeMls = OFFICIAL_MLS_TEAMS.some((t) => h.includes(t));
-            const isAwayMls = OFFICIAL_MLS_TEAMS.some((t) => a.includes(t));
-            return (f.league.id === 253 || l.includes("major league soccer")) && isHomeMls && isAwayMls;
-          }
-
-          return targetCountryTerms.some((term) =>
-            l.includes(term) || c.includes(term) || h.includes(term) || a.includes(term)
-          );
-        });
-
-        if (liveMatchingFixtures.length > 0) {
-          const dynamicallyEvaluated: MarketOpportunity[] = [];
-          for (const f of liveMatchingFixtures.slice(0, 10)) {
-            const oddsRaw = await apiFootball.getOddsByFixture(f.fixture.id);
-            const marketOdds = extractMarketOddsFromBookmaker(oddsRaw);
-            const statusShort = f.fixture.status.short || "NS";
-            const isFixtureLive = ["1H", "HT", "2H", "ET", "P"].includes(statusShort);
-            const elapsed = f.fixture.status.elapsed || (statusShort === "HT" ? 45 : statusShort === "2H" ? 65 : 30);
-            const homeGoals = typeof f.goals?.home === "number" ? f.goals.home : 0;
-            const awayGoals = typeof f.goals?.away === "number" ? f.goals.away : 0;
-            const currentScore = isFixtureLive ? `${homeGoals} - ${awayGoals}` : undefined;
-
-            const opps = evaluateFixturePrediction({
-              fixtureId: f.fixture.id,
-              homeTeam: f.teams.home.name,
-              awayTeam: f.teams.away.name,
-              homeTeamId: f.teams.home.id,
-              awayTeamId: f.teams.away.id,
-              homeLogo: f.teams.home.logo,
-              awayLogo: f.teams.away.logo,
-              league: f.league.name,
-              leagueId: f.league.id,
-              country: f.league.country,
-              leagueLogo: f.league.logo,
-              kickoff: f.fixture.date,
-              marketOdds,
-              liveContext: isFixtureLive ? {
-                isLive: true,
-                statusShort,
-                elapsed,
-                homeGoals,
-                awayGoals,
-              } : undefined,
-            });
-
-            if (opps && opps.length > 0) {
-              for (const opp of opps) {
-                if (currentScore) {
-                  opp.currentScore = currentScore;
-                }
-                dynamicallyEvaluated.push(opp);
-              }
-            }
-          }
-          if (dynamicallyEvaluated.length > 0) {
-            filtered = dynamicallyEvaluated;
-          }
-        }
-      } catch (err) {
-        console.warn("[McpAgentApi] Live fixture query error:", err);
-      }
-    }
-
-    // 5. Market Filter from natural language
+    // 4. Market Filter from natural language
     const mLower = (market || "").toLowerCase().trim();
     let requestedMarket = "";
     if (mLower) {
@@ -339,7 +256,7 @@ export async function POST(req: Request) {
       requestedMarket = "over";
     } else if (qLower.includes("gana visitante") || qLower.includes("victoria visitante") || qLower.includes("ganador visitante")) {
       requestedMarket = "visitante";
-    } else if (qLower.includes("gana local") || qLower.includes("victoria local") || qLower.includes("triunfo local") || qLower.includes("ganador local")) {
+    } else if (qLower.includes("gana local") || qLower.includes("victoria local") || qLower.includes("triunfo local") || qLower.includes("ganador local") || qLower.includes("local")) {
       requestedMarket = "local";
     }
 
@@ -356,22 +273,35 @@ export async function POST(req: Request) {
       }
     }
 
-    // 6. Odds filtering (minOdds / maxOdds / natural language)
+    // 5. Probability / Confidence filtering with tolerance
+    let effectiveMinProb = minProb || 0;
+    const probMatch = qLower.match(/probabilidad(?:\s*(?:de|con))?\s*(?:superior|mayor(?:es)?|más|mas|>|>=)\s*(?:al?|de)?\s*([0-9]+)%?/);
+    if (probMatch) {
+      effectiveMinProb = parseFloat(probMatch[1]);
+    }
+    if (qLower.includes("muy alta") || qLower.includes("maxima seguridad") || qLower.includes("más seguros")) {
+      effectiveMinProb = Math.max(effectiveMinProb, 65);
+    }
+
+    if (effectiveMinProb > 0) {
+      // Filter with soft tolerance so 64.8% matches 65% requested
+      const probFiltered = filtered.filter((p) => p.probability >= (effectiveMinProb - 2.0));
+      if (probFiltered.length > 0) {
+        filtered = probFiltered;
+      }
+    }
+
+    // 6. Odds filtering
     let effectiveMinOdds = minOdds || 0;
     let effectiveMaxOdds = maxOdds || 99;
 
-    const minOddsMatch = qLower.match(/cuota(?:s)?\s*(?:mayor(?:es)?\s*(?:a|de)?|>|>=)\s*([0-9]+(?:\.[0-9]+)?)/);
+    const minOddsMatch = qLower.match(/cuota(?:s)?\s*(?:mayor(?:es)?|superior(?:es)?\s*(?:a|de)?|>|>=)\s*([0-9]+(?:\.[0-9]+)?)/);
     if (minOddsMatch) {
       effectiveMinOdds = parseFloat(minOddsMatch[1]);
     }
     const maxOddsMatch = qLower.match(/cuota(?:s)?\s*(?:menor(?:es)?\s*(?:a|de)?|<|<=)\s*([0-9]+(?:\.[0-9]+)?)/);
     if (maxOddsMatch) {
       effectiveMaxOdds = parseFloat(maxOddsMatch[1]);
-    }
-    const rangeOddsMatch = qLower.match(/cuota(?:s)?\s*(?:entre)\s*([0-9]+(?:\.[0-9]+)?)\s*(?:y|-)\s*([0-9]+(?:\.[0-9]+)?)/);
-    if (rangeOddsMatch) {
-      effectiveMinOdds = parseFloat(rangeOddsMatch[1]);
-      effectiveMaxOdds = parseFloat(rangeOddsMatch[2]);
     }
 
     if (qLower.includes("bomba") || qLower.includes("cuotas altas") || qLower.includes("sorpresa")) {
@@ -387,48 +317,8 @@ export async function POST(req: Request) {
       if (oddsFiltered.length > 0) filtered = oddsFiltered;
     }
 
-    // 7. Probability / Confidence filtering
-    let effectiveMinProb = minProb || 0;
-    const probMatch = qLower.match(/probabilidad(?:\s*de)?\s*(?:mayor(?:es)?\s*(?:a|de)?|>|>=)\s*([0-9]+)%?/);
-    if (probMatch) {
-      effectiveMinProb = parseFloat(probMatch[1]);
-    }
-    if (qLower.includes("muy alta") || qLower.includes("maxima seguridad") || qLower.includes("más seguros")) {
-      effectiveMinProb = Math.max(effectiveMinProb, 65);
-    }
-
-    if (effectiveMinProb > 0) {
-      const probFiltered = filtered.filter((p) => p.probability >= effectiveMinProb);
-      if (probFiltered.length > 0) filtered = probFiltered;
-    }
-
-    // Strictly enforce date = today on all candidate predictions
-    filtered = filtered.filter((p) => {
-      const pDate = getEcuadorDateString(new Date(p.kickoff));
-      return pDate === todayStr;
-    });
-
-    // Deduplicate by fixture & ensure a single match per team on today's date
-    const seenFixtures = new Set<string>();
-    const seenTeamsToday = new Set<string>();
-    const deduplicated: MarketOpportunity[] = [];
-    for (const item of filtered) {
-      const hNorm = (item.homeTeam || "").toLowerCase().trim();
-      const aNorm = (item.awayTeam || "").toLowerCase().trim();
-      const key = `${item.fixtureId}-${item.market}`;
-
-      if (seenTeamsToday.has(hNorm) || seenTeamsToday.has(aNorm) || seenFixtures.has(key)) {
-        continue;
-      }
-      seenTeamsToday.add(hNorm);
-      seenTeamsToday.add(aNorm);
-      seenFixtures.add(key);
-      deduplicated.push(item);
-    }
-    filtered = deduplicated;
-
     // Sort by best statistical conviction
-    filtered.sort((a, b) => b.probability - a.probability || (b.smartScore || 0) - (a.smartScore || 0));
+    filtered.sort((a, b) => (b.smartScore || 0) - (a.smartScore || 0) || b.probability - a.probability);
 
     // Limit to top 6 best picks for the response
     if (filtered.length > 6) {
@@ -438,16 +328,14 @@ export async function POST(req: Request) {
     // Tag every discovered prediction with MCP origin
     filtered = filtered.map((p) => ({
       ...p,
-      pickBadge: "mcp" as const,
+      pickBadge: (p.pickBadge || "mcp") as "bomba" | "valor" | "estandar" | "mcp",
       isMcpPick: true,
       source: "mcp" as const,
     }));
 
-    // 8. Snapshot Safety: Do not overwrite baseline daily alerts during search queries.
-    // If the search found new picks and user wants to publish them, action === 'publish' handles it above.
     const autoPublishResult = { addedCount: 0, totalAlerts: pool.length };
 
-    // 9. Parlay Generation if requested
+    // 7. Parlay Generation if requested
     const isParlayRequest = qLower.includes("parlay") || qLower.includes("combinada") || qLower.includes("acumulada");
     let parlayData = undefined;
     if (isParlayRequest && filtered.length >= 2) {
@@ -468,26 +356,24 @@ export async function POST(req: Request) {
       filtered = legs;
     }
 
-    // 10. Generate Dynamic AI Reasoning & Briefing (Powered by Claude 3.5 Sonnet when configured)
+    // 8. Generate Dynamic AI Reasoning & Briefing (Powered by Gemini / Claude)
     let claudeAgentResult = null;
     if (isClaudeConfigured()) {
       try {
         claudeAgentResult = await queryClaudeSportsAgent({
           query,
           country,
-          candidatePicks: filtered,
+          candidatePicks: filtered.length > 0 ? filtered : pool.slice(0, 6),
           todayDateStr: todayStr,
         });
       } catch (err) {
-        console.warn("[McpAgentApi] Claude live reasoning error, using rule-based analyst fallback:", err);
+        console.warn("[McpAgentApi] AI live reasoning error:", err);
       }
     }
 
     const topPick = filtered[0];
     const avgProb = filtered.length > 0 ? Math.round(filtered.reduce((acc, p) => acc + p.probability, 0) / filtered.length) : 0;
     const avgOdds = filtered.length > 0 ? (filtered.reduce((acc, p) => acc + p.odds, 0) / filtered.length).toFixed(2) : "0.00";
-
-    const leagueDisplayName = isMlsRequest ? "Major League Soccer (Primera División USA)" : topPick?.league || "Ligas Principales";
 
     const aiAnalysis: AiAgentAnalysis = claudeAgentResult ? {
       intent: claudeAgentResult.intent,
@@ -503,48 +389,35 @@ export async function POST(req: Request) {
         ? "Combinada / Parlay Inteligente"
         : matchedByTeam
         ? `Análisis Táctico Específico: ${topPick?.homeTeam} vs ${topPick?.awayTeam}`
-        : isLiveRequest
-        ? `Análisis Dinámico en Vivo (Partidos en Juego)`
-        : isMlsRequest
-        ? "Búsqueda Oficial: Major League Soccer (MLS - 1ª División)"
-        : targetCountryTerms.length > 0
-        ? `Búsqueda por País/Región: ${targetCountryTerms[0].toUpperCase()}`
-        : "Filtro Algorítmico Cuantitativo",
+        : matchedByLeague
+        ? `Análisis de Competición: ${topPick?.league || "UEFA Champions League"}`
+        : "Filtro Algorítmico Cuantitativo con IA",
       summary: filtered.length === 0
-        ? `No se encontraron partidos programados para disputarse hoy (${todayStr}) que coincidan con tu búsqueda "${query || country || "general"}". Se respeta la regla de fecha estricta para evitar mostrar partidos de fechas futuras.`
-        : matchedByTeam
-        ? `El motor analizó el encuentro ${topPick.homeTeam} vs ${topPick.awayTeam} en ${topPick.league}. El modelo Poisson y las líneas de Bet365/Pinnacle determinan que la mejor oportunidad es '${topPick.market}' con una cuota real de @${topPick.odds} y un ${topPick.probability}% de certeza matemática.`
-        : isParlayRequest
-        ? `Se generó una combinada de ${parlayData?.selectionsCount} selecciones de alta compatibilidad estadística, con una cuota acumulada de @${parlayData?.totalOdds} y probabilidad conjunta calculada de ${parlayData?.combinedProbability}.`
-        : isLiveRequest
-        ? `Se procesaron los datos dinámicos en directo para partidos en juego. El algoritmo evaluó el avance del partido y seleccionó ${filtered.length} oportunidades en vivo con probabilidad promedio del ${avgProb}% y cuota promedio de @${avgOdds}. Las alertas se han publicado en la sección ⚡ Alertas en Vivo con la etiqueta 🤖 Agente MCP.`
-        : `Se procesaron los datos en vivo para tu solicitud "${query || "pronósticos generales"}". El algoritmo seleccionó ${filtered.length} partidos de ${leagueDisplayName} para la fecha de hoy con un promedio de probabilidad del ${avgProb}% y cuota promedio de @${avgOdds}.`,
+        ? `No se encontraron partidos para hoy (${todayStr}) que cumplan exactamente todos los criterios de "${query}". Se protegen los filtros para evitar apuestas precipitadas.`
+        : `El motor analizó las oportunidades de hoy para "${query}". Se encontraron ${filtered.length} selecciones de alto valor con probabilidad promedio del ${avgProb}% y cuota promedio real de @${avgOdds}.`,
       insights: [
-        topPick ? `Poco margen de error: ${topPick.homeTeam} vs ${topPick.awayTeam} lidera en ${topPick.league} con SmartScore de ${topPick.smartScore}/100 y cuota @${topPick.odds}.` : "Filtros aplicados con rigor estadístico.",
-        isLiveRequest ? `Evaluación dinámica de líneas: Si un umbral de goles ya fue superado por el marcador actual, el modelo calcula automáticamente el siguiente escalón rentable.` : `Filtro Estricto de 1ª División: Se excluyen filiales, reservas y ligas de desarrollo. Solo equipos oficiales de Primera División.`,
-        `Calibración de cuotas: 100% integradas directamente con líneas de casas de apuestas (Bet365 / Pinnacle) sin distorsión de modelos sintéticos.`,
-        effectiveMinOdds > 0 ? `Restricción de cuota mínima: Se aseguraron selecciones con cuota >= @${effectiveMinOdds}.` : `Distribución diversificada en mercados de alto valor (${filtered.map(p => p.market).slice(0, 2).join(", ")}).`,
+        topPick ? `Líder en valor: ${topPick.homeTeam} vs ${topPick.awayTeam} (${topPick.league}) con cuota real @${topPick.odds} y probabilidad del ${topPick.probability}%.` : "Filtros aplicados con rigor estadístico.",
+        `Cuotas 100% verificadas directamente con líneas de Bet365 / Pinnacle sin modelos sintéticos.`,
+        `Filtro de Primera División activo: Se excluyen filiales y ligas menores.`,
       ],
       recommendation: isParlayRequest
-        ? `Estrategia Parlay: Asignar Stake 1 (1-2% del bankroll) para maximizar el retorno de la cuota @${parlayData?.totalOdds}.`
-        : filtered.some(p => p.pickBadge === "bomba")
-        ? `Estrategia de Valor: El partido con cuota @${filtered.find(p => p.pickBadge === "bomba")?.odds} presenta ineficiencia de mercado; se sugiere Stake 1.5.`
-        : `Estrategia Principal: Apuestas simples con Stake 2-3 (2% a 3% del bankroll) en los picks con probabilidad superior al 60%.`,
+        ? `Estrategia Parlay: Stake 1 (1-2% del bankroll) para retorno de cuota @${parlayData?.totalOdds}.`
+        : `Estrategia Principal: Apuestas simples con Stake 2 (2% del bankroll) en las opciones de mayor probabilidad.`,
       parlayRecommendation: parlayData,
     };
 
     return NextResponse.json({
       success: true,
       count: filtered.length,
-      countryDetected: isMlsRequest ? "Major League Soccer (1ª División)" : targetCountryTerms.length > 0 ? targetCountryTerms[0] : "Global",
-      autoPublished: true,
+      countryDetected: matchedByLeague ? (topPick?.league || "Europa") : "Global",
+      autoPublished: false,
       autoPublishResult,
       aiAnalysis,
       metrics: {
         totalMatches: filtered.length,
         averageProbability: `${avgProb}%`,
         averageOdds: `@${avgOdds}`,
-        highConfidenceCount: filtered.filter((p) => p.confidence === "Muy Alta").length,
+        highConfidenceCount: filtered.filter((p) => p.confidence === "Muy Alta" || p.probability >= 60).length,
       },
       predictions: filtered,
     });
