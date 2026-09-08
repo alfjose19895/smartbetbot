@@ -4,11 +4,11 @@ import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 
 /**
  * SmartBetBot Unified AI Sports Analyst.
- * Supports Google Gemini (gemini-2.5-flash / gemini-2.5-pro) and Anthropic Claude (claude-3-5-sonnet-latest).
+ * Supports Google Gemini (gemini-3.6-flash) and Anthropic Claude (claude-3-5-sonnet-latest).
  * Defaults to Google Gemini when GEMINI_API_KEY is present for zero-cost, high-speed quantitative reasoning.
  */
 
-const GEMINI_PRIMARY_MODEL = "gemini-2.5-flash";
+const GEMINI_PRIMARY_MODEL = "gemini-3.6-flash";
 const CLAUDE_PRIMARY_MODEL = "claude-3-5-sonnet-latest";
 
 export type AiProvider = "gemini" | "claude" | "none";
@@ -69,22 +69,39 @@ Reglas de análisis profesional:
 5. RESPUESTA EN JSON ESTRICTO: Devuelve ÚNICAMENTE un bloque JSON válido sin comentarios ni texto introductorio.`;
 
 /**
- * Execute a prompt with Google Gemini using JSON response mode
+ * Execute a prompt with Google Gemini using direct REST/SDK with JSON response mode
  */
 async function callGemini(prompt: string): Promise<string> {
   const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || "";
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({
-    model: GEMINI_PRIMARY_MODEL,
-    systemInstruction: SPORTS_ANALYST_SYSTEM_PROMPT,
-    generationConfig: {
-      temperature: 0.2,
-      responseMimeType: "application/json",
-    },
+  
+  // High-reliability direct REST call for gemini-3.6-flash
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_PRIMARY_MODEL}:generateContent?key=${apiKey}`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      systemInstruction: {
+        parts: [{ text: SPORTS_ANALYST_SYSTEM_PROMPT }]
+      },
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.2,
+        responseMimeType: "application/json",
+      },
+    }),
   });
 
-  const result = await model.generateContent(prompt);
-  return result.response.text();
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(`Gemini API error (${response.status}): ${JSON.stringify(errorData)}`);
+  }
+
+  const data = await response.json();
+  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) {
+    throw new Error("Gemini returned empty candidate response.");
+  }
+  return text;
 }
 
 /**
@@ -152,7 +169,7 @@ Devuelve un JSON con la siguiente estructura exacta:
 {
   "audits": [
     {
-      "fixtureId": "string o número",
+      "fixtureId": "string o número correspondiente al fixtureId recibido",
       "approved": true,
       "convictionScore": 85,
       "trapRisk": "Bajo",
@@ -211,7 +228,7 @@ Devuelve un JSON con la siguiente estructura exacta:
 }
 
 /**
- * Deep Sports Intelligence reasoning query using Gemini 2.5 Flash / Claude 3.5 Sonnet.
+ * Deep Sports Intelligence reasoning query using Gemini 3.6 Flash / Claude 3.5 Sonnet.
  * Powers the MCP Natural Language Assistant.
  */
 export async function queryClaudeSportsAgent(params: {
@@ -264,7 +281,7 @@ Devuelve un JSON estrictamente estructurado:
   "tacticalInsights": ["Insight 1", "Insight 2", "Insight 3"],
   "riskWarnings": ["Advertencia de riesgo 1", "Advertencia de riesgo 2"],
   "recommendedStrategy": "Recomendación de gestión de stake / bankroll",
-  "selectedFixtureIds": [array de fixtureIds aprobados]
+  "selectedFixtureIds": [array de fixtureIds numéricos o strings seleccionados]
 }`;
 
     const responseText = provider === "gemini" ? await callGemini(prompt) : await callClaude(prompt);
