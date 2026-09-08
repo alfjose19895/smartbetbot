@@ -583,6 +583,24 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
             >
               <span>📥</span>
             </button>
+
+            {onPublishAlert && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onPublishAlert(prediction);
+                }}
+                disabled={isPublished}
+                className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-[11px] font-black transition cursor-pointer shadow-sm ${
+                  isPublished
+                    ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700"
+                    : "bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:brightness-110 shadow-emerald-600/30"
+                }`}
+              >
+                <span>{isPublished ? "✓" : "📥"}</span>
+                <span>{isPublished ? "En App" : "Publicar"}</span>
+              </button>
+            )}
           </div>
 
           {/* View Details Button */}

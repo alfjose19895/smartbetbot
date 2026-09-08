@@ -74,9 +74,31 @@ export default function SignalsPage() {
       setLoading(true);
       const res = await fetch("/api/signals");
       const json = await res.json();
-      if (json.signals) {
-        setSignals(json.signals);
+      let serverSignals: MarketOpportunity[] = Array.isArray(json.signals) ? [...json.signals] : [];
+
+      try {
+        const localRaw = typeof window !== "undefined" ? localStorage.getItem("smartbetbot_published_picks") : null;
+        if (localRaw) {
+          const localPicks = JSON.parse(localRaw);
+          if (Array.isArray(localPicks)) {
+            const map = new Map<string, MarketOpportunity>();
+            for (const p of serverSignals) {
+              const key = `${p.fixtureId || 0}-${p.homeTeam}-${p.awayTeam}-${p.market}`;
+              map.set(key, p);
+            }
+            for (const lp of localPicks) {
+              const key = `${lp.fixtureId || 0}-${lp.homeTeam}-${lp.awayTeam}-${lp.market}`;
+              map.set(key, { ...lp, isMcpPick: true, pickBadge: lp.pickBadge || "mcp" });
+            }
+            serverSignals = Array.from(map.values());
+            serverSignals.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
+          }
+        }
+      } catch (err) {
+        console.warn("Could not merge local published picks in signals:", err);
       }
+
+      setSignals(serverSignals);
     } catch (err) {
       console.error("Error fetching signals:", err);
     } finally {
@@ -86,6 +108,15 @@ export default function SignalsPage() {
 
   useEffect(() => {
     fetchSignals();
+    const handleUpdated = () => {
+      fetchSignals();
+    };
+    window.addEventListener("predictions-updated", handleUpdated);
+    window.addEventListener("storage", handleUpdated);
+    return () => {
+      window.removeEventListener("predictions-updated", handleUpdated);
+      window.removeEventListener("storage", handleUpdated);
+    };
   }, []);
 
   const handleSyncSignals = async () => {
@@ -378,9 +409,6 @@ export default function SignalsPage() {
               options={leagueDropdownOptions}
               selected={selectedLeagues}
               onChange={setSelectedLeagues}
-              
-              
-              
             />
 
             {marketDropdownOptions.length > 0 && (
@@ -389,8 +417,6 @@ export default function SignalsPage() {
                 options={marketDropdownOptions}
                 selected={selectedMarkets}
                 onChange={setSelectedMarkets}
-                
-                
               />
             )}
 
@@ -399,8 +425,6 @@ export default function SignalsPage() {
               options={confidenceDropdownOptions}
               selected={selectedConfidence}
               onChange={setSelectedConfidence}
-              
-              
             />
 
             {/* Min probability control */}

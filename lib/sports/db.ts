@@ -110,24 +110,11 @@ function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
       mergedMap.set(key, p);
     }
 
-    // Merge incoming picks with strict team-date deduplication
-    const seenTeamDates = new Set<string>();
-    for (const p of existingPicks) {
-      const hNorm = getCanonicalTeamKey(p.homeTeam);
-      const aNorm = getCanonicalTeamKey(p.awayTeam);
-      const dateStr = p.kickoff ? p.kickoff.split("T")[0] : "nodate";
-      seenTeamDates.add(`${hNorm}-${dateStr}`);
-      seenTeamDates.add(`${aNorm}-${dateStr}`);
-    }
-
     for (const p of picks) {
       const hNorm = getCanonicalTeamKey(p.homeTeam);
       const aNorm = getCanonicalTeamKey(p.awayTeam);
       const fixId = p.fixtureId || 0;
       const key = `${fixId}-${hNorm}-${aNorm}-${p.market}`;
-      const dateStr = p.kickoff ? p.kickoff.split("T")[0] : "nodate";
-      const hDateKey = `${hNorm}-${dateStr}`;
-      const aDateKey = `${aNorm}-${dateStr}`;
 
       if (mergedMap.has(key)) {
         const existing = mergedMap.get(key)!;
@@ -140,12 +127,7 @@ function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
           explanation: existing.explanation || p.explanation,
         });
       } else {
-        // If it's a new pick, ensure neither team is already playing another fixture on this date
-        if (!seenTeamDates.has(hDateKey) && !seenTeamDates.has(aDateKey)) {
-          seenTeamDates.add(hDateKey);
-          seenTeamDates.add(aDateKey);
-          mergedMap.set(key, p);
-        }
+        mergedMap.set(key, p);
       }
     }
 
@@ -832,47 +814,58 @@ export function addPredictionsToDailySnapshot(newPicks: MarketOpportunity[]): {
     existingSnapshot = getStoredPredictions();
   }
   existingSnapshot = Array.isArray(existingSnapshot) ? [...existingSnapshot] : [];
-  const existingKeys = new Set(
-    existingSnapshot.map((p) => {
-      const h = getCanonicalTeamKey(p.homeTeam);
-      const a = getCanonicalTeamKey(p.awayTeam);
-      const fixId = Number(p.fixtureId) || 0;
-      return `${fixId}-${h}-${a}`;
-    })
-  );
+  
+  const existingMap = new Map<string, MarketOpportunity>();
+  for (const p of existingSnapshot) {
+    const h = getCanonicalTeamKey(p.homeTeam);
+    const a = getCanonicalTeamKey(p.awayTeam);
+    const fixId = Number(p.fixtureId) || 0;
+    const key = `${fixId}-${h}-${a}-${p.market}`;
+    existingMap.set(key, p);
+  }
 
   let addedCount = 0;
   for (const pick of newPicks) {
     const h = getCanonicalTeamKey(pick.homeTeam);
     const a = getCanonicalTeamKey(pick.awayTeam);
     const fixId = Number(pick.fixtureId) || 0;
-    const key = `${fixId}-${h}-${a}`;
-    const keyAlt = `0-${h}-${a}`;
+    const key = `${fixId}-${h}-${a}-${pick.market}`;
 
-    if (!existingKeys.has(key) && !existingKeys.has(keyAlt)) {
-      existingKeys.add(key);
-      existingSnapshot.push({
-        ...pick,
-        status: pick.status || "pending",
+    const taggedPick: MarketOpportunity = {
+      ...pick,
+      pickBadge: (pick.pickBadge || "mcp") as "bomba" | "valor" | "estandar" | "mcp",
+      isMcpPick: true,
+      source: "mcp",
+      status: pick.status || "pending",
+    };
+
+    if (existingMap.has(key)) {
+      const existing = existingMap.get(key)!;
+      existingMap.set(key, {
+        ...existing,
+        ...taggedPick,
+        status: existing.status !== "pending" ? existing.status : taggedPick.status,
       });
+      addedCount++;
+    } else {
+      existingMap.set(key, taggedPick);
       addedCount++;
     }
   }
 
+  const finalPicks = Array.from(existingMap.values());
+  finalPicks.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
+
   if (addedCount > 0) {
-    // Sort chronologically by kickoff time
-    existingSnapshot.sort(
-      (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
-    );
-    saveDailySnapshot(activeDateStr, existingSnapshot);
-    cachedLivePredictions = existingSnapshot;
+    saveDailySnapshot(activeDateStr, finalPicks);
+    cachedLivePredictions = finalPicks;
     cacheTimestamp = nowMs;
   }
 
   return {
     addedCount,
-    totalAlerts: existingSnapshot.length,
-    predictions: existingSnapshot,
+    totalAlerts: finalPicks.length,
+    predictions: finalPicks,
   };
 }
 

@@ -40,6 +40,7 @@ const LEAGUE_KEYWORDS: Record<string, string[]> = {
   "ecuador": ["ecuador", "liga pro", "ligapro", "serie a ecuador"],
   "portugal": ["portugal", "primeira liga", "liga portugal"],
   "turquia": ["turquia", "turquía", "super lig", "süper lig"],
+  "finlandia": ["veikkausliiga", "finlandia", "finland"],
 };
 
 const COUNTRY_SYNONYMS: Record<string, string[]> = {
@@ -60,6 +61,7 @@ const COUNTRY_SYNONYMS: Record<string, string[]> = {
   "estados unidos": ["usa", "estados unidos", "united states", "mls"],
   "champions": ["champions", "uefa", "ucl"],
   "sudamericana": ["sudamericana", "conmebol"],
+  "finlandia": ["finlandia", "finland", "veikkausliiga"],
 };
 
 interface AiAgentAnalysis {
@@ -83,7 +85,7 @@ interface AiAgentAnalysis {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { action, picks, pick, query = "", country = "", minProb, minOdds, maxOdds, market = "" } = body;
+    const { action, picks, pick, query = "", country = "", minProb, minOdds, maxOdds, market = "", parlay } = body;
 
     // Direct publish action: Add MCP-discovered alerts to active daily dashboard and signals
     if (action === "publish" || action === "addPicks") {
@@ -109,9 +111,10 @@ export async function POST(req: Request) {
         success: true,
         addedCount: result.addedCount,
         totalAlerts: result.totalAlerts,
+        parlay: parlay || null,
         message: result.addedCount > 0
-          ? `✓ Se agregaron ${result.addedCount} alertas al Dashboard y Alertas del Día con la etiqueta 🤖 Agente MCP. Total activo: ${result.totalAlerts} alertas.`
-          : `Las alertas seleccionadas ya se encontraban registradas en el Dashboard. Total activo: ${result.totalAlerts} alertas.`,
+          ? `✓ Se agregaron ${result.addedCount} pronósticos con éxito al Dashboard y la Sección Parlay con la etiqueta 🤖 Agente MCP.`
+          : `Los pronósticos seleccionados ya se encontraban registrados en el Dashboard. Total activo: ${result.totalAlerts} alertas.`,
         predictions: result.predictions,
       });
     }
@@ -123,20 +126,21 @@ export async function POST(req: Request) {
     // 1. DYNAMIC MARKET SEARCH: Query live API-Football fixtures & genuine bookmaker odds
     const dynamicMarketOpps = await searchLiveMarketDynamic({ query, country });
 
-    // 2. Retrieve baseline stored predictions
+    // 2. Retrieve baseline stored predictions for today
     const storedPicks = getStoredPredictions();
 
     // 3. Merge: Prioritize fresh dynamic market discoveries + baseline
-    const seenMap = new Map<string | number, MarketOpportunity>();
+    // KEYED BY FIXTURE + MARKET to preserve all distinct market opportunities per match (1X2, Over 2.5, BTTS)
+    const seenMap = new Map<string, MarketOpportunity>();
     
-    // Add dynamic market picks first
     for (const p of dynamicMarketOpps) {
-      const key = p.fixtureId || p.id || `${p.homeTeam}-${p.awayTeam}`;
+      const fixId = p.fixtureId || 0;
+      const key = `${fixId}-${p.homeTeam}-${p.awayTeam}-${p.market}`;
       seenMap.set(key, p);
     }
-    // Add stored picks if not already present
     for (const p of storedPicks) {
-      const key = p.fixtureId || p.id || `${p.homeTeam}-${p.awayTeam}`;
+      const fixId = p.fixtureId || 0;
+      const key = `${fixId}-${p.homeTeam}-${p.awayTeam}-${p.market}`;
       if (!seenMap.has(key)) {
         seenMap.set(key, p);
       }
@@ -172,7 +176,7 @@ export async function POST(req: Request) {
     for (const [leagueKey, keywords] of Object.entries(LEAGUE_KEYWORDS)) {
       if (keywords.some((kw) => qLower.includes(kw))) {
         const leagueMatches = pool.filter((p) => {
-          const l = p.league.toLowerCase();
+          const l = (p.league || "").toLowerCase();
           return keywords.some((kw) => l.includes(kw) || kw.includes(l));
         });
         if (leagueMatches.length > 0) {
@@ -187,8 +191,8 @@ export async function POST(req: Request) {
     let matchedByTeam = false;
     if (!matchedByLeague && qLower.length > 2) {
       const teamMatches = pool.filter((p) => {
-        const h = p.homeTeam.toLowerCase();
-        const a = p.awayTeam.toLowerCase();
+        const h = (p.homeTeam || "").toLowerCase();
+        const a = (p.awayTeam || "").toLowerCase();
         return (
           qLower.includes(h) ||
           h.includes(qLower) ||
@@ -244,15 +248,32 @@ export async function POST(req: Request) {
       requestedMarket = "over";
     } else if (qLower.includes("gana visitante") || qLower.includes("victoria visitante") || qLower.includes("ganador visitante")) {
       requestedMarket = "visitante";
-    } else if (qLower.includes("gana local") || qLower.includes("victoria local") || qLower.includes("triunfo local") || qLower.includes("ganador local") || qLower.includes("local")) {
+    } else if (
+      qLower.includes("ganador local") ||
+      qLower.includes("gana local") ||
+      qLower.includes("victoria local") ||
+      qLower.includes("triunfo local") ||
+      (qLower.includes("local") && !qLower.includes("visitante"))
+    ) {
       requestedMarket = "local";
+    } else if (qLower.includes("empate") || qLower.includes("draw")) {
+      requestedMarket = "empate";
     }
 
     if (requestedMarket) {
       const matchMarket = filtered.filter((p) => {
-        const pMarket = p.market.toLowerCase();
+        const pMarket = (p.market || "").toLowerCase();
         if (requestedMarket === "over") {
-          return pMarket.includes("over") || pMarket.includes("goles");
+          return pMarket.includes("over") || pMarket.includes("goles") || pMarket.includes("más");
+        }
+        if (requestedMarket === "local") {
+          return pMarket.includes("local") || pMarket.includes("gana local") || pMarket.includes("ganador local");
+        }
+        if (requestedMarket === "visitante") {
+          return pMarket.includes("visitante") || pMarket.includes("gana visitante") || pMarket.includes("ganador visitante");
+        }
+        if (requestedMarket === "ambos") {
+          return pMarket.includes("ambos") || pMarket.includes("btts") || pMarket.includes("anotan");
         }
         return pMarket.includes(requestedMarket);
       });
@@ -263,7 +284,7 @@ export async function POST(req: Request) {
 
     // 5. Probability / Confidence filtering with soft tolerance
     let effectiveMinProb = minProb || 0;
-    const probMatch = qLower.match(/probabilidad(?:\s*(?:de|con))?\s*(?:superior|mayor(?:es)?|más|mas|>|>=)\s*(?:al?|de)?\s*([0-9]+)%?/);
+    const probMatch = qLower.match(/probabilidad(?:s*(?:de|con))?s*(?:superior|mayor(?:es)?|más|mas|>|>=)s*(?:al?|de)?s*([0-9]+)%?/);
     if (probMatch) {
       effectiveMinProb = parseFloat(probMatch[1]);
     }
@@ -272,7 +293,7 @@ export async function POST(req: Request) {
     }
 
     if (effectiveMinProb > 0) {
-      const probFiltered = filtered.filter((p) => p.probability >= (effectiveMinProb - 2.0));
+      const probFiltered = filtered.filter((p) => p.probability >= (effectiveMinProb - 3.0));
       if (probFiltered.length > 0) {
         filtered = probFiltered;
       }
@@ -282,11 +303,11 @@ export async function POST(req: Request) {
     let effectiveMinOdds = minOdds || 0;
     let effectiveMaxOdds = maxOdds || 99;
 
-    const minOddsMatch = qLower.match(/cuota(?:s)?\s*(?:mayor(?:es)?|superior(?:es)?\s*(?:a|de)?|>|>=)\s*([0-9]+(?:\.[0-9]+)?)/);
+    const minOddsMatch = qLower.match(/cuota(?:s)?s*(?:mayor(?:es)?|superior(?:es)?s*(?:a|de)?|>|>=)s*([0-9]+(?:.[0-9]+)?)/);
     if (minOddsMatch) {
       effectiveMinOdds = parseFloat(minOddsMatch[1]);
     }
-    const maxOddsMatch = qLower.match(/cuota(?:s)?\s*(?:menor(?:es)?\s*(?:a|de)?|<|<=)\s*([0-9]+(?:\.[0-9]+)?)/);
+    const maxOddsMatch = qLower.match(/cuota(?:s)?s*(?:menor(?:es)?s*(?:a|de)?|<|<=)s*([0-9]+(?:.[0-9]+)?)/);
     if (maxOddsMatch) {
       effectiveMaxOdds = parseFloat(maxOddsMatch[1]);
     }
@@ -307,8 +328,42 @@ export async function POST(req: Request) {
     // Sort by best statistical conviction (SmartScore and probability)
     filtered.sort((a, b) => (b.smartScore || 0) - (a.smartScore || 0) || b.probability - a.probability);
 
-    if (filtered.length > 8) {
-      filtered = filtered.slice(0, 8);
+    // 7. Parlay Generation if requested: STRICTLY DISTINCT MATCHES
+    const isParlayRequest = qLower.includes("parlay") || qLower.includes("combinada") || qLower.includes("acumulada");
+    let parlayData = undefined;
+    if (isParlayRequest) {
+      const poolForParlay = filtered.length >= 2 ? filtered : pool;
+      const distinctMatchMap = new Map<string, MarketOpportunity>();
+      for (const p of poolForParlay) {
+        const matchKey = `${p.fixtureId || 0}-${p.homeTeam}-${p.awayTeam}`;
+        if (!distinctMatchMap.has(matchKey) && p.probability >= 55) {
+          distinctMatchMap.set(matchKey, p);
+        }
+      }
+
+      const distinctPicks = Array.from(distinctMatchMap.values());
+      const legs = distinctPicks.slice(0, Math.min(3, distinctPicks.length));
+
+      if (legs.length >= 2) {
+        const totalOdds = legs.reduce((acc, l) => acc * l.odds, 1);
+        const combinedProb = legs.reduce((acc, l) => acc * (l.probability / 100), 1) * 100;
+        parlayData = {
+          totalOdds: totalOdds.toFixed(2),
+          combinedProbability: `${combinedProb.toFixed(1)}%`,
+          selectionsCount: legs.length,
+          legs: legs.map((l) => ({
+            match: `${l.homeTeam} vs ${l.awayTeam}`,
+            market: l.market,
+            selection: l.selection,
+            odds: l.odds,
+          })),
+        };
+        filtered = legs;
+      }
+    } else {
+      if (filtered.length > 8) {
+        filtered = filtered.slice(0, 8);
+      }
     }
 
     filtered = filtered.map((p) => ({
@@ -319,27 +374,6 @@ export async function POST(req: Request) {
       isMcpPick: true,
       source: "mcp" as const,
     }));
-
-    // 7. Parlay Generation if requested
-    const isParlayRequest = qLower.includes("parlay") || qLower.includes("combinada") || qLower.includes("acumulada");
-    let parlayData = undefined;
-    if (isParlayRequest && filtered.length >= 2) {
-      const legs = filtered.slice(0, Math.min(3, filtered.length));
-      const totalOdds = legs.reduce((acc, l) => acc * l.odds, 1);
-      const combinedProb = legs.reduce((acc, l) => acc * (l.probability / 100), 1) * 100;
-      parlayData = {
-        totalOdds: totalOdds.toFixed(2),
-        combinedProbability: `${combinedProb.toFixed(1)}%`,
-        selectionsCount: legs.length,
-        legs: legs.map((l) => ({
-          match: `${l.homeTeam} vs ${l.awayTeam}`,
-          market: l.market,
-          selection: l.selection,
-          odds: l.odds,
-        })),
-      };
-      filtered = legs;
-    }
 
     // 8. Generate Live Tactical Reasoning & Briefing (Powered by Gemini AI)
     let claudeAgentResult = null;

@@ -102,41 +102,83 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
     handleSearch(chip.query, chip.id);
   };
 
-  const handlePublishPicks = async (picksToPublish: MarketOpportunity[], customMsg?: string) => {
+  const handlePublishPicks = async (
+    picksToPublish: MarketOpportunity[],
+    customMsg?: string,
+    isParlay: boolean = false
+  ) => {
     if (picksToPublish.length === 0) return;
     setPublishing(true);
     try {
+      // 1. Instant client-side persistence in localStorage
+      try {
+        if (typeof window !== "undefined") {
+          const localRaw = localStorage.getItem("smartbetbot_published_picks");
+          const existing = localRaw ? JSON.parse(localRaw) : [];
+          const map = new Map<string, MarketOpportunity>();
+          for (const p of [...existing, ...picksToPublish]) {
+            const key = `${p.fixtureId || 0}-${p.homeTeam}-${p.awayTeam}-${p.market}`;
+            map.set(key, { ...p, isMcpPick: true, pickBadge: p.pickBadge || "mcp" });
+          }
+          localStorage.setItem("smartbetbot_published_picks", JSON.stringify(Array.from(map.values())));
+
+          if (isParlay && aiAnalysis?.parlayRecommendation) {
+            localStorage.setItem(
+              "smartbetbot_published_parlay",
+              JSON.stringify({
+                ...aiAnalysis.parlayRecommendation,
+                date: new Date().toISOString(),
+                picks: picksToPublish,
+              })
+            );
+          }
+        }
+      } catch (err) {
+        console.warn("Could not save to localStorage:", err);
+      }
+
+      // 2. Server-side persistence in snapshot
       const res = await fetch("/api/mcp/predictions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "publish",
           picks: picksToPublish,
+          parlay: isParlay ? aiAnalysis?.parlayRecommendation : undefined,
         }),
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        const msg = customMsg || `✓ ¡Se publicaron ${picksToPublish.length} pronóstico(s) exitosamente en el Dashboard y la Sección Parlay!`;
-        setPublishSuccessMessage(msg);
+      const msg =
+        customMsg ||
+        `✓ ¡Se publicaron ${picksToPublish.length} pronóstico(s) exitosamente en el Dashboard y la Sección Parlay!`;
+      setPublishSuccessMessage(msg);
 
-        // Mark published IDs
-        setPublishedIds((prev) => {
-          const next = new Set(prev);
-          picksToPublish.forEach((p) => next.add(p.fixtureId || p.id || `${p.homeTeam}-${p.awayTeam}`));
-          return next;
+      // Mark published IDs
+      setPublishedIds((prev) => {
+        const next = new Set(prev);
+        picksToPublish.forEach((p) => {
+          next.add(`${p.fixtureId || 0}-${p.homeTeam}-${p.awayTeam}-${p.market}`);
+          if (p.id) next.add(p.id);
         });
+        return next;
+      });
 
-        // Notify other components & pages
-        if (typeof window !== "undefined") {
-          window.dispatchEvent(new Event("storage"));
-          window.dispatchEvent(new CustomEvent("predictions-updated", { detail: { picks: picksToPublish } }));
-        }
-
-        setTimeout(() => {
-          setPublishSuccessMessage(null);
-        }, 5000);
+      // Dispatch real-time events to all pages
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("storage"));
+        window.dispatchEvent(
+          new CustomEvent("predictions-updated", {
+            detail: {
+              picks: picksToPublish,
+              parlay: isParlay ? aiAnalysis?.parlayRecommendation : undefined,
+            },
+          })
+        );
       }
+
+      setTimeout(() => {
+        setPublishSuccessMessage(null);
+      }, 5000);
     } catch (err) {
       console.error("Error publishing picks:", err);
     } finally {
@@ -390,7 +432,7 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
                     </div>
 
                     <button
-                      onClick={() => handlePublishPicks(results, `✓ ¡Combinada Parlay de ${results.length} selecciones (@${aiAnalysis?.parlayRecommendation?.totalOdds}) publicada en el Dashboard y la Sección Parlay!`)}
+                      onClick={() => handlePublishPicks(results, `✓ ¡Combinada Parlay de ${results.length} selecciones (@${aiAnalysis?.parlayRecommendation?.totalOdds}) publicada en el Dashboard y la Sección Parlay!`, true)}
                       disabled={publishing}
                       className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 px-4 py-2.5 text-xs font-black text-slate-950 hover:brightness-110 shadow-lg shadow-amber-500/30 transition cursor-pointer disabled:opacity-50"
                     >
@@ -427,7 +469,7 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {results.map((pick) => {
-                  const pickKey = pick.fixtureId || pick.id || `${pick.homeTeam}-${pick.awayTeam}`;
+                  const pickKey = `${pick.fixtureId || 0}-${pick.homeTeam}-${pick.awayTeam}-${pick.market}`;
                   const isAlreadyPublished = publishedIds.has(pickKey);
                   return (
                     <PredictionCard

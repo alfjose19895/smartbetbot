@@ -1,5 +1,845 @@
 [
   {
+    "fixtureId": 1635662,
+    "match": "Ilves vs FF Jaro",
+    "homeTeam": "Ilves",
+    "awayTeam": "FF Jaro",
+    "homeTeamId": 647,
+    "awayTeamId": 651,
+    "homeLogo": "https://media.api-sports.io/football/teams/647.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/651.png",
+    "league": "Veikkausliiga",
+    "leagueId": 244,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/244.png",
+    "country": "Finlandia",
+    "kickoff": "2026-09-08T10:30:00-05:00",
+    "market": "Ganador Local",
+    "selection": "Ilves",
+    "odds": 1.53,
+    "bookmakerOdds": 1.53,
+    "modelOdds": 1.53,
+    "fairOdds": 1.53,
+    "probability": 65.3,
+    "impliedProbability": 65.4,
+    "edge": 1,
+    "expectedValue": -0.1,
+    "confidence": "Alta",
+    "pickBadge": "valor",
+    "smartScore": 81,
+    "explanation": "Superioridad táctica de Ilves en Tampere. 65.3% de probabilidad a cuota real Bet365 @1.53.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-10",
+        "homeTeam": "Ilves",
+        "awayTeam": "FF Jaro",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "Veikkausliiga"
+      },
+      {
+        "date": "2026-03-12",
+        "homeTeam": "FF Jaro",
+        "awayTeam": "Ilves",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "Veikkausliiga"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-04",
+        "opponent": "Rival A",
+        "score": "2-0",
+        "result": "W",
+        "venue": "home",
+        "competition": "Veikkausliiga"
+      },
+      {
+        "date": "2026-08-30",
+        "opponent": "Rival B",
+        "score": "1-1",
+        "result": "D",
+        "venue": "away",
+        "competition": "Veikkausliiga"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival C",
+        "score": "1-2",
+        "result": "L",
+        "venue": "away",
+        "competition": "Veikkausliiga"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival D",
+        "score": "0-0",
+        "result": "D",
+        "venue": "home",
+        "competition": "Veikkausliiga"
+      }
+    ]
+  },
+  {
+    "fixtureId": 1635663,
+    "match": "Lahti vs Mariehamn",
+    "homeTeam": "Lahti",
+    "awayTeam": "Mariehamn",
+    "homeTeamId": 648,
+    "awayTeamId": 652,
+    "homeLogo": "https://media.api-sports.io/football/teams/648.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/652.png",
+    "league": "Veikkausliiga",
+    "leagueId": 244,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/244.png",
+    "country": "Finlandia",
+    "kickoff": "2026-09-08T10:30:00-05:00",
+    "market": "Ganador Local",
+    "selection": "Lahti",
+    "odds": 1.55,
+    "bookmakerOdds": 1.55,
+    "modelOdds": 1.54,
+    "fairOdds": 1.54,
+    "probability": 65.1,
+    "impliedProbability": 64.5,
+    "edge": 1,
+    "expectedValue": 0.9,
+    "confidence": "Alta",
+    "pickBadge": "valor",
+    "smartScore": 81,
+    "explanation": "Solidez defensiva de Lahti en casa. Cuota real Bet365 @1.55 con 65.1% de probabilidad.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-10",
+        "homeTeam": "Lahti",
+        "awayTeam": "Mariehamn",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "Veikkausliiga"
+      },
+      {
+        "date": "2026-03-12",
+        "homeTeam": "Mariehamn",
+        "awayTeam": "Lahti",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "Veikkausliiga"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-04",
+        "opponent": "Rival A",
+        "score": "2-0",
+        "result": "W",
+        "venue": "home",
+        "competition": "Veikkausliiga"
+      },
+      {
+        "date": "2026-08-30",
+        "opponent": "Rival B",
+        "score": "1-1",
+        "result": "D",
+        "venue": "away",
+        "competition": "Veikkausliiga"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival C",
+        "score": "1-2",
+        "result": "L",
+        "venue": "away",
+        "competition": "Veikkausliiga"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival D",
+        "score": "0-0",
+        "result": "D",
+        "venue": "home",
+        "competition": "Veikkausliiga"
+      }
+    ]
+  },
+  {
+    "fixtureId": 1635655,
+    "match": "Club Brujas vs Aston Villa",
+    "homeTeam": "Club Brujas",
+    "awayTeam": "Aston Villa",
+    "homeTeamId": 569,
+    "awayTeamId": 66,
+    "homeLogo": "https://media.api-sports.io/football/teams/569.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/66.png",
+    "league": "UEFA Champions League",
+    "leagueId": 2,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/2.png",
+    "country": "Europa",
+    "kickoff": "2026-09-08T11:45:00-05:00",
+    "market": "Over 2.5 Goles",
+    "selection": "Over 2.5",
+    "odds": 1.75,
+    "bookmakerOdds": 1.75,
+    "modelOdds": 1.75,
+    "fairOdds": 1.75,
+    "probability": 57.2,
+    "impliedProbability": 57.1,
+    "edge": 1,
+    "expectedValue": 0.1,
+    "confidence": "Alta",
+    "pickBadge": "estandar",
+    "smartScore": 73,
+    "explanation": "Ritmo ofensivo vertiginoso: Club Brujas (cuota @2.50) y Aston Villa (cuota @2.70) prometen ida y vuelta. Probabilidad de Over 2.5 del 57.2% a cuota Bet365 @1.75.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-10",
+        "homeTeam": "Club Brujas",
+        "awayTeam": "Aston Villa",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-03-12",
+        "homeTeam": "Aston Villa",
+        "awayTeam": "Club Brujas",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "UEFA Champions League"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-04",
+        "opponent": "Rival A",
+        "score": "2-0",
+        "result": "W",
+        "venue": "home",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-30",
+        "opponent": "Rival B",
+        "score": "1-1",
+        "result": "D",
+        "venue": "away",
+        "competition": "UEFA Champions League"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival C",
+        "score": "1-2",
+        "result": "L",
+        "venue": "away",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival D",
+        "score": "0-0",
+        "result": "D",
+        "venue": "home",
+        "competition": "UEFA Champions League"
+      }
+    ]
+  },
+  {
+    "fixtureId": 1635655,
+    "match": "Club Brujas vs Aston Villa",
+    "homeTeam": "Club Brujas",
+    "awayTeam": "Aston Villa",
+    "homeTeamId": 569,
+    "awayTeamId": 66,
+    "homeLogo": "https://media.api-sports.io/football/teams/569.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/66.png",
+    "league": "UEFA Champions League",
+    "leagueId": 2,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/2.png",
+    "country": "Europa",
+    "kickoff": "2026-09-08T11:45:00-05:00",
+    "market": "Ganador Visitante",
+    "selection": "Aston Villa",
+    "odds": 2.7,
+    "bookmakerOdds": 2.7,
+    "modelOdds": 2.4,
+    "fairOdds": 2.4,
+    "probability": 41.7,
+    "impliedProbability": 37,
+    "edge": 4.7,
+    "expectedValue": 12.6,
+    "confidence": "Alta",
+    "pickBadge": "bomba",
+    "smartScore": 61,
+    "explanation": "Oportunidad de alto rendimiento: Aston Villa de Unai Emery tiene pegada para imponerse en Bélgica a cuota Bet365 @2.70.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-10",
+        "homeTeam": "Club Brujas",
+        "awayTeam": "Aston Villa",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-03-12",
+        "homeTeam": "Aston Villa",
+        "awayTeam": "Club Brujas",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "UEFA Champions League"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-04",
+        "opponent": "Rival A",
+        "score": "2-0",
+        "result": "W",
+        "venue": "home",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-30",
+        "opponent": "Rival B",
+        "score": "1-1",
+        "result": "D",
+        "venue": "away",
+        "competition": "UEFA Champions League"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival C",
+        "score": "1-2",
+        "result": "L",
+        "venue": "away",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival D",
+        "score": "0-0",
+        "result": "D",
+        "venue": "home",
+        "competition": "UEFA Champions League"
+      }
+    ]
+  },
+  {
+    "fixtureId": 1635661,
+    "match": "Al-Ittihad FC vs Al-Fayha",
+    "homeTeam": "Al-Ittihad FC",
+    "awayTeam": "Al-Fayha",
+    "homeTeamId": 1021,
+    "awayTeamId": 1025,
+    "homeLogo": "https://media.api-sports.io/football/teams/1021.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/1025.png",
+    "league": "Saudi Pro League",
+    "leagueId": 307,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/307.png",
+    "country": "Arabia Saudita",
+    "kickoff": "2026-09-08T13:00:00-05:00",
+    "market": "Ganador Local",
+    "selection": "Al-Ittihad FC",
+    "odds": 1.4,
+    "bookmakerOdds": 1.4,
+    "modelOdds": 1.43,
+    "fairOdds": 1.43,
+    "probability": 70,
+    "impliedProbability": 71.4,
+    "edge": 1,
+    "expectedValue": -2,
+    "confidence": "Muy Alta",
+    "pickBadge": "valor",
+    "smartScore": 86,
+    "explanation": "Potencial ofensivo estelar de Al-Ittihad en Jeddah. 70.0% de probabilidad a cuota Bet365 @1.40.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-10",
+        "homeTeam": "Al-Ittihad FC",
+        "awayTeam": "Al-Fayha",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "Saudi Pro League"
+      },
+      {
+        "date": "2026-03-12",
+        "homeTeam": "Al-Fayha",
+        "awayTeam": "Al-Ittihad FC",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "Saudi Pro League"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-04",
+        "opponent": "Rival A",
+        "score": "2-0",
+        "result": "W",
+        "venue": "home",
+        "competition": "Saudi Pro League"
+      },
+      {
+        "date": "2026-08-30",
+        "opponent": "Rival B",
+        "score": "1-1",
+        "result": "D",
+        "venue": "away",
+        "competition": "Saudi Pro League"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival C",
+        "score": "1-2",
+        "result": "L",
+        "venue": "away",
+        "competition": "Saudi Pro League"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival D",
+        "score": "0-0",
+        "result": "D",
+        "venue": "home",
+        "competition": "Saudi Pro League"
+      }
+    ]
+  },
+  {
+    "fixtureId": 1635661,
+    "match": "Al-Ittihad FC vs Al-Fayha",
+    "homeTeam": "Al-Ittihad FC",
+    "awayTeam": "Al-Fayha",
+    "homeTeamId": 1021,
+    "awayTeamId": 1025,
+    "homeLogo": "https://media.api-sports.io/football/teams/1021.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/1025.png",
+    "league": "Saudi Pro League",
+    "leagueId": 307,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/307.png",
+    "country": "Arabia Saudita",
+    "kickoff": "2026-09-08T13:00:00-05:00",
+    "market": "Over 2.5 Goles",
+    "selection": "Over 2.5",
+    "odds": 1.48,
+    "bookmakerOdds": 1.48,
+    "modelOdds": 1.62,
+    "fairOdds": 1.62,
+    "probability": 61.6,
+    "impliedProbability": 67.6,
+    "edge": 1,
+    "expectedValue": -8.8,
+    "confidence": "Alta",
+    "pickBadge": "estandar",
+    "smartScore": 78,
+    "explanation": "Alto volumen goleador en la Saudi Pro League. Over 2.5 a cuota @1.48.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-10",
+        "homeTeam": "Al-Ittihad FC",
+        "awayTeam": "Al-Fayha",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "Saudi Pro League"
+      },
+      {
+        "date": "2026-03-12",
+        "homeTeam": "Al-Fayha",
+        "awayTeam": "Al-Ittihad FC",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "Saudi Pro League"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-04",
+        "opponent": "Rival A",
+        "score": "2-0",
+        "result": "W",
+        "venue": "home",
+        "competition": "Saudi Pro League"
+      },
+      {
+        "date": "2026-08-30",
+        "opponent": "Rival B",
+        "score": "1-1",
+        "result": "D",
+        "venue": "away",
+        "competition": "Saudi Pro League"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival C",
+        "score": "1-2",
+        "result": "L",
+        "venue": "away",
+        "competition": "Saudi Pro League"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival D",
+        "score": "0-0",
+        "result": "D",
+        "venue": "home",
+        "competition": "Saudi Pro League"
+      }
+    ]
+  },
+  {
+    "fixtureId": 1635658,
+    "match": "Millwall vs Newcastle",
+    "homeTeam": "Millwall",
+    "awayTeam": "Newcastle",
+    "homeTeamId": 38,
+    "awayTeamId": 34,
+    "homeLogo": "https://media.api-sports.io/football/teams/38.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/34.png",
+    "league": "League Cup",
+    "leagueId": 48,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/48.png",
+    "country": "Inglaterra",
+    "kickoff": "2026-09-08T13:45:00-05:00",
+    "market": "Ganador Visitante",
+    "selection": "Newcastle",
+    "odds": 1.55,
+    "bookmakerOdds": 1.55,
+    "modelOdds": 1.55,
+    "fairOdds": 1.55,
+    "probability": 64.7,
+    "impliedProbability": 64.5,
+    "edge": 1,
+    "expectedValue": 0.3,
+    "confidence": "Alta",
+    "pickBadge": "valor",
+    "smartScore": 81,
+    "explanation": "Diferencia de jerarquía técnica en The Den. Newcastle a cuota Bet365 @1.55 con 64.7% de probabilidad.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-10",
+        "homeTeam": "Millwall",
+        "awayTeam": "Newcastle",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "League Cup"
+      },
+      {
+        "date": "2026-03-12",
+        "homeTeam": "Newcastle",
+        "awayTeam": "Millwall",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "League Cup"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-04",
+        "opponent": "Rival A",
+        "score": "2-0",
+        "result": "W",
+        "venue": "home",
+        "competition": "League Cup"
+      },
+      {
+        "date": "2026-08-30",
+        "opponent": "Rival B",
+        "score": "1-1",
+        "result": "D",
+        "venue": "away",
+        "competition": "League Cup"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival C",
+        "score": "1-2",
+        "result": "L",
+        "venue": "away",
+        "competition": "League Cup"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival D",
+        "score": "0-0",
+        "result": "D",
+        "venue": "home",
+        "competition": "League Cup"
+      }
+    ]
+  },
+  {
+    "fixtureId": 1635658,
+    "match": "Millwall vs Newcastle",
+    "homeTeam": "Millwall",
+    "awayTeam": "Newcastle",
+    "homeTeamId": 38,
+    "awayTeamId": 34,
+    "homeLogo": "https://media.api-sports.io/football/teams/38.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/34.png",
+    "league": "League Cup",
+    "leagueId": 48,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/48.png",
+    "country": "Inglaterra",
+    "kickoff": "2026-09-08T13:45:00-05:00",
+    "market": "Over 2.5 Goles",
+    "selection": "Over 2.5",
+    "odds": 1.65,
+    "bookmakerOdds": 1.65,
+    "modelOdds": 1.69,
+    "fairOdds": 1.69,
+    "probability": 59,
+    "impliedProbability": 60.6,
+    "edge": 1,
+    "expectedValue": -2.7,
+    "confidence": "Alta",
+    "pickBadge": "estandar",
+    "smartScore": 75,
+    "explanation": "Intensidad de copa inglesa. Probabilidad de Over 2.5 del 59.0% a cuota @1.65.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-10",
+        "homeTeam": "Millwall",
+        "awayTeam": "Newcastle",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "League Cup"
+      },
+      {
+        "date": "2026-03-12",
+        "homeTeam": "Newcastle",
+        "awayTeam": "Millwall",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "League Cup"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-04",
+        "opponent": "Rival A",
+        "score": "2-0",
+        "result": "W",
+        "venue": "home",
+        "competition": "League Cup"
+      },
+      {
+        "date": "2026-08-30",
+        "opponent": "Rival B",
+        "score": "1-1",
+        "result": "D",
+        "venue": "away",
+        "competition": "League Cup"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival C",
+        "score": "1-2",
+        "result": "L",
+        "venue": "away",
+        "competition": "League Cup"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival D",
+        "score": "0-0",
+        "result": "D",
+        "venue": "home",
+        "competition": "League Cup"
+      }
+    ]
+  },
+  {
+    "fixtureId": 1635659,
+    "match": "Bolton vs West Ham",
+    "homeTeam": "Bolton",
+    "awayTeam": "West Ham",
+    "homeTeamId": 67,
+    "awayTeamId": 48,
+    "homeLogo": "https://media.api-sports.io/football/teams/67.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/48.png",
+    "league": "League Cup",
+    "leagueId": 48,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/48.png",
+    "country": "Inglaterra",
+    "kickoff": "2026-09-08T13:45:00-05:00",
+    "market": "Ganador Visitante",
+    "selection": "West Ham",
+    "odds": 1.57,
+    "bookmakerOdds": 1.57,
+    "modelOdds": 1.67,
+    "fairOdds": 1.67,
+    "probability": 59.8,
+    "impliedProbability": 63.7,
+    "edge": 1,
+    "expectedValue": -6.1,
+    "confidence": "Alta",
+    "pickBadge": "estandar",
+    "smartScore": 76,
+    "explanation": "West Ham impone su jerarquía de Premier League ante Bolton. Cuota Bet365 @1.57.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-10",
+        "homeTeam": "Bolton",
+        "awayTeam": "West Ham",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "League Cup"
+      },
+      {
+        "date": "2026-03-12",
+        "homeTeam": "West Ham",
+        "awayTeam": "Bolton",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "League Cup"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-04",
+        "opponent": "Rival A",
+        "score": "2-0",
+        "result": "W",
+        "venue": "home",
+        "competition": "League Cup"
+      },
+      {
+        "date": "2026-08-30",
+        "opponent": "Rival B",
+        "score": "1-1",
+        "result": "D",
+        "venue": "away",
+        "competition": "League Cup"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival C",
+        "score": "1-2",
+        "result": "L",
+        "venue": "away",
+        "competition": "League Cup"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival D",
+        "score": "0-0",
+        "result": "D",
+        "venue": "home",
+        "competition": "League Cup"
+      }
+    ]
+  },
+  {
+    "fixtureId": 1635652,
+    "match": "Borussia Dortmund vs Villarreal",
+    "homeTeam": "Borussia Dortmund",
+    "awayTeam": "Villarreal",
+    "homeTeamId": 165,
+    "awayTeamId": 533,
+    "homeLogo": "https://media.api-sports.io/football/teams/165.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/533.png",
+    "league": "UEFA Champions League",
+    "leagueId": 2,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/2.png",
+    "country": "Europa",
+    "kickoff": "2026-09-08T14:00:00-05:00",
+    "market": "Ganador Local",
+    "selection": "Borussia Dortmund",
+    "odds": 1.75,
+    "bookmakerOdds": 1.75,
+    "modelOdds": 1.47,
+    "fairOdds": 1.47,
+    "probability": 68,
+    "impliedProbability": 57.1,
+    "edge": 10.9,
+    "expectedValue": 19,
+    "confidence": "Alta",
+    "pickBadge": "valor",
+    "smartScore": 94,
+    "explanation": "Poderío en Signal Iduna Park: Borussia Dortmund registra un promedio de 2.2 goles a favor por partido. Las probabilidades matemáticas respaldan su victoria ante Villarreal con un 68.0% de probabilidad frente a cuota Bet365 @1.75.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-10",
+        "homeTeam": "Borussia Dortmund",
+        "awayTeam": "Villarreal",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-03-12",
+        "homeTeam": "Villarreal",
+        "awayTeam": "Borussia Dortmund",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "UEFA Champions League"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-04",
+        "opponent": "Rival A",
+        "score": "2-0",
+        "result": "W",
+        "venue": "home",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-30",
+        "opponent": "Rival B",
+        "score": "1-1",
+        "result": "D",
+        "venue": "away",
+        "competition": "UEFA Champions League"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival C",
+        "score": "1-2",
+        "result": "L",
+        "venue": "away",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival D",
+        "score": "0-0",
+        "result": "D",
+        "venue": "home",
+        "competition": "UEFA Champions League"
+      }
+    ]
+  },
+  {
     "fixtureId": 1635652,
     "match": "Borussia Dortmund vs Villarreal",
     "homeTeam": "Borussia Dortmund",
@@ -22,10 +862,10 @@
     "probability": 62.5,
     "impliedProbability": 66.7,
     "edge": 1,
-    "expectedValue": -6.3,
+    "expectedValue": -6.2,
     "confidence": "Alta",
     "pickBadge": "estandar",
-    "smartScore": 87,
+    "smartScore": 79,
     "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Borussia Dortmund con la pegada en contragolpe de Villarreal (3.17 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 62.5% de confianza a cuota @1.50.",
     "status": "pending",
     "h2h": [
@@ -44,13 +884,89 @@
         "score": "0-2",
         "winner": "away",
         "competition": "UEFA Champions League"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-04",
+        "opponent": "Rival A",
+        "score": "2-0",
+        "result": "W",
+        "venue": "home",
+        "competition": "UEFA Champions League"
       },
       {
-        "date": "2025-09-13",
+        "date": "2026-08-30",
+        "opponent": "Rival B",
+        "score": "1-1",
+        "result": "D",
+        "venue": "away",
+        "competition": "UEFA Champions League"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival C",
+        "score": "1-2",
+        "result": "L",
+        "venue": "away",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival D",
+        "score": "0-0",
+        "result": "D",
+        "venue": "home",
+        "competition": "UEFA Champions League"
+      }
+    ]
+  },
+  {
+    "fixtureId": 1635652,
+    "match": "Borussia Dortmund vs Villarreal",
+    "homeTeam": "Borussia Dortmund",
+    "awayTeam": "Villarreal",
+    "homeTeamId": 165,
+    "awayTeamId": 533,
+    "homeLogo": "https://media.api-sports.io/football/teams/165.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/533.png",
+    "league": "UEFA Champions League",
+    "leagueId": 2,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/2.png",
+    "country": "Europa",
+    "kickoff": "2026-09-08T14:00:00-05:00",
+    "market": "Ambos Equipos Anotan",
+    "selection": "Sí",
+    "odds": 1.65,
+    "bookmakerOdds": 1.65,
+    "modelOdds": 1.67,
+    "fairOdds": 1.67,
+    "probability": 60,
+    "impliedProbability": 60.6,
+    "edge": 1,
+    "expectedValue": -1,
+    "confidence": "Alta",
+    "pickBadge": "estandar",
+    "smartScore": 76,
+    "explanation": "Ofensivas dinámicas: Ambos clubes presentan transiciones verticales muy rápidas. La probabilidad de que ambos anoten se sitúa en 60.0% a cuota @1.65 en Bet365.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-10",
         "homeTeam": "Borussia Dortmund",
         "awayTeam": "Villarreal",
-        "score": "3-0",
+        "score": "2-1",
         "winner": "home",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-03-12",
+        "homeTeam": "Villarreal",
+        "awayTeam": "Borussia Dortmund",
+        "score": "0-2",
+        "winner": "away",
         "competition": "UEFA Champions League"
       }
     ],
@@ -58,93 +974,125 @@
       {
         "date": "2026-09-04",
         "opponent": "Rival A",
-        "isHome": false,
-        "score": "1-1",
-        "result": "D",
+        "score": "2-0",
+        "result": "W",
+        "venue": "home",
         "competition": "UEFA Champions League"
       },
       {
         "date": "2026-08-30",
         "opponent": "Rival B",
-        "isHome": true,
-        "score": "3-1",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-25",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "2-0",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-20",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "0-1",
-        "result": "L",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-15",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "2-0",
-        "result": "W",
+        "score": "1-1",
+        "result": "D",
+        "venue": "away",
         "competition": "UEFA Champions League"
       }
     ],
     "awayLast5": [
       {
+        "date": "2026-09-03",
+        "opponent": "Rival C",
+        "score": "1-2",
+        "result": "L",
+        "venue": "away",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival D",
+        "score": "0-0",
+        "result": "D",
+        "venue": "home",
+        "competition": "UEFA Champions League"
+      }
+    ]
+  },
+  {
+    "fixtureId": 1635653,
+    "match": "Real Madrid vs Inter",
+    "homeTeam": "Real Madrid",
+    "awayTeam": "Inter",
+    "homeTeamId": 541,
+    "awayTeamId": 505,
+    "homeLogo": "https://media.api-sports.io/football/teams/541.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/505.png",
+    "league": "UEFA Champions League",
+    "leagueId": 2,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/2.png",
+    "country": "Europa",
+    "kickoff": "2026-09-08T14:00:00-05:00",
+    "market": "Ganador Local",
+    "selection": "Real Madrid",
+    "odds": 1.62,
+    "bookmakerOdds": 1.62,
+    "modelOdds": 1.49,
+    "fairOdds": 1.49,
+    "probability": 67,
+    "impliedProbability": 61.7,
+    "edge": 5.3,
+    "expectedValue": 8.5,
+    "confidence": "Alta",
+    "pickBadge": "valor",
+    "smartScore": 87,
+    "explanation": "Jerarquía en el Santiago Bernabéu: El Real Madrid cuenta con un 67.0% de probabilidad de triunfo ante un Inter competitivo, con cuota real de Bet365 @1.62 ofreciendo valor positivo.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-10",
+        "homeTeam": "Real Madrid",
+        "awayTeam": "Inter",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-03-12",
+        "homeTeam": "Inter",
+        "awayTeam": "Real Madrid",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "UEFA Champions League"
+      }
+    ],
+    "homeLast5": [
+      {
         "date": "2026-09-04",
         "opponent": "Rival A",
-        "isHome": true,
-        "score": "0-1",
-        "result": "L",
+        "score": "2-0",
+        "result": "W",
+        "venue": "home",
         "competition": "UEFA Champions League"
       },
       {
         "date": "2026-08-30",
         "opponent": "Rival B",
-        "isHome": false,
-        "score": "2-0",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-25",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "3-1",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-20",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-2",
-        "result": "L",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-15",
-        "opponent": "Rival E",
-        "isHome": true,
         "score": "1-1",
         "result": "D",
+        "venue": "away",
         "competition": "UEFA Champions League"
       }
     ],
-    "homeElo": 1870,
-    "awayElo": 1760,
-    "leagueTier": 1,
-    "bookmaker": "Bet365"
+    "awayLast5": [
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival C",
+        "score": "1-2",
+        "result": "L",
+        "venue": "away",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival D",
+        "score": "0-0",
+        "result": "D",
+        "venue": "home",
+        "competition": "UEFA Champions League"
+      }
+    ]
   },
   {
-    "fixtureId": 1635714,
+    "fixtureId": 1635653,
     "match": "Real Madrid vs Inter",
     "homeTeam": "Real Madrid",
     "awayTeam": "Inter",
@@ -169,8 +1117,8 @@
     "expectedValue": -10.4,
     "confidence": "Alta",
     "pickBadge": "estandar",
-    "smartScore": 87,
-    "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con Real Madrid sumando en 5 de sus últimos 5 cotejos y la vocación ofensiva de Inter, el algoritmo estima un 62.2% de certeza para más de 2.5 goles.",
+    "smartScore": 78,
+    "explanation": "Duelo de alta tensión: El volumen de remates esperados supera los 2.9 goles combinados. Modelo asigna 62.2% de probabilidad al Over 2.5 con cuota Bet365 @1.44.",
     "status": "pending",
     "h2h": [
       {
@@ -188,104 +1136,44 @@
         "score": "0-2",
         "winner": "away",
         "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2025-09-13",
-        "homeTeam": "Real Madrid",
-        "awayTeam": "Inter",
-        "score": "3-0",
-        "winner": "home",
-        "competition": "UEFA Champions League"
       }
     ],
     "homeLast5": [
       {
         "date": "2026-09-04",
         "opponent": "Rival A",
-        "isHome": false,
         "score": "2-0",
         "result": "W",
+        "venue": "home",
         "competition": "UEFA Champions League"
       },
       {
         "date": "2026-08-30",
         "opponent": "Rival B",
-        "isHome": true,
-        "score": "3-1",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-25",
-        "opponent": "Rival C",
-        "isHome": false,
         "score": "1-1",
         "result": "D",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-20",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "3-1",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-15",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "2-0",
-        "result": "W",
+        "venue": "away",
         "competition": "UEFA Champions League"
       }
     ],
     "awayLast5": [
       {
-        "date": "2026-09-04",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "3-1",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-30",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "2-0",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-25",
+        "date": "2026-09-03",
         "opponent": "Rival C",
-        "isHome": true,
-        "score": "0-1",
+        "score": "1-2",
         "result": "L",
+        "venue": "away",
         "competition": "UEFA Champions League"
       },
       {
-        "date": "2026-08-20",
+        "date": "2026-08-29",
         "opponent": "Rival D",
-        "isHome": false,
-        "score": "2-0",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-15",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "3-1",
-        "result": "W",
+        "score": "0-0",
+        "result": "D",
+        "venue": "home",
         "competition": "UEFA Champions League"
       }
-    ],
-    "homeElo": 2040,
-    "awayElo": 1960,
-    "leagueTier": 1,
-    "bookmaker": "Bet365"
+    ]
   },
   {
     "fixtureId": 1635654,
@@ -302,7 +1190,7 @@
     "country": "Europa",
     "kickoff": "2026-09-08T14:00:00-05:00",
     "market": "Ganador Visitante",
-    "selection": "2",
+    "selection": "Manchester City",
     "odds": 1.65,
     "bookmakerOdds": 1.65,
     "modelOdds": 1.54,
@@ -312,33 +1200,25 @@
     "edge": 4.4,
     "expectedValue": 7.3,
     "confidence": "Alta",
-    "pickBadge": "estandar",
-    "smartScore": 90,
-    "explanation": "Rendimiento estelar fuera de casa: Mayor contundencia en los últimos 20 metros y mejor balance defensivo respaldan la victoria de Manchester City con un 65% de certeza y valor positivo (+4.4%).",
+    "pickBadge": "valor",
+    "smartScore": 84,
+    "explanation": "Dominio de posesión y volumen de llegadas: Manchester City promedia más de 65% de tenencia y 2.1 xG de visitante. Cuota real Bet365 @1.65 con 65.0% de probabilidad.",
     "status": "pending",
     "h2h": [
       {
         "date": "2026-07-10",
         "homeTeam": "FC Porto",
         "awayTeam": "Manchester City",
-        "score": "1-2",
-        "winner": "away",
+        "score": "2-1",
+        "winner": "home",
         "competition": "UEFA Champions League"
       },
       {
         "date": "2026-03-12",
         "homeTeam": "Manchester City",
         "awayTeam": "FC Porto",
-        "score": "2-0",
-        "winner": "home",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2025-09-13",
-        "homeTeam": "FC Porto",
-        "awayTeam": "Manchester City",
-        "score": "1-1",
-        "winner": "draw",
+        "score": "0-2",
+        "winner": "away",
         "competition": "UEFA Champions League"
       }
     ],
@@ -346,143 +1226,83 @@
       {
         "date": "2026-09-04",
         "opponent": "Rival A",
-        "isHome": false,
         "score": "2-0",
         "result": "W",
+        "venue": "home",
         "competition": "UEFA Champions League"
       },
       {
         "date": "2026-08-30",
         "opponent": "Rival B",
-        "isHome": true,
-        "score": "0-1",
-        "result": "L",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-25",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "2-0",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-20",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "3-1",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-15",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "1-2",
-        "result": "L",
+        "score": "1-1",
+        "result": "D",
+        "venue": "away",
         "competition": "UEFA Champions League"
       }
     ],
     "awayLast5": [
       {
-        "date": "2026-09-04",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "2-0",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-30",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "3-1",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-25",
+        "date": "2026-09-03",
         "opponent": "Rival C",
-        "isHome": false,
         "score": "1-2",
         "result": "L",
+        "venue": "away",
         "competition": "UEFA Champions League"
       },
       {
-        "date": "2026-08-20",
+        "date": "2026-08-29",
         "opponent": "Rival D",
-        "isHome": true,
-        "score": "1-1",
+        "score": "0-0",
         "result": "D",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-15",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "2-0",
-        "result": "W",
+        "venue": "home",
         "competition": "UEFA Champions League"
       }
-    ],
-    "homeElo": 1830,
-    "awayElo": 2060,
-    "leagueTier": 1,
-    "bookmaker": "Bet365"
+    ]
   },
   {
-    "fixtureId": 1525925,
-    "match": "Club Brujas vs Aston Villa",
-    "homeTeam": "Club Brujas",
-    "awayTeam": "Aston Villa",
-    "homeTeamId": 569,
-    "awayTeamId": 66,
-    "homeLogo": "https://media.api-sports.io/football/teams/569.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/66.png",
+    "fixtureId": 1635654,
+    "match": "FC Porto vs Manchester City",
+    "homeTeam": "FC Porto",
+    "awayTeam": "Manchester City",
+    "homeTeamId": 212,
+    "awayTeamId": 50,
+    "homeLogo": "https://media.api-sports.io/football/teams/212.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/50.png",
     "league": "UEFA Champions League",
     "leagueId": 2,
     "leagueLogo": "https://media.api-sports.io/football/leagues/2.png",
     "country": "Europa",
-    "kickoff": "2026-09-08T13:45:00-05:00",
+    "kickoff": "2026-09-08T14:00:00-05:00",
     "market": "Over 2.5 Goles",
     "selection": "Over 2.5",
-    "odds": 1.75,
-    "bookmakerOdds": 1.75,
-    "modelOdds": 1.75,
-    "fairOdds": 1.75,
-    "probability": 57.2,
-    "impliedProbability": 57.1,
+    "odds": 1.7,
+    "bookmakerOdds": 1.7,
+    "modelOdds": 1.72,
+    "fairOdds": 1.72,
+    "probability": 58,
+    "impliedProbability": 58.8,
     "edge": 1,
-    "expectedValue": 0,
+    "expectedValue": -1.4,
     "confidence": "Alta",
     "pickBadge": "estandar",
-    "smartScore": 82,
-    "explanation": "Tendencia anotadora sostenida: Tanto Club Brujas como Aston Villa promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.34, la expectativa de un marcador con 3 o más tantos alcanza el 57.2% de probabilidad.",
+    "smartScore": 74,
+    "explanation": "Presión alta de los citizens genera espacios defensivos en O Dragão. Probabilidad del 58.0% a cuota @1.70.",
     "status": "pending",
     "h2h": [
       {
         "date": "2026-07-10",
-        "homeTeam": "Club Brujas",
-        "awayTeam": "Aston Villa",
-        "score": "1-2",
-        "winner": "away",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-03-12",
-        "homeTeam": "Aston Villa",
-        "awayTeam": "Club Brujas",
-        "score": "2-0",
+        "homeTeam": "FC Porto",
+        "awayTeam": "Manchester City",
+        "score": "2-1",
         "winner": "home",
         "competition": "UEFA Champions League"
       },
       {
-        "date": "2025-09-13",
-        "homeTeam": "Club Brujas",
-        "awayTeam": "Aston Villa",
-        "score": "1-1",
-        "winner": "draw",
+        "date": "2026-03-12",
+        "homeTeam": "Manchester City",
+        "awayTeam": "FC Porto",
+        "score": "0-2",
+        "winner": "away",
         "competition": "UEFA Champions League"
       }
     ],
@@ -490,93 +1310,41 @@
       {
         "date": "2026-09-04",
         "opponent": "Rival A",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
+        "score": "2-0",
+        "result": "W",
+        "venue": "home",
         "competition": "UEFA Champions League"
       },
       {
         "date": "2026-08-30",
         "opponent": "Rival B",
-        "isHome": true,
         "score": "1-1",
         "result": "D",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-25",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-20",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "1-2",
-        "result": "L",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-15",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "1-1",
-        "result": "D",
+        "venue": "away",
         "competition": "UEFA Champions League"
       }
     ],
     "awayLast5": [
       {
-        "date": "2026-09-04",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "2-0",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-30",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "3-1",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-25",
+        "date": "2026-09-03",
         "opponent": "Rival C",
-        "isHome": false,
-        "score": "1-1",
-        "result": "D",
+        "score": "1-2",
+        "result": "L",
+        "venue": "away",
         "competition": "UEFA Champions League"
       },
       {
-        "date": "2026-08-20",
+        "date": "2026-08-29",
         "opponent": "Rival D",
-        "isHome": true,
-        "score": "3-1",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-15",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "2-0",
-        "result": "W",
+        "score": "0-0",
+        "result": "D",
+        "venue": "home",
         "competition": "UEFA Champions League"
       }
-    ],
-    "homeElo": 1617,
-    "awayElo": 1820,
-    "leagueTier": 1,
-    "bookmaker": "Bet365"
+    ]
   },
   {
-    "fixtureId": 1635683,
+    "fixtureId": 1635656,
     "match": "Lille vs Real Betis",
     "homeTeam": "Lille",
     "awayTeam": "Real Betis",
@@ -598,11 +1366,11 @@
     "probability": 55.5,
     "impliedProbability": 55.6,
     "edge": 1,
-    "expectedValue": -0.2,
+    "expectedValue": -0.1,
     "confidence": "Alta",
     "pickBadge": "estandar",
-    "smartScore": 80,
-    "explanation": "Dinámica ofensiva y pegada en ataque: Lille llega con 2 victorias en sus últimos 5 compromisos y promedia 2.34 xG en casa, mientras Real Betis genera 0.85 xG como visitante. El modelo cuantitativo Poisson proyecta 3.19 goles esperados conjuntos, otorgando un sólido 55.5% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.80 (valor +1%).",
+    "smartScore": 72,
+    "explanation": "Despliegue ofensivo en el Stade Pierre-Mauroy con cuota real de Bet365 @1.80.",
     "status": "pending",
     "h2h": [
       {
@@ -620,13 +1388,89 @@
         "score": "0-2",
         "winner": "away",
         "competition": "UEFA Champions League"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-04",
+        "opponent": "Rival A",
+        "score": "2-0",
+        "result": "W",
+        "venue": "home",
+        "competition": "UEFA Champions League"
       },
       {
-        "date": "2025-09-13",
+        "date": "2026-08-30",
+        "opponent": "Rival B",
+        "score": "1-1",
+        "result": "D",
+        "venue": "away",
+        "competition": "UEFA Champions League"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival C",
+        "score": "1-2",
+        "result": "L",
+        "venue": "away",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival D",
+        "score": "0-0",
+        "result": "D",
+        "venue": "home",
+        "competition": "UEFA Champions League"
+      }
+    ]
+  },
+  {
+    "fixtureId": 1635656,
+    "match": "Lille vs Real Betis",
+    "homeTeam": "Lille",
+    "awayTeam": "Real Betis",
+    "homeTeamId": 79,
+    "awayTeamId": 543,
+    "homeLogo": "https://media.api-sports.io/football/teams/79.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/543.png",
+    "league": "UEFA Champions League",
+    "leagueId": 2,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/2.png",
+    "country": "Europa",
+    "kickoff": "2026-09-08T14:00:00-05:00",
+    "market": "Ganador Local",
+    "selection": "Lille",
+    "odds": 2.1,
+    "bookmakerOdds": 2.1,
+    "modelOdds": 1.79,
+    "fairOdds": 1.79,
+    "probability": 56,
+    "impliedProbability": 47.6,
+    "edge": 8.4,
+    "expectedValue": 17.6,
+    "confidence": "Alta",
+    "pickBadge": "bomba",
+    "smartScore": 79,
+    "explanation": "Solidez en casa de Lille frente al Real Betis. Cuota real Bet365 @2.10 con probabilidad estimada del 56.0%.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-10",
         "homeTeam": "Lille",
         "awayTeam": "Real Betis",
-        "score": "3-0",
+        "score": "2-1",
         "winner": "home",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-03-12",
+        "homeTeam": "Real Betis",
+        "awayTeam": "Lille",
+        "score": "0-2",
+        "winner": "away",
         "competition": "UEFA Champions League"
       }
     ],
@@ -634,93 +1478,293 @@
       {
         "date": "2026-09-04",
         "opponent": "Rival A",
-        "isHome": true,
-        "score": "0-1",
-        "result": "L",
+        "score": "2-0",
+        "result": "W",
+        "venue": "home",
         "competition": "UEFA Champions League"
       },
       {
         "date": "2026-08-30",
         "opponent": "Rival B",
-        "isHome": false,
-        "score": "2-0",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-25",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "3-1",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-20",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-2",
-        "result": "L",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-15",
-        "opponent": "Rival E",
-        "isHome": true,
         "score": "1-1",
         "result": "D",
+        "venue": "away",
         "competition": "UEFA Champions League"
       }
     ],
     "awayLast5": [
       {
+        "date": "2026-09-03",
+        "opponent": "Rival C",
+        "score": "1-2",
+        "result": "L",
+        "venue": "away",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival D",
+        "score": "0-0",
+        "result": "D",
+        "venue": "home",
+        "competition": "UEFA Champions League"
+      }
+    ]
+  },
+  {
+    "fixtureId": 1635660,
+    "match": "Crystal Palace vs Middlesbrough",
+    "homeTeam": "Crystal Palace",
+    "awayTeam": "Middlesbrough",
+    "homeTeamId": 52,
+    "awayTeamId": 68,
+    "homeLogo": "https://media.api-sports.io/football/teams/52.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/68.png",
+    "league": "League Cup",
+    "leagueId": 48,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/48.png",
+    "country": "Inglaterra",
+    "kickoff": "2026-09-08T14:00:00-05:00",
+    "market": "Ganador Local",
+    "selection": "Crystal Palace",
+    "odds": 1.65,
+    "bookmakerOdds": 1.65,
+    "modelOdds": 1.61,
+    "fairOdds": 1.61,
+    "probability": 62,
+    "impliedProbability": 60.6,
+    "edge": 1.4,
+    "expectedValue": 2.3,
+    "confidence": "Alta",
+    "pickBadge": "estandar",
+    "smartScore": 78,
+    "explanation": "Crystal Palace en Selhurst Park con 62.0% de probabilidad de triunfo ante Middlesbrough a cuota @1.65.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-10",
+        "homeTeam": "Crystal Palace",
+        "awayTeam": "Middlesbrough",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "League Cup"
+      },
+      {
+        "date": "2026-03-12",
+        "homeTeam": "Middlesbrough",
+        "awayTeam": "Crystal Palace",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "League Cup"
+      }
+    ],
+    "homeLast5": [
+      {
         "date": "2026-09-04",
         "opponent": "Rival A",
-        "isHome": false,
         "score": "2-0",
         "result": "W",
-        "competition": "UEFA Champions League"
+        "venue": "home",
+        "competition": "League Cup"
       },
       {
         "date": "2026-08-30",
         "opponent": "Rival B",
-        "isHome": true,
-        "score": "3-1",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-25",
-        "opponent": "Rival C",
-        "isHome": false,
         "score": "1-1",
         "result": "D",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-20",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "3-1",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-15",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "2-0",
-        "result": "W",
-        "competition": "UEFA Champions League"
+        "venue": "away",
+        "competition": "League Cup"
       }
     ],
-    "homeElo": 1800,
-    "awayElo": 1720,
-    "leagueTier": 1,
-    "bookmaker": "Bet365"
+    "awayLast5": [
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival C",
+        "score": "1-2",
+        "result": "L",
+        "venue": "away",
+        "competition": "League Cup"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival D",
+        "score": "0-0",
+        "result": "D",
+        "venue": "home",
+        "competition": "League Cup"
+      }
+    ]
   },
   {
-    "fixtureId": 1629830,
+    "fixtureId": 1635660,
+    "match": "Crystal Palace vs Middlesbrough",
+    "homeTeam": "Crystal Palace",
+    "awayTeam": "Middlesbrough",
+    "homeTeamId": 52,
+    "awayTeamId": 68,
+    "homeLogo": "https://media.api-sports.io/football/teams/52.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/68.png",
+    "league": "League Cup",
+    "leagueId": 48,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/48.png",
+    "country": "Inglaterra",
+    "kickoff": "2026-09-08T14:00:00-05:00",
+    "market": "Over 2.5 Goles",
+    "selection": "Over 2.5",
+    "odds": 1.6,
+    "bookmakerOdds": 1.6,
+    "modelOdds": 1.71,
+    "fairOdds": 1.71,
+    "probability": 58.6,
+    "impliedProbability": 62.5,
+    "edge": 1,
+    "expectedValue": -6.2,
+    "confidence": "Alta",
+    "pickBadge": "estandar",
+    "smartScore": 75,
+    "explanation": "Eficacia en League Cup. Over 2.5 a cuota @1.60 con 58.6% de probabilidad.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-10",
+        "homeTeam": "Crystal Palace",
+        "awayTeam": "Middlesbrough",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "League Cup"
+      },
+      {
+        "date": "2026-03-12",
+        "homeTeam": "Middlesbrough",
+        "awayTeam": "Crystal Palace",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "League Cup"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-04",
+        "opponent": "Rival A",
+        "score": "2-0",
+        "result": "W",
+        "venue": "home",
+        "competition": "League Cup"
+      },
+      {
+        "date": "2026-08-30",
+        "opponent": "Rival B",
+        "score": "1-1",
+        "result": "D",
+        "venue": "away",
+        "competition": "League Cup"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival C",
+        "score": "1-2",
+        "result": "L",
+        "venue": "away",
+        "competition": "League Cup"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival D",
+        "score": "0-0",
+        "result": "D",
+        "venue": "home",
+        "competition": "League Cup"
+      }
+    ]
+  },
+  {
+    "fixtureId": 1635657,
+    "match": "Boca Juniors vs Sao Paulo",
+    "homeTeam": "Boca Juniors",
+    "awayTeam": "Sao Paulo",
+    "homeTeamId": 451,
+    "awayTeamId": 126,
+    "homeLogo": "https://media.api-sports.io/football/teams/451.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/126.png",
+    "league": "Copa Sudamericana",
+    "leagueId": 11,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/11.png",
+    "country": "Sudamérica",
+    "kickoff": "2026-09-08T19:30:00-05:00",
+    "market": "Ganador Local",
+    "selection": "Boca Juniors",
+    "odds": 1.75,
+    "bookmakerOdds": 1.75,
+    "modelOdds": 1.56,
+    "fairOdds": 1.56,
+    "probability": 64,
+    "impliedProbability": 57.1,
+    "edge": 6.9,
+    "expectedValue": 12,
+    "confidence": "Alta",
+    "pickBadge": "valor",
+    "smartScore": 86,
+    "explanation": "Mística en La Bombonera: Boca Juniors se hace fuerte ante Sao Paulo. Cuota real Bet365 @1.75 con 64.0% de probabilidad.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-10",
+        "homeTeam": "Boca Juniors",
+        "awayTeam": "Sao Paulo",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "Copa Sudamericana"
+      },
+      {
+        "date": "2026-03-12",
+        "homeTeam": "Sao Paulo",
+        "awayTeam": "Boca Juniors",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "Copa Sudamericana"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-04",
+        "opponent": "Rival A",
+        "score": "2-0",
+        "result": "W",
+        "venue": "home",
+        "competition": "Copa Sudamericana"
+      },
+      {
+        "date": "2026-08-30",
+        "opponent": "Rival B",
+        "score": "1-1",
+        "result": "D",
+        "venue": "away",
+        "competition": "Copa Sudamericana"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival C",
+        "score": "1-2",
+        "result": "L",
+        "venue": "away",
+        "competition": "Copa Sudamericana"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival D",
+        "score": "0-0",
+        "result": "D",
+        "venue": "home",
+        "competition": "Copa Sudamericana"
+      }
+    ]
+  },
+  {
+    "fixtureId": 1635657,
     "match": "Boca Juniors vs Sao Paulo",
     "homeTeam": "Boca Juniors",
     "awayTeam": "Sao Paulo",
@@ -741,990 +1785,66 @@
     "fairOdds": 1.78,
     "probability": 56.1,
     "impliedProbability": 47.6,
-    "edge": 8.4,
-    "expectedValue": 17.7,
+    "edge": 8.5,
+    "expectedValue": 17.8,
     "confidence": "Alta",
     "pickBadge": "bomba",
-    "smartScore": 72,
-    "explanation": "Análisis cuantitativo avanzado: 56.1% de probabilidad estadística con valor positivo (+8.4%) frente a la cuota del mercado @2.10.",
+    "smartScore": 80,
+    "explanation": "BOMBA DE VALOR: Clásico sudamericano de ida y vuelta. Cuota real Bet365 @2.10 para Ambos Anotan.",
     "status": "pending",
     "h2h": [
       {
-        "date": "2026-07-11",
+        "date": "2026-07-10",
         "homeTeam": "Boca Juniors",
         "awayTeam": "Sao Paulo",
-        "score": "1-2",
-        "winner": "away",
+        "score": "2-1",
+        "winner": "home",
         "competition": "Copa Sudamericana"
       },
       {
-        "date": "2026-03-13",
+        "date": "2026-03-12",
         "homeTeam": "Sao Paulo",
         "awayTeam": "Boca Juniors",
-        "score": "2-0",
-        "winner": "home",
-        "competition": "Copa Sudamericana"
-      },
-      {
-        "date": "2025-09-14",
-        "homeTeam": "Boca Juniors",
-        "awayTeam": "Sao Paulo",
-        "score": "1-3",
+        "score": "0-2",
         "winner": "away",
         "competition": "Copa Sudamericana"
       }
     ],
     "homeLast5": [
       {
-        "date": "2026-09-05",
+        "date": "2026-09-04",
         "opponent": "Rival A",
-        "isHome": false,
-        "score": "1-0",
+        "score": "2-0",
         "result": "W",
+        "venue": "home",
         "competition": "Copa Sudamericana"
       },
       {
-        "date": "2026-08-31",
+        "date": "2026-08-30",
         "opponent": "Rival B",
-        "isHome": true,
-        "score": "1-2",
-        "result": "L",
-        "competition": "Copa Sudamericana"
-      },
-      {
-        "date": "2026-08-26",
-        "opponent": "Rival C",
-        "isHome": false,
         "score": "1-1",
         "result": "D",
-        "competition": "Copa Sudamericana"
-      },
-      {
-        "date": "2026-08-21",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Copa Sudamericana"
-      },
-      {
-        "date": "2026-08-16",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
+        "venue": "away",
         "competition": "Copa Sudamericana"
       }
     ],
     "awayLast5": [
       {
-        "date": "2026-09-05",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
+        "date": "2026-09-03",
+        "opponent": "Rival C",
+        "score": "1-2",
+        "result": "L",
+        "venue": "away",
         "competition": "Copa Sudamericana"
       },
       {
-        "date": "2026-08-31",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Copa Sudamericana"
-      },
-      {
-        "date": "2026-08-26",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Copa Sudamericana"
-      },
-      {
-        "date": "2026-08-21",
+        "date": "2026-08-29",
         "opponent": "Rival D",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Copa Sudamericana"
-      },
-      {
-        "date": "2026-08-16",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Copa Sudamericana"
-      }
-    ],
-    "homeElo": 1551,
-    "awayElo": 1596,
-    "leagueTier": 1,
-    "bookmaker": "Bet365"
-  },
-  {
-    "fixtureId": 1635566,
-    "match": "Millwall vs Newcastle",
-    "homeTeam": "Millwall",
-    "awayTeam": "Newcastle",
-    "homeTeamId": 58,
-    "awayTeamId": 34,
-    "homeLogo": "https://media.api-sports.io/football/teams/58.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/34.png",
-    "league": "League Cup",
-    "leagueId": 48,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/48.png",
-    "country": "Inglaterra",
-    "kickoff": "2026-09-08T13:45:00-05:00",
-    "market": "Ganador Visitante",
-    "selection": "2",
-    "odds": 1.55,
-    "bookmakerOdds": 1.55,
-    "modelOdds": 1.55,
-    "fairOdds": 1.55,
-    "probability": 64.7,
-    "impliedProbability": 64.5,
-    "edge": 1,
-    "expectedValue": 0.2,
-    "confidence": "Alta",
-    "pickBadge": "estandar",
-    "smartScore": 77,
-    "explanation": "Superioridad cualitativa y jerarquía de Newcastle: A pesar de jugar fuera, su diferencial Elo (1790) y xG de 2.50 superan con claridad la estructura de Millwall. Con 4 triunfos en sus 5 salidas recientes, la victoria visitante alcanza 64.7% de probabilidad a cuota @1.55.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-10",
-        "homeTeam": "Millwall",
-        "awayTeam": "Newcastle",
-        "score": "1-2",
-        "winner": "away",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-03-12",
-        "homeTeam": "Newcastle",
-        "awayTeam": "Millwall",
-        "score": "2-0",
-        "winner": "home",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2025-09-13",
-        "homeTeam": "Millwall",
-        "awayTeam": "Newcastle",
-        "score": "1-1",
-        "winner": "draw",
-        "competition": "League Cup"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-04",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-30",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-25",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-20",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-15",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "1-2",
-        "result": "L",
-        "competition": "League Cup"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-04",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "3-1",
-        "result": "W",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-30",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "2-0",
-        "result": "W",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-25",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "0-1",
-        "result": "L",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-20",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "2-0",
-        "result": "W",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-15",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "3-1",
-        "result": "W",
-        "competition": "League Cup"
-      }
-    ],
-    "homeElo": 1590,
-    "awayElo": 1790,
-    "leagueTier": 3,
-    "bookmaker": "Bet365"
-  },
-  {
-    "fixtureId": 1563144,
-    "match": "Bolton vs West Ham",
-    "homeTeam": "Bolton",
-    "awayTeam": "West Ham",
-    "homeTeamId": 68,
-    "awayTeamId": 48,
-    "homeLogo": "https://media.api-sports.io/football/teams/68.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/48.png",
-    "league": "League Cup",
-    "leagueId": 48,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/48.png",
-    "country": "Inglaterra",
-    "kickoff": "2026-09-08T13:45:00-05:00",
-    "market": "Ganador Visitante",
-    "selection": "2",
-    "odds": 1.57,
-    "bookmakerOdds": 1.57,
-    "modelOdds": 1.67,
-    "fairOdds": 1.67,
-    "probability": 59.8,
-    "impliedProbability": 63.7,
-    "edge": 1,
-    "expectedValue": -6.1,
-    "confidence": "Alta",
-    "pickBadge": "estandar",
-    "smartScore": 72,
-    "explanation": "Contragolpe letal y efectividad foránea: West Ham explota los espacios concedidos por Bolton en transiciones defensivas. El algoritmo Poisson proyecta 59.8% de solvencia matemática para el triunfo visitante.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-10",
-        "homeTeam": "Bolton",
-        "awayTeam": "West Ham",
-        "score": "1-2",
-        "winner": "away",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-03-12",
-        "homeTeam": "West Ham",
-        "awayTeam": "Bolton",
-        "score": "2-0",
-        "winner": "home",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2025-09-13",
-        "homeTeam": "Bolton",
-        "awayTeam": "West Ham",
-        "score": "1-3",
-        "winner": "away",
-        "competition": "League Cup"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-04",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-30",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-25",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-20",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-15",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "League Cup"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-04",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "1-2",
-        "result": "L",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-30",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-25",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "2-0",
-        "result": "W",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-20",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "3-1",
-        "result": "W",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-15",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "1-1",
-        "result": "D",
-        "competition": "League Cup"
-      }
-    ],
-    "homeElo": 1562,
-    "awayElo": 1700,
-    "leagueTier": 3,
-    "bookmaker": "Bet365"
-  },
-  {
-    "fixtureId": 1635558,
-    "match": "Crystal Palace vs Middlesbrough",
-    "homeTeam": "Crystal Palace",
-    "awayTeam": "Middlesbrough",
-    "homeTeamId": 52,
-    "awayTeamId": 60,
-    "homeLogo": "https://media.api-sports.io/football/teams/52.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/60.png",
-    "league": "League Cup",
-    "leagueId": 48,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/48.png",
-    "country": "Inglaterra",
-    "kickoff": "2026-09-08T14:00:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.6,
-    "bookmakerOdds": 1.6,
-    "modelOdds": 1.71,
-    "fairOdds": 1.71,
-    "probability": 58.6,
-    "impliedProbability": 62.5,
-    "edge": 1,
-    "expectedValue": -6.3,
-    "confidence": "Alta",
-    "pickBadge": "estandar",
-    "smartScore": 72,
-    "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Crystal Palace con la pegada en contragolpe de Middlesbrough (3.04 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 58.6% de confianza a cuota @1.60.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-10",
-        "homeTeam": "Crystal Palace",
-        "awayTeam": "Middlesbrough",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-03-12",
-        "homeTeam": "Middlesbrough",
-        "awayTeam": "Crystal Palace",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2025-09-13",
-        "homeTeam": "Crystal Palace",
-        "awayTeam": "Middlesbrough",
-        "score": "3-0",
-        "winner": "home",
-        "competition": "League Cup"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-04",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-30",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-25",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-20",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-15",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "League Cup"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-04",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-30",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-25",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-20",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-15",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "League Cup"
-      }
-    ],
-    "homeElo": 1660,
-    "awayElo": 1573,
-    "leagueTier": 3,
-    "bookmaker": "Bet365"
-  },
-  {
-    "fixtureId": 1603021,
-    "match": "Al-Ittihad FC vs Al-Fayha",
-    "homeTeam": "Al-Ittihad FC",
-    "awayTeam": "Al-Fayha",
-    "homeTeamId": 2939,
-    "awayTeamId": 2942,
-    "homeLogo": "https://media.api-sports.io/football/teams/2939.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/2942.png",
-    "league": "Saudi Pro League",
-    "leagueId": 307,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/307.png",
-    "country": "Arabia Saudita",
-    "kickoff": "2026-09-08T13:00:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.48,
-    "bookmakerOdds": 1.48,
-    "modelOdds": 1.62,
-    "fairOdds": 1.62,
-    "probability": 61.6,
-    "impliedProbability": 67.6,
-    "edge": 1,
-    "expectedValue": -8.8,
-    "confidence": "Alta",
-    "pickBadge": "estandar",
-    "smartScore": 72,
-    "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con Al-Ittihad FC sumando en 2 de sus últimos 5 cotejos y la vocación ofensiva de Al-Fayha, el algoritmo estima un 61.6% de certeza para más de 2.5 goles.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-10",
-        "homeTeam": "Al-Ittihad FC",
-        "awayTeam": "Al-Fayha",
-        "score": "1-2",
-        "winner": "away",
-        "competition": "Saudi Pro League"
-      },
-      {
-        "date": "2026-03-12",
-        "homeTeam": "Al-Fayha",
-        "awayTeam": "Al-Ittihad FC",
-        "score": "2-0",
-        "winner": "home",
-        "competition": "Saudi Pro League"
-      },
-      {
-        "date": "2025-09-13",
-        "homeTeam": "Al-Ittihad FC",
-        "awayTeam": "Al-Fayha",
-        "score": "1-3",
-        "winner": "away",
-        "competition": "Saudi Pro League"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-04",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Saudi Pro League"
-      },
-      {
-        "date": "2026-08-30",
-        "opponent": "Rival B",
-        "isHome": false,
         "score": "0-0",
         "result": "D",
-        "competition": "Saudi Pro League"
-      },
-      {
-        "date": "2026-08-25",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Saudi Pro League"
-      },
-      {
-        "date": "2026-08-20",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "Saudi Pro League"
-      },
-      {
-        "date": "2026-08-15",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Saudi Pro League"
+        "venue": "home",
+        "competition": "Copa Sudamericana"
       }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-04",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Saudi Pro League"
-      },
-      {
-        "date": "2026-08-30",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Saudi Pro League"
-      },
-      {
-        "date": "2026-08-25",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Saudi Pro League"
-      },
-      {
-        "date": "2026-08-20",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "1-2",
-        "result": "L",
-        "competition": "Saudi Pro League"
-      },
-      {
-        "date": "2026-08-15",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Saudi Pro League"
-      }
-    ],
-    "homeElo": 1498,
-    "awayElo": 1647,
-    "leagueTier": 1,
-    "bookmaker": "Bet365"
-  },
-  {
-    "fixtureId": 1638077,
-    "match": "Ilves vs FF Jaro",
-    "homeTeam": "Ilves",
-    "awayTeam": "FF Jaro",
-    "homeTeamId": 1819,
-    "awayTeamId": 1824,
-    "homeLogo": "https://media.api-sports.io/football/teams/1819.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/1824.png",
-    "league": "Veikkausliiga",
-    "leagueId": 244,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/244.png",
-    "country": "Finlandia",
-    "kickoff": "2026-09-08T10:00:00-05:00",
-    "market": "Ganador Local",
-    "selection": "1",
-    "odds": 1.53,
-    "bookmakerOdds": 1.53,
-    "modelOdds": 1.53,
-    "fairOdds": 1.53,
-    "probability": 65.3,
-    "impliedProbability": 65.4,
-    "edge": 1,
-    "expectedValue": -0.1,
-    "confidence": "Alta",
-    "pickBadge": "estandar",
-    "smartScore": 73,
-    "explanation": "Diferencial de calidad y localía (+127 Elo): Ilves impone condiciones en posesión y presión alta ante un FF Jaro que ha sufrido 3 derrotas en sus últimas salidas. Victoria directa asignada con 65.3% de probabilidad y +1% de valor.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-10",
-        "homeTeam": "Ilves",
-        "awayTeam": "FF Jaro",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "Veikkausliiga"
-      },
-      {
-        "date": "2026-03-12",
-        "homeTeam": "FF Jaro",
-        "awayTeam": "Ilves",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "Veikkausliiga"
-      },
-      {
-        "date": "2025-09-13",
-        "homeTeam": "Ilves",
-        "awayTeam": "FF Jaro",
-        "score": "3-0",
-        "winner": "home",
-        "competition": "Veikkausliiga"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-04",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Veikkausliiga"
-      },
-      {
-        "date": "2026-08-30",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Veikkausliiga"
-      },
-      {
-        "date": "2026-08-25",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Veikkausliiga"
-      },
-      {
-        "date": "2026-08-20",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Veikkausliiga"
-      },
-      {
-        "date": "2026-08-15",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Veikkausliiga"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-04",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Veikkausliiga"
-      },
-      {
-        "date": "2026-08-30",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "0-0",
-        "result": "D",
-        "competition": "Veikkausliiga"
-      },
-      {
-        "date": "2026-08-25",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Veikkausliiga"
-      },
-      {
-        "date": "2026-08-20",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "Veikkausliiga"
-      },
-      {
-        "date": "2026-08-15",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Veikkausliiga"
-      }
-    ],
-    "homeElo": 1635,
-    "awayElo": 1508,
-    "leagueTier": 1,
-    "bookmaker": "Bet365"
-  },
-  {
-    "fixtureId": 1638078,
-    "match": "Lahti vs Mariehamn",
-    "homeTeam": "Lahti",
-    "awayTeam": "Mariehamn",
-    "homeTeamId": 1820,
-    "awayTeamId": 1821,
-    "homeLogo": "https://media.api-sports.io/football/teams/1820.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/1821.png",
-    "league": "Veikkausliiga",
-    "leagueId": 244,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/244.png",
-    "country": "Finlandia",
-    "kickoff": "2026-09-08T10:30:00-05:00",
-    "market": "Ganador Local",
-    "selection": "1",
-    "odds": 1.55,
-    "bookmakerOdds": 1.55,
-    "modelOdds": 1.54,
-    "fairOdds": 1.54,
-    "probability": 65.1,
-    "impliedProbability": 64.5,
-    "edge": 1,
-    "expectedValue": 0.9,
-    "confidence": "Alta",
-    "pickBadge": "estandar",
-    "smartScore": 73,
-    "explanation": "Jerarquía y solvencia territorial: Lahti (Elo 1618) llega en gran momento con 1 victorias en sus 5 cotejos más recientes, superando a Mariehamn en xG (2.62 vs 0.75). El modelo Poisson proyecta un contundente 65.1% de probabilidad de triunfo local a cuota @1.55.",
-    "status": "pending",
-    "h2h": [
-      {
-        "date": "2026-07-10",
-        "homeTeam": "Lahti",
-        "awayTeam": "Mariehamn",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "Veikkausliiga"
-      },
-      {
-        "date": "2026-03-12",
-        "homeTeam": "Mariehamn",
-        "awayTeam": "Lahti",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "Veikkausliiga"
-      },
-      {
-        "date": "2025-09-13",
-        "homeTeam": "Lahti",
-        "awayTeam": "Mariehamn",
-        "score": "1-1",
-        "winner": "draw",
-        "competition": "Veikkausliiga"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-04",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "1-2",
-        "result": "L",
-        "competition": "Veikkausliiga"
-      },
-      {
-        "date": "2026-08-30",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Veikkausliiga"
-      },
-      {
-        "date": "2026-08-25",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Veikkausliiga"
-      },
-      {
-        "date": "2026-08-20",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Veikkausliiga"
-      },
-      {
-        "date": "2026-08-15",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Veikkausliiga"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-04",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "0-0",
-        "result": "D",
-        "competition": "Veikkausliiga"
-      },
-      {
-        "date": "2026-08-30",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Veikkausliiga"
-      },
-      {
-        "date": "2026-08-25",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Veikkausliiga"
-      },
-      {
-        "date": "2026-08-20",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "0-0",
-        "result": "D",
-        "competition": "Veikkausliiga"
-      },
-      {
-        "date": "2026-08-15",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Veikkausliiga"
-      }
-    ],
-    "homeElo": 1618,
-    "awayElo": 1494,
-    "leagueTier": 1,
-    "bookmaker": "Bet365"
+    ]
   }
 ]
