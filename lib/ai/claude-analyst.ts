@@ -1,24 +1,37 @@
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import Anthropic from "@anthropic-ai/sdk";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 
 /**
- * SmartBetBot AI Sports Analyst powered by Anthropic Claude (claude-3-5-sonnet-latest).
- * Acts as a quantitative sports risk assessor and tactical reasoning engine.
+ * SmartBetBot Unified AI Sports Analyst.
+ * Supports Google Gemini (gemini-2.5-flash / gemini-2.5-pro) and Anthropic Claude (claude-3-5-sonnet-latest).
+ * Defaults to Google Gemini when GEMINI_API_KEY is present for zero-cost, high-speed quantitative reasoning.
  */
 
-const CLAUDE_MODEL = "claude-3-5-sonnet-latest";
+const GEMINI_PRIMARY_MODEL = "gemini-2.5-flash";
+const CLAUDE_PRIMARY_MODEL = "claude-3-5-sonnet-latest";
 
-function getAnthropicClient(): Anthropic | null {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey || apiKey.trim() === "") {
-    return null;
+export type AiProvider = "gemini" | "claude" | "none";
+
+export function getActiveAiProvider(): AiProvider {
+  if (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.trim().length > 5) {
+    return "gemini";
   }
-  return new Anthropic({ apiKey });
+  if (process.env.GOOGLE_API_KEY && process.env.GOOGLE_API_KEY.trim().length > 5) {
+    return "gemini";
+  }
+  if (process.env.ANTHROPIC_API_KEY && process.env.ANTHROPIC_API_KEY.trim().length > 5) {
+    return "claude";
+  }
+  return "none";
 }
 
-export function isClaudeConfigured(): boolean {
-  return Boolean(process.env.ANTHROPIC_API_KEY && process.env.ANTHROPIC_API_KEY.trim().length > 10);
+export function isAiConfigured(): boolean {
+  return getActiveAiProvider() !== "none";
 }
+
+// Backward-compatible alias
+export const isClaudeConfigured = isAiConfigured;
 
 export interface ClaudeMatchAudit {
   fixtureId: string | number;
@@ -42,11 +55,9 @@ export interface ClaudeAgentAnalysisResult {
   riskWarnings: string[];
   recommendedStrategy: string;
   approvedPredictions: MarketOpportunity[];
+  providerUsed?: "gemini" | "claude";
 }
 
-/**
- * System prompt setting up Claude as an elite quantitative sports betting risk analyst.
- */
 const SPORTS_ANALYST_SYSTEM_PROMPT = `Eres el Analista Cuantitativo y Director de Riesgo Deportivo Senior de SmartBetBot.
 Tu misión es auditar pronósticos matemáticos de fútbol y filtrar exclusivamente las oportunidades de mayor valor esperado (+EV), detectando y eliminando "Cuotas Trampa", partidos con alta varianza o sesgos estadísticos engañosos.
 
@@ -55,25 +66,62 @@ Reglas de análisis profesional:
 2. DETECCIÓN DE TRAMPAS: Identifica si un equipo tiene partidos de copa/Champions entre semana, si su racha reciente fue contra rivales débiles, o si el mercado está sobrevalorando su nombre.
 3. CONVICCIÓN ESTADÍSTICA: Asigna una puntuación de convicción (0-100). Solo aprueba pronósticos con convicción >= 70.
 4. RAZONAMIENTO CLARO Y CONCISO: Explica en 2-3 frases tácticas y directas por qué la apuesta tiene ventaja sobre la casa de apuestas (Bet365 / Pinnacle).
-5. RESPUESTA EN JSON ESTRICTO: Cuando se solicite formato JSON, devuelve ÚNICAMENTE el bloque JSON válido sin comentarios ni texto introductorio.`;
+5. RESPUESTA EN JSON ESTRICTO: Devuelve ÚNICAMENTE un bloque JSON válido sin comentarios ni texto introductorio.`;
 
 /**
- * Audits a batch of mathematically generated predictions through Claude 3.5 Sonnet.
- * Filters out low-conviction picks and enriches approved ones with tactical reasoning.
+ * Execute a prompt with Google Gemini using JSON response mode
+ */
+async function callGemini(prompt: string): Promise<string> {
+  const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || "";
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({
+    model: GEMINI_PRIMARY_MODEL,
+    systemInstruction: SPORTS_ANALYST_SYSTEM_PROMPT,
+    generationConfig: {
+      temperature: 0.2,
+      responseMimeType: "application/json",
+    },
+  });
+
+  const result = await model.generateContent(prompt);
+  return result.response.text();
+}
+
+/**
+ * Execute a prompt with Anthropic Claude
+ */
+async function callClaude(prompt: string): Promise<string> {
+  const apiKey = process.env.ANTHROPIC_API_KEY || "";
+  const anthropic = new Anthropic({ apiKey });
+  const response = await anthropic.messages.create({
+    model: CLAUDE_PRIMARY_MODEL,
+    max_tokens: 2500,
+    temperature: 0.2,
+    system: SPORTS_ANALYST_SYSTEM_PROMPT,
+    messages: [{ role: "user", content: prompt }],
+  });
+
+  return response.content[0].type === "text" ? response.content[0].text : "";
+}
+
+/**
+ * Audits a batch of mathematically generated predictions through Gemini or Claude.
  */
 export async function auditPredictionsBatchWithClaude(
   predictions: MarketOpportunity[]
 ): Promise<{
   approvedPicks: MarketOpportunity[];
   audits: ClaudeMatchAudit[];
-  usedClaude: boolean;
+  usedAi: boolean;
+  provider: AiProvider;
 }> {
-  const client = getAnthropicClient();
-  if (!client || predictions.length === 0) {
+  const provider = getActiveAiProvider();
+  if (provider === "none" || predictions.length === 0) {
     return {
       approvedPicks: predictions,
       audits: [],
-      usedClaude: false,
+      usedAi: false,
+      provider: "none",
     };
   }
 
@@ -100,33 +148,25 @@ ${JSON.stringify(simplifiedCandidates, null, 2)}
 
 Para cada pronóstico, analiza el valor real frente a la cuota, evalúa si es una cuota trampa, determina si debe ser APROBADO o RECHAZADO, y genera una justificación táctica.
 
-Devuelve un JSON con la siguiente estructura:
+Devuelve un JSON con la siguiente estructura exacta:
 {
   "audits": [
     {
       "fixtureId": "string o número",
-      "approved": true / false,
-      "convictionScore": 0-100,
-      "trapRisk": "Bajo" | "Moderado" | "Alto",
+      "approved": true,
+      "convictionScore": 85,
+      "trapRisk": "Bajo",
       "keyRiskFactor": "Breve factor de riesgo identificado",
       "tacticalReasoning": "Explicación profesional de 2 frases con fundamentos tácticos y valor esperado",
-      "recommendedStake": "Stake 1 (1%)" | "Stake 2 (2%)" | "Stake 3 (3%)"
+      "recommendedStake": "Stake 2 (2%)"
     }
   ]
 }`;
 
-    const response = await client.messages.create({
-      model: CLAUDE_MODEL,
-      max_tokens: 2500,
-      temperature: 0.2, // Low temperature for high quantitative consistency
-      system: SPORTS_ANALYST_SYSTEM_PROMPT,
-      messages: [{ role: "user", content: prompt }],
-    });
-
-    const responseText = response.content[0].type === "text" ? response.content[0].text : "";
+    const responseText = provider === "gemini" ? await callGemini(prompt) : await callClaude(prompt);
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      return { approvedPicks: predictions, audits: [], usedClaude: false };
+      return { approvedPicks: predictions, audits: [], usedAi: false, provider };
     }
 
     const parsed = JSON.parse(jsonMatch[0]) as { audits: ClaudeMatchAudit[] };
@@ -156,20 +196,22 @@ Devuelve un JSON con la siguiente estructura:
     return {
       approvedPicks: enrichedPicks.length > 0 ? enrichedPicks : predictions,
       audits: parsed.audits || [],
-      usedClaude: true,
+      usedAi: true,
+      provider,
     };
   } catch (error) {
-    console.error("[ClaudeAnalyst] Error during batch prediction audit:", error);
+    console.error(`[AiAnalyst (${provider})] Error during batch prediction audit:`, error);
     return {
       approvedPicks: predictions,
       audits: [],
-      usedClaude: false,
+      usedAi: false,
+      provider,
     };
   }
 }
 
 /**
- * Deep Sports Intelligence reasoning query using Claude 3.5 Sonnet.
+ * Deep Sports Intelligence reasoning query using Gemini 2.5 Flash / Claude 3.5 Sonnet.
  * Powers the MCP Natural Language Assistant.
  */
 export async function queryClaudeSportsAgent(params: {
@@ -178,8 +220,8 @@ export async function queryClaudeSportsAgent(params: {
   candidatePicks: MarketOpportunity[];
   todayDateStr: string;
 }): Promise<ClaudeAgentAnalysisResult | null> {
-  const client = getAnthropicClient();
-  if (!client) {
+  const provider = getActiveAiProvider();
+  if (provider === "none") {
     return null;
   }
 
@@ -225,15 +267,7 @@ Devuelve un JSON estrictamente estructurado:
   "selectedFixtureIds": [array de fixtureIds aprobados]
 }`;
 
-    const response = await client.messages.create({
-      model: CLAUDE_MODEL,
-      max_tokens: 2000,
-      temperature: 0.3,
-      system: SPORTS_ANALYST_SYSTEM_PROMPT,
-      messages: [{ role: "user", content: prompt }],
-    });
-
-    const responseText = response.content[0].type === "text" ? response.content[0].text : "";
+    const responseText = provider === "gemini" ? await callGemini(prompt) : await callClaude(prompt);
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) return null;
 
@@ -250,15 +284,16 @@ Devuelve un JSON estrictamente estructurado:
     const approvedPredictions = candidatePicks.filter((p) => selectedIds.has(String(p.fixtureId)));
 
     return {
-      intent: parsed.intent || "Análisis de Inteligencia Deportiva con Claude",
+      intent: parsed.intent || "Análisis de Inteligencia Deportiva con IA",
       summary: parsed.summary || "",
       tacticalInsights: parsed.tacticalInsights || [],
       riskWarnings: parsed.riskWarnings || [],
       recommendedStrategy: parsed.recommendedStrategy || "Stake 2 (2% del bankroll)",
       approvedPredictions: approvedPredictions.length > 0 ? approvedPredictions : candidatePicks.slice(0, 3),
+      providerUsed: provider,
     };
   } catch (err) {
-    console.error("[ClaudeAnalyst] Error querying sports agent:", err);
+    console.error(`[AiAnalyst (${provider})] Error querying sports agent:`, err);
     return null;
   }
 }
