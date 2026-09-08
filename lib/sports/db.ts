@@ -1,4 +1,4 @@
-import { auditPredictionsBatchWithClaude, isClaudeConfigured } from "@/lib/ai/claude-analyst";
+import { auditPredictionsBatchWithClaude, isClaudeConfigured } from "../ai/claude-analyst";
 /**
  * Direct Supabase persistence and real-time live API-Football prediction service.
  * Strictly 100% real fixtures from API-Football aligned with Ecuador (America/Guayaquil, UTC-5) timezone.
@@ -614,6 +614,41 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
 
       // Enrich candidate matches with real bookmaker odds directly from API-Football
       // Paginated getOddsByDate already loaded all real bookmaker odds for all fixtures without hitting rate limits
+
+      // Prioritize fetching real bookmaker odds for Champions League, European and Tier 1 leagues
+      const priorityLeagues = candidates.filter((f) => {
+        const lName = (f.league?.name || "").toLowerCase();
+        return (
+          lName.includes("champions") ||
+          lName.includes("europa") ||
+          lName.includes("libertadores") ||
+          lName.includes("sudamericana") ||
+          lName.includes("premier") ||
+          lName.includes("la liga") ||
+          lName.includes("serie a") ||
+          lName.includes("bundesliga") ||
+          lName.includes("ligue 1") ||
+          lName.includes("championship") ||
+          lName.includes("eredivisie") ||
+          lName.includes("k league") ||
+          lName.includes("veikkausliiga") ||
+          lName.includes("saudi") ||
+          lName.includes("brasileir") ||
+          lName.includes("liga profesional") ||
+          lName.includes("concacaf")
+        );
+      });
+
+      for (const f of priorityLeagues) {
+        if (!oddsMapByFixture[f.fixture.id]) {
+          try {
+            const itemOdds = await apiFootball.getOddsByFixture(f.fixture.id);
+            if (itemOdds && itemOdds.bookmakers && itemOdds.bookmakers.length > 0) {
+              oddsMapByFixture[f.fixture.id] = itemOdds;
+            }
+          } catch {}
+        }
+      }
 
       for (const item of todayFixtures) {
         if (!item.fixture?.id || !item.teams?.home?.name || !item.teams?.away?.name) continue;
