@@ -40,8 +40,6 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.124.0",
-    "@google/genai": "^2.21.0",
-    "@google/generative-ai": "^0.24.1",
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.3",
     "firebase": "^12.18.0",
