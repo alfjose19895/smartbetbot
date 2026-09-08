@@ -50,7 +50,7 @@ function getAdminClient() {
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const SNAPSHOTS_DIR = path.join(process.cwd(), "data", "daily_snapshots");
-export const HISTORY_START_DATE = "2026-09-05"; // Official history tracking starts strictly from tomorrow (September 3, 2026)
+export const HISTORY_START_DATE = "2026-09-07"; // Historial oficial reiniciado desde hoy (7 de Septiembre de 2026)
 
 function ensureSnapshotsDir() {
   try {
@@ -422,6 +422,33 @@ async function enrichCandidateFixturesWithOdds(
       })
     );
   }
+}
+
+
+/**
+ * Passive, deterministic reader for active predictions.
+ * NEVER makes unprompted external API calls on page loads or GET requests.
+ */
+export function getStoredPredictions(): MarketOpportunity[] {
+  const nowMs = Date.now();
+  const todayDateStr = getEcuadorDateString(nowMs);
+
+  // 1. Try to load today's snapshot
+  const todaySnapshot = loadDailySnapshot(todayDateStr);
+  if (todaySnapshot && todaySnapshot.length > 0) {
+    return todaySnapshot;
+  }
+
+  // 2. Fallback to latest available snapshot if today is not yet generated
+  const allSnapshots = getAllDailySnapshots();
+  const sortedDates = Object.keys(allSnapshots).sort().reverse();
+  for (const d of sortedDates) {
+    if (allSnapshots[d] && allSnapshots[d].length > 0) {
+      return allSnapshots[d];
+    }
+  }
+
+  return [];
 }
 
 export async function generatePredictionsForUpcoming(targetLeagueIds?: number[]): Promise<MarketOpportunity[]> {

@@ -1,5 +1,5 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
-import { generatePredictionsForUpcoming } from "@/lib/sports/db";
+import { getStoredPredictions } from "@/lib/sports/db";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const marketFilter = searchParams.get("market");
     const minProb = parseFloat(searchParams.get("minProb") || "0");
 
-    let predictions = await generatePredictionsForUpcoming();
+    let predictions = getStoredPredictions();
 
     if (leagueFilter) {
       predictions = predictions.filter((p) =>

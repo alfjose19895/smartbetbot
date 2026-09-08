@@ -1,11 +1,11 @@
 import { ThemeToggle } from "@/components/ThemeToggle";
 import Link from "next/link";
 import { PredictionCard } from "@/components/PredictionCard";
-import { generatePredictionsForUpcoming } from "@/lib/sports/db";
+import { getStoredPredictions } from "@/lib/sports/db";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 
 export default async function HomePage() {
-  const allPicks = await generatePredictionsForUpcoming();
+  const allPicks = getStoredPredictions();
   const featuredPicks: MarketOpportunity[] = allPicks.slice(0, 3);
 
   return (
