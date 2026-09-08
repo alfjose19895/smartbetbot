@@ -142,7 +142,17 @@ export async function POST(req: Request) {
       }
     }
 
+    const nowMs = Date.now();
     let pool = Array.from(seenMap.values()).filter((p) => {
+      // REGLA ESTRICTA 1: Solo partidos del día actual
+      const pDate = getEcuadorDateString(new Date(p.kickoff));
+      if (pDate !== todayStr) return false;
+
+      // REGLA ESTRICTA 2: Excluir partidos ya finalizados del día actual o días anteriores
+      const kMs = new Date(p.kickoff).getTime();
+      if (p.status === "won" || p.status === "lost" || p.status === "void") return false;
+      if (kMs < nowMs - 135 * 60 * 1000) return false;
+
       const h = (p.homeTeam || "").toLowerCase();
       const a = (p.awayTeam || "").toLowerCase();
       const leg = (p.league || "").toLowerCase();

@@ -455,19 +455,17 @@ export function getStoredPredictions(): MarketOpportunity[] {
   const nowMs = Date.now();
   const todayDateStr = getEcuadorDateString(nowMs);
 
-  // 1. Try to load today's snapshot
+  // REGLA ESTRICTA: Solo partidos del día actual que no hayan finalizado
   const todaySnapshot = loadDailySnapshot(todayDateStr);
   if (todaySnapshot && todaySnapshot.length > 0) {
-    return todaySnapshot;
-  }
-
-  // 2. Fallback to latest available snapshot if today is not yet generated
-  const allSnapshots = getAllDailySnapshots();
-  const sortedDates = Object.keys(allSnapshots).sort().reverse();
-  for (const d of sortedDates) {
-    if (allSnapshots[d] && allSnapshots[d].length > 0) {
-      return allSnapshots[d];
-    }
+    return todaySnapshot.filter((p) => {
+      const pDate = getEcuadorDateString(new Date(p.kickoff));
+      if (pDate !== todayDateStr) return false;
+      const kMs = new Date(p.kickoff).getTime();
+      if (p.status === "won" || p.status === "lost" || p.status === "void") return false;
+      if (kMs < nowMs - 135 * 60 * 1000) return false;
+      return true;
+    });
   }
 
   return [];
@@ -947,16 +945,14 @@ export async function refreshRemainingLivePredictions(): Promise<{
     })
   );
 
-  // 2. Fetch upcoming fixtures and odds for today & tomorrow
-  const [todayFixtures, tomorrowFixtures, todayOddsList, tomorrowOddsList] = await Promise.all([
+  // 2. Fetch upcoming fixtures and odds strictly for TODAY only
+  const [todayFixtures, todayOddsList] = await Promise.all([
     apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil").catch(() => []),
-    apiFootball.getFixturesByDate(tomorrowDateStr, "America/Guayaquil").catch(() => []),
     apiFootball.getOddsByDate(todayDateStr, "America/Guayaquil").catch(() => [] as ApiFootballOddsItem[]),
-    apiFootball.getOddsByDate(tomorrowDateStr, "America/Guayaquil").catch(() => [] as ApiFootballOddsItem[]),
   ]);
 
-  const allFixtures = [...(Array.isArray(todayFixtures) ? todayFixtures : []), ...(Array.isArray(tomorrowFixtures) ? tomorrowFixtures : [])];
-  const allOdds = [...(Array.isArray(todayOddsList) ? todayOddsList : []), ...(Array.isArray(tomorrowOddsList) ? tomorrowOddsList : [])];
+  const allFixtures = Array.isArray(todayFixtures) ? todayFixtures : [];
+  const allOdds = Array.isArray(todayOddsList) ? todayOddsList : [];
 
   const oddsMapByFixture: Record<number, ApiFootballOddsItem> = {};
   for (const item of allOdds) {
@@ -1650,29 +1646,32 @@ export async function searchLiveMarketDynamic(params: {
   limit?: number;
 }): Promise<MarketOpportunity[]> {
   try {
-    const todayDateStr = getEcuadorDateString(Date.now());
-    const tomorrowDateStr = getEcuadorDateString(Date.now() + 24 * 60 * 60 * 1000);
+    const nowMs = Date.now();
+    const todayDateStr = getEcuadorDateString(nowMs);
 
     const qLower = (params.query || "").toLowerCase().trim();
     const cLower = (params.country || "").toLowerCase().trim();
 
-    // 1. Fetch live schedule from API-Football for today and tomorrow
-    const [todayFixtures, tomorrowFixtures] = await Promise.all([
-      apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil").catch(() => []),
-      qLower.includes("mañana") || qLower.includes("tomorrow")
-        ? apiFootball.getFixturesByDate(tomorrowDateStr, "America/Guayaquil").catch(() => [])
-        : Promise.resolve([]),
-    ]);
+    // 1. Fetch live schedule from API-Football STRICTLY for today only (NO tomorrow, NO past dates)
+    const todayFixtures = await apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil").catch(() => []);
+    if (!Array.isArray(todayFixtures) || todayFixtures.length === 0) return [];
 
-    const allFixtures = [
-      ...(Array.isArray(todayFixtures) ? todayFixtures : []),
-      ...(Array.isArray(tomorrowFixtures) ? tomorrowFixtures : [])
-    ];
-    if (allFixtures.length === 0) return [];
-
-    // 2. Filter candidate fixtures based on user query and premier leagues
-    const candidates = allFixtures.filter((f) => {
+    // 2. Filter candidate fixtures strictly belonging to today and NOT finished
+    const candidates = todayFixtures.filter((f) => {
       if (!f.fixture?.id || !f.teams?.home?.name || !f.teams?.away?.name) return false;
+
+      // REGLA ESTRICTA 1: Solo partidos de la fecha actual
+      const kickoffMs = new Date(f.fixture.date).getTime();
+      const fDateStr = getEcuadorDateString(kickoffMs);
+      if (fDateStr !== todayDateStr) return false;
+
+      // REGLA ESTRICTA 2: Excluir partidos ya finalizados o cancelados
+      const shortStatus = f.fixture?.status?.short || "NS";
+      if (["FT", "AET", "PEN", "PST", "CANC", "ABD", "INT", "120", "POST"].includes(shortStatus)) return false;
+
+      // Si el partido inició hace más de 135 minutos, se considera finalizado
+      if (kickoffMs < nowMs - 135 * 60 * 1000) return false;
+
       const hName = (f.teams.home.name || "").toLowerCase();
       const aName = (f.teams.away.name || "").toLowerCase();
       const legName = (f.league?.name || "").toLowerCase();
