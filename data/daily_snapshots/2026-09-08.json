@@ -429,27 +429,6 @@
     "leagueTier": 1
   },
   {
-    "id": "mcp-test-1",
-    "fixtureId": 999001,
-    "homeTeam": "Test FC Home",
-    "awayTeam": "Test FC Away",
-    "league": "Premier League",
-    "country": "Inglaterra",
-    "kickoff": "2026-09-08T15:00:00.000Z",
-    "market": "Ganador Local",
-    "selection": "1",
-    "odds": 1.85,
-    "probability": 62.5,
-    "confidence": "Muy Alta",
-    "smartScore": 88,
-    "edge": 12.5,
-    "pickBadge": "mcp",
-    "isMcpPick": true,
-    "source": "mcp",
-    "explanation": "Test pick from MCP",
-    "status": "pending"
-  },
-  {
     "fixtureId": 1638093,
     "match": "Gnistan vs KuPS",
     "homeTeam": "Gnistan",

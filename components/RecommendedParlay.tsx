@@ -74,7 +74,7 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
       const ok = await copyParlayCardImageToClipboard(
         selectedPicks,
         totalOdds,
-        Number(combinedProbability.toFixed(1)),
+        Number((combinedProbability ?? 50).toFixed(1)),
         stake
       );
       if (ok) {
@@ -89,12 +89,12 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
   const handleCopyParlay = () => {
     const lines = [
       `🔥 PARLEY COMBINADO DEL DÍA (${selectedPicks.length} PICKS)`,
-      `🎯 Cuota Casa: @${totalOdds.toFixed(2)} | Cuota Modelo: @${totalFairOdds.toFixed(2)} | Prob: ${combinedProbability.toFixed(1)}%`,
+      `🎯 Cuota Casa: @${(totalOdds ?? 1.5).toFixed(2)} | Cuota Modelo: @${(totalFairOdds ?? 1.5).toFixed(2)} | Prob: ${(combinedProbability ?? 50).toFixed(1)}%`,
       `📅 Fecha: ${now.toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}`,
       "",
       ...selectedPicks.map(
         (p, idx) =>
-          `${idx + 1}. ${p.match} (${p.league})\n   🎯 Pronóstico: ${p.market}\n   🏢 Cuota Casa: @${p.odds.toFixed(2)} | 🤖 Cuota Modelo: @${p.fairOdds.toFixed(2)} (${p.probability}% prob)`
+          `${idx + 1}. ${p.match} (${p.league})\n   🎯 Pronóstico: ${p.market}\n   🏢 Cuota Casa: @${(p.odds ?? 1.5).toFixed(2)} | 🤖 Cuota Modelo: @${(p.fairOdds ?? p.odds ?? 1.5).toFixed(2)} (${p.probability}% prob)`
       ),
       "",
       `💰 Simulación ($${stake}): Retorno $${potentialTotalReturn} (+$${potentialProfit})`,
@@ -211,14 +211,14 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-xl bg-sky-950/80 px-2.5 py-1 text-xs font-black text-sky-300 border border-sky-800/60" title="Cuota de la Casa de Apuestas">
                   <span className="text-[10px] opacity-70">Casa de Apuestas:</span>
-                  <span>@{pick.odds.toFixed(2)}</span>
+                  <span>@{(pick.odds ?? 1.5).toFixed(2)}</span>
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-xl bg-indigo-950/80 px-2.5 py-1 text-xs font-black text-indigo-300 border border-indigo-800/60" title="Cuota Justa del Modelo SmartBetBot">
                   <span className="text-[10px] opacity-70">Modelo SmartBetBot:</span>
-                  <span>@{pick.fairOdds.toFixed(2)}</span>
+                  <span>@{(pick.fairOdds ?? pick.odds ?? 1.5).toFixed(2)}</span>
                 </span>
                 <span className="text-xs font-extrabold text-emerald-400 bg-emerald-950/50 px-2 py-1 rounded-xl border border-emerald-800/40">
-                  {pick.probability.toFixed(0)}%
+                  {(pick.probability ?? 50).toFixed(0)}%
                 </span>
               </div>
             </div>
@@ -232,13 +232,13 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold uppercase text-sky-400">🏢 Cuota Casa de Apuestas Combinada</span>
                 <span className="text-2xl font-black text-sky-400">
-                  @{totalOdds.toFixed(2)}
+                  @{(totalOdds ?? 1.5).toFixed(2)}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold uppercase text-indigo-400">🤖 Cuota Modelo SmartBetBot</span>
                 <span className="text-lg font-black text-indigo-400">
-                  @{totalFairOdds.toFixed(2)}
+                  @{(totalFairOdds ?? 1.5).toFixed(2)}
                 </span>
               </div>
             </div>
@@ -246,7 +246,7 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
             <div className="mt-3 flex items-center justify-between text-xs text-slate-300">
               <span>Probabilidad Estimada:</span>
               <span className="font-extrabold text-emerald-400">
-                {combinedProbability.toFixed(1)}%
+                {(combinedProbability ?? 50).toFixed(1)}%
               </span>
             </div>
 

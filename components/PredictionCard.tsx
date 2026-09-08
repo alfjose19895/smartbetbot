@@ -191,7 +191,7 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
                 </span>
               ) : (
                 <span className="rounded-xl bg-sky-600 px-2 py-0.5 text-[10px] font-black text-white">
-                  @{prediction.odds.toFixed(2)}
+                  @{(prediction.odds ?? 1.5).toFixed(2)}
                 </span>
               )}
 
@@ -295,11 +295,11 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
                 <div className="grid grid-cols-3 gap-1.5 pt-1">
                   <div className="rounded-lg bg-white p-1.5 border border-sky-200 dark:bg-slate-900 dark:border-sky-900/60 text-center">
                     <div className="text-[8px] font-bold text-sky-600 dark:text-sky-400 truncate">🏢 Casa</div>
-                    <div className="text-xs font-black text-slate-900 dark:text-white">@{prediction.odds.toFixed(2)}</div>
+                    <div className="text-xs font-black text-slate-900 dark:text-white">@{(prediction.odds ?? 1.5).toFixed(2)}</div>
                   </div>
                   <div className="rounded-lg bg-white p-1.5 border border-indigo-200 dark:bg-slate-900 dark:border-indigo-900/60 text-center">
                     <div className="text-[8px] font-bold text-indigo-600 dark:text-indigo-400 truncate">🤖 Modelo</div>
-                    <div className="text-xs font-black text-slate-900 dark:text-white">@{prediction.fairOdds.toFixed(2)}</div>
+                    <div className="text-xs font-black text-slate-900 dark:text-white">@{(prediction.fairOdds ?? prediction.odds ?? 1.5).toFixed(2)}</div>
                   </div>
                   <div className="rounded-lg bg-white p-1.5 border border-emerald-200 dark:bg-slate-900 dark:border-emerald-900/60 text-center">
                     <div className="text-[8px] font-bold text-emerald-600 dark:text-emerald-400 truncate">📈 Prob.</div>
@@ -497,7 +497,7 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
                   <span>🏢</span> Cuota Casa
                 </div>
                 <div className="text-base font-black text-slate-900 dark:text-white mt-0.5">
-                  @{prediction.odds.toFixed(2)}
+                  @{(prediction.odds ?? 1.5).toFixed(2)}
                 </div>
                 <div className="text-[10px] text-slate-400 leading-tight">
                   Precio casa apuestas
@@ -510,7 +510,7 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
                   <span>🤖</span> Cuota Modelo
                 </div>
                 <div className="text-base font-black text-slate-900 dark:text-white mt-0.5">
-                  @{prediction.fairOdds.toFixed(2)}
+                  @{(prediction.fairOdds ?? prediction.odds ?? 1.5).toFixed(2)}
                 </div>
                 <div className="text-[10px] text-slate-400 leading-tight">
                   Cuota justa SmartBetBot

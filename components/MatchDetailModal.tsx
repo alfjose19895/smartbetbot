@@ -343,7 +343,7 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
         {/* Footer Actions */}
         <div className="flex items-center justify-between border-t border-slate-200 bg-slate-50/80 p-4 dark:border-slate-800 dark:bg-slate-900/60">
           <span className="text-xs font-extrabold text-slate-700 dark:text-slate-300">
-            Pronóstico: <strong className="text-emerald-700 dark:text-emerald-400">{prediction.market}</strong> (@{prediction.odds.toFixed(2)})
+            Pronóstico: <strong className="text-emerald-700 dark:text-emerald-400">{prediction.market}</strong> (@{(prediction.odds ?? 1.5).toFixed(2)})
           </span>
           <button
             onClick={onClose}

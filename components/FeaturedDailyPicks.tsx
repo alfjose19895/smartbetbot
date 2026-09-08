@@ -24,8 +24,8 @@ export function FeaturedDailyPicks({ smartPick, bombaPick, onOpenDetail }: Featu
       `🏆 ${pick.league} ${pick.country ? `(${pick.country})` : ""}`,
       `⚽ ${pick.homeTeam} vs ${pick.awayTeam}`,
       `🎯 Pronóstico Oficial: ${pick.market} (${(pick.market.includes("Local") || pick.market.includes("1")) ? "1" : (pick.market.includes("Visitante") || pick.market.includes("2")) ? "2" : pick.selection})`,
-      `🏢 Cuota Casa de Apuestas: @${pick.odds.toFixed(2)}`,
-      `🤖 Cuota Modelo SmartBetBot: @${pick.fairOdds.toFixed(2)}`,
+      `🏢 Cuota Casa de Apuestas: @${(pick.odds ?? 1.5).toFixed(2)}`,
+      `🤖 Cuota Modelo SmartBetBot: @${(pick.fairOdds ?? pick.odds ?? 1.5).toFixed(2)}`,
       `📈 Probabilidad Estimada: ${pick.probability}% (+${pick.edge}% Valor)`,
       `⭐ Confianza: ${pick.confidence || "Muy Alta"}`,
       "",
@@ -160,14 +160,14 @@ export function FeaturedDailyPicks({ smartPick, bombaPick, onOpenDetail }: Featu
             {/* Casa de Apuestas */}
             <div className="rounded-2xl bg-sky-950/60 p-2.5 border border-sky-800/60 flex flex-col justify-between">
               <span className="text-[9px] font-black uppercase text-sky-300">🏢 Cuota Casa</span>
-              <span className="text-lg font-black text-sky-200 mt-0.5">@{pick.odds.toFixed(2)}</span>
+              <span className="text-lg font-black text-sky-200 mt-0.5">@{(pick.odds ?? 1.5).toFixed(2)}</span>
               <span className="text-[9px] text-sky-400/80 mt-0.5">Casa de Apuestas</span>
             </div>
 
             {/* Cuota Modelo */}
             <div className="rounded-2xl bg-indigo-950/60 p-2.5 border border-indigo-800/60 flex flex-col justify-between">
               <span className="text-[9px] font-black uppercase text-indigo-300">🤖 Cuota Modelo</span>
-              <span className="text-lg font-black text-indigo-200 mt-0.5">@{pick.fairOdds.toFixed(2)}</span>
+              <span className="text-lg font-black text-indigo-200 mt-0.5">@{(pick.fairOdds ?? pick.odds ?? 1.5).toFixed(2)}</span>
               <span className="text-[9px] text-indigo-400/80 mt-0.5">SmartBetBot AI</span>
             </div>
 
