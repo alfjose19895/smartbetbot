@@ -140,7 +140,8 @@
     ],
     "homeElo": 1590,
     "awayElo": 1525,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "bookmaker": "Bet365"
   },
   {
     "fixtureId": 1638077,
@@ -283,7 +284,8 @@
     ],
     "homeElo": 1635,
     "awayElo": 1508,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "bookmaker": "Bet365"
   },
   {
     "fixtureId": 1638078,
@@ -426,7 +428,8 @@
     ],
     "homeElo": 1618,
     "awayElo": 1494,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "bookmaker": "Bet365"
   },
   {
     "fixtureId": 1638092,
@@ -569,7 +572,8 @@
     ],
     "homeElo": 1549,
     "awayElo": 1525,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "bookmaker": "Bet365"
   },
   {
     "fixtureId": 1638093,
@@ -712,7 +716,8 @@
     ],
     "homeElo": 1484,
     "awayElo": 1655,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "bookmaker": "Bet365"
   },
   {
     "fixtureId": 1552136,
@@ -855,7 +860,8 @@
     ],
     "homeElo": 1639,
     "awayElo": 1522,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "bookmaker": "Bet365"
   },
   {
     "fixtureId": 1635643,
@@ -998,7 +1004,8 @@
     ],
     "homeElo": 1619,
     "awayElo": 1820,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "bookmaker": "Bet365"
   },
   {
     "fixtureId": 1635609,
@@ -1141,7 +1148,8 @@
     ],
     "homeElo": 1601,
     "awayElo": 1600,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "bookmaker": "Bet365"
   },
   {
     "fixtureId": 1635654,
@@ -1284,7 +1292,8 @@
     ],
     "homeElo": 1830,
     "awayElo": 2060,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "bookmaker": "Bet365"
   },
   {
     "fixtureId": 1635652,
@@ -1427,7 +1436,8 @@
     ],
     "homeElo": 1870,
     "awayElo": 1760,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "bookmaker": "Bet365"
   },
   {
     "fixtureId": 1635683,
@@ -1570,7 +1580,8 @@
     ],
     "homeElo": 1800,
     "awayElo": 1720,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "bookmaker": "Bet365"
   },
   {
     "fixtureId": 1629830,
@@ -1713,6 +1724,7 @@
     ],
     "homeElo": 1551,
     "awayElo": 1596,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "bookmaker": "Bet365"
   }
 ]
