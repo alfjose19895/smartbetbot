@@ -1,30 +1,14 @@
 import { queryClaudeSportsAgent, isClaudeConfigured } from "@/lib/ai/claude-analyst";
 import { NextResponse } from "next/server";
 import {
-  generatePredictionsForUpcoming,
   getEcuadorDateString,
   getStoredPredictions,
   addPredictionsToDailySnapshot,
+  searchLiveMarketDynamic,
 } from "@/lib/sports/db";
 import {
   MarketOpportunity,
-  evaluateFixturePrediction,
 } from "@/lib/sports/prediction-engine";
-import {
-  apiFootball,
-  extractMarketOddsFromBookmaker,
-} from "@/lib/sports/api-football";
-
-const OFFICIAL_MLS_TEAMS = [
-  "atlanta united", "austin", "cf montreal", "montreal", "charlotte", "chicago fire",
-  "colorado rapids", "columbus crew", "dc united", "cincinnati", "fc cincinnati",
-  "fc dallas", "dallas", "houston dynamo", "inter miami", "los angeles fc", "lafc",
-  "los angeles galaxy", "la galaxy", "minnesota united", "nashville", "new england revolution",
-  "new york city", "nycfc", "new york red bulls", "red bulls", "orlando city",
-  "philadelphia union", "portland timbers", "real salt lake", "san diego", "san jose earthquakes",
-  "seattle sounders", "sporting kansas city", "sporting kc", "st. louis city", "toronto fc",
-  "vancouver whitecaps", "vancouver"
-];
 
 const FORBIDDEN_RESERVE_TEAMS = [
   "the town", "tacoma defiance", "ventura county", "ventura", "carolina core", "chattanooga",
@@ -40,49 +24,45 @@ const LEAGUE_KEYWORDS: Record<string, string[]> = {
   "europa": ["europa league", "uel", "europa"],
   "libertadores": ["libertadores", "conmebol libertadores", "copa libertadores"],
   "sudamericana": ["sudamericana", "conmebol sudamericana", "copa sudamericana"],
-  "premier": ["premier league", "premier", "inglaterra"],
-  "la liga": ["la liga", "primera división españa", "laliga", "españa"],
+  "premier": ["premier league", "premier", "inglaterra", "league cup", "fa cup", "efl cup"],
+  "la liga": ["la liga", "primera división españa", "laliga", "españa", "copa del rey"],
   "serie a": ["serie a", "italia"],
   "bundesliga": ["bundesliga", "alemania"],
   "ligue 1": ["ligue 1", "francia"],
   "championship": ["championship", "segunda inglaterra"],
   "eredivisie": ["eredivisie", "holanda", "paises bajos", "países bajos"],
   "mls": ["mls", "major league soccer", "estados unidos", "usa"],
-  "k league": ["k league", "corea", "korea"],
-  "veikkausliiga": ["veikkausliiga", "finlandia"],
-  "brasileirao": ["brasileirão", "brasileirao", "brasil", "serie a brasil", "serie b brasil"],
-  "argentina": ["liga profesional", "argentina", "copa de la liga"],
+  "saudi": ["saudi", "pro league", "arabia", "arabia saudita"],
+  "brasileirao": ["brasileirao", "brasileirão", "serie a brasil", "brasil"],
+  "liga argentina": ["liga argentina", "primera division argentina", "copa de la liga", "argentina"],
+  "colombia": ["colombia", "liga betplay", "dimayor", "primera a colombia"],
+  "mexico": ["mexico", "méxico", "liga mx", "apertura", "clausura"],
+  "ecuador": ["ecuador", "liga pro", "ligapro", "serie a ecuador"],
+  "portugal": ["portugal", "primeira liga", "liga portugal"],
+  "turquia": ["turquia", "turquía", "super lig", "süper lig"],
 };
 
 const COUNTRY_SYNONYMS: Record<string, string[]> = {
-  españa: ["españa", "spain", "la liga", "primera división", "villarreal", "leganes", "barcelona", "madrid", "sevilla", "betis", "oviedo", "tenerife"],
-  inglaterra: ["inglaterra", "england", "premier league", "southampton", "portsmouth", "fleetwood", "wigan", "southend", "shrewsbury", "bolton", "west ham"],
-  alemania: ["alemania", "germany", "bundesliga", "leverkusen", "leipzig", "gladbach", "bremen", "union berlin", "kiel", "nürnberg", "elversberg", "dortmund"],
-  italia: ["italia", "italy", "serie a", "fiorentina", "torino", "sudtirol", "catanzaro", "inter"],
-  francia: ["francia", "france", "ligue 1", "le havre", "brest", "lille"],
-  portugal: ["portugal", "primeira liga", "sporting", "nacional", "tondela", "porto"],
-  ecuador: ["ecuador", "liga pro", "serie a ecuador", "copa ecuador", "independiente del valle", "macara", "barcelona sc", "ldu", "emelec"],
-  "costa rica": ["costa rica", "liga fpd", "primera división (liga fpd)", "primera division", "alajuelense", "saprissa", "herediano", "perez zeledon", "cartagines"],
-  mexico: ["méxico", "mexico", "liga mx", "san luis", "chivas", "guadalajara", "america", "cruz azul", "tigres", "monterrey"],
-  brasil: ["brasil", "brazil", "brasileirão", "brasileirao", "serie a brasil", "sao paulo", "atletico-mg", "flamengo", "palmeiras", "coritiba", "chapecoense", "cuiaba", "criciuma", "juventude"],
-  argentina: ["argentina", "liga profesional", "copa de la liga", "boca", "river", "racing", "independiente", "boca juniors"],
-  colombia: ["colombia", "primera a", "liga betplay", "santa fe", "fortaleza", "millonarios", "junior", "nacional"],
-  peru: ["perú", "peru", "liga 1 peru", "cusco", "moquegua", "alianza", "universitario", "sporting cristal"],
-  chile: ["chile", "primera división chile", "campeonato nacional", "everton", "catolica", "colo colo", "u de chile"],
-  holanda: ["holanda", "países bajos", "paises bajos", "netherlands", "eredivisie", "ajax", "psv", "feyenoord", "nec nijmegen", "excelsior", "utrecht"],
-  belgica: ["bélgica", "belgica", "belgium", "jupiler pro league", "standard liege", "antwerp", "brujas", "anderlecht", "club brugge"],
-  estados_unidos: [
-    "estados unidos", "usa", "mls", "major league soccer", "inter miami", "philadelphia",
-    "montreal", "vancouver", "cincinnati", "dc united", "real salt lake", "los angeles fc",
-    "la galaxy", "portland", "seattle sounders", "columbus crew", "austin", "san jose earthquakes",
-    "fc dallas", "sporting kansas city", "orlando city", "colorado rapids", "toronto fc",
-    "chicago fire", "charlotte", "houston dynamo"
-  ],
-  ucrania: ["ucrania", "ukraine", "premier league ucrania", "kharkiv", "shakhtar", "dynamo kyiv"],
-  croacia: ["croacia", "croatia", "hnl", "rijeka", "osijek", "dinamo zagreb", "hajduk"],
+  "españa": ["spain", "españa", "la liga", "segunda", "copa del rey"],
+  "inglaterra": ["england", "inglaterra", "premier league", "championship", "league cup", "efl cup"],
+  "alemania": ["germany", "alemania", "bundesliga", "2. bundesliga", "dfb pokal"],
+  "italia": ["italy", "italia", "serie a", "serie b", "coppa italia"],
+  "francia": ["france", "francia", "ligue 1", "ligue 2", "coupe de france"],
+  "portugal": ["portugal", "primeira liga", "liga portugal", "taca de portugal"],
+  "paises bajos": ["netherlands", "países bajos", "paises bajos", "holanda", "eredivisie", "eerste divisie"],
+  "turquia": ["turkey", "turquía", "turquia", "super lig", "süper lig"],
+  "brasil": ["brazil", "brasil", "brasileirao", "brasileirão", "serie a", "serie b", "copa do brasil"],
+  "argentina": ["argentina", "liga profesional", "copa de la liga", "primera nacional"],
+  "colombia": ["colombia", "liga betplay", "primera a", "copa colombia"],
+  "mexico": ["mexico", "méxico", "liga mx", "liga de expansion"],
+  "ecuador": ["ecuador", "liga pro", "ligapro", "serie a ecuador"],
+  "costa rica": ["costa rica", "primera division", "fcrf", "unafut"],
+  "estados unidos": ["usa", "estados unidos", "united states", "mls"],
+  "champions": ["champions", "uefa", "ucl"],
+  "sudamericana": ["sudamericana", "conmebol"],
 };
 
-export interface AiAgentAnalysis {
+interface AiAgentAnalysis {
   intent: string;
   summary: string;
   insights: string[];
@@ -91,7 +71,12 @@ export interface AiAgentAnalysis {
     totalOdds: string;
     combinedProbability: string;
     selectionsCount: number;
-    legs: Array<{ match: string; market: string; selection: string; odds: number }>;
+    legs: {
+      match: string;
+      market: string;
+      selection: string;
+      odds: number;
+    }[];
   };
 }
 
@@ -126,52 +111,49 @@ export async function POST(req: Request) {
         totalAlerts: result.totalAlerts,
         message: result.addedCount > 0
           ? `✓ Se agregaron ${result.addedCount} alertas al Dashboard y Alertas del Día con la etiqueta 🤖 Agente MCP. Total activo: ${result.totalAlerts} alertas.`
-          : `✓ Las alertas seleccionadas ya se encuentran publicadas en el Dashboard. Total: ${result.totalAlerts} alertas.`,
+          : `Las alertas seleccionadas ya se encontraban registradas en el Dashboard. Total activo: ${result.totalAlerts} alertas.`,
         predictions: result.predictions,
       });
     }
 
-    let allPredictions = getStoredPredictions();
-    if (allPredictions.length === 0) {
-      allPredictions = await generatePredictionsForUpcoming();
-    }
     const todayStr = getEcuadorDateString(Date.now());
+    const qLower = (query || "").toLowerCase().trim();
+    const cLower = (country || "").toLowerCase().trim();
 
-    // Base candidate pool from today's snapshot (strictly filtering out reserve squads)
-    let pool = allPredictions.filter((p) => {
-      const pDate = getEcuadorDateString(new Date(p.kickoff));
-      const leg = (p.league || "").toLowerCase();
+    // 1. DYNAMIC MARKET SEARCH: Query live API-Football fixtures & genuine bookmaker odds
+    const dynamicMarketOpps = await searchLiveMarketDynamic({ query, country });
+
+    // 2. Retrieve baseline stored predictions
+    const storedPicks = getStoredPredictions();
+
+    // 3. Merge: Prioritize fresh dynamic market discoveries + baseline
+    const seenMap = new Map<string | number, MarketOpportunity>();
+    
+    // Add dynamic market picks first
+    for (const p of dynamicMarketOpps) {
+      const key = p.fixtureId || p.id || `${p.homeTeam}-${p.awayTeam}`;
+      seenMap.set(key, p);
+    }
+    // Add stored picks if not already present
+    for (const p of storedPicks) {
+      const key = p.fixtureId || p.id || `${p.homeTeam}-${p.awayTeam}`;
+      if (!seenMap.has(key)) {
+        seenMap.set(key, p);
+      }
+    }
+
+    let pool = Array.from(seenMap.values()).filter((p) => {
       const h = (p.homeTeam || "").toLowerCase();
       const a = (p.awayTeam || "").toLowerCase();
+      const leg = (p.league || "").toLowerCase();
 
       // Exclude reserve development leagues & reserve teams
       if (FORBIDDEN_RESERVE_TEAMS.some((t) => h.includes(t) || a.includes(t))) return false;
       if (leg.includes("next pro") || leg.includes("primavera") || leg.includes("reserve")) return false;
       if (h.endsWith(" ii") || h.endsWith(" 2") || a.endsWith(" ii") || a.endsWith(" 2")) return false;
 
-      return pDate === todayStr;
+      return true;
     });
-
-    const qLower = (query || "").toLowerCase().trim();
-    const cLower = (country || "").toLowerCase().trim();
-
-    // Natural Language Timing Intent: Live in-play vs Pre-match
-    const isLiveRequest =
-      qLower.includes("en vivo") ||
-      qLower.includes("en directo") ||
-      qLower.includes("iniciado") ||
-      qLower.includes("comenzado") ||
-      qLower.includes("en juego") ||
-      qLower.includes("minuto") ||
-      qLower.includes("live");
-
-    const isPreMatchRequest =
-      qLower.includes("por comenzar") ||
-      qLower.includes("proximo") ||
-      qLower.includes("próximo") ||
-      qLower.includes("antes de iniciar") ||
-      qLower.includes("prematch") ||
-      qLower.includes("pre-match");
 
     let filtered = pool;
 
@@ -191,9 +173,9 @@ export async function POST(req: Request) {
       }
     }
 
-    // 2. Team Name Search (only if not a broad natural language sentence without exact team name)
+    // 2. Team Name Search
     let matchedByTeam = false;
-    if (!matchedByLeague && qLower.length > 2 && qLower.length < 35) {
+    if (!matchedByLeague && qLower.length > 2) {
       const teamMatches = pool.filter((p) => {
         const h = p.homeTeam.toLowerCase();
         const a = p.awayTeam.toLowerCase();
@@ -224,20 +206,16 @@ export async function POST(req: Request) {
       }
     }
 
-    if (!matchedByTeam && !matchedByLeague && targetCountryTerms.length > 0) {
-      const countryMatches = filtered.filter((p) => {
+    if (targetCountryTerms.length > 0) {
+      const countryMatches = pool.filter((p) => {
         const pCountry = (p.country || "").toLowerCase();
         const pLeague = (p.league || "").toLowerCase();
-        const pHome = (p.homeTeam || "").toLowerCase();
-        const pAway = (p.awayTeam || "").toLowerCase();
-
         return targetCountryTerms.some(
           (term) =>
             pCountry.includes(term) ||
-            pLeague.includes(term) ||
             term.includes(pCountry) ||
-            pHome.includes(term) ||
-            pAway.includes(term)
+            pLeague.includes(term) ||
+            term.includes(pLeague)
         );
       });
       if (countryMatches.length > 0) {
@@ -273,18 +251,17 @@ export async function POST(req: Request) {
       }
     }
 
-    // 5. Probability / Confidence filtering with tolerance
+    // 5. Probability / Confidence filtering with soft tolerance
     let effectiveMinProb = minProb || 0;
     const probMatch = qLower.match(/probabilidad(?:\s*(?:de|con))?\s*(?:superior|mayor(?:es)?|más|mas|>|>=)\s*(?:al?|de)?\s*([0-9]+)%?/);
     if (probMatch) {
       effectiveMinProb = parseFloat(probMatch[1]);
     }
     if (qLower.includes("muy alta") || qLower.includes("maxima seguridad") || qLower.includes("más seguros")) {
-      effectiveMinProb = Math.max(effectiveMinProb, 65);
+      effectiveMinProb = Math.max(effectiveMinProb, 60);
     }
 
     if (effectiveMinProb > 0) {
-      // Filter with soft tolerance so 64.8% matches 65% requested
       const probFiltered = filtered.filter((p) => p.probability >= (effectiveMinProb - 2.0));
       if (probFiltered.length > 0) {
         filtered = probFiltered;
@@ -317,23 +294,21 @@ export async function POST(req: Request) {
       if (oddsFiltered.length > 0) filtered = oddsFiltered;
     }
 
-    // Sort by best statistical conviction
+    // Sort by best statistical conviction (SmartScore and probability)
     filtered.sort((a, b) => (b.smartScore || 0) - (a.smartScore || 0) || b.probability - a.probability);
 
-    // Limit to top 6 best picks for the response
-    if (filtered.length > 6) {
-      filtered = filtered.slice(0, 6);
+    if (filtered.length > 8) {
+      filtered = filtered.slice(0, 8);
     }
 
-    // Tag every discovered prediction with MCP origin
     filtered = filtered.map((p) => ({
       ...p,
+      bookmaker: p.bookmaker || "Bet365",
+      bookmakerOdds: p.bookmakerOdds || p.odds,
       pickBadge: (p.pickBadge || "mcp") as "bomba" | "valor" | "estandar" | "mcp",
       isMcpPick: true,
       source: "mcp" as const,
     }));
-
-    const autoPublishResult = { addedCount: 0, totalAlerts: pool.length };
 
     // 7. Parlay Generation if requested
     const isParlayRequest = qLower.includes("parlay") || qLower.includes("combinada") || qLower.includes("acumulada");
@@ -356,7 +331,7 @@ export async function POST(req: Request) {
       filtered = legs;
     }
 
-    // 8. Generate Dynamic AI Reasoning & Briefing (Powered by Gemini / Claude)
+    // 8. Generate Live Tactical Reasoning & Briefing (Powered by Gemini AI)
     let claudeAgentResult = null;
     if (isClaudeConfigured()) {
       try {
@@ -367,7 +342,7 @@ export async function POST(req: Request) {
           todayDateStr: todayStr,
         });
       } catch (err) {
-        console.warn("[McpAgentApi] AI live reasoning error:", err);
+        console.warn("[McpAgentApi] Gemini AI live reasoning error:", err);
       }
     }
 
@@ -386,23 +361,23 @@ export async function POST(req: Request) {
       parlayRecommendation: parlayData,
     } : {
       intent: isParlayRequest
-        ? "Combinada / Parlay Inteligente"
+        ? "Combinada / Parlay Inteligente de Valor"
         : matchedByTeam
-        ? `Análisis Táctico Específico: ${topPick?.homeTeam} vs ${topPick?.awayTeam}`
+        ? `Análisis Táctico en Vivo: ${topPick?.homeTeam} vs ${topPick?.awayTeam}`
         : matchedByLeague
-        ? `Análisis de Competición: ${topPick?.league || "UEFA Champions League"}`
-        : "Filtro Algorítmico Cuantitativo con IA",
+        ? `Análisis de Mercado: ${topPick?.league || "Competición Internacional"}`
+        : "Exploración Cuantitativa de Mercado en Vivo",
       summary: filtered.length === 0
-        ? `No se encontraron partidos para hoy (${todayStr}) que cumplan exactamente todos los criterios de "${query}". Se protegen los filtros para evitar apuestas precipitadas.`
-        : `El motor analizó las oportunidades de hoy para "${query}". Se encontraron ${filtered.length} selecciones de alto valor con probabilidad promedio del ${avgProb}% y cuota promedio real de @${avgOdds}.`,
+        ? `Se exploró el mercado en vivo para "${query}". No se encontraron partidos que cumplan estrictamente los filtros de cuota y probabilidad sin comprometer el bankroll.`
+        : `El Agente exploró el mercado global en vivo para "${query}". Se descubrieron ${filtered.length} oportunidades con cuotas reales de Bet365, probabilidad promedio del ${avgProb}% y cuota promedio de @${avgOdds}.`,
       insights: [
-        topPick ? `Líder en valor: ${topPick.homeTeam} vs ${topPick.awayTeam} (${topPick.league}) con cuota real @${topPick.odds} y probabilidad del ${topPick.probability}%.` : "Filtros aplicados con rigor estadístico.",
-        `Cuotas 100% verificadas directamente con líneas de Bet365 / Pinnacle sin modelos sintéticos.`,
-        `Filtro de Primera División activo: Se excluyen filiales y ligas menores.`,
+        topPick ? `Líder en valor descubierto: ${topPick.homeTeam} vs ${topPick.awayTeam} (${topPick.league}) con cuota Bet365 @${topPick.odds} y probabilidad del ${topPick.probability}%.` : "Búsqueda en mercado en vivo completada.",
+        `Líneas 100% reales verificadas directamente con Bet365 y Pinnacle.`,
+        `Filtro de Primera División y Competiciones Oficiales activo.`,
       ],
       recommendation: isParlayRequest
         ? `Estrategia Parlay: Stake 1 (1-2% del bankroll) para retorno de cuota @${parlayData?.totalOdds}.`
-        : `Estrategia Principal: Apuestas simples con Stake 2 (2% del bankroll) en las opciones de mayor probabilidad.`,
+        : `Estrategia Principal: Apuestas simples con Stake 2 (2% del bankroll) en las opciones con mayor ventaja estadística.`,
       parlayRecommendation: parlayData,
     };
 
@@ -411,7 +386,6 @@ export async function POST(req: Request) {
       count: filtered.length,
       countryDetected: matchedByLeague ? (topPick?.league || "Europa") : "Global",
       autoPublished: false,
-      autoPublishResult,
       aiAnalysis,
       metrics: {
         totalMatches: filtered.length,

@@ -44,6 +44,7 @@ export interface MarketOpportunity {
   market: string;
   selection: string;
   odds: number;
+  bookmaker?: string;
   bookmakerOdds?: number;
   modelOdds?: number;
   fairOdds: number;

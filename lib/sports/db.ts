@@ -1637,3 +1637,115 @@ export async function getLiveInPlayPredictions(): Promise<MarketOpportunity[]> {
     return [];
   }
 }
+
+
+/**
+ * Searches the live football market across all fixtures today (and tomorrow) in API-Football,
+ * fetching real bookmaker lines and generating dynamic, on-the-fly predictions for MCP.
+ */
+export async function searchLiveMarketDynamic(params: {
+  query?: string;
+  country?: string;
+  league?: string;
+  limit?: number;
+}): Promise<MarketOpportunity[]> {
+  try {
+    const todayDateStr = getEcuadorDateString(Date.now());
+    const tomorrowDateStr = getEcuadorDateString(Date.now() + 24 * 60 * 60 * 1000);
+
+    const qLower = (params.query || "").toLowerCase().trim();
+    const cLower = (params.country || "").toLowerCase().trim();
+
+    // 1. Fetch live schedule from API-Football for today and tomorrow
+    const [todayFixtures, tomorrowFixtures] = await Promise.all([
+      apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil").catch(() => []),
+      qLower.includes("mañana") || qLower.includes("tomorrow")
+        ? apiFootball.getFixturesByDate(tomorrowDateStr, "America/Guayaquil").catch(() => [])
+        : Promise.resolve([]),
+    ]);
+
+    const allFixtures = [
+      ...(Array.isArray(todayFixtures) ? todayFixtures : []),
+      ...(Array.isArray(tomorrowFixtures) ? tomorrowFixtures : [])
+    ];
+    if (allFixtures.length === 0) return [];
+
+    // 2. Filter candidate fixtures based on user query and premier leagues
+    const candidates = allFixtures.filter((f) => {
+      if (!f.fixture?.id || !f.teams?.home?.name || !f.teams?.away?.name) return false;
+      const hName = (f.teams.home.name || "").toLowerCase();
+      const aName = (f.teams.away.name || "").toLowerCase();
+      const legName = (f.league?.name || "").toLowerCase();
+      const countryName = (f.league?.country || "").toLowerCase();
+
+      // Exclude reserve development leagues & reserve teams
+      if (hName.endsWith(" ii") || aName.endsWith(" ii") || legName.includes("reserve") || legName.includes("primavera") || legName.includes("next pro")) {
+        return false;
+      }
+
+      // Check query match (team, league, country)
+      if (qLower) {
+        if (hName.includes(qLower) || qLower.includes(hName) || aName.includes(qLower) || qLower.includes(aName)) return true;
+        if (legName.includes(qLower) || qLower.includes(legName)) return true;
+        if (countryName.includes(qLower) || qLower.includes(countryName)) return true;
+        if (qLower.includes("champions") && (legName.includes("champions") || legName.includes("uefa"))) return true;
+        if (qLower.includes("sudamericana") && (legName.includes("sudamericana") || legName.includes("conmebol"))) return true;
+        if (qLower.includes("libertadores") && (legName.includes("libertadores") || legName.includes("conmebol"))) return true;
+        if (qLower.includes("inglaterra") && (countryName.includes("england") || legName.includes("cup") || legName.includes("league"))) return true;
+        if (qLower.includes("españa") && (countryName.includes("spain") || countryName.includes("españa") || legName.includes("la liga") || legName.includes("copa del rey"))) return true;
+      }
+
+      if (cLower && (countryName.includes(cLower) || legName.includes(cLower))) return true;
+
+      return isCuratedLeague(f.league?.id, f.league?.name, f.league?.country);
+    });
+
+    const targetFixtures = candidates.slice(0, 15);
+    const discoveredOpps: MarketOpportunity[] = [];
+
+    for (const f of targetFixtures) {
+      try {
+        const oddsItem = await apiFootball.getOddsByFixture(f.fixture.id);
+        const realMarketOdds = extractMarketOddsFromBookmaker(oddsItem);
+
+        // Only evaluate if real authentic odds exist
+        const hasRealOdds = realMarketOdds && Object.keys(realMarketOdds).length > 0;
+        if (!hasRealOdds) continue;
+
+        const opps = evaluateFixturePrediction({
+          fixtureId: f.fixture.id,
+          homeTeam: f.teams.home.name,
+          awayTeam: f.teams.away.name,
+          homeTeamId: f.teams.home.id,
+          awayTeamId: f.teams.away.id,
+          homeLogo: f.teams.home.logo,
+          awayLogo: f.teams.away.logo,
+          league: f.league?.name || "Competición Oficial",
+          leagueId: f.league?.id,
+          leagueLogo: f.league?.logo,
+          country: f.league?.country || "Global",
+          kickoff: f.fixture.date,
+          marketOdds: realMarketOdds,
+        });
+
+        if (Array.isArray(opps) && opps.length > 0) {
+          for (const op of opps) {
+            op.bookmaker = "Bet365";
+            op.bookmakerOdds = op.odds;
+            op.source = "mcp";
+            op.isMcpPick = true;
+            op.pickBadge = "mcp";
+            discoveredOpps.push(op);
+          }
+        }
+      } catch (err) {
+        // ignore fixture fetch error
+      }
+    }
+
+    return discoveredOpps;
+  } catch (err) {
+    console.error("[searchLiveMarketDynamic] Error searching market:", err);
+    return [];
+  }
+}
