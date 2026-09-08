@@ -80,6 +80,10 @@ function loadDailySnapshot(dateStr: string): MarketOpportunity[] | null {
 }
 
 function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
+  // Never write disk snapshots during test execution to prevent test mocks from polluting production data
+  if (process.env.VITEST || process.env.NODE_ENV === "test") {
+    return;
+  }
   try {
     ensureSnapshotsDir();
     const filePath = path.join(SNAPSHOTS_DIR, `${dateStr}.json`);
@@ -105,12 +109,24 @@ function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
       mergedMap.set(key, p);
     }
 
-    // Merge incoming picks
+    // Merge incoming picks with strict team-date deduplication
+    const seenTeamDates = new Set<string>();
+    for (const p of existingPicks) {
+      const hNorm = getCanonicalTeamKey(p.homeTeam);
+      const aNorm = getCanonicalTeamKey(p.awayTeam);
+      const dateStr = p.kickoff ? p.kickoff.split("T")[0] : "nodate";
+      seenTeamDates.add(`${hNorm}-${dateStr}`);
+      seenTeamDates.add(`${aNorm}-${dateStr}`);
+    }
+
     for (const p of picks) {
       const hNorm = getCanonicalTeamKey(p.homeTeam);
       const aNorm = getCanonicalTeamKey(p.awayTeam);
       const fixId = p.fixtureId || 0;
       const key = `${fixId}-${hNorm}-${aNorm}-${p.market}`;
+      const dateStr = p.kickoff ? p.kickoff.split("T")[0] : "nodate";
+      const hDateKey = `${hNorm}-${dateStr}`;
+      const aDateKey = `${aNorm}-${dateStr}`;
 
       if (mergedMap.has(key)) {
         const existing = mergedMap.get(key)!;
@@ -123,7 +139,12 @@ function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
           explanation: existing.explanation || p.explanation,
         });
       } else {
-        mergedMap.set(key, p);
+        // If it's a new pick, ensure neither team is already playing another fixture on this date
+        if (!seenTeamDates.has(hDateKey) && !seenTeamDates.has(aDateKey)) {
+          seenTeamDates.add(hDateKey);
+          seenTeamDates.add(aDateKey);
+          mergedMap.set(key, p);
+        }
       }
     }
 
@@ -541,17 +562,25 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
 
   const allOpportunities: MarketOpportunity[] = [];
   const processedMatchKeys = new Set<string>();
+  const usedTeamsOnDate = new Set<string>();
 
   const addUniqueMatchPick = (opp: MarketOpportunity) => {
     const dateStr = opp.kickoff ? opp.kickoff.split("T")[0] : "nodate";
     const hNorm = getCanonicalTeamKey(opp.homeTeam);
     const aNorm = getCanonicalTeamKey(opp.awayTeam);
     const matchKey = `${hNorm}-${aNorm}-${dateStr}`;
+    const homeDateKey = `${hNorm}-${dateStr}`;
+    const awayDateKey = `${aNorm}-${dateStr}`;
 
-    if (!processedMatchKeys.has(matchKey)) {
-      processedMatchKeys.add(matchKey);
-      allOpportunities.push(opp);
+    // Evitar que un mismo equipo aparezca en más de 1 partido en la misma fecha (partidos simulados o repetidos)
+    if (usedTeamsOnDate.has(homeDateKey) || usedTeamsOnDate.has(awayDateKey) || processedMatchKeys.has(matchKey)) {
+      return;
     }
+
+    usedTeamsOnDate.add(homeDateKey);
+    usedTeamsOnDate.add(awayDateKey);
+    processedMatchKeys.add(matchKey);
+    allOpportunities.push(opp);
   };
 
   // Efficient single API call for today's entire match schedule and odds in Ecuador timezone
