@@ -128,9 +128,7 @@ export async function POST(req: Request) {
       return pDate === todayStr;
     });
 
-    if (pool.length === 0) {
-      pool = allPredictions;
-    }
+    // pool strictly stays limited to today's matches
 
     const qLower = (query || "").toLowerCase().trim();
     const cLower = (country || "").toLowerCase().trim();
@@ -224,7 +222,7 @@ export async function POST(req: Request) {
 
     if ((isMlsRequest || isLiveRequest || (targetCountryTerms.length > 0 && filtered.length <= 1)) && !matchedByTeam) {
       try {
-        const liveFixtures = await apiFootball.getFixturesByDate(todayStr);
+        const liveFixtures = await apiFootball.getFixturesByDate(todayStr, "America/Guayaquil");
         const liveMatchingFixtures = liveFixtures.filter((f) => {
           const l = (f.league.name || "").toLowerCase();
           const c = (f.league.country || "").toLowerCase();
@@ -403,20 +401,28 @@ export async function POST(req: Request) {
       if (probFiltered.length > 0) filtered = probFiltered;
     }
 
-    // Fallback if empty
-    if (filtered.length === 0) {
-      filtered = pool.slice(0, 5);
-    }
+    // Strictly enforce date = today on all candidate predictions
+    filtered = filtered.filter((p) => {
+      const pDate = getEcuadorDateString(new Date(p.kickoff));
+      return pDate === todayStr;
+    });
 
-    // Deduplicate by fixture to avoid duplicate cards for same match
+    // Deduplicate by fixture & ensure a single match per team on today's date
     const seenFixtures = new Set<string>();
+    const seenTeamsToday = new Set<string>();
     const deduplicated: MarketOpportunity[] = [];
     for (const item of filtered) {
+      const hNorm = (item.homeTeam || "").toLowerCase().trim();
+      const aNorm = (item.awayTeam || "").toLowerCase().trim();
       const key = `${item.fixtureId}-${item.market}`;
-      if (!seenFixtures.has(key)) {
-        seenFixtures.add(key);
-        deduplicated.push(item);
+
+      if (seenTeamsToday.has(hNorm) || seenTeamsToday.has(aNorm) || seenFixtures.has(key)) {
+        continue;
       }
+      seenTeamsToday.add(hNorm);
+      seenTeamsToday.add(aNorm);
+      seenFixtures.add(key);
+      deduplicated.push(item);
     }
     filtered = deduplicated;
 
@@ -484,13 +490,15 @@ export async function POST(req: Request) {
         : targetCountryTerms.length > 0
         ? `Búsqueda por País/Región: ${targetCountryTerms[0].toUpperCase()}`
         : "Filtro Algorítmico Cuantitativo",
-      summary: matchedByTeam
+      summary: filtered.length === 0
+        ? `No se encontraron partidos programados para disputarse hoy (${todayStr}) que coincidan con tu búsqueda "${query || country || "general"}". Se respeta la regla de fecha estricta para evitar mostrar partidos de fechas futuras.`
+        : matchedByTeam
         ? `El motor analizó el encuentro ${topPick.homeTeam} vs ${topPick.awayTeam} en ${topPick.league}. El modelo Poisson y las líneas de Bet365/Pinnacle determinan que la mejor oportunidad es '${topPick.market}' con una cuota real de @${topPick.odds} y un ${topPick.probability}% de certeza matemática.`
         : isParlayRequest
         ? `Se generó una combinada de ${parlayData?.selectionsCount} selecciones de alta compatibilidad estadística, con una cuota acumulada de @${parlayData?.totalOdds} y probabilidad conjunta calculada de ${parlayData?.combinedProbability}.`
         : isLiveRequest
         ? `Se procesaron los datos dinámicos en directo para partidos en juego. El algoritmo evaluó el avance del partido y seleccionó ${filtered.length} oportunidades en vivo con probabilidad promedio del ${avgProb}% y cuota promedio de @${avgOdds}. Las alertas se han publicado en la sección ⚡ Alertas en Vivo con la etiqueta 🤖 Agente MCP.`
-        : `Se procesaron los datos en vivo para tu solicitud "${query || "pronósticos generales"}". El algoritmo seleccionó ${filtered.length} partidos de ${leagueDisplayName} con un promedio de probabilidad del ${avgProb}% y cuota promedio de @${avgOdds}. Las alertas se han publicado automáticamente en el Dashboard y Alertas del Día con la etiqueta 🤖 Agente MCP.`,
+        : `Se procesaron los datos en vivo para tu solicitud "${query || "pronósticos generales"}". El algoritmo seleccionó ${filtered.length} partidos de ${leagueDisplayName} para la fecha de hoy con un promedio de probabilidad del ${avgProb}% y cuota promedio de @${avgOdds}.`,
       insights: [
         topPick ? `Poco margen de error: ${topPick.homeTeam} vs ${topPick.awayTeam} lidera en ${topPick.league} con SmartScore de ${topPick.smartScore}/100 y cuota @${topPick.odds}.` : "Filtros aplicados con rigor estadístico.",
         isLiveRequest ? `Evaluación dinámica de líneas: Si un umbral de goles ya fue superado por el marcador actual, el modelo calcula automáticamente el siguiente escalón rentable.` : `Filtro Estricto de 1ª División: Se excluyen filiales, reservas y ligas de desarrollo. Solo equipos oficiales de Primera División.`,

@@ -482,7 +482,7 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
   const activeDateStr = todayDateStr >= HISTORY_START_DATE ? todayDateStr : HISTORY_START_DATE;
 
   // 1. If a frozen snapshot exists for active date (or tomorrow), update finished match scores & statuses and return it
-  const existingSnapshot = loadDailySnapshot(activeDateStr) || (activeDateStr !== tomorrowDateStr ? loadDailySnapshot(tomorrowDateStr) : null);
+  const existingSnapshot = loadDailySnapshot(activeDateStr);
   if (existingSnapshot && existingSnapshot.length > 0) {
     try {
       const allTodayFixtures = await apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil");
@@ -618,6 +618,9 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
         if (!item.fixture?.id || !item.teams?.home?.name || !item.teams?.away?.name) continue;
 
         const kickoffMs = new Date(item.fixture.date).getTime();
+        const fixtureDateStr = getEcuadorDateString(kickoffMs);
+        if (fixtureDateStr !== todayDateStr) continue; // REGLA ESTRICTA: Solo partidos de la fecha actual
+
         const shortStatus = item.fixture.status?.short || "NS";
         if (["FT", "AET", "PEN", "PST", "CANC", "ABD"].includes(shortStatus)) continue;
         if (kickoffMs < nowMs - 15 * 60 * 1000) continue;
