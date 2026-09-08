@@ -613,7 +613,7 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
       });
 
       // Enrich candidate matches with real bookmaker odds directly from API-Football
-      await enrichCandidateFixturesWithOdds(candidates, oddsMapByFixture);
+      // Paginated getOddsByDate already loaded all real bookmaker odds for all fixtures without hitting rate limits
 
       for (const item of todayFixtures) {
         if (!item.fixture?.id || !item.teams?.home?.name || !item.teams?.away?.name) continue;
@@ -631,7 +631,11 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
         if (legName.includes("primavera") || legName.includes("u19") || legName.includes("u20")) continue;
         if (!isCuratedLeague(item.league?.id, item.league?.name, item.league?.country)) continue;
 
-        const realMarketOdds = extractMarketOddsFromBookmaker(oddsMapByFixture[item.fixture.id]);
+        const oddsItem = oddsMapByFixture[item.fixture.id];
+        if (!oddsItem || !oddsItem.bookmakers || oddsItem.bookmakers.length === 0) {
+          continue; // REGLA ESTRICTA: Solo pronósticos con cuotas reales de casas de apuestas (Bet365 / Pinnacle)
+        }
+        const realMarketOdds = extractMarketOddsFromBookmaker(oddsItem);
 
         const opps = evaluateFixturePrediction({
           fixtureId: item.fixture.id,

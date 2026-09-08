@@ -447,10 +447,25 @@ class ApiFootballClient {
   }
 
   async getOddsByDate(dateStr: string, timezone: string = this.defaultTimezone): Promise<ApiFootballOddsItem[]> {
-    return this.request<ApiFootballOddsItem>("odds", {
-      date: dateStr,
-      timezone,
-    });
+    const allOdds: ApiFootballOddsItem[] = [];
+    for (let page = 1; page <= 6; page++) {
+      try {
+        const pageData = await this.request<ApiFootballOddsItem>("odds", {
+          date: dateStr,
+          timezone,
+          page,
+        });
+        if (Array.isArray(pageData) && pageData.length > 0) {
+          allOdds.push(...pageData);
+          if (pageData.length < 10) break; // Last page reached
+        } else {
+          break;
+        }
+      } catch {
+        break;
+      }
+    }
+    return allOdds;
   }
 
   async getFixtureStatistics(fixtureId: number): Promise<ApiFootballFixtureStatistics[]> {
