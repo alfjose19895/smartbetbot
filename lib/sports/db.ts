@@ -1,3 +1,4 @@
+import { auditPredictionsBatchWithClaude, isClaudeConfigured } from "@/lib/ai/claude-analyst";
 /**
  * Direct Supabase persistence and real-time live API-Football prediction service.
  * Strictly 100% real fixtures from API-Football aligned with Ecuador (America/Guayaquil, UTC-5) timezone.
@@ -745,17 +746,30 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
   }));
 
   // Sort final display by kickoff time ascending for convenient betting timeline
-  const sorted = topPicks.sort(
+  const sorted: MarketOpportunity[] = topPicks.sort(
     (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
   );
 
+  let finalSorted: MarketOpportunity[] = sorted;
   if (sorted.length > 0) {
-    saveDailySnapshot(todayDateStr, sorted);
-    cachedLivePredictions = sorted;
+    // Si Claude está configurado, auditar y enriquecer los pronósticos antes de guardarlos
+    if (isClaudeConfigured()) {
+      try {
+        const auditRes = await auditPredictionsBatchWithClaude(sorted);
+        if (auditRes.approvedPicks.length > 0) {
+          finalSorted = auditRes.approvedPicks;
+        }
+      } catch (err) {
+        console.warn("[Prediction Generator] Claude audit error, proceeding with mathematical picks:", err);
+      }
+    }
+
+    saveDailySnapshot(todayDateStr, finalSorted);
+    cachedLivePredictions = finalSorted;
     cacheTimestamp = nowMs;
   }
 
-  return sorted;
+  return finalSorted;
 }
 
 /**

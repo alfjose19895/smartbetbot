@@ -1,3 +1,4 @@
+import { queryClaudeSportsAgent, isClaudeConfigured } from "@/lib/ai/claude-analyst";
 import { NextResponse } from "next/server";
 import {
   generatePredictionsForUpcoming,
@@ -471,14 +472,37 @@ export async function POST(req: Request) {
       filtered = legs;
     }
 
-    // 10. Generate Dynamic AI Reasoning & Briefing
+    // 10. Generate Dynamic AI Reasoning & Briefing (Powered by Claude 3.5 Sonnet when configured)
+    let claudeAgentResult = null;
+    if (isClaudeConfigured()) {
+      try {
+        claudeAgentResult = await queryClaudeSportsAgent({
+          query,
+          country,
+          candidatePicks: filtered,
+          todayDateStr: todayStr,
+        });
+      } catch (err) {
+        console.warn("[McpAgentApi] Claude live reasoning error, using rule-based analyst fallback:", err);
+      }
+    }
+
     const topPick = filtered[0];
     const avgProb = filtered.length > 0 ? Math.round(filtered.reduce((acc, p) => acc + p.probability, 0) / filtered.length) : 0;
     const avgOdds = filtered.length > 0 ? (filtered.reduce((acc, p) => acc + p.odds, 0) / filtered.length).toFixed(2) : "0.00";
 
     const leagueDisplayName = isMlsRequest ? "Major League Soccer (Primera División USA)" : topPick?.league || "Ligas Principales";
 
-    const aiAnalysis: AiAgentAnalysis = {
+    const aiAnalysis: AiAgentAnalysis = claudeAgentResult ? {
+      intent: claudeAgentResult.intent,
+      summary: claudeAgentResult.summary,
+      insights: [
+        ...claudeAgentResult.tacticalInsights,
+        ...claudeAgentResult.riskWarnings,
+      ],
+      recommendation: claudeAgentResult.recommendedStrategy,
+      parlayRecommendation: parlayData,
+    } : {
       intent: isParlayRequest
         ? "Combinada / Parlay Inteligente"
         : matchedByTeam
