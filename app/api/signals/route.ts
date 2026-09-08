@@ -1,5 +1,5 @@
-﻿import { NextRequest, NextResponse } from "next/server";
-import { getStoredPredictions } from "@/lib/sports/db";
+import { NextRequest, NextResponse } from "next/server";
+import { getStoredPredictions, generatePredictionsForUpcoming } from "@/lib/sports/db";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +11,11 @@ export async function GET(request: NextRequest) {
     const minProb = parseFloat(searchParams.get("minProb") || "0");
 
     let predictions = getStoredPredictions();
+
+    // Ensure baseline alerts are always present if cache/snapshot is cold
+    if (predictions.length === 0) {
+      predictions = await generatePredictionsForUpcoming();
+    }
 
     if (leagueFilter) {
       predictions = predictions.filter((p) =>

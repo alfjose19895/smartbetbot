@@ -790,7 +790,11 @@ export function addPredictionsToDailySnapshot(newPicks: MarketOpportunity[]): {
   const todayDateStr = getEcuadorDateString(nowMs);
   const activeDateStr = todayDateStr >= HISTORY_START_DATE ? todayDateStr : HISTORY_START_DATE;
 
-  let existingSnapshot = loadDailySnapshot(activeDateStr) || [];
+  let existingSnapshot = loadDailySnapshot(activeDateStr);
+  if (!existingSnapshot || existingSnapshot.length === 0) {
+    existingSnapshot = getStoredPredictions();
+  }
+  existingSnapshot = Array.isArray(existingSnapshot) ? [...existingSnapshot] : [];
   const existingKeys = new Set(
     existingSnapshot.map((p) => {
       const h = getCanonicalTeamKey(p.homeTeam);

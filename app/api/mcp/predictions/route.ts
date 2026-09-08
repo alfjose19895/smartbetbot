@@ -443,13 +443,9 @@ export async function POST(req: Request) {
       source: "mcp" as const,
     }));
 
-    // 8. AUTOMATIC PUBLISH: Directly merge MCP picks into the Daily Snapshot & Cache
-    let autoPublishResult = { addedCount: 0, totalAlerts: 0 };
-    try {
-      autoPublishResult = addPredictionsToDailySnapshot(filtered);
-    } catch (publishErr) {
-      console.warn("[McpAgentApi] Auto-publishing snapshot error:", publishErr);
-    }
+    // 8. Snapshot Safety: Do not overwrite baseline daily alerts during search queries.
+    // If the search found new picks and user wants to publish them, action === 'publish' handles it above.
+    const autoPublishResult = { addedCount: 0, totalAlerts: pool.length };
 
     // 9. Parlay Generation if requested
     const isParlayRequest = qLower.includes("parlay") || qLower.includes("combinada") || qLower.includes("acumulada");
