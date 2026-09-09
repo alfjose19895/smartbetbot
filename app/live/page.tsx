@@ -28,6 +28,24 @@ export default function LiveAlertsPage() {
   const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
   const [secondsUntilNextPoll, setSecondsUntilNextPoll] = useState(15);
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    async function checkUserRole() {
+      try {
+        const res = await fetch("/api/auth/me");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.user?.role === "admin" || data.user?.roleSlug === "admin") {
+            setIsAdmin(true);
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+    checkUserRole();
+  }, []);
 
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
@@ -198,13 +216,16 @@ export default function LiveAlertsPage() {
               <span className="font-black text-emerald-600 dark:text-emerald-400">{secondsUntilNextPoll}s</span>
             </div>
 
-            <button
-              onClick={() => loadLiveSignals(false)}
-              className="inline-flex items-center gap-1.5 rounded-2xl border border-rose-500/30 bg-rose-500/10 px-3.5 py-2 text-xs font-black text-rose-600 hover:bg-rose-500/20 transition dark:text-rose-400 cursor-pointer"
-            >
-              <span>🔄</span>
-              <span>Refrescar Ahora</span>
-            </button>
+            {isAdmin && (
+              <button
+                onClick={() => loadLiveSignals(false)}
+                className="inline-flex items-center gap-1.5 rounded-2xl border border-rose-500/30 bg-rose-500/10 px-3.5 py-2 text-xs font-black text-rose-600 hover:bg-rose-500/20 transition dark:text-rose-400 cursor-pointer"
+                title="Actualizar radar en vivo (Sólo Administrador)"
+              >
+                <span>🔄</span>
+                <span>Refrescar Ahora</span>
+              </button>
+            )}
           </div>
         </div>
 
