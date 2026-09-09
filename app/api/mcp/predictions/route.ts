@@ -89,7 +89,20 @@ interface AiAgentAnalysis {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { action, picks, pick, query = "", country = "", minProb, minOdds, maxOdds, market = "", parlay } = body;
+    const {
+      action,
+      picks,
+      pick,
+      query = "",
+      country = "",
+      league = "",
+      leagueId,
+      minProb,
+      minOdds,
+      maxOdds,
+      market = "",
+      parlay,
+    } = body;
 
     // Direct publish action: Add MCP-discovered alerts to active daily dashboard and signals
     if (action === "publish" || action === "addPicks") {
@@ -126,9 +139,16 @@ export async function POST(req: Request) {
     const todayStr = getEcuadorDateString(Date.now());
     const qLower = (query || "").toLowerCase().trim();
     const cLower = (country || "").toLowerCase().trim();
+    const lLower = (league || "").toLowerCase().trim();
+    const targetLeagueId = leagueId ? Number(leagueId) : undefined;
 
     // 1. DYNAMIC MARKET SEARCH: Query live API-Football fixtures & genuine bookmaker odds
-    const dynamicMarketOpps = await searchLiveMarketDynamic({ query, country });
+    const dynamicMarketOpps = await searchLiveMarketDynamic({
+      query,
+      country,
+      league,
+      leagueId: targetLeagueId,
+    });
 
     // 2. Retrieve baseline stored predictions for today (generate if slate is fresh)
     let storedPicks = getStoredPredictions();
@@ -178,19 +198,43 @@ export async function POST(req: Request) {
 
     let filtered = pool;
 
-    // 1. League Filter Recognition from Prompt or Country Parameter
+    // 1. Direct League Filter Recognition (Exact ID or League Name)
     let matchedByLeague = false;
-    for (const [leagueKey, keywords] of Object.entries(LEAGUE_KEYWORDS)) {
-      if (keywords.some((kw) => qLower.includes(kw) || cLower.includes(kw) || kw === cLower)) {
-        const leagueMatches = pool.filter((p) => {
-          const l = (p.league || "").toLowerCase();
-          const c = (p.country || "").toLowerCase();
-          return keywords.some((kw) => l.includes(kw) || kw.includes(l) || c.includes(kw));
-        });
-        if (leagueMatches.length > 0) {
-          filtered = leagueMatches;
-          matchedByLeague = true;
-          break;
+
+    if (targetLeagueId) {
+      const idMatches = pool.filter((p) => p.leagueId === targetLeagueId);
+      if (idMatches.length > 0) {
+        filtered = idMatches;
+        matchedByLeague = true;
+      }
+    }
+
+    if (!matchedByLeague && lLower && lLower !== "all" && lLower !== "todas" && lLower !== "todas las ligas") {
+      const nameMatches = pool.filter((p) => {
+        const pLeague = (p.league || "").toLowerCase();
+        const pCountry = (p.country || "").toLowerCase();
+        return pLeague.includes(lLower) || lLower.includes(pLeague) || pCountry.includes(lLower);
+      });
+      if (nameMatches.length > 0) {
+        filtered = nameMatches;
+        matchedByLeague = true;
+      }
+    }
+
+    // 2. NLP League Filter Recognition from Prompt or Country Parameter
+    if (!matchedByLeague) {
+      for (const [leagueKey, keywords] of Object.entries(LEAGUE_KEYWORDS)) {
+        if (keywords.some((kw) => qLower.includes(kw) || cLower.includes(kw) || kw === cLower)) {
+          const leagueMatches = pool.filter((p) => {
+            const l = (p.league || "").toLowerCase();
+            const c = (p.country || "").toLowerCase();
+            return keywords.some((kw) => l.includes(kw) || kw.includes(l) || c.includes(kw));
+          });
+          if (leagueMatches.length > 0) {
+            filtered = leagueMatches;
+            matchedByLeague = true;
+            break;
+          }
         }
       }
     }

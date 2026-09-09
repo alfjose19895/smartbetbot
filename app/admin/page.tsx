@@ -36,6 +36,93 @@ interface AuditItem {
   formattedDate: string;
 }
 
+interface AvailableLeagueItem {
+  id: number;
+  name: string;
+  country: string;
+  flag: string;
+  category: "cups" | "top5" | "americas" | "second_divisions" | "europe_mid" | "asia_africa";
+  categoryName: string;
+}
+
+const MCP_AVAILABLE_LEAGUES: AvailableLeagueItem[] = [
+  // --- COPAS & TORNEOS INTERNACIONALES ---
+  { id: 2, name: "UEFA Champions League", country: "Europa", flag: "🏆", category: "cups", categoryName: "Copas & UEFA" },
+  { id: 3, name: "UEFA Europa League", country: "Europa", flag: "🏆", category: "cups", categoryName: "Copas & UEFA" },
+  { id: 848, name: "UEFA Europa Conference League", country: "Europa", flag: "🏆", category: "cups", categoryName: "Copas & UEFA" },
+  { id: 13, name: "Copa Libertadores", country: "Sudamérica", flag: "⭐", category: "cups", categoryName: "Copas & UEFA" },
+  { id: 11, name: "Copa Sudamericana", country: "Sudamérica", flag: "⭐", category: "cups", categoryName: "Copas & UEFA" },
+  { id: 772, name: "Leagues Cup", country: "Norteamérica", flag: "🏆", category: "cups", categoryName: "Copas & UEFA" },
+  { id: 16, name: "CONCACAF Champions League", country: "Norteamérica", flag: "🏆", category: "cups", categoryName: "Copas & UEFA" },
+  { id: 5, name: "UEFA Nations League", country: "Europa", flag: "🏆", category: "cups", categoryName: "Copas & UEFA" },
+
+  // --- TOP 5 EUROPA ---
+  { id: 39, name: "Premier League", country: "Inglaterra", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", category: "top5", categoryName: "Top 5 Europa" },
+  { id: 140, name: "La Liga", country: "España", flag: "🇪🇸", category: "top5", categoryName: "Top 5 Europa" },
+  { id: 135, name: "Serie A", country: "Italia", flag: "🇮🇹", category: "top5", categoryName: "Top 5 Europa" },
+  { id: 78, name: "Bundesliga", country: "Alemania", flag: "🇩🇪", category: "top5", categoryName: "Top 5 Europa" },
+  { id: 61, name: "Ligue 1", country: "Francia", flag: "🇫🇷", category: "top5", categoryName: "Top 5 Europa" },
+
+  // --- AMÉRICAS & CONMEBOL ---
+  { id: 242, name: "Liga Pro", country: "Ecuador", flag: "🇪🇨", category: "americas", categoryName: "Américas & Conmebol" },
+  { id: 253, name: "Major League Soccer (MLS)", country: "Estados Unidos", flag: "🇺🇸", category: "americas", categoryName: "Américas & Conmebol" },
+  { id: 162, name: "Primera División (Liga FPD)", country: "Costa Rica", flag: "🇨🇷", category: "americas", categoryName: "Américas & Conmebol" },
+  { id: 262, name: "Liga MX", country: "México", flag: "🇲🇽", category: "americas", categoryName: "Américas & Conmebol" },
+  { id: 71, name: "Brasileirão Série A", country: "Brasil", flag: "🇧🇷", category: "americas", categoryName: "Américas & Conmebol" },
+  { id: 128, name: "Liga Profesional", country: "Argentina", flag: "🇦🇷", category: "americas", categoryName: "Américas & Conmebol" },
+  { id: 239, name: "Primera A", country: "Colombia", flag: "🇨🇴", category: "americas", categoryName: "Américas & Conmebol" },
+  { id: 281, name: "Liga 1", country: "Perú", flag: "🇵🇪", category: "americas", categoryName: "Américas & Conmebol" },
+  { id: 265, name: "Primera División", country: "Chile", flag: "🇨🇱", category: "americas", categoryName: "Américas & Conmebol" },
+  { id: 271, name: "Primera División", country: "Uruguay", flag: "🇺🇾", category: "americas", categoryName: "Américas & Conmebol" },
+  { id: 250, name: "Primera División", country: "Paraguay", flag: "🇵🇾", category: "americas", categoryName: "Américas & Conmebol" },
+  { id: 344, name: "Primera División", country: "Bolivia", flag: "🇧🇴", category: "americas", categoryName: "Américas & Conmebol" },
+
+  // --- SEGUNDAS DIVISIONES ---
+  { id: 40, name: "Championship", country: "Inglaterra", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", category: "second_divisions", categoryName: "Segundas Divisiones" },
+  { id: 141, name: "La Liga 2 (Segunda)", country: "España", flag: "🇪🇸", category: "second_divisions", categoryName: "Segundas Divisiones" },
+  { id: 136, name: "Serie B", country: "Italia", flag: "🇮🇹", category: "second_divisions", categoryName: "Segundas Divisiones" },
+  { id: 79, name: "2. Bundesliga", country: "Alemania", flag: "🇩🇪", category: "second_divisions", categoryName: "Segundas Divisiones" },
+  { id: 62, name: "Ligue 2", country: "Francia", flag: "🇫🇷", category: "second_divisions", categoryName: "Segundas Divisiones" },
+  { id: 89, name: "Eerste Divisie", country: "Países Bajos", flag: "🇳🇱", category: "second_divisions", categoryName: "Segundas Divisiones" },
+  { id: 95, name: "Liga Portugal 2", country: "Portugal", flag: "🇵🇹", category: "second_divisions", categoryName: "Segundas Divisiones" },
+  { id: 72, name: "Brasileirão Série B", country: "Brasil", flag: "🇧🇷", category: "second_divisions", categoryName: "Segundas Divisiones" },
+  { id: 263, name: "Liga de Expansión MX", country: "México", flag: "🇲🇽", category: "second_divisions", categoryName: "Segundas Divisiones" },
+  { id: 254, name: "USL Championship", country: "Estados Unidos", flag: "🇺🇸", category: "second_divisions", categoryName: "Segundas Divisiones" },
+
+  // --- OTRAS LIGAS DE EUROPA ---
+  { id: 94, name: "Primeira Liga", country: "Portugal", flag: "🇵🇹", category: "europe_mid", categoryName: "Otras Ligas Europa" },
+  { id: 88, name: "Eredivisie", country: "Países Bajos", flag: "🇳🇱", category: "europe_mid", categoryName: "Otras Ligas Europa" },
+  { id: 144, name: "Jupiler Pro League", country: "Bélgica", flag: "🇧🇪", category: "europe_mid", categoryName: "Otras Ligas Europa" },
+  { id: 203, name: "Süper Lig", country: "Turquía", flag: "🇹🇷", category: "europe_mid", categoryName: "Otras Ligas Europa" },
+  { id: 179, name: "Premiership", country: "Escocia", flag: "🏴󠁧󠁢󠁳󠁮󠁧󠁿", category: "europe_mid", categoryName: "Otras Ligas Europa" },
+  { id: 103, name: "Eliteserien", country: "Noruega", flag: "🇳🇴", category: "europe_mid", categoryName: "Otras Ligas Europa" },
+  { id: 113, name: "Allsvenskan", country: "Suecia", flag: "🇸🇪", category: "europe_mid", categoryName: "Otras Ligas Europa" },
+  { id: 119, name: "Superliga", country: "Dinamarca", flag: "🇩🇰", category: "europe_mid", categoryName: "Otras Ligas Europa" },
+  { id: 207, name: "Super League", country: "Suiza", flag: "🇨🇭", category: "europe_mid", categoryName: "Otras Ligas Europa" },
+  { id: 218, name: "Austrian Bundesliga", country: "Austria", flag: "🇦🇹", category: "europe_mid", categoryName: "Otras Ligas Europa" },
+  { id: 106, name: "Ekstraklasa", country: "Polonia", flag: "🇵🇱", category: "europe_mid", categoryName: "Otras Ligas Europa" },
+  { id: 244, name: "Veikkausliiga", country: "Finlandia", flag: "🇫🇮", category: "europe_mid", categoryName: "Otras Ligas Europa" },
+  { id: 142, name: "Liga F (Femenina)", country: "España", flag: "🇪🇸", category: "europe_mid", categoryName: "Otras Ligas Europa" },
+
+  // --- ASIA, OCEANÍA & MEDIO ORIENTE ---
+  { id: 307, name: "Saudi Pro League", country: "Arabia Saudita", flag: "🇸🇦", category: "asia_africa", categoryName: "Asia & Oceanía" },
+  { id: 98, name: "J1 League", country: "Japón", flag: "🇯🇵", category: "asia_africa", categoryName: "Asia & Oceanía" },
+  { id: 101, name: "J-League Cup", country: "Japón", flag: "🇯🇵", category: "asia_africa", categoryName: "Asia & Oceanía" },
+  { id: 292, name: "K League 1", country: "Corea del Sur", flag: "🇰🇷", category: "asia_africa", categoryName: "Asia & Oceanía" },
+  { id: 169, name: "Chinese Super League", country: "China", flag: "🇨🇳", category: "asia_africa", categoryName: "Asia & Oceanía" },
+  { id: 188, name: "A-League Men", country: "Australia", flag: "🇦🇺", category: "asia_africa", categoryName: "Asia & Oceanía" },
+];
+
+const MCP_LEAGUE_CATEGORIES = [
+  { id: "all", label: "🌐 Todas las Ligas" },
+  { id: "cups", label: "🏆 Copas & UEFA" },
+  { id: "top5", label: "🇪🇺 Top 5 Europa" },
+  { id: "americas", label: "🌎 Américas & Conmebol" },
+  { id: "second_divisions", label: "🥈 Segundas Div" },
+  { id: "europe_mid", label: "🌍 Otras Europa" },
+  { id: "asia_africa", label: "🌏 Asia & Oceanía" },
+];
+
 function AdminControlContent() {
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
@@ -82,6 +169,9 @@ function AdminControlContent() {
   // MCP Agent State (Admin Exclusive)
   const [mcpQuery, setMcpQuery] = useState("");
   const [mcpCountry, setMcpCountry] = useState("españa");
+  const [selectedMcpLeague, setSelectedMcpLeague] = useState<AvailableLeagueItem | null>(null);
+  const [mcpLeagueCategoryFilter, setMcpLeagueCategoryFilter] = useState<string>("all");
+  const [mcpLeagueSearchQuery, setMcpLeagueSearchQuery] = useState<string>("");
   const [mcpLoading, setMcpLoading] = useState(false);
   const [mcpResults, setMcpResults] = useState<MarketOpportunity[]>([]);
   const [mcpMetrics, setMcpMetrics] = useState<{
@@ -223,10 +313,34 @@ function AdminControlContent() {
     setTimeout(() => setCopiedTemplateId(null), 2500);
   };
 
-  const handleUsePromptInAgent = (text: string, country: string) => {
+  const handleUsePromptInAgent = (text: string, country: string, leagueName?: string, leagueId?: number) => {
     setMcpQuery(text);
     setMcpCountry(country);
+    if (leagueId) {
+      const matchLeague = MCP_AVAILABLE_LEAGUES.find((l) => l.id === leagueId);
+      if (matchLeague) setSelectedMcpLeague(matchLeague);
+    }
     window.scrollTo({ top: 180, behavior: "smooth" });
+    handleMcpSearch(text, country, leagueName, leagueId);
+  };
+
+  const handleSelectLeagueFilter = (league: AvailableLeagueItem | null) => {
+    setSelectedMcpLeague(league);
+    if (league) {
+      setTemplateTargetLeague(league.name);
+      setTemplateTargetCountry(league.country.toLowerCase());
+      setMcpCountry(league.country.toLowerCase());
+      const autoQuery = `Pronósticos de ${league.name} para hoy`;
+      setMcpQuery(autoQuery);
+      handleMcpSearch(autoQuery, league.country.toLowerCase(), league.name, league.id);
+    } else {
+      setTemplateTargetLeague("Todas las Ligas");
+      setTemplateTargetCountry("");
+      setMcpCountry("");
+      const autoQuery = "Pronósticos de mayor valor para hoy";
+      setMcpQuery(autoQuery);
+      handleMcpSearch(autoQuery, "", "", undefined);
+    }
   };
 
   const [publishFeedback, setPublishFeedback] = useState<{ text: string; type: "success" | "error" } | null>(null);
@@ -311,9 +425,16 @@ function AdminControlContent() {
     { id: "estados_unidos", label: "USA / MLS", flag: "🇺🇸" },
   ];
 
-  const handleMcpSearch = async (customQuery?: string, countryParam?: string) => {
+  const handleMcpSearch = async (
+    customQuery?: string,
+    countryParam?: string,
+    leagueParam?: string,
+    leagueIdParam?: number
+  ) => {
     const activeQuery = customQuery !== undefined ? customQuery : mcpQuery;
-    const activeCountry = countryParam !== undefined ? countryParam : mcpCountry;
+    const activeCountry = countryParam !== undefined ? countryParam : (selectedMcpLeague?.country.toLowerCase() || mcpCountry);
+    const activeLeague = leagueParam !== undefined ? leagueParam : (selectedMcpLeague?.name || "");
+    const activeLeagueId = leagueIdParam !== undefined ? leagueIdParam : (selectedMcpLeague?.id || undefined);
 
     setMcpLoading(true);
     setMcpSearched(true);
@@ -324,6 +445,8 @@ function AdminControlContent() {
         body: JSON.stringify({
           query: activeQuery,
           country: activeCountry,
+          league: activeLeague,
+          leagueId: activeLeagueId,
         }),
       });
 
@@ -1092,14 +1215,14 @@ function AdminControlContent() {
                       </span>
                     </div>
                     <p className="text-xs text-slate-400 mt-0.5">
-                      Escribe lo que necesitas en lenguaje natural: el agente interpretará tu instrucción y aplicará el algoritmo cuantitativo en tiempo real.
+                      Escribe lo que necesitas en lenguaje natural o filtra directamente por liga: el agente interpretará tu instrucción y aplicará el algoritmo cuantitativo en tiempo real.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => handleMcpSearch(mcpQuery, mcpCountry)}
+                    onClick={() => handleMcpSearch(mcpQuery, mcpCountry, selectedMcpLeague?.name, selectedMcpLeague?.id)}
                     disabled={mcpLoading}
                     className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2.5 text-xs font-black text-slate-950 shadow-lg shadow-emerald-500/25 hover:bg-emerald-400 transition cursor-pointer disabled:opacity-50"
                   >
@@ -1128,14 +1251,14 @@ function AdminControlContent() {
                     onChange={(e) => setMcpQuery(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
-                        handleMcpSearch(mcpQuery, mcpCountry);
+                        handleMcpSearch(mcpQuery, mcpCountry, selectedMcpLeague?.name, selectedMcpLeague?.id);
                       }
                     }}
                     placeholder="Ejemplo: 'busca partidos de Costa Rica con cuota mayor a 1.80' o 'analiza Alajuelense vs Saprissa' o 'dame un parley de 3 partidos'..."
                     className="w-full rounded-2xl border border-slate-700 bg-slate-900/90 pl-12 pr-28 py-3.5 text-sm text-white placeholder-slate-400 shadow-inner outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition"
                   />
                   <button
-                    onClick={() => handleMcpSearch(mcpQuery, mcpCountry)}
+                    onClick={() => handleMcpSearch(mcpQuery, mcpCountry, selectedMcpLeague?.name, selectedMcpLeague?.id)}
                     disabled={mcpLoading}
                     className="absolute right-2 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-black text-slate-950 hover:bg-emerald-400 transition cursor-pointer disabled:opacity-50"
                   >
@@ -1143,28 +1266,62 @@ function AdminControlContent() {
                   </button>
                 </div>
 
-                {/* Quick Prompt Suggestion Chips */}
+                {/* Active League Badge / Quick Status Bar */}
+                {selectedMcpLeague && (
+                  <div className="flex items-center justify-between rounded-xl bg-emerald-950/60 border border-emerald-500/40 px-3.5 py-2 text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="text-emerald-400 font-bold">🎯 Filtro de Liga Activo:</span>
+                      <span className="font-extrabold text-white flex items-center gap-1.5">
+                        <span>{selectedMcpLeague.flag}</span>
+                        <span>{selectedMcpLeague.name}</span>
+                        <span className="text-emerald-300/80 font-medium">({selectedMcpLeague.country})</span>
+                      </span>
+                      <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-bold text-emerald-300 font-mono">
+                        ID: {selectedMcpLeague.id}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => handleSelectLeagueFilter(null)}
+                      className="text-[11px] font-extrabold text-emerald-400 hover:text-white underline cursor-pointer"
+                    >
+                      ✕ Quitar Filtro (Todas las Ligas)
+                    </button>
+                  </div>
+                )}
+
+                {/* Quick Action Chips */}
                 <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                  <span className="text-[11px] font-bold text-slate-400 mr-1">Sugerencias rápidas:</span>
+                  <span className="text-[11px] font-bold text-slate-400 mr-1">Consultas rápidas:</span>
                   {[
-                    { label: "🏆 Champions League", query: "Busca los mejores pronósticos de Champions League para hoy", country: "champions" },
-                    { label: "⭐ Copa Sudamericana", query: "Busca los mejores pronósticos de Copa Sudamericana para hoy", country: "sudamericana" },
-                    { label: "🇺🇸 USA / MLS Over 2.5", query: "Busca cuotas de over 2.5 mas rentables con los partidos de la mls que estan por comenzar", country: "estados_unidos" },
-                    { label: "🇨🇷 Alajuelense vs Saprissa", query: "analiza el clásico LD Alajuelense vs Deportivo Saprissa", country: "costa rica" },
-                    { label: "🇪🇸 La Liga Española", query: "mejores pronósticos de La Liga española para hoy", country: "españa" },
-                    { label: "🔥 Probabilidad > 65%", query: "busca los partidos con probabilidad mayor al 65%", country: "" },
-                    { label: "⚽ Ambos Equipos Anotan", query: "partidos con Ambos Equipos Anotan y cuota mayor a 1.70", country: "" },
-                    { label: "💣 Bombas Cuota > 2.00", query: "encuentra bombas del día con cuota mayor a 2.00", country: "" },
-                    { label: "🎲 Parley de 3 Partidos", query: "genera un parley de 3 selecciones de alta confianza", country: "" },
-                    { label: "🇪🇨 Ecuador Liga Pro", query: "pronósticos de la Liga Pro de Ecuador", country: "ecuador" },
-                    { label: "🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra Over 2.5", query: "partidos de ligas de Inglaterra con Over 2.5 goles", country: "inglaterra" },
+                    { label: "🏆 Champions League", query: "Busca los mejores pronósticos de Champions League para hoy", leagueId: 2, country: "europa", league: "UEFA Champions League" },
+                    { label: "⭐ Copa Sudamericana", query: "Busca los mejores pronósticos de Copa Sudamericana para hoy", leagueId: 11, country: "sudamérica", league: "Copa Sudamericana" },
+                    { label: "🇺🇸 MLS Over 2.5", query: "Busca cuotas de over 2.5 mas rentables con los partidos de la MLS", leagueId: 253, country: "estados unidos", league: "Major League Soccer (MLS)" },
+                    { label: "🇨🇷 Costa Rica Primera", query: "mejores pronósticos de la Primera División de Costa Rica", leagueId: 162, country: "costa rica", league: "Primera División (Liga FPD)" },
+                    { label: "🇪🇨 Ecuador Liga Pro", query: "pronósticos de la Liga Pro de Ecuador para hoy", leagueId: 242, country: "ecuador", league: "Liga Pro" },
+                    { label: "🇪🇸 La Liga", query: "mejores pronósticos de La Liga española para hoy", leagueId: 140, country: "españa", league: "La Liga" },
+                    { label: "🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League", query: "partidos de Premier League con alto valor y Over 2.5", leagueId: 39, country: "inglaterra", league: "Premier League" },
+                    { label: "🔥 Probabilidad > 65%", query: "busca los partidos con probabilidad mayor al 65%" },
+                    { label: "⚽ Ambos Equipos Anotan", query: "partidos con Ambos Equipos Anotan y cuota mayor a 1.70" },
+                    { label: "💣 Bombas Cuota > 2.00", query: "encuentra bombas del día con cuota mayor a 2.00" },
+                    { label: "🎲 Parley de 3 Partidos", query: "genera un parley de 3 selecciones de alta confianza" },
                   ].map((chip, idx) => (
                     <button
                       key={idx}
                       onClick={() => {
-                        setMcpQuery(chip.query);
-                        setMcpCountry(chip.country || "españa");
-                        handleMcpSearch(chip.query, chip.country);
+                        if (chip.leagueId) {
+                          const leg = MCP_AVAILABLE_LEAGUES.find((l) => l.id === chip.leagueId);
+                          if (leg) {
+                            setSelectedMcpLeague(leg);
+                            setTemplateTargetLeague(leg.name);
+                            setTemplateTargetCountry(leg.country.toLowerCase());
+                          }
+                          setMcpQuery(chip.query);
+                          setMcpCountry(chip.country || "");
+                          handleMcpSearch(chip.query, chip.country, chip.league, chip.leagueId);
+                        } else {
+                          setMcpQuery(chip.query);
+                          handleMcpSearch(chip.query, mcpCountry, selectedMcpLeague?.name, selectedMcpLeague?.id);
+                        }
                       }}
                       className="rounded-lg bg-slate-800/80 px-2.5 py-1 text-[11px] font-bold text-slate-300 hover:bg-emerald-500/20 hover:text-emerald-300 border border-slate-700/60 transition cursor-pointer"
                     >
@@ -1175,7 +1332,129 @@ function AdminControlContent() {
               </div>
             </div>
 
-            
+            {/* SELECCIÓN Y FILTRO DE LIGAS DISPONIBLES EN LA APP */}
+            <div className="rounded-3xl border border-slate-700/80 bg-gradient-to-br from-slate-900 via-slate-900/90 to-slate-950 p-5 sm:p-6 shadow-xl text-white">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">🏆</span>
+                    <h4 className="text-base font-black text-white tracking-tight">
+                      Filtro de Ligas Disponibles en la App ({MCP_AVAILABLE_LEAGUES.length} Ligas)
+                    </h4>
+                    <span className="rounded-md bg-emerald-500/20 px-2 py-0.5 text-[10px] font-black text-emerald-400 border border-emerald-500/30">
+                      Coincidencia Exacta 100%
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Selecciona una liga para filtrar el algoritmo de predicción y sincronizar automáticamente los prompts del Agente:
+                  </p>
+                </div>
+
+                {/* Category Tabs */}
+                <div className="flex flex-wrap items-center gap-1.5 bg-slate-800/80 p-1.5 rounded-2xl border border-slate-700">
+                  {MCP_LEAGUE_CATEGORIES.map((cat) => {
+                    const count = cat.id === "all" 
+                      ? MCP_AVAILABLE_LEAGUES.length 
+                      : MCP_AVAILABLE_LEAGUES.filter((l) => l.category === cat.id).length;
+                    return (
+                      <button
+                        key={cat.id}
+                        onClick={() => setMcpLeagueCategoryFilter(cat.id)}
+                        className={`rounded-xl px-2.5 py-1.5 text-[11px] font-extrabold transition cursor-pointer ${
+                          mcpLeagueCategoryFilter === cat.id
+                            ? "bg-emerald-500 text-slate-950 font-black shadow-sm"
+                            : "text-slate-400 hover:text-white"
+                        }`}
+                      >
+                        <span>{cat.label}</span>
+                        <span className="ml-1 opacity-75 text-[10px]">({count})</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Search input & Active League Status Bar */}
+              <div className="mt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <div className="relative flex-1">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-slate-400 pointer-events-none">🔍</span>
+                  <input
+                    type="text"
+                    value={mcpLeagueSearchQuery}
+                    onChange={(e) => setMcpLeagueSearchQuery(e.target.value)}
+                    placeholder="Buscar liga o país (ej. Champions, Ecuador, Premier, Costa Rica, MLS, Serie A, España)..."
+                    className="w-full rounded-xl border border-slate-700 bg-slate-950 pl-10 pr-4 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/30"
+                  />
+                  {mcpLeagueSearchQuery && (
+                    <button
+                      onClick={() => setMcpLeagueSearchQuery("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-white"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => handleSelectLeagueFilter(null)}
+                    className={`rounded-xl px-3.5 py-2 text-xs font-black transition cursor-pointer border ${
+                      selectedMcpLeague === null
+                        ? "bg-emerald-500 text-slate-950 border-emerald-400 shadow-sm"
+                        : "bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700 hover:text-white"
+                    }`}
+                  >
+                    🌐 Ver Todas ({MCP_AVAILABLE_LEAGUES.length})
+                  </button>
+                </div>
+              </div>
+
+              {/* Filtered League Pills Grid */}
+              <div className="mt-4 max-h-56 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-700">
+                <div className="flex flex-wrap items-center gap-2">
+                  {MCP_AVAILABLE_LEAGUES.filter((league) => {
+                    const matchesCategory = mcpLeagueCategoryFilter === "all" || league.category === mcpLeagueCategoryFilter;
+                    const matchesSearch = !mcpLeagueSearchQuery || 
+                      league.name.toLowerCase().includes(mcpLeagueSearchQuery.toLowerCase()) ||
+                      league.country.toLowerCase().includes(mcpLeagueSearchQuery.toLowerCase());
+                    return matchesCategory && matchesSearch;
+                  }).map((league) => {
+                    const isSelected = selectedMcpLeague?.id === league.id;
+                    return (
+                      <button
+                        key={league.id}
+                        onClick={() => handleSelectLeagueFilter(league)}
+                        className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer border ${
+                          isSelected
+                            ? "bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 border-emerald-300 shadow-md shadow-emerald-500/20 font-black scale-[1.02]"
+                            : "bg-slate-800/90 text-slate-200 border-slate-700/80 hover:bg-slate-750 hover:border-emerald-500/50 hover:text-white"
+                        }`}
+                      >
+                        <span className="text-sm">{league.flag}</span>
+                        <span>{league.name}</span>
+                        <span className={`text-[10px] px-1.5 py-0.2 rounded-md font-semibold ${
+                          isSelected ? "bg-slate-950/20 text-slate-900" : "bg-slate-900/80 text-slate-400"
+                        }`}>
+                          {league.country}
+                        </span>
+                      </button>
+                    );
+                  })}
+                  {MCP_AVAILABLE_LEAGUES.filter((league) => {
+                    const matchesCategory = mcpLeagueCategoryFilter === "all" || league.category === mcpLeagueCategoryFilter;
+                    const matchesSearch = !mcpLeagueSearchQuery || 
+                      league.name.toLowerCase().includes(mcpLeagueSearchQuery.toLowerCase()) ||
+                      league.country.toLowerCase().includes(mcpLeagueSearchQuery.toLowerCase());
+                    return matchesCategory && matchesSearch;
+                  }).length === 0 && (
+                    <div className="w-full text-center py-6 text-xs text-slate-400">
+                      No se encontraron ligas que coincidan con la búsqueda "{mcpLeagueSearchQuery}".
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
             {/* BIBLIOTECA DE PROMPTS Y TEXTOS PREDETERMINADOS LISTOS PARA COPIAR */}
             <div className="rounded-3xl border border-slate-700/80 bg-gradient-to-br from-slate-900 via-slate-900/90 to-slate-950 p-5 sm:p-6 shadow-xl text-white">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800 pb-4">
@@ -1190,7 +1469,7 @@ function AdminControlContent() {
                     </span>
                   </div>
                   <p className="text-xs text-slate-400 mt-1">
-                    Selecciona una liga/competición o personaliza el nombre para adaptar automáticamente todos los prompts:
+                    Prompts contextualizados con la liga activa ({selectedMcpLeague?.name || templateTargetLeague}):
                   </p>
                 </div>
 
@@ -1219,56 +1498,14 @@ function AdminControlContent() {
                 </div>
               </div>
 
-              {/* League / Country Selector Pills */}
-              <div className="mt-4">
-                <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 block mb-2">
-                  Liga o Torneo Seleccionado para los Prompts:
-                </span>
-                <div className="flex flex-wrap items-center gap-1.5">
-                  {leagueTemplatePresets.map((lp, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => {
-                        setTemplateTargetLeague(lp.name);
-                        setTemplateTargetCountry(lp.country);
-                        setCustomLeagueInput("");
-                      }}
-                      className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer border ${
-                        templateTargetLeague === lp.name
-                          ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 border-emerald-400 shadow-sm font-black"
-                          : "bg-slate-800/80 text-slate-300 border-slate-700/70 hover:bg-slate-750 hover:text-white"
-                      }`}
-                    >
-                      <span>{lp.flag}</span>
-                      <span>{lp.name}</span>
-                    </button>
-                  ))}
-                </div>
-
-                {/* Custom League input */}
-                <div className="mt-3 flex items-center gap-2 max-w-md">
-                  <span className="text-xs text-slate-400 font-bold shrink-0">O escribe otra liga:</span>
-                  <input
-                    type="text"
-                    value={customLeagueInput}
-                    onChange={(e) => {
-                      setCustomLeagueInput(e.target.value);
-                      if (e.target.value.trim().length > 0) {
-                        setTemplateTargetLeague(e.target.value.trim());
-                      }
-                    }}
-                    placeholder="Ej. Copa Libertadores, Liga de Bélgica..."
-                    className="flex-1 rounded-xl border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-white placeholder-slate-500 outline-none focus:border-emerald-400"
-                  />
-                </div>
-              </div>
-
               {/* Grid of Prompt Cards */}
               <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-3.5">
                 {promptTemplatesList
                   .filter((pt) => activeTemplateCategory === "all" || pt.category === activeTemplateCategory)
                   .map((pt) => {
-                    const fullPromptText = pt.templateText(templateTargetLeague);
+                    const currentTargetLeague = selectedMcpLeague?.name || templateTargetLeague;
+                    const currentTargetCountry = selectedMcpLeague?.country.toLowerCase() || templateTargetCountry;
+                    const fullPromptText = pt.templateText(currentTargetLeague);
                     const isCopied = copiedTemplateId === pt.id;
                     return (
                       <div
@@ -1299,7 +1536,12 @@ function AdminControlContent() {
                           </button>
 
                           <button
-                            onClick={() => handleUsePromptInAgent(fullPromptText, templateTargetCountry)}
+                            onClick={() => handleUsePromptInAgent(
+                              fullPromptText,
+                              currentTargetCountry,
+                              selectedMcpLeague?.name,
+                              selectedMcpLeague?.id
+                            )}
                             className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 px-3.5 py-1.5 text-xs font-black text-slate-950 shadow-md shadow-emerald-500/20 hover:from-emerald-400 hover:to-teal-300 transition cursor-pointer"
                           >
                             <span>⚡</span>
@@ -1311,7 +1553,6 @@ function AdminControlContent() {
                   })}
               </div>
             </div>
-
 
             {/* AI Reasoning & Briefing Card */}
             {mcpAiAnalysis && (

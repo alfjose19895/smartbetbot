@@ -1636,6 +1636,7 @@ export async function searchLiveMarketDynamic(params: {
   query?: string;
   country?: string;
   league?: string;
+  leagueId?: number;
   limit?: number;
 }): Promise<MarketOpportunity[]> {
   try {
@@ -1644,6 +1645,8 @@ export async function searchLiveMarketDynamic(params: {
 
     const qLower = (params.query || "").toLowerCase().trim();
     const cLower = (params.country || "").toLowerCase().trim();
+    const lLower = (params.league || "").toLowerCase().trim();
+    const targetLeagueId = params.leagueId ? Number(params.leagueId) : undefined;
 
     // 1. Fetch live schedule from API-Football STRICTLY for today only (NO tomorrow, NO past dates)
     const todayFixtures = await apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil").catch(() => []);
@@ -1673,6 +1676,18 @@ export async function searchLiveMarketDynamic(params: {
       // Exclude reserve development leagues & reserve teams
       if (hName.endsWith(" ii") || aName.endsWith(" ii") || legName.includes("reserve") || legName.includes("primavera") || legName.includes("next pro")) {
         return false;
+      }
+
+      // 1. Direct League ID match
+      if (targetLeagueId && f.league?.id === targetLeagueId) {
+        return true;
+      }
+
+      // 2. Direct League Name or Country string match
+      if (lLower && lLower !== "all" && lLower !== "todas") {
+        if (legName.includes(lLower) || lLower.includes(legName) || countryName.includes(lLower)) {
+          return true;
+        }
       }
 
       // Smart semantic token and league matching from user prompt
