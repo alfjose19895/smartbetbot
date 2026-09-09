@@ -75,8 +75,12 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
     (user?.user_metadata && typeof user.user_metadata === "object" && (user.user_metadata as Record<string, unknown>).status === "paused")
   );
 
-  const isPending = Boolean(
-    user?.user_metadata && typeof user.user_metadata === "object" && (user.user_metadata as Record<string, unknown>).status === "pending"
+  const metaStatus = (user?.user_metadata && typeof user.user_metadata === "object" && (user.user_metadata as Record<string, unknown>).status);
+  const metaApproved = (user?.user_metadata && typeof user.user_metadata === "object" && (user.user_metadata as Record<string, unknown>).is_approved);
+  const isUserApproved = metaStatus === "approved" || metaApproved === true;
+
+  const isPending = !isUserApproved && Boolean(
+    metaStatus === "pending" || metaStatus === "pending_approval" || metaApproved === false
   );
 
   if ((!hasVerifiedIdentity || isPaused || isPending) && isProtectedRoute) {

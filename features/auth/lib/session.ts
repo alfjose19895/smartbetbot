@@ -84,9 +84,10 @@ export async function getVerifiedIdentity(): Promise<VerifiedIdentity | null> {
     const status = metadata?.status;
     const isApprovedFlag = metadata?.is_approved;
     const isAdm = role === "admin";
-    const isPending = !isAdm && (status === "pending" || status === "pending_approval" || isApprovedFlag === false || !status);
+    const isExplicitlyApproved = status === "approved" || isApprovedFlag === true;
     const isPaused = !isAdm && Boolean(user.banned_until || metadata?.status === "paused");
-    const isApproved = isAdm || (!isPending && !isPaused && status === "approved" && isApprovedFlag !== false);
+    const isPending = !isAdm && !isPaused && !isExplicitlyApproved && (status === "pending" || status === "pending_approval" || isApprovedFlag === false || !status);
+    const isApproved = isAdm || (!isPaused && isExplicitlyApproved);
 
     return {
       id: user.id,

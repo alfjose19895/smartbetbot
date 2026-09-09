@@ -510,6 +510,32 @@ function AdminControlContent() {
   };
 
 
+  const handleApproveAllPending = async () => {
+    const pending = users.filter((u) => u.status === "pending");
+    if (pending.length === 0) return;
+    try {
+      setUserMsg({ text: `Aprobando ${pending.length} usuario(s) pendiente(s)...`, type: "success" });
+      for (const u of pending) {
+        await fetch("/api/admin/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: u.id,
+            action: "updateStatus",
+            status: "approved",
+          }),
+        });
+      }
+      setUsers((prev) =>
+        prev.map((u) => (u.status === "pending" ? { ...u, status: "approved" } : u))
+      );
+      addLog(`✓ ${pending.length} usuarios pendientes aprobados con éxito`);
+      setUserMsg({ text: `✓ ${pending.length} usuario(s) activado(s) y aprobado(s) correctamente.`, type: "success" });
+    } catch {
+      setUserMsg({ text: "Error al aprobar usuarios", type: "error" });
+    }
+  };
+
   const handleToggleApproval = async (user: UserItem) => {
     const nextStatus = user.status === "approved" ? "pending" : "approved";
     try {

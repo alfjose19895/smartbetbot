@@ -114,7 +114,8 @@ export async function loginAction(
         };
       }
 
-      if (status === "pending" || status === "pending_approval" || isApproved === false) {
+      const isUserApproved = status === "approved" || isApproved === true;
+      if (!isUserApproved && (status === "pending" || status === "pending_approval" || isApproved === false || !status)) {
         await logAuditEvent({
           userId: data?.user?.id,
           email: parsed.data.email,

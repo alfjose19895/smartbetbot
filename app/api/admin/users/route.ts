@@ -123,8 +123,10 @@ export async function GET(request: NextRequest) {
           let status: "approved" | "paused" | "pending" = "approved";
           if (u.banned_until || meta.status === "paused") {
             status = "paused";
-          } else if (meta.status === "pending") {
-            status = "pending";
+          } else if (meta.status === "pending" || (!meta.status && meta.is_approved === false)) {
+            status = isAdm ? "approved" : "pending";
+          } else if (meta.status === "approved" || meta.is_approved === true) {
+            status = "approved";
           }
 
           const fullName =
@@ -184,10 +186,23 @@ export async function POST(request: Request) {
       const isPaused = status === "paused";
       const isApproved = status === "approved";
       
-      await supabase.auth.admin.updateUserById(userId, {
-        user_metadata: { status },
+      const updatePayload: {
+        user_metadata: Record<string, unknown>;
+        email_confirm?: boolean;
+        ban_duration: string;
+      } = {
+        user_metadata: {
+          status,
+          is_approved: isApproved,
+        },
         ban_duration: isPaused ? "876000h" : "none",
-      });
+      };
+
+      if (isApproved) {
+        updatePayload.email_confirm = true;
+      }
+
+      await supabase.auth.admin.updateUserById(userId, updatePayload);
 
       return NextResponse.json({
         success: true,
@@ -231,7 +246,7 @@ export async function POST(request: Request) {
         email?: string;
         password?: string;
         email_confirm?: boolean;
-        user_metadata?: Record<string, unknown>;
+        user_metadata: Record<string, unknown>;
         ban_duration?: string;
       } = {
         user_metadata: {},
@@ -247,10 +262,7 @@ export async function POST(request: Request) {
       }
 
       if (fullName) {
-        updatePayload.user_metadata = {
-          ...updatePayload.user_metadata,
-          full_name: fullName,
-        };
+        updatePayload.user_metadata.full_name = fullName;
         await supabase
           .from("profiles")
           .update({ display_name: fullName })
@@ -265,11 +277,8 @@ export async function POST(request: Request) {
           if (rRow) targetRoleId = rRow.id;
         } catch {}
 
-        updatePayload.user_metadata = {
-          ...updatePayload.user_metadata,
-          role,
-          role_id: targetRoleId,
-        };
+        updatePayload.user_metadata.role = role;
+        updatePayload.user_metadata.role_id = targetRoleId;
 
         await supabase
           .from("profiles")
@@ -279,10 +288,12 @@ export async function POST(request: Request) {
 
       if (status) {
         const isPaused = status === "paused";
-        updatePayload.user_metadata = {
-          ...updatePayload.user_metadata,
-          status,
-        };
+        const isApproved = status === "approved";
+        updatePayload.user_metadata.status = status;
+        updatePayload.user_metadata.is_approved = isApproved;
+        if (isApproved) {
+          updatePayload.email_confirm = true;
+        }
         updatePayload.ban_duration = isPaused ? "876000h" : "none";
       }
 
