@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import {
   getEcuadorDateString,
   getStoredPredictions,
+  generatePredictionsForUpcoming,
   addPredictionsToDailySnapshot,
   searchLiveMarketDynamic,
 } from "@/lib/sports/db";
@@ -20,10 +21,10 @@ const FORBIDDEN_RESERVE_TEAMS = [
 ];
 
 const LEAGUE_KEYWORDS: Record<string, string[]> = {
-  "champions": ["champions", "ucl", "champions league", "uefa champions league"],
-  "europa": ["europa league", "uel", "europa"],
+  "champions": ["champions", "ucl", "champions league", "uefa champions league", "uefa"],
+  "europa": ["europa league", "uel", "uefa europa league", "europa"],
   "libertadores": ["libertadores", "conmebol libertadores", "copa libertadores"],
-  "sudamericana": ["sudamericana", "conmebol sudamericana", "copa sudamericana"],
+  "sudamericana": ["sudamericana", "conmebol sudamericana", "copa sudamericana", "sudamerica"],
   "premier": ["premier league", "premier", "inglaterra", "league cup", "fa cup", "efl cup"],
   "la liga": ["la liga", "primera división españa", "laliga", "españa", "copa del rey"],
   "serie a": ["serie a", "italia"],
@@ -58,9 +59,12 @@ const COUNTRY_SYNONYMS: Record<string, string[]> = {
   "mexico": ["mexico", "méxico", "liga mx", "liga de expansion"],
   "ecuador": ["ecuador", "liga pro", "ligapro", "serie a ecuador"],
   "costa rica": ["costa rica", "primera division", "fcrf", "unafut"],
+  "estados_unidos": ["usa", "estados unidos", "united states", "mls"],
   "estados unidos": ["usa", "estados unidos", "united states", "mls"],
-  "champions": ["champions", "uefa", "ucl"],
-  "sudamericana": ["sudamericana", "conmebol"],
+  "champions": ["champions", "uefa", "ucl", "champions league", "uefa champions league", "europe", "world"],
+  "europa": ["europa", "champions", "uefa", "ucl", "europa league", "europe", "world"],
+  "sudamericana": ["sudamericana", "conmebol", "copa sudamericana", "south america", "sudamerica"],
+  "libertadores": ["libertadores", "conmebol", "copa libertadores", "south america", "sudamerica"],
   "finlandia": ["finlandia", "finland", "veikkausliiga"],
 };
 
@@ -126,8 +130,11 @@ export async function POST(req: Request) {
     // 1. DYNAMIC MARKET SEARCH: Query live API-Football fixtures & genuine bookmaker odds
     const dynamicMarketOpps = await searchLiveMarketDynamic({ query, country });
 
-    // 2. Retrieve baseline stored predictions for today
-    const storedPicks = getStoredPredictions();
+    // 2. Retrieve baseline stored predictions for today (generate if slate is fresh)
+    let storedPicks = getStoredPredictions();
+    if (!storedPicks || storedPicks.length === 0) {
+      storedPicks = await generatePredictionsForUpcoming();
+    }
 
     // 3. Merge: Prioritize fresh dynamic market discoveries + baseline
     // KEYED BY FIXTURE + MARKET to preserve all distinct market opportunities per match (1X2, Over 2.5, BTTS)
@@ -171,13 +178,14 @@ export async function POST(req: Request) {
 
     let filtered = pool;
 
-    // 1. League Filter Recognition from Prompt
+    // 1. League Filter Recognition from Prompt or Country Parameter
     let matchedByLeague = false;
     for (const [leagueKey, keywords] of Object.entries(LEAGUE_KEYWORDS)) {
-      if (keywords.some((kw) => qLower.includes(kw))) {
+      if (keywords.some((kw) => qLower.includes(kw) || cLower.includes(kw) || kw === cLower)) {
         const leagueMatches = pool.filter((p) => {
           const l = (p.league || "").toLowerCase();
-          return keywords.some((kw) => l.includes(kw) || kw.includes(l));
+          const c = (p.country || "").toLowerCase();
+          return keywords.some((kw) => l.includes(kw) || kw.includes(l) || c.includes(kw));
         });
         if (leagueMatches.length > 0) {
           filtered = leagueMatches;

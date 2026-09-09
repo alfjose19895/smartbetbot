@@ -1679,9 +1679,9 @@ export async function searchLiveMarketDynamic(params: {
       if (qLower) {
         // League keyword matching
         const leagueKeywords: Record<string, string[]> = {
-          champions: ["champions", "ucl", "uefa champions league"],
-          europa: ["europa league", "uel"],
-          sudamericana: ["sudamericana", "conmebol sudamericana", "copa sudamericana"],
+          champions: ["champions", "ucl", "uefa champions league", "champions league", "uefa"],
+          europa: ["europa league", "uel", "uefa europa league", "europa"],
+          sudamericana: ["sudamericana", "conmebol sudamericana", "copa sudamericana", "sudamerica"],
           libertadores: ["libertadores", "conmebol libertadores", "copa libertadores"],
           premier: ["premier", "inglaterra", "league cup", "efl cup", "fa cup"],
           laliga: ["la liga", "laliga", "españa", "copa del rey"],
@@ -1714,7 +1714,17 @@ export async function searchLiveMarketDynamic(params: {
         if (countryName && qLower.includes(countryName)) return true;
       }
 
-      if (cLower && (countryName.includes(cLower) || legName.includes(cLower))) return true;
+      if (cLower) {
+        if (
+          countryName.includes(cLower) ||
+          legName.includes(cLower) ||
+          (cLower === "champions" && (legName.includes("champions") || legName.includes("uefa") || countryName.includes("world") || countryName.includes("europe"))) ||
+          (cLower === "sudamericana" && (legName.includes("sudamericana") || countryName.includes("world") || countryName.includes("south america"))) ||
+          (cLower === "europa" && (legName.includes("uefa") || legName.includes("champions") || legName.includes("europa")))
+        ) {
+          return true;
+        }
+      }
 
       return isCuratedLeague(f.league?.id, f.league?.name, f.league?.country);
     });

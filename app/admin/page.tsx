@@ -113,6 +113,8 @@ function AdminControlContent() {
   const [customLeagueInput, setCustomLeagueInput] = useState("");
 
   const leagueTemplatePresets = [
+    { name: "Champions League (UEFA)", country: "champions", flag: "🏆" },
+    { name: "Copa Sudamericana", country: "sudamericana", flag: "⭐" },
     { name: "Major League Soccer (MLS)", country: "estados_unidos", flag: "🇺🇸" },
     { name: "La Liga (España)", country: "españa", flag: "🇪🇸" },
     { name: "Premier League (Inglaterra)", country: "inglaterra", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
@@ -122,7 +124,6 @@ function AdminControlContent() {
     { name: "Bundesliga (Alemania)", country: "alemania", flag: "🇩🇪" },
     { name: "Liga MX (México)", country: "mexico", flag: "🇲🇽" },
     { name: "Brasileirão (Brasil)", country: "brasil", flag: "🇧🇷" },
-    { name: "Champions League", country: "europa", flag: "🏆" },
   ];
 
   const promptTemplatesList = [
@@ -293,6 +294,8 @@ function AdminControlContent() {
   };
 
   const QUICK_COUNTRIES = [
+    { id: "champions", label: "Champions League", flag: "🏆" },
+    { id: "sudamericana", label: "Copa Sudamericana", flag: "⭐" },
     { id: "españa", label: "España", flag: "🇪🇸" },
     { id: "inglaterra", label: "Inglaterra", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
     { id: "alemania", label: "Alemania", flag: "🇩🇪" },
@@ -1144,6 +1147,8 @@ function AdminControlContent() {
                 <div className="flex flex-wrap items-center gap-1.5 pt-1">
                   <span className="text-[11px] font-bold text-slate-400 mr-1">Sugerencias rápidas:</span>
                   {[
+                    { label: "🏆 Champions League", query: "Busca los mejores pronósticos de Champions League para hoy", country: "champions" },
+                    { label: "⭐ Copa Sudamericana", query: "Busca los mejores pronósticos de Copa Sudamericana para hoy", country: "sudamericana" },
                     { label: "🇺🇸 USA / MLS Over 2.5", query: "Busca cuotas de over 2.5 mas rentables con los partidos de la mls que estan por comenzar", country: "estados_unidos" },
                     { label: "🇨🇷 Alajuelense vs Saprissa", query: "analiza el clásico LD Alajuelense vs Deportivo Saprissa", country: "costa rica" },
                     { label: "🇪🇸 La Liga Española", query: "mejores pronósticos de La Liga española para hoy", country: "españa" },
@@ -1310,34 +1315,41 @@ function AdminControlContent() {
 
             {/* AI Reasoning & Briefing Card */}
             {mcpAiAnalysis && (
-              <div className="rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-white via-emerald-50/20 to-white p-5 sm:p-6 shadow-sm dark:border-emerald-900/40 dark:from-slate-900 dark:via-slate-900/90 dark:to-slate-950">
+              <div className="rounded-3xl border border-emerald-500/40 bg-gradient-to-br from-white via-slate-50 to-emerald-50/30 p-5 sm:p-6 shadow-md dark:border-emerald-800/50 dark:from-slate-900 dark:via-slate-900/95 dark:to-slate-950">
                 <div className="flex items-center gap-2.5 border-b border-slate-200 dark:border-slate-800 pb-3.5">
-                  <span className="text-xl">🧠</span>
+                  <span className="text-2xl">🧠</span>
                   <div>
                     <h4 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
                       Informe Ejecutivo del Agente de Inteligencia
                     </h4>
-                    <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
                       Objetivo: {mcpAiAnalysis.intent}
                     </span>
                   </div>
                 </div>
 
-                <div className="mt-3.5 space-y-3 text-xs text-slate-700 dark:text-slate-300">
-                  <p className="font-medium leading-relaxed text-sm text-slate-900 dark:text-slate-100 bg-emerald-50/60 dark:bg-emerald-950/40 p-3 rounded-2xl border border-emerald-200/60 dark:border-emerald-800/40">
+                <div className="mt-4 space-y-3.5 text-xs text-slate-800 dark:text-slate-200">
+                  <p className="font-semibold leading-relaxed text-sm text-slate-900 dark:text-emerald-100 bg-emerald-50/80 dark:bg-emerald-950/60 p-3.5 rounded-2xl border border-emerald-200 dark:border-emerald-800/80 shadow-xs">
                     {mcpAiAnalysis.summary}
                   </p>
 
                   {mcpAiAnalysis.insights && mcpAiAnalysis.insights.length > 0 && (
-                    <div className="space-y-1.5 pt-1">
-                      <span className="text-[11px] font-black uppercase text-slate-500 dark:text-slate-400 block tracking-wider">
-                        Factores Clave & Hallazgos Estadísticos:
+                    <div className="space-y-2 pt-1.5">
+                      <span className="text-xs font-black uppercase text-slate-800 dark:text-emerald-400 block tracking-wider flex items-center gap-1.5">
+                        <span>📊</span> Factores Clave & Hallazgos Estadísticos:
                       </span>
-                      <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      <ul className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                         {mcpAiAnalysis.insights.map((insight, i) => (
-                          <li key={i} className="flex items-start gap-2 bg-slate-50 dark:bg-slate-850 p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800">
-                            <span className="text-emerald-500 font-bold shrink-0">✦</span>
-                            <span className="text-[11px] leading-snug">{insight}</span>
+                          <li
+                            key={i}
+                            className="flex items-start gap-2.5 bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-300 dark:border-slate-800 shadow-xs transition hover:border-emerald-500/40"
+                          >
+                            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400 font-black text-xs mt-0.5">
+                              ✦
+                            </span>
+                            <span className="text-xs font-semibold leading-relaxed text-slate-900 dark:text-slate-100">
+                              {insight}
+                            </span>
                           </li>
                         ))}
                       </ul>
@@ -1346,7 +1358,7 @@ function AdminControlContent() {
 
                   {/* Parlay Recommendation Card */}
                   {mcpAiAnalysis.parlayRecommendation && (
-                    <div className="mt-3 rounded-2xl border-2 border-emerald-500/40 bg-gradient-to-br from-emerald-500/10 to-transparent p-4">
+                    <div className="mt-3.5 rounded-2xl border-2 border-emerald-500/40 bg-gradient-to-br from-emerald-500/10 via-white to-transparent dark:from-emerald-950/40 dark:via-slate-900/90 dark:to-slate-950 p-4 shadow-sm">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <span className="text-lg">🎲</span>
@@ -1355,18 +1367,18 @@ function AdminControlContent() {
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-xs text-slate-500 dark:text-slate-400 font-bold">Cuota Acumulada:</span>
-                          <span className="text-base font-black text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950 px-2 py-0.5 rounded-lg">
+                          <span className="text-xs text-slate-600 dark:text-slate-400 font-bold">Cuota Acumulada:</span>
+                          <span className="text-base font-black text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950 px-2.5 py-0.5 rounded-lg border border-emerald-300 dark:border-emerald-800">
                             @{mcpAiAnalysis.parlayRecommendation.totalOdds}
                           </span>
                         </div>
                       </div>
-                      <div className="mt-2.5 divide-y divide-slate-200 dark:divide-slate-800 text-[11px]">
+                      <div className="mt-2.5 divide-y divide-slate-200 dark:divide-slate-800 text-xs">
                         {mcpAiAnalysis.parlayRecommendation.legs.map((leg, li) => (
-                          <div key={li} className="py-1.5 flex items-center justify-between">
-                            <span className="font-bold text-slate-800 dark:text-slate-200">{leg.match}</span>
-                            <span className="text-slate-600 dark:text-slate-400">
-                              {leg.market} ({leg.selection}) <strong className="text-emerald-600 dark:text-emerald-400">@{leg.odds.toFixed(2)}</strong>
+                          <div key={li} className="py-2 flex items-center justify-between">
+                            <span className="font-bold text-slate-900 dark:text-slate-100">{leg.match}</span>
+                            <span className="text-slate-700 dark:text-slate-300 font-medium">
+                              {leg.market} ({leg.selection}) <strong className="text-emerald-700 dark:text-emerald-400 font-black">@{leg.odds.toFixed(2)}</strong>
                             </span>
                           </div>
                         ))}
@@ -1374,9 +1386,11 @@ function AdminControlContent() {
                     </div>
                   )}
 
-                  <div className="pt-2 flex items-center gap-2 text-[11px] font-bold text-slate-600 dark:text-slate-400">
-                    <span>💡 Recomendación Operativa:</span>
-                    <span className="text-emerald-700 dark:text-emerald-300">{mcpAiAnalysis.recommendation}</span>
+                  <div className="pt-2 flex flex-col sm:flex-row sm:items-center gap-2 text-xs font-bold text-slate-800 dark:text-slate-200 bg-slate-100/90 dark:bg-slate-900/90 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <span className="flex items-center gap-1.5 shrink-0 text-slate-900 dark:text-white">
+                      <span>💡</span> Recomendación Operativa:
+                    </span>
+                    <span className="text-emerald-700 dark:text-emerald-400 font-black">{mcpAiAnalysis.recommendation}</span>
                   </div>
                 </div>
               </div>
