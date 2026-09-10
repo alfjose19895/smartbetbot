@@ -23,21 +23,26 @@ function getMatchLiveStatus(kickoff: string): "SCHEDULED" | "IN_PLAY" | "FINISHE
 
 function matchesStatusBadgeFilter(
   p: MarketOpportunity,
-  filter: "ALL" | "VALOR" | "BOMBA" | "WON" | "LOST" | "SCHEDULED" | "IN_PLAY" | "FINISHED"
+  filter: "ALL" | "VALOR" | "BOMBA" | "MCP" | "WON" | "LOST" | "SCHEDULED" | "IN_PLAY" | "FINISHED"
 ): boolean {
+  const isWon = p.status === "won" || (p as any).result === "WON" || (p.status as string) === "WON";
+  const isLost = p.status === "lost" || (p as any).result === "LOST" || (p.status as string) === "LOST";
+  const isMcp = Boolean(p.isMcp || p.isMcpPick || p.source === "mcp" || p.pickBadge === "mcp" || (p.explanation && p.explanation.includes("MCP")));
+
   if (filter === "ALL") return true;
   if (filter === "VALOR") return p.pickBadge === "valor";
   if (filter === "BOMBA") return p.pickBadge === "bomba";
-  if (filter === "WON") return p.status === "won";
-  if (filter === "LOST") return p.status === "lost";
+  if (filter === "MCP") return isMcp;
+  if (filter === "WON") return isWon;
+  if (filter === "LOST") return isLost;
   if (filter === "IN_PLAY") {
     return p.matchTiming === "live" || Boolean(p.currentScore) || getMatchLiveStatus(p.kickoff) === "IN_PLAY";
   }
   if (filter === "SCHEDULED") {
-    return p.matchTiming === "prematch" || (!p.currentScore && getMatchLiveStatus(p.kickoff) === "SCHEDULED");
+    return !isWon && !isLost && (p.matchTiming === "prematch" || (!p.currentScore && getMatchLiveStatus(p.kickoff) === "SCHEDULED"));
   }
   if (filter === "FINISHED") {
-    return (getMatchLiveStatus(p.kickoff) === "FINISHED" && p.matchTiming !== "live") || p.status === "won" || p.status === "lost";
+    return isWon || isLost || (getMatchLiveStatus(p.kickoff) === "FINISHED" && p.matchTiming !== "live");
   }
   return true;
 }
@@ -51,7 +56,7 @@ export default function DashboardPage() {
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
 
   // Filters (exclusively for Today's Alertas)
-  const [matchStatusFilter, setMatchStatusFilter] = useState<"ALL" | "VALOR" | "BOMBA" | "WON" | "LOST" | "SCHEDULED" | "IN_PLAY" | "FINISHED">("ALL");
+  const [matchStatusFilter, setMatchStatusFilter] = useState<"ALL" | "VALOR" | "BOMBA" | "MCP" | "WON" | "LOST" | "SCHEDULED" | "IN_PLAY" | "FINISHED">("ALL");
   const [minProbability, setMinProbability] = useState<number>(35);
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
@@ -223,6 +228,7 @@ export default function DashboardPage() {
   const finishedCount = predictions.filter((p) => matchesStatusBadgeFilter(p, "FINISHED")).length;
   const wonCount = predictions.filter((p) => matchesStatusBadgeFilter(p, "WON")).length;
   const lostCount = predictions.filter((p) => matchesStatusBadgeFilter(p, "LOST")).length;
+  const mcpCount = predictions.filter((p) => matchesStatusBadgeFilter(p, "MCP")).length;
   const valorCount = predictions.filter((p) => matchesStatusBadgeFilter(p, "VALOR")).length;
   const bombaCount = predictions.filter((p) => matchesStatusBadgeFilter(p, "BOMBA")).length;
 
@@ -410,6 +416,16 @@ export default function DashboardPage() {
             }`}
           >
             💎 Valor ({valorCount})
+          </button>
+          <button
+            onClick={() => setMatchStatusFilter("MCP")}
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
+              matchStatusFilter === "MCP"
+                ? "bg-purple-600 text-white shadow-md shadow-purple-600/30 border border-purple-500"
+                : "bg-purple-50 text-purple-800 border border-purple-200 hover:bg-purple-100 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800"
+            }`}
+          >
+            <span>🤖 Agente MCP ({mcpCount})</span>
           </button>
           <button
             onClick={() => setMatchStatusFilter("BOMBA")}

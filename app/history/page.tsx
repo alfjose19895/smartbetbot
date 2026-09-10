@@ -49,9 +49,23 @@ export default function HistoryPage() {
         setLoading(true);
         const res = await fetch("/api/history");
         const data = await res.json();
-        if (data.history) {
-          setHistoryItems(data.history);
-        }
+        let items = Array.isArray(data.history) ? [...data.history] : [];
+        try {
+          const localRaw = typeof window !== "undefined" ? localStorage.getItem("smartbetbot_published_picks") : null;
+          if (localRaw) {
+            const localPicks = JSON.parse(localRaw);
+            if (Array.isArray(localPicks)) {
+              for (const lp of localPicks) {
+                const found = items.find(i => i.match === `${lp.homeTeam} vs ${lp.awayTeam}` || (i.homeTeam === lp.homeTeam && i.awayTeam === lp.awayTeam));
+                if (found) {
+                  found.isMcp = true;
+                  found.pickBadge = lp.pickBadge || "mcp";
+                }
+              }
+            }
+          }
+        } catch (e) {}
+        setHistoryItems(items);
         if (data.parlays) {
           setParlayItems(data.parlays);
         }
@@ -132,7 +146,7 @@ export default function HistoryPage() {
     } else if (timingFilter === "LIVE") {
       if (!item.isLive && item.matchTiming !== "live") return false;
     } else if (timingFilter === "MCP") {
-      if (!item.isMcp && item.pickBadge !== "mcp") return false;
+      if (!item.isMcp && !item.isMcpPick && item.source !== "mcp" && item.pickBadge !== "mcp" && !(item.explanation && item.explanation.includes("MCP"))) return false;
     } else if (timingFilter === "BOMBA") {
       if (item.pickBadge !== "bomba" && item.odds < 2.05) return false;
     }
@@ -203,7 +217,7 @@ export default function HistoryPage() {
   // Exact Counts for Badges
   const prematchCount = historyItems.filter((h) => !h.isLive && h.matchTiming !== "live").length;
   const liveCount = historyItems.filter((h) => h.isLive || h.matchTiming === "live").length;
-  const mcpCount = historyItems.filter((h) => h.isMcp || h.pickBadge === "mcp").length;
+  const mcpCount = historyItems.filter((h) => Boolean(h.isMcp || h.isMcpPick || h.source === "mcp" || h.pickBadge === "mcp" || (h.explanation && h.explanation.includes("MCP")))).length;
   const bombaCount = historyItems.filter((h) => h.pickBadge === "bomba" || h.odds >= 2.05).length;
   const wonCount = historyItems.filter((h) => h.result === "WON").length;
   const lostCount = historyItems.filter((h) => h.result === "LOST").length;
@@ -345,18 +359,6 @@ export default function HistoryPage() {
               }`}
             >
               📋 Pre-Match ({prematchCount})
-            </button>
-
-            <button
-              onClick={() => setTimingFilter("LIVE")}
-              className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
-                timingFilter === "LIVE"
-                  ? "bg-gradient-to-r from-rose-600 to-red-600 text-white shadow-md shadow-rose-600/30 border border-rose-500"
-                  : "bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800"
-              }`}
-            >
-              <span className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-ping" />
-              <span>⚡ Alertas en Vivo ({liveCount})</span>
             </button>
 
             <button
@@ -541,6 +543,7 @@ export default function HistoryPage() {
                 const isWon = item.result === "WON";
                 const isLive = item.isLive || item.matchTiming === "live";
                 const conf = getConfidenceBadge(item.confidence, item.probability);
+                const matchTime = item.kickoff ? new Date(item.kickoff).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }) : "";
 
                 return (
                   <div
@@ -599,9 +602,13 @@ export default function HistoryPage() {
 
                     {/* Match & Score */}
                     <div className="my-3.5">
-                      <span className="text-[11px] font-bold text-slate-400 block mb-1">
-                        {item.league} {item.country ? `• ${item.country}` : ""}
-                      </span>
+                      <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 mb-1.5 flex-wrap gap-1">
+                        <span className="truncate max-w-[200px]">{item.league} {item.country ? `• ${item.country}` : ""}</span>
+                        <span className="flex items-center gap-1 text-slate-600 dark:text-slate-300 font-extrabold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md text-[10px]">
+                          <span>📅 {item.date}</span>
+                          {matchTime && <span className="text-emerald-700 dark:text-emerald-400 font-black">• ⏰ {matchTime}</span>}
+                        </span>
+                      </div>
 
                       <div className="flex items-center justify-between gap-3">
                         <div className="truncate">
@@ -699,7 +706,12 @@ export default function HistoryPage() {
                           )}
                         </td>
                         <td className="p-3.5 whitespace-nowrap font-medium text-slate-500 dark:text-slate-400">
-                          {item.date}
+                          <div className="font-bold">{item.date}</div>
+                          {item.kickoff && (
+                            <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-extrabold">
+                              ⏰ {new Date(item.kickoff).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}
+                            </div>
+                          )}
                         </td>
                         <td className="p-3.5 font-bold text-slate-900 dark:text-white">
                           <div>{item.match}</div>

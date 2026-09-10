@@ -55,6 +55,8 @@ export interface MarketOpportunity {
   confidence: "Muy Alta" | "Alta";
   pickBadge?: "bomba" | "valor" | "estandar" | "mcp";
   isMcpPick?: boolean;
+  isMcp?: boolean;
+  result?: "WON" | "LOST" | "VOID" | string;
   source?: "algorithm" | "mcp" | "manual";
   matchTiming?: "prematch" | "live";
   livePeriod?: "1H" | "HT" | "2H" | "ET";

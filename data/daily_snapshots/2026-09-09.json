@@ -170,7 +170,7 @@
     "pickBadge": "valor",
     "smartScore": 86,
     "explanation": "Feyenoord anota en el 85% de sus visitas europeas y Barcelona tiene un juego ultra ofensivo con líneas adelantadas. Cuota real Bet365 para Ambos Anotan a 1.75 con alta probabilidad estadística.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-11",
@@ -283,7 +283,11 @@
     ],
     "homeElo": 2010,
     "awayElo": 1810,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "3 - 1",
+    "isMcp": true,
+    "isMcpPick": true,
+    "source": "mcp"
   },
   {
     "fixtureId": 1635741,
@@ -1597,7 +1601,7 @@
     "edge": 1,
     "expectedValue": -21.4,
     "confidence": "Muy Alta",
-    "pickBadge": "estandar",
+    "pickBadge": "mcp",
     "smartScore": 72,
     "explanation": "Dominio estadístico de Los Angeles FC: La solidez defensiva del local y su promedio de más de 1.7 goles por encuentro justifican una alta certeza matemática del 56.2% para el triunfo en casa.",
     "status": "pending",
@@ -1713,6 +1717,9 @@
     ],
     "homeElo": 1606,
     "awayElo": 1652,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "isMcp": true,
+    "isMcpPick": true,
+    "source": "mcp"
   }
 ]

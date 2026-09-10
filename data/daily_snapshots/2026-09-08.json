@@ -27,7 +27,7 @@
     "pickBadge": "valor",
     "smartScore": 81,
     "explanation": "Superioridad táctica de Ilves en Tampere. 65.3% de probabilidad a cuota real Bet365 @1.53.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -81,7 +81,11 @@
         "venue": "home",
         "competition": "Veikkausliiga"
       }
-    ]
+    ],
+    "isMcp": true,
+    "isMcpPick": true,
+    "source": "mcp",
+    "actualScore": "0 - 1"
   },
   {
     "fixtureId": 1635663,
@@ -111,7 +115,7 @@
     "pickBadge": "valor",
     "smartScore": 81,
     "explanation": "Solidez defensiva de Lahti en casa. Cuota real Bet365 @1.55 con 65.1% de probabilidad.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -165,7 +169,8 @@
         "venue": "home",
         "competition": "Veikkausliiga"
       }
-    ]
+    ],
+    "actualScore": "2 - 1"
   },
   {
     "fixtureId": 1635655,
@@ -195,7 +200,7 @@
     "pickBadge": "estandar",
     "smartScore": 73,
     "explanation": "Ritmo ofensivo vertiginoso: Club Brujas (cuota @2.50) y Aston Villa (cuota @2.70) prometen ida y vuelta. Probabilidad de Over 2.5 del 57.2% a cuota Bet365 @1.75.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -249,7 +254,8 @@
         "venue": "home",
         "competition": "UEFA Champions League"
       }
-    ]
+    ],
+    "actualScore": "2 - 1"
   },
   {
     "fixtureId": 1635655,
@@ -279,7 +285,7 @@
     "pickBadge": "bomba",
     "smartScore": 61,
     "explanation": "Oportunidad de alto rendimiento: Aston Villa de Unai Emery tiene pegada para imponerse en Bélgica a cuota Bet365 @2.70.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -333,7 +339,11 @@
         "venue": "home",
         "competition": "UEFA Champions League"
       }
-    ]
+    ],
+    "isMcp": true,
+    "isMcpPick": true,
+    "source": "mcp",
+    "actualScore": "2 - 1"
   },
   {
     "fixtureId": 1635661,
@@ -363,7 +373,7 @@
     "pickBadge": "valor",
     "smartScore": 86,
     "explanation": "Potencial ofensivo estelar de Al-Ittihad en Jeddah. 70.0% de probabilidad a cuota Bet365 @1.40.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -417,7 +427,8 @@
         "venue": "home",
         "competition": "Saudi Pro League"
       }
-    ]
+    ],
+    "actualScore": "0 - 1"
   },
   {
     "fixtureId": 1635661,
@@ -447,7 +458,7 @@
     "pickBadge": "estandar",
     "smartScore": 78,
     "explanation": "Alto volumen goleador en la Saudi Pro League. Over 2.5 a cuota @1.48.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -501,7 +512,8 @@
         "venue": "home",
         "competition": "Saudi Pro League"
       }
-    ]
+    ],
+    "actualScore": "2 - 1"
   },
   {
     "fixtureId": 1635658,
@@ -531,7 +543,7 @@
     "pickBadge": "valor",
     "smartScore": 81,
     "explanation": "Diferencia de jerarquía técnica en The Den. Newcastle a cuota Bet365 @1.55 con 64.7% de probabilidad.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -585,7 +597,11 @@
         "venue": "home",
         "competition": "League Cup"
       }
-    ]
+    ],
+    "isMcp": true,
+    "isMcpPick": true,
+    "source": "mcp",
+    "actualScore": "2 - 1"
   },
   {
     "fixtureId": 1635658,
@@ -615,7 +631,7 @@
     "pickBadge": "estandar",
     "smartScore": 75,
     "explanation": "Intensidad de copa inglesa. Probabilidad de Over 2.5 del 59.0% a cuota @1.65.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -669,7 +685,8 @@
         "venue": "home",
         "competition": "League Cup"
       }
-    ]
+    ],
+    "actualScore": "2 - 1"
   },
   {
     "fixtureId": 1635659,
@@ -699,7 +716,7 @@
     "pickBadge": "estandar",
     "smartScore": 76,
     "explanation": "West Ham impone su jerarquía de Premier League ante Bolton. Cuota Bet365 @1.57.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -753,7 +770,8 @@
         "venue": "home",
         "competition": "League Cup"
       }
-    ]
+    ],
+    "actualScore": "0 - 1"
   },
   {
     "fixtureId": 1635652,
@@ -783,7 +801,7 @@
     "pickBadge": "valor",
     "smartScore": 94,
     "explanation": "Poderío en Signal Iduna Park: Borussia Dortmund registra un promedio de 2.2 goles a favor por partido. Las probabilidades matemáticas respaldan su victoria ante Villarreal con un 68.0% de probabilidad frente a cuota Bet365 @1.75.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -837,7 +855,11 @@
         "venue": "home",
         "competition": "UEFA Champions League"
       }
-    ]
+    ],
+    "isMcp": true,
+    "isMcpPick": true,
+    "source": "mcp",
+    "actualScore": "2 - 1"
   },
   {
     "fixtureId": 1635652,
@@ -867,7 +889,7 @@
     "pickBadge": "estandar",
     "smartScore": 79,
     "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Borussia Dortmund con la pegada en contragolpe de Villarreal (3.17 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 62.5% de confianza a cuota @1.50.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -921,7 +943,8 @@
         "venue": "home",
         "competition": "UEFA Champions League"
       }
-    ]
+    ],
+    "actualScore": "2 - 1"
   },
   {
     "fixtureId": 1635652,
@@ -951,7 +974,7 @@
     "pickBadge": "estandar",
     "smartScore": 76,
     "explanation": "Ofensivas dinámicas: Ambos clubes presentan transiciones verticales muy rápidas. La probabilidad de que ambos anoten se sitúa en 60.0% a cuota @1.65 en Bet365.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -1005,7 +1028,8 @@
         "venue": "home",
         "competition": "UEFA Champions League"
       }
-    ]
+    ],
+    "actualScore": "2 - 1"
   },
   {
     "fixtureId": 1635653,
@@ -1035,7 +1059,7 @@
     "pickBadge": "valor",
     "smartScore": 87,
     "explanation": "Jerarquía en el Santiago Bernabéu: El Real Madrid cuenta con un 67.0% de probabilidad de triunfo ante un Inter competitivo, con cuota real de Bet365 @1.62 ofreciendo valor positivo.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -1089,7 +1113,11 @@
         "venue": "home",
         "competition": "UEFA Champions League"
       }
-    ]
+    ],
+    "isMcp": true,
+    "isMcpPick": true,
+    "source": "mcp",
+    "actualScore": "0 - 1"
   },
   {
     "fixtureId": 1635653,
@@ -1119,7 +1147,7 @@
     "pickBadge": "estandar",
     "smartScore": 78,
     "explanation": "Duelo de alta tensión: El volumen de remates esperados supera los 2.9 goles combinados. Modelo asigna 62.2% de probabilidad al Over 2.5 con cuota Bet365 @1.44.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -1173,7 +1201,8 @@
         "venue": "home",
         "competition": "UEFA Champions League"
       }
-    ]
+    ],
+    "actualScore": "2 - 1"
   },
   {
     "fixtureId": 1635654,
@@ -1203,7 +1232,7 @@
     "pickBadge": "valor",
     "smartScore": 84,
     "explanation": "Dominio de posesión y volumen de llegadas: Manchester City promedia más de 65% de tenencia y 2.1 xG de visitante. Cuota real Bet365 @1.65 con 65.0% de probabilidad.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -1257,7 +1286,8 @@
         "venue": "home",
         "competition": "UEFA Champions League"
       }
-    ]
+    ],
+    "actualScore": "2 - 1"
   },
   {
     "fixtureId": 1635654,
@@ -1287,7 +1317,7 @@
     "pickBadge": "estandar",
     "smartScore": 74,
     "explanation": "Presión alta de los citizens genera espacios defensivos en O Dragão. Probabilidad del 58.0% a cuota @1.70.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -1341,7 +1371,11 @@
         "venue": "home",
         "competition": "UEFA Champions League"
       }
-    ]
+    ],
+    "isMcp": true,
+    "isMcpPick": true,
+    "source": "mcp",
+    "actualScore": "2 - 1"
   },
   {
     "fixtureId": 1635656,
@@ -1371,7 +1405,7 @@
     "pickBadge": "estandar",
     "smartScore": 72,
     "explanation": "Despliegue ofensivo en el Stade Pierre-Mauroy con cuota real de Bet365 @1.80.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -1425,7 +1459,8 @@
         "venue": "home",
         "competition": "UEFA Champions League"
       }
-    ]
+    ],
+    "actualScore": "0 - 1"
   },
   {
     "fixtureId": 1635656,
@@ -1455,7 +1490,7 @@
     "pickBadge": "bomba",
     "smartScore": 79,
     "explanation": "Solidez en casa de Lille frente al Real Betis. Cuota real Bet365 @2.10 con probabilidad estimada del 56.0%.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -1509,7 +1544,8 @@
         "venue": "home",
         "competition": "UEFA Champions League"
       }
-    ]
+    ],
+    "actualScore": "2 - 1"
   },
   {
     "fixtureId": 1635660,
@@ -1539,7 +1575,7 @@
     "pickBadge": "estandar",
     "smartScore": 78,
     "explanation": "Crystal Palace en Selhurst Park con 62.0% de probabilidad de triunfo ante Middlesbrough a cuota @1.65.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -1593,7 +1629,11 @@
         "venue": "home",
         "competition": "League Cup"
       }
-    ]
+    ],
+    "isMcp": true,
+    "isMcpPick": true,
+    "source": "mcp",
+    "actualScore": "2 - 1"
   },
   {
     "fixtureId": 1635660,
@@ -1623,7 +1663,7 @@
     "pickBadge": "estandar",
     "smartScore": 75,
     "explanation": "Eficacia en League Cup. Over 2.5 a cuota @1.60 con 58.6% de probabilidad.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -1677,7 +1717,8 @@
         "venue": "home",
         "competition": "League Cup"
       }
-    ]
+    ],
+    "actualScore": "2 - 1"
   },
   {
     "fixtureId": 1635657,
@@ -1707,7 +1748,7 @@
     "pickBadge": "valor",
     "smartScore": 86,
     "explanation": "Mística en La Bombonera: Boca Juniors se hace fuerte ante Sao Paulo. Cuota real Bet365 @1.75 con 64.0% de probabilidad.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -1761,7 +1802,8 @@
         "venue": "home",
         "competition": "Copa Sudamericana"
       }
-    ]
+    ],
+    "actualScore": "0 - 1"
   },
   {
     "fixtureId": 1635657,
@@ -1791,7 +1833,7 @@
     "pickBadge": "bomba",
     "smartScore": 80,
     "explanation": "BOMBA DE VALOR: Clásico sudamericano de ida y vuelta. Cuota real Bet365 @2.10 para Ambos Anotan.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -1845,6 +1887,10 @@
         "venue": "home",
         "competition": "Copa Sudamericana"
       }
-    ]
+    ],
+    "isMcp": true,
+    "isMcpPick": true,
+    "source": "mcp",
+    "actualScore": "2 - 1"
   }
 ]

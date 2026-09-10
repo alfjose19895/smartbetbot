@@ -82,6 +82,9 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
   const [copySuccess, setCopySuccess] = useState(false);
 
   const statusBadge = getMatchLiveStatusBadge(prediction.kickoff);
+  const isWon = prediction.status === "won" || (prediction as any).result === "WON" || (prediction.status as string) === "WON";
+  const isLost = prediction.status === "lost" || (prediction as any).result === "LOST" || (prediction.status as string) === "LOST";
+  const isMcp = Boolean(prediction.isMcp || prediction.isMcpPick || prediction.source === "mcp" || prediction.pickBadge === "mcp" || (prediction.explanation && prediction.explanation.includes("MCP")));
 
   const handleCopyImage = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -162,7 +165,7 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
                   🕒 PRE
                 </span>
               )}
-              {(prediction.pickBadge === "mcp" || prediction.isMcpPick || prediction.source === "mcp") && (
+              {isMcp && (
                 <span className="rounded-lg px-1.5 py-0.5 text-[9px] font-black bg-purple-600 text-white shadow-sm border border-purple-400 flex items-center gap-0.5">
                   🤖 MCP
                 </span>
@@ -177,13 +180,13 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
                   💎
                 </span>
               )}
-              {prediction.status === "won" ? (
+              {isWon ? (
                 <span className="rounded-xl px-2 py-0.5 text-[10px] font-black bg-emerald-500 text-slate-950">
-                  ✓ Ganado
+                  ✓ Ganada
                 </span>
-              ) : prediction.status === "lost" ? (
+              ) : isLost ? (
                 <span className="rounded-xl px-2 py-0.5 text-[10px] font-black bg-rose-600 text-white">
-                  ✗ Perdido
+                  ✗ Perdida
                 </span>
               ) : statusBadge ? (
                 <span className={`inline-flex items-center rounded-xl px-2 py-0.5 text-[9px] font-black border ${statusBadge.cls}`}>
@@ -223,13 +226,13 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
                 </span>
 
                 <div className="flex items-center gap-1.5 shrink-0">
-                  {prediction.status === "won" ? (
+                  {isWon ? (
                     <span className="rounded-xl px-2 py-0.5 text-[10px] font-black bg-emerald-500 text-slate-950">
-                      ✓ Ganado
+                      ✓ Ganada
                     </span>
-                  ) : prediction.status === "lost" ? (
+                  ) : isLost ? (
                     <span className="rounded-xl px-2 py-0.5 text-[10px] font-black bg-rose-600 text-white">
-                      ✗ Perdido
+                      ✗ Perdida
                     </span>
                   ) : statusBadge ? (
                     <span className={`inline-flex items-center rounded-xl px-2 py-0.5 text-[9px] font-black border ${statusBadge.cls}`}>
@@ -237,7 +240,7 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
                     </span>
                   ) : null}
 
-                  {(prediction.pickBadge === "mcp" || prediction.isMcpPick || prediction.source === "mcp") && (
+                  {isMcp && (
                     <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black bg-gradient-to-r from-purple-600 to-indigo-600 text-white border border-purple-400 shadow-sm">
                       🤖 Agente MCP
                     </span>
@@ -399,13 +402,13 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
             </div>
 
             <div className="flex items-center gap-2">
-              {prediction.status === "won" ? (
+              {isWon ? (
                 <span className="inline-flex items-center gap-1 rounded-xl px-3 py-1 text-xs font-black bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30">
-                  ✓ Ganado
+                  ✓ Ganada
                 </span>
-              ) : prediction.status === "lost" ? (
+              ) : isLost ? (
                 <span className="inline-flex items-center gap-1 rounded-xl px-3 py-1 text-xs font-black bg-rose-600 text-white shadow-md shadow-rose-600/30">
-                  ✗ Perdido
+                  ✗ Perdida
                 </span>
               ) : statusBadge ? (
                 <span className={`inline-flex items-center rounded-xl px-2.5 py-1 text-[10px] font-black border ${statusBadge.cls}`}>
@@ -433,7 +436,7 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
             </div>
 
             <div className="flex items-center gap-1.5 flex-wrap">
-              {(prediction.pickBadge === "mcp" || prediction.isMcpPick || prediction.source === "mcp") && (
+              {isMcp && (
                 <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-sm border border-purple-400">
                   🤖 Agente MCP
                 </span>

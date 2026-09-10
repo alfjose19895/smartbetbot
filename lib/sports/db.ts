@@ -217,6 +217,8 @@ export interface HistoricalSettledPick {
   matchTiming?: "prematch" | "live";
   isLive?: boolean;
   isMcp?: boolean;
+  isMcpPick?: boolean;
+  source?: "algorithm" | "mcp" | "manual";
   livePeriod?: string;
   liveMinute?: string | number;
   result: "WON" | "LOST" | "VOID";
@@ -1149,7 +1151,7 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
         realScoresMap[scoreKeyGeneric];
 
       const isLiveMatch = p.matchTiming === "live" || Boolean(p.currentScore) || Boolean(p.livePeriod);
-      const isMcpPick = p.pickBadge === "mcp" || Boolean(p.explanation?.includes("MCP")) || Boolean(p.explanation?.includes("Agente MCP"));
+      const isMcpPick = Boolean(p.isMcp || p.isMcpPick || p.source === "mcp" || p.pickBadge === "mcp" || (p.explanation && p.explanation.includes("MCP")) || (p.market && p.market.includes("MCP")));
 
       // If snapshot already has a finalized status and score with statistics (e.g. "2 - 5 (13 Córners)")
       if (p.status === "won" || p.status === "lost") {
