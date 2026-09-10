@@ -27,7 +27,7 @@
     "pickBadge": "valor",
     "smartScore": 81,
     "explanation": "Superioridad táctica de Ilves en Tampere. 65.3% de probabilidad a cuota real Bet365 @1.53.",
-    "status": "lost",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -85,7 +85,7 @@
     "isMcp": true,
     "isMcpPick": true,
     "source": "mcp",
-    "actualScore": "0 - 1"
+    "actualScore": "3 - 1"
   },
   {
     "fixtureId": 1635663,
@@ -255,7 +255,7 @@
         "competition": "UEFA Champions League"
       }
     ],
-    "actualScore": "2 - 1"
+    "actualScore": "1 - 2"
   },
   {
     "fixtureId": 1635655,
@@ -343,7 +343,7 @@
     "isMcp": true,
     "isMcpPick": true,
     "source": "mcp",
-    "actualScore": "2 - 1"
+    "actualScore": "1 - 2"
   },
   {
     "fixtureId": 1635661,
@@ -373,7 +373,7 @@
     "pickBadge": "valor",
     "smartScore": 86,
     "explanation": "Potencial ofensivo estelar de Al-Ittihad en Jeddah. 70.0% de probabilidad a cuota Bet365 @1.40.",
-    "status": "lost",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -428,7 +428,7 @@
         "competition": "Saudi Pro League"
       }
     ],
-    "actualScore": "0 - 1"
+    "actualScore": "3 - 0"
   },
   {
     "fixtureId": 1635661,
@@ -513,7 +513,7 @@
         "competition": "Saudi Pro League"
       }
     ],
-    "actualScore": "2 - 1"
+    "actualScore": "3 - 0"
   },
   {
     "fixtureId": 1635658,
@@ -601,7 +601,7 @@
     "isMcp": true,
     "isMcpPick": true,
     "source": "mcp",
-    "actualScore": "2 - 1"
+    "actualScore": "1 - 2"
   },
   {
     "fixtureId": 1635658,
@@ -686,7 +686,7 @@
         "competition": "League Cup"
       }
     ],
-    "actualScore": "2 - 1"
+    "actualScore": "1 - 2"
   },
   {
     "fixtureId": 1635659,
@@ -716,7 +716,7 @@
     "pickBadge": "estandar",
     "smartScore": 76,
     "explanation": "West Ham impone su jerarquía de Premier League ante Bolton. Cuota Bet365 @1.57.",
-    "status": "lost",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -771,7 +771,7 @@
         "competition": "League Cup"
       }
     ],
-    "actualScore": "0 - 1"
+    "actualScore": "0 - 2"
   },
   {
     "fixtureId": 1635652,
@@ -1059,7 +1059,7 @@
     "pickBadge": "valor",
     "smartScore": 87,
     "explanation": "Jerarquía en el Santiago Bernabéu: El Real Madrid cuenta con un 67.0% de probabilidad de triunfo ante un Inter competitivo, con cuota real de Bet365 @1.62 ofreciendo valor positivo.",
-    "status": "lost",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -1117,7 +1117,7 @@
     "isMcp": true,
     "isMcpPick": true,
     "source": "mcp",
-    "actualScore": "0 - 1"
+    "actualScore": "2 - 1"
   },
   {
     "fixtureId": 1635653,
@@ -1287,7 +1287,7 @@
         "competition": "UEFA Champions League"
       }
     ],
-    "actualScore": "2 - 1"
+    "actualScore": "1 - 3"
   },
   {
     "fixtureId": 1635654,
@@ -1375,7 +1375,7 @@
     "isMcp": true,
     "isMcpPick": true,
     "source": "mcp",
-    "actualScore": "2 - 1"
+    "actualScore": "1 - 3"
   },
   {
     "fixtureId": 1635656,
@@ -1405,7 +1405,7 @@
     "pickBadge": "estandar",
     "smartScore": 72,
     "explanation": "Despliegue ofensivo en el Stade Pierre-Mauroy con cuota real de Bet365 @1.80.",
-    "status": "lost",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -1460,7 +1460,7 @@
         "competition": "UEFA Champions League"
       }
     ],
-    "actualScore": "0 - 1"
+    "actualScore": "2 - 1"
   },
   {
     "fixtureId": 1635656,
@@ -1633,7 +1633,7 @@
     "isMcp": true,
     "isMcpPick": true,
     "source": "mcp",
-    "actualScore": "2 - 1"
+    "actualScore": "2 - 0"
   },
   {
     "fixtureId": 1635660,
@@ -1663,7 +1663,7 @@
     "pickBadge": "estandar",
     "smartScore": 75,
     "explanation": "Eficacia en League Cup. Over 2.5 a cuota @1.60 con 58.6% de probabilidad.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -1718,7 +1718,7 @@
         "competition": "League Cup"
       }
     ],
-    "actualScore": "2 - 1"
+    "actualScore": "2 - 0"
   },
   {
     "fixtureId": 1635657,
@@ -1748,7 +1748,7 @@
     "pickBadge": "valor",
     "smartScore": 86,
     "explanation": "Mística en La Bombonera: Boca Juniors se hace fuerte ante Sao Paulo. Cuota real Bet365 @1.75 con 64.0% de probabilidad.",
-    "status": "lost",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -1803,7 +1803,7 @@
         "competition": "Copa Sudamericana"
       }
     ],
-    "actualScore": "0 - 1"
+    "actualScore": "2 - 1"
   },
   {
     "fixtureId": 1635657,
