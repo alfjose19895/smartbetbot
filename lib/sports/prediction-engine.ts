@@ -1205,25 +1205,86 @@ export function evaluateFixturePrediction(params: {
       candidates = candidates.filter((c) => c.odds >= 1.50 && c.prob >= 0.48);
     }
   } else {
-    // === PRE-MATCH MARKET EVALUATION (WITH AUTHENTIC REAL BOOKMAKER ODDS) ===
-    candidates = [
-      { market: "Ganador Local", selection: "1", prob: pHome, odds: resolvedHomeOdds, minOddsThreshold: 1.25, minProbThreshold: 0.45 },
-      { market: "Ganador Visitante", selection: "2", prob: pAway, odds: resolvedAwayOdds, minOddsThreshold: 1.25, minProbThreshold: 0.45 },
-      { market: "Over 2.5 Goles", selection: "Over 2.5", prob: pOver25, odds: resolvedOver25Odds, minOddsThreshold: 1.35, minProbThreshold: 0.45 },
-      { market: "Ambos Equipos Anotan", selection: "Sí", prob: pBttsYes, odds: resolvedBttsOdds, minOddsThreshold: 1.35, minProbThreshold: 0.45 },
-    ];
+    // === PRE-MATCH MARKET EVALUATION (STRICT ZERO-FAKE-ODDS POLICY) ===
+    // ONLY include opportunities where a genuine bookmaker odd was extracted from Bet365/Pinnacle/1xBet.
+    candidates = [];
 
-    if (resolvedDrawOdds && pDraw >= 0.26) {
-      candidates.push({ market: "Empate", selection: "X", prob: pDraw, odds: resolvedDrawOdds, minOddsThreshold: 2.60, minProbThreshold: 0.26 });
+    if (marketOdds.homeWin && marketOdds.homeWin >= 1.05) {
+      candidates.push({
+        market: "Ganador Local",
+        selection: "1",
+        prob: pHome,
+        odds: marketOdds.homeWin,
+        minOddsThreshold: 1.15,
+        minProbThreshold: 0.40,
+      });
+    }
+
+    if (marketOdds.awayWin && marketOdds.awayWin >= 1.05) {
+      candidates.push({
+        market: "Ganador Visitante",
+        selection: "2",
+        prob: pAway,
+        odds: marketOdds.awayWin,
+        minOddsThreshold: 1.15,
+        minProbThreshold: 0.40,
+      });
+    }
+
+    if (marketOdds.over25 && marketOdds.over25 >= 1.05) {
+      candidates.push({
+        market: "Over 2.5 Goles",
+        selection: "Over 2.5",
+        prob: pOver25,
+        odds: marketOdds.over25,
+        minOddsThreshold: 1.25,
+        minProbThreshold: 0.40,
+      });
+    }
+
+    if (marketOdds.bttsYes && marketOdds.bttsYes >= 1.05) {
+      candidates.push({
+        market: "Ambos Equipos Anotan",
+        selection: "Sí",
+        prob: pBttsYes,
+        odds: marketOdds.bttsYes,
+        minOddsThreshold: 1.25,
+        minProbThreshold: 0.40,
+      });
+    }
+
+    if (marketOdds.draw && marketOdds.draw >= 2.00 && pDraw >= 0.25) {
+      candidates.push({
+        market: "Empate",
+        selection: "X",
+        prob: pDraw,
+        odds: marketOdds.draw,
+        minOddsThreshold: 2.20,
+        minProbThreshold: 0.25,
+      });
     }
 
     if (targetMarket) {
       const tm = targetMarket.toLowerCase();
-      if ((tm.includes("over 1.5") || tm.includes("mas de 1.5")) && resolvedOver15Odds) {
-        candidates.push({ market: "Over 1.5 Goles", selection: "Over 1.5", prob: pOver15, odds: resolvedOver15Odds, minOddsThreshold: 1.20, minProbThreshold: 0.65 });
+      if ((tm.includes("over 1.5") || tm.includes("mas de 1.5")) && marketOdds.over15 && marketOdds.over15 >= 1.05) {
+        candidates.push({
+          market: "Over 1.5 Goles",
+          selection: "Over 1.5",
+          prob: pOver15,
+          odds: marketOdds.over15,
+          minOddsThreshold: 1.15,
+          minProbThreshold: 0.60,
+        });
       }
-      if ((tm.includes("doble") || tm.includes("1x")) && resolvedDouble1XOdds) {
-        candidates.push({ market: "Doble Oportunidad", selection: "1X", prob: pDouble1X, odds: resolvedDouble1XOdds, minOddsThreshold: 1.15, minProbThreshold: 0.68 });
+      if ((tm.includes("doble") || tm.includes("1x")) && marketOdds.doubleChance1X && marketOdds.doubleChance1X >= 1.05) {
+        candidates.push({
+          market: "Doble Oportunidad",
+          selection: "1X",
+          prob: pDouble1X,
+          odds: marketOdds.doubleChance1X,
+          minOddsThreshold: 1.10,
+          minProbThreshold: 0.60,
+        });
       }
     }
   }
@@ -1282,6 +1343,7 @@ export function evaluateFixturePrediction(params: {
       market: item.market,
       selection: item.selection,
       odds: item.odds,
+      bookmaker: "Bet365",
       bookmakerOdds: item.odds,
       modelOdds: fairOdds,
       fairOdds,

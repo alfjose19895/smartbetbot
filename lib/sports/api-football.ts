@@ -545,6 +545,7 @@ export function extractMatchDetails(stats?: ApiFootballFixtureStatistics[] | nul
 }
 
 export function extractMarketOddsFromBookmaker(oddsItem?: ApiFootballOddsItem | null): {
+  bookmakerName?: string;
   homeWin?: number;
   draw?: number;
   awayWin?: number;
@@ -564,20 +565,34 @@ export function extractMarketOddsFromBookmaker(oddsItem?: ApiFootballOddsItem | 
     return {};
   }
 
-  // Find preferred top tier authentic bookmakers (Bet365, 1xBet, Pinnacle, Betway, Unibet, Bwin, William Hill)
-  const bm =
-    oddsItem.bookmakers.find((b) => b.name.toLowerCase().includes("bet365")) ||
-    oddsItem.bookmakers.find((b) => b.name.toLowerCase().includes("1xbet")) ||
-    oddsItem.bookmakers.find((b) => b.name.toLowerCase().includes("pinnacle")) ||
-    oddsItem.bookmakers.find((b) => b.name.toLowerCase().includes("betway")) ||
-    oddsItem.bookmakers.find((b) => b.name.toLowerCase().includes("unibet")) ||
-    oddsItem.bookmakers.find((b) => b.name.toLowerCase().includes("bwin")) ||
-    oddsItem.bookmakers.find((b) => b.name.toLowerCase().includes("william hill")) ||
-    oddsItem.bookmakers[0];
+  // Priority order for authentic bookmakers
+  const priorityList = [
+    "bet365",
+    "pinnacle",
+    "1xbet",
+    "betway",
+    "unibet",
+    "bwin",
+    "william hill",
+    "marathonbet",
+    "betfair",
+    "10bet",
+    "888sport",
+  ];
 
-  if (!bm || !bm.bets || !Array.isArray(bm.bets)) return {};
+  // Sort available bookmakers by priority rank
+  const sortedBookmakers = [...oddsItem.bookmakers].sort((a, b) => {
+    const aName = (a.name || "").toLowerCase();
+    const bName = (b.name || "").toLowerCase();
+    const aRank = priorityList.findIndex((p) => aName.includes(p));
+    const bRank = priorityList.findIndex((p) => bName.includes(p));
+    const finalARank = aRank === -1 ? 999 : aRank;
+    const finalBRank = bRank === -1 ? 999 : bRank;
+    return finalARank - finalBRank;
+  });
 
   const result: {
+    bookmakerName?: string;
     homeWin?: number;
     draw?: number;
     awayWin?: number;
@@ -594,95 +609,162 @@ export function extractMarketOddsFromBookmaker(oddsItem?: ApiFootballOddsItem | 
     bttsNo?: number;
   } = {};
 
-  for (const bet of bm.bets) {
-    const betId = Number(bet.id);
-    const betName = (bet.name || "").toLowerCase().trim();
+  let primaryBookmakerName = sortedBookmakers[0]?.name || "Bet365";
 
-    // 1. 1X2 Match Winner (Full Time) - Bet ID 1
-    // Exclude 1st half, 2nd half, corners, cards
-    if (
-      betId === 1 ||
-      (betName.includes("match winner") && !betName.includes("first half") && !betName.includes("1st") && !betName.includes("2nd") && !betName.includes("corner") && !betName.includes("card"))
-    ) {
-      for (const val of bet.values || []) {
-        const v = String(val.value).toLowerCase().trim();
-        const o = parseFloat(String(val.odd));
-        if (!isNaN(o) && o > 1.01 && o <= 50.0) {
-          if (v === "home" || v === "1" || v === "local") result.homeWin = Math.round(o * 100) / 100;
-          else if (v === "draw" || v === "x" || v === "empate") result.draw = Math.round(o * 100) / 100;
-          else if (v === "away" || v === "2" || v === "visitante") result.awayWin = Math.round(o * 100) / 100;
-        }
-      }
+  // Helper to parse numeric odd
+  const parseOdd = (val: any): number | null => {
+    const o = parseFloat(String(val));
+    if (!isNaN(o) && o >= 1.01 && o <= 50.0) {
+      return Math.round(o * 100) / 100;
     }
+    return null;
+  };
 
-    // 2. Full Match Goals Over/Under (Over/Under 0.5, 1.5, 2.5, 3.5) - Bet ID 5
-    // STRICT: Never match 1st half (Bet 6), team totals (Bet 25, 26), corners (Bet 27), cards (Bet 28)
-    else if (
-      betId === 5 ||
-      ((betName === "goals over/under" || betName === "over/under" || betName.includes("total goals") || betName.includes("over/under line")) &&
-        !betName.includes("first half") &&
-        !betName.includes("1st") &&
-        !betName.includes("2nd") &&
-        !betName.includes("home") &&
-        !betName.includes("away") &&
-        !betName.includes("corner") &&
-        !betName.includes("card"))
-    ) {
-      for (const val of bet.values || []) {
-        const v = String(val.value).toLowerCase().trim();
-        const o = parseFloat(String(val.odd));
-        if (!isNaN(o) && o > 1.01 && o <= 50.0) {
-          const rounded = Math.round(o * 100) / 100;
-          if (v === "over 0.5" || v === "más de 0.5" || v === "mas de 0.5" || v === "+0.5" || v === "> 0.5") result.over05 = rounded;
-          else if (v === "over 1.5" || v === "más de 1.5" || v === "mas de 1.5" || v === "+1.5" || v === "> 1.5") result.over15 = rounded;
-          else if (v === "over 2.5" || v === "más de 2.5" || v === "mas de 2.5" || v === "+2.5" || v === "> 2.5") result.over25 = rounded;
-          else if (v === "under 2.5" || v === "menos de 2.5" || v === "-2.5" || v === "< 2.5") result.under25 = rounded;
-          else if (v === "over 3.5" || v === "más de 3.5" || v === "mas de 3.5" || v === "+3.5" || v === "> 3.5") result.over35 = rounded;
-          else if (v === "under 3.5" || v === "menos de 3.5" || v === "-3.5" || v === "< 3.5") result.under35 = rounded;
+  // 1. Extract 1X2 Match Winner across cascade
+  for (const bm of sortedBookmakers) {
+    if (!bm.bets || !Array.isArray(bm.bets)) continue;
+    if (result.homeWin && result.awayWin) break;
+
+    for (const bet of bm.bets) {
+      const betId = Number(bet.id);
+      const betName = (bet.name || "").toLowerCase().trim();
+
+      if (
+        betId === 1 ||
+        (betName.includes("match winner") &&
+          !betName.includes("first half") &&
+          !betName.includes("1st") &&
+          !betName.includes("2nd") &&
+          !betName.includes("corner") &&
+          !betName.includes("card") &&
+          !betName.includes("team"))
+      ) {
+        for (const val of bet.values || []) {
+          const v = String(val.value).toLowerCase().trim();
+          const odd = parseOdd(val.odd);
+          if (!odd) continue;
+
+          if (v === "home" || v === "1" || v === "local") {
+            if (!result.homeWin) result.homeWin = odd;
+          } else if (v === "draw" || v === "x" || v === "empate") {
+            if (!result.draw) result.draw = odd;
+          } else if (v === "away" || v === "2" || v === "visitante") {
+            if (!result.awayWin) result.awayWin = odd;
+          }
         }
-      }
-    }
-
-    // 3. Both Teams to Score (BTTS) - Bet ID 8
-    else if (
-      betId === 8 ||
-      ((betName.includes("both teams score") || betName.includes("both teams to score") || betName === "btts" || betName.includes("ambos anotan")) &&
-        !betName.includes("first half") &&
-        !betName.includes("1st") &&
-        !betName.includes("2nd"))
-    ) {
-      for (const val of bet.values || []) {
-        const v = String(val.value).toLowerCase().trim();
-        const o = parseFloat(String(val.odd));
-        if (!isNaN(o) && o > 1.01 && o <= 50.0) {
-          const rounded = Math.round(o * 100) / 100;
-          if (v === "yes" || v === "si" || v === "sí" || v === "1") result.bttsYes = rounded;
-          else if (v === "no" || v === "2") result.bttsNo = rounded;
-        }
-      }
-    }
-
-    // 4. Double Chance - Bet ID 12
-    else if (
-      betId === 12 ||
-      ((betName.includes("double chance") || betName.includes("doble oportunidad")) &&
-        !betName.includes("first half") &&
-        !betName.includes("1st") &&
-        !betName.includes("2nd"))
-    ) {
-      for (const val of bet.values || []) {
-        const v = String(val.value).toLowerCase().trim();
-        const o = parseFloat(String(val.odd));
-        if (!isNaN(o) && o > 1.01 && o <= 50.0) {
-          const rounded = Math.round(o * 100) / 100;
-          if (v.includes("home/draw") || v === "1x" || v.includes("local/empate")) result.doubleChance1X = rounded;
-          else if (v.includes("draw/away") || v === "x2" || v.includes("empate/visitante")) result.doubleChanceX2 = rounded;
-          else if (v.includes("home/away") || v === "12" || v.includes("local/visitante")) result.doubleChance12 = rounded;
+        if (result.homeWin) {
+          primaryBookmakerName = bm.name;
         }
       }
     }
   }
 
+  // 2. Extract Full Match Goals Over/Under across cascade
+  for (const bm of sortedBookmakers) {
+    if (!bm.bets || !Array.isArray(bm.bets)) continue;
+    if (result.over25 && result.under25) break;
+
+    for (const bet of bm.bets) {
+      const betId = Number(bet.id);
+      const betName = (bet.name || "").toLowerCase().trim();
+
+      if (
+        betId === 5 ||
+        ((betName === "goals over/under" || betName === "over/under" || betName.includes("total goals") || betName.includes("goals total")) &&
+          !betName.includes("first half") &&
+          !betName.includes("1st") &&
+          !betName.includes("2nd") &&
+          !betName.includes("home") &&
+          !betName.includes("away") &&
+          !betName.includes("corner") &&
+          !betName.includes("card") &&
+          !betName.includes("booking") &&
+          !betName.includes("player"))
+      ) {
+        for (const val of bet.values || []) {
+          const v = String(val.value).toLowerCase().trim();
+          const odd = parseOdd(val.odd);
+          if (!odd) continue;
+
+          const isOver = v.includes("over") || v.includes(">") || v.includes("+") || v.includes("más") || v.includes("mas");
+          const isUnder = v.includes("under") || v.includes("<") || v.includes("-") || v.includes("menos");
+
+          if (isOver && v.includes("0.5") && !result.over05) result.over05 = odd;
+          else if (isOver && v.includes("1.5") && !result.over15) result.over15 = odd;
+          else if (isOver && v.includes("2.5") && !result.over25) result.over25 = odd;
+          else if (isUnder && v.includes("2.5") && !result.under25) result.under25 = odd;
+          else if (isOver && v.includes("3.5") && !result.over35) result.over35 = odd;
+          else if (isUnder && v.includes("3.5") && !result.under35) result.under35 = odd;
+        }
+      }
+    }
+  }
+
+  // 3. Extract Both Teams to Score (BTTS) across cascade
+  for (const bm of sortedBookmakers) {
+    if (!bm.bets || !Array.isArray(bm.bets)) continue;
+    if (result.bttsYes && result.bttsNo) break;
+
+    for (const bet of bm.bets) {
+      const betId = Number(bet.id);
+      const betName = (bet.name || "").toLowerCase().trim();
+
+      if (
+        betId === 8 ||
+        ((betName.includes("both teams score") || betName.includes("both teams to score") || betName === "btts" || betName.includes("ambos anotan") || betName.includes("ambos marcan")) &&
+          !betName.includes("first half") &&
+          !betName.includes("1st") &&
+          !betName.includes("2nd"))
+      ) {
+        for (const val of bet.values || []) {
+          const v = String(val.value).toLowerCase().trim();
+          const odd = parseOdd(val.odd);
+          if (!odd) continue;
+
+          if (v === "yes" || v === "si" || v === "sí" || v === "1" || v === "gg" || v.includes("yes")) {
+            if (!result.bttsYes) result.bttsYes = odd;
+          } else if (v === "no" || v === "2" || v === "ng" || v.includes("no")) {
+            if (!result.bttsNo) result.bttsNo = odd;
+          }
+        }
+      }
+    }
+  }
+
+  // 4. Extract Double Chance across cascade
+  for (const bm of sortedBookmakers) {
+    if (!bm.bets || !Array.isArray(bm.bets)) continue;
+    if (result.doubleChance1X) break;
+
+    for (const bet of bm.bets) {
+      const betId = Number(bet.id);
+      const betName = (bet.name || "").toLowerCase().trim();
+
+      if (
+        betId === 12 ||
+        ((betName.includes("double chance") || betName.includes("doble oportunidad")) &&
+          !betName.includes("first half") &&
+          !betName.includes("1st") &&
+          !betName.includes("2nd"))
+      ) {
+        for (const val of bet.values || []) {
+          const v = String(val.value).toLowerCase().trim();
+          const odd = parseOdd(val.odd);
+          if (!odd) continue;
+
+          if (v.includes("home/draw") || v === "1x" || v.includes("local/empate") || v.includes("1 or x")) {
+            if (!result.doubleChance1X) result.doubleChance1X = odd;
+          } else if (v.includes("draw/away") || v === "x2" || v.includes("empate/visitante") || v.includes("x or 2")) {
+            if (!result.doubleChanceX2) result.doubleChanceX2 = odd;
+          } else if (v.includes("home/away") || v === "12" || v.includes("local/visitante") || v.includes("1 or 2")) {
+            if (!result.doubleChance12) result.doubleChance12 = odd;
+          }
+        }
+      }
+    }
+  }
+
+  result.bookmakerName = primaryBookmakerName;
   return result;
 }
 
