@@ -436,18 +436,12 @@ async function enrichCandidateFixturesWithOdds(
 export function getStoredPredictions(): MarketOpportunity[] {
   const nowMs = Date.now();
   const todayDateStr = getEcuadorDateString(nowMs);
+  const activeDateStr = todayDateStr >= HISTORY_START_DATE ? todayDateStr : HISTORY_START_DATE;
 
-  // REGLA ESTRICTA: Solo partidos del día actual que no hayan finalizado
-  const todaySnapshot = loadDailySnapshot(todayDateStr);
-  if (todaySnapshot && todaySnapshot.length > 0) {
-    return todaySnapshot.filter((p) => {
-      const pDate = getEcuadorDateString(new Date(p.kickoff));
-      if (pDate !== todayDateStr) return false;
-      const kMs = new Date(p.kickoff).getTime();
-      if (p.status === "won" || p.status === "lost" || p.status === "void") return false;
-      if (kMs < nowMs - 135 * 60 * 1000) return false;
-      return true;
-    });
+  // Return the complete snapshot of predictions for today so all status tabs (Scheduled, In-Play, Finished, Won, Lost, MCP) work properly
+  const todaySnapshot = loadDailySnapshot(todayDateStr) || loadDailySnapshot(activeDateStr);
+  if (todaySnapshot && Array.isArray(todaySnapshot) && todaySnapshot.length > 0) {
+    return todaySnapshot;
   }
 
   return [];
@@ -1637,6 +1631,7 @@ export async function searchLiveMarketDynamic(params: {
   country?: string;
   league?: string;
   leagueId?: number;
+  market?: string;
   limit?: number;
 }): Promise<MarketOpportunity[]> {
   try {
@@ -1756,6 +1751,17 @@ export async function searchLiveMarketDynamic(params: {
         const hasRealOdds = realMarketOdds && Object.keys(realMarketOdds).length > 0;
         if (!hasRealOdds) continue;
 
+        // Detect target market from params or query
+        const mParam = (params.market || "").toLowerCase().trim();
+        let targetMarket = mParam;
+        if (!targetMarket && qLower) {
+          if (qLower.includes("over 2.5") || qLower.includes("más de 2.5") || qLower.includes("mas de 2.5") || qLower.includes("goles")) targetMarket = "Over 2.5 Goles";
+          else if (qLower.includes("ambos") || qLower.includes("btts") || qLower.includes("anotan")) targetMarket = "Ambos Equipos Anotan";
+          else if (qLower.includes("gana visitante") || qLower.includes("victoria visitante") || qLower.includes("ganador visitante")) targetMarket = "Ganador Visitante";
+          else if (qLower.includes("gana local") || qLower.includes("victoria local") || qLower.includes("ganador local")) targetMarket = "Ganador Local";
+          else if (qLower.includes("empate") || qLower.includes("draw")) targetMarket = "Empate";
+        }
+
         const opps = evaluateFixturePrediction({
           fixtureId: f.fixture.id,
           homeTeam: f.teams.home.name,
@@ -1770,6 +1776,7 @@ export async function searchLiveMarketDynamic(params: {
           country: f.league?.country || "Global",
           kickoff: f.fixture.date,
           marketOdds: realMarketOdds,
+          targetMarket,
         });
 
         if (Array.isArray(opps) && opps.length > 0) {

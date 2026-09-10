@@ -41,77 +41,83 @@ interface AvailableLeagueItem {
   name: string;
   country: string;
   flag: string;
-  category: "cups" | "top5" | "americas" | "second_divisions" | "europe_mid" | "asia_africa";
+  category: "cups" | "top5" | "americas" | "second_divisions" | "europe_mid" | "nordics_others" | "asia_africa";
   categoryName: string;
+  tier?: number;
 }
 
-const MCP_AVAILABLE_LEAGUES: AvailableLeagueItem[] = [
-  // --- COPAS & TORNEOS INTERNACIONALES ---
-  { id: 2, name: "UEFA Champions League", country: "Europa", flag: "🏆", category: "cups", categoryName: "Copas & UEFA" },
-  { id: 3, name: "UEFA Europa League", country: "Europa", flag: "🏆", category: "cups", categoryName: "Copas & UEFA" },
-  { id: 848, name: "UEFA Europa Conference League", country: "Europa", flag: "🏆", category: "cups", categoryName: "Copas & UEFA" },
-  { id: 13, name: "Copa Libertadores", country: "Sudamérica", flag: "⭐", category: "cups", categoryName: "Copas & UEFA" },
-  { id: 11, name: "Copa Sudamericana", country: "Sudamérica", flag: "⭐", category: "cups", categoryName: "Copas & UEFA" },
-  { id: 772, name: "Leagues Cup", country: "Norteamérica", flag: "🏆", category: "cups", categoryName: "Copas & UEFA" },
-  { id: 16, name: "CONCACAF Champions League", country: "Norteamérica", flag: "🏆", category: "cups", categoryName: "Copas & UEFA" },
-  { id: 5, name: "UEFA Nations League", country: "Europa", flag: "🏆", category: "cups", categoryName: "Copas & UEFA" },
+const COUNTRY_FLAGS_MAP: Record<string, string> = {
+  "Europa": "🏆",
+  "Sudamérica": "⭐",
+  "Norteamérica": "🏆",
+  "Inglaterra": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+  "España": "🇪🇸",
+  "Italia": "🇮🇹",
+  "Alemania": "🇩🇪",
+  "Francia": "🇫🇷",
+  "Ecuador": "🇪🇨",
+  "Brasil": "🇧🇷",
+  "Argentina": "🇦🇷",
+  "México": "🇲🇽",
+  "Estados Unidos": "🇺🇸",
+  "Colombia": "🇨🇴",
+  "Perú": "🇵🇪",
+  "Chile": "🇨🇱",
+  "Uruguay": "🇺🇾",
+  "Paraguay": "🇵🇾",
+  "Bolivia": "🇧🇴",
+  "Costa Rica": "🇨🇷",
+  "Países Bajos": "🇳🇱",
+  "Portugal": "🇵🇹",
+  "Bélgica": "🇧🇪",
+  "Turquía": "🇹🇷",
+  "Escocia": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+  "Noruega": "🇳🇴",
+  "Suecia": "🇸🇪",
+  "Dinamarca": "🇩🇰",
+  "Suiza": "🇨🇭",
+  "Austria": "🇦🇹",
+  "Polonia": "🇵🇱",
+  "Ucrania": "🇺🇦",
+  "Croacia": "🇭🇷",
+  "Hungría": "🇭🇺",
+  "Finlandia": "🇫🇮",
+  "Irlanda": "🇮🇪",
+  "Islandia": "🇮🇸",
+  "Israel": "🇮🇱",
+  "Bulgaria": "🇧🇬",
+  "Bosnia": "🇧🇦",
+  "Eslovaquia": "🇸🇰",
+  "Eslovenia": "🇸🇮",
+  "Serbia": "🇷🇸",
+  "República Checa": "🇨🇿",
+  "Bielorrusia": "🇧🇾",
+  "Arabia Saudita": "🇸🇦",
+  "Japón": "🇯🇵",
+  "Corea del Sur": "🇰🇷",
+  "China": "🇨🇳",
+  "Australia": "🇦🇺",
+};
 
-  // --- TOP 5 EUROPA ---
-  { id: 39, name: "Premier League", country: "Inglaterra", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", category: "top5", categoryName: "Top 5 Europa" },
-  { id: 140, name: "La Liga", country: "España", flag: "🇪🇸", category: "top5", categoryName: "Top 5 Europa" },
-  { id: 135, name: "Serie A", country: "Italia", flag: "🇮🇹", category: "top5", categoryName: "Top 5 Europa" },
-  { id: 78, name: "Bundesliga", country: "Alemania", flag: "🇩🇪", category: "top5", categoryName: "Top 5 Europa" },
-  { id: 61, name: "Ligue 1", country: "Francia", flag: "🇫🇷", category: "top5", categoryName: "Top 5 Europa" },
+const CATEGORY_NAMES_MAP: Record<string, string> = {
+  "cups": "Copas & UEFA",
+  "top5": "Top 5 Europa",
+  "americas": "Américas & Conmebol",
+  "second_divisions": "Segundas Divisiones",
+  "europe_mid": "Ligas Europa",
+  "nordics_others": "Nórdicas & Otras",
+  "asia_africa": "Asia & Oceanía",
+};
 
-  // --- AMÉRICAS & CONMEBOL ---
-  { id: 242, name: "Liga Pro", country: "Ecuador", flag: "🇪🇨", category: "americas", categoryName: "Américas & Conmebol" },
-  { id: 253, name: "Major League Soccer (MLS)", country: "Estados Unidos", flag: "🇺🇸", category: "americas", categoryName: "Américas & Conmebol" },
-  { id: 162, name: "Primera División (Liga FPD)", country: "Costa Rica", flag: "🇨🇷", category: "americas", categoryName: "Américas & Conmebol" },
-  { id: 262, name: "Liga MX", country: "México", flag: "🇲🇽", category: "americas", categoryName: "Américas & Conmebol" },
-  { id: 71, name: "Brasileirão Série A", country: "Brasil", flag: "🇧🇷", category: "americas", categoryName: "Américas & Conmebol" },
-  { id: 128, name: "Liga Profesional", country: "Argentina", flag: "🇦🇷", category: "americas", categoryName: "Américas & Conmebol" },
-  { id: 239, name: "Primera A", country: "Colombia", flag: "🇨🇴", category: "americas", categoryName: "Américas & Conmebol" },
-  { id: 281, name: "Liga 1", country: "Perú", flag: "🇵🇪", category: "americas", categoryName: "Américas & Conmebol" },
-  { id: 265, name: "Primera División", country: "Chile", flag: "🇨🇱", category: "americas", categoryName: "Américas & Conmebol" },
-  { id: 271, name: "Primera División", country: "Uruguay", flag: "🇺🇾", category: "americas", categoryName: "Américas & Conmebol" },
-  { id: 250, name: "Primera División", country: "Paraguay", flag: "🇵🇾", category: "americas", categoryName: "Américas & Conmebol" },
-  { id: 344, name: "Primera División", country: "Bolivia", flag: "🇧🇴", category: "americas", categoryName: "Américas & Conmebol" },
-
-  // --- SEGUNDAS DIVISIONES ---
-  { id: 40, name: "Championship", country: "Inglaterra", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", category: "second_divisions", categoryName: "Segundas Divisiones" },
-  { id: 141, name: "La Liga 2 (Segunda)", country: "España", flag: "🇪🇸", category: "second_divisions", categoryName: "Segundas Divisiones" },
-  { id: 136, name: "Serie B", country: "Italia", flag: "🇮🇹", category: "second_divisions", categoryName: "Segundas Divisiones" },
-  { id: 79, name: "2. Bundesliga", country: "Alemania", flag: "🇩🇪", category: "second_divisions", categoryName: "Segundas Divisiones" },
-  { id: 62, name: "Ligue 2", country: "Francia", flag: "🇫🇷", category: "second_divisions", categoryName: "Segundas Divisiones" },
-  { id: 89, name: "Eerste Divisie", country: "Países Bajos", flag: "🇳🇱", category: "second_divisions", categoryName: "Segundas Divisiones" },
-  { id: 95, name: "Liga Portugal 2", country: "Portugal", flag: "🇵🇹", category: "second_divisions", categoryName: "Segundas Divisiones" },
-  { id: 72, name: "Brasileirão Série B", country: "Brasil", flag: "🇧🇷", category: "second_divisions", categoryName: "Segundas Divisiones" },
-  { id: 263, name: "Liga de Expansión MX", country: "México", flag: "🇲🇽", category: "second_divisions", categoryName: "Segundas Divisiones" },
-  { id: 254, name: "USL Championship", country: "Estados Unidos", flag: "🇺🇸", category: "second_divisions", categoryName: "Segundas Divisiones" },
-
-  // --- OTRAS LIGAS DE EUROPA ---
-  { id: 94, name: "Primeira Liga", country: "Portugal", flag: "🇵🇹", category: "europe_mid", categoryName: "Otras Ligas Europa" },
-  { id: 88, name: "Eredivisie", country: "Países Bajos", flag: "🇳🇱", category: "europe_mid", categoryName: "Otras Ligas Europa" },
-  { id: 144, name: "Jupiler Pro League", country: "Bélgica", flag: "🇧🇪", category: "europe_mid", categoryName: "Otras Ligas Europa" },
-  { id: 203, name: "Süper Lig", country: "Turquía", flag: "🇹🇷", category: "europe_mid", categoryName: "Otras Ligas Europa" },
-  { id: 179, name: "Premiership", country: "Escocia", flag: "🏴󠁧󠁢󠁳󠁮󠁧󠁿", category: "europe_mid", categoryName: "Otras Ligas Europa" },
-  { id: 103, name: "Eliteserien", country: "Noruega", flag: "🇳🇴", category: "europe_mid", categoryName: "Otras Ligas Europa" },
-  { id: 113, name: "Allsvenskan", country: "Suecia", flag: "🇸🇪", category: "europe_mid", categoryName: "Otras Ligas Europa" },
-  { id: 119, name: "Superliga", country: "Dinamarca", flag: "🇩🇰", category: "europe_mid", categoryName: "Otras Ligas Europa" },
-  { id: 207, name: "Super League", country: "Suiza", flag: "🇨🇭", category: "europe_mid", categoryName: "Otras Ligas Europa" },
-  { id: 218, name: "Austrian Bundesliga", country: "Austria", flag: "🇦🇹", category: "europe_mid", categoryName: "Otras Ligas Europa" },
-  { id: 106, name: "Ekstraklasa", country: "Polonia", flag: "🇵🇱", category: "europe_mid", categoryName: "Otras Ligas Europa" },
-  { id: 244, name: "Veikkausliiga", country: "Finlandia", flag: "🇫🇮", category: "europe_mid", categoryName: "Otras Ligas Europa" },
-  { id: 142, name: "Liga F (Femenina)", country: "España", flag: "🇪🇸", category: "europe_mid", categoryName: "Otras Ligas Europa" },
-
-  // --- ASIA, OCEANÍA & MEDIO ORIENTE ---
-  { id: 307, name: "Saudi Pro League", country: "Arabia Saudita", flag: "🇸🇦", category: "asia_africa", categoryName: "Asia & Oceanía" },
-  { id: 98, name: "J1 League", country: "Japón", flag: "🇯🇵", category: "asia_africa", categoryName: "Asia & Oceanía" },
-  { id: 101, name: "J-League Cup", country: "Japón", flag: "🇯🇵", category: "asia_africa", categoryName: "Asia & Oceanía" },
-  { id: 292, name: "K League 1", country: "Corea del Sur", flag: "🇰🇷", category: "asia_africa", categoryName: "Asia & Oceanía" },
-  { id: 169, name: "Chinese Super League", country: "China", flag: "🇨🇳", category: "asia_africa", categoryName: "Asia & Oceanía" },
-  { id: 188, name: "A-League Men", country: "Australia", flag: "🇦🇺", category: "asia_africa", categoryName: "Asia & Oceanía" },
-];
+const MCP_AVAILABLE_LEAGUES: AvailableLeagueItem[] = SUPPORTED_LEAGUES.map((l) => ({
+  id: l.id,
+  name: l.name,
+  country: l.country,
+  flag: COUNTRY_FLAGS_MAP[l.country] || "⚽",
+  category: (l.category as any) || "nordics_others",
+  categoryName: CATEGORY_NAMES_MAP[l.category] || "Competiciones Oficiales",
+  tier: l.tier,
+}));
 
 const MCP_LEAGUE_CATEGORIES = [
   { id: "all", label: "🌐 Todas las Ligas" },
@@ -119,7 +125,8 @@ const MCP_LEAGUE_CATEGORIES = [
   { id: "top5", label: "🇪🇺 Top 5 Europa" },
   { id: "americas", label: "🌎 Américas & Conmebol" },
   { id: "second_divisions", label: "🥈 Segundas Div" },
-  { id: "europe_mid", label: "🌍 Otras Europa" },
+  { id: "europe_mid", label: "🌍 Ligas Europa" },
+  { id: "nordics_others", label: "❄️ Nórdicas & Otras" },
   { id: "asia_africa", label: "🌏 Asia & Oceanía" },
 ];
 

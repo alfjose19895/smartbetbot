@@ -118,7 +118,6 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
 
   const navLinks: NavLinkItem[] = [
     { href: "/dashboard", label: t("navDashboard"), icon: "📊", subtitle: language === "es" ? "Resumen y pronósticos cuantitativos" : "Overview & quantitative predictions" },
-    { href: "/live", label: language === "es" ? "Alertas en Vivo" : "Live Alerts", icon: "⚡", subtitle: language === "es" ? "Partidos en juego y cuotas live" : "In-play matches & dynamic live odds", isLive: true },
     { href: "/signals", label: language === "es" ? "Alertas Pre-Match" : "Pre-Match Alerts", icon: "📋", subtitle: language === "es" ? "Pronósticos antes del inicio" : "Upcoming pre-match predictions" },
     { href: "/featured", label: language === "es" ? "Destacados" : "Featured", icon: "⭐", subtitle: language === "es" ? "SmartPick y Bomba del Día" : "SmartPick & Bomb of the Day" },
     { href: "/parlay", label: t("navParlay"), icon: "🎲", subtitle: language === "es" ? "Combinadas inteligentes" : "Smart accumulator parlays" },
@@ -176,21 +175,6 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
           >
             <span>📊</span>
             <span>Dashboard</span>
-          </Link>
-
-          <Link
-            href="/live"
-            className={`flex items-center gap-1.5 px-2.5 lg:px-3 py-1.5 rounded-xl text-xs font-black whitespace-nowrap transition cursor-pointer relative ${
-              pathname === "/live"
-                ? "bg-gradient-to-r from-rose-600 to-red-600 text-white shadow-xs shadow-rose-600/30"
-                : "text-rose-600 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300"
-            }`}
-          >
-            <span className="relative flex h-2 w-2 shrink-0">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
-            </span>
-            <span>{language === "es" ? "En Vivo" : "Live"}</span>
           </Link>
 
           <Link

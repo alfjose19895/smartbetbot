@@ -886,6 +886,7 @@ export function evaluateFixturePrediction(params: {
     bttsNo?: number;
   };
   liveContext?: LiveMatchContext;
+  targetMarket?: string;
 }): MarketOpportunity[] {
   const {
     fixtureId,
@@ -902,6 +903,7 @@ export function evaluateFixturePrediction(params: {
     kickoff,
     marketOdds = {},
     liveContext,
+    targetMarket,
   } = params;
 
   const { canonicalLeague, country, tier } = normalizeLeagueInfo(league, rawCountry, leagueId);
@@ -1201,13 +1203,27 @@ export function evaluateFixturePrediction(params: {
       candidates = candidates.filter((c) => c.odds >= 1.50 && c.prob >= 0.48);
     }
   } else {
-    // === PRE-MATCH MARKET EVALUATION ===
+    // === PRE-MATCH MARKET EVALUATION (WITH AUTHENTIC REAL BOOKMAKER ODDS) ===
     candidates = [
-      { market: "Ganador Local", selection: "1", prob: pHome, odds: resolvedHomeOdds, minOddsThreshold: 1.35, minProbThreshold: 0.55 },
-      { market: "Ganador Visitante", selection: "2", prob: pAway, odds: resolvedAwayOdds, minOddsThreshold: 1.35, minProbThreshold: 0.55 },
-      ...(isDefensiveLeague ? [] : [{ market: "Over 2.5 Goles", selection: "Over 2.5", prob: pOver25, odds: resolvedOver25Odds, minOddsThreshold: 1.40, minProbThreshold: 0.55 }]),
-      { market: "Ambos Equipos Anotan", selection: "Sí", prob: pBttsYes, odds: resolvedBttsOdds, minOddsThreshold: 1.45, minProbThreshold: 0.54 },
+      { market: "Ganador Local", selection: "1", prob: pHome, odds: resolvedHomeOdds, minOddsThreshold: 1.25, minProbThreshold: 0.45 },
+      { market: "Ganador Visitante", selection: "2", prob: pAway, odds: resolvedAwayOdds, minOddsThreshold: 1.25, minProbThreshold: 0.45 },
+      { market: "Over 2.5 Goles", selection: "Over 2.5", prob: pOver25, odds: resolvedOver25Odds, minOddsThreshold: 1.35, minProbThreshold: 0.45 },
+      { market: "Ambos Equipos Anotan", selection: "Sí", prob: pBttsYes, odds: resolvedBttsOdds, minOddsThreshold: 1.35, minProbThreshold: 0.45 },
     ];
+
+    if (resolvedDrawOdds && pDraw >= 0.26) {
+      candidates.push({ market: "Empate", selection: "X", prob: pDraw, odds: resolvedDrawOdds, minOddsThreshold: 2.60, minProbThreshold: 0.26 });
+    }
+
+    if (targetMarket) {
+      const tm = targetMarket.toLowerCase();
+      if ((tm.includes("over 1.5") || tm.includes("mas de 1.5")) && resolvedOver15Odds) {
+        candidates.push({ market: "Over 1.5 Goles", selection: "Over 1.5", prob: pOver15, odds: resolvedOver15Odds, minOddsThreshold: 1.20, minProbThreshold: 0.65 });
+      }
+      if ((tm.includes("doble") || tm.includes("1x")) && resolvedDouble1XOdds) {
+        candidates.push({ market: "Doble Oportunidad", selection: "1X", prob: pDouble1X, odds: resolvedDouble1XOdds, minOddsThreshold: 1.15, minProbThreshold: 0.68 });
+      }
+    }
   }
 
   const opportunities: MarketOpportunity[] = [];

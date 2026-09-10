@@ -142,12 +142,36 @@ export async function POST(req: Request) {
     const lLower = (league || "").toLowerCase().trim();
     const targetLeagueId = leagueId ? Number(leagueId) : undefined;
 
+    // Detect target market before search
+    const mLower = (market || "").toLowerCase().trim();
+    let requestedMarket = "";
+    if (mLower) {
+      requestedMarket = mLower;
+    } else if (qLower.includes("ambos marcan") || qLower.includes("ambos anotan") || qLower.includes("btts") || qLower.includes("ambos")) {
+      requestedMarket = "ambos";
+    } else if (qLower.includes("over 2.5") || qLower.includes("más de 2.5") || qLower.includes("mas de 2.5") || qLower.includes("over") || qLower.includes("goles")) {
+      requestedMarket = "over";
+    } else if (qLower.includes("gana visitante") || qLower.includes("victoria visitante") || qLower.includes("ganador visitante")) {
+      requestedMarket = "visitante";
+    } else if (
+      qLower.includes("ganador local") ||
+      qLower.includes("gana local") ||
+      qLower.includes("victoria local") ||
+      qLower.includes("triunfo local") ||
+      (qLower.includes("local") && !qLower.includes("visitante"))
+    ) {
+      requestedMarket = "local";
+    } else if (qLower.includes("empate") || qLower.includes("draw")) {
+      requestedMarket = "empate";
+    }
+
     // 1. DYNAMIC MARKET SEARCH: Query live API-Football fixtures & genuine bookmaker odds
     const dynamicMarketOpps = await searchLiveMarketDynamic({
       query,
       country,
       league,
       leagueId: targetLeagueId,
+      market: requestedMarket || market,
     });
 
     // 2. Retrieve baseline stored predictions for today (generate if slate is fresh)
@@ -290,27 +314,6 @@ export async function POST(req: Request) {
     }
 
     // 4. Market Filter from natural language
-    const mLower = (market || "").toLowerCase().trim();
-    let requestedMarket = "";
-    if (mLower) {
-      requestedMarket = mLower;
-    } else if (qLower.includes("ambos marcan") || qLower.includes("ambos anotan") || qLower.includes("btts") || qLower.includes("ambos")) {
-      requestedMarket = "ambos";
-    } else if (qLower.includes("over 2.5") || qLower.includes("más de 2.5") || qLower.includes("mas de 2.5") || qLower.includes("over") || qLower.includes("goles")) {
-      requestedMarket = "over";
-    } else if (qLower.includes("gana visitante") || qLower.includes("victoria visitante") || qLower.includes("ganador visitante")) {
-      requestedMarket = "visitante";
-    } else if (
-      qLower.includes("ganador local") ||
-      qLower.includes("gana local") ||
-      qLower.includes("victoria local") ||
-      qLower.includes("triunfo local") ||
-      (qLower.includes("local") && !qLower.includes("visitante"))
-    ) {
-      requestedMarket = "local";
-    } else if (qLower.includes("empate") || qLower.includes("draw")) {
-      requestedMarket = "empate";
-    }
 
     if (requestedMarket) {
       const matchMarket = filtered.filter((p) => {
