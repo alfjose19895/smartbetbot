@@ -212,7 +212,7 @@ export interface HistoricalSettledPick {
   fairOdds?: number;
   edge?: number;
   probability: number;
-  confidence: "Muy Alta" | "Alta";
+  confidence: "Muy Alta" | "Alta" | "Media" | "Moderada";
   pickBadge?: "bomba" | "valor" | "estandar" | "mcp";
   matchTiming?: "prematch" | "live";
   isLive?: boolean;
@@ -1733,10 +1733,16 @@ export async function searchLiveMarketDynamic(params: {
 
     let allFixtures: ApiFootballFixtureItem[] = [];
 
-    // Strategy 1: If specific league is targeted, fetch the exact upcoming fixtures for that league directly
+    // Strategy 1: Fetch today's official fixtures schedule in Ecuador timezone
+    const todayFixtures = await apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil").catch(() => []);
+    if (Array.isArray(todayFixtures) && todayFixtures.length > 0) {
+      allFixtures.push(...todayFixtures);
+    }
+
+    // Strategy 2: If specific league is targeted and today has few matches, fetch upcoming fixtures for that league
     if (targetLeagueId) {
       try {
-        const upcomingLeagueFixtures = await apiFootball.getUpcomingFixtures(targetLeagueId, 12, "America/Guayaquil");
+        const upcomingLeagueFixtures = await apiFootball.getUpcomingFixtures(targetLeagueId, 10, "America/Guayaquil");
         if (Array.isArray(upcomingLeagueFixtures) && upcomingLeagueFixtures.length > 0) {
           allFixtures.push(...upcomingLeagueFixtures);
         }

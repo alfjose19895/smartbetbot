@@ -211,7 +211,9 @@ export default function DashboardPage() {
 
   const confidenceDropdownOptions: DropdownOption[] = [
     { value: "muy_alta", label: language === "en" ? "⭐⭐⭐ Very High (≥70%)" : "⭐⭐⭐ Muy Alta (≥70%)" },
-    { value: "alta", label: language === "en" ? "⭐⭐ High (55% - 69%)" : "⭐⭐ Alta (55% - 69%)" },
+    { value: "alta", label: language === "en" ? "⭐⭐ High (58% - 69%)" : "⭐⭐ Alta (58% - 69%)" },
+    { value: "media", label: language === "en" ? "⭐ Medium (50% - 57%)" : "⭐ Media (50% - 57%)" },
+    { value: "moderada", label: language === "en" ? "⚠️ Moderate / Value (<50%)" : "⚠️ Moderada / Valor (<50%)" },
   ];
 
   const now = new Date();

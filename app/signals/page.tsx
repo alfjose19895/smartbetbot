@@ -22,21 +22,26 @@ function getMatchLiveStatus(kickoff: string): "SCHEDULED" | "IN_PLAY" | "FINISHE
 
 function matchesStatusBadgeFilter(
   p: MarketOpportunity,
-  filter: "ALL" | "VALOR" | "BOMBA" | "WON" | "LOST" | "SCHEDULED" | "IN_PLAY" | "FINISHED"
+  filter: "ALL" | "VALOR" | "BOMBA" | "MCP" | "WON" | "LOST" | "SCHEDULED" | "IN_PLAY" | "FINISHED"
 ): boolean {
+  const isWon = p.status === "won" || (p as any).result === "WON" || (p.status as string) === "WON";
+  const isLost = p.status === "lost" || (p as any).result === "LOST" || (p.status as string) === "LOST";
+  const isMcp = Boolean(p.isMcp || p.isMcpPick || p.source === "mcp" || p.pickBadge === "mcp" || (p.explanation && p.explanation.includes("MCP")));
+
   if (filter === "ALL") return true;
   if (filter === "VALOR") return p.pickBadge === "valor";
   if (filter === "BOMBA") return p.pickBadge === "bomba";
-  if (filter === "WON") return p.status === "won";
-  if (filter === "LOST") return p.status === "lost";
+  if (filter === "MCP") return isMcp;
+  if (filter === "WON") return isWon;
+  if (filter === "LOST") return isLost;
   if (filter === "IN_PLAY") {
     return p.matchTiming === "live" || Boolean(p.currentScore) || getMatchLiveStatus(p.kickoff) === "IN_PLAY";
   }
   if (filter === "SCHEDULED") {
-    return p.matchTiming === "prematch" || (!p.currentScore && getMatchLiveStatus(p.kickoff) === "SCHEDULED");
+    return !isWon && !isLost && (p.matchTiming === "prematch" || (!p.currentScore && getMatchLiveStatus(p.kickoff) === "SCHEDULED"));
   }
   if (filter === "FINISHED") {
-    return (getMatchLiveStatus(p.kickoff) === "FINISHED" && p.matchTiming !== "live") || p.status === "won" || p.status === "lost";
+    return isWon || isLost || (getMatchLiveStatus(p.kickoff) === "FINISHED" && p.matchTiming !== "live");
   }
   return true;
 }
@@ -177,7 +182,9 @@ export default function SignalsPage() {
 
   const confidenceDropdownOptions: DropdownOption[] = [
     { value: "muy_alta", label: language === "en" ? "⭐⭐⭐ Very High (≥70%)" : "⭐⭐⭐ Muy Alta (≥70%)" },
-    { value: "alta", label: language === "en" ? "⭐⭐ High (55% - 69%)" : "⭐⭐ Alta (55% - 69%)" },
+    { value: "alta", label: language === "en" ? "⭐⭐ High (58% - 69%)" : "⭐⭐ Alta (58% - 69%)" },
+    { value: "media", label: language === "en" ? "⭐ Medium (50% - 57%)" : "⭐ Media (50% - 57%)" },
+    { value: "moderada", label: language === "en" ? "⚠️ Moderate / Value (<50%)" : "⚠️ Moderada / Valor (<50%)" },
   ];
 
   const now = new Date();

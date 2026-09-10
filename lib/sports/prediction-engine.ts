@@ -52,7 +52,7 @@ export interface MarketOpportunity {
   impliedProbability?: number;
   edge: number;
   expectedValue: number;
-  confidence: "Muy Alta" | "Alta";
+  confidence: "Muy Alta" | "Alta" | "Media" | "Moderada";
   pickBadge?: "bomba" | "valor" | "estandar" | "mcp";
   isMcpPick?: boolean;
   isMcp?: boolean;
@@ -1304,8 +1304,19 @@ export function evaluateFixturePrediction(params: {
 
     // Strict mathematical confidence calibration:
     // "Muy Alta" when probability >= 70.0%
-    // "Alta" when probability is between 55.0% and 69.9%
-    const confidence: "Muy Alta" | "Alta" = probPercent >= 70.0 ? "Muy Alta" : "Alta";
+    // "Alta" when probability is between 58.0% and 69.9%
+    // "Media" when probability is between 50.0% and 57.9%
+    // "Moderada" when probability < 50.0% (cuotas altas / bombas)
+    let confidence: "Muy Alta" | "Alta" | "Media" | "Moderada" = "Media";
+    if (probPercent >= 70.0) {
+      confidence = "Muy Alta";
+    } else if (probPercent >= 58.0) {
+      confidence = "Alta";
+    } else if (probPercent >= 50.0) {
+      confidence = "Media";
+    } else {
+      confidence = "Moderada";
+    }
     let pickBadge: "bomba" | "valor" | "estandar" = "estandar";
 
     if (item.odds >= 2.00 && edgePercent >= 2.0) {
