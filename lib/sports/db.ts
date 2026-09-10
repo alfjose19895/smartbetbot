@@ -1684,38 +1684,108 @@ export async function searchLiveMarketDynamic(params: {
     const qLower = (params.query || "").toLowerCase().trim();
     const cLower = (params.country || "").toLowerCase().trim();
     const lLower = (params.league || "").toLowerCase().trim();
-    const targetLeagueId = params.leagueId ? Number(params.leagueId) : undefined;
+    let targetLeagueId = params.leagueId ? Number(params.leagueId) : undefined;
 
-    // 1. Fetch live schedule from API-Football: strictly upcoming matches that have NOT started yet
-    const tomorrowMs = nowMs + 24 * 60 * 60 * 1000;
-    const tomorrowDateStr = getEcuadorDateString(tomorrowMs);
+    // Detect league ID from query or params if not explicitly provided
+    if (!targetLeagueId) {
+      const leagueKeywordMap: Record<string, number> = {
+        "champions": 2,
+        "ucl": 2,
+        "uefa champions league": 2,
+        "europa league": 3,
+        "uel": 3,
+        "copa libertadores": 13,
+        "libertadores": 13,
+        "copa sudamericana": 11,
+        "sudamericana": 11,
+        "premier league": 39,
+        "premier": 39,
+        "la liga": 140,
+        "laliga": 140,
+        "serie a": 135,
+        "bundesliga": 78,
+        "ligue 1": 61,
+        "brasileirao": 71,
+        "brasileirão": 71,
+        "liga profesional": 128,
+        "argentina": 128,
+        "major league soccer": 253,
+        "mls": 253,
+        "liga pro": 242,
+        "saudi pro league": 307,
+        "saudi": 307,
+        "eredivisie": 88,
+        "primeira liga": 94,
+        "jupiler": 144,
+        "super lig": 203,
+        "süper lig": 203,
+        "veikkausliiga": 244,
+        "k league": 292,
+      };
 
-    const todayFixtures = await apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil").catch(() => []);
-    let allFixtures = Array.isArray(todayFixtures) ? [...todayFixtures] : [];
-
-    // Check how many matches today have not started yet
-    const unstartedToday = allFixtures.filter((f) => {
-      const kMs = new Date(f.fixture.date).getTime();
-      const s = f.fixture?.status?.short || "NS";
-      return kMs > nowMs && !["FT", "AET", "PEN", "PST", "CANC", "ABD", "INT", "120", "POST", "1H", "HT", "2H", "ET", "BT", "LIVE"].includes(s);
-    });
-
-    // If few unstarted matches remain today, also fetch tomorrow's upcoming fixtures for complete coverage
-    if (unstartedToday.length < 6) {
-      try {
-        const tomFixtures = await apiFootball.getFixturesByDate(tomorrowDateStr, "America/Guayaquil").catch(() => []);
-        if (Array.isArray(tomFixtures)) {
-          allFixtures.push(...tomFixtures);
+      for (const [kw, lid] of Object.entries(leagueKeywordMap)) {
+        if (qLower.includes(kw) || lLower.includes(kw) || cLower.includes(kw)) {
+          targetLeagueId = lid;
+          break;
         }
-      } catch (e) {
-        console.warn("Could not fetch tomorrow fixtures in MCP:", e);
       }
+    }
+
+    let allFixtures: ApiFootballFixtureItem[] = [];
+
+    // Strategy 1: If specific league is targeted, fetch the exact upcoming fixtures for that league directly
+    if (targetLeagueId) {
+      try {
+        const upcomingLeagueFixtures = await apiFootball.getUpcomingFixtures(targetLeagueId, 12, "America/Guayaquil");
+        if (Array.isArray(upcomingLeagueFixtures) && upcomingLeagueFixtures.length > 0) {
+          allFixtures.push(...upcomingLeagueFixtures);
+        }
+      } catch (err) {
+        console.warn(`Could not fetch upcoming fixtures for league ${targetLeagueId}:`, err);
+      }
+    }
+
+    // Strategy 2: If no fixtures found or general search, fetch upcoming for top tier leagues + today/tomorrow fixtures
+    if (allFixtures.length === 0) {
+      const topLeagueIds = [2, 39, 140, 135, 78, 61, 71, 128, 253, 307];
+      const selectedTopLeagues = targetLeagueId ? [targetLeagueId] : topLeagueIds.slice(0, 5);
+
+      await Promise.all(
+        selectedTopLeagues.map(async (lid) => {
+          try {
+            const fixs = await apiFootball.getUpcomingFixtures(lid, 6, "America/Guayaquil");
+            if (Array.isArray(fixs)) {
+              allFixtures.push(...fixs);
+            }
+          } catch {}
+        })
+      );
+
+      // Also get today's and tomorrow's general slate
+      try {
+        const [todayFixs, tomFixs] = await Promise.all([
+          apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil").catch(() => []),
+          apiFootball.getFixturesByDate(getEcuadorDateString(nowMs + 24 * 60 * 60 * 1000), "America/Guayaquil").catch(() => []),
+        ]);
+        if (Array.isArray(todayFixs)) allFixtures.push(...todayFixs);
+        if (Array.isArray(tomFixs)) allFixtures.push(...tomFixs);
+      } catch {}
     }
 
     if (allFixtures.length === 0) return [];
 
-    // 2. Filter candidate fixtures STRICTLY to those that have NOT started yet (pre-match upcoming only)
-    const candidates = allFixtures.filter((f) => {
+    // Deduplicate fixtures by fixture.id
+    const seenFixtureIds = new Set<number>();
+    const uniqueFixtures: ApiFootballFixtureItem[] = [];
+    for (const f of allFixtures) {
+      if (f.fixture?.id && !seenFixtureIds.has(f.fixture.id)) {
+        seenFixtureIds.add(f.fixture.id);
+        uniqueFixtures.push(f);
+      }
+    }
+
+    // Filter candidate fixtures STRICTLY to those that have NOT started yet (pre-match upcoming only)
+    const candidates = uniqueFixtures.filter((f) => {
       if (!f.fixture?.id || !f.teams?.home?.name || !f.teams?.away?.name) return false;
 
       const kickoffMs = new Date(f.fixture.date).getTime();
@@ -1737,65 +1807,14 @@ export async function searchLiveMarketDynamic(params: {
         return false;
       }
 
-      // 1. Direct League ID match
+      // Direct League ID match
       if (targetLeagueId && f.league?.id === targetLeagueId) {
         return true;
       }
 
-      // 2. Direct League Name or Country string match
+      // Direct League Name or Country string match
       if (lLower && lLower !== "all" && lLower !== "todas") {
         if (legName.includes(lLower) || lLower.includes(legName) || countryName.includes(lLower)) {
-          return true;
-        }
-      }
-
-      // Smart semantic token and league matching from user prompt
-      if (qLower) {
-        // League keyword matching
-        const leagueKeywords: Record<string, string[]> = {
-          champions: ["champions", "ucl", "uefa champions league", "champions league", "uefa"],
-          europa: ["europa league", "uel", "uefa europa league", "europa"],
-          sudamericana: ["sudamericana", "conmebol sudamericana", "copa sudamericana", "sudamerica"],
-          libertadores: ["libertadores", "conmebol libertadores", "copa libertadores"],
-          premier: ["premier", "inglaterra", "league cup", "efl cup", "fa cup"],
-          laliga: ["la liga", "laliga", "españa", "copa del rey"],
-          seriea: ["serie a", "italia"],
-          bundesliga: ["bundesliga", "alemania"],
-          ligue1: ["ligue 1", "francia"],
-          saudi: ["saudi", "pro league", "arabia"],
-          brasil: ["brasileirao", "brasileirão", "brasil"],
-          argentina: ["argentina", "liga profesional"],
-          finland: ["veikkausliiga", "finlandia"],
-          korea: ["k league", "corea"],
-        };
-
-        for (const keywords of Object.values(leagueKeywords)) {
-          if (keywords.some((kw) => qLower.includes(kw))) {
-            if (keywords.some((kw) => legName.includes(kw) || countryName.includes(kw))) {
-              return true;
-            }
-          }
-        }
-
-        // Significant token match for team names
-        const tokens = qLower.split(/[\s,.;:!?]+/).filter((t) => t.length >= 4 && !["pronosticos", "pronósticos", "partidos", "ganador", "cuota", "valor", "superior", "probabilidad"].includes(t));
-        for (const tok of tokens) {
-          if (hName.includes(tok) || aName.includes(tok)) {
-            return true;
-          }
-        }
-
-        if (countryName && qLower.includes(countryName)) return true;
-      }
-
-      if (cLower) {
-        if (
-          countryName.includes(cLower) ||
-          legName.includes(cLower) ||
-          (cLower === "champions" && (legName.includes("champions") || legName.includes("uefa") || countryName.includes("world") || countryName.includes("europe"))) ||
-          (cLower === "sudamericana" && (legName.includes("sudamericana") || countryName.includes("world") || countryName.includes("south america"))) ||
-          (cLower === "europa" && (legName.includes("uefa") || legName.includes("champions") || legName.includes("europa")))
-        ) {
           return true;
         }
       }
@@ -1806,25 +1825,25 @@ export async function searchLiveMarketDynamic(params: {
     const targetFixtures = candidates.slice(0, 15);
     const discoveredOpps: MarketOpportunity[] = [];
 
+    // Target market detection
+    const mParam = (params.market || "").toLowerCase().trim();
+    let targetMarket = mParam;
+    if (!targetMarket && qLower) {
+      if (qLower.includes("over 2.5") || qLower.includes("más de 2.5") || qLower.includes("mas de 2.5") || qLower.includes("goles")) targetMarket = "Over 2.5 Goles";
+      else if (qLower.includes("ambos") || qLower.includes("btts") || qLower.includes("anotan")) targetMarket = "Ambos Equipos Anotan";
+      else if (qLower.includes("gana visitante") || qLower.includes("victoria visitante") || qLower.includes("ganador visitante")) targetMarket = "Ganador Visitante";
+      else if (qLower.includes("gana local") || qLower.includes("victoria local") || qLower.includes("ganador local")) targetMarket = "Ganador Local";
+      else if (qLower.includes("empate") || qLower.includes("draw")) targetMarket = "Empate";
+    }
+
     for (const f of targetFixtures) {
       try {
         const oddsItem = await apiFootball.getOddsByFixture(f.fixture.id);
         const realMarketOdds = extractMarketOddsFromBookmaker(oddsItem);
 
-        // Only evaluate if real authentic odds exist
-        const hasRealOdds = realMarketOdds && Object.keys(realMarketOdds).length > 0;
+        // Only evaluate if real authentic odds exist from bookmaker
+        const hasRealOdds = realMarketOdds && (realMarketOdds.homeWin || realMarketOdds.awayWin || realMarketOdds.over25 || realMarketOdds.bttsYes);
         if (!hasRealOdds) continue;
-
-        // Detect target market from params or query
-        const mParam = (params.market || "").toLowerCase().trim();
-        let targetMarket = mParam;
-        if (!targetMarket && qLower) {
-          if (qLower.includes("over 2.5") || qLower.includes("más de 2.5") || qLower.includes("mas de 2.5") || qLower.includes("goles")) targetMarket = "Over 2.5 Goles";
-          else if (qLower.includes("ambos") || qLower.includes("btts") || qLower.includes("anotan")) targetMarket = "Ambos Equipos Anotan";
-          else if (qLower.includes("gana visitante") || qLower.includes("victoria visitante") || qLower.includes("ganador visitante")) targetMarket = "Ganador Visitante";
-          else if (qLower.includes("gana local") || qLower.includes("victoria local") || qLower.includes("ganador local")) targetMarket = "Ganador Local";
-          else if (qLower.includes("empate") || qLower.includes("draw")) targetMarket = "Empate";
-        }
 
         const opps = evaluateFixturePrediction({
           fixtureId: f.fixture.id,
@@ -1845,7 +1864,7 @@ export async function searchLiveMarketDynamic(params: {
 
         if (Array.isArray(opps) && opps.length > 0) {
           for (const op of opps) {
-            op.bookmaker = "Bet365";
+            op.bookmaker = realMarketOdds.bookmakerName || "Bet365";
             op.bookmakerOdds = op.odds;
             op.source = "mcp";
             op.isMcpPick = true;

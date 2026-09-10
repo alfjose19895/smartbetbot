@@ -319,7 +319,11 @@ class ApiFootballClient {
         return [];
       }
 
-      const json = await response.json();
+      const rawText = await response.text();
+      if (!rawText || rawText.trim().length === 0) {
+        return [];
+      }
+      const json = JSON.parse(rawText);
 
       if (json.errors && Object.keys(json.errors).length > 0) {
         console.warn(`[ApiFootball] API returned errors:`, json.errors);

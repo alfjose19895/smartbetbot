@@ -75,6 +75,7 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
   const [publishing, setPublishing] = useState(false);
   const [publishSuccessMessage, setPublishSuccessMessage] = useState<string | null>(null);
   const [publishedIds, setPublishedIds] = useState<Set<string | number>>(new Set());
+  const [expandedCardKey, setExpandedCardKey] = useState<string | null>(null);
 
   // Default search on open
   useEffect(() => {
@@ -579,18 +580,168 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
                   <span className="text-emerald-600 dark:text-emerald-400 hidden sm:inline">100% Cuotas Reales</span>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                 {results.map((pick) => {
                   const pickKey = `${pick.fixtureId || 0}-${pick.homeTeam}-${pick.awayTeam}-${pick.market}`;
                   const isAlreadyPublished = publishedIds.has(pickKey);
+                  const isExpanded = expandedCardKey === pickKey;
+                  const formattedTime = new Date(pick.kickoff).toLocaleTimeString("es-ES", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  });
+                  const formattedDate = new Date(pick.kickoff).toLocaleDateString("es-ES", {
+                    month: "short",
+                    day: "numeric",
+                  });
+
                   return (
-                    <PredictionCard
+                    <div
                       key={pickKey}
-                      prediction={pick}
-                      onOpenDetail={onSelectPrediction}
-                      onPublishAlert={handlePublishSinglePick}
-                      isPublished={isAlreadyPublished}
-                    />
+                      className="flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs transition-all duration-200 hover:border-purple-500/50 hover:shadow-md dark:border-slate-800/80 dark:bg-slate-900/90"
+                    >
+                      <div>
+                        {/* Header: League, Kickoff Time & Badges */}
+                        <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-2.5 dark:border-slate-800/80 flex-wrap">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="inline-flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-0.5 text-[10px] font-black text-slate-800 dark:bg-slate-800 dark:text-slate-200 truncate max-w-[180px]">
+                              <span>🏆</span>
+                              <span className="truncate">{pick.league}</span>
+                            </span>
+                            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                              📅 {formattedDate} • ⏰ {formattedTime}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-1 flex-wrap">
+                            <span className="rounded-lg px-2 py-0.5 text-[9px] font-bold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                              🕒 PRE
+                            </span>
+                            <span className="rounded-lg px-2 py-0.5 text-[9px] font-black bg-purple-600 text-white shadow-xs">
+                              🤖 MCP
+                            </span>
+                            {pick.pickBadge === "bomba" && (
+                              <span className="rounded-lg px-2 py-0.5 text-[9px] font-black bg-rose-500 text-white animate-pulse">
+                                💣 BOMBA
+                              </span>
+                            )}
+                            {pick.pickBadge === "valor" && (
+                              <span className="rounded-lg px-2 py-0.5 text-[9px] font-black bg-emerald-500 text-slate-950 font-extrabold">
+                                💎 VALOR
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Teams */}
+                        <div className="mt-2.5 rounded-xl bg-slate-50 p-2.5 border border-slate-100 dark:bg-slate-950/80 dark:border-slate-800/80">
+                          <div className="text-sm font-black text-slate-900 dark:text-white leading-tight">
+                            {pick.homeTeam}
+                          </div>
+                          <div className="text-[11px] font-bold text-slate-400 my-0.5">vs</div>
+                          <div className="text-sm font-black text-slate-900 dark:text-white leading-tight">
+                            {pick.awayTeam}
+                          </div>
+                        </div>
+
+                        {/* Pronóstico Box */}
+                        <div className="mt-3 rounded-xl border border-purple-200 bg-purple-50/50 p-3 dark:border-purple-900/40 dark:bg-purple-950/20 space-y-2">
+                          <div className="flex items-center justify-between text-[10px] font-black uppercase text-purple-700 dark:text-purple-300">
+                            <span>🎯 PRONÓSTICO SUGERIDO</span>
+                            <span className="text-emerald-600 dark:text-emerald-400 font-bold lowercase">
+                              +{pick.edge}% edge
+                            </span>
+                          </div>
+
+                          <div className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">
+                            {pick.market} <span className="text-purple-600 dark:text-purple-400 font-bold">({pick.selection})</span>
+                          </div>
+
+                          <div className="grid grid-cols-3 gap-1.5 pt-1 text-center">
+                            <div className="rounded-lg bg-white p-1.5 border border-purple-100 dark:bg-slate-900 dark:border-purple-900/40">
+                              <div className="text-[9px] text-slate-400 font-bold">Cuota {pick.bookmaker || "Bet365"}</div>
+                              <div className="text-xs font-black text-purple-600 dark:text-purple-400">@{(pick.odds ?? 1.5).toFixed(2)}</div>
+                            </div>
+                            <div className="rounded-lg bg-white p-1.5 border border-purple-100 dark:bg-slate-900 dark:border-purple-900/40">
+                              <div className="text-[9px] text-slate-400 font-bold">Probabilidad</div>
+                              <div className="text-xs font-black text-emerald-600 dark:text-emerald-400">{pick.probability}%</div>
+                            </div>
+                            <div className="rounded-lg bg-white p-1.5 border border-purple-100 dark:bg-slate-900 dark:border-purple-900/40">
+                              <div className="text-[9px] text-slate-400 font-bold">SmartScore</div>
+                              <div className="text-xs font-black text-sky-600 dark:text-sky-400">{pick.smartScore || 85}/100</div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Collapsible Detailed Metrics */}
+                        {isExpanded && (
+                          <div className="mt-3 space-y-2.5 rounded-xl bg-slate-50 p-3 border border-slate-200 dark:bg-slate-950 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300 animate-fadeIn">
+                            {pick.explanation && (
+                              <div>
+                                <span className="font-bold text-slate-900 dark:text-white block text-[11px] mb-0.5">
+                                  🧠 Análisis Cuantitativo:
+                                </span>
+                                <p className="text-[11px] leading-relaxed text-slate-600 dark:text-slate-400">
+                                  {pick.explanation}
+                                </p>
+                              </div>
+                            )}
+
+                            {/* Home vs Away Form */}
+                            <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-200 dark:border-slate-800 text-[10px]">
+                              <div>
+                                <span className="font-bold text-slate-900 dark:text-white block truncate">{pick.homeTeam} (Últ. 5):</span>
+                                <div className="flex gap-1 mt-0.5">
+                                  {(pick.homeLast5 || ["W", "W", "D", "W", "L"]).map((res, i) => {
+                                    const r = typeof res === "string" ? res : (res?.result || "W");
+                                    return (
+                                      <span key={i} className={`w-4 h-4 flex items-center justify-center rounded-sm font-black text-[9px] ${r === "W" ? "bg-emerald-500 text-slate-950" : r === "D" ? "bg-amber-500 text-slate-950" : "bg-rose-500 text-white"}`}>
+                                        {r}
+                                      </span>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                              <div>
+                                <span className="font-bold text-slate-900 dark:text-white block truncate">{pick.awayTeam} (Últ. 5):</span>
+                                <div className="flex gap-1 mt-0.5">
+                                  {(pick.awayLast5 || ["W", "D", "L", "W", "D"]).map((res, i) => {
+                                    const r = typeof res === "string" ? res : (res?.result || "W");
+                                    return (
+                                      <span key={i} className={`w-4 h-4 flex items-center justify-center rounded-sm font-black text-[9px] ${r === "W" ? "bg-emerald-500 text-slate-950" : r === "D" ? "bg-amber-500 text-slate-950" : "bg-rose-500 text-white"}`}>
+                                        {r}
+                                      </span>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Card Action Buttons */}
+                      <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
+                        <button
+                          onClick={() => setExpandedCardKey(isExpanded ? null : pickKey)}
+                          className="flex items-center gap-1 text-[11px] font-bold text-slate-500 hover:text-purple-600 dark:hover:text-purple-400 transition cursor-pointer"
+                        >
+                          <span>{isExpanded ? "▲ Ocultar Métricas" : "▼ Ver Métricas & H2H"}</span>
+                        </button>
+
+                        <button
+                          onClick={() => handlePublishSinglePick(pick)}
+                          disabled={isAlreadyPublished || publishing}
+                          className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-black transition cursor-pointer ${
+                            isAlreadyPublished
+                              ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30"
+                              : "bg-purple-600 hover:bg-purple-500 text-white shadow-xs shadow-purple-600/20"
+                          }`}
+                        >
+                          <span>{isAlreadyPublished ? "✓" : "📤"}</span>
+                          <span>{isAlreadyPublished ? "Publicado en Dashboard" : "Publicar Alerta"}</span>
+                        </button>
+                      </div>
+                    </div>
                   );
                 })}
               </div>
