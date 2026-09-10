@@ -324,13 +324,7 @@ export default function DashboardPage() {
               <span>Módulo Pre-Match ({scheduledCount})</span>
             </Link>
 
-            <Link
-              href="/live"
-              className="inline-flex items-center gap-2 rounded-2xl border border-rose-500/30 bg-rose-500/10 px-3.5 py-2 text-xs font-black text-rose-600 hover:bg-rose-500/20 transition dark:text-rose-400 cursor-pointer"
-            >
-              <span className="h-2 w-2 rounded-full bg-rose-500 animate-ping" />
-              <span>Módulo En Vivo ({inPlayCount})</span>
-            </Link>
+
 
             {isAdmin && (
               <button
@@ -392,17 +386,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
-            <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              En Juego (Live)
-            </span>
-            <div className="mt-1 flex items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-black text-rose-600 dark:text-rose-400">
-                {inPlayCount}
-              </span>
-              <span className="text-xs font-bold text-rose-500">en vivo</span>
-            </div>
-          </div>
+
         </div>
 
         {/* Status / Category Filter Pills */}
@@ -437,17 +421,7 @@ export default function DashboardPage() {
           >
             💣 Bomba ({bombaCount})
           </button>
-          <button
-            onClick={() => setMatchStatusFilter("IN_PLAY")}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
-              matchStatusFilter === "IN_PLAY"
-                ? "bg-gradient-to-r from-rose-600 to-red-600 text-white shadow-md shadow-rose-600/30 border border-rose-500 animate-pulse"
-                : "bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800"
-            }`}
-          >
-            <span className="h-2 w-2 rounded-full bg-rose-400 animate-ping" />
-            <span>⚡ Alertas en Vivo ({inPlayCount})</span>
-          </button>
+
           <button
             onClick={() => setMatchStatusFilter("SCHEDULED")}
             className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
