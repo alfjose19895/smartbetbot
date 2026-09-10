@@ -1645,25 +1645,46 @@ export async function searchLiveMarketDynamic(params: {
     const lLower = (params.league || "").toLowerCase().trim();
     const targetLeagueId = params.leagueId ? Number(params.leagueId) : undefined;
 
-    // 1. Fetch live schedule from API-Football STRICTLY for today only (NO tomorrow, NO past dates)
-    const todayFixtures = await apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil").catch(() => []);
-    if (!Array.isArray(todayFixtures) || todayFixtures.length === 0) return [];
+    // 1. Fetch live schedule from API-Football: strictly upcoming matches that have NOT started yet
+    const tomorrowMs = nowMs + 24 * 60 * 60 * 1000;
+    const tomorrowDateStr = getEcuadorDateString(tomorrowMs);
 
-    // 2. Filter candidate fixtures strictly belonging to today and NOT finished
-    const candidates = todayFixtures.filter((f) => {
+    const todayFixtures = await apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil").catch(() => []);
+    let allFixtures = Array.isArray(todayFixtures) ? [...todayFixtures] : [];
+
+    // Check how many matches today have not started yet
+    const unstartedToday = allFixtures.filter((f) => {
+      const kMs = new Date(f.fixture.date).getTime();
+      const s = f.fixture?.status?.short || "NS";
+      return kMs > nowMs && !["FT", "AET", "PEN", "PST", "CANC", "ABD", "INT", "120", "POST", "1H", "HT", "2H", "ET", "BT", "LIVE"].includes(s);
+    });
+
+    // If few unstarted matches remain today, also fetch tomorrow's upcoming fixtures for complete coverage
+    if (unstartedToday.length < 6) {
+      try {
+        const tomFixtures = await apiFootball.getFixturesByDate(tomorrowDateStr, "America/Guayaquil").catch(() => []);
+        if (Array.isArray(tomFixtures)) {
+          allFixtures.push(...tomFixtures);
+        }
+      } catch (e) {
+        console.warn("Could not fetch tomorrow fixtures in MCP:", e);
+      }
+    }
+
+    if (allFixtures.length === 0) return [];
+
+    // 2. Filter candidate fixtures STRICTLY to those that have NOT started yet (pre-match upcoming only)
+    const candidates = allFixtures.filter((f) => {
       if (!f.fixture?.id || !f.teams?.home?.name || !f.teams?.away?.name) return false;
 
-      // REGLA ESTRICTA 1: Solo partidos de la fecha actual
       const kickoffMs = new Date(f.fixture.date).getTime();
-      const fDateStr = getEcuadorDateString(kickoffMs);
-      if (fDateStr !== todayDateStr) return false;
 
-      // REGLA ESTRICTA 2: Excluir partidos ya finalizados o cancelados
+      // REGLA ESTRICTA 1: El partido NO DEBE HABER INICIADO (kickoff estrictamente en el futuro)
+      if (isNaN(kickoffMs) || kickoffMs <= nowMs) return false;
+
+      // REGLA ESTRICTA 2: Excluir partidos finalizados, en juego, suspendidos o cancelados
       const shortStatus = f.fixture?.status?.short || "NS";
-      if (["FT", "AET", "PEN", "PST", "CANC", "ABD", "INT", "120", "POST"].includes(shortStatus)) return false;
-
-      // Si el partido inició hace más de 135 minutos, se considera finalizado
-      if (kickoffMs < nowMs - 135 * 60 * 1000) return false;
+      if (!["NS", "TBD"].includes(shortStatus)) return false;
 
       const hName = (f.teams.home.name || "").toLowerCase();
       const aName = (f.teams.away.name || "").toLowerCase();

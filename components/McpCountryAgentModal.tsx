@@ -454,7 +454,7 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
           ) : results.length > 0 ? (
             <div className="space-y-3">
               <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-slate-500">
-                <span>Pronósticos descubiertos con cuotas reales Bet365 ({results.length}):</span>
+                <span>Nuevos pronósticos (Partidos próximos a iniciar • {results.length}):</span>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handlePublishPicks(results)}
@@ -487,10 +487,10 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
             <div className="py-10 text-center rounded-2xl bg-slate-50 dark:bg-slate-950 p-6 border border-slate-200 dark:border-slate-800">
               <div className="text-3xl mb-2">🔎</div>
               <h4 className="text-sm font-black text-slate-900 dark:text-white">
-                No se encontraron partidos para el filtro solicitado hoy
+                No se encontraron partidos pendientes de iniciar para este filtro
               </h4>
               <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
-                Prueba seleccionando Champions League o cualquiera de las ligas de la barra de acceso rápido.
+                Todos los partidos de esta jornada ya iniciaron o finalizaron. Prueba buscando en otras ligas o partidos de la siguiente jornada.
               </p>
             </div>
           ) : null}

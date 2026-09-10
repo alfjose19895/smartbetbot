@@ -199,14 +199,25 @@ export async function POST(req: Request) {
 
     const nowMs = Date.now();
     let pool = Array.from(seenMap.values()).filter((p) => {
-      // REGLA ESTRICTA 1: Solo partidos del día actual
-      const pDate = getEcuadorDateString(new Date(p.kickoff));
-      if (pDate !== todayStr) return false;
-
-      // REGLA ESTRICTA 2: Excluir partidos ya finalizados del día actual o días anteriores
+      // REGLA ESTRICTA 1: Solo partidos que NO hayan iniciado aún (kickoff estrictamente en el futuro)
       const kMs = new Date(p.kickoff).getTime();
-      if (p.status === "won" || p.status === "lost" || p.status === "void") return false;
-      if (kMs < nowMs - 135 * 60 * 1000) return false;
+      if (isNaN(kMs) || kMs <= nowMs) return false;
+
+      // REGLA ESTRICTA 2: Excluir totalmente jugadas finalizadas, en juego o con marcador oficial
+      if (
+        p.status === "won" ||
+        p.status === "lost" ||
+        p.status === "void" ||
+        (p.status as string) === "WON" ||
+        (p.status as string) === "LOST" ||
+        (p as any).result === "WON" ||
+        (p as any).result === "LOST"
+      ) {
+        return false;
+      }
+      if (p.actualScore || p.currentScore || p.matchTiming === "live" || p.livePeriod || p.liveMinute) {
+        return false;
+      }
 
       const h = (p.homeTeam || "").toLowerCase();
       const a = (p.awayTeam || "").toLowerCase();
@@ -467,8 +478,8 @@ export async function POST(req: Request) {
         ? `Análisis de Mercado: ${topPick?.league || "Competición Internacional"}`
         : "Exploración Cuantitativa de Mercado en Vivo",
       summary: filtered.length === 0
-        ? `Se exploró el mercado en vivo para "${query}". No se encontraron partidos que cumplan estrictamente los filtros de cuota y probabilidad sin comprometer el bankroll.`
-        : `El Agente exploró el mercado global en vivo para "${query}". Se descubrieron ${filtered.length} oportunidades con cuotas reales de Bet365, probabilidad promedio del ${avgProb}% y cuota promedio de @${avgOdds}.`,
+        ? `Se exploraron los partidos próximos a iniciar para "${query}". No se encontraron partidos sin iniciar que cumplan estrictamente los filtros de cuota y probabilidad sin comprometer el bankroll.`
+        : `El Agente exploró los partidos próximos a iniciar para "${query}". Se descubrieron ${filtered.length} nuevas oportunidades pre-match con cuotas reales de Bet365, probabilidad promedio del ${avgProb}% y cuota promedio de @${avgOdds}.`,
       insights: [
         topPick ? `Líder en valor descubierto: ${topPick.homeTeam} vs ${topPick.awayTeam} (${topPick.league}) con cuota Bet365 @${topPick.odds} y probabilidad del ${topPick.probability}%.` : "Búsqueda en mercado en vivo completada.",
         `Líneas 100% reales verificadas directamente con Bet365 y Pinnacle.`,
