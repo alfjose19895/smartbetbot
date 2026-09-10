@@ -1,47 +1,43 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
-import { useLanguage } from "@/context/LanguageContext";
+import React, { useState, useEffect } from "react";
 import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
+import { useLanguage } from "@/context/LanguageContext";
 import { MultiSelectDropdown, DropdownOption } from "@/components/MultiSelectDropdown";
 import { HistoricalSettledPick, HistoricalSettledParlay } from "@/lib/sports/db";
 
-function getConfidenceBadge(confidence?: string, probability: number = 70) {
-  if (confidence === "Muy Alta" || probability >= 75) {
+function getConfidenceBadge(confidence?: string, prob?: number) {
+  if (confidence === "Muy Alta" || (prob && prob >= 75)) {
     return {
       label: "⭐⭐⭐ Muy Alta",
       cls: "bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700",
     };
   }
-  if (confidence === "Alta" || probability >= 68) {
-    return {
-      label: "⭐⭐ Alta",
-      cls: "bg-cyan-100 text-cyan-900 border-cyan-300 dark:bg-cyan-950/80 dark:text-cyan-300 dark:border-cyan-700",
-    };
-  }
   return {
-    label: "⭐ Media",
-    cls: "bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950/80 dark:text-amber-300 dark:border-amber-700",
+    label: "⭐⭐ Alta",
+    cls: "bg-cyan-100 text-cyan-900 border-cyan-300 dark:bg-cyan-950/80 dark:text-cyan-300 dark:border-cyan-700",
   };
 }
 
 export default function HistoryPage() {
   const { language, t } = useLanguage();
-  const [historyType, setHistoryType] = useState<"picks" | "parlays">("picks");
   const [historyItems, setHistoryItems] = useState<HistoricalSettledPick[]>([]);
   const [parlayItems, setParlayItems] = useState<HistoricalSettledParlay[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Search & Filters
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [timingFilter, setTimingFilter] = useState<"ALL" | "PREMATCH" | "LIVE" | "MCP" | "BOMBA">("ALL");
+  // View state
+  const [historyType, setHistoryType] = useState<"picks" | "parlays">("picks");
+  const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
+
+  // Filters
+  const [timingFilter, setTimingFilter] = useState<"ALL" | "PREMATCH" | "MCP" | "BOMBA">("ALL");
   const [filterResult, setFilterResult] = useState<"ALL" | "WON" | "LOST">("ALL");
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
   const [selectedDateFilter, setSelectedDateFilter] = useState<"all" | "today" | "yesterday" | "week" | "month" | "custom">("all");
   const [customDate, setCustomDate] = useState<string>("");
-  const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -49,14 +45,16 @@ export default function HistoryPage() {
         setLoading(true);
         const res = await fetch("/api/history");
         const data = await res.json();
-        let items = Array.isArray(data.history) ? [...data.history] : [];
+        let items: HistoricalSettledPick[] = Array.isArray(data.history) ? [...data.history] : [];
         try {
           const localRaw = typeof window !== "undefined" ? localStorage.getItem("smartbetbot_published_picks") : null;
           if (localRaw) {
             const localPicks = JSON.parse(localRaw);
             if (Array.isArray(localPicks)) {
               for (const lp of localPicks) {
-                const found = items.find(i => i.match === `${lp.homeTeam} vs ${lp.awayTeam}` || (i.homeTeam === lp.homeTeam && i.awayTeam === lp.awayTeam));
+                const found = items.find(
+                  (i) => i.match === `${lp.homeTeam} vs ${lp.awayTeam}` || (i.homeTeam === lp.homeTeam && i.awayTeam === lp.awayTeam)
+                );
                 if (found) {
                   found.isMcp = true;
                   found.pickBadge = lp.pickBadge || "mcp";
@@ -64,7 +62,7 @@ export default function HistoryPage() {
               }
             }
           }
-        } catch (e) {}
+        } catch {}
         setHistoryItems(items);
         if (data.parlays) {
           setParlayItems(data.parlays);
@@ -131,6 +129,16 @@ export default function HistoryPage() {
   const sevenDaysAgoMs = now.getTime() - 7 * 86400000;
   const thirtyDaysAgoMs = now.getTime() - 30 * 86400000;
 
+  const isMcpItem = (item: HistoricalSettledPick) =>
+    Boolean(
+      item.isMcp ||
+      item.isMcpPick ||
+      item.source === "mcp" ||
+      item.pickBadge === "mcp" ||
+      (item.explanation && item.explanation.includes("MCP")) ||
+      (item.market && item.market.includes("MCP"))
+    );
+
   // Filter Individual Picks
   const filteredHistory = historyItems.filter((item) => {
     // 1. Search Query
@@ -140,13 +148,11 @@ export default function HistoryPage() {
       if (!matchText.includes(q)) return false;
     }
 
-    // 2. Timing / Modality Filter (Pre-Match, Live, MCP, Bomba)
+    // 2. Timing / Modality Filter (Pre-Match, MCP, Bomba)
     if (timingFilter === "PREMATCH") {
       if (item.isLive || item.matchTiming === "live") return false;
-    } else if (timingFilter === "LIVE") {
-      if (!item.isLive && item.matchTiming !== "live") return false;
     } else if (timingFilter === "MCP") {
-      if (!item.isMcp && !item.isMcpPick && item.source !== "mcp" && item.pickBadge !== "mcp" && !(item.explanation && item.explanation.includes("MCP"))) return false;
+      if (!isMcpItem(item)) return false;
     } else if (timingFilter === "BOMBA") {
       if (item.pickBadge !== "bomba" && item.odds < 2.05) return false;
     }
@@ -216,8 +222,7 @@ export default function HistoryPage() {
 
   // Exact Counts for Badges
   const prematchCount = historyItems.filter((h) => !h.isLive && h.matchTiming !== "live").length;
-  const liveCount = historyItems.filter((h) => h.isLive || h.matchTiming === "live").length;
-  const mcpCount = historyItems.filter((h) => Boolean(h.isMcp || h.isMcpPick || h.source === "mcp" || h.pickBadge === "mcp" || (h.explanation && h.explanation.includes("MCP")))).length;
+  const mcpCount = historyItems.filter((h) => isMcpItem(h)).length;
   const bombaCount = historyItems.filter((h) => h.pickBadge === "bomba" || h.odds >= 2.05).length;
   const wonCount = historyItems.filter((h) => h.result === "WON").length;
   const lostCount = historyItems.filter((h) => h.result === "LOST").length;
@@ -262,37 +267,37 @@ export default function HistoryPage() {
               className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black transition cursor-pointer ${
                 historyType === "picks"
                   ? "bg-slate-900 text-white shadow-xs dark:bg-slate-100 dark:text-slate-950"
-                  : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                  : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               <span>🎯</span>
-              <span>Pronósticos ({historyItems.length})</span>
+              <span>Pronósticos Individuales</span>
             </button>
             <button
               onClick={() => setHistoryType("parlays")}
               className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black transition cursor-pointer ${
                 historyType === "parlays"
                   ? "bg-slate-900 text-white shadow-xs dark:bg-slate-100 dark:text-slate-950"
-                  : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                  : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               <span>🎲</span>
-              <span>Parlays ({parlayItems.length})</span>
+              <span>Combinadas Parlay ({parlayItems.length})</span>
             </button>
           </div>
         </div>
 
-        {/* Top KPIs Summary Bar */}
-        <div className="mb-6 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        {/* Global Performance Summary Cards */}
+        <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:gap-4">
           <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
             <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              {t("historyEvaluated")}
+              {t("historyTotalPicks")}
             </span>
             <div className="mt-1 flex items-baseline gap-2">
               <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
                 {totalSettled}
               </span>
-              <span className="text-xs font-bold text-slate-500">resueltos</span>
+              <span className="text-xs font-bold text-slate-400">cerrados</span>
             </div>
           </div>
 
@@ -301,7 +306,7 @@ export default function HistoryPage() {
               {t("historyWinRate")}
             </span>
             <div className="mt-1 flex items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+              <span className="text-2xl sm:text-3xl font-black text-emerald-700 dark:text-emerald-400">
                 {winRate.toFixed(1)}%
               </span>
               <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
@@ -338,7 +343,6 @@ export default function HistoryPage() {
         {/* Modality & Result Filter Pills */}
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2.5">
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-            {/* Timing Modality Filters (Pre-Match vs Live vs All vs MCP) */}
             <button
               onClick={() => setTimingFilter("ALL")}
               className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
@@ -445,7 +449,6 @@ export default function HistoryPage() {
 
         {/* Filters Toolbar */}
         <div className="mb-6 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-xs dark:border-slate-800/80 dark:bg-slate-900/80">
-          {/* Search bar */}
           <div className="relative flex-1 min-w-[200px]">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400">🔍</span>
             <input
@@ -533,7 +536,7 @@ export default function HistoryPage() {
                 No se encontraron registros para estos filtros
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm">
-                Prueba ajustando los filtros de fecha, liga o modalidad de alerta.
+                Prueba ajustando los filtros de fecha, liga o modalidad.
               </p>
             </div>
           ) : viewMode === "cards" ? (
@@ -541,7 +544,6 @@ export default function HistoryPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {filteredHistory.map((item) => {
                 const isWon = item.result === "WON";
-                const isLive = item.isLive || item.matchTiming === "live";
                 const conf = getConfidenceBadge(item.confidence, item.probability);
                 const matchTime = item.kickoff ? new Date(item.kickoff).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }) : "";
 
@@ -557,26 +559,16 @@ export default function HistoryPage() {
                     {/* Top Badges Strip */}
                     <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3 dark:border-slate-800">
                       <div className="flex flex-wrap items-center gap-1.5">
-                        {/* Live vs Pre-Match Badge */}
-                        {isLive ? (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/10 px-2.5 py-0.5 text-[10px] font-black text-rose-600 dark:text-rose-400 border border-rose-500/30">
-                            <span className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-ping" />
-                            <span>⚡ EN VIVO</span>
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                            <span>🕒 PRE-MATCH</span>
-                          </span>
-                        )}
+                        <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                          <span>🕒 PRE-MATCH</span>
+                        </span>
 
-                        {/* MCP Agent Badge */}
-                        {(item.isMcp || item.pickBadge === "mcp") && (
+                        {isMcpItem(item) && (
                           <span className="inline-flex items-center gap-1 rounded-md bg-purple-100 px-2 py-0.5 text-[10px] font-black text-purple-800 dark:bg-purple-950 dark:text-purple-300 border border-purple-300 dark:border-purple-800">
                             <span>🤖 MCP</span>
                           </span>
                         )}
 
-                        {/* Bomba Badge */}
                         {item.pickBadge === "bomba" && (
                           <span className="inline-flex items-center gap-1 rounded-md bg-gradient-to-r from-orange-500 to-rose-500 px-2 py-0.5 text-[10px] font-black text-white shadow-xs">
                             <span>💣 BOMBA</span>
@@ -669,12 +661,12 @@ export default function HistoryPage() {
             </div>
           ) : (
             /* Table View */
-            <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-xs dark:border-slate-800 dark:bg-slate-900">
+            <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow-xs dark:border-slate-800 dark:bg-slate-900">
               <table className="w-full text-left text-xs">
                 <thead className="border-b border-slate-200 bg-slate-50 text-[11px] font-black uppercase tracking-wider text-slate-500 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400">
                   <tr>
                     <th className="p-3.5">Modalidad</th>
-                    <th className="p-3.5">{t("colDate")}</th>
+                    <th className="p-3.5">{t("colDate")} & Hora</th>
                     <th className="p-3.5">{t("colMatch")}</th>
                     <th className="p-3.5">{t("colScore")}</th>
                     <th className="p-3.5">{t("colMarket")}</th>
@@ -686,22 +678,14 @@ export default function HistoryPage() {
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
                   {filteredHistory.map((item) => {
                     const isWon = item.result === "WON";
-                    const isLive = item.isLive || item.matchTiming === "live";
 
                     return (
                       <tr key={item.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition">
                         <td className="p-3.5 whitespace-nowrap">
-                          {isLive ? (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/10 px-2 py-0.5 text-[10px] font-black text-rose-600 dark:text-rose-400 border border-rose-500/30">
-                              <span className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-ping" />
-                              <span>LIVE</span>
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                              <span>PRE</span>
-                            </span>
-                          )}
-                          {item.isMcp && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                            <span>PRE</span>
+                          </span>
+                          {isMcpItem(item) && (
                             <span className="ml-1 text-[10px] font-black text-purple-600 dark:text-purple-400">🤖 MCP</span>
                           )}
                         </td>

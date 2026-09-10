@@ -233,7 +233,7 @@ export default function ReportsPage() {
               Reportes & Rendimiento
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-2xl">
-              Métricas auditadas de tasa de acierto, beneficio neto por mercado, comparativa Pre-Match vs En Vivo y rendimiento del Agente MCP.
+              Métricas auditadas de tasa de acierto, beneficio neto por mercado, comparativa Pre-Match y Agente MCP y rendimiento del Agente MCP.
             </p>
           </div>
 
@@ -290,7 +290,7 @@ export default function ReportsPage() {
             }`}
           >
             <span className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-ping" />
-            <span>⚡ Alertas en Vivo ({comparativeMetrics.live.total})</span>
+            <span>🎯 Pronósticos de Valor ({comparativeMetrics.live.total})</span>
           </button>
 
           <button
@@ -393,7 +393,7 @@ export default function ReportsPage() {
                 Análisis Comparativo por Modalidad
               </span>
               <h3 className="text-lg font-black text-slate-900 dark:text-white">
-                Pre-Match vs Alertas en Vivo vs Agente MCP
+                Pre-Match vs Agente MCP
               </h3>
             </div>
             <span className="rounded-xl bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
@@ -439,7 +439,7 @@ export default function ReportsPage() {
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-black uppercase text-rose-800 dark:text-rose-400 flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full bg-rose-500 animate-ping" />
-                  <span>⚡ Alertas en Vivo (Live)</span>
+                  <span>⚡ Pronósticos Cuantitativos</span>
                 </span>
                 <span className="rounded-md bg-rose-100 text-rose-900 dark:bg-rose-950 dark:text-rose-300 px-2 py-0.5 text-[10px] font-black">
                   {comparativeMetrics.live.total} picks

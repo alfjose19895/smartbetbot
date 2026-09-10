@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
+import { SUPPORTED_LEAGUES, SupportedLeague } from "@/lib/sports/api-football";
 import { PredictionCard } from "./PredictionCard";
 
 interface McpCountryAgentModalProps {
@@ -28,24 +29,39 @@ interface AiAgentAnalysis {
   };
 }
 
-const QUICK_CHIPS = [
-  { id: "champions", label: "Champions League", query: "Pronósticos de Champions League hoy", icon: "🏆" },
-  { id: "sudamericana", label: "Copa Sudamericana", query: "Pronósticos de Copa Sudamericana hoy", icon: "🌎" },
-  { id: "local_value", label: "Ganador Local (+60%)", query: "Pronósticos de Ganador Local con probabilidad superior al 60% y cuota de valor", icon: "🎯" },
-  { id: "parlay_top", label: "Parlay del Día", query: "Crea una combinada parlay segura de 2 o 3 partidos con cuota de valor", icon: "🔥" },
-  { id: "inglaterra", label: "Inglaterra (League Cup)", query: "Pronósticos de Inglaterra League Cup hoy", icon: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
-  { id: "españa", label: "España", query: "Pronósticos de España La Liga hoy", icon: "🇪🇸" },
-  { id: "alemania", label: "Alemania", query: "Pronósticos de Alemania Bundesliga", icon: "🇩🇪" },
-  { id: "italia", label: "Italia", query: "Pronósticos de Italia Serie A", icon: "🇮🇹" },
-  { id: "francia", label: "Francia", query: "Pronósticos de Francia Ligue 1", icon: "🇫🇷" },
-  { id: "saudi", label: "Arabia Saudita", query: "Pronósticos de Saudi Pro League hoy", icon: "🇸🇦" },
-  { id: "brasil", label: "Brasil", query: "Pronósticos de Brasil Brasileirão", icon: "🇧🇷" },
-  { id: "argentina", label: "Argentina", query: "Pronósticos de Argentina Liga Profesional", icon: "🇦🇷" },
+interface QuickChip {
+  id: string;
+  label: string;
+  icon: string;
+  query: string;
+  leagueId?: number;
+  league?: string;
+  country?: string;
+}
+
+const QUICK_CHIPS: QuickChip[] = [
+  { id: "champions", label: "Champions League", icon: "🏆", query: "Pronósticos de UEFA Champions League", leagueId: 2, league: "UEFA Champions League", country: "Europa" },
+  { id: "europa", label: "Europa League", icon: "🇪🇺", query: "Pronósticos de UEFA Europa League", leagueId: 3, league: "UEFA Europa League", country: "Europa" },
+  { id: "premier", label: "Premier League", icon: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", query: "Pronósticos de Premier League", leagueId: 39, league: "Premier League", country: "Inglaterra" },
+  { id: "laliga", label: "La Liga", icon: "🇪🇸", query: "Pronósticos de La Liga España", leagueId: 140, league: "La Liga", country: "España" },
+  { id: "seriea", label: "Serie A", icon: "🇮🇹", query: "Pronósticos de Serie A Italia", leagueId: 135, league: "Serie A", country: "Italia" },
+  { id: "bundesliga", label: "Bundesliga", icon: "🇩🇪", query: "Pronósticos de Bundesliga Alemania", leagueId: 78, league: "Bundesliga", country: "Alemania" },
+  { id: "ligue1", label: "Ligue 1", icon: "🇫🇷", query: "Pronósticos de Ligue 1 Francia", leagueId: 61, league: "Ligue 1", country: "Francia" },
+  { id: "brasileirao", label: "Brasileirão", icon: "🇧🇷", query: "Pronósticos de Brasileirão Série A", leagueId: 71, league: "Brasileirão Série A", country: "Brasil" },
+  { id: "argentina", label: "Liga Argentina", icon: "🇦🇷", query: "Pronósticos de Liga Profesional Argentina", leagueId: 128, league: "Liga Profesional Argentina", country: "Argentina" },
+  { id: "mls", label: "MLS (USA)", icon: "🇺🇸", query: "Pronósticos de Major League Soccer MLS", leagueId: 253, league: "Major League Soccer (MLS)", country: "Estados Unidos" },
+  { id: "ecuador", label: "Liga Pro Ecuador", icon: "🇪🇨", query: "Pronósticos de Liga Pro Ecuador", leagueId: 242, league: "Liga Pro", country: "Ecuador" },
+  { id: "saudi", label: "Saudi Pro League", icon: "🇸🇦", query: "Pronósticos de Saudi Pro League", leagueId: 307, league: "Saudi Pro League", country: "Arabia Saudita" },
+  { id: "sudamericana", label: "Copa Sudamericana", icon: "🌎", query: "Pronósticos de Copa Sudamericana", leagueId: 11, league: "Copa Sudamericana", country: "Sudamérica" },
+  { id: "libertadores", label: "Copa Libertadores", icon: "🌎", query: "Pronósticos de Copa Libertadores", leagueId: 13, league: "Copa Libertadores", country: "Sudamérica" },
+  { id: "local_value", label: "Ganador Local (+60%)", icon: "🎯", query: "Pronósticos de Ganador Local con probabilidad superior al 60% y cuota de valor" },
+  { id: "parlay_top", label: "Parlay del Día", icon: "🔥", query: "Crea una combinada parlay segura de 2 o 3 selecciones de alto valor" },
 ];
 
 export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: McpCountryAgentModalProps) {
   const [query, setQuery] = useState("");
-  const [selectedChip, setSelectedChip] = useState<string>("");
+  const [selectedChip, setSelectedChip] = useState<string>("champions");
+  const [selectedLeagueId, setSelectedLeagueId] = useState<string>("all");
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<MarketOpportunity[]>([]);
   const [aiAnalysis, setAiAnalysis] = useState<AiAgentAnalysis | null>(null);
@@ -60,15 +76,41 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
   const [publishSuccessMessage, setPublishSuccessMessage] = useState<string | null>(null);
   const [publishedIds, setPublishedIds] = useState<Set<string | number>>(new Set());
 
+  // Default search on open
   useEffect(() => {
     if (isOpen) {
-      handleSearch("Pronósticos de Champions League y cuotas de valor hoy", "champions");
+      handleSearch({
+        customQuery: "Pronósticos de UEFA Champions League",
+        chipId: "champions",
+        leagueId: 2,
+        league: "UEFA Champions League",
+        country: "Europa",
+      });
     }
   }, [isOpen]);
 
-  const handleSearch = async (customQuery?: string, chipId?: string) => {
-    const activeQuery = customQuery !== undefined ? customQuery : query;
-    if (chipId) setSelectedChip(chipId);
+  const handleSearch = async (opts?: {
+    customQuery?: string;
+    chipId?: string;
+    leagueId?: number;
+    league?: string;
+    country?: string;
+  }) => {
+    const activeQuery = opts?.customQuery !== undefined ? opts.customQuery : query;
+    if (opts?.chipId) setSelectedChip(opts.chipId);
+
+    let effectiveLeagueId = opts?.leagueId;
+    let effectiveLeague = opts?.league;
+    let effectiveCountry = opts?.country;
+
+    if (!effectiveLeagueId && selectedLeagueId && selectedLeagueId !== "all") {
+      effectiveLeagueId = Number(selectedLeagueId);
+      const foundL = SUPPORTED_LEAGUES.find((l) => l.id === effectiveLeagueId);
+      if (foundL) {
+        effectiveLeague = foundL.name;
+        effectiveCountry = foundL.country;
+      }
+    }
 
     setLoading(true);
     setSearched(true);
@@ -80,6 +122,9 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           query: activeQuery,
+          leagueId: effectiveLeagueId,
+          league: effectiveLeague,
+          country: effectiveCountry,
         }),
       });
 
@@ -96,93 +141,114 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
     }
   };
 
-  const handleChipClick = (chip: typeof QUICK_CHIPS[0]) => {
+  const handleChipClick = (chip: QuickChip) => {
     setSelectedChip(chip.id);
+    if (chip.leagueId) {
+      setSelectedLeagueId(String(chip.leagueId));
+    } else {
+      setSelectedLeagueId("all");
+    }
     setQuery(chip.query);
-    handleSearch(chip.query, chip.id);
+    handleSearch({
+      customQuery: chip.query,
+      chipId: chip.id,
+      leagueId: chip.leagueId,
+      league: chip.league,
+      country: chip.country,
+    });
   };
 
-  const handlePublishPicks = async (
-    picksToPublish: MarketOpportunity[],
-    customMsg?: string,
-    isParlay: boolean = false
-  ) => {
-    if (picksToPublish.length === 0) return;
-    setPublishing(true);
-    try {
-      // 1. Instant client-side persistence in localStorage
-      try {
-        if (typeof window !== "undefined") {
-          const localRaw = localStorage.getItem("smartbetbot_published_picks");
-          const existing = localRaw ? JSON.parse(localRaw) : [];
-          const map = new Map<string, MarketOpportunity>();
-          for (const p of [...existing, ...picksToPublish]) {
-            const key = `${p.fixtureId || 0}-${p.homeTeam}-${p.awayTeam}-${p.market}`;
-            map.set(key, { ...p, isMcpPick: true, pickBadge: p.pickBadge || "mcp" });
-          }
-          localStorage.setItem("smartbetbot_published_picks", JSON.stringify(Array.from(map.values())));
+  const handleLeagueDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value;
+    setSelectedLeagueId(val);
+    setSelectedChip("");
 
-          if (isParlay && aiAnalysis?.parlayRecommendation) {
-            localStorage.setItem(
-              "smartbetbot_published_parlay",
-              JSON.stringify({
-                ...aiAnalysis.parlayRecommendation,
-                date: new Date().toISOString(),
-                picks: picksToPublish,
-              })
-            );
-          }
+    if (val === "all") {
+      handleSearch({ customQuery: query || "Pronósticos de fútbol y cuotas de valor" });
+    } else {
+      const lid = Number(val);
+      const foundL = SUPPORTED_LEAGUES.find((l) => l.id === lid);
+      if (foundL) {
+        const customQ = `Pronósticos de ${foundL.name} (${foundL.country})`;
+        setQuery(customQ);
+        handleSearch({
+          customQuery: customQ,
+          leagueId: lid,
+          league: foundL.name,
+          country: foundL.country,
+        });
+      }
+    }
+  };
+
+  const handlePublishPicks = async (picksToPublish: MarketOpportunity[], successMsg?: string, isParlay = false) => {
+    if (picksToPublish.length === 0) return;
+    try {
+      setPublishing(true);
+
+      const taggedPicks = picksToPublish.map((p) => ({
+        ...p,
+        isMcpPick: true,
+        isMcp: true,
+        source: "mcp" as const,
+        pickBadge: (p.pickBadge || "mcp") as "bomba" | "valor" | "estandar" | "mcp",
+      }));
+
+      // Store in localStorage for client instant merge
+      if (typeof window !== "undefined") {
+        const localRaw = localStorage.getItem("smartbetbot_published_picks");
+        const existing: MarketOpportunity[] = localRaw ? JSON.parse(localRaw) : [];
+        const map = new Map<string, MarketOpportunity>();
+        for (const p of [...existing, ...taggedPicks]) {
+          const key = `${p.fixtureId || 0}-${p.homeTeam}-${p.awayTeam}-${p.market}`;
+          map.set(key, p);
         }
-      } catch (err) {
-        console.warn("Could not save to localStorage:", err);
+        localStorage.setItem("smartbetbot_published_picks", JSON.stringify(Array.from(map.values())));
+
+        if (isParlay && aiAnalysis?.parlayRecommendation) {
+          localStorage.setItem(
+            "smartbetbot_published_parlay",
+            JSON.stringify({
+              ...aiAnalysis.parlayRecommendation,
+              date: new Date().toISOString(),
+              picks: taggedPicks,
+            })
+          );
+        }
       }
 
-      // 2. Server-side persistence in snapshot
+      // Sync with server snapshot
       const res = await fetch("/api/mcp/predictions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "publish",
-          picks: picksToPublish,
-          parlay: isParlay ? aiAnalysis?.parlayRecommendation : undefined,
+          picks: taggedPicks,
+          parlay: isParlay ? aiAnalysis?.parlayRecommendation : null,
         }),
       });
 
-      const msg =
-        customMsg ||
-        `✓ ¡Se publicaron ${picksToPublish.length} pronóstico(s) exitosamente en el Dashboard y la Sección Parlay!`;
-      setPublishSuccessMessage(msg);
-
-      // Mark published IDs
-      setPublishedIds((prev) => {
-        const next = new Set(prev);
-        picksToPublish.forEach((p) => {
-          next.add(`${p.fixtureId || 0}-${p.homeTeam}-${p.awayTeam}-${p.market}`);
-          if (p.id) next.add(p.id);
+      if (res.ok) {
+        const data = await res.json();
+        setPublishSuccessMessage(successMsg || data.message || `✓ ¡${taggedPicks.length} pronósticos publicados con éxito en el Dashboard!`);
+        
+        const newPublished = new Set(publishedIds);
+        taggedPicks.forEach((p) => {
+          const key = `${p.fixtureId || 0}-${p.homeTeam}-${p.awayTeam}-${p.market}`;
+          newPublished.add(key);
         });
-        return next;
-      });
+        setPublishedIds(newPublished);
 
-      // Dispatch real-time events to all pages
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new Event("storage"));
-        window.dispatchEvent(
-          new CustomEvent("predictions-updated", {
-            detail: {
-              picks: picksToPublish,
-              parlay: isParlay ? aiAnalysis?.parlayRecommendation : undefined,
-            },
-          })
-        );
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new Event("predictions-updated"));
+        }
       }
-
-      setTimeout(() => {
-        setPublishSuccessMessage(null);
-      }, 5000);
     } catch (err) {
       console.error("Error publishing picks:", err);
+      setPublishSuccessMessage("⚠️ Ocurrió un error al publicar las alertas.");
     } finally {
       setPublishing(false);
+      setTimeout(() => setPublishSuccessMessage(null), 5000);
     }
   };
 
@@ -194,13 +260,19 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
 
   const isParlayActive = Boolean(aiAnalysis?.parlayRecommendation);
 
+  // Group supported leagues for the dropdown
+  const topLeagues = SUPPORTED_LEAGUES.filter((l) => l.category === "top5" || l.category === "cups");
+  const americasLeagues = SUPPORTED_LEAGUES.filter((l) => l.category === "americas");
+  const otherEuropeanLeagues = SUPPORTED_LEAGUES.filter((l) => l.category === "europe_mid");
+  const secondDivLeagues = SUPPORTED_LEAGUES.filter((l) => l.category === "second_divisions");
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-2 sm:p-4 backdrop-blur-md animate-in fade-in duration-200">
       <div className="relative flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/80">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-xl shadow-lg shadow-emerald-600/30 text-white">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-xl shadow-lg shadow-purple-600/30 text-white">
               🤖
             </div>
             <div>
@@ -208,12 +280,12 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
                 <h3 className="text-base font-black text-slate-900 dark:text-white">
                   Agente MCP de Inteligencia Cuantitativa
                 </h3>
-                <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-black text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-700">
-                  ⚡ Gemini AI + Cuotas Reales Bet365
+                <span className="rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-black text-purple-800 dark:bg-purple-950 dark:text-purple-300 border border-purple-300 dark:border-purple-700">
+                  ⚡ Pre-Match • Cuotas Reales Bet365/Pinnacle
                 </span>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Líneas reales de Bet365/Pinnacle, análisis táctico por IA y modelado cuantitativo
+                Filtros por ligas oficiales, pronósticos antes del inicio y modelado matemático
               </p>
             </div>
           </div>
@@ -247,7 +319,7 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
           {/* Quick Access Chips Bar */}
           <div>
             <div className="text-[11px] font-black uppercase tracking-wider text-slate-400 mb-2">
-              Acceso Rápido • Competiciones y Estrategias:
+              Acceso Rápido por Ligas Oficiales & Estrategias:
             </div>
             <div className="flex flex-wrap gap-1.5">
               {QUICK_CHIPS.map((c) => {
@@ -258,7 +330,7 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
                     onClick={() => handleChipClick(c)}
                     className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-black transition cursor-pointer ${
                       isSelected
-                        ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30 scale-105"
+                        ? "bg-purple-600 text-white shadow-md shadow-purple-600/30 scale-105"
                         : "bg-slate-100 text-slate-800 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                     }`}
                   >
@@ -270,48 +342,94 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
             </div>
           </div>
 
-          {/* Search Bar Input */}
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSearch();
-            }}
-            className="flex items-center gap-2"
-          >
-            <div className="relative flex-1">
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Ej: Ganador local con probabilidad superior al 65% en Champions League..."
-                className="w-full rounded-2xl border border-slate-300 bg-white py-3 pl-4 pr-10 text-sm font-bold text-slate-900 placeholder:text-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-              />
-              {query && (
-                <button
-                  type="button"
-                  onClick={() => setQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600"
+          {/* League Dropdown Selector & Freeform Search Bar */}
+          <div className="space-y-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              {/* League Selector Dropdown */}
+              <div className="flex items-center gap-1.5 rounded-2xl border border-slate-300 bg-white px-3 py-2.5 dark:border-slate-700 dark:bg-slate-800 shrink-0">
+                <span className="text-xs font-bold text-slate-500">🏆 Liga:</span>
+                <select
+                  value={selectedLeagueId}
+                  onChange={handleLeagueDropdownChange}
+                  aria-label="Seleccionar liga oficial"
+                  className="bg-transparent text-xs font-black text-slate-900 dark:text-white outline-none cursor-pointer"
                 >
-                  ✕
-                </button>
-              )}
-            </div>
+                  <option value="all" className="dark:bg-slate-900">🌐 Todas las Ligas Oficiales</option>
+                  <optgroup label="Top Ligas Europeas & Copas" className="dark:bg-slate-900">
+                    {topLeagues.map((l) => (
+                      <option key={l.id} value={l.id} className="dark:bg-slate-900">
+                        {l.name} ({l.country})
+                      </option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="Américas & Conmebol" className="dark:bg-slate-900">
+                    {americasLeagues.map((l) => (
+                      <option key={l.id} value={l.id} className="dark:bg-slate-900">
+                        {l.name} ({l.country})
+                      </option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="Otras Ligas Principales de Europa" className="dark:bg-slate-900">
+                    {otherEuropeanLeagues.map((l) => (
+                      <option key={l.id} value={l.id} className="dark:bg-slate-900">
+                        {l.name} ({l.country})
+                      </option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="Segundas Divisiones de Élite" className="dark:bg-slate-900">
+                    {secondDivLeagues.map((l) => (
+                      <option key={l.id} value={l.id} className="dark:bg-slate-900">
+                        {l.name} ({l.country})
+                      </option>
+                    ))}
+                  </optgroup>
+                </select>
+              </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-3 text-sm font-black text-white hover:from-emerald-500 hover:to-teal-500 shadow-md shadow-emerald-600/20 transition cursor-pointer disabled:opacity-50"
-            >
-              <span>{loading ? "🔄" : "🔍"}</span>
-              <span className="hidden sm:inline">{loading ? "Analizando..." : "Buscar"}</span>
-            </button>
-          </form>
+              {/* Freeform Prompt Search Bar */}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSearch();
+                }}
+                className="flex items-center gap-2 flex-1"
+              >
+                <div className="relative flex-1">
+                  <input
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Ej: Ganador local con cuota superior a 1.50 en Premier League..."
+                    className="w-full rounded-2xl border border-slate-300 bg-white py-2.5 pl-4 pr-10 text-xs font-bold text-slate-900 placeholder:text-slate-400 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  />
+                  {query && (
+                    <button
+                      type="button"
+                      onClick={() => setQuery("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2.5 text-xs font-black text-white hover:from-purple-500 hover:to-indigo-500 shadow-md shadow-purple-600/20 transition cursor-pointer disabled:opacity-50"
+                >
+                  <span>{loading ? "🔄" : "🔍"}</span>
+                  <span className="hidden sm:inline">{loading ? "Buscando..." : "Buscar"}</span>
+                </button>
+              </form>
+            </div>
+          </div>
 
           {/* Summary Metrics Banner */}
           {metrics && (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 rounded-2xl bg-slate-50 p-3 border border-slate-200 dark:bg-slate-950 dark:border-slate-800">
               <div className="text-center p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
-                <div className="text-[10px] font-bold text-slate-500">Partidos Encontrados</div>
+                <div className="text-[10px] font-bold text-slate-500">Partidos Próximos</div>
                 <div className="text-base font-black text-slate-900 dark:text-white mt-0.5">
                   {metrics.totalMatches}
                 </div>
@@ -323,59 +441,53 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
                 </div>
               </div>
               <div className="text-center p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
-                <div className="text-[10px] font-bold text-slate-500">Cuota Promedio Real</div>
+                <div className="text-[10px] font-bold text-slate-500">Cuota Media</div>
                 <div className="text-base font-black text-sky-600 dark:text-sky-400 mt-0.5">
                   {metrics.averageOdds}
                 </div>
               </div>
               <div className="text-center p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
-                <div className="text-[10px] font-bold text-slate-500">Confianza Muy Alta</div>
-                <div className="text-base font-black text-indigo-600 dark:text-indigo-400 mt-0.5">
+                <div className="text-[10px] font-bold text-slate-500">Alta Convicción</div>
+                <div className="text-base font-black text-purple-600 dark:text-purple-400 mt-0.5">
                   {metrics.highConfidenceCount}
                 </div>
               </div>
             </div>
           )}
 
-          {/* AI Executive Reasoning Card (Powered by Gemini / Quantitative Engine) */}
+          {/* AI Intelligence Briefing Box */}
           {aiAnalysis && (
-            <div className="rounded-2xl border border-indigo-200/80 bg-gradient-to-br from-indigo-50/70 via-slate-50 to-teal-50/50 p-4 dark:border-indigo-900/60 dark:from-indigo-950/40 dark:via-slate-900 dark:to-teal-950/30 space-y-3 shadow-sm">
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-indigo-100 pb-2 dark:border-indigo-900/40">
+            <div className="rounded-2xl border border-purple-200/80 bg-gradient-to-br from-purple-50/50 via-white to-indigo-50/50 p-4 dark:border-purple-900/40 dark:from-purple-950/20 dark:via-slate-900 dark:to-indigo-950/20 space-y-3">
+              <div className="flex items-center justify-between flex-wrap gap-2 border-b border-purple-100 pb-2.5 dark:border-purple-900/30">
                 <div className="flex items-center gap-2">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-600 text-white text-xs font-black shadow-sm">
-                    ✨
-                  </span>
-                  <span className="text-xs font-black tracking-wide text-indigo-950 dark:text-indigo-200">
-                    Dictamen Estratégico Gemini AI
-                  </span>
-                </div>
-                {aiAnalysis.intent && (
-                  <span className="rounded-full bg-indigo-100 px-2.5 py-0.5 text-[10px] font-black text-indigo-800 dark:bg-indigo-900/80 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                  <span className="text-base">⚡</span>
+                  <span className="text-xs font-black text-purple-950 dark:text-purple-200 uppercase tracking-wider">
                     {aiAnalysis.intent}
                   </span>
-                )}
+                </div>
+                <span className="text-[10px] font-bold text-purple-700 dark:text-purple-300 bg-purple-100 dark:bg-purple-950/80 px-2.5 py-0.5 rounded-full">
+                  Líneas Reales Bet365 • Pre-Match
+                </span>
               </div>
 
-              {/* Summary */}
-              {aiAnalysis.summary && (
-                <p className="text-xs font-semibold leading-relaxed text-slate-700 dark:text-slate-300">
-                  {aiAnalysis.summary}
-                </p>
-              )}
+              {/* Briefing Summary */}
+              <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
+                {aiAnalysis.summary}
+              </p>
 
               {/* Tactical Insights & Risk Warnings */}
               {aiAnalysis.insights && aiAnalysis.insights.length > 0 && (
                 <div className="space-y-1.5 pt-1">
-                  <div className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    Observaciones Tácticas y Riesgo:
+                  <div className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                    Puntos Clave y Evaluación Cuantitativa:
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 gap-1.5 text-xs">
                     {aiAnalysis.insights.map((insight, idx) => {
-                      const isRisk = insight.includes("⚠️") || insight.toLowerCase().includes("riesgo") || insight.toLowerCase().includes("precaución") || insight.toLowerCase().includes("desventaja");
+                      const isRisk = insight.toLowerCase().includes("riesgo") || insight.toLowerCase().includes("atención") || insight.toLowerCase().includes("cautela") || insight.toLowerCase().includes("alerta");
                       return (
                         <div
                           key={idx}
-                          className={`flex items-start gap-2 rounded-xl p-2.5 text-xs font-medium border ${
+                          className={`flex items-start gap-2 rounded-xl p-2.5 border text-xs font-medium ${
                             isRisk
                               ? "bg-amber-50/80 text-amber-900 border-amber-200 dark:bg-amber-950/30 dark:text-amber-300 dark:border-amber-900/50"
                               : "bg-white/80 text-slate-800 border-slate-200/80 dark:bg-slate-800/80 dark:text-slate-200 dark:border-slate-700"
@@ -392,10 +504,10 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
 
               {/* Recommended Bankroll Strategy */}
               {aiAnalysis.recommendation && (
-                <div className="flex items-center gap-2.5 rounded-xl bg-emerald-500/10 p-2.5 border border-emerald-500/20 text-xs font-bold text-emerald-900 dark:text-emerald-300">
+                <div className="flex items-center gap-2.5 rounded-xl bg-purple-500/10 p-2.5 border border-purple-500/20 text-xs font-bold text-purple-900 dark:text-purple-300">
                   <span className="text-base shrink-0">💡</span>
                   <div>
-                    <span className="font-black text-emerald-800 dark:text-emerald-200 uppercase text-[10px] block">
+                    <span className="font-black text-purple-800 dark:text-purple-200 uppercase text-[10px] block">
                       Recomendación de Bankroll & Gestión de Riesgo:
                     </span>
                     <span className="font-semibold text-xs leading-snug">
@@ -449,17 +561,17 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
           {loading ? (
             <div className="py-12 text-center text-slate-500">
               <div className="text-2xl animate-spin mb-2">🔄</div>
-              <p className="text-xs font-bold">El Agente MCP está consultando cuotas reales y ejecutando el modelo matemático...</p>
+              <p className="text-xs font-bold">El Agente MCP está consultando cuotas reales de Bet365 para partidos próximos a iniciar...</p>
             </div>
           ) : results.length > 0 ? (
             <div className="space-y-3">
               <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-slate-500">
-                <span>Nuevos pronósticos (Partidos próximos a iniciar • {results.length}):</span>
+                <span>Nuevos pronósticos pre-match descubiertos ({results.length}):</span>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handlePublishPicks(results)}
                     disabled={publishing}
-                    className="flex items-center gap-1.5 rounded-xl bg-emerald-600/10 hover:bg-emerald-600 px-3 py-1.5 text-xs font-black text-emerald-700 hover:text-white dark:text-emerald-300 dark:hover:text-white border border-emerald-500/30 transition cursor-pointer disabled:opacity-50"
+                    className="flex items-center gap-1.5 rounded-xl bg-purple-600/10 hover:bg-purple-600 px-3 py-1.5 text-xs font-black text-purple-700 hover:text-white dark:text-purple-300 dark:hover:text-white border border-purple-500/30 transition cursor-pointer disabled:opacity-50"
                   >
                     <span>📤</span>
                     <span>{publishing ? "Publicando..." : "Publicar Todo al Dashboard"}</span>
@@ -490,7 +602,7 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
                 No se encontraron partidos pendientes de iniciar para este filtro
               </h4>
               <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
-                Todos los partidos de esta jornada ya iniciaron o finalizaron. Prueba buscando en otras ligas o partidos de la siguiente jornada.
+                Los encuentros de esta jornada ya iniciaron o finalizaron. Selecciona otra liga en el menú desplegable o consulta la siguiente jornada.
               </p>
             </div>
           ) : null}
@@ -506,7 +618,7 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
               <button
                 onClick={() => handlePublishPicks(results)}
                 disabled={publishing}
-                className="rounded-xl bg-emerald-600 px-4 py-2 text-xs font-black text-white hover:bg-emerald-500 transition cursor-pointer disabled:opacity-50 shadow-md shadow-emerald-600/20"
+                className="rounded-xl bg-purple-600 px-4 py-2 text-xs font-black text-white hover:bg-purple-500 transition cursor-pointer disabled:opacity-50 shadow-md shadow-purple-600/20"
               >
                 {publishing ? "Publicando..." : "Publicar Alertas"}
               </button>

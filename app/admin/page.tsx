@@ -227,7 +227,7 @@ function AdminControlContent() {
     {
       id: "live-1",
       category: "live",
-      categoryName: "⚡ Alertas en Vivo (Live)",
+      categoryName: "🎯 Mercados de Valor y Goles",
       badgeColor: "bg-rose-500/10 text-rose-400 border-rose-500/30",
       title: "Oportunidad de Gol In-Play en Próximos 15 Min",
       templateText: (league: string) => `Busca alertas en vivo con partidos en juego donde haya alta probabilidad de gol en los próximos 15 minutos en ${league}`,
@@ -235,7 +235,7 @@ function AdminControlContent() {
     {
       id: "live-2",
       category: "live",
-      categoryName: "⚡ Alertas en Vivo (Live)",
+      categoryName: "🎯 Mercados de Valor y Goles",
       badgeColor: "bg-rose-500/10 text-rose-400 border-rose-500/30",
       title: "Empates en 2do Tiempo con Cuota de Ganador",
       templateText: (league: string) => `Analiza partidos en vivo en ${league} que vayan empatados al segundo tiempo y tengan cuota rentable de ganador o Over 1.5/2.5`,
@@ -243,7 +243,7 @@ function AdminControlContent() {
     {
       id: "live-3",
       category: "live",
-      categoryName: "⚡ Alertas en Vivo (Live)",
+      categoryName: "🎯 Mercados de Valor y Goles",
       badgeColor: "bg-rose-500/10 text-rose-400 border-rose-500/30",
       title: "Partidos Abiertos con Presión de Ataque",
       templateText: (league: string) => `Encuentra oportunidades en vivo de Over 2.5 o Over 3.5 en partidos abiertos y con alta presión de ataque en ${league}`,
@@ -1484,7 +1484,7 @@ function AdminControlContent() {
                 <div className="flex flex-wrap items-center gap-1.5 bg-slate-800/80 p-1 rounded-xl border border-slate-700">
                   {[
                     { id: "all", label: "Todos" },
-                    { id: "live", label: "⚡ En Vivo" },
+                    
                     { id: "prematch", label: "📋 Pre-Match" },
                     { id: "bomba", label: "💣 Bombas" },
                     { id: "parlay", label: "🎲 Parlays" },

@@ -97,7 +97,7 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
   { id: 239, name: "Primera A", country: "Colombia", category: "americas", tier: 1 },
   { id: 281, name: "Liga 1", country: "Perú", category: "americas", tier: 1 },
   { id: 265, name: "Primera División", country: "Chile", category: "americas", tier: 1 },
-  { id: 271, name: "Primera División", country: "Uruguay", category: "americas", tier: 1 },
+  { id: 274, name: "Primera División", country: "Uruguay", category: "americas", tier: 1 },
   { id: 250, name: "Primera División", country: "Paraguay", category: "americas", tier: 1 },
   { id: 162, name: "Primera División (Liga FPD)", country: "Costa Rica", category: "americas", tier: 1 },
 

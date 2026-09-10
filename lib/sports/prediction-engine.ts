@@ -304,7 +304,7 @@ export function normalizeLeagueInfo(
   if (norm.includes("hnl") || normCountry.includes("croat") || normCountry.includes("croacia")) {
     return { canonicalLeague: "HNL", country: "Croacia", tier: 2 };
   }
-  if (norm.includes("nb i") || norm.includes("nb 1") || normCountry.includes("hungar") || normCountry.includes("hungría")) {
+  if ((norm.includes("nb i") && norm.includes("otp")) || norm.includes("otp bank liga") || normCountry === "hungría" || normCountry === "hungary") {
     return { canonicalLeague: "NB I (OTP Bank Liga)", country: "Hungría", tier: 2 };
   }
   if (norm.includes("süper lig") || norm.includes("super lig") || normCountry.includes("turkey") || normCountry.includes("turquía")) {
