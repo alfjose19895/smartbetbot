@@ -1488,7 +1488,14 @@ export function getFeaturedDailyPicks(predictions: MarketOpportunity[]): {
   });
 
   const smartPick = smartPickCandidates.length > 0
-    ? { ...smartPickCandidates[0], confidence: "Muy Alta" as const }
+    ? {
+        ...smartPickCandidates[0],
+        confidence: (smartPickCandidates[0].probability >= 70
+          ? "Muy Alta"
+          : smartPickCandidates[0].probability >= 58
+          ? "Alta"
+          : "Media") as "Muy Alta" | "Alta" | "Media" | "Moderada",
+      }
     : null;
 
   return { smartPick, bombaPick };

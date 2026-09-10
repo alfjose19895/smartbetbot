@@ -772,10 +772,15 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
   const isWeekend = dayOfWeek === 0 || dayOfWeek === 6 || dayOfWeek === 5;
   const dailyLimit = isWeekend ? 15 : 12;
 
-  const topPicks = rankedPicks.slice(0, dailyLimit).map((p) => ({
-    ...p,
-    confidence: "Muy Alta" as const,
-  }));
+  const topPicks = rankedPicks.slice(0, dailyLimit).map((p) => {
+    const prob = p.probability || 50;
+    const conf: "Muy Alta" | "Alta" | "Media" | "Moderada" =
+      prob >= 70 ? "Muy Alta" : prob >= 58 ? "Alta" : prob >= 50 ? "Media" : "Moderada";
+    return {
+      ...p,
+      confidence: conf,
+    };
+  });
 
   // Sort final display by kickoff time ascending for convenient betting timeline
   const sorted: MarketOpportunity[] = topPicks.sort(
@@ -1220,7 +1225,7 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
             fairOdds: p.fairOdds || Math.max(1.10, Math.round((100 / (p.probability || 60)) * 100) / 100),
             edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
             probability: p.probability,
-            confidence: p.confidence || (p.probability >= 75 ? "Muy Alta" : p.probability >= 68 ? "Alta" : "Media"),
+            confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
             pickBadge: p.pickBadge,
             matchTiming: isLiveMatch ? "live" : "prematch",
             isLive: isLiveMatch,
@@ -1273,7 +1278,7 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
             fairOdds: p.fairOdds || Math.max(1.10, Math.round((100 / (p.probability || 60)) * 100) / 100),
             edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
             probability: p.probability,
-            confidence: p.confidence || (p.probability >= 75 ? "Muy Alta" : p.probability >= 68 ? "Alta" : "Media"),
+            confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
             pickBadge: p.pickBadge,
             matchTiming: isLiveMatch ? "live" : "prematch",
             isLive: isLiveMatch,
@@ -1327,7 +1332,7 @@ export async function getHistoricalSettledPredictions(): Promise<HistoricalSettl
               fairOdds: p.fairOdds || Math.max(1.10, Math.round((100 / (p.probability || 60)) * 100) / 100),
               edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
               probability: p.probability,
-              confidence: p.confidence || (p.probability >= 75 ? "Muy Alta" : p.probability >= 68 ? "Alta" : "Media"),
+              confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
               pickBadge: p.pickBadge,
               matchTiming: "live",
               isLive: true,

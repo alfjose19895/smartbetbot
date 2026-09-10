@@ -122,15 +122,15 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
     minute: "2-digit",
   });
 
-  const pVal = prediction.probability || 50;
+  const pVal = typeof prediction.probability === "number" ? prediction.probability : 50;
   const confidenceBadge =
-    prediction.confidence === "Muy Alta" || pVal >= 70
+    pVal >= 70.0
       ? { label: "⭐⭐⭐ Muy Alta", cls: "bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700 font-extrabold" }
-      : prediction.confidence === "Alta" || pVal >= 58
+      : pVal >= 58.0
       ? { label: "⭐⭐ Alta", cls: "bg-cyan-100 text-cyan-900 border-cyan-300 dark:bg-cyan-950/80 dark:text-cyan-300 dark:border-cyan-700 font-bold" }
-      : prediction.confidence === "Media" || pVal >= 50
-      ? { label: "⭐ Media", cls: "bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950/80 dark:text-amber-300 dark:border-amber-700" }
-      : { label: "⚠️ Moderada", cls: "bg-purple-100 text-purple-900 border-purple-300 dark:bg-purple-950/80 dark:text-purple-300 dark:border-purple-700" };
+      : pVal >= 50.0
+      ? { label: "⭐ Media", cls: "bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950/80 dark:text-amber-300 dark:border-amber-700 font-bold" }
+      : { label: "⚠️ Moderada", cls: "bg-purple-100 text-purple-900 border-purple-300 dark:bg-purple-950/80 dark:text-purple-300 dark:border-purple-700 font-bold" };
 
   return (
     <>
