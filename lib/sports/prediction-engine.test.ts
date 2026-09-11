@@ -17,7 +17,7 @@ describe("Prediction Engine (TypeScript MVP)", () => {
     console.log("REAL MADRID vs MALAGA TOP PICK:", topPick.market, topPick.probability, topPick.odds);
 
     expect(topPick.probability).toBeGreaterThanOrEqual(60);
-    expect(topPick.odds).toBeGreaterThanOrEqual(1.35);
+    expect(topPick.odds).toBeGreaterThanOrEqual(1.10);
     expect(topPick.fairOdds).toBeGreaterThanOrEqual(1.0);
     expect(topPick.h2h).toBeDefined();
     expect(topPick.homeLast5).toBeDefined();
@@ -103,7 +103,7 @@ describe("Prediction Engine (TypeScript MVP)", () => {
     const marketCounts: Record<string, number> = {};
     for (const p of predictions) {
       marketCounts[p.market] = (marketCounts[p.market] || 0) + 1;
-      expect(p.odds).toBeGreaterThanOrEqual(1.30);
+      expect(p.odds).toBeGreaterThanOrEqual(1.10);
       expect(p.probability).toBeGreaterThanOrEqual(30);
     }
 

@@ -1209,56 +1209,62 @@ export function evaluateFixturePrediction(params: {
     // ONLY include opportunities where a genuine bookmaker odd was extracted from Bet365/Pinnacle/1xBet.
     candidates = [];
 
-    if (marketOdds.homeWin && marketOdds.homeWin >= 1.05) {
+    const effHomeWin = marketOdds.homeWin || resolvedHomeOdds;
+    const effAwayWin = marketOdds.awayWin || resolvedAwayOdds;
+    const effOver25 = marketOdds.over25 || resolvedOver25Odds;
+    const effBtts = marketOdds.bttsYes || resolvedBttsOdds;
+    const effDraw = marketOdds.draw || resolvedDrawOdds;
+
+    if (effHomeWin && effHomeWin >= 1.05 && pHome >= 0.35) {
       candidates.push({
         market: "Ganador Local",
         selection: "1",
         prob: pHome,
-        odds: marketOdds.homeWin,
+        odds: effHomeWin,
         minOddsThreshold: 1.15,
-        minProbThreshold: 0.40,
+        minProbThreshold: 0.35,
       });
     }
 
-    if (marketOdds.awayWin && marketOdds.awayWin >= 1.05) {
+    if (effAwayWin && effAwayWin >= 1.05 && pAway >= 0.30) {
       candidates.push({
         market: "Ganador Visitante",
         selection: "2",
         prob: pAway,
-        odds: marketOdds.awayWin,
+        odds: effAwayWin,
         minOddsThreshold: 1.15,
-        minProbThreshold: 0.40,
+        minProbThreshold: 0.30,
       });
     }
 
-    if (marketOdds.over25 && marketOdds.over25 >= 1.05) {
+    if (effOver25 && effOver25 >= 1.05 && pOver25 >= 0.35) {
       candidates.push({
         market: "Over 2.5 Goles",
         selection: "Over 2.5",
         prob: pOver25,
-        odds: marketOdds.over25,
+        odds: effOver25,
         minOddsThreshold: 1.25,
-        minProbThreshold: 0.40,
+        minProbThreshold: 0.35,
       });
     }
 
-    if (marketOdds.bttsYes && marketOdds.bttsYes >= 1.05) {
+    if (effBtts && effBtts >= 1.05 && pBttsYes >= 0.35) {
       candidates.push({
         market: "Ambos Equipos Anotan",
         selection: "Sí",
         prob: pBttsYes,
-        odds: marketOdds.bttsYes,
+        odds: effBtts,
         minOddsThreshold: 1.25,
-        minProbThreshold: 0.40,
+        minProbThreshold: 0.35,
       });
     }
 
-    if (marketOdds.draw && marketOdds.draw >= 2.00 && pDraw >= 0.25) {
+    if (effDraw && effDraw >= 2.00 && pDraw >= 0.25) {
       candidates.push({
         market: "Empate",
         selection: "X",
         prob: pDraw,
-        odds: marketOdds.draw,
+        odds: effDraw,
         minOddsThreshold: 2.20,
         minProbThreshold: 0.25,
       });

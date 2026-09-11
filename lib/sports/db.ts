@@ -488,6 +488,17 @@ async function enrichCandidateFixturesWithOdds(
  * Passive, deterministic reader for active predictions.
  * NEVER makes unprompted external API calls on page loads or GET requests.
  */
+/**
+ * Dynamic Daily Alert Limit Strategy:
+ * - Lunes a Viernes (Weekdays, Mon-Fri): 15 pronósticos
+ * - Sábados y Domingos (Weekends, Sat-Sun): 20 pronósticos
+ */
+export function getDailyAlertLimit(targetDate: Date = new Date()): number {
+  const day = targetDate.getDay(); // 0 = Domingo, 1 = Lunes, ..., 5 = Viernes, 6 = Sábado
+  const isWeekend = day === 0 || day === 6;
+  return isWeekend ? 20 : 15;
+}
+
 export function getStoredPredictions(): MarketOpportunity[] {
   const nowMs = Date.now();
   const todayDateStr = getEcuadorDateString(nowMs);
@@ -814,10 +825,8 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[])
     return b.edge - a.edge;
   });
 
-  // Daily alert strategy: 12 on weekdays (Mon-Thu), 15 on weekends (Fri-Sun)
-  const dayOfWeek = new Date().getDay();
-  const isWeekend = dayOfWeek === 0 || dayOfWeek === 6 || dayOfWeek === 5;
-  const dailyLimit = isWeekend ? 15 : 12;
+  // Daily alert strategy: 15 on weekdays (Lunes a Viernes), 20 on weekends (Sábados y Domingos)
+  const dailyLimit = getDailyAlertLimit(new Date());
 
   const topPicks = rankedPicks.slice(0, dailyLimit).map((p) => {
     const prob = p.probability || 50;
@@ -1922,7 +1931,7 @@ export async function searchLiveMarketDynamic(params: {
       return isCuratedLeague(f.league?.id, f.league?.name, f.league?.country);
     });
 
-    const targetFixtures = candidates.slice(0, 15);
+    const targetFixtures = candidates.slice(0, 25);
     const discoveredOpps: MarketOpportunity[] = [];
 
     // Target market detection
