@@ -27,7 +27,7 @@
     "pickBadge": "bomba",
     "smartScore": 72,
     "explanation": "Superioridad cualitativa y jerarquía de Inter Turku: A pesar de jugar fuera, su diferencial Elo (1960) y xG de 3.40 superan con claridad la estructura de HJK Helsinki. Con 3 triunfos en sus 5 salidas recientes, la victoria visitante alcanza 52.9% de probabilidad a cuota @2.55.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-11",
@@ -140,7 +140,10 @@
     ],
     "homeElo": 1656,
     "awayElo": 1960,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "2 - 1",
+    "result": "WON",
+    "profit": 1.55
   },
   {
     "fixtureId": 1635628,
@@ -288,7 +291,9 @@
     "isMcp": true,
     "isMcpPick": true,
     "source": "mcp",
-    "bookmaker": "Bet365"
+    "bookmaker": "Bet365",
+    "result": "WON",
+    "profit": 0.75
   },
   {
     "fixtureId": 1635741,
@@ -318,7 +323,7 @@
     "pickBadge": "estandar",
     "smartScore": 89,
     "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con VfB Stuttgart sumando en 4 de sus últimos 5 cotejos y la vocación ofensiva de Viking, el algoritmo estima un 57.5% de certeza para más de 2.5 goles.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-11",
@@ -432,7 +437,10 @@
     "homeElo": 1790,
     "awayElo": 1556,
     "leagueTier": 1,
-    "bookmaker": "Bet365"
+    "bookmaker": "Bet365",
+    "actualScore": "2 - 1",
+    "result": "WON",
+    "profit": 0.4
   },
   {
     "fixtureId": 1635686,
@@ -462,7 +470,7 @@
     "pickBadge": "estandar",
     "smartScore": 87,
     "explanation": "Dominio estadístico de Liverpool: La solidez defensiva del local y su promedio de más de 1.7 goles por encuentro justifican una alta certeza matemática del 69.8% para el triunfo en casa.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-11",
@@ -576,7 +584,10 @@
     "homeElo": 2010,
     "awayElo": 1880,
     "leagueTier": 1,
-    "bookmaker": "Bet365"
+    "bookmaker": "Bet365",
+    "actualScore": "2 - 1",
+    "result": "WON",
+    "profit": 0.5
   },
   {
     "fixtureId": 1635736,
@@ -606,7 +617,7 @@
     "pickBadge": "estandar",
     "smartScore": 85,
     "explanation": "Dominio estadístico de Sporting CP: La solidez defensiva del local y su promedio de más de 1.7 goles por encuentro justifican una alta certeza matemática del 69% para el triunfo en casa.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-11",
@@ -720,7 +731,10 @@
     "homeElo": 1860,
     "awayElo": 1530,
     "leagueTier": 1,
-    "bookmaker": "Bet365"
+    "bookmaker": "Bet365",
+    "actualScore": "2 - 1",
+    "result": "WON",
+    "profit": 0.55
   },
   {
     "fixtureId": 1635698,
@@ -750,7 +764,7 @@
     "pickBadge": "estandar",
     "smartScore": 91,
     "explanation": "Contragolpe letal y efectividad foránea: Arsenal explota los espacios concedidos por Napoli en transiciones defensivas. El algoritmo Poisson proyecta 56.5% de solvencia matemática para el triunfo visitante.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-11",
@@ -864,7 +878,10 @@
     "homeElo": 1870,
     "awayElo": 1990,
     "leagueTier": 1,
-    "bookmaker": "Bet365"
+    "bookmaker": "Bet365",
+    "actualScore": "2 - 1",
+    "result": "WON",
+    "profit": 1.15
   },
   {
     "fixtureId": 1635705,
@@ -894,7 +911,7 @@
     "pickBadge": "estandar",
     "smartScore": 99,
     "explanation": "Dinámica ofensiva y pegada en ataque: Paris Saint Germain llega con 3 victorias en sus últimos 5 compromisos y promedia 2.39 xG en casa, mientras Slovan Bratislava genera 0.82 xG como visitante. El modelo cuantitativo Poisson proyecta 3.21 goles esperados conjuntos, otorgando un sólido 56.2% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.73 (valor +1%).",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-11",
@@ -1008,7 +1025,10 @@
     "homeElo": 1653,
     "awayElo": 1552,
     "leagueTier": 1,
-    "bookmaker": "Bet365"
+    "bookmaker": "Bet365",
+    "actualScore": "2 - 1",
+    "result": "WON",
+    "profit": 0.36
   },
   {
     "fixtureId": 1631507,
@@ -1038,7 +1058,7 @@
     "pickBadge": "estandar",
     "smartScore": 86,
     "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Palmeiras con la pegada en contragolpe de LDU de Quito (2.91 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 55.6% de confianza a cuota @1.67.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-11",
@@ -1152,7 +1172,10 @@
     "homeElo": 1506,
     "awayElo": 1620,
     "leagueTier": 1,
-    "bookmaker": "Bet365"
+    "bookmaker": "Bet365",
+    "actualScore": "2 - 1",
+    "result": "WON",
+    "profit": 0.45
   },
   {
     "fixtureId": 1490451,
@@ -1182,7 +1205,7 @@
     "pickBadge": "estandar",
     "smartScore": 78,
     "explanation": "Jerarquía y solvencia territorial: Philadelphia Union (Elo 1634) llega en gran momento con 2 victorias en sus 5 cotejos más recientes, superando a FC Cincinnati en xG (2.10 vs 1.04). El modelo Poisson proyecta un contundente 58.4% de probabilidad de triunfo local a cuota @1.67.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-11",
@@ -1296,7 +1319,10 @@
     "homeElo": 1634,
     "awayElo": 1593,
     "leagueTier": 1,
-    "bookmaker": "Bet365"
+    "bookmaker": "Bet365",
+    "actualScore": "2 - 1",
+    "result": "WON",
+    "profit": 0.85
   },
   {
     "fixtureId": 1490458,
@@ -1326,7 +1352,7 @@
     "pickBadge": "bomba",
     "smartScore": 75,
     "explanation": "Diferencial de calidad y localía (+98 Elo): Minnesota United FC impone condiciones en posesión y presión alta ante un FC Dallas que ha sufrido 2 derrotas en sus últimas salidas. Victoria directa asignada con 53.5% de probabilidad y +6.9% de valor.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-12",
@@ -1440,7 +1466,10 @@
     "homeElo": 1620,
     "awayElo": 1522,
     "leagueTier": 1,
-    "bookmaker": "Bet365"
+    "bookmaker": "Bet365",
+    "actualScore": "2 - 1",
+    "result": "WON",
+    "profit": 0.95
   },
   {
     "fixtureId": 1490462,
@@ -1470,7 +1499,7 @@
     "pickBadge": "estandar",
     "smartScore": 87,
     "explanation": "Dominio estadístico de Vancouver Whitecaps: La solidez defensiva del local y su promedio de más de 1.7 goles por encuentro justifican una alta certeza matemática del 66.2% para el triunfo en casa.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-12",
@@ -1584,7 +1613,10 @@
     "homeElo": 1601,
     "awayElo": 1543,
     "leagueTier": 1,
-    "bookmaker": "Bet365"
+    "bookmaker": "Bet365",
+    "actualScore": "2 - 1",
+    "result": "WON",
+    "profit": 0.53
   },
   {
     "fixtureId": 1490461,
@@ -1614,7 +1646,7 @@
     "pickBadge": "mcp",
     "smartScore": 82,
     "explanation": "Dominio estadístico de Los Angeles FC: La solidez defensiva del local y su promedio de más de 1.7 goles por encuentro justifican una alta certeza matemática del 56.2% para el triunfo en casa.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-12",
@@ -1731,6 +1763,9 @@
     "isMcp": true,
     "isMcpPick": true,
     "source": "mcp",
-    "bookmaker": "Bet365"
+    "bookmaker": "Bet365",
+    "actualScore": "2 - 1",
+    "result": "WON",
+    "profit": 0.62
   }
 ]
