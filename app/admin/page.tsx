@@ -246,7 +246,7 @@ function AdminControlContent() {
       categoryName: "🎯 Mercados de Valor y Goles",
       badgeColor: "bg-rose-500/10 text-rose-400 border-rose-500/30",
       title: "Partidos Abiertos con Presión de Ataque",
-      templateText: (league: string) => `Encuentra oportunidades en vivo de Over 2.5 o Over 3.5 en partidos abiertos y con alta presión de ataque en ${league}`,
+      templateText: (league: string) => `Encuentra oportunidades en vivo de Over 2.5 o Ambos Anotan en partidos abiertos y con alta presión de ataque en ${league}`,
     },
     {
       id: "prematch-1",

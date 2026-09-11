@@ -1122,22 +1122,7 @@ export function evaluateFixturePrediction(params: {
             minProbThreshold: 0.50,
           });
         }
-      } else if (totalCurrentGoals >= 3) {
-        const nextLine = totalCurrentGoals + 0.5;
-        const probOverNext = prob1MoreGoal;
-        const realOverNext = totalCurrentGoals === 3 ? marketOdds?.over35 : undefined;
-        const liveOdds = realOverNext && realOverNext >= 1.05 ? realOverNext : calculateBookmakerOdds(probOverNext, 0.95);
-        if (liveOdds >= 1.50 && probOverNext >= 0.50) {
-          candidates.push({
-            market: `Over ${nextLine} Goles`,
-            selection: `Over ${nextLine}`,
-            prob: Math.min(0.85, Math.max(0.50, probOverNext)),
-            odds: liveOdds,
-            minOddsThreshold: 1.50,
-            minProbThreshold: 0.50,
-          });
-        }
-      }
+      } // Excluded Over 3.5+ lines per user specification
 
       // 4. Ganador Local (Gana Local) -> strictly use original bookmaker live odds if available
       if (currentH > currentA) {
@@ -1294,6 +1279,14 @@ export function evaluateFixturePrediction(params: {
       }
     }
   }
+
+  // Exclude Under 2.5 and Over 3.5 markets per user specification
+  candidates = candidates.filter(c => {
+    const m = (c.market || "").toLowerCase();
+    if (m.includes("under 2.5") || m.includes("menos de 2.5")) return false;
+    if (m.includes("over 3.5") || m.includes("más de 3.5") || m.includes("mas de 3.5")) return false;
+    return true;
+  });
 
   const opportunities: MarketOpportunity[] = [];
 
