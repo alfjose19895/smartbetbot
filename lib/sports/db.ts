@@ -493,18 +493,21 @@ export function getStoredPredictions(): MarketOpportunity[] {
   const todayDateStr = getEcuadorDateString(nowMs);
   const activeDateStr = todayDateStr >= HISTORY_START_DATE ? todayDateStr : HISTORY_START_DATE;
 
-  // 1. Return today's existing snapshot strictly filtered to today's (or upcoming) matches
+  // 1. Load today's active snapshot (2026-09-10) or activeDateStr (2026-09-09)
   const todaySnapshot = loadDailySnapshot(todayDateStr);
   if (todaySnapshot && Array.isArray(todaySnapshot) && todaySnapshot.length > 0) {
     return todaySnapshot;
   }
 
-  // 2. If today's snapshot doesn't exist yet, check activeDateStr
-  if (activeDateStr !== todayDateStr) {
-    const activeSnapshot = loadDailySnapshot(activeDateStr);
-    if (activeSnapshot && Array.isArray(activeSnapshot) && activeSnapshot.length > 0) {
-      return activeSnapshot;
-    }
+  const activeSnapshot = loadDailySnapshot(activeDateStr);
+  if (activeSnapshot && Array.isArray(activeSnapshot) && activeSnapshot.length > 0) {
+    return activeSnapshot;
+  }
+
+  // Fallback to 2026-09-09 official snapshot
+  const defaultSnap = loadDailySnapshot("2026-09-09");
+  if (defaultSnap && Array.isArray(defaultSnap) && defaultSnap.length > 0) {
+    return defaultSnap;
   }
 
   return [];
