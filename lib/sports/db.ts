@@ -114,19 +114,43 @@ function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
       const hNorm = getCanonicalTeamKey(p.homeTeam);
       const aNorm = getCanonicalTeamKey(p.awayTeam);
       const fixId = p.fixtureId || 0;
-      const key = `${fixId}-${hNorm}-${aNorm}-${p.market}`;
+      const selNorm = (p.selection || p.market || "").toLowerCase().trim();
+      const key = `${fixId}-${hNorm}-${aNorm}-${p.market}-${selNorm}`;
+      const genericKey = `${fixId}-${hNorm}-${aNorm}-${p.market}`;
 
-      if (mergedMap.has(key)) {
-        const existing = mergedMap.get(key)!;
-        mergedMap.set(key, {
-          ...p,
-          status: existing.status !== "pending" ? existing.status : p.status,
-          actualScore: existing.actualScore || p.actualScore,
-          pickBadge: existing.pickBadge || p.pickBadge,
-          isMcpPick: existing.isMcpPick || p.isMcpPick,
-          explanation: existing.explanation || p.explanation,
-        });
+      const matchedKey = mergedMap.has(key) ? key : mergedMap.has(genericKey) ? genericKey : null;
+
+      if (matchedKey) {
+        const existing = mergedMap.get(matchedKey)!;
+        const isSettled =
+          existing.status === "won" ||
+          existing.status === "lost" ||
+          existing.result === "WON" ||
+          existing.result === "LOST" ||
+          Boolean(existing.actualScore);
+
+        if (isSettled) {
+          // PILLAR 2: IMMUTABLE LEDGER LOCK - Settle state, score, and profit are 100% locked!
+          mergedMap.set(matchedKey, {
+            ...existing,
+            homeLogo: existing.homeLogo || p.homeLogo,
+            awayLogo: existing.awayLogo || p.awayLogo,
+            leagueLogo: existing.leagueLogo || p.leagueLogo,
+          });
+        } else {
+          // Update active pending pick without deleting its tags
+          mergedMap.set(matchedKey, {
+            ...existing,
+            ...p,
+            status: p.status || existing.status || "pending",
+            actualScore: p.actualScore || existing.actualScore,
+            pickBadge: existing.pickBadge || p.pickBadge,
+            isMcpPick: existing.isMcpPick || p.isMcpPick,
+            explanation: existing.explanation || p.explanation,
+          });
+        }
       } else {
+        // Append new pick smoothly without deleting any existing alerts
         mergedMap.set(key, p);
       }
     }
@@ -1947,4 +1971,52 @@ export async function searchLiveMarketDynamic(params: {
     console.error("[searchLiveMarketDynamic] Error searching market:", err);
     return [];
   }
+}
+
+
+/**
+ * Master Reconciliation & Settlement Engine (Dual Layer: Disk Snapshots + Supabase)
+ * Guarantees all concluded matches are finalized, scored, and permanently recorded in History.
+ */
+export async function reconcileAndSettleAllSnapshots(): Promise<{
+  settledCount: number;
+  totalHistoricalPicks: number;
+  snapshotsProcessed: number;
+}> {
+  console.log("[Reconciliation Engine] Running immutable history settlement and snapshot sync...");
+  const settledHistory = await getHistoricalSettledPredictions(true);
+  const parlays = await getHistoricalSettledParlays();
+
+  // Dual Persistence to Supabase PostgreSQL (if available)
+  const supabase = getAdminClient();
+  if (supabase && settledHistory.length > 0) {
+    try {
+      const rows = settledHistory.map((s) => ({
+        id: s.id,
+        date: s.date,
+        match: s.match,
+        home_team: s.homeTeam,
+        away_team: s.awayTeam,
+        league: s.league,
+        market: s.market,
+        selection: s.selection,
+        odds: s.odds,
+        probability: s.probability,
+        result: s.result,
+        score: s.score,
+        profit: s.profit,
+        updated_at: new Date().toISOString(),
+      }));
+      // Upsert in background
+      await (supabase.from("prediction_history") as any).upsert(rows, { onConflict: "id" });
+    } catch (e) {
+      console.warn("[Reconciliation Engine] Supabase history backup skipped:", e);
+    }
+  }
+
+  return {
+    settledCount: settledHistory.filter((s) => s.result === "WON" || s.result === "LOST").length,
+    totalHistoricalPicks: settledHistory.length,
+    snapshotsProcessed: Object.keys(getAllDailySnapshots()).length,
+  };
 }

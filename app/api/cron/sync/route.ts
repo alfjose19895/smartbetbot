@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { syncUpcomingFixtures, generatePredictionsForUpcoming, getHistoricalSettledPredictions } from "@/lib/sports/db";
+import { syncUpcomingFixtures, generatePredictionsForUpcoming, getHistoricalSettledPredictions, reconcileAndSettleAllSnapshots } from "@/lib/sports/db";
 import { ALL_LEAGUE_IDS } from "@/lib/sports/api-football";
 
 export const dynamic = "force-dynamic";
@@ -21,7 +21,8 @@ export async function GET(request: NextRequest) {
     // 2. Generate curated high-precision predictions
     const predictions = await generatePredictionsForUpcoming(ALL_LEAGUE_IDS);
 
-    // 3. Settle and transition finished matches into history
+    // 3. Master immutable settlement and dual persistence
+    const settlement = await reconcileAndSettleAllSnapshots();
     const history = await getHistoricalSettledPredictions();
 
     return NextResponse.json({
