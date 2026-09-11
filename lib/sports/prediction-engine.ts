@@ -1198,8 +1198,8 @@ export function evaluateFixturePrediction(params: {
     const effAwayWin = marketOdds.awayWin || resolvedAwayOdds;
     const effOver25 = marketOdds.over25 || resolvedOver25Odds;
     const effBtts = marketOdds.bttsYes || resolvedBttsOdds;
-    const effDraw = marketOdds.draw || resolvedDrawOdds;
 
+    // 1. Ganador Local (1)
     if (effHomeWin && effHomeWin >= 1.05 && pHome >= 0.35) {
       candidates.push({
         market: "Ganador Local",
@@ -1211,6 +1211,7 @@ export function evaluateFixturePrediction(params: {
       });
     }
 
+    // 2. Ganador Visitante (2)
     if (effAwayWin && effAwayWin >= 1.05 && pAway >= 0.30) {
       candidates.push({
         market: "Ganador Visitante",
@@ -1222,6 +1223,7 @@ export function evaluateFixturePrediction(params: {
       });
     }
 
+    // 3. Over 2.5 Goles
     if (effOver25 && effOver25 >= 1.05 && pOver25 >= 0.35) {
       candidates.push({
         market: "Over 2.5 Goles",
@@ -1233,6 +1235,7 @@ export function evaluateFixturePrediction(params: {
       });
     }
 
+    // 4. Ambos Equipos Anotan (BTTS)
     if (effBtts && effBtts >= 1.05 && pBttsYes >= 0.35) {
       candidates.push({
         market: "Ambos Equipos Anotan",
@@ -1243,50 +1246,16 @@ export function evaluateFixturePrediction(params: {
         minProbThreshold: 0.35,
       });
     }
-
-    if (effDraw && effDraw >= 2.00 && pDraw >= 0.25) {
-      candidates.push({
-        market: "Empate",
-        selection: "X",
-        prob: pDraw,
-        odds: effDraw,
-        minOddsThreshold: 2.20,
-        minProbThreshold: 0.25,
-      });
-    }
-
-    if (targetMarket) {
-      const tm = targetMarket.toLowerCase();
-      if ((tm.includes("over 1.5") || tm.includes("mas de 1.5")) && marketOdds.over15 && marketOdds.over15 >= 1.05) {
-        candidates.push({
-          market: "Over 1.5 Goles",
-          selection: "Over 1.5",
-          prob: pOver15,
-          odds: marketOdds.over15,
-          minOddsThreshold: 1.15,
-          minProbThreshold: 0.60,
-        });
-      }
-      if ((tm.includes("doble") || tm.includes("1x")) && marketOdds.doubleChance1X && marketOdds.doubleChance1X >= 1.05) {
-        candidates.push({
-          market: "Doble Oportunidad",
-          selection: "1X",
-          prob: pDouble1X,
-          odds: marketOdds.doubleChance1X,
-          minOddsThreshold: 1.10,
-          minProbThreshold: 0.60,
-        });
-      }
-    }
   }
 
-  // Exclude Under 2.5 and Over 3.5 markets per user specification
-  candidates = candidates.filter(c => {
-    const m = (c.market || "").toLowerCase();
-    if (m.includes("under 2.5") || m.includes("menos de 2.5")) return false;
-    if (m.includes("over 3.5") || m.includes("más de 3.5") || m.includes("mas de 3.5")) return false;
-    return true;
-  });
+  // STRICT RULE: Only the 4 authorized markets are permitted across the entire system
+  const ALLOWED_MARKET_NAMES = new Set([
+    "Over 2.5 Goles",
+    "Ganador Local",
+    "Ganador Visitante",
+    "Ambos Equipos Anotan",
+  ]);
+  candidates = candidates.filter((c) => ALLOWED_MARKET_NAMES.has(c.market));
 
   const opportunities: MarketOpportunity[] = [];
 

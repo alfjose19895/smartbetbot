@@ -140,7 +140,7 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
           </h2>
           <p className="mt-0.5 text-xs text-slate-400">
             {parlaySize === 3
-              ? "Picks independientes de máxima probabilidad (1X2, Doble Oportunidad, Over/Under y BTTS) para un crecimiento seguro del capital."
+              ? "Picks independientes de máxima probabilidad (Ganador Local, Ganador Visitante, Over 2.5 y Ambos Anotan) para un crecimiento seguro del capital."
               : "5 selecciones totalmente distintas al Parley Élite para multiplicar exponencialmente el beneficio con cuotas de alto valor."}
           </p>
         </div>
