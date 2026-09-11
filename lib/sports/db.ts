@@ -95,7 +95,13 @@ function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
       try {
         const raw = fs.readFileSync(filePath, "utf-8");
         const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) existingPicks = parsed;
+        if (Array.isArray(parsed)) {
+          // STRICT DATE ISOLATION: Keep only picks that genuinely belong to dateStr
+          existingPicks = parsed.filter((p) => {
+            const pDate = p.kickoff ? p.kickoff.split("T")[0] : (p as any).date || dateStr;
+            return pDate === dateStr;
+          });
+        }
       } catch {}
     }
 
@@ -111,6 +117,12 @@ function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
     }
 
     for (const p of picks) {
+      // STRICT DATE ISOLATION: A pick cannot be saved in dateStr.json if its kickoff is on a different date
+      const pDate = p.kickoff ? p.kickoff.split("T")[0] : (p as any).date || dateStr;
+      if (pDate !== dateStr) {
+        continue;
+      }
+
       const hNorm = getCanonicalTeamKey(p.homeTeam);
       const aNorm = getCanonicalTeamKey(p.awayTeam);
       const fixId = p.fixtureId || 0;
@@ -481,24 +493,17 @@ export function getStoredPredictions(): MarketOpportunity[] {
   const todayDateStr = getEcuadorDateString(nowMs);
   const activeDateStr = todayDateStr >= HISTORY_START_DATE ? todayDateStr : HISTORY_START_DATE;
 
-  // 1. Return today's existing snapshot if present
+  // 1. Return today's existing snapshot strictly filtered to today's (or upcoming) matches
   const todaySnapshot = loadDailySnapshot(todayDateStr);
   if (todaySnapshot && Array.isArray(todaySnapshot) && todaySnapshot.length > 0) {
     return todaySnapshot;
   }
 
-  // 2. Fallback to activeDateStr snapshot
-  const activeSnapshot = loadDailySnapshot(activeDateStr);
-  if (activeSnapshot && Array.isArray(activeSnapshot) && activeSnapshot.length > 0) {
-    return activeSnapshot;
-  }
-
-  // 3. Fallback to most recent available daily snapshot
-  const allSnapshots = getAllDailySnapshots();
-  const dates = Object.keys(allSnapshots).sort().reverse();
-  for (const d of dates) {
-    if (d >= HISTORY_START_DATE && allSnapshots[d] && allSnapshots[d].length > 0) {
-      return allSnapshots[d];
+  // 2. If today's snapshot doesn't exist yet, check activeDateStr
+  if (activeDateStr !== todayDateStr) {
+    const activeSnapshot = loadDailySnapshot(activeDateStr);
+    if (activeSnapshot && Array.isArray(activeSnapshot) && activeSnapshot.length > 0) {
+      return activeSnapshot;
     }
   }
 
@@ -1239,6 +1244,9 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
     if (dateStr < HISTORY_START_DATE) continue;
 
     for (const p of picks) {
+      // Match true date strictly from kickoff
+      const trueMatchDate = p.kickoff ? p.kickoff.split("T")[0] : dateStr;
+      if (trueMatchDate < HISTORY_START_DATE) continue;
       const hNorm = getCanonicalTeamKey(p.homeTeam);
       const aNorm = getCanonicalTeamKey(p.awayTeam);
       const scoreKeyWithDate = `${hNorm}-${aNorm}-${dateStr}`;
@@ -1281,12 +1289,12 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
 
         const isWon = evaluation.isWon;
         const scoreText = p.actualScore || evaluation.actualScoreText;
-        const matchKey = `${hNorm}-${aNorm}-${dateStr}-${p.market}`;
+        const matchKey = `${hNorm}-${aNorm}-${trueMatchDate}-${p.market}`;
         if (!processedMatchKeys.has(matchKey)) {
           processedMatchKeys.add(matchKey);
           settledPicks.push({
-            id: p.id || `snapshot-settled-${scoreKeyWithDate}-${p.market}`,
-            date: dateStr,
+            id: p.id || `snapshot-settled-${hNorm}-${aNorm}-${trueMatchDate}-${p.market}`,
+            date: trueMatchDate,
             kickoff: p.kickoff,
             match: p.match,
             homeTeam: p.homeTeam,
