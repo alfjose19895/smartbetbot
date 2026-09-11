@@ -63,7 +63,7 @@ function ensureSnapshotsDir() {
   }
 }
 
-function loadDailySnapshot(dateStr: string): MarketOpportunity[] | null {
+export function loadDailySnapshot(dateStr: string): MarketOpportunity[] | null {
   try {
     ensureSnapshotsDir();
     const filePath = path.join(SNAPSHOTS_DIR, `${dateStr}.json`);
@@ -502,23 +502,25 @@ export function getDailyAlertLimit(targetDate: Date = new Date()): number {
 export function getStoredPredictions(): MarketOpportunity[] {
   const nowMs = Date.now();
   const todayDateStr = getEcuadorDateString(nowMs);
-  const activeDateStr = todayDateStr >= HISTORY_START_DATE ? todayDateStr : HISTORY_START_DATE;
 
-  // 1. Load today's active snapshot (2026-09-10) or activeDateStr (2026-09-09)
+  // 1. Load today's active snapshot (e.g. today's date)
   const todaySnapshot = loadDailySnapshot(todayDateStr);
   if (todaySnapshot && Array.isArray(todaySnapshot) && todaySnapshot.length > 0) {
     return todaySnapshot;
   }
 
-  const activeSnapshot = loadDailySnapshot(activeDateStr);
-  if (activeSnapshot && Array.isArray(activeSnapshot) && activeSnapshot.length > 0) {
-    return activeSnapshot;
-  }
+  // 2. Search all disk snapshots in descending date order for the most recent valid active snapshot
+  const allSnaps = getAllDailySnapshots();
+  const sortedDates = Object.keys(allSnaps)
+    .filter((d) => d >= HISTORY_START_DATE)
+    .sort()
+    .reverse();
 
-  // Fallback to 2026-09-09 official snapshot
-  const defaultSnap = loadDailySnapshot("2026-09-09");
-  if (defaultSnap && Array.isArray(defaultSnap) && defaultSnap.length > 0) {
-    return defaultSnap;
+  for (const dateKey of sortedDates) {
+    const snap = allSnaps[dateKey];
+    if (Array.isArray(snap) && snap.length > 0) {
+      return snap;
+    }
   }
 
   return [];

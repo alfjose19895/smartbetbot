@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getStoredPredictions, generatePredictionsForUpcoming } from "@/lib/sports/db";
+import {
+  getStoredPredictions,
+  generatePredictionsForUpcoming,
+  getEcuadorDateString,
+  loadDailySnapshot,
+} from "@/lib/sports/db";
+import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 
 export const dynamic = "force-dynamic";
 
@@ -10,11 +16,25 @@ export async function GET(request: NextRequest) {
     const marketFilter = searchParams.get("market");
     const minProb = parseFloat(searchParams.get("minProb") || "0");
 
-    let predictions = getStoredPredictions();
+    const nowMs = Date.now();
+    const todayDateStr = getEcuadorDateString(nowMs);
 
-    // Ensure baseline alerts are always present if cache/snapshot is cold
-    if (predictions.length === 0) {
-      predictions = await generatePredictionsForUpcoming();
+    // 1. Check if today's snapshot exists
+    let todaySnapshot = loadDailySnapshot(todayDateStr);
+    let predictions: MarketOpportunity[] = [];
+
+    if (todaySnapshot && Array.isArray(todaySnapshot) && todaySnapshot.length > 0) {
+      predictions = todaySnapshot;
+    } else {
+      // 2. Automatically generate fresh predictions for today
+      try {
+        predictions = await generatePredictionsForUpcoming();
+      } catch (genErr) {
+        console.warn("[API /api/signals] Auto-generation error, loading latest stored:", genErr);
+      }
+      if (!predictions || predictions.length === 0) {
+        predictions = getStoredPredictions();
+      }
     }
 
     if (leagueFilter) {

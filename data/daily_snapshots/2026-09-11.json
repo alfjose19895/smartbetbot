@@ -1,0 +1,2162 @@
+[
+  {
+    "fixtureId": 1549016,
+    "match": "FC Copenhagen vs AC Horsens",
+    "homeTeam": "FC Copenhagen",
+    "awayTeam": "AC Horsens",
+    "homeTeamId": 400,
+    "awayTeamId": 404,
+    "homeLogo": "https://media.api-sports.io/football/teams/400.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/404.png",
+    "league": "Superliga",
+    "leagueId": 119,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/119.png",
+    "country": "Dinamarca",
+    "kickoff": "2026-09-11T12:00:00-05:00",
+    "market": "Ganador Local",
+    "selection": "1",
+    "odds": 1.33,
+    "bookmaker": "Bet365",
+    "bookmakerOdds": 1.33,
+    "modelOdds": 1.43,
+    "fairOdds": 1.43,
+    "probability": 69.9,
+    "impliedProbability": 75.2,
+    "edge": 1,
+    "expectedValue": -7,
+    "confidence": "Alta",
+    "pickBadge": "estandar",
+    "smartScore": 77,
+    "explanation": "Jerarquía y solvencia territorial: FC Copenhagen (Elo 1585) llega en gran momento con 2 victorias en sus 5 cotejos más recientes, superando a AC Horsens en xG (2.28 vs 0.84). El modelo Poisson proyecta un contundente 69.9% de probabilidad de triunfo local a cuota @1.33.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-13",
+        "homeTeam": "FC Copenhagen",
+        "awayTeam": "AC Horsens",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "Superliga"
+      },
+      {
+        "date": "2026-03-15",
+        "homeTeam": "AC Horsens",
+        "awayTeam": "FC Copenhagen",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "Superliga"
+      },
+      {
+        "date": "2025-09-16",
+        "homeTeam": "FC Copenhagen",
+        "awayTeam": "AC Horsens",
+        "score": "3-0",
+        "winner": "home",
+        "competition": "Superliga"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-07",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Superliga"
+      },
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Superliga"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Superliga"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Superliga"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Superliga"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-07",
+        "opponent": "Rival A",
+        "isHome": true,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Superliga"
+      },
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "1-3",
+        "result": "L",
+        "competition": "Superliga"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Superliga"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Superliga"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Superliga"
+      }
+    ],
+    "homeElo": 1585,
+    "awayElo": 1482,
+    "leagueTier": 1
+  },
+  {
+    "fixtureId": 1494277,
+    "match": "BK Hacken vs Mjallby AIF",
+    "homeTeam": "BK Hacken",
+    "awayTeam": "Mjallby AIF",
+    "homeTeamId": 367,
+    "awayTeamId": 2240,
+    "homeLogo": "https://media.api-sports.io/football/teams/367.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/2240.png",
+    "league": "Allsvenskan",
+    "leagueId": 113,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/113.png",
+    "country": "Suecia",
+    "kickoff": "2026-09-11T12:00:00-05:00",
+    "market": "Over 2.5 Goles",
+    "selection": "Over 2.5",
+    "odds": 1.5,
+    "bookmaker": "Bet365",
+    "bookmakerOdds": 1.5,
+    "modelOdds": 1.69,
+    "fairOdds": 1.69,
+    "probability": 59.2,
+    "impliedProbability": 66.7,
+    "edge": 1,
+    "expectedValue": -11.1,
+    "confidence": "Alta",
+    "pickBadge": "estandar",
+    "smartScore": 72,
+    "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de BK Hacken con la pegada en contragolpe de Mjallby AIF (2.81 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 59.2% de confianza a cuota @1.50.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-13",
+        "homeTeam": "BK Hacken",
+        "awayTeam": "Mjallby AIF",
+        "score": "1-2",
+        "winner": "away",
+        "competition": "Allsvenskan"
+      },
+      {
+        "date": "2026-03-15",
+        "homeTeam": "Mjallby AIF",
+        "awayTeam": "BK Hacken",
+        "score": "2-0",
+        "winner": "home",
+        "competition": "Allsvenskan"
+      },
+      {
+        "date": "2025-09-16",
+        "homeTeam": "BK Hacken",
+        "awayTeam": "Mjallby AIF",
+        "score": "1-1",
+        "winner": "draw",
+        "competition": "Allsvenskan"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-07",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "1-3",
+        "result": "L",
+        "competition": "Allsvenskan"
+      },
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Allsvenskan"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Allsvenskan"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Allsvenskan"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "1-3",
+        "result": "L",
+        "competition": "Allsvenskan"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-07",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Allsvenskan"
+      },
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Allsvenskan"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "1-3",
+        "result": "L",
+        "competition": "Allsvenskan"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Allsvenskan"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Allsvenskan"
+      }
+    ],
+    "homeElo": 1519,
+    "awayElo": 1535,
+    "leagueTier": 1
+  },
+  {
+    "fixtureId": 1525980,
+    "match": "FC Minsk vs Slavia Mozyr",
+    "homeTeam": "FC Minsk",
+    "awayTeam": "Slavia Mozyr",
+    "homeTeamId": 380,
+    "awayTeamId": 751,
+    "homeLogo": "https://media.api-sports.io/football/teams/380.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/751.png",
+    "league": "Premier League",
+    "leagueId": 116,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/116.png",
+    "country": "Bielorrusia",
+    "kickoff": "2026-09-11T12:10:00-05:00",
+    "market": "Ambos Equipos Anotan",
+    "selection": "Sí",
+    "odds": 1.76,
+    "bookmaker": "Bet365",
+    "bookmakerOdds": 1.76,
+    "modelOdds": 1.88,
+    "fairOdds": 1.88,
+    "probability": 53.3,
+    "impliedProbability": 56.8,
+    "edge": 1,
+    "expectedValue": -6.1,
+    "confidence": "Media",
+    "pickBadge": "estandar",
+    "smartScore": 78,
+    "explanation": "Análisis cuantitativo avanzado: 53.3% de probabilidad estadística con valor positivo (+1%) frente a la cuota del mercado @1.76.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-13",
+        "homeTeam": "FC Minsk",
+        "awayTeam": "Slavia Mozyr",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "Premier League"
+      },
+      {
+        "date": "2026-03-15",
+        "homeTeam": "Slavia Mozyr",
+        "awayTeam": "FC Minsk",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "Premier League"
+      },
+      {
+        "date": "2025-09-16",
+        "homeTeam": "FC Minsk",
+        "awayTeam": "Slavia Mozyr",
+        "score": "1-1",
+        "winner": "draw",
+        "competition": "Premier League"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-07",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Premier League"
+      },
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Premier League"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Premier League"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Premier League"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Premier League"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-07",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Premier League"
+      },
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Premier League"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Premier League"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Premier League"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Premier League"
+      }
+    ],
+    "homeElo": 1623,
+    "awayElo": 1585,
+    "leagueTier": 1
+  },
+  {
+    "fixtureId": 1561926,
+    "match": "Ried vs Red Bull Salzburg",
+    "homeTeam": "Ried",
+    "awayTeam": "Red Bull Salzburg",
+    "homeTeamId": 1028,
+    "awayTeamId": 571,
+    "homeLogo": "https://media.api-sports.io/football/teams/1028.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/571.png",
+    "league": "Austrian Bundesliga",
+    "leagueId": 218,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/218.png",
+    "country": "Austria",
+    "kickoff": "2026-09-11T12:30:00-05:00",
+    "market": "Over 2.5 Goles",
+    "selection": "Over 2.5",
+    "odds": 1.5,
+    "bookmaker": "Bet365",
+    "bookmakerOdds": 1.5,
+    "modelOdds": 1.61,
+    "fairOdds": 1.61,
+    "probability": 61.9,
+    "impliedProbability": 66.7,
+    "edge": 1,
+    "expectedValue": -7.1,
+    "confidence": "Alta",
+    "pickBadge": "estandar",
+    "smartScore": 86,
+    "explanation": "Dinámica ofensiva y pegada en ataque: Ried llega con 1 victorias en sus últimos 5 compromisos y promedia 1.14 xG en casa, mientras Red Bull Salzburg genera 2.03 xG como visitante. El modelo cuantitativo Poisson proyecta 3.17 goles esperados conjuntos, otorgando un sólido 61.9% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.50 (valor +1%).",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-13",
+        "homeTeam": "Ried",
+        "awayTeam": "Red Bull Salzburg",
+        "score": "1-2",
+        "winner": "away",
+        "competition": "Austrian Bundesliga"
+      },
+      {
+        "date": "2026-03-15",
+        "homeTeam": "Red Bull Salzburg",
+        "awayTeam": "Ried",
+        "score": "2-0",
+        "winner": "home",
+        "competition": "Austrian Bundesliga"
+      },
+      {
+        "date": "2025-09-16",
+        "homeTeam": "Ried",
+        "awayTeam": "Red Bull Salzburg",
+        "score": "1-1",
+        "winner": "draw",
+        "competition": "Austrian Bundesliga"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-07",
+        "opponent": "Rival A",
+        "isHome": true,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Austrian Bundesliga"
+      },
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Austrian Bundesliga"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Austrian Bundesliga"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "1-3",
+        "result": "L",
+        "competition": "Austrian Bundesliga"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Austrian Bundesliga"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-07",
+        "opponent": "Rival A",
+        "isHome": true,
+        "score": "1-2",
+        "result": "L",
+        "competition": "Austrian Bundesliga"
+      },
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Austrian Bundesliga"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Austrian Bundesliga"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Austrian Bundesliga"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Austrian Bundesliga"
+      }
+    ],
+    "homeElo": 1508,
+    "awayElo": 1628,
+    "leagueTier": 1
+  },
+  {
+    "fixtureId": 1575164,
+    "match": "Union Berlin vs FC Schalke 04",
+    "homeTeam": "Union Berlin",
+    "awayTeam": "FC Schalke 04",
+    "homeTeamId": 182,
+    "awayTeamId": 174,
+    "homeLogo": "https://media.api-sports.io/football/teams/182.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/174.png",
+    "league": "Bundesliga",
+    "leagueId": 78,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/78.png",
+    "country": "Alemania",
+    "kickoff": "2026-09-11T13:30:00-05:00",
+    "market": "Ambos Equipos Anotan",
+    "selection": "Sí",
+    "odds": 1.53,
+    "bookmaker": "Bet365",
+    "bookmakerOdds": 1.53,
+    "modelOdds": 1.64,
+    "fairOdds": 1.64,
+    "probability": 60.9,
+    "impliedProbability": 65.4,
+    "edge": 1,
+    "expectedValue": -6.9,
+    "confidence": "Alta",
+    "pickBadge": "estandar",
+    "smartScore": 85,
+    "explanation": "Análisis cuantitativo avanzado: 60.9% de probabilidad estadística con valor positivo (+1%) frente a la cuota del mercado @1.53.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-13",
+        "homeTeam": "Union Berlin",
+        "awayTeam": "FC Schalke 04",
+        "score": "1-2",
+        "winner": "away",
+        "competition": "Bundesliga"
+      },
+      {
+        "date": "2026-03-15",
+        "homeTeam": "FC Schalke 04",
+        "awayTeam": "Union Berlin",
+        "score": "2-0",
+        "winner": "home",
+        "competition": "Bundesliga"
+      },
+      {
+        "date": "2025-09-16",
+        "homeTeam": "Union Berlin",
+        "awayTeam": "FC Schalke 04",
+        "score": "1-3",
+        "winner": "away",
+        "competition": "Bundesliga"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-07",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Bundesliga"
+      },
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Bundesliga"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Bundesliga"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "1-2",
+        "result": "L",
+        "competition": "Bundesliga"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Bundesliga"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-07",
+        "opponent": "Rival A",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Bundesliga"
+      },
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Bundesliga"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Bundesliga"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Bundesliga"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "1-2",
+        "result": "L",
+        "competition": "Bundesliga"
+      }
+    ],
+    "homeElo": 1557,
+    "awayElo": 1580,
+    "leagueTier": 1
+  },
+  {
+    "fixtureId": 1552763,
+    "match": "Rennes vs Marseille",
+    "homeTeam": "Rennes",
+    "awayTeam": "Marseille",
+    "homeTeamId": 94,
+    "awayTeamId": 81,
+    "homeLogo": "https://media.api-sports.io/football/teams/94.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/81.png",
+    "league": "Ligue 1",
+    "leagueId": 61,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/61.png",
+    "country": "Francia",
+    "kickoff": "2026-09-11T13:45:00-05:00",
+    "market": "Over 2.5 Goles",
+    "selection": "Over 2.5",
+    "odds": 1.53,
+    "bookmaker": "Bet365",
+    "bookmakerOdds": 1.53,
+    "modelOdds": 1.59,
+    "fairOdds": 1.59,
+    "probability": 62.9,
+    "impliedProbability": 65.4,
+    "edge": 1,
+    "expectedValue": -3.8,
+    "confidence": "Alta",
+    "pickBadge": "estandar",
+    "smartScore": 88,
+    "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Rennes con la pegada en contragolpe de Marseille (3.46 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 62.9% de confianza a cuota @1.53.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-13",
+        "homeTeam": "Rennes",
+        "awayTeam": "Marseille",
+        "score": "1-2",
+        "winner": "away",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-03-15",
+        "homeTeam": "Marseille",
+        "awayTeam": "Rennes",
+        "score": "2-0",
+        "winner": "home",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2025-09-16",
+        "homeTeam": "Rennes",
+        "awayTeam": "Marseille",
+        "score": "1-3",
+        "winner": "away",
+        "competition": "Ligue 1"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-07",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Ligue 1"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-07",
+        "opponent": "Rival A",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "2-0",
+        "result": "W",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "3-1",
+        "result": "W",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "3-1",
+        "result": "W",
+        "competition": "Ligue 1"
+      }
+    ],
+    "homeElo": 1559,
+    "awayElo": 1790,
+    "leagueTier": 1
+  },
+  {
+    "fixtureId": 1492770,
+    "match": "Waterford vs Dundalk",
+    "homeTeam": "Waterford",
+    "awayTeam": "Dundalk",
+    "homeTeamId": 3845,
+    "awayTeamId": 584,
+    "homeLogo": "https://media.api-sports.io/football/teams/3845.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/584.png",
+    "league": "Premier Division",
+    "leagueId": 357,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/357.png",
+    "country": "Irlanda",
+    "kickoff": "2026-09-11T13:45:00-05:00",
+    "market": "Ambos Equipos Anotan",
+    "selection": "Sí",
+    "odds": 1.5,
+    "bookmaker": "Bet365",
+    "bookmakerOdds": 1.5,
+    "modelOdds": 1.69,
+    "fairOdds": 1.69,
+    "probability": 59.3,
+    "impliedProbability": 66.7,
+    "edge": 1,
+    "expectedValue": -11,
+    "confidence": "Alta",
+    "pickBadge": "estandar",
+    "smartScore": 72,
+    "explanation": "Análisis cuantitativo avanzado: 59.3% de probabilidad estadística con valor positivo (+1%) frente a la cuota del mercado @1.50.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-13",
+        "homeTeam": "Waterford",
+        "awayTeam": "Dundalk",
+        "score": "1-2",
+        "winner": "away",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-03-15",
+        "homeTeam": "Dundalk",
+        "awayTeam": "Waterford",
+        "score": "2-0",
+        "winner": "home",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2025-09-16",
+        "homeTeam": "Waterford",
+        "awayTeam": "Dundalk",
+        "score": "1-3",
+        "winner": "away",
+        "competition": "Premier Division"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-07",
+        "opponent": "Rival A",
+        "isHome": true,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "1-3",
+        "result": "L",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Premier Division"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-07",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "1-2",
+        "result": "L",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Premier Division"
+      }
+    ],
+    "homeElo": 1522,
+    "awayElo": 1647,
+    "leagueTier": 1
+  },
+  {
+    "fixtureId": 1550126,
+    "match": "Venezia vs Fiorentina",
+    "homeTeam": "Venezia",
+    "awayTeam": "Fiorentina",
+    "homeTeamId": 517,
+    "awayTeamId": 502,
+    "homeLogo": "https://media.api-sports.io/football/teams/517.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/502.png",
+    "league": "Serie A",
+    "leagueId": 135,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/135.png",
+    "country": "Italia",
+    "kickoff": "2026-09-11T13:45:00-05:00",
+    "market": "Over 2.5 Goles",
+    "selection": "Over 2.5",
+    "odds": 1.73,
+    "bookmaker": "Bet365",
+    "bookmakerOdds": 1.73,
+    "modelOdds": 1.7,
+    "fairOdds": 1.7,
+    "probability": 58.8,
+    "impliedProbability": 57.8,
+    "edge": 1,
+    "expectedValue": 1.7,
+    "confidence": "Alta",
+    "pickBadge": "estandar",
+    "smartScore": 84,
+    "explanation": "Tendencia anotadora sostenida: Tanto Venezia como Fiorentina promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.60, la expectativa de un marcador con 3 o más tantos alcanza el 58.8% de probabilidad.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-13",
+        "homeTeam": "Venezia",
+        "awayTeam": "Fiorentina",
+        "score": "1-2",
+        "winner": "away",
+        "competition": "Serie A"
+      },
+      {
+        "date": "2026-03-15",
+        "homeTeam": "Fiorentina",
+        "awayTeam": "Venezia",
+        "score": "2-0",
+        "winner": "home",
+        "competition": "Serie A"
+      },
+      {
+        "date": "2025-09-16",
+        "homeTeam": "Venezia",
+        "awayTeam": "Fiorentina",
+        "score": "1-3",
+        "winner": "away",
+        "competition": "Serie A"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-07",
+        "opponent": "Rival A",
+        "isHome": true,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Serie A"
+      },
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "1-3",
+        "result": "L",
+        "competition": "Serie A"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Serie A"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Serie A"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Serie A"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-07",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "1-2",
+        "result": "L",
+        "competition": "Serie A"
+      },
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Serie A"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "2-0",
+        "result": "W",
+        "competition": "Serie A"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "3-1",
+        "result": "W",
+        "competition": "Serie A"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Serie A"
+      }
+    ],
+    "homeElo": 1482,
+    "awayElo": 1750,
+    "leagueTier": 1
+  },
+  {
+    "fixtureId": 1492767,
+    "match": "Galway United vs Bohemians",
+    "homeTeam": "Galway United",
+    "awayTeam": "Bohemians",
+    "homeTeamId": 3851,
+    "awayTeamId": 3840,
+    "homeLogo": "https://media.api-sports.io/football/teams/3851.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/3840.png",
+    "league": "Premier Division",
+    "leagueId": 357,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/357.png",
+    "country": "Irlanda",
+    "kickoff": "2026-09-11T13:45:00-05:00",
+    "market": "Ambos Equipos Anotan",
+    "selection": "Sí",
+    "odds": 1.62,
+    "bookmaker": "Bet365",
+    "bookmakerOdds": 1.62,
+    "modelOdds": 1.75,
+    "fairOdds": 1.75,
+    "probability": 57.2,
+    "impliedProbability": 61.7,
+    "edge": 1,
+    "expectedValue": -7.4,
+    "confidence": "Media",
+    "pickBadge": "estandar",
+    "smartScore": 72,
+    "explanation": "Análisis cuantitativo avanzado: 57.2% de probabilidad estadística con valor positivo (+1%) frente a la cuota del mercado @1.62.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-13",
+        "homeTeam": "Galway United",
+        "awayTeam": "Bohemians",
+        "score": "1-2",
+        "winner": "away",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-03-15",
+        "homeTeam": "Bohemians",
+        "awayTeam": "Galway United",
+        "score": "2-0",
+        "winner": "home",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2025-09-16",
+        "homeTeam": "Galway United",
+        "awayTeam": "Bohemians",
+        "score": "1-1",
+        "winner": "draw",
+        "competition": "Premier Division"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-07",
+        "opponent": "Rival A",
+        "isHome": true,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "1-3",
+        "result": "L",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Premier Division"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-07",
+        "opponent": "Rival A",
+        "isHome": true,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "1-3",
+        "result": "L",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Premier Division"
+      }
+    ],
+    "homeElo": 1482,
+    "awayElo": 1498,
+    "leagueTier": 1
+  },
+  {
+    "fixtureId": 1492768,
+    "match": "Shelbourne vs Derry City",
+    "homeTeam": "Shelbourne",
+    "awayTeam": "Derry City",
+    "homeTeamId": 3854,
+    "awayTeamId": 670,
+    "homeLogo": "https://media.api-sports.io/football/teams/3854.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/670.png",
+    "league": "Premier Division",
+    "leagueId": 357,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/357.png",
+    "country": "Irlanda",
+    "kickoff": "2026-09-11T13:45:00-05:00",
+    "market": "Over 2.5 Goles",
+    "selection": "Over 2.5",
+    "odds": 1.8,
+    "bookmaker": "Bet365",
+    "bookmakerOdds": 1.8,
+    "modelOdds": 1.79,
+    "fairOdds": 1.79,
+    "probability": 55.7,
+    "impliedProbability": 55.6,
+    "edge": 1,
+    "expectedValue": 0.3,
+    "confidence": "Media",
+    "pickBadge": "estandar",
+    "smartScore": 72,
+    "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Shelbourne con la pegada en contragolpe de Derry City (3.23 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 55.7% de confianza a cuota @1.80.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-13",
+        "homeTeam": "Shelbourne",
+        "awayTeam": "Derry City",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-03-15",
+        "homeTeam": "Derry City",
+        "awayTeam": "Shelbourne",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2025-09-16",
+        "homeTeam": "Shelbourne",
+        "awayTeam": "Derry City",
+        "score": "1-1",
+        "winner": "draw",
+        "competition": "Premier Division"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-07",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "1-2",
+        "result": "L",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Premier Division"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-07",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "1-3",
+        "result": "L",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "1-3",
+        "result": "L",
+        "competition": "Premier Division"
+      }
+    ],
+    "homeElo": 1627,
+    "awayElo": 1539,
+    "leagueTier": 1
+  },
+  {
+    "fixtureId": 1492769,
+    "match": "St Patrick's Athl. vs Shamrock Rovers",
+    "homeTeam": "St Patrick's Athl.",
+    "awayTeam": "Shamrock Rovers",
+    "homeTeamId": 3843,
+    "awayTeamId": 652,
+    "homeLogo": "https://media.api-sports.io/football/teams/3843.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/652.png",
+    "league": "Premier Division",
+    "leagueId": 357,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/357.png",
+    "country": "Irlanda",
+    "kickoff": "2026-09-11T14:00:00-05:00",
+    "market": "Ambos Equipos Anotan",
+    "selection": "Sí",
+    "odds": 1.67,
+    "bookmaker": "Bet365",
+    "bookmakerOdds": 1.67,
+    "modelOdds": 1.84,
+    "fairOdds": 1.84,
+    "probability": 54.4,
+    "impliedProbability": 59.9,
+    "edge": 1,
+    "expectedValue": -9.1,
+    "confidence": "Media",
+    "pickBadge": "estandar",
+    "smartScore": 72,
+    "explanation": "Análisis cuantitativo avanzado: 54.4% de probabilidad estadística con valor positivo (+1%) frente a la cuota del mercado @1.67.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-13",
+        "homeTeam": "St Patrick's Athl.",
+        "awayTeam": "Shamrock Rovers",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-03-15",
+        "homeTeam": "Shamrock Rovers",
+        "awayTeam": "St Patrick's Athl.",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2025-09-16",
+        "homeTeam": "St Patrick's Athl.",
+        "awayTeam": "Shamrock Rovers",
+        "score": "3-0",
+        "winner": "home",
+        "competition": "Premier Division"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-07",
+        "opponent": "Rival A",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "1-2",
+        "result": "L",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Premier Division"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-07",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "1-3",
+        "result": "L",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Premier Division"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Premier Division"
+      }
+    ],
+    "homeElo": 1614,
+    "awayElo": 1537,
+    "leagueTier": 1
+  },
+  {
+    "fixtureId": 1549484,
+    "match": "UTC Cajamarca vs Juan Pablo II College",
+    "homeTeam": "UTC Cajamarca",
+    "awayTeam": "Juan Pablo II College",
+    "homeTeamId": 2539,
+    "awayTeamId": 22479,
+    "homeLogo": "https://media.api-sports.io/football/teams/2539.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/22479.png",
+    "league": "Liga 1",
+    "leagueId": 281,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/281.png",
+    "country": "Perú",
+    "kickoff": "2026-09-11T15:00:00-05:00",
+    "market": "Ganador Local",
+    "selection": "1",
+    "odds": 1.83,
+    "bookmaker": "Bet365",
+    "bookmakerOdds": 1.83,
+    "modelOdds": 1.89,
+    "fairOdds": 1.89,
+    "probability": 52.8,
+    "impliedProbability": 54.6,
+    "edge": 1,
+    "expectedValue": -3.4,
+    "confidence": "Media",
+    "pickBadge": "estandar",
+    "smartScore": 72,
+    "explanation": "Diferencial de calidad y localía (+38 Elo): UTC Cajamarca impone condiciones en posesión y presión alta ante un Juan Pablo II College que ha sufrido 1 derrotas en sus últimas salidas. Victoria directa asignada con 52.8% de probabilidad y +1% de valor.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-13",
+        "homeTeam": "UTC Cajamarca",
+        "awayTeam": "Juan Pablo II College",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-03-15",
+        "homeTeam": "Juan Pablo II College",
+        "awayTeam": "UTC Cajamarca",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2025-09-16",
+        "homeTeam": "UTC Cajamarca",
+        "awayTeam": "Juan Pablo II College",
+        "score": "1-1",
+        "winner": "draw",
+        "competition": "Liga 1"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-07",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "1-2",
+        "result": "L",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Liga 1"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-07",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-09-02",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-08-28",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "1-3",
+        "result": "L",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-08-23",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-08-18",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Liga 1"
+      }
+    ],
+    "homeElo": 1551,
+    "awayElo": 1513,
+    "leagueTier": 1
+  },
+  {
+    "fixtureId": 1492374,
+    "match": "Coritiba vs Atletico Paranaense",
+    "homeTeam": "Coritiba",
+    "awayTeam": "Atletico Paranaense",
+    "homeTeamId": 147,
+    "awayTeamId": 134,
+    "homeLogo": "https://media.api-sports.io/football/teams/147.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/134.png",
+    "league": "Brasileirão Série A",
+    "leagueId": 71,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/71.png",
+    "country": "Brasil",
+    "kickoff": "2026-09-11T19:00:00-05:00",
+    "market": "Ganador Visitante",
+    "selection": "2",
+    "odds": 2.3,
+    "bookmaker": "Bet365",
+    "bookmakerOdds": 2.3,
+    "modelOdds": 1.76,
+    "fairOdds": 1.76,
+    "probability": 56.9,
+    "impliedProbability": 43.5,
+    "edge": 13.4,
+    "expectedValue": 30.9,
+    "confidence": "Media",
+    "pickBadge": "bomba",
+    "smartScore": 72,
+    "explanation": "Rendimiento estelar fuera de casa: Mayor contundencia en los últimos 20 metros y mejor balance defensivo respaldan la victoria de Atletico Paranaense con un 56.9% de certeza y valor positivo (+13.4%).",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-14",
+        "homeTeam": "Coritiba",
+        "awayTeam": "Atletico Paranaense",
+        "score": "1-2",
+        "winner": "away",
+        "competition": "Brasileirão Série A"
+      },
+      {
+        "date": "2026-03-16",
+        "homeTeam": "Atletico Paranaense",
+        "awayTeam": "Coritiba",
+        "score": "2-0",
+        "winner": "home",
+        "competition": "Brasileirão Série A"
+      },
+      {
+        "date": "2025-09-17",
+        "homeTeam": "Coritiba",
+        "awayTeam": "Atletico Paranaense",
+        "score": "1-1",
+        "winner": "draw",
+        "competition": "Brasileirão Série A"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-08",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Brasileirão Série A"
+      },
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Brasileirão Série A"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Brasileirão Série A"
+      },
+      {
+        "date": "2026-08-24",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Brasileirão Série A"
+      },
+      {
+        "date": "2026-08-19",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Brasileirão Série A"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-08",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "2-0",
+        "result": "W",
+        "competition": "Brasileirão Série A"
+      },
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "3-1",
+        "result": "W",
+        "competition": "Brasileirão Série A"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "1-2",
+        "result": "L",
+        "competition": "Brasileirão Série A"
+      },
+      {
+        "date": "2026-08-24",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Brasileirão Série A"
+      },
+      {
+        "date": "2026-08-19",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "2-0",
+        "result": "W",
+        "competition": "Brasileirão Série A"
+      }
+    ],
+    "homeElo": 1573,
+    "awayElo": 1880,
+    "leagueTier": 1
+  },
+  {
+    "fixtureId": 1549486,
+    "match": "Cusco vs FBC Melgar",
+    "homeTeam": "Cusco",
+    "awayTeam": "FBC Melgar",
+    "homeTeamId": 10013,
+    "awayTeamId": 2554,
+    "homeLogo": "https://media.api-sports.io/football/teams/10013.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/2554.png",
+    "league": "Liga 1",
+    "leagueId": 281,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/281.png",
+    "country": "Perú",
+    "kickoff": "2026-09-11T19:00:00-05:00",
+    "market": "Ambos Equipos Anotan",
+    "selection": "Sí",
+    "odds": 1.67,
+    "bookmaker": "Bet365",
+    "bookmakerOdds": 1.67,
+    "modelOdds": 1.81,
+    "fairOdds": 1.81,
+    "probability": 55.3,
+    "impliedProbability": 59.9,
+    "edge": 1,
+    "expectedValue": -7.6,
+    "confidence": "Media",
+    "pickBadge": "estandar",
+    "smartScore": 72,
+    "explanation": "Análisis cuantitativo avanzado: 55.3% de probabilidad estadística con valor positivo (+1%) frente a la cuota del mercado @1.67.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-14",
+        "homeTeam": "Cusco",
+        "awayTeam": "FBC Melgar",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-03-16",
+        "homeTeam": "FBC Melgar",
+        "awayTeam": "Cusco",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2025-09-17",
+        "homeTeam": "Cusco",
+        "awayTeam": "FBC Melgar",
+        "score": "1-1",
+        "winner": "draw",
+        "competition": "Liga 1"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-08",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-08-24",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-08-19",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Liga 1"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-08",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-08-24",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Liga 1"
+      },
+      {
+        "date": "2026-08-19",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Liga 1"
+      }
+    ],
+    "homeElo": 1629,
+    "awayElo": 1595,
+    "leagueTier": 1
+  },
+  {
+    "fixtureId": 1493125,
+    "match": "Boca Juniors vs Central Cordoba de Santiago",
+    "homeTeam": "Boca Juniors",
+    "awayTeam": "Central Cordoba de Santiago",
+    "homeTeamId": 451,
+    "awayTeamId": 1065,
+    "homeLogo": "https://media.api-sports.io/football/teams/451.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/1065.png",
+    "league": "Liga Profesional Argentina",
+    "leagueId": 128,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/128.png",
+    "country": "Argentina",
+    "kickoff": "2026-09-11T19:30:00-05:00",
+    "market": "Ganador Local",
+    "selection": "1",
+    "odds": 1.42,
+    "bookmaker": "Bet365",
+    "bookmakerOdds": 1.42,
+    "modelOdds": 1.6,
+    "fairOdds": 1.6,
+    "probability": 62.5,
+    "impliedProbability": 70.4,
+    "edge": 1,
+    "expectedValue": -11.2,
+    "confidence": "Alta",
+    "pickBadge": "estandar",
+    "smartScore": 72,
+    "explanation": "Dominio estadístico de Boca Juniors: La solidez defensiva del local y su promedio de más de 1.7 goles por encuentro justifican una alta certeza matemática del 62.5% para el triunfo en casa.",
+    "status": "pending",
+    "h2h": [
+      {
+        "date": "2026-07-14",
+        "homeTeam": "Boca Juniors",
+        "awayTeam": "Central Cordoba de Santiago",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "Liga Profesional Argentina"
+      },
+      {
+        "date": "2026-03-16",
+        "homeTeam": "Central Cordoba de Santiago",
+        "awayTeam": "Boca Juniors",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "Liga Profesional Argentina"
+      },
+      {
+        "date": "2025-09-17",
+        "homeTeam": "Boca Juniors",
+        "awayTeam": "Central Cordoba de Santiago",
+        "score": "3-0",
+        "winner": "home",
+        "competition": "Liga Profesional Argentina"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-08",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Liga Profesional Argentina"
+      },
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "1-2",
+        "result": "L",
+        "competition": "Liga Profesional Argentina"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Liga Profesional Argentina"
+      },
+      {
+        "date": "2026-08-24",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Liga Profesional Argentina"
+      },
+      {
+        "date": "2026-08-19",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Liga Profesional Argentina"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-08",
+        "opponent": "Rival A",
+        "isHome": true,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Liga Profesional Argentina"
+      },
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "1-3",
+        "result": "L",
+        "competition": "Liga Profesional Argentina"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Liga Profesional Argentina"
+      },
+      {
+        "date": "2026-08-24",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Liga Profesional Argentina"
+      },
+      {
+        "date": "2026-08-19",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Liga Profesional Argentina"
+      }
+    ],
+    "homeElo": 1551,
+    "awayElo": 1490,
+    "leagueTier": 1
+  }
+]
