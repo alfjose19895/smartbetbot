@@ -457,10 +457,25 @@ export function getStoredPredictions(): MarketOpportunity[] {
   const todayDateStr = getEcuadorDateString(nowMs);
   const activeDateStr = todayDateStr >= HISTORY_START_DATE ? todayDateStr : HISTORY_START_DATE;
 
-  // Return the complete snapshot of predictions for today so all status tabs (Scheduled, In-Play, Finished, Won, Lost, MCP) work properly
-  const todaySnapshot = loadDailySnapshot(todayDateStr) || loadDailySnapshot(activeDateStr);
+  // 1. Return today's existing snapshot if present
+  const todaySnapshot = loadDailySnapshot(todayDateStr);
   if (todaySnapshot && Array.isArray(todaySnapshot) && todaySnapshot.length > 0) {
     return todaySnapshot;
+  }
+
+  // 2. Fallback to activeDateStr snapshot
+  const activeSnapshot = loadDailySnapshot(activeDateStr);
+  if (activeSnapshot && Array.isArray(activeSnapshot) && activeSnapshot.length > 0) {
+    return activeSnapshot;
+  }
+
+  // 3. Fallback to most recent available daily snapshot
+  const allSnapshots = getAllDailySnapshots();
+  const dates = Object.keys(allSnapshots).sort().reverse();
+  for (const d of dates) {
+    if (d >= HISTORY_START_DATE && allSnapshots[d] && allSnapshots[d].length > 0) {
+      return allSnapshots[d];
+    }
   }
 
   return [];
@@ -842,17 +857,27 @@ export function addPredictionsToDailySnapshot(newPicks: MarketOpportunity[]): {
     existingMap.set(key, p);
   }
 
+  // Also group new picks by their specific kickoff date so multi-day forecasts persist in their date file
+  const picksByDate = new Map<string, MarketOpportunity[]>();
+
   let addedCount = 0;
   for (const pick of newPicks) {
     const h = getCanonicalTeamKey(pick.homeTeam);
     const a = getCanonicalTeamKey(pick.awayTeam);
     const fixId = Number(pick.fixtureId) || 0;
     const key = `${fixId}-${h}-${a}-${pick.market}`;
+    const pickDate = pick.kickoff ? pick.kickoff.split("T")[0] : activeDateStr;
+
+    const prob = typeof pick.probability === "number" ? pick.probability : 50;
+    const conf: "Muy Alta" | "Alta" | "Media" | "Moderada" =
+      prob >= 70 ? "Muy Alta" : prob >= 58 ? "Alta" : prob >= 50 ? "Media" : "Moderada";
 
     const taggedPick: MarketOpportunity = {
       ...pick,
+      confidence: conf,
       pickBadge: (pick.pickBadge || "mcp") as "bomba" | "valor" | "estandar" | "mcp",
       isMcpPick: true,
+      isMcp: true,
       source: "mcp",
       status: pick.status || "pending",
     };
@@ -869,15 +894,44 @@ export function addPredictionsToDailySnapshot(newPicks: MarketOpportunity[]): {
       existingMap.set(key, taggedPick);
       addedCount++;
     }
+
+    if (!picksByDate.has(pickDate)) {
+      picksByDate.set(pickDate, []);
+    }
+    picksByDate.get(pickDate)!.push(taggedPick);
   }
 
   const finalPicks = Array.from(existingMap.values());
   finalPicks.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
 
   if (addedCount > 0) {
+    // 1. Save to active today snapshot
     saveDailySnapshot(activeDateStr, finalPicks);
+
+    // 2. Save/merge into each respective date snapshot file
+    for (const [dateStr, datePicks] of picksByDate.entries()) {
+      if (dateStr !== activeDateStr && dateStr >= HISTORY_START_DATE) {
+        const dateExisting = loadDailySnapshot(dateStr) || [];
+        const dateMap = new Map<string, MarketOpportunity>();
+        for (const p of dateExisting) {
+          const key = `${Number(p.fixtureId) || 0}-${getCanonicalTeamKey(p.homeTeam)}-${getCanonicalTeamKey(p.awayTeam)}-${p.market}`;
+          dateMap.set(key, p);
+        }
+        for (const p of datePicks) {
+          const key = `${Number(p.fixtureId) || 0}-${getCanonicalTeamKey(p.homeTeam)}-${getCanonicalTeamKey(p.awayTeam)}-${p.market}`;
+          dateMap.set(key, p);
+        }
+        const mergedDate = Array.from(dateMap.values()).sort(
+          (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
+        );
+        saveDailySnapshot(dateStr, mergedDate);
+      }
+    }
+
     cachedLivePredictions = finalPicks;
     cacheTimestamp = nowMs;
+    cachedSettledHistory = []; // Invalidate history cache so settled updates reflect immediately
+    historyCacheTimestamp = 0;
   }
 
   return {
@@ -1060,11 +1114,11 @@ export async function refreshRemainingLivePredictions(): Promise<{
   };
 }
 
-export async function getHistoricalSettledPredictions(): Promise<HistoricalSettledPick[]> {
+export async function getHistoricalSettledPredictions(forceRefresh = false): Promise<HistoricalSettledPick[]> {
   const nowMs = Date.now();
   const todayDateStr = getEcuadorDateString(nowMs);
 
-  if (cachedSettledHistory.length > 0 && nowMs - historyCacheTimestamp < HISTORY_CACHE_TTL_MS) {
+  if (!forceRefresh && cachedSettledHistory.length > 0 && nowMs - historyCacheTimestamp < HISTORY_CACHE_TTL_MS) {
     return cachedSettledHistory;
   }
 

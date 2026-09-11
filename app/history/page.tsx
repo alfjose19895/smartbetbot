@@ -75,6 +75,15 @@ export default function HistoryPage() {
     };
 
     fetchHistory();
+    const handleUpdated = () => {
+      fetchHistory();
+    };
+    window.addEventListener("predictions-updated", handleUpdated);
+    window.addEventListener("storage", handleUpdated);
+    return () => {
+      window.removeEventListener("predictions-updated", handleUpdated);
+      window.removeEventListener("storage", handleUpdated);
+    };
   }, []);
 
   // Build classified league options grouped by Country
