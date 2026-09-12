@@ -20,6 +20,91 @@ function getMatchLiveStatus(kickoff: string): "SCHEDULED" | "IN_PLAY" | "FINISHE
   return "FINISHED";
 }
 
+
+function getMatchDeduplicationKey(p: MarketOpportunity): string {
+  const fixId = Number(p.fixtureId) || 0;
+  if (fixId > 0) return `fix-${fixId}`;
+  const h = (p.homeTeam || "").toLowerCase().replace(/[^a-z0-9]/gi, "").trim();
+  const a = (p.awayTeam || "").toLowerCase().replace(/[^a-z0-9]/gi, "").trim();
+  
+  // Canonical aliases
+  let hKey = h;
+  let aKey = a;
+  if (h.includes("chico")) hKey = "boyacachico";
+  if (a.includes("chico")) aKey = "boyacachico";
+  if (h.includes("medellin")) hKey = "independientemedellin";
+  if (a.includes("medellin")) aKey = "independientemedellin";
+  if (h.includes("cruzazul")) hKey = "cruzazul";
+  if (a.includes("cruzazul")) aKey = "cruzazul";
+  if (h.includes("america") && !h.includes("cali")) hKey = "clubamerica";
+  if (a.includes("america") && !a.includes("cali")) aKey = "clubamerica";
+  if (h.includes("columbus")) hKey = "columbuscrew";
+  if (a.includes("columbus")) aKey = "columbuscrew";
+  if (h.includes("redbulls")) hKey = "newyorkredbulls";
+  if (a.includes("redbulls")) aKey = "newyorkredbulls";
+  if (h.includes("dallas")) hKey = "fcdallas";
+  if (a.includes("dallas")) aKey = "fcdallas";
+  if (h.includes("portland")) hKey = "portlandtimbers";
+  if (a.includes("portland")) aKey = "portlandtimbers";
+  
+  return `${hKey}-${aKey}`;
+}
+
+function deduplicatePicksList(picks: MarketOpportunity[]): MarketOpportunity[] {
+  const map = new Map<string, MarketOpportunity>();
+  const seenTeams = new Set<string>();
+
+  for (const p of picks) {
+    const key = getMatchDeduplicationKey(p);
+    const h = (p.homeTeam || "").toLowerCase().replace(/[^a-z0-9]/gi, "").trim();
+    const a = (p.awayTeam || "").toLowerCase().replace(/[^a-z0-9]/gi, "").trim();
+    let hKey = h.includes("chico") ? "boyacachico" : h.includes("cruzazul") ? "cruzazul" : h;
+    let aKey = a.includes("chico") ? "boyacachico" : a.includes("cruzazul") ? "cruzazul" : a;
+
+    let matchedExistingKey: string | null = null;
+    for (const [exKey, ex] of map.entries()) {
+      if (exKey === key) {
+        matchedExistingKey = exKey;
+        break;
+      }
+      const exFixId = Number(ex.fixtureId) || 0;
+      const fixId = Number(p.fixtureId) || 0;
+      if (fixId > 0 && exFixId > 0 && fixId === exFixId) {
+        matchedExistingKey = exKey;
+        break;
+      }
+      const exH = (ex.homeTeam || "").toLowerCase().replace(/[^a-z0-9]/gi, "").trim();
+      const exA = (ex.awayTeam || "").toLowerCase().replace(/[^a-z0-9]/gi, "").trim();
+      let exHKey = exH.includes("chico") ? "boyacachico" : exH.includes("cruzazul") ? "cruzazul" : exH;
+      let exAKey = exA.includes("chico") ? "boyacachico" : exA.includes("cruzazul") ? "cruzazul" : exA;
+
+      if ((hKey === exHKey && aKey === exAKey) ||
+          ((hKey.includes(exHKey) || exHKey.includes(hKey)) && (aKey.includes(exAKey) || exAKey.includes(aKey)))) {
+        matchedExistingKey = exKey;
+        break;
+      }
+    }
+
+    if (matchedExistingKey) {
+      const existing = map.get(matchedExistingKey)!;
+      map.set(matchedExistingKey, {
+        ...existing,
+        ...p,
+        status: existing.status !== "pending" ? existing.status : p.status || "pending",
+        actualScore: existing.actualScore || p.actualScore,
+      });
+    } else {
+      if (!seenTeams.has(hKey) && !seenTeams.has(aKey)) {
+        map.set(key, p);
+        seenTeams.add(hKey);
+        seenTeams.add(aKey);
+      }
+    }
+  }
+
+  return Array.from(map.values());
+}
+
 function getEcuadorDateString(d: Date | number | string = Date.now()): string {
   try {
     return new Intl.DateTimeFormat("en-CA", {
@@ -143,7 +228,8 @@ export default function SignalsPage() {
         console.warn("Could not merge local published picks in signals:", err);
       }
 
-      setSignals(serverSignals);
+      const cleanUniqueSignals = deduplicatePicksList(serverSignals);
+      setSignals(cleanUniqueSignals);
     } catch (err) {
       console.error("Error fetching signals:", err);
     } finally {

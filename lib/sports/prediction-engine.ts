@@ -187,13 +187,44 @@ export function getCanonicalTeamKey(name: string): string {
     .toLowerCase()
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
-    .replace(/\b(fc|cf|rc|rcd|ud|ca|afc|sc|sd|gd|sl|de|la|el|los|las|the|club|balompie|futbol|fútbol|de futbol|de fútbol|de madrid|de bilbao|de barcelona|de vigo|sad|praia)\b/gi, " ")
+    .replace(/\b(fc|cf|rc|rcd|ud|ca|afc|sc|sd|gd|sl|de|la|el|los|las|the|club|balompie|futbol|fútbol|de futbol|de fútbol|de madrid|de bilbao|de barcelona|de vigo|sad|praia|sports|sporting|asociacion|corporacion|cd)\b/gi, " ")
     .replace(/[^a-z0-9]/gi, "")
     .trim();
 
+  // Colombia
+  if (norm.includes("chico") || norm.includes("boyacachico")) return "boyacachico";
+  if (norm.includes("medellin") || norm.includes("independientemedellin") || norm.includes("dim")) return "independientemedellin";
+  if (norm.includes("nacional") || norm.includes("atleticonacional")) return "atleticonacional";
+  if (norm.includes("millonarios")) return "millonarios";
+  if (norm.includes("santafe")) return "santafe";
+  if (norm.includes("junior")) return "junior";
+  if (norm.includes("americadecali") || (norm.includes("america") && norm.includes("cali"))) return "americadecali";
+
+  // Mexico
+  if (norm.includes("cruzazul")) return "cruzazul";
+  if (norm.includes("clubamerica") || norm.includes("america") || norm.includes("aguilas")) return "clubamerica";
+  if (norm.includes("chivas") || norm.includes("guadalajara")) return "guadalajara";
+  if (norm.includes("tigres") || norm.includes("uanl")) return "tigresuanl";
+  if (norm.includes("monterrey") || norm.includes("rayados")) return "monterrey";
+  if (norm.includes("pumas") || norm.includes("unam")) return "pumasunam";
+  if (norm.includes("toluca")) return "toluca";
+  if (norm.includes("pachuca")) return "pachuca";
+
+  // USA MLS
+  if (norm.includes("columbus") || norm.includes("columbuscrew")) return "columbuscrew";
+  if (norm.includes("redbulls") || norm.includes("nyredbulls") || norm.includes("newyorkredbulls")) return "newyorkredbulls";
+  if (norm.includes("dallas") || norm.includes("fcdallas")) return "fcdallas";
+  if (norm.includes("portland") || norm.includes("portlandtimbers")) return "portlandtimbers";
+  if (norm.includes("intermiami") || norm.includes("miami")) return "intermiami";
+  if (norm.includes("lafc") || (norm.includes("losangeles") && !norm.includes("galaxy"))) return "lafc";
+  if (norm.includes("galaxy") || norm.includes("lagalaxy")) return "lagalaxy";
+
+  // Spain
   if (norm.includes("espanyol")) return "espanyol";
+  if (norm.includes("barcelonaw") || norm.includes("barcelonafem")) return "barcelonaw";
   if (norm.includes("barcelona")) return "barcelona";
   if (norm.includes("realmadrid")) return "realmadrid";
+  if (norm.includes("atleticomadridw") || norm.includes("atleticofem")) return "atleticomadridw";
   if (norm.includes("atleticomadrid") || norm.includes("atletico")) return "atleticomadrid";
   if (norm.includes("realsociedad") || norm.includes("sociedad")) return "realsociedad";
   if (norm.includes("athletic") || norm.includes("bilbao")) return "athleticclub";
@@ -204,24 +235,61 @@ export function getCanonicalTeamKey(name: string): string {
   if (norm.includes("valencia")) return "valencia";
   if (norm.includes("villarreal")) return "villarreal";
   if (norm.includes("deportivo") || norm.includes("coruna")) return "deportivolacoruna";
-  if (norm.includes("benfica")) return "benfica";
-  if (norm.includes("sporting")) return "sportingcp";
-  if (norm.includes("porto")) return "porto";
-  if (norm.includes("estoril")) return "estoril";
+
+  // England
   if (norm.includes("mancity") || norm.includes("manchestercity")) return "manchestercity";
   if (norm.includes("manunited") || norm.includes("manchesterunited")) return "manchesterunited";
   if (norm.includes("chelsea")) return "chelsea";
   if (norm.includes("arsenal")) return "arsenal";
   if (norm.includes("liverpool")) return "liverpool";
-  if (norm.includes("tottenham")) return "tottenham";
+  if (norm.includes("tottenham") || norm.includes("spurs")) return "tottenham";
+  if (norm.includes("astonvilla")) return "astonvilla";
+  if (norm.includes("nottingham") || norm.includes("forest")) return "nottinghamforest";
+  if (norm.includes("crystalpalace")) return "crystalpalace";
+  if (norm.includes("ipswich")) return "ipswich";
+  if (norm.includes("hullcity") || norm.includes("hull")) return "hullcity";
+  if (norm.includes("fulham")) return "fulham";
+  if (norm.includes("everton")) return "everton";
+
+  // Germany (Bundesliga, 2. Bundesliga & 3. Liga)
+  if (norm.includes("bayern")) return "bayernmunich";
+  if (norm.includes("dortmund")) return "borussiadortmund";
+  if (norm.includes("leverkusen")) return "bayerleverkusen";
+  if (norm.includes("leipzig")) return "rbleipzig";
+  if (norm.includes("frankfurt") || norm.includes("eintracht")) return "eintrachtfrankfurt";
+  if (norm.includes("mainz")) return "fsvmainz05";
+  if (norm.includes("hoffenheim")) return "1899hoffenheim";
+  if (norm.includes("stuttgart")) return "vfbstuttgart";
+  if (norm.includes("freiburg")) return "scfreiburg";
+  if (norm.includes("monchengladbach") || norm.includes("gladbach")) return "borussiamonchengladbach";
+  if (norm.includes("augsburg")) return "fcaugsburg";
+  if (norm.includes("paderborn")) return "scpaderborn07";
+  if (norm.includes("dynamodresden") || norm.includes("dresden")) return "dynamodresden";
+  if (norm.includes("hansarostock") || norm.includes("rostock")) return "hansarostock";
+  if (norm.includes("saarbrucken")) return "1fcsaarbrucken";
+  if (norm.includes("unterhaching")) return "spvggunterhaching";
+
+  // Italy
   if (norm.includes("inter")) return "inter";
   if (norm.includes("milan")) return "milan";
   if (norm.includes("juventus")) return "juventus";
-  if (norm.includes("bayern")) return "bayernmunich";
-  if (norm.includes("dortmund")) return "borussiadortmund";
+  if (norm.includes("atalanta")) return "atalanta";
+  if (norm.includes("cagliari")) return "cagliari";
+
+  // France
+  if (norm.includes("psg") || norm.includes("parissaintgermain")) return "psg";
+  if (norm.includes("lehavre")) return "lehavre";
+  if (norm.includes("angers")) return "angers";
+
+  // Netherlands & Portugal
   if (norm.includes("psv")) return "psveindhoven";
   if (norm.includes("ajax")) return "ajax";
   if (norm.includes("feyenoord")) return "feyenoord";
+  if (norm.includes("twente")) return "twente";
+  if (norm.includes("adodenhaag") || norm.includes("denhaag")) return "adodenhaag";
+  if (norm.includes("benfica")) return "benfica";
+  if (norm.includes("sporting")) return "sportingcp";
+  if (norm.includes("porto")) return "porto";
 
   return norm;
 }
