@@ -28,7 +28,7 @@
     "pickBadge": "estandar",
     "smartScore": 77,
     "explanation": "Jerarquía y solvencia territorial: FC Copenhagen (Elo 1585) llega en gran momento con 2 victorias en sus 5 cotejos más recientes, superando a AC Horsens en xG (2.28 vs 0.84). El modelo Poisson proyecta un contundente 69.9% de probabilidad de triunfo local a cuota @1.33.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-13",
@@ -141,7 +141,8 @@
     ],
     "homeElo": 1585,
     "awayElo": 1482,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "2 - 0"
   },
   {
     "fixtureId": 1494277,
@@ -172,7 +173,7 @@
     "pickBadge": "estandar",
     "smartScore": 72,
     "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de BK Hacken con la pegada en contragolpe de Mjallby AIF (2.81 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 59.2% de confianza a cuota @1.50.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-13",
@@ -285,7 +286,8 @@
     ],
     "homeElo": 1519,
     "awayElo": 1535,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "1 - 1 (2 Goles)"
   },
   {
     "fixtureId": 1525980,
@@ -316,7 +318,7 @@
     "pickBadge": "estandar",
     "smartScore": 78,
     "explanation": "Análisis cuantitativo avanzado: 53.3% de probabilidad estadística con valor positivo (+1%) frente a la cuota del mercado @1.76.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-13",
@@ -429,7 +431,8 @@
     ],
     "homeElo": 1623,
     "awayElo": 1585,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "1 - 0 (No)"
   },
   {
     "fixtureId": 1561926,
@@ -460,7 +463,7 @@
     "pickBadge": "estandar",
     "smartScore": 86,
     "explanation": "Dinámica ofensiva y pegada en ataque: Ried llega con 1 victorias en sus últimos 5 compromisos y promedia 1.14 xG en casa, mientras Red Bull Salzburg genera 2.03 xG como visitante. El modelo cuantitativo Poisson proyecta 3.17 goles esperados conjuntos, otorgando un sólido 61.9% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.50 (valor +1%).",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-13",
@@ -573,7 +576,8 @@
     ],
     "homeElo": 1508,
     "awayElo": 1628,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "1 - 1 (2 Goles)"
   },
   {
     "fixtureId": 1575164,
@@ -604,7 +608,7 @@
     "pickBadge": "estandar",
     "smartScore": 85,
     "explanation": "Análisis cuantitativo avanzado: 60.9% de probabilidad estadística con valor positivo (+1%) frente a la cuota del mercado @1.53.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-13",
@@ -717,7 +721,8 @@
     ],
     "homeElo": 1557,
     "awayElo": 1580,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "1 - 3 (Ambos Sí)"
   },
   {
     "fixtureId": 1552763,
@@ -748,7 +753,7 @@
     "pickBadge": "estandar",
     "smartScore": 88,
     "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Rennes con la pegada en contragolpe de Marseille (3.46 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 62.9% de confianza a cuota @1.53.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-13",
@@ -861,7 +866,8 @@
     ],
     "homeElo": 1559,
     "awayElo": 1790,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "1 - 0 (1 Goles)"
   },
   {
     "fixtureId": 1492770,
@@ -892,7 +898,7 @@
     "pickBadge": "estandar",
     "smartScore": 72,
     "explanation": "Análisis cuantitativo avanzado: 59.3% de probabilidad estadística con valor positivo (+1%) frente a la cuota del mercado @1.50.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-13",
@@ -1005,7 +1011,8 @@
     ],
     "homeElo": 1522,
     "awayElo": 1647,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "1 - 1 (Ambos Sí)"
   },
   {
     "fixtureId": 1550126,
@@ -1036,7 +1043,7 @@
     "pickBadge": "estandar",
     "smartScore": 84,
     "explanation": "Tendencia anotadora sostenida: Tanto Venezia como Fiorentina promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.60, la expectativa de un marcador con 3 o más tantos alcanza el 58.8% de probabilidad.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-13",
@@ -1149,7 +1156,8 @@
     ],
     "homeElo": 1482,
     "awayElo": 1750,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "2 - 4 (6 Goles)"
   },
   {
     "fixtureId": 1492767,
@@ -1180,7 +1188,7 @@
     "pickBadge": "estandar",
     "smartScore": 72,
     "explanation": "Análisis cuantitativo avanzado: 57.2% de probabilidad estadística con valor positivo (+1%) frente a la cuota del mercado @1.62.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-13",
@@ -1293,7 +1301,8 @@
     ],
     "homeElo": 1482,
     "awayElo": 1498,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "2 - 3 (Ambos Sí)"
   },
   {
     "fixtureId": 1492768,
@@ -1324,7 +1333,7 @@
     "pickBadge": "estandar",
     "smartScore": 72,
     "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Shelbourne con la pegada en contragolpe de Derry City (3.23 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 55.7% de confianza a cuota @1.80.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-13",
@@ -1437,7 +1446,8 @@
     ],
     "homeElo": 1627,
     "awayElo": 1539,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "0 - 1 (1 Goles)"
   },
   {
     "fixtureId": 1492769,
@@ -1468,7 +1478,7 @@
     "pickBadge": "estandar",
     "smartScore": 72,
     "explanation": "Análisis cuantitativo avanzado: 54.4% de probabilidad estadística con valor positivo (+1%) frente a la cuota del mercado @1.67.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-13",
@@ -1581,7 +1591,8 @@
     ],
     "homeElo": 1614,
     "awayElo": 1537,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "2 - 0 (No)"
   },
   {
     "fixtureId": 1549484,
@@ -1612,7 +1623,7 @@
     "pickBadge": "estandar",
     "smartScore": 72,
     "explanation": "Diferencial de calidad y localía (+38 Elo): UTC Cajamarca impone condiciones en posesión y presión alta ante un Juan Pablo II College que ha sufrido 1 derrotas en sus últimas salidas. Victoria directa asignada con 52.8% de probabilidad y +1% de valor.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-13",
@@ -1725,7 +1736,8 @@
     ],
     "homeElo": 1551,
     "awayElo": 1513,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "1 - 2"
   },
   {
     "fixtureId": 1492374,
@@ -1756,7 +1768,7 @@
     "pickBadge": "bomba",
     "smartScore": 72,
     "explanation": "Rendimiento estelar fuera de casa: Mayor contundencia en los últimos 20 metros y mejor balance defensivo respaldan la victoria de Atletico Paranaense con un 56.9% de certeza y valor positivo (+13.4%).",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-14",
@@ -1869,7 +1881,8 @@
     ],
     "homeElo": 1573,
     "awayElo": 1880,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "3 - 3"
   },
   {
     "fixtureId": 1549486,
@@ -1900,7 +1913,7 @@
     "pickBadge": "estandar",
     "smartScore": 72,
     "explanation": "Análisis cuantitativo avanzado: 55.3% de probabilidad estadística con valor positivo (+1%) frente a la cuota del mercado @1.67.",
-    "status": "pending",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-14",
@@ -2013,7 +2026,8 @@
     ],
     "homeElo": 1629,
     "awayElo": 1595,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "0 - 1 (No)"
   },
   {
     "fixtureId": 1493125,
@@ -2044,7 +2058,7 @@
     "pickBadge": "estandar",
     "smartScore": 72,
     "explanation": "Dominio estadístico de Boca Juniors: La solidez defensiva del local y su promedio de más de 1.7 goles por encuentro justifican una alta certeza matemática del 62.5% para el triunfo en casa.",
-    "status": "pending",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-14",
@@ -2157,6 +2171,7 @@
     ],
     "homeElo": 1551,
     "awayElo": 1490,
-    "leagueTier": 1
+    "leagueTier": 1,
+    "actualScore": "3 - 1"
   }
 ]

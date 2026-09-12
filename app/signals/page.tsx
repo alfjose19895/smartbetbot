@@ -93,7 +93,19 @@ export default function SignalsPage() {
             }
             for (const lp of localPicks) {
               const key = `${lp.fixtureId || 0}-${lp.homeTeam}-${lp.awayTeam}-${lp.market}`;
-              map.set(key, { ...lp, isMcpPick: true, pickBadge: lp.pickBadge || "mcp" });
+              const existing = map.get(key);
+              if (existing) {
+                map.set(key, {
+                  ...existing,
+                  ...lp,
+                  status: existing.status && existing.status !== "pending" ? existing.status : lp.status || "pending",
+                  actualScore: existing.actualScore || lp.actualScore,
+                  isMcpPick: true,
+                  pickBadge: lp.pickBadge || existing.pickBadge || "mcp",
+                });
+              } else {
+                map.set(key, { ...lp, isMcpPick: true, pickBadge: lp.pickBadge || "mcp" });
+              }
             }
             serverSignals = Array.from(map.values());
             serverSignals.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());

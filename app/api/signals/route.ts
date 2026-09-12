@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  getStoredPredictions,
   generatePredictionsForUpcoming,
-  getEcuadorDateString,
-  loadDailySnapshot,
+  getStoredPredictions,
 } from "@/lib/sports/db";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 
@@ -17,36 +15,18 @@ export async function GET(request: NextRequest) {
     const minProb = parseFloat(searchParams.get("minProb") || "0");
     const forceRefresh = searchParams.get("refresh") === "true";
 
-    const nowMs = Date.now();
-    const todayDateStr = getEcuadorDateString(nowMs);
-
     let predictions: MarketOpportunity[] = [];
 
-    if (forceRefresh) {
-      try {
-        predictions = await generatePredictionsForUpcoming(undefined, true);
-      } catch (genErr) {
-        console.warn("[API /api/signals] Force-generation error:", genErr);
-      }
+    try {
+      // Always call generatePredictionsForUpcoming so it evaluates finished match scores & statuses (won/lost)
+      predictions = await generatePredictionsForUpcoming(undefined, forceRefresh);
+    } catch (genErr) {
+      console.warn("[API /api/signals] Generation error, loading latest stored:", genErr);
+      predictions = getStoredPredictions();
     }
 
     if (!predictions || predictions.length === 0) {
-      // 1. Check if today's snapshot exists
-      const todaySnapshot = loadDailySnapshot(todayDateStr);
-
-      if (todaySnapshot && Array.isArray(todaySnapshot) && todaySnapshot.length > 0) {
-        predictions = todaySnapshot;
-      } else {
-        // 2. Automatically generate fresh predictions for today
-        try {
-          predictions = await generatePredictionsForUpcoming();
-        } catch (genErr) {
-          console.warn("[API /api/signals] Auto-generation error, loading latest stored:", genErr);
-        }
-        if (!predictions || predictions.length === 0) {
-          predictions = getStoredPredictions();
-        }
-      }
+      predictions = getStoredPredictions();
     }
 
     if (leagueFilter) {
