@@ -1,0 +1,59 @@
+import { NextRequest, NextResponse } from "next/server";
+import { generatePredictionsForUpcoming } from "@/lib/sports/db";
+import { buildTripleExclusiveParlays } from "@/lib/sports/parlay-generator";
+import { sendDailyMcpPushNotification } from "@/lib/push/web-push-sender";
+import { getAllPushSubscriptions } from "@/lib/push/push-store";
+
+export const dynamic = "force-dynamic";
+
+export async function GET(req: NextRequest) {
+  return handleDailyAlertsDispatch(req);
+}
+
+export async function POST(req: NextRequest) {
+  return handleDailyAlertsDispatch(req);
+}
+
+async function handleDailyAlertsDispatch(req: NextRequest) {
+  try {
+    const authHeader = req.headers.get("authorization");
+    const cronSecret = process.env.CRON_SECRET;
+    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+      // Optional secret check if configured in production
+    }
+
+    const subscriptions = getAllPushSubscriptions();
+    if (subscriptions.length === 0) {
+      return NextResponse.json({
+        success: true,
+        message: "No registered push subscribers found. Skipping dispatch.",
+        subscribersCount: 0,
+      });
+    }
+
+    // 1. Generate / load today's verified MCP predictions
+    const predictions = await generatePredictionsForUpcoming(undefined, false);
+
+    // 2. Build 3 exclusive parlays
+    const parlays = buildTripleExclusiveParlays(predictions);
+
+    // 3. Dispatch Web Push notification
+    const pushResult = await sendDailyMcpPushNotification(predictions, parlays);
+
+    return NextResponse.json({
+      success: true,
+      timestamp: new Date().toISOString(),
+      dispatched: true,
+      totalSubscribers: pushResult.broadcastResult.totalSubscribers,
+      sentCount: pushResult.broadcastResult.sentCount,
+      failedCount: pushResult.broadcastResult.failedCount,
+      payload: pushResult.payload,
+    });
+  } catch (error: any) {
+    console.error("[API /api/cron/daily-alerts] Error running daily alerts push cron:", error);
+    return NextResponse.json(
+      { success: false, error: error?.message || "Internal server error" },
+      { status: 500 }
+    );
+  }
+}

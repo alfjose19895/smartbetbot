@@ -47,7 +47,8 @@
     "next": "16.2.11",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "zod": "^4.4.3"
+    "zod": "^4.4.3",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.0",
@@ -60,6 +61,7 @@
     "supabase": "^2.115.0",
     "tailwindcss": "^4.1.0",
     "typescript": "^5.9.0",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.11",
+    "@types/web-push": "^3.6.4"
   }
 }

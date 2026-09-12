@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import "./globals.css";
 import { ServiceWorkerRegistration } from "@/features/notifications/service-worker-registration";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
+import { PushNotificationManager } from "@/components/PushNotificationManager";
 import { Footer } from "@/components/Footer";
 import { LanguageProvider } from "@/context/LanguageContext";
 
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
   },
   description:
     "Plataforma de inteligencia deportiva que analiza datos, probabilidades y mercados para detectar oportunidades estadísticas.",
+  manifest: "/manifest.json",
 };
 
 export const viewport: Viewport = {
@@ -27,6 +29,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   return (
     <html lang="es" suppressHydrationWarning className="w-full">
       <head>
+        <link rel="manifest" href="/manifest.json" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -58,6 +61,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
           </div>
           <Footer />
           <WhatsAppButton />
+          <PushNotificationManager />
         </LanguageProvider>
       </body>
     </html>
