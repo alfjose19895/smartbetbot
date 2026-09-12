@@ -1,3 +1,5 @@
+import { MarketOpportunity } from "@/lib/sports/prediction-engine";
+
 export function getEcuadorDateString(d: Date | number | string = Date.now()): string {
   try {
     const dateObj = typeof d === "string" ? new Date(d) : typeof d === "number" ? new Date(d) : d;
@@ -12,12 +14,16 @@ export function getEcuadorDateString(d: Date | number | string = Date.now()): st
   }
 }
 
-import { MarketOpportunity } from "@/lib/sports/prediction-engine";
-
-export interface DualParlays {
+export interface TripleExclusiveParlays {
+  parlay1: MarketOpportunity[]; // Parley 1: Seguro / Élite (3 Picks)
+  parlay2: MarketOpportunity[]; // Parley 2: Valor / Oro (3 Picks)
+  parlay3: MarketOpportunity[]; // Parley 3: Bomba / Platino (3 Picks)
+  // Backward-compatible properties:
   elite3: MarketOpportunity[];
   premium5: MarketOpportunity[];
 }
+
+export type DualParlays = TripleExclusiveParlays;
 
 /**
  * Normalizes market descriptions into distinct categories to guarantee market diversity in parlays.
@@ -26,7 +32,17 @@ export function getMarketCategory(marketName: string): string {
   const m = (marketName || "").toLowerCase().trim();
   if (m.includes("ambos") || m.includes("btts")) return "BTTS";
   if (m.includes("doble") || m.includes("1x") || m.includes("x2") || m.includes("12")) return "DOUBLE_CHANCE";
-  if (m.includes("ganador local") || m.includes("ganador visitante") || m.includes("gana local") || m.includes("gana visitante") || m.includes("1x2") || m.startsWith("gana") || m.startsWith("ganador")) return "MONEYLINE";
+  if (
+    m.includes("ganador local") ||
+    m.includes("ganador visitante") ||
+    m.includes("gana local") ||
+    m.includes("gana visitante") ||
+    m.includes("1x2") ||
+    m.startsWith("gana") ||
+    m.startsWith("ganador")
+  ) {
+    return "MONEYLINE";
+  }
   if (m.includes("under") || m.includes("menos")) return "GOALS_UNDER";
   if (m.includes("over") || m.includes("más") || m.includes("mas")) return "GOALS_OVER";
   if (m.includes("handicap") || m.includes("hándicap")) return "HANDICAP";
@@ -34,99 +50,98 @@ export function getMarketCategory(marketName: string): string {
 }
 
 /**
- * Generates two mutually exclusive Parlays:
- * 1. Parley Élite (3 Picks): 3 highest-conviction picks with distinct markets.
- * 2. Parley Premium (5 Picks): 5 high-confidence picks strictly from DIFFERENT matches and diversified markets.
+ * Generates THREE mutually exclusive Parlays with 3 predictions each (9 distinct picks in total):
+ * 1. Parley 1 (Seguro / Élite): 3 highest probability & confidence selections (Max Winrate).
+ * 2. Parley 2 (Valor / Oro): 3 highest Expected Value (+EV) selections from distinct matches.
+ * 3. Parley 3 (Bomba / Platino): 3 bold / high-yield multiplier selections from distinct matches.
  * 
- * Guarantees:
- * - NO match repetition between Parley Élite and Parley Premium.
- * - Market diversity (mix of 1X2, Doble Oportunidad, Over/Under, BTTS).
+ * Strict Guarantee:
+ * - ZERO match repetition across the 3 parlays (9 completely distinct matches).
+ * - Maximum market diversification across legs (1X2, Over 2.5, BTTS).
  */
-export function buildDualExclusiveParlays(predictions: MarketOpportunity[]): DualParlays {
+export function buildTripleExclusiveParlays(predictions: MarketOpportunity[]): TripleExclusiveParlays {
   const todayStr = getEcuadorDateString(Date.now());
 
-  // Filter high-conviction candidate picks (prioritize today)
-  const todayPicks = [...predictions]
-    .filter((p) => {
-      const isToday = getEcuadorDateString(new Date(p.kickoff)) === todayStr;
-      return isToday && p.probability >= 55 && p.odds >= 1.35;
-    })
-    .sort((a, b) => b.probability - a.probability || (b.smartScore || 0) - (a.smartScore || 0));
+  // Filter candidate pool (prioritize today, then general upcoming)
+  const validPool = [...predictions].filter((p) => p.odds >= 1.25 && p.probability >= 35);
 
-  const candidatePool =
-    todayPicks.length >= 8
-      ? todayPicks
-      : [...predictions]
-          .filter((p) => p.probability >= 55 && p.odds >= 1.35)
-          .sort((a, b) => b.probability - a.probability || (b.smartScore || 0) - (a.smartScore || 0));
+  const usedMatchKeys = new Set<string>();
 
-  // 1. Build Parley Élite (3 Picks)
-  const elite3: MarketOpportunity[] = [];
-  const eliteMatches = new Set<string>();
-  const eliteMarketCats = new Set<string>();
+  const getMatchKey = (p: MarketOpportunity): string => {
+    return `${p.fixtureId || 0}-${p.homeTeam.trim().toLowerCase()}-${p.awayTeam.trim().toLowerCase()}`;
+  };
 
-  // Pass 1: pick highest probability with unique market category and unique match
-  for (const pick of candidatePool) {
-    if (elite3.length >= 3) break;
-    const cat = getMarketCategory(pick.market);
-    if (!eliteMatches.has(pick.match) && !eliteMarketCats.has(cat)) {
-      elite3.push(pick);
-      eliteMatches.add(pick.match);
-      eliteMarketCats.add(cat);
-    }
-  }
+  // Helper to build a 3-pick parlay given a candidate list and criteria
+  const select3Picks = (
+    pool: MarketOpportunity[],
+    sorter: (a: MarketOpportunity, b: MarketOpportunity) => number
+  ): MarketOpportunity[] => {
+    const selected: MarketOpportunity[] = [];
+    const usedCategories = new Set<string>();
 
-  // Pass 2: fill if needed with unique match
-  if (elite3.length < 3) {
-    for (const pick of candidatePool) {
-      if (elite3.length >= 3) break;
-      if (!eliteMatches.has(pick.match)) {
-        elite3.push(pick);
-        eliteMatches.add(pick.match);
+    const sorted = [...pool]
+      .filter((p) => !usedMatchKeys.has(getMatchKey(p)))
+      .sort(sorter);
+
+    // Pass 1: Select picks with unique market categories to enforce diversity
+    for (const p of sorted) {
+      if (selected.length >= 3) break;
+      const key = getMatchKey(p);
+      const cat = getMarketCategory(p.market);
+      if (!usedMatchKeys.has(key) && !usedCategories.has(cat)) {
+        selected.push(p);
+        usedMatchKeys.add(key);
+        usedCategories.add(cat);
       }
     }
-  }
 
-  // 2. Build Parley Premium (5 Picks) EXCLUDING any matches used in Parley Élite
-  const remainingPool = candidatePool.filter((p) => !eliteMatches.has(p.match));
-  const premium5: MarketOpportunity[] = [];
-  const premiumMatches = new Set<string>();
-  const premiumMarketCats = new Map<string, number>();
-
-  // Pass 1: select diversified market picks from remaining non-overlapping matches
-  for (const pick of remainingPool) {
-    if (premium5.length >= 5) break;
-    const cat = getMarketCategory(pick.market);
-    const catCount = premiumMarketCats.get(cat) || 0;
-    // Allow at most 2 per market category to guarantee rich diversity
-    if (!premiumMatches.has(pick.match) && catCount < 2) {
-      premium5.push(pick);
-      premiumMatches.add(pick.match);
-      premiumMarketCats.set(cat, catCount + 1);
-    }
-  }
-
-  // Pass 2: fill remaining slots from remainingPool
-  if (premium5.length < 5) {
-    for (const pick of remainingPool) {
-      if (premium5.length >= 5) break;
-      if (!premiumMatches.has(pick.match)) {
-        premium5.push(pick);
-        premiumMatches.add(pick.match);
+    // Pass 2: If we couldn't find 3 distinct categories, pick any remaining unused match
+    if (selected.length < 3) {
+      for (const p of sorted) {
+        if (selected.length >= 3) break;
+        const key = getMatchKey(p);
+        if (!usedMatchKeys.has(key)) {
+          selected.push(p);
+          usedMatchKeys.add(key);
+        }
       }
     }
-  }
 
-  // Pass 3: emergency fallback ONLY if entire database has fewer than 8 unique matches
-  if (premium5.length < 5) {
-    for (const pick of candidatePool) {
-      if (premium5.length >= 5) break;
-      if (!premiumMatches.has(pick.match)) {
-        premium5.push(pick);
-        premiumMatches.add(pick.match);
-      }
-    }
-  }
+    return selected;
+  };
 
-  return { elite3, premium5 };
+  // 1. Build Parley 1: Seguro (Highest Probability & SmartScore)
+  const parlay1 = select3Picks(validPool, (a, b) => {
+    const aTier = a.leagueTier || 3;
+    const bTier = b.leagueTier || 3;
+    if (aTier !== bTier) return aTier - bTier;
+    if (b.probability !== a.probability) return b.probability - a.probability;
+    return (b.smartScore || 0) - (a.smartScore || 0);
+  });
+
+  // 2. Build Parley 2: Valor (Highest Expected Value (+EV) and Edge)
+  const parlay2 = select3Picks(validPool, (a, b) => {
+    const bEv = b.expectedValue || (b.probability * b.odds - 100);
+    const aEv = a.expectedValue || (a.probability * a.odds - 100);
+    if (bEv !== aEv) return bEv - aEv;
+    if (b.edge !== a.edge) return b.edge - a.edge;
+    return b.probability - a.probability;
+  });
+
+  // 3. Build Parley 3: Bomba / Multiplicador (Highest Odds with Value)
+  const parlay3 = select3Picks(validPool, (a, b) => {
+    if (b.odds !== a.odds) return b.odds - a.odds;
+    return (b.expectedValue || 0) - (a.expectedValue || 0);
+  });
+
+  return {
+    parlay1,
+    parlay2,
+    parlay3,
+    elite3: parlay1,
+    premium5: [...parlay2, ...parlay3.slice(0, 2)],
+  };
 }
+
+// Backward compatible alias
+export const buildDualExclusiveParlays = buildTripleExclusiveParlays;

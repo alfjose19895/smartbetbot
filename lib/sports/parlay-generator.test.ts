@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildDualExclusiveParlays, getMarketCategory } from "./parlay-generator";
+import { buildTripleExclusiveParlays, buildDualExclusiveParlays, getMarketCategory } from "./parlay-generator";
 import { MarketOpportunity } from "./prediction-engine";
 
 const createMockOpp = (partial: Partial<MarketOpportunity>): MarketOpportunity => ({
@@ -27,7 +27,7 @@ const createMockOpp = (partial: Partial<MarketOpportunity>): MarketOpportunity =
   ...partial,
 });
 
-const mockOpportunities: MarketOpportunity[] = [
+const mock12Opportunities: MarketOpportunity[] = [
   createMockOpp({
     id: "opp-1",
     fixtureId: 101,
@@ -35,16 +35,15 @@ const mockOpportunities: MarketOpportunity[] = [
     homeTeam: "Real Madrid",
     awayTeam: "Real Betis",
     league: "La Liga",
-    country: "España",
-    kickoff: "2026-03-30T19:00:00Z",
     market: "Ganador Local",
     selection: "Real Madrid",
-    probability: 72.5,
-    odds: 1.55,
-    fairOdds: 1.38,
-    edge: 8.0,
+    probability: 82.0,
+    odds: 1.45,
+    fairOdds: 1.22,
+    edge: 15.0,
+    expectedValue: 18.9,
     confidence: "Muy Alta",
-    pickBadge: "valor",
+    leagueTier: 1,
   }),
   createMockOpp({
     id: "opp-2",
@@ -53,16 +52,15 @@ const mockOpportunities: MarketOpportunity[] = [
     homeTeam: "Barcelona",
     awayTeam: "Sevilla",
     league: "La Liga",
-    country: "España",
-    kickoff: "2026-03-30T21:00:00Z",
     market: "Over 2.5 Goles",
     selection: "Over 2.5",
-    probability: 75.0,
-    odds: 1.62,
-    fairOdds: 1.33,
-    edge: 13.3,
+    probability: 78.0,
+    odds: 1.60,
+    fairOdds: 1.28,
+    edge: 16.0,
+    expectedValue: 24.8,
     confidence: "Muy Alta",
-    pickBadge: "valor",
+    leagueTier: 1,
   }),
   createMockOpp({
     id: "opp-3",
@@ -71,15 +69,15 @@ const mockOpportunities: MarketOpportunity[] = [
     homeTeam: "Arsenal",
     awayTeam: "Chelsea",
     league: "Premier League",
-    country: "Inglaterra",
-    kickoff: "2026-03-30T16:30:00Z",
     market: "Ambos Equipos Anotan",
     selection: "Sí",
-    probability: 70.0,
+    probability: 74.0,
     odds: 1.70,
-    fairOdds: 1.43,
-    edge: 11.2,
+    fairOdds: 1.35,
+    edge: 15.2,
+    expectedValue: 25.8,
     confidence: "Muy Alta",
+    leagueTier: 1,
   }),
   createMockOpp({
     id: "opp-4",
@@ -88,15 +86,15 @@ const mockOpportunities: MarketOpportunity[] = [
     homeTeam: "Bayern Munich",
     awayTeam: "Dortmund",
     league: "Bundesliga",
-    country: "Alemania",
-    kickoff: "2026-03-30T17:30:00Z",
     market: "Over 2.5 Goles",
     selection: "Over 2.5",
-    probability: 68.0,
-    odds: 1.50,
-    fairOdds: 1.47,
-    edge: 1.3,
+    probability: 69.0,
+    odds: 1.95,
+    fairOdds: 1.45,
+    edge: 17.7,
+    expectedValue: 34.5,
     confidence: "Alta",
+    leagueTier: 1,
   }),
   createMockOpp({
     id: "opp-5",
@@ -105,16 +103,15 @@ const mockOpportunities: MarketOpportunity[] = [
     homeTeam: "Inter",
     awayTeam: "Milan",
     league: "Serie A",
-    country: "Italia",
-    kickoff: "2026-03-30T19:45:00Z",
     market: "Ganador Local",
     selection: "Inter",
-    probability: 60.0,
-    odds: 2.15,
-    fairOdds: 1.67,
-    edge: 5.9,
+    probability: 65.0,
+    odds: 2.10,
+    fairOdds: 1.54,
+    edge: 17.3,
+    expectedValue: 36.5,
     confidence: "Alta",
-    pickBadge: "bomba",
+    leagueTier: 1,
   }),
   createMockOpp({
     id: "opp-6",
@@ -123,29 +120,138 @@ const mockOpportunities: MarketOpportunity[] = [
     homeTeam: "PSG",
     awayTeam: "Marseille",
     league: "Ligue 1",
-    country: "Francia",
-    kickoff: "2026-03-30T20:00:00Z",
-    market: "Ganador Local",
-    selection: "PSG",
-    probability: 66.0,
-    odds: 1.60,
-    fairOdds: 1.52,
-    edge: 3.5,
+    market: "Ambos Equipos Anotan",
+    selection: "Sí",
+    probability: 64.0,
+    odds: 1.90,
+    fairOdds: 1.56,
+    edge: 11.4,
+    expectedValue: 21.6,
     confidence: "Alta",
+    leagueTier: 1,
+  }),
+  createMockOpp({
+    id: "opp-7",
+    fixtureId: 107,
+    match: "Liverpool vs Everton",
+    homeTeam: "Liverpool",
+    awayTeam: "Everton",
+    league: "Premier League",
+    market: "Ganador Local",
+    selection: "Liverpool",
+    probability: 58.0,
+    odds: 2.65,
+    fairOdds: 1.72,
+    edge: 20.3,
+    expectedValue: 53.7,
+    confidence: "Alta",
+    leagueTier: 1,
+  }),
+  createMockOpp({
+    id: "opp-8",
+    fixtureId: 108,
+    match: "Juventus vs Roma",
+    homeTeam: "Juventus",
+    awayTeam: "Roma",
+    league: "Serie A",
+    market: "Over 2.5 Goles",
+    selection: "Over 2.5",
+    probability: 52.0,
+    odds: 2.50,
+    fairOdds: 1.92,
+    edge: 12.0,
+    expectedValue: 30.0,
+    confidence: "Media",
+    leagueTier: 1,
+  }),
+  createMockOpp({
+    id: "opp-9",
+    fixtureId: 109,
+    match: "Atletico Madrid vs Valencia",
+    homeTeam: "Atletico Madrid",
+    awayTeam: "Valencia",
+    league: "La Liga",
+    market: "Ambos Equipos Anotan",
+    selection: "Sí",
+    probability: 48.0,
+    odds: 2.80,
+    fairOdds: 2.08,
+    edge: 12.3,
+    expectedValue: 34.4,
+    confidence: "Media",
+    leagueTier: 1,
+  }),
+  createMockOpp({
+    id: "opp-10",
+    fixtureId: 110,
+    match: "Ajax vs Feyenoord",
+    homeTeam: "Ajax",
+    awayTeam: "Feyenoord",
+    league: "Eredivisie",
+    market: "Over 2.5 Goles",
+    selection: "Over 2.5",
+    probability: 60.0,
+    odds: 1.80,
+    fairOdds: 1.67,
+    edge: 4.3,
+    expectedValue: 8.0,
+    confidence: "Media",
+    leagueTier: 2,
   }),
 ];
 
-describe("Parlay Generator", () => {
-  it("generates dual exclusive parlays with sufficient candidates", () => {
-    const result = buildDualExclusiveParlays(mockOpportunities);
+describe("Parlay Generator - 3 Parlays of 3 Picks", () => {
+  it("generates 3 parlays of 3 picks each with ZERO match repetition across all 9 picks", () => {
+    const result = buildTripleExclusiveParlays(mock12Opportunities);
     expect(result).toBeDefined();
-    expect(Array.isArray(result.elite3)).toBe(true);
-    expect(Array.isArray(result.premium5)).toBe(true);
+
+    // 3 picks in each parlay
+    expect(result.parlay1.length).toBe(3);
+    expect(result.parlay2.length).toBe(3);
+    expect(result.parlay3.length).toBe(3);
+
+    // Collect all fixture IDs across parlay1, parlay2, parlay3
+    const allPicks = [...result.parlay1, ...result.parlay2, ...result.parlay3];
+    expect(allPicks.length).toBe(9);
+
+    const fixtureIds = allPicks.map((p) => p.fixtureId);
+    const uniqueFixtureIds = new Set(fixtureIds);
+
+    // ZERO repetition across all 9 picks!
+    expect(uniqueFixtureIds.size).toBe(9);
+
+    // Check match teams uniqueness as well
+    const teamKeys = allPicks.map((p) => `${p.homeTeam}-${p.awayTeam}`);
+    const uniqueTeamKeys = new Set(teamKeys);
+    expect(uniqueTeamKeys.size).toBe(9);
+  });
+
+  it("maintains backward compatibility with elite3 and premium5 aliases", () => {
+    const result = buildDualExclusiveParlays(mock12Opportunities);
+    expect(result.elite3).toBeDefined();
+    expect(result.premium5).toBeDefined();
+    expect(result.elite3.length).toBe(3);
+    expect(result.premium5.length).toBe(5);
   });
 
   it("classifies market categories properly", () => {
     expect(getMarketCategory("Ambos Equipos Anotan")).toBe("BTTS");
     expect(getMarketCategory("Over 2.5 Goles")).toBe("GOALS_OVER");
+    expect(getMarketCategory("Menos de 2.5 Goles")).toBe("GOALS_UNDER");
     expect(getMarketCategory("Ganador Local")).toBe("MONEYLINE");
+    expect(getMarketCategory("Doble Oportunidad 1X")).toBe("DOUBLE_CHANCE");
+  });
+
+  it("handles small pools gracefully without crashing or duplicating matches", () => {
+    const smallPool = mock12Opportunities.slice(0, 5);
+    const result = buildTripleExclusiveParlays(smallPool);
+
+    const allPicks = [...result.parlay1, ...result.parlay2, ...result.parlay3];
+    const fixtureIds = allPicks.map((p) => p.fixtureId);
+    const uniqueFixtureIds = new Set(fixtureIds);
+
+    // Must still be 100% mutually exclusive
+    expect(fixtureIds.length).toBe(uniqueFixtureIds.size);
+    expect(uniqueFixtureIds.size).toBeLessThanOrEqual(5);
   });
 });
