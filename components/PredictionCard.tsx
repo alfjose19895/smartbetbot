@@ -234,6 +234,12 @@ export function PredictionCard({
                     </span>
                   )}
                 </div>
+                {/* Visible Market & Odds in Mobile Compact Strip */}
+                <div className="text-[11px] font-black text-emerald-700 dark:text-emerald-400 truncate flex items-center gap-1 mt-0.5">
+                  <span>🎯</span>
+                  <span className="truncate">{getDisplayMarketSelection(prediction.market, prediction.selection)}</span>
+                  <span className="font-extrabold text-sky-600 dark:text-sky-400 shrink-0">@{(prediction.odds ?? 1.5).toFixed(2)}</span>
+                </div>
                 <div className="text-[10px] font-bold text-slate-500 dark:text-slate-400 truncate flex items-center gap-1.5 mt-0.5">
                   <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-black text-[10px]">
                     ⏰ {formattedTime}

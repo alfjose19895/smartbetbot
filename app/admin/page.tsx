@@ -1222,28 +1222,29 @@ function AdminControlContent() {
 
               {/* Natural Language Prompt Bar */}
               <div className="mt-5 space-y-3">
-                <div className="relative flex items-center">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleMcpSearch(mcpQuery, mcpCountry, selectedMcpLeague?.name, selectedMcpLeague?.id);
+                  }}
+                  className="relative flex items-center"
+                >
                   <span className="absolute left-4 text-lg text-emerald-400 pointer-events-none">💬</span>
                   <input
                     type="text"
                     value={mcpQuery}
                     onChange={(e) => setMcpQuery(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        handleMcpSearch(mcpQuery, mcpCountry, selectedMcpLeague?.name, selectedMcpLeague?.id);
-                      }
-                    }}
                     placeholder="Ejemplo: 'busca partidos de Costa Rica con cuota mayor a 1.80' o 'analiza Alajuelense vs Saprissa' o 'dame un parley de 3 partidos'..."
                     className="w-full rounded-2xl border border-slate-700 bg-slate-900/90 pl-12 pr-28 py-3.5 text-sm text-white placeholder-slate-400 shadow-inner outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition"
                   />
                   <button
-                    onClick={() => handleMcpSearch(mcpQuery, mcpCountry, selectedMcpLeague?.name, selectedMcpLeague?.id)}
+                    type="submit"
                     disabled={mcpLoading}
                     className="absolute right-2 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-black text-slate-950 hover:bg-emerald-400 transition cursor-pointer disabled:opacity-50"
                   >
-                    Enviar
+                    {mcpLoading ? "Buscando..." : "Enviar"}
                   </button>
-                </div>
+                </form>
 
                 {/* Active League Badge / Quick Status Bar */}
                 {selectedMcpLeague && (
@@ -1704,7 +1705,7 @@ function AdminControlContent() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {mcpResults.map((opp) => (
                     <PredictionCard
-                      key={opp.fixtureId}
+                      key={`${opp.fixtureId || 0}-${opp.homeTeam}-${opp.awayTeam}-${opp.market}`}
                       prediction={opp}
                       onOpenDetail={(pick) => setActiveModalPick(pick)}
                       onPublishAlert={(pick) => handlePublishMcpPicks([pick])}
