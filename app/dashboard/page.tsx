@@ -14,10 +14,11 @@ import { openPushModal } from "@/components/PushNotificationManager";
 
 function getMatchDeduplicationKey(p: MarketOpportunity): string {
   const fixId = Number(p.fixtureId) || 0;
-  if (fixId > 0) return `fix-${fixId}`;
+  const m = (p.market || "").toLowerCase().replace(/[^a-z0-9]/gi, "").trim();
+  if (fixId > 0) return `fix-${fixId}-${m}`;
   const h = (p.homeTeam || "").toLowerCase().replace(/[^a-z0-9]/gi, "").trim();
   const a = (p.awayTeam || "").toLowerCase().replace(/[^a-z0-9]/gi, "").trim();
-  return `${h}-${a}`;
+  return `${h}-${a}-${m}`;
 }
 
 function deduplicatePicksList(picks: MarketOpportunity[]): MarketOpportunity[] {
@@ -28,6 +29,7 @@ function deduplicatePicksList(picks: MarketOpportunity[]): MarketOpportunity[] {
     const fixId = Number(p.fixtureId) || 0;
     const h = (p.homeTeam || "").toLowerCase().replace(/[^a-z0-9]/gi, "").trim();
     const a = (p.awayTeam || "").toLowerCase().replace(/[^a-z0-9]/gi, "").trim();
+    const m = (p.market || "").toLowerCase().replace(/[^a-z0-9]/gi, "").trim();
 
     let matchedExistingKey: string | null = null;
     if (map.has(key)) {
@@ -35,15 +37,18 @@ function deduplicatePicksList(picks: MarketOpportunity[]): MarketOpportunity[] {
     } else {
       for (const [exKey, ex] of map.entries()) {
         const exFixId = Number(ex.fixtureId) || 0;
-        if (fixId > 0 && exFixId > 0 && fixId === exFixId) {
-          matchedExistingKey = exKey;
-          break;
-        }
-        const exH = (ex.homeTeam || "").toLowerCase().replace(/[^a-z0-9]/gi, "").trim();
-        const exA = (ex.awayTeam || "").toLowerCase().replace(/[^a-z0-9]/gi, "").trim();
-        if (h && a && exH && exA && h === exH && a === exA) {
-          matchedExistingKey = exKey;
-          break;
+        const exM = (ex.market || "").toLowerCase().replace(/[^a-z0-9]/gi, "").trim();
+        if (m === exM) {
+          if (fixId > 0 && exFixId > 0 && fixId === exFixId) {
+            matchedExistingKey = exKey;
+            break;
+          }
+          const exH = (ex.homeTeam || "").toLowerCase().replace(/[^a-z0-9]/gi, "").trim();
+          const exA = (ex.awayTeam || "").toLowerCase().replace(/[^a-z0-9]/gi, "").trim();
+          if (h && a && exH && exA && h === exH && a === exA) {
+            matchedExistingKey = exKey;
+            break;
+          }
         }
       }
     }
