@@ -135,6 +135,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
     { href: "/parlay", label: t("navParlay"), icon: "🎲", subtitle: language === "es" ? "Combinadas inteligentes" : "Smart accumulator parlays" },
     { href: "/history", label: t("navHistory"), icon: "📜", subtitle: language === "es" ? "Resultados y balance" : "Past results & track record" },
     { href: "/reports", label: t("navReports"), icon: "📈", subtitle: language === "es" ? "Métricas y rendimiento" : "Analytics & win rate stats" },
+    { href: "/responsible-gambling", label: t("navResponsible"), icon: "🛡️", subtitle: language === "es" ? "Guía de autocontrol y juego seguro" : "Responsible gaming guide" },
     { href: "/settings", label: t("navSettings"), icon: "⚙️", subtitle: language === "es" ? "Ajustes y notificaciones" : "Preferences & alerts" },
     {
       href: "#push-alerts",
@@ -182,68 +183,64 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
           </div>
         </Link>
 
-        {/* Center: Desktop Fast Direct Navigation (Pill Menu with strict whitespace-nowrap) */}
-        <nav className="hidden md:flex items-center gap-0.5 lg:gap-1 bg-slate-100/90 dark:bg-slate-900/90 p-1 rounded-2xl border border-slate-200/70 dark:border-slate-800/70 shrink-0">
+        {/* Center: Desktop Navigation Bar (Direct Quick Links) */}
+        <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5">
           <Link
             href="/dashboard"
-            className={`flex items-center gap-1.5 px-2.5 lg:px-3 py-1.5 rounded-xl text-xs font-black whitespace-nowrap transition cursor-pointer ${
+            className={`px-2.5 lg:px-3 py-1.5 rounded-xl text-xs font-black whitespace-nowrap transition cursor-pointer ${
               pathname === "/dashboard"
-                ? "bg-white text-emerald-700 shadow-xs dark:bg-slate-800 dark:text-emerald-400"
-                : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                ? "bg-emerald-50 text-emerald-800 border border-emerald-300 shadow-xs dark:bg-emerald-950/70 dark:text-emerald-300 dark:border-emerald-500/30"
+                : "text-slate-700 hover:text-slate-950 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-900"
             }`}
           >
-            <span>📊</span>
-            <span>Dashboard</span>
+            📊 {t("navDashboard")}
           </Link>
 
           <Link
             href="/signals"
-            className={`flex items-center gap-1.5 px-2.5 lg:px-3 py-1.5 rounded-xl text-xs font-black whitespace-nowrap transition cursor-pointer ${
+            className={`px-2.5 lg:px-3 py-1.5 rounded-xl text-xs font-black whitespace-nowrap transition cursor-pointer ${
               pathname === "/signals"
-                ? "bg-white text-emerald-700 shadow-xs dark:bg-slate-800 dark:text-emerald-400"
-                : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                ? "bg-emerald-50 text-emerald-800 border border-emerald-300 shadow-xs dark:bg-emerald-950/70 dark:text-emerald-300 dark:border-emerald-500/30"
+                : "text-slate-700 hover:text-slate-950 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-900"
             }`}
           >
-            <span>📋</span>
-            <span>Pre-Match</span>
+            📋 {language === "es" ? "Pre-Match" : "Pre-Match"}
           </Link>
 
           <Link
             href="/featured"
-            className={`hidden lg:flex items-center gap-1.5 px-2.5 lg:px-3 py-1.5 rounded-xl text-xs font-black whitespace-nowrap transition cursor-pointer ${
+            className={`px-2.5 lg:px-3 py-1.5 rounded-xl text-xs font-black whitespace-nowrap transition cursor-pointer ${
               pathname === "/featured"
-                ? "bg-white text-emerald-700 shadow-xs dark:bg-slate-800 dark:text-emerald-400"
-                : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                ? "bg-emerald-50 text-emerald-800 border border-emerald-300 shadow-xs dark:bg-emerald-950/70 dark:text-emerald-300 dark:border-emerald-500/30"
+                : "text-slate-700 hover:text-slate-950 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-900"
             }`}
           >
-            <span>⭐</span>
-            <span>{language === "es" ? "Destacados" : "Featured"}</span>
+            ⭐ {language === "es" ? "Destacados" : "Featured"}
           </Link>
 
           <Link
             href="/parlay"
-            className={`flex items-center gap-1.5 px-2.5 lg:px-3 py-1.5 rounded-xl text-xs font-black whitespace-nowrap transition cursor-pointer ${
+            className={`px-2.5 lg:px-3 py-1.5 rounded-xl text-xs font-black whitespace-nowrap transition cursor-pointer ${
               pathname === "/parlay"
-                ? "bg-white text-emerald-700 shadow-xs dark:bg-slate-800 dark:text-emerald-400"
-                : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                ? "bg-emerald-50 text-emerald-800 border border-emerald-300 shadow-xs dark:bg-emerald-950/70 dark:text-emerald-300 dark:border-emerald-500/30"
+                : "text-slate-700 hover:text-slate-950 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-900"
             }`}
           >
-            <span>🎲</span>
-            <span>Parlay</span>
+            🎲 {t("navParlay")}
           </Link>
 
           <Link
             href="/history"
-            className={`flex items-center gap-1.5 px-2.5 lg:px-3 py-1.5 rounded-xl text-xs font-black whitespace-nowrap transition cursor-pointer ${
+            className={`px-2.5 lg:px-3 py-1.5 rounded-xl text-xs font-black whitespace-nowrap transition cursor-pointer ${
               pathname === "/history"
-                ? "bg-white text-emerald-700 shadow-xs dark:bg-slate-800 dark:text-emerald-400"
-                : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                ? "bg-emerald-50 text-emerald-800 border border-emerald-300 shadow-xs dark:bg-emerald-950/70 dark:text-emerald-300 dark:border-emerald-500/30"
+                : "text-slate-700 hover:text-slate-950 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-900"
             }`}
           >
-            <span>📜</span>
-            <span>{language === "es" ? "Historial" : "History"}</span>
+            📜 {t("navHistory")}
           </Link>
 
+          {/* Admin Agent MCP shortcut */}
           {currentRole === "admin" && (
             <Link
               href="/admin?tab=mcp"
@@ -300,7 +297,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
           {/* Theme Toggle */}
           <ThemeToggle />
 
-          {/* Desktop Mega-Menu Trigger Button ("Módulos") */}
+          {/* Desktop Mega-Menu Trigger Button ("Menú") */}
           <button
             data-desktop-menu-toggle="true"
             onClick={() => setDesktopMenuOpen(!desktopMenuOpen)}
@@ -311,7 +308,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
             }`}
             aria-expanded={desktopMenuOpen}
           >
-            <span>🧩</span>
+            <span>☰</span>
             <span>{t("navModules")}</span>
             <span className="text-[10px] opacity-70">{desktopMenuOpen ? "▲" : "▼"}</span>
           </button>
@@ -342,51 +339,35 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
         </div>
       </div>
 
-      {/* 1. Desktop Mega-Menu Dropdown Panel (When clicking "Módulos") */}
+      {/* 1. Desktop Dropdown Mega-Menu */}
       {desktopMenuOpen && (
         <div
           ref={desktopMenuRef}
-          className="hidden md:block border-t border-slate-200/90 bg-white/98 shadow-2xl backdrop-blur-2xl dark:border-slate-800/90 dark:bg-slate-950/98 animate-in fade-in slide-in-from-top-2 duration-150"
+          className="hidden md:block absolute right-4 lg:right-8 top-full mt-2 w-96 rounded-3xl border border-slate-200 bg-white/98 p-4 shadow-2xl backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/98 animate-in fade-in slide-in-from-top-2 duration-150 z-50"
         >
-          <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6">
-            {/* Header with User Info & Role */}
-            <div className="mb-4 flex items-center justify-between border-b border-slate-200 pb-3 dark:border-slate-800">
-              <div className="flex items-center gap-2.5">
-                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-base shadow-xs">
-                  {currentRole === "admin" ? "👑" : "👤"}
+          <div className="space-y-3">
+            {/* Header with User Info */}
+            <div className="flex items-center justify-between border-b border-slate-200 pb-3 dark:border-slate-800">
+              <div className="min-w-0 pr-2">
+                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 block">
+                  {language === "es" ? "Cuenta Activa" : "Active Account"}
                 </span>
-                <div>
-                  <span className="text-slate-400 text-[11px] block leading-none">Sesión iniciada:</span>
-                  <span className="font-extrabold text-slate-900 dark:text-white text-sm">
-                    {currentEmail || "Usuario Activo"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1 rounded-md bg-emerald-100 px-2.5 py-1 text-[11px] font-black text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
-                  <span>{currentRole === "admin" ? `👑 ${t("navAdminRole")}` : `🎯 ${t("navBettor")}`}</span>
+                <span className="text-xs font-extrabold text-slate-900 dark:text-white truncate block">
+                  {currentEmail || "usuario@smartbetbot.com"}
                 </span>
-
-                {/* Desktop Logout Button */}
-                <button
-                  onClick={handleLogout}
-                  disabled={loggingOut}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-3 py-1 text-xs font-bold text-red-700 transition hover:bg-red-100 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-900/60 cursor-pointer"
-                  title="Cerrar sesión"
-                >
-                  <span className="text-sm font-bold">⎋</span>
-                  <span>{loggingOut ? "..." : t("navLogout")}</span>
-                </button>
               </div>
+              <button
+                onClick={handleLogout}
+                disabled={loggingOut}
+                className="inline-flex items-center gap-1 rounded-xl bg-red-50 px-2.5 py-1 text-[11px] font-bold text-red-700 hover:bg-red-100 dark:bg-red-950/60 dark:text-red-300 dark:hover:bg-red-900/60 transition cursor-pointer shrink-0"
+              >
+                <span>⎋</span>
+                <span>{loggingOut ? "..." : t("navLogout")}</span>
+              </button>
             </div>
 
-            {/* Navigation Grid (Organized in 4 columns on Web) */}
-            <div className="text-[11px] font-black uppercase tracking-wider text-slate-400 mb-2">
-              Módulos del Sistema
-            </div>
-            <nav className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
+            {/* Grid of Navigation Links */}
+            <nav className="grid grid-cols-1 gap-1.5 max-h-[70vh] overflow-y-auto pr-1">
               {navLinks.map((link) => {
                 if (link.isAction) {
                   return (
@@ -396,9 +377,9 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
                         setDesktopMenuOpen(false);
                         openPushModal();
                       }}
-                      className="group relative flex items-start gap-3 rounded-2xl p-3.5 transition-all cursor-pointer text-left bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/30 hover:border-emerald-500 dark:bg-emerald-950/30 dark:border-emerald-800/60 dark:hover:border-emerald-500"
+                      className="group relative flex items-start gap-3 rounded-2xl p-3.5 transition-all bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-transparent border border-emerald-500/30 hover:border-emerald-500 hover:bg-emerald-500/20 text-left w-full cursor-pointer dark:bg-emerald-950/30 dark:hover:bg-emerald-950/50"
                     >
-                      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-xl shadow-xs border border-emerald-200 dark:bg-slate-800 dark:border-emerald-800/80 shrink-0 group-hover:scale-110 transition-transform">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20 text-xl shadow-xs border border-emerald-500/40 shrink-0 group-hover:scale-110 transition-transform">
                         {link.icon}
                       </span>
                       <div className="min-w-0 flex-1">

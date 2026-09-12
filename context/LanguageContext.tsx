@@ -30,11 +30,13 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     navBettor: "Apostador",
     navAdminRole: "Administrador",
     navSubtitle: "Inteligencia Deportiva",
+    navModules: "Menú",
+    navResponsible: "Apuesta con responsabilidad",
 
     // Dashboard
     dashboardKicker: "Panel Principal",
-    dashboardTitle: "Alertas y Pronósticos Cuantitativos",
-    dashboardSubtitle: "Predicciones fundamentadas con modelos matemáticos Poisson, ratings ELO y cálculo de cuotas justas",
+    dashboardTitle: "Centro de Inteligencia Deportiva",
+    dashboardSubtitle: "Selecciones automáticas de máxima probabilidad con enfoque prioritario en Ganador Local (1) y Over 2.5 Goles, respaldadas por modelos Dixon-Coles y simulación Monte Carlo.",
     statActivePicks: "Alertas Activas",
     statAvgOdds: "Cuota Promedio",
     statAvgProb: "Probabilidad Media",
@@ -153,11 +155,13 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     navBettor: "Bettor",
     navAdminRole: "Administrator",
     navSubtitle: "Sports Intelligence",
+    navModules: "Menu",
+    navResponsible: "Responsible Gambling",
 
     // Dashboard
     dashboardKicker: "Main Dashboard",
-    dashboardTitle: "Quantitative Predictions & Alerts",
-    dashboardSubtitle: "Mathematical Poisson models, ELO ratings & fair-odds value betting predictions",
+    dashboardTitle: "Sports Intelligence Center",
+    dashboardSubtitle: "Automated maximum-probability selections with primary focus on Home Win (1) and Over 2.5 Goals, backed by Dixon-Coles models and Monte Carlo simulations.",
     statActivePicks: "Active Alerts",
     statAvgOdds: "Average Odds",
     statAvgProb: "Average Probability",

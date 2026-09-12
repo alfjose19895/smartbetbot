@@ -5,33 +5,39 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
 
-export function Footer() {
+interface FooterProps {
+  phoneNumber?: string;
+}
+
+export function Footer({
+  phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "593964082483",
+}: FooterProps) {
   const pathname = usePathname();
   const { language, t } = useLanguage();
+  const isLandingPage = pathname === "/" || pathname === "/login" || pathname === "/register";
 
-  const phone = "593964082483";
-  const isHomePage = pathname === "/";
+  const phone = phoneNumber.replace(/[^0-9]/g, "");
 
-  let badgeText: string;
-  let title: string;
-  let subtitle: string;
-  let btnText: string;
-  let defaultMessage: string;
+  let title = "";
+  let subtitle = "";
+  let badgeText = "";
+  let btnText = "";
+  let defaultMessage = "";
 
-  if (isHomePage) {
-    badgeText = language === "en" ? "Official VIP Assistance" : "Asesoría Personalizada VIP";
+  if (isLandingPage) {
+    badgeText = language === "en" ? "VIP Access & Inquiries" : "Adquisición & Dudas";
     title =
       language === "en"
-        ? "¿Have questions or want to acquire SmartBetBot?"
-        : "¿Tienes dudas o deseas adquirir SmartBetBot?";
+        ? "Questions on how to acquire SmartBetBot VIP?"
+        : "¿Dudas sobre cómo adquirir SmartBetBot VIP?";
     subtitle =
       language === "en"
         ? "Chat directly with our official support team on WhatsApp to get personalized guidance on access plans and instant activation."
         : "Escríbenos directamente a nuestro WhatsApp oficial para recibir asesoría personalizada sobre planes de acceso y activación inmediata.";
     btnText =
       language === "en"
-        ? "Chat via WhatsApp (+593 964082483)"
-        : "Chatear por WhatsApp (+593 964082483)";
+        ? "WhatsApp Support"
+        : "Soporte WhatsApp";
     defaultMessage =
       language === "en"
         ? "Hello! ⚽🔥 I would like to get personalized guidance on how to acquire SmartBetBot and activate my VIP access. How can I get started?"
@@ -48,8 +54,8 @@ export function Footer() {
         : "Escríbenos a nuestro canal de soporte en WhatsApp para resolver cualquier inquietud sobre tus pronósticos, mercados o cuenta.";
     btnText =
       language === "en"
-        ? "Technical Support WhatsApp (+593 964082483)"
-        : "Soporte WhatsApp (+593 964082483)";
+        ? "WhatsApp Support"
+        : "Soporte WhatsApp";
     defaultMessage =
       language === "en"
         ? "Hello! ⚽ I need technical support / assistance with my SmartBetBot account and sports predictions."

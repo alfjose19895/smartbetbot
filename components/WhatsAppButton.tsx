@@ -29,8 +29,8 @@ export function WhatsAppButton({
         : "¡Hola! ⚽🔥 Tengo dudas y me gustaría recibir asesoría sobre cómo adquirir SmartBetBot y activar mi acceso VIP. ¿Cómo puedo empezar?";
     tooltipText =
       language === "en"
-        ? "Questions on getting SmartBetBot? Chat with us"
-        : "¿Dudas sobre cómo adquirir SmartBetBot? Escríbenos";
+        ? "Questions on getting SmartBetBot? WhatsApp Support"
+        : "¿Dudas sobre cómo adquirir SmartBetBot? Soporte WhatsApp";
   } else {
     // Support & Account Assistance Mode
     defaultMessage =
@@ -39,8 +39,8 @@ export function WhatsAppButton({
         : "¡Hola! ⚽ Necesito soporte técnico / asistencia con mi cuenta de SmartBetBot y el uso de los pronósticos.";
     tooltipText =
       language === "en"
-        ? "Need help with your account? Chat with support"
-        : "¿Necesitas soporte con tu cuenta? Escríbenos";
+        ? "Need help with your account? WhatsApp Support"
+        : "¿Necesitas ayuda con tu cuenta? Soporte WhatsApp";
   }
 
   const encodedText = encodeURIComponent(defaultMessage);
@@ -69,8 +69,8 @@ export function WhatsAppButton({
         href={waUrl}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="Contactar soporte o ventas por WhatsApp"
-        title="Escríbenos por WhatsApp (+593 964082483)"
+        aria-label="Contactar soporte por WhatsApp"
+        title={language === "en" ? "WhatsApp Support" : "Soporte WhatsApp"}
         className="flex h-13 w-13 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg shadow-emerald-500/30 transition-all duration-300 hover:scale-110 hover:shadow-xl hover:shadow-emerald-500/40 active:scale-95 cursor-pointer relative"
       >
         {/* Pulse Ring Indicator */}
