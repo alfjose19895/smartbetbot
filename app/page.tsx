@@ -160,24 +160,22 @@ export default async function HomePage() {
             ⚡ Pago único de por vida si compras antes del <strong className="text-emerald-400">31 de Octubre del 2026</strong>. Sin cuotas mensuales.
           </p>
 
-          {/* Visual Showcase: Tablet Mockup from Provided Image */}
+          {/* Visual Showcase: Hero Banner Image */}
           <div className="relative mx-auto max-w-5xl pt-4">
-            <div className="relative rounded-3xl border border-emerald-500/30 bg-slate-900/50 p-2 sm:p-4 shadow-2xl shadow-emerald-950/60 backdrop-blur-xl group">
-              {/* Image Frame */}
-              <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-inner">
-                <Image
-                  src="/smartbetbot-hero-mockup.jpg"
+            <div className="relative rounded-3xl border border-emerald-500/30 bg-slate-900/70 p-2 sm:p-3 shadow-2xl shadow-emerald-950/60 backdrop-blur-xl group">
+              {/* Image Frame with direct resilient img */}
+              <div className="relative w-full rounded-2xl overflow-hidden shadow-inner bg-slate-950">
+                <img
+                  src="/index-hero-banner.jpg"
                   alt="SmartBetBot - La IA Analiza. Tú decides mejor. Pronósticos inteligentes con IA"
-                  fill
-                  priority
-                  className="object-cover transition-transform duration-700 group-hover:scale-[1.01]"
-                  sizes="(max-width: 1200px) 100vw, 1200px"
+                  className="w-full h-auto object-cover rounded-2xl transition-transform duration-700 group-hover:scale-[1.01] block"
+                  loading="eager"
                 />
               </div>
 
               {/* Decorative Floating Badges */}
-              <div className="hidden sm:flex absolute -bottom-5 -left-4 rounded-2xl bg-slate-900/95 border border-emerald-500/40 p-3.5 shadow-2xl items-center gap-3 backdrop-blur-md">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 text-xl font-black">
+              <div className="hidden sm:flex absolute -bottom-4 -left-3 rounded-2xl bg-slate-900/95 border border-emerald-500/40 p-3 shadow-2xl items-center gap-3 backdrop-blur-md">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 text-lg font-black">
                   ⚽
                 </span>
                 <div className="text-left">
@@ -186,8 +184,8 @@ export default async function HomePage() {
                 </div>
               </div>
 
-              <div className="hidden sm:flex absolute -top-5 -right-4 rounded-2xl bg-slate-900/95 border border-emerald-500/40 p-3.5 shadow-2xl items-center gap-3 backdrop-blur-md">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 text-xl font-black">
+              <div className="hidden sm:flex absolute -top-4 -right-3 rounded-2xl bg-slate-900/95 border border-emerald-500/40 p-3 shadow-2xl items-center gap-3 backdrop-blur-md">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 text-lg font-black">
                   📈
                 </span>
                 <div className="text-left">
