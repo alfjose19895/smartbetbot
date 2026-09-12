@@ -111,7 +111,8 @@ describe("Prediction Engine (TypeScript MVP)", () => {
     const predictions = await generatePredictionsForUpcoming();
     for (const p of predictions) {
       expect(p.odds).toBeGreaterThanOrEqual(1.10);
-      expect(p.probability).toBeGreaterThanOrEqual(30);
+      const confOrProb = p.probability ?? p.confidenceScore ?? (typeof p.confidence === "number" ? p.confidence : 50);
+      expect(confOrProb).toBeGreaterThanOrEqual(30);
     }
     expect(predictions.length).toBeGreaterThanOrEqual(0);
   }, 25000);

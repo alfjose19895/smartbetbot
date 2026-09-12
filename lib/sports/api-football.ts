@@ -39,8 +39,7 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
   { id: 141, name: "La Liga 2 (Segunda División)", country: "España", category: "second_divisions", tier: 2 },
   { id: 136, name: "Serie B", country: "Italia", category: "second_divisions", tier: 2 },
   { id: 79, name: "2. Bundesliga", country: "Alemania", category: "second_divisions", tier: 2 },
-  { id: 80, name: "3. Liga", country: "Alemania", category: "nordics_others", tier: 3 },
-  { id: 62, name: "Ligue 2", country: "Francia", category: "second_divisions", tier: 2 },
+    { id: 62, name: "Ligue 2", country: "Francia", category: "second_divisions", tier: 2 },
   { id: 89, name: "Eerste Divisie (2da Div)", country: "Países Bajos", category: "second_divisions", tier: 2 },
   { id: 95, name: "Liga Portugal 2", country: "Portugal", category: "second_divisions", tier: 2 },
   { id: 145, name: "Challenger Pro League (2da Div)", country: "Bélgica", category: "second_divisions", tier: 2 },
@@ -121,7 +120,7 @@ export const PRIORITY_EUROPEAN_LEAGUE_IDS = [
   39, 40, 45, 48, // England
   140, 141, 143, // Spain
   135, 136, 137, // Italy
-  78, 79, 80, 81, // Germany (Bundesliga, 2. Bundesliga, 3. Liga, DFB Pokal)
+  78, 79, 81, // Germany (Bundesliga, 2. Bundesliga, DFB Pokal)
   61, 62, 66, // France
   88, 89, 90, // Netherlands
   94, 95, 96, // Portugal
@@ -156,7 +155,7 @@ export function isPriorityEuropeanLeague(leagueId?: number, leagueName?: string,
   if (leagueName) {
     const normName = leagueName.toLowerCase();
     if (normName.includes("premier league") && !normName.includes("egipto") && !normName.includes("kuwait") && !normName.includes("ucrania") && !normName.includes("ghana")) return true;
-    if (normName.includes("la liga") || normName.includes("laliga") || normName.includes("serie a") || normName.includes("bundesliga") || normName.includes("3. liga") || normName.includes("3 liga") || normName.includes("ligue 1") || normName.includes("eredivisie") || normName.includes("primeira liga") || normName.includes("champions league") || normName.includes("europa league") || normName.includes("nations league")) return true;
+    if (normName.includes("la liga") || normName.includes("laliga") || normName.includes("serie a") || normName.includes("bundesliga") || normName.includes("ligue 1") || normName.includes("eredivisie") || normName.includes("primeira liga") || normName.includes("champions league") || normName.includes("europa league") || normName.includes("nations league")) return true;
   }
   return false;
 }

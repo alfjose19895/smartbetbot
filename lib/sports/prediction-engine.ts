@@ -251,7 +251,7 @@ export function getCanonicalTeamKey(name: string): string {
   if (norm.includes("fulham")) return "fulham";
   if (norm.includes("everton")) return "everton";
 
-  // Germany (Bundesliga, 2. Bundesliga & 3. Liga)
+  // Germany (Bundesliga & 2. Bundesliga)
   if (norm.includes("bayern")) return "bayernmunich";
   if (norm.includes("dortmund")) return "borussiadortmund";
   if (norm.includes("leverkusen")) return "bayerleverkusen";
@@ -346,8 +346,7 @@ export function normalizeLeagueInfo(
   if (norm.includes("serie a") && (normCountry.includes("ital") || !rawCountry)) {
     return { canonicalLeague: "Serie A", country: "Italia", tier: 1 };
   }
-  if ((norm.includes("bundesliga") || norm.includes("3. liga") || norm.includes("3 liga") || norm.includes("3.liga")) && (normCountry.includes("alem") || normCountry.includes("germany") || !rawCountry)) {
-    if (norm.includes("3")) return { canonicalLeague: "3. Liga", country: "Alemania", tier: 3 };
+  if (norm.includes("bundesliga") && (normCountry.includes("alem") || normCountry.includes("germany") || !rawCountry)) {
     if (norm.includes("2")) return { canonicalLeague: "2. Bundesliga", country: "Alemania", tier: 2 };
     return { canonicalLeague: "Bundesliga", country: "Alemania", tier: 1 };
   }
@@ -559,7 +558,7 @@ export const KNOWN_ELO_RATINGS: Record<string, number> = {
   "bologna": 1760,
   "torino": 1660,
 
-  // Alemania (Bundesliga, 2. Bundesliga & 3. Liga)
+  // Alemania (Bundesliga & 2. Bundesliga)
   "bayernmunich": 2000,
   "bayerleverkusen": 1950,
   "borussiadortmund": 1870,

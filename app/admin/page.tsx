@@ -232,7 +232,6 @@ function AdminControlContent() {
     { name: "Primera División (Costa Rica)", country: "costa rica", flag: "🇨🇷" },
     { name: "Serie A (Italia)", country: "italia", flag: "🇮🇹" },
     { name: "Bundesliga (Alemania)", country: "alemania", flag: "🇩🇪" },
-    { name: "3. Liga (Alemania)", country: "alemania", flag: "🇩🇪" },
     { name: "Liga MX (México)", country: "mexico", flag: "🇲🇽" },
     { name: "Brasileirão (Brasil)", country: "brasil", flag: "🇧🇷" },
   ];
