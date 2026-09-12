@@ -1105,7 +1105,7 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     }
   }
 
-  const newOpportunities: MarketOpportunity[] = [];
+  const candidateOpportunities: MarketOpportunity[] = [];
   const usedTeams = new Set<string>();
 
   for (const item of allFixtures) {
@@ -1150,47 +1150,90 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     });
 
     if (opps.length > 0) {
-      const topPick = opps[0];
-      const prob = typeof topPick.probability === "number" ? topPick.probability : 50;
-      const conf: "Muy Alta" | "Alta" | "Media" | "Moderada" =
-        prob >= 70 ? "Muy Alta" : prob >= 58 ? "Alta" : "Media";
-
-      newOpportunities.push({
-        ...topPick,
-        confidence: conf,
-        pickBadge: "nuevo",
-        isNew: true,
-        isNewlyDiscovered: true,
-        addedAt: new Date().toISOString(),
-        isMcpPick: true,
-        isMcp: true,
-        source: "mcp",
-        status: "pending",
-      });
+      for (const opp of opps) {
+        candidateOpportunities.push(opp);
+      }
       usedTeams.add(hNorm);
       usedTeams.add(aNorm);
     }
   }
 
-  // Sort candidate opportunities by high probability and tier
-  const sortedNew = newOpportunities.sort((a, b) => {
-    const aTier = a.leagueTier || 3;
-    const bTier = b.leagueTier || 3;
-    if (aTier !== bTier) return aTier - bTier;
-    if (b.probability !== a.probability) return b.probability - a.probability;
-    return (b.smartScore || 0) - (a.smartScore || 0) || b.edge - a.edge;
-  });
+  // 2. Separate into 3 High-Yield Portfolio Tiers (60% Seguras / 25% Valor / 15% Bombas)
+  const poolSeguras: MarketOpportunity[] = [];
+  const poolValor: MarketOpportunity[] = [];
+  const poolBombas: MarketOpportunity[] = [];
+
+  for (const opp of candidateOpportunities) {
+    const prob = typeof opp.probability === "number" ? opp.probability : 50;
+    const conf: "Muy Alta" | "Alta" | "Media" | "Moderada" =
+      prob >= 70 ? "Muy Alta" : prob >= 58 ? "Alta" : "Media";
+
+    if (opp.odds >= 2.05 || opp.market.includes("Empate") || opp.pickBadge === "bomba") {
+      poolBombas.push({
+        ...opp,
+        confidence: conf,
+        pickBadge: "bomba",
+        isMcpPick: true,
+        isMcp: true,
+        source: "mcp",
+        status: "pending",
+      });
+    } else if (opp.odds >= 1.72 && opp.odds < 2.05) {
+      poolValor.push({
+        ...opp,
+        confidence: conf,
+        pickBadge: "valor",
+        isMcpPick: true,
+        isMcp: true,
+        source: "mcp",
+        status: "pending",
+      });
+    } else if (opp.odds >= 1.25 && opp.odds < 1.72) {
+      poolSeguras.push({
+        ...opp,
+        confidence: conf,
+        pickBadge: "estandar",
+        isMcpPick: true,
+        isMcp: true,
+        source: "mcp",
+        status: "pending",
+      });
+    }
+  }
+
+  // Sort each pool by quantitative conviction
+  poolSeguras.sort((a, b) => b.probability - a.probability || (b.smartScore || 0) - (a.smartScore || 0));
+  poolValor.sort((a, b) => b.edge - a.edge || b.probability - a.probability);
+  poolBombas.sort((a, b) => b.odds * b.probability - a.odds * a.probability || b.odds - a.odds);
 
   let newlyAdded: MarketOpportunity[] = [];
   let merged: MarketOpportunity[] = [];
 
   if (existingSnapshot.length === 0) {
-    // Initial slate generation: select top 25 high conviction picks
-    newlyAdded = sortedNew.slice(0, 25);
-    merged = newlyAdded;
+    // 60 / 25 / 15 Portfolio Strategy (25 picks total)
+    const selSeguras = poolSeguras.slice(0, 15);
+    const selValor = poolValor.slice(0, 6);
+    const selBombas = poolBombas.slice(0, 4);
+
+    newlyAdded = [...selSeguras, ...selValor, ...selBombas].map((p) => ({
+      ...p,
+      isNew: true,
+      isNewlyDiscovered: true,
+      addedAt: new Date().toISOString(),
+    }));
+    merged = newlyAdded.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
   } else {
-    // Incremental search: take up to 10 newly found picks
-    newlyAdded = sortedNew.slice(0, 10);
+    // Incremental search: take up to 5 seguras, 3 valor, 2 bombas
+    const selSeguras = poolSeguras.slice(0, 5);
+    const selValor = poolValor.slice(0, 3);
+    const selBombas = poolBombas.slice(0, 2);
+
+    newlyAdded = [...selSeguras, ...selValor, ...selBombas].map((p) => ({
+      ...p,
+      isNew: true,
+      isNewlyDiscovered: true,
+      addedAt: new Date().toISOString(),
+    }));
     merged = [...existingSnapshot, ...newlyAdded].sort(
       (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
     );
@@ -1202,13 +1245,17 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     cacheTimestamp = nowMs;
     cachedSettledHistory = [];
 
-    // Dynamically build/refresh daily parlays if needed
+    // Dynamically build and save immutable daily parlays (Conservative, Moderate, Aggressive)
     try {
       getImmutableDailyParlays(merged, todayDateStr);
     } catch (parlayErr) {
       console.warn("Could not generate parlays on sync:", parlayErr);
     }
   }
+
+  const segurasCount = newlyAdded.filter((p) => p.pickBadge === "estandar").length;
+  const valorCount = newlyAdded.filter((p) => p.pickBadge === "valor").length;
+  const bombasCount = newlyAdded.filter((p) => p.pickBadge === "bomba").length;
 
   return {
     success: true,
@@ -1218,7 +1265,7 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     totalAlerts: merged.length,
     predictions: merged,
     message: newlyAdded.length > 0
-      ? `✓ ¡Búsqueda completada! Se sincronizaron ${newlyAdded.length} alertas cuantitativas de hoy. Total: ${merged.length} alertas.`
+      ? `✓ ¡Búsqueda completada! Se sincronizaron ${newlyAdded.length} alertas (${segurasCount} Seguras, ${valorCount} Valor, ${bombasCount} Bombas). Total: ${merged.length} alertas.`
       : `✓ El mercado de hoy está completamente al día con ${merged.length} alertas activas.`,
   };
 }

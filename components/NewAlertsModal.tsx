@@ -24,16 +24,21 @@ export function NewAlertsModal({
 
   if (!isOpen || !newAlerts || newAlerts.length === 0) return null;
 
+  const segurasCount = newAlerts.filter((p) => p.pickBadge === "estandar" || (!p.pickBadge && p.odds < 1.72)).length;
+  const valorCount = newAlerts.filter((p) => p.pickBadge === "valor").length;
+  const bombasCount = newAlerts.filter((p) => p.pickBadge === "bomba" || p.odds >= 2.05).length;
+
   const handleCopySingle = (e: React.MouseEvent, pick: MarketOpportunity) => {
     e.stopPropagation();
     const id = String(pick.fixtureId || pick.id || `${pick.homeTeam}-${pick.awayTeam}`);
+    const badgeLabel = pick.pickBadge === "bomba" ? "💣 CUOTA BOMBA" : pick.pickBadge === "valor" ? "💎 VALOR (+EV)" : "🛡️ APUESTA SEGURA";
     const text = [
-      `⚡ NUEVA ALERTA SMARTBETBOT ⚡`,
+      `⭐ SMARTBETBOT MCP — ${badgeLabel} ⭐`,
       `🏆 ${pick.league} ${pick.country ? `(${pick.country})` : ""}`,
       `⚽ ${pick.homeTeam} vs ${pick.awayTeam}`,
       `🎯 Pronóstico: ${pick.market} @${(pick.odds ?? 1.5).toFixed(2)}`,
-      `📈 Probabilidad: ${pick.probability}% (Fair Odds: @${(pick.fairOdds ?? pick.odds ?? 1.5).toFixed(2)})`,
-      `💎 Valor Esperado (+EV): +${pick.edge || 5}%`,
+      `📈 Probabilidad Modelo: ${pick.probability}% (Fair Odds: @${(pick.fairOdds ?? pick.odds ?? 1.5).toFixed(2)})`,
+      `💎 Ventaja (+EV): +${pick.edge || 5}%`,
       `⭐ Confianza: ${pick.confidence || "Muy Alta"}`,
       "",
       `🧠 Análisis: "${pick.explanation}"`,
@@ -49,13 +54,15 @@ export function NewAlertsModal({
 
   const handleCopyAll = () => {
     const lines = [
-      `🔥 SE HAN AGREGADO ${newAlerts.length} NUEVAS ALERTAS A SMARTBETBOT 🔥`,
+      `🔥 SE HAN AGREGADO ${newAlerts.length} NUEVAS ALERTAS (MODELO 60/25/15) 🔥`,
       `📅 Fecha: ${new Date().toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long" })}`,
+      `📊 Distribución: 🛡️ ${segurasCount} Seguras | 💎 ${valorCount} Valor | 💣 ${bombasCount} Bombas`,
       "----------------------------------------",
       ...newAlerts.map((pick, i) => {
         const { time } = formatMatchKickoffTime(pick.kickoff);
+        const b = pick.pickBadge === "bomba" ? "💣 BOMBA" : pick.pickBadge === "valor" ? "💎 VALOR" : "🛡️ SEGURA";
         return [
-          `#${i + 1} 🏆 ${pick.league} | ⏰ ${time}`,
+          `#${i + 1} [${b}] 🏆 ${pick.league} | ⏰ ${time}`,
           `⚽ ${pick.homeTeam} vs ${pick.awayTeam}`,
           `🎯 ${pick.market} @${(pick.odds ?? 1.5).toFixed(2)} | Prob: ${pick.probability}% | +EV: +${pick.edge || 5}%`,
           `🧠 "${pick.explanation}"`,
@@ -83,17 +90,29 @@ export function NewAlertsModal({
             <div>
               <div className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-xs font-black tracking-wide uppercase backdrop-blur-sm">
                 <span className="animate-ping inline-flex h-2 w-2 rounded-full bg-emerald-300 opacity-75"></span>
-                <span>✨ Búsqueda Exitosa</span>
+                <span>✨ Modelo 60/25/15 Sincronizado</span>
               </div>
               <h2 className="mt-2 text-xl sm:text-2xl font-black tracking-tight">
                 ¡{newAlerts.length} {newAlerts.length === 1 ? "Nueva Alerta Encontrada" : "Nuevas Alertas Encontradas"}!
               </h2>
-              <p className="mt-1 text-xs sm:text-sm text-emerald-50 leading-relaxed">
-                Se han añadido al snapshot del día sin modificar tus pronósticos anteriores.
+              
+              {/* Portfolio Distribution Pill Counters */}
+              <div className="mt-2 flex items-center gap-2 flex-wrap text-xs font-black">
+                <span className="rounded-lg bg-emerald-950/60 px-2.5 py-1 border border-emerald-400/40 text-emerald-200">
+                  🛡️ {segurasCount} Seguras
+                </span>
+                <span className="rounded-lg bg-cyan-950/60 px-2.5 py-1 border border-cyan-400/40 text-cyan-200">
+                  💎 {valorCount} Valor
+                </span>
+                <span className="rounded-lg bg-rose-950/60 px-2.5 py-1 border border-rose-400/40 text-rose-200 animate-pulse">
+                  💣 {bombasCount} Bombas
+                </span>
                 {typeof totalCount === "number" && (
-                  <span className="font-extrabold text-white"> Total actual: {totalCount} alertas.</span>
+                  <span className="rounded-lg bg-white/10 px-2.5 py-1 text-white/90">
+                    Total: {totalCount}
+                  </span>
                 )}
-              </p>
+              </div>
             </div>
 
             <button
@@ -112,21 +131,38 @@ export function NewAlertsModal({
             const { time } = formatMatchKickoffTime(pick.kickoff);
             const id = String(pick.fixtureId || pick.id || `${pick.homeTeam}-${pick.awayTeam}-${idx}`);
             const isCopied = copiedId === id;
+            const isBomba = pick.pickBadge === "bomba" || pick.odds >= 2.05;
+            const isValor = pick.pickBadge === "valor";
 
             return (
               <div
                 key={id}
                 onClick={() => onOpenDetail?.(pick)}
-                className={`group relative rounded-2xl border border-emerald-500/40 bg-gradient-to-br from-emerald-50/40 via-white to-slate-50/50 p-4 transition hover:border-emerald-500 hover:shadow-lg dark:from-emerald-950/20 dark:via-slate-900/90 dark:to-slate-900/50 dark:border-emerald-500/30 dark:hover:border-emerald-500 cursor-pointer ${
-                  idx > 0 ? "pt-4.5" : ""
-                }`}
+                className={`group relative rounded-2xl border p-4 transition hover:shadow-lg cursor-pointer ${
+                  isBomba
+                    ? "border-rose-500/60 bg-gradient-to-br from-rose-50/50 via-white to-slate-50/50 dark:from-rose-950/30 dark:via-slate-900/90 dark:to-slate-900/50 dark:border-rose-500/40 hover:border-rose-500"
+                    : isValor
+                    ? "border-cyan-500/60 bg-gradient-to-br from-cyan-50/50 via-white to-slate-50/50 dark:from-cyan-950/30 dark:via-slate-900/90 dark:to-slate-900/50 dark:border-cyan-500/40 hover:border-cyan-500"
+                    : "border-emerald-500/40 bg-gradient-to-br from-emerald-50/40 via-white to-slate-50/50 dark:from-emerald-950/20 dark:via-slate-900/90 dark:to-slate-900/50 dark:border-emerald-500/30 hover:border-emerald-500"
+                } ${idx > 0 ? "pt-4.5" : ""}`}
               >
                 {/* Top Badge strip */}
                 <div className="flex items-center justify-between gap-2 mb-2">
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-500 text-slate-950 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider shadow-xs animate-pulse">
-                      ⚡ NUEVA #{idx + 1}
-                    </span>
+                    {isBomba ? (
+                      <span className="inline-flex items-center gap-1 rounded-lg bg-rose-600 text-white px-2 py-0.5 text-[10px] font-black uppercase tracking-wider shadow-sm animate-pulse border border-rose-400">
+                        💣 BOMBA
+                      </span>
+                    ) : isValor ? (
+                      <span className="inline-flex items-center gap-1 rounded-lg bg-cyan-600 text-white px-2 py-0.5 text-[10px] font-black uppercase tracking-wider shadow-sm border border-cyan-400">
+                        💎 VALOR (+EV)
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 text-white px-2 py-0.5 text-[10px] font-black uppercase tracking-wider shadow-sm border border-emerald-400">
+                        🛡️ SEGURA
+                      </span>
+                    )}
+
                     <span className="inline-flex items-center gap-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-2 py-0.5 text-[11px] font-bold">
                       🏆 {pick.league} {pick.country ? `(${pick.country})` : ""}
                     </span>
@@ -156,10 +192,16 @@ export function NewAlertsModal({
 
                 {/* Market & Value Metrics */}
                 <div className="mt-2.5 grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  <div className="rounded-xl bg-slate-100/90 dark:bg-slate-800/80 p-2 border border-slate-200/80 dark:border-slate-700/60">
+                  <div className={`rounded-xl p-2 border ${
+                    isBomba
+                      ? "bg-rose-50/80 dark:bg-rose-950/40 border-rose-200 dark:border-rose-900/60"
+                      : "bg-slate-100/90 dark:bg-slate-800/80 border-slate-200/80 dark:border-slate-700/60"
+                  }`}>
                     <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">Pronóstico</span>
-                    <span className="font-black text-xs sm:text-sm text-emerald-800 dark:text-emerald-400">
-                      {pick.market} <span className="text-sky-600 dark:text-sky-400 font-extrabold">@{(pick.odds ?? 1.5).toFixed(2)}</span>
+                    <span className={`font-black text-xs sm:text-sm ${
+                      isBomba ? "text-rose-700 dark:text-rose-300" : "text-emerald-800 dark:text-emerald-400"
+                    }`}>
+                      {pick.market} <span className="font-extrabold text-sky-600 dark:text-sky-400">@{(pick.odds ?? 1.5).toFixed(2)}</span>
                     </span>
                   </div>
 
@@ -170,9 +212,13 @@ export function NewAlertsModal({
                     </span>
                   </div>
 
-                  <div className="col-span-2 sm:col-span-1 rounded-xl bg-emerald-100/60 dark:bg-emerald-950/40 p-2 border border-emerald-300/60 dark:border-emerald-800/40 flex items-center justify-between sm:block">
-                    <span className="block text-[10px] font-bold text-emerald-800 dark:text-emerald-400 uppercase">Valor (+EV)</span>
-                    <span className="font-black text-xs sm:text-sm text-emerald-900 dark:text-emerald-300">
+                  <div className={`col-span-2 sm:col-span-1 rounded-xl p-2 border flex items-center justify-between sm:block ${
+                    isBomba
+                      ? "bg-rose-100/60 dark:bg-rose-950/50 border-rose-300/60 dark:border-rose-800/50 text-rose-900 dark:text-rose-200"
+                      : "bg-emerald-100/60 dark:bg-emerald-950/40 border-emerald-300/60 dark:border-emerald-800/40 text-emerald-900 dark:text-emerald-300"
+                  }`}>
+                    <span className="block text-[10px] font-bold uppercase">Valor (+EV)</span>
+                    <span className="font-black text-xs sm:text-sm">
                       +{pick.edge || 5}% Ventaja
                     </span>
                   </div>
