@@ -3113,7 +3113,10 @@
     "isNewlyDiscovered": true,
     "addedAt": "2026-09-12T11:53:00.065Z",
     "pick": "Over 2.5 Goles",
-    "matchTiming": "prematch"
+    "matchTiming": "live",
+    "currentScore": "0 - 0",
+    "livePeriod": "1H",
+    "liveMinute": "4"
   },
   {
     "fixtureId": 1549776,

@@ -63,6 +63,7 @@ const QUICK_CHIPS: QuickChip[] = [
   { id: "brasileirao", label: "Brasileirão", icon: "🇧🇷", query: "Pronósticos de Brasileirão Série A", leagueId: 71, league: "Brasileirão Série A", country: "Brasil" },
   { id: "argentina", label: "Liga Argentina", icon: "🇦🇷", query: "Pronósticos de Liga Profesional Argentina", leagueId: 128, league: "Liga Profesional Argentina", country: "Argentina" },
   { id: "mls", label: "MLS (USA)", icon: "🇺🇸", query: "Pronósticos de Major League Soccer MLS", leagueId: 253, league: "Major League Soccer (MLS)", country: "Estados Unidos" },
+  { id: "usl", label: "USL (USA)", icon: "🇺🇸", query: "Pronósticos de USL Championship Estados Unidos", leagueId: 254, league: "USL Championship", country: "Estados Unidos" },
   { id: "ecuador", label: "Liga Pro Ecuador", icon: "🇪🇨", query: "Pronósticos de Liga Pro Ecuador", leagueId: 242, league: "Liga Pro", country: "Ecuador" },
   { id: "saudi", label: "Saudi Pro League", icon: "🇸🇦", query: "Pronósticos de Saudi Pro League", leagueId: 307, league: "Saudi Pro League", country: "Arabia Saudita" },
   { id: "sudamericana", label: "Copa Sudamericana", icon: "🌎", query: "Pronósticos de Copa Sudamericana", leagueId: 11, league: "Copa Sudamericana", country: "Sudamérica" },

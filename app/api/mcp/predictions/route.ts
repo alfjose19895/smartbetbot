@@ -62,7 +62,8 @@ const FORBIDDEN_RESERVE_TEAMS = [
 ];
 
 const LEAGUE_KEYWORDS: Record<string, string[]> = {
-  mls: ["mls", "major league soccer", "estados unidos", "usa"],
+  mls: ["mls", "major league soccer"],
+  usl: ["usl", "usl championship", "usl league one", "united soccer league"],
   ligamx: ["liga mx", "mexico", "méxico", "expansion mx"],
   colombia: ["colombia", "primera a", "liga betplay"],
   ecuador: ["ecuador", "liga pro"],
@@ -106,7 +107,7 @@ const COUNTRY_SYNONYMS: Record<string, string[]> = {
   turquia: ["turquia", "turquía", "turkey", "super lig", "süper lig", "turkiye kupasi"],
   belgica: ["belgica", "bélgica", "belgium", "jupiler pro league", "challenger pro league"],
   arabia: ["arabia", "arabia saudita", "saudi arabia", "saudi", "pro league", "king cup"],
-  usa: ["usa", "estados unidos", "united states", "major league soccer", "mls", "us open cup"],
+  usa: ["usa", "estados unidos", "united states", "major league soccer", "mls", "us open cup", "usl", "usl championship", "usl league one"],
   japon: ["japon", "japón", "japan", "j1 league", "j2 league", "emperor cup"],
   corea: ["corea", "south korea", "k league 1", "k league 2", "fa cup"],
   finlandia: ["finlandia", "finland", "veikkausliiga", "suomen cup"],

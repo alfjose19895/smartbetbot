@@ -92,7 +92,8 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
   { id: 262, name: "Liga MX", country: "México", category: "americas", tier: 1 },
   { id: 263, name: "Liga de Expansión MX", country: "México", category: "second_divisions", tier: 2 },
   { id: 253, name: "Major League Soccer (MLS)", country: "Estados Unidos", category: "americas", tier: 1 },
-  { id: 254, name: "USL Championship", country: "Estados Unidos", category: "second_divisions", tier: 2 },
+  { id: 254, name: "USL Championship", country: "Estados Unidos", category: "americas", tier: 2 },
+  { id: 489, name: "USL League One", country: "Estados Unidos", category: "americas", tier: 3 },
   { id: 239, name: "Primera A", country: "Colombia", category: "americas", tier: 1 },
   { id: 281, name: "Liga 1", country: "Perú", category: "americas", tier: 1 },
   { id: 265, name: "Primera División", country: "Chile", category: "americas", tier: 1 },
@@ -160,7 +161,7 @@ export function isPriorityEuropeanLeague(leagueId?: number, leagueName?: string,
   return false;
 }
 export const CUPS_LEAGUE_IDS = [2, 3, 848, 5, 13, 11];
-export const AMERICAS_LEAGUE_IDS = [242, 71, 72, 128, 344, 262, 263, 253, 254, 239, 281, 265, 271, 250];
+export const AMERICAS_LEAGUE_IDS = [242, 71, 72, 128, 344, 262, 263, 253, 254, 489, 239, 281, 265, 274, 250, 162];
 
 export interface ApiFootballLeague {
   id: number;
