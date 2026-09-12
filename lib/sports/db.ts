@@ -273,7 +273,7 @@ export interface HistoricalSettledPick {
   edge?: number;
   probability: number;
   confidence: "Muy Alta" | "Alta" | "Media" | "Moderada";
-  pickBadge?: "bomba" | "valor" | "estandar" | "mcp";
+  pickBadge?: "bomba" | "valor" | "estandar" | "mcp" | "nuevo";
   matchTiming?: "prematch" | "live";
   isLive?: boolean;
   isMcp?: boolean;
@@ -1064,22 +1064,21 @@ export function addPredictionsToDailySnapshot(newPicks: MarketOpportunity[]): {
   };
 }
 
-export async function refreshRemainingLivePredictions(): Promise<{
+export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise<{
+  success: boolean;
   count: number;
+  newCount: number;
+  newAlerts: MarketOpportunity[];
   totalAlerts: number;
   predictions: MarketOpportunity[];
-  message?: string;
+  message: string;
 }> {
   const nowMs = Date.now();
   const todayDateStr = getEcuadorDateString(nowMs);
-  const tomorrowMs = nowMs + 24 * 60 * 60 * 1000;
-  const tomorrowDateStr = getEcuadorDateString(tomorrowMs);
-
-  const dayOfWeek = new Date().getDay();
-  const isWeekend = dayOfWeek === 0 || dayOfWeek === 6 || dayOfWeek === 5;
-  const dailyTarget = isWeekend ? 15 : 12;
-
   let existingSnapshot = loadDailySnapshot(todayDateStr) || [];
+  if (existingSnapshot.length === 0) {
+    existingSnapshot = getStoredPredictions();
+  }
 
   // 1. First ensure all finished matches in the existing snapshot are settled with real scores
   try {
@@ -1132,8 +1131,11 @@ export async function refreshRemainingLivePredictions(): Promise<{
       return `${h}-${a}`;
     })
   );
+  const existingFixIds = new Set(
+    existingSnapshot.map((p) => Number(p.fixtureId)).filter(Boolean)
+  );
 
-  // 2. Fetch upcoming fixtures and odds strictly for TODAY only
+  // 2. Fetch upcoming fixtures and odds strictly for TODAY only in Ecuador timezone
   const [todayFixtures, todayOddsList] = await Promise.all([
     apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil").catch(() => []),
     apiFootball.getOddsByDate(todayDateStr, "America/Guayaquil").catch(() => [] as ApiFootballOddsItem[]),
@@ -1152,7 +1154,7 @@ export async function refreshRemainingLivePredictions(): Promise<{
   const candidates = allFixtures.filter((item) => {
     if (!item.fixture?.id || !item.teams?.home?.name || !item.teams?.away?.name) return false;
     const legName = (item.league?.name || "").toLowerCase();
-    if (legName.includes("primavera") || legName.includes("u19") || legName.includes("u20")) return false;
+    if (legName.includes("primavera") || legName.includes("u19") || legName.includes("u20") || legName.includes("u21") || legName.includes("reserve") || legName.includes("next pro")) return false;
     return isCuratedLeague(item.league?.id, item.league?.name, item.league?.country);
   });
 
@@ -1164,18 +1166,21 @@ export async function refreshRemainingLivePredictions(): Promise<{
     if (!item.fixture?.id || !item.teams?.home?.name || !item.teams?.away?.name) continue;
 
     const kickoff = item.fixture.date;
-    // Strict date check: Only matches for today
-    if (!kickoff || !kickoff.startsWith(todayDateStr)) continue;
+    const fixtureDateStr = kickoff ? getEcuadorDateString(kickoff) : todayDateStr;
+    if (fixtureDateStr !== todayDateStr) continue;
 
     const shortStatus = item.fixture.status?.short || "NS";
-    // Only matches that have NOT started yet
-    if (["FT", "AET", "PEN", "PST", "CANC", "ABD", "1H", "2H", "HT"].includes(shortStatus)) continue;
+    if (["FT", "AET", "PEN", "PST", "CANC", "ABD"].includes(shortStatus)) continue;
 
     const hNorm = getCanonicalTeamKey(item.teams.home.name);
     const aNorm = getCanonicalTeamKey(item.teams.away.name);
     const matchKey = `${hNorm}-${aNorm}`;
-    if (existingMatchKeys.has(matchKey)) continue;
+    const fixId = Number(item.fixture.id);
 
+    if (existingMatchKeys.has(matchKey) || (fixId && existingFixIds.has(fixId))) continue;
+
+    const legName = (item.league?.name || "").toLowerCase();
+    if (legName.includes("primavera") || legName.includes("u19") || legName.includes("u20") || legName.includes("u21") || legName.includes("reserve") || legName.includes("next pro")) continue;
     if (!isCuratedLeague(item.league?.id, item.league?.name, item.league?.country)) continue;
 
     const realMarketOdds = extractMarketOddsFromBookmaker(oddsMapByFixture[item.fixture.id]);
@@ -1196,16 +1201,29 @@ export async function refreshRemainingLivePredictions(): Promise<{
     });
 
     if (opps.length > 0) {
+      const topPick = opps[0];
+      const prob = typeof topPick.probability === "number" ? topPick.probability : 50;
+      const conf: "Muy Alta" | "Alta" | "Media" | "Moderada" =
+        prob >= 70 ? "Muy Alta" : prob >= 58 ? "Alta" : "Media";
+
       newOpportunities.push({
-        ...opps[0],
-        
+        ...topPick,
+        confidence: conf,
+        pickBadge: "nuevo",
+        isNew: true,
+        isNewlyDiscovered: true,
+        addedAt: new Date().toISOString(),
+        isMcpPick: true,
+        isMcp: true,
+        source: "mcp",
         status: "pending",
       });
       existingMatchKeys.add(matchKey);
+      if (fixId) existingFixIds.add(fixId);
     }
   }
 
-  const rankedNew = newOpportunities.sort((a, b) => {
+  const addedPicks = newOpportunities.sort((a, b) => {
     const aTier = a.leagueTier || 3;
     const bTier = b.leagueTier || 3;
     if (aTier !== bTier) return aTier - bTier;
@@ -1213,13 +1231,11 @@ export async function refreshRemainingLivePredictions(): Promise<{
     return (b.smartScore || 0) - (a.smartScore || 0) || b.edge - a.edge;
   });
 
-  const addedPicks = rankedNew;
-
   const merged = [...existingSnapshot, ...addedPicks].sort(
     (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
   );
 
-  if (addedPicks.length > 0 || existingSnapshot.length === 0) {
+  if (addedPicks.length > 0) {
     saveDailySnapshot(todayDateStr, merged);
     cachedLivePredictions = merged;
     cacheTimestamp = nowMs;
@@ -1227,14 +1243,19 @@ export async function refreshRemainingLivePredictions(): Promise<{
   }
 
   return {
-    count: addedPicks.length,
+    success: true,
+    count: merged.length,
+    newCount: addedPicks.length,
+    newAlerts: addedPicks,
     totalAlerts: merged.length,
     predictions: merged,
     message: addedPicks.length > 0
-      ? `✓ Se agregaron ${addedPicks.length} nuevas alertas de alta precisión. Total de alertas hoy: ${merged.length}.`
-      : `✓ El mercado actual está al día con ${merged.length} alertas.`,
+      ? `✓ ¡Se encontraron y agregaron ${addedPicks.length} nuevas alertas al panel de hoy! Total: ${merged.length} alertas.`
+      : `✓ El mercado de hoy está completamente al día (${merged.length} alertas activas).`,
   };
 }
+
+export const refreshRemainingLivePredictions = searchAndAddNewAlerts;
 
 export async function getHistoricalSettledPredictions(forceRefresh = false): Promise<HistoricalSettledPick[]> {
   const nowMs = Date.now();

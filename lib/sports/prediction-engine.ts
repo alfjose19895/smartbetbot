@@ -54,7 +54,10 @@ export interface MarketOpportunity {
   expectedValue: number;
   confidence: "Muy Alta" | "Alta" | "Media" | "Moderada";
   confidenceScore?: number;
-  pickBadge?: "bomba" | "valor" | "estandar" | "mcp";
+  pickBadge?: "bomba" | "valor" | "estandar" | "mcp" | "nuevo";
+  isNew?: boolean;
+  isNewlyDiscovered?: boolean;
+  addedAt?: string;
   isMcpPick?: boolean;
   isMcp?: boolean;
   result?: "WON" | "LOST" | "VOID" | string;

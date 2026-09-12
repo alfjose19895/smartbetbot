@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { MatchDetailModal } from "@/components/MatchDetailModal";
+import { NewAlertsModal } from "@/components/NewAlertsModal";
 import { RecommendedParlay } from "@/components/RecommendedParlay";
 import { FeaturedDailyPicks } from "@/components/FeaturedDailyPicks";
 import { MarketOpportunity, getFeaturedDailyPicks } from "@/lib/sports/prediction-engine";
@@ -115,6 +116,8 @@ export default function DashboardPage() {
   const [syncing, setSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
+  const [newlyDiscoveredAlerts, setNewlyDiscoveredAlerts] = useState<MarketOpportunity[]>([]);
+  const [newAlertsModalOpen, setNewAlertsModalOpen] = useState<boolean>(false);
   const [copiedPickId, setCopiedPickId] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
@@ -200,9 +203,17 @@ export default function DashboardPage() {
       loadSignals();
     };
     window.addEventListener("predictions-updated", handleUpdated);
+    const handleNewAlertsDiscovered = (e: any) => {
+      if (e.detail?.newAlerts && e.detail.newAlerts.length > 0) {
+        setNewlyDiscoveredAlerts(e.detail.newAlerts);
+        setNewAlertsModalOpen(true);
+      }
+    };
+    window.addEventListener("new-alerts-discovered", handleNewAlertsDiscovered);
     window.addEventListener("storage", handleUpdated);
     return () => {
       window.removeEventListener("predictions-updated", handleUpdated);
+      window.removeEventListener("new-alerts-discovered", handleNewAlertsDiscovered);
       window.removeEventListener("storage", handleUpdated);
     };
   }, []);
@@ -210,16 +221,28 @@ export default function DashboardPage() {
   const handleSyncPredictions = async () => {
     try {
       setSyncing(true);
-      setSyncMessage("⚡ Buscando partidos y cuotas del día con modelos cuantitativos...");
+      setSyncMessage("⚡ Buscando nuevas alertas del mercado de hoy con modelos cuantitativos...");
       const res = await fetch("/api/admin/sync/predictions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ forceRefresh: true }),
+        body: JSON.stringify({}),
       });
       const data = await res.json();
       if (data.success) {
-        setSyncMessage(`✓ ¡Búsqueda completada! ${data.count} pronósticos actualizados.`);
-        await loadSignals();
+        if (data.newAlerts && data.newAlerts.length > 0) {
+          setNewlyDiscoveredAlerts(data.newAlerts);
+          setNewAlertsModalOpen(true);
+          setSyncMessage(`✓ ¡Se encontraron ${data.newAlerts.length} nuevas alertas! Agregadas al panel.`);
+        } else {
+          setSyncMessage(`✓ Mercado al día: no hay nuevas alertas pendientes (${data.count || predictions.length} activas).`);
+        }
+        if (Array.isArray(data.predictions)) {
+          const cleanPicks = deduplicatePicksList(data.predictions);
+          setPredictions(cleanPicks);
+          window.dispatchEvent(new CustomEvent("predictions-updated", { detail: cleanPicks }));
+        } else {
+          await loadSignals();
+        }
       } else {
         setSyncMessage(`⚠️ ${data.message || "Error al buscar nuevas alertas"}`);
       }
@@ -227,7 +250,7 @@ export default function DashboardPage() {
       setSyncMessage("❌ Error de conexión al buscar nuevas alertas");
     } finally {
       setSyncing(false);
-      setTimeout(() => setSyncMessage(null), 4000);
+      setTimeout(() => setSyncMessage(null), 5000);
     }
   };
 
@@ -730,6 +753,15 @@ export default function DashboardPage() {
           </Link>
         </section>
       </main>
+
+      {/* Modal de Nuevas Alertas Descubiertas */}
+      <NewAlertsModal
+        isOpen={newAlertsModalOpen}
+        newAlerts={newlyDiscoveredAlerts}
+        totalCount={predictions.length}
+        onClose={() => setNewAlertsModalOpen(false)}
+        onOpenDetail={setActiveModalPick}
+      />
 
       {/* Match Detail Modal */}
       {activeModalPick && (

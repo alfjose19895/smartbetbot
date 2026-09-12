@@ -4,6 +4,7 @@ import { Navbar } from "@/components/Navbar";
 import React, { useState, useEffect } from "react";
 import { PredictionCard } from "@/components/PredictionCard";
 import { MatchDetailModal } from "@/components/MatchDetailModal";
+import { NewAlertsModal } from "@/components/NewAlertsModal";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
 import { useLanguage } from "@/context/LanguageContext";
@@ -149,6 +150,8 @@ export default function SignalsPage() {
   const [signals, setSignals] = useState<MarketOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
+  const [newlyDiscoveredAlerts, setNewlyDiscoveredAlerts] = useState<MarketOpportunity[]>([]);
+  const [newAlertsModalOpen, setNewAlertsModalOpen] = useState<boolean>(false);
 
   // Search & Filters
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -243,9 +246,17 @@ export default function SignalsPage() {
       fetchSignals();
     };
     window.addEventListener("predictions-updated", handleUpdated);
+    const handleNewAlertsDiscovered = (e: any) => {
+      if (e.detail?.newAlerts && e.detail.newAlerts.length > 0) {
+        setNewlyDiscoveredAlerts(e.detail.newAlerts);
+        setNewAlertsModalOpen(true);
+      }
+    };
+    window.addEventListener("new-alerts-discovered", handleNewAlertsDiscovered);
     window.addEventListener("storage", handleUpdated);
     return () => {
       window.removeEventListener("predictions-updated", handleUpdated);
+      window.removeEventListener("new-alerts-discovered", handleNewAlertsDiscovered);
       window.removeEventListener("storage", handleUpdated);
     };
   }, []);
@@ -253,14 +264,28 @@ export default function SignalsPage() {
   const handleSyncSignals = async () => {
     try {
       setSyncing(true);
-      setSyncMessage("⚡ Buscando nuevas alertas pre-match con modelos cuantitativos...");
+      setSyncMessage("⚡ Buscando nuevas alertas del mercado de hoy con modelos cuantitativos...");
       const res = await fetch("/api/admin/sync/predictions", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
       });
       const data = await res.json();
       if (data.success) {
-        setSyncMessage(`✓ ¡Búsqueda completada! ${data.count} alertas cuantitativas activas.`);
-        await fetchSignals();
+        if (data.newAlerts && data.newAlerts.length > 0) {
+          setNewlyDiscoveredAlerts(data.newAlerts);
+          setNewAlertsModalOpen(true);
+          setSyncMessage(`✓ ¡Se encontraron ${data.newAlerts.length} nuevas alertas! Agregadas al panel.`);
+        } else {
+          setSyncMessage(`✓ Mercado al día: no hay nuevas alertas pendientes (${data.count || signals.length} activas).`);
+        }
+        if (Array.isArray(data.predictions)) {
+          const cleanPicks = deduplicatePicksList(data.predictions);
+          setSignals(cleanPicks);
+          window.dispatchEvent(new CustomEvent("predictions-updated", { detail: cleanPicks }));
+        } else {
+          await fetchSignals();
+        }
       } else {
         setSyncMessage(`⚠️ ${data.message || "Error al buscar nuevas alertas"}`);
       }
@@ -268,7 +293,7 @@ export default function SignalsPage() {
       setSyncMessage("❌ Error de conexión al buscar nuevas alertas");
     } finally {
       setSyncing(false);
-      setTimeout(() => setSyncMessage(null), 4000);
+      setTimeout(() => setSyncMessage(null), 5000);
     }
   };
 
@@ -688,6 +713,15 @@ export default function SignalsPage() {
           </div>
         )}
       </main>
+
+      {/* Modal de Nuevas Alertas Descubiertas */}
+      <NewAlertsModal
+        isOpen={newAlertsModalOpen}
+        newAlerts={newlyDiscoveredAlerts}
+        totalCount={signals.length}
+        onClose={() => setNewAlertsModalOpen(false)}
+        onOpenDetail={setActiveModalPick}
+      />
 
       {/* Match Detail Modal */}
       {activeModalPick && (

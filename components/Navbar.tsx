@@ -45,12 +45,22 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
     } else {
       try {
         setSyncingInternal(true);
-        await fetch("/api/admin/sync/predictions", {
+        const res = await fetch("/api/admin/sync/predictions", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({}),
         });
-        window.location.reload();
+        const data = await res.json();
+        if (data.success) {
+          window.dispatchEvent(
+            new CustomEvent("new-alerts-discovered", {
+              detail: { newAlerts: data.newAlerts || [], totalCount: data.count },
+            })
+          );
+          window.dispatchEvent(
+            new CustomEvent("predictions-updated", { detail: data.predictions })
+          );
+        }
       } catch (err) {
         console.error("Admin sync error:", err);
       } finally {
