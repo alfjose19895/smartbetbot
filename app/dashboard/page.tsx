@@ -396,8 +396,65 @@ export default function DashboardPage() {
             </div>
           </div>
 
-
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Balance Resultados
+            </span>
+            <div className="mt-1 flex items-baseline gap-2">
+              <span className="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400">
+                ✓ {wonCount}
+              </span>
+              <span className="text-sm font-black text-slate-400">/</span>
+              <span className="text-xl sm:text-2xl font-black text-rose-600 dark:text-rose-400">
+                ✗ {lostCount}
+              </span>
+              <span className="text-[10px] font-bold text-slate-400 ml-auto">
+                {wonCount + lostCount > 0 ? `${Math.round((wonCount / (wonCount + lostCount)) * 100)}% acierto` : "en juego"}
+              </span>
+            </div>
+          </div>
         </div>
+
+        {/* Results Banner when finished matches exist */}
+        {(wonCount > 0 || lostCount > 0) && (
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-3.5 text-white shadow-md dark:border dark:border-slate-800">
+            <div className="flex items-center gap-2">
+              <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 text-sm font-black">
+                📊
+              </span>
+              <div>
+                <span className="text-xs font-black">Resumen de Resultados Evaluados:</span>
+                <span className="text-[11px] text-slate-300 ml-2">
+                  Marcadores oficiales liquidados y verificados
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setMatchStatusFilter("WON")}
+                className="flex items-center gap-1 rounded-xl bg-emerald-500/20 border border-emerald-500/40 px-3 py-1 text-xs font-black text-emerald-300 hover:bg-emerald-500/30 transition cursor-pointer"
+              >
+                <span>✓ Ganadas:</span>
+                <span className="text-emerald-200 font-extrabold">{wonCount}</span>
+              </button>
+
+              <button
+                onClick={() => setMatchStatusFilter("LOST")}
+                className="flex items-center gap-1 rounded-xl bg-rose-500/20 border border-rose-500/40 px-3 py-1 text-xs font-black text-rose-300 hover:bg-rose-500/30 transition cursor-pointer"
+              >
+                <span>✗ Perdidas:</span>
+                <span className="text-rose-200 font-extrabold">{lostCount}</span>
+              </button>
+
+              {wonCount + lostCount > 0 && (
+                <span className="rounded-xl bg-slate-800 px-3 py-1 text-xs font-black text-amber-300 border border-slate-700">
+                  📈 {Math.round((wonCount / (wonCount + lostCount)) * 100)}% Acierto
+                </span>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Status / Category Filter Pills */}
         <div className="mb-4 flex flex-wrap items-center gap-1.5 sm:gap-2">

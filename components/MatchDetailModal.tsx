@@ -104,6 +104,34 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
           </button>
         </div>
 
+        {/* Settled Result Status Banner */}
+        {(() => {
+          const isWon = prediction.status === "won" || (prediction as any).result === "WON";
+          const isLost = prediction.status === "lost" || (prediction as any).result === "LOST";
+          const score = prediction.actualScore || prediction.currentScore || (prediction as any).score;
+          if (isWon) {
+            return (
+              <div className="bg-emerald-500 text-slate-950 px-4 py-2 text-xs font-black flex items-center justify-between shadow-xs border-b border-emerald-400">
+                <span className="flex items-center gap-1.5">
+                  ✓ PRONÓSTICO ACERTADO (GANADA) • Mercado: {prediction.market} ({prediction.selection || ""}) @{prediction.odds}
+                </span>
+                {score && <span className="rounded-md bg-slate-950 px-2 py-0.5 text-white text-[11px]">⚽ Marcador: {score}</span>}
+              </div>
+            );
+          }
+          if (isLost) {
+            return (
+              <div className="bg-rose-600 text-white px-4 py-2 text-xs font-black flex items-center justify-between shadow-xs border-b border-rose-500">
+                <span className="flex items-center gap-1.5">
+                  ✗ PRONÓSTICO NO ACERTADO (PERDIDA) • Mercado: {prediction.market} ({prediction.selection || ""}) @{prediction.odds}
+                </span>
+                {score && <span className="rounded-md bg-black px-2 py-0.5 text-white text-[11px]">⚽ Marcador: {score}</span>}
+              </div>
+            );
+          }
+          return null;
+        })()}
+
         {/* Tab Navigation */}
         <div className="flex border-b border-slate-200 bg-slate-100/50 px-4 text-xs font-black dark:border-slate-800 dark:bg-slate-950/40">
           <button

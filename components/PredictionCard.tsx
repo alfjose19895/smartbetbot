@@ -132,6 +132,12 @@ export function PredictionCard({
       (prediction.explanation && prediction.explanation.includes("MCP"))
   );
 
+  const finalScoreText =
+    prediction.actualScore ||
+    prediction.currentScore ||
+    (prediction as any).score ||
+    "";
+
   const handleCopyImage = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
@@ -195,16 +201,37 @@ export function PredictionCard({
           /* Mobile Compact Strip */
           <div
             onClick={() => onOpenDetail?.(prediction)}
-            className="group relative flex items-center justify-between gap-2 overflow-hidden rounded-2xl border border-slate-200/90 bg-white px-3.5 py-3 shadow-xs transition-all duration-200 hover:border-emerald-500/50 hover:shadow-md dark:border-slate-800/80 dark:bg-slate-900/90 cursor-pointer"
+            className={`group relative flex items-center justify-between gap-2 overflow-hidden rounded-2xl px-3.5 py-3 transition-all duration-200 cursor-pointer ${
+              isWon
+                ? "border-2 border-emerald-500 bg-emerald-50/40 shadow-sm dark:bg-emerald-950/30 dark:border-emerald-500/80"
+                : isLost
+                ? "border-2 border-rose-500 bg-rose-50/40 shadow-sm dark:bg-rose-950/30 dark:border-rose-500/80"
+                : "border border-slate-200/90 bg-white shadow-xs hover:border-emerald-500/50 hover:shadow-md dark:border-slate-800/80 dark:bg-slate-900/90"
+            }`}
           >
             {/* Left: League & Teams */}
             <div className="flex items-center gap-2.5 min-w-0 flex-1">
-              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100 text-xs font-black text-slate-800 dark:bg-slate-800 dark:text-slate-200 shrink-0">
-                🏆
+              <span
+                className={`flex h-8 w-8 items-center justify-center rounded-xl text-xs font-black shrink-0 ${
+                  isWon
+                    ? "bg-emerald-500 text-slate-950 shadow-sm"
+                    : isLost
+                    ? "bg-rose-600 text-white shadow-sm"
+                    : "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200"
+                }`}
+              >
+                {isWon ? "✓" : isLost ? "✗" : "🏆"}
               </span>
               <div className="min-w-0">
-                <div className="text-xs font-black text-slate-900 dark:text-white truncate">
-                  {prediction.homeTeam} <span className="text-slate-400 font-normal">vs</span> {prediction.awayTeam}
+                <div className="text-xs font-black text-slate-900 dark:text-white truncate flex items-center gap-1.5">
+                  <span className="truncate">
+                    {prediction.homeTeam} <span className="text-slate-400 font-normal">vs</span> {prediction.awayTeam}
+                  </span>
+                  {finalScoreText && (
+                    <span className="shrink-0 px-1.5 py-0.5 rounded-md bg-slate-900 text-white dark:bg-slate-800 text-[10px] font-black">
+                      {finalScoreText}
+                    </span>
+                  )}
                 </div>
                 <div className="text-[10px] font-bold text-slate-500 dark:text-slate-400 truncate flex items-center gap-1.5 mt-0.5">
                   <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-black text-[10px]">
@@ -220,9 +247,6 @@ export function PredictionCard({
 
             {/* Right: Badges, Status & Expand Button */}
             <div className="flex items-center gap-1.5 shrink-0">
-              <span className="rounded-lg px-1.5 py-0.5 text-[9px] font-bold bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                🕒 PRE
-              </span>
               {isMcp && (
                 <span className="rounded-lg px-1.5 py-0.5 text-[9px] font-black bg-purple-600 text-white shadow-sm border border-purple-400 flex items-center gap-0.5">
                   🤖 MCP
@@ -239,12 +263,12 @@ export function PredictionCard({
                 </span>
               )}
               {isWon ? (
-                <span className="rounded-xl px-2 py-0.5 text-[10px] font-black bg-emerald-500 text-slate-950">
-                  ✓ Ganada
+                <span className="rounded-xl px-2.5 py-1 text-[10px] font-black bg-emerald-500 text-slate-950 shadow-sm border border-emerald-400 flex items-center gap-1">
+                  <span>✓</span> Ganada
                 </span>
               ) : isLost ? (
-                <span className="rounded-xl px-2 py-0.5 text-[10px] font-black bg-rose-600 text-white">
-                  ✗ Perdida
+                <span className="rounded-xl px-2.5 py-1 text-[10px] font-black bg-rose-600 text-white shadow-sm border border-rose-400 flex items-center gap-1">
+                  <span>✗</span> Perdida
                 </span>
               ) : statusBadge ? (
                 <span className={`inline-flex items-center rounded-xl px-2 py-0.5 text-[9px] font-black border ${statusBadge.cls}`}>
@@ -273,23 +297,32 @@ export function PredictionCard({
           /* Mobile Full Expanded View */
           <div
             onClick={() => onOpenDetail?.(prediction)}
-            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-emerald-500/40 bg-white p-4 shadow-md transition-all dark:border-emerald-500/30 dark:bg-slate-900/95 cursor-pointer"
+            className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl p-4 shadow-md transition-all cursor-pointer ${
+              isWon
+                ? "border-2 border-emerald-500 bg-gradient-to-b from-emerald-50/50 to-white dark:from-emerald-950/40 dark:to-slate-900/95"
+                : isLost
+                ? "border-2 border-rose-500 bg-gradient-to-b from-rose-50/50 to-white dark:from-rose-950/40 dark:to-slate-900/95"
+                : "border border-emerald-500/40 bg-white dark:border-emerald-500/30 dark:bg-slate-900/95"
+            }`}
           >
             <div>
               {/* Header: League & Minimize Button */}
               <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-2.5 dark:border-slate-800/80">
-                <span className="inline-flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-0.5 text-[10px] font-black text-slate-800 dark:bg-slate-800 dark:text-slate-200 truncate max-w-[200px]">
+                <span className="inline-flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1 text-[11px] font-black text-slate-800 dark:bg-slate-800 dark:text-slate-200">
                   <span>🏆</span>
-                  <span className="truncate">{prediction.league}</span>
+                  <span>{prediction.league}</span>
+                  {prediction.country && (
+                    <span className="text-emerald-700 dark:text-emerald-400 font-bold">• {prediction.country}</span>
+                  )}
                 </span>
 
-                <div className="flex items-center gap-1.5 shrink-0">
+                <div className="flex items-center gap-1.5">
                   {isWon ? (
-                    <span className="rounded-xl px-2 py-0.5 text-[10px] font-black bg-emerald-500 text-slate-950">
+                    <span className="inline-flex items-center gap-1 rounded-xl px-2.5 py-0.5 text-[10px] font-black bg-emerald-500 text-slate-950 shadow-sm border border-emerald-400">
                       ✓ Ganada
                     </span>
                   ) : isLost ? (
-                    <span className="rounded-xl px-2 py-0.5 text-[10px] font-black bg-rose-600 text-white">
+                    <span className="inline-flex items-center gap-1 rounded-xl px-2.5 py-0.5 text-[10px] font-black bg-rose-600 text-white shadow-sm border border-rose-400">
                       ✗ Perdida
                     </span>
                   ) : statusBadge ? (
@@ -298,18 +331,13 @@ export function PredictionCard({
                     </span>
                   ) : null}
 
-                  {isMcp && (
-                    <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black bg-gradient-to-r from-purple-600 to-indigo-600 text-white border border-purple-400 shadow-sm">
-                      🤖 Agente MCP
-                    </span>
-                  )}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       setIsMobileExpanded(false);
                     }}
-                    title="Minimizar a vista compacta"
-                    className="flex items-center gap-1 rounded-xl bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 transition cursor-pointer"
+                    title="Minimizar tarjeta"
+                    className="flex items-center gap-1 rounded-xl bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
                   >
                     <span>▲</span>
                     <span>Minimizar</span>
@@ -317,89 +345,103 @@ export function PredictionCard({
                 </div>
               </div>
 
-              {/* Match Kickoff Time Banner */}
-              <div className="mt-2.5 flex items-center justify-between px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 text-xs font-bold text-slate-700 dark:text-slate-300">
-                <div className="flex items-center gap-1.5 font-black text-emerald-700 dark:text-emerald-400">
-                  <span>⏰</span>
-                  <span>Hora: {formattedTime}</span>
-                </div>
-                {formattedDateShort && (
-                  <span className="text-[10px] font-extrabold text-slate-500 dark:text-slate-400 capitalize">
-                    {formattedDateShort}
-                  </span>
-                )}
-              </div>
-
-              {/* Match Header (Teams) */}
-              <div className="mt-2.5 rounded-xl bg-slate-50 p-2.5 border border-slate-100 dark:bg-slate-950/80 dark:border-slate-800/80">
-                <div className="text-sm font-black text-slate-900 dark:text-white leading-snug">
-                  {prediction.homeTeam}
-                </div>
-                <div className="text-[10px] font-bold text-slate-500 dark:text-slate-400 my-0.5">vs</div>
-                <div className="text-sm font-black text-slate-900 dark:text-white leading-snug">
-                  {prediction.awayTeam}
-                </div>
-
-                {prediction.actualScore && (
-                  <div className="mt-2 flex items-center justify-between pt-1.5 border-t border-slate-200 dark:border-slate-800/80">
-                    <span className="text-[10px] font-bold text-slate-500">Resultado Oficial:</span>
-                    <span className="px-2 py-0.5 rounded-lg bg-slate-900 text-[10px] font-black text-emerald-400 font-mono">
-                      {prediction.actualScore}
+              {/* Time & Badges */}
+              <div className="mt-2.5 flex items-center justify-between flex-wrap gap-1.5">
+                <span className="inline-flex items-center gap-1 rounded-xl bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[11px] font-black text-emerald-700 dark:text-emerald-300">
+                  ⏰ {formattedTime} {formattedDateShort ? `(${formattedDateShort})` : ""}
+                </span>
+                <div className="flex items-center gap-1">
+                  {isMcp && (
+                    <span className="rounded-full px-2 py-0.5 text-[9px] font-black bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
+                      🤖 MCP
                     </span>
-                  </div>
-                )}
+                  )}
+                  {prediction.pickBadge === "bomba" && (
+                    <span className="rounded-full px-2 py-0.5 text-[9px] font-black bg-rose-500 text-white">
+                      💣 BOMBA
+                    </span>
+                  )}
+                  {prediction.pickBadge === "valor" && (
+                    <span className="rounded-full px-2 py-0.5 text-[9px] font-black bg-emerald-500 text-slate-950 font-black">
+                      💎 VALOR
+                    </span>
+                  )}
+                  <span className={`rounded-full px-2 py-0.5 text-[9px] border ${confidenceBadge.cls}`}>
+                    {confidenceBadge.label}
+                  </span>
+                </div>
               </div>
 
-              {/* Pick Highlight Box */}
-              <div className="mt-2.5 rounded-xl border border-emerald-300 bg-emerald-50/60 p-2.5 dark:border-emerald-500/30 dark:bg-emerald-950/20 space-y-2">
-                <div className="flex items-center justify-between flex-wrap gap-1">
-                  <div className="text-[9px] font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-400">
-                    🎯 PRONÓSTICO SMARTBETBOT
+              {/* Teams & Score Box */}
+              <div className="mt-3 rounded-xl bg-slate-50 p-3 border border-slate-100 dark:bg-slate-950/80 dark:border-slate-800/80">
+                {finalScoreText && (
+                  <div
+                    className={`mb-2 flex items-center justify-center gap-2 rounded-lg py-1 px-2 text-xs font-black border ${
+                      isWon
+                        ? "bg-emerald-500/20 text-emerald-800 border-emerald-400 dark:bg-emerald-950/60 dark:text-emerald-300"
+                        : isLost
+                        ? "bg-rose-500/20 text-rose-800 border-rose-400 dark:bg-rose-950/60 dark:text-rose-300"
+                        : "bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-200"
+                    }`}
+                  >
+                    <span>⚽ Marcador Final:</span>
+                    <span className="text-sm tracking-widest">{finalScoreText}</span>
                   </div>
-                  <div className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
-                    Ventaja: <strong className="text-emerald-700 dark:text-emerald-300">+{prediction.edge}%</strong>
+                )}
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex-1 text-center font-black text-slate-900 dark:text-white text-xs">
+                    {prediction.homeTeam}
+                  </div>
+                  <span className="px-2 py-0.5 rounded-md bg-slate-200 dark:bg-slate-800 text-[10px] font-black text-slate-600 dark:text-slate-300">
+                    VS
+                  </span>
+                  <div className="flex-1 text-center font-black text-slate-900 dark:text-white text-xs">
+                    {prediction.awayTeam}
                   </div>
                 </div>
+              </div>
 
-                <div className="text-xs font-black text-slate-900 dark:text-white">
+              {/* Pick Market Details */}
+              <div
+                className={`mt-3 rounded-xl p-3 border space-y-2 ${
+                  isWon
+                    ? "border-emerald-400 bg-emerald-50/70 dark:border-emerald-500/50 dark:bg-emerald-950/30"
+                    : isLost
+                    ? "border-rose-400 bg-rose-50/70 dark:border-rose-500/50 dark:bg-rose-950/30"
+                    : "border-emerald-300 bg-emerald-50/60 dark:border-emerald-500/30 dark:bg-emerald-950/20"
+                }`}
+              >
+                <div className="flex items-center justify-between text-[10px] font-black">
+                  <span className={isWon ? "text-emerald-800 dark:text-emerald-400 font-extrabold" : isLost ? "text-rose-800 dark:text-rose-400 font-extrabold" : "text-emerald-800 dark:text-emerald-400"}>
+                    {isWon ? "✓ PRONÓSTICO ACERTADO (GANADA)" : isLost ? "✗ PRONÓSTICO NO ACERTADO (PERDIDA)" : "🎯 PRONÓSTICO SMARTBETBOT"}
+                  </span>
+                  <span className="text-emerald-700 dark:text-emerald-300">
+                    +{prediction.edge}% EV
+                  </span>
+                </div>
+                <div className="text-sm font-black text-slate-900 dark:text-white">
                   {getDisplayMarketSelection(prediction.market, prediction.selection)}
                 </div>
 
-                {/* Odds 3-cards Grid */}
-                <div className="grid grid-cols-3 gap-1.5 pt-1">
-                  <div className="rounded-lg bg-white p-1.5 border border-sky-200 dark:bg-slate-900 dark:border-sky-900/60 text-center">
-                    <div className="text-[8px] font-bold text-sky-600 dark:text-sky-400 truncate">🏢 Casa</div>
-                    <div className="text-xs font-black text-slate-900 dark:text-white">
-                      @{(prediction.odds ?? 1.5).toFixed(2)}
-                    </div>
+                <div className="grid grid-cols-3 gap-1.5 text-center pt-1">
+                  <div className="rounded-lg bg-white p-1.5 border border-sky-200 dark:bg-slate-900 dark:border-sky-900/50">
+                    <div className="text-[9px] font-bold text-sky-600 dark:text-sky-400">Cuota Casa</div>
+                    <div className="text-xs font-black text-slate-900 dark:text-white">@{(prediction.odds ?? 1.5).toFixed(2)}</div>
                   </div>
-                  <div className="rounded-lg bg-white p-1.5 border border-indigo-200 dark:bg-slate-900 dark:border-indigo-900/60 text-center">
-                    <div className="text-[8px] font-bold text-indigo-600 dark:text-indigo-400 truncate">🤖 Modelo</div>
-                    <div className="text-xs font-black text-slate-900 dark:text-white">
-                      @{(prediction.fairOdds ?? prediction.odds ?? 1.5).toFixed(2)}
-                    </div>
+                  <div className="rounded-lg bg-white p-1.5 border border-indigo-200 dark:bg-slate-900 dark:border-indigo-900/50">
+                    <div className="text-[9px] font-bold text-indigo-600 dark:text-indigo-400">Cuota Justa</div>
+                    <div className="text-xs font-black text-slate-900 dark:text-white">@{(prediction.fairOdds ?? prediction.odds ?? 1.5).toFixed(2)}</div>
                   </div>
-                  <div className="rounded-lg bg-white p-1.5 border border-emerald-200 dark:bg-slate-900 dark:border-emerald-900/60 text-center">
-                    <div className="text-[8px] font-bold text-emerald-600 dark:text-emerald-400 truncate">📈 Prob.</div>
-                    <div className="text-xs font-black text-emerald-700 dark:text-emerald-400">
-                      {prediction.probability}%
-                    </div>
+                  <div className="rounded-lg bg-white p-1.5 border border-emerald-200 dark:bg-slate-900 dark:border-emerald-900/50">
+                    <div className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400">Probabilidad</div>
+                    <div className="text-xs font-black text-emerald-700 dark:text-emerald-400">{prediction.probability}%</div>
                   </div>
                 </div>
               </div>
-
-              {/* AI Analysis Quote */}
-              {prediction.explanation && (
-                <div className="mt-2 rounded-xl bg-slate-50/80 p-2 border border-slate-100 dark:bg-slate-950/60 dark:border-slate-800">
-                  <p className="text-[10px] text-slate-700 dark:text-slate-300 leading-relaxed italic">
-                    &quot;{prediction.explanation}&quot;
-                  </p>
-                </div>
-              )}
             </div>
 
-            {/* Mobile Action Footer */}
-            <div className="mt-3 border-t border-slate-100 pt-2 dark:border-slate-800/80 flex items-center justify-between gap-1.5">
+            {/* Footer Buttons */}
+            <div className="mt-3.5 border-t border-slate-100 pt-2.5 dark:border-slate-800/80 flex items-center justify-between gap-1.5">
               <div className="flex items-center gap-1">
                 <button
                   onClick={handleShareWhatsAppImage}
@@ -460,7 +502,13 @@ export function PredictionCard({
       {/* ========================================================================= */}
       <div
         onClick={() => onOpenDetail?.(prediction)}
-        className="hidden md:flex flex-col justify-between overflow-hidden rounded-3xl border border-slate-200/90 bg-white p-5 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/50 hover:shadow-xl dark:border-slate-800/80 dark:bg-slate-900/90 cursor-pointer"
+        className={`hidden md:flex flex-col justify-between overflow-hidden rounded-3xl p-5 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer ${
+          isWon
+            ? "border-2 border-emerald-500 shadow-md shadow-emerald-500/15 bg-gradient-to-b from-emerald-50/50 via-white to-white dark:from-emerald-950/30 dark:via-slate-900/90 dark:to-slate-900/90"
+            : isLost
+            ? "border-2 border-rose-500 shadow-md shadow-rose-500/15 bg-gradient-to-b from-rose-50/50 via-white to-white dark:from-rose-950/30 dark:via-slate-900/90 dark:to-slate-900/90"
+            : "border border-slate-200/90 bg-white hover:border-emerald-500/50 dark:border-slate-800/80 dark:bg-slate-900/90"
+        }`}
       >
         <div>
           {/* Top Bar: League, Country, Match Time, Status Badge */}
@@ -479,18 +527,18 @@ export function PredictionCard({
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Prominent Match Kickoff Time Badge in Header */}
+              {/* Kickoff Time Badge */}
               <span className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 text-xs font-black text-emerald-700 dark:text-emerald-300 shadow-xs">
                 <span>⏰</span>
                 <span>{formattedTime}</span>
               </span>
 
               {isWon ? (
-                <span className="inline-flex items-center gap-1 rounded-xl px-3 py-1 text-xs font-black bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30">
+                <span className="inline-flex items-center gap-1 rounded-xl px-3 py-1 text-xs font-black bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30 border border-emerald-400">
                   ✓ Ganada
                 </span>
               ) : isLost ? (
-                <span className="inline-flex items-center gap-1 rounded-xl px-3 py-1 text-xs font-black bg-rose-600 text-white shadow-md shadow-rose-600/30">
+                <span className="inline-flex items-center gap-1 rounded-xl px-3 py-1 text-xs font-black bg-rose-600 text-white shadow-md shadow-rose-600/30 border border-rose-400">
                   ✗ Perdida
                 </span>
               ) : statusBadge ? (
@@ -538,8 +586,16 @@ export function PredictionCard({
             </div>
           </div>
 
-          {/* Teams Header Container with Match Kickoff Time Header */}
-          <div className="mt-3 rounded-2xl bg-slate-50 p-3.5 border border-slate-100 dark:bg-slate-950/80 dark:border-slate-800/80">
+          {/* Teams Container with Final Score Banner */}
+          <div
+            className={`mt-3 rounded-2xl p-3.5 border ${
+              isWon
+                ? "bg-emerald-50/40 border-emerald-200 dark:bg-slate-950/90 dark:border-emerald-900/50"
+                : isLost
+                ? "bg-rose-50/40 border-rose-200 dark:bg-slate-950/90 dark:border-rose-900/50"
+                : "bg-slate-50 border-slate-100 dark:bg-slate-950/80 dark:border-slate-800/80"
+            }`}
+          >
             <div className="flex items-center justify-between mb-2 pb-1.5 border-b border-slate-200/60 dark:border-slate-800/60 text-[11px]">
               <div className="flex items-center gap-1.5 font-bold text-slate-600 dark:text-slate-300">
                 <span>🕒 Hora de Inicio:</span>
@@ -552,29 +608,77 @@ export function PredictionCard({
               )}
             </div>
 
-            <div className="text-base font-black text-slate-900 dark:text-white leading-snug">
-              {prediction.homeTeam}
-            </div>
-            <div className="text-xs font-bold text-slate-400 my-0.5">vs</div>
-            <div className="text-base font-black text-slate-900 dark:text-white leading-snug">
-              {prediction.awayTeam}
-            </div>
-
-            {prediction.actualScore && (
-              <div className="mt-2.5 flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800/80">
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Resultado Oficial & Estadísticas:</span>
-                <span className="px-3 py-1 rounded-xl bg-slate-900 text-xs font-black text-emerald-400 border border-slate-700 font-mono">
-                  {prediction.actualScore}
+            {/* Prominent Score Banner for Finished Matches */}
+            {finalScoreText && (
+              <div
+                className={`mb-3 flex items-center justify-center gap-2.5 rounded-xl py-1.5 px-3 border shadow-xs ${
+                  isWon
+                    ? "bg-emerald-500/15 border-emerald-400 text-emerald-900 dark:bg-emerald-950/80 dark:text-emerald-200"
+                    : isLost
+                    ? "bg-rose-500/15 border-rose-400 text-rose-900 dark:bg-rose-950/80 dark:text-rose-200"
+                    : "bg-slate-200 border-slate-300 text-slate-900 dark:bg-slate-800 dark:text-slate-200"
+                }`}
+              >
+                <span className="text-xs font-bold">⚽ Marcador Final:</span>
+                <span className="text-base font-black tracking-wider">{finalScoreText}</span>
+                <span
+                  className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase ${
+                    isWon ? "bg-emerald-500 text-slate-950" : isLost ? "bg-rose-600 text-white" : "bg-slate-700 text-white"
+                  }`}
+                >
+                  {isWon ? "Acertada" : isLost ? "No Acertada" : "Final"}
                 </span>
               </div>
             )}
+
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-xs font-black text-slate-900 shadow-xs border border-slate-200 dark:bg-slate-900 dark:text-white dark:border-slate-800 shrink-0">
+                  {prediction.homeTeam.substring(0, 2).toUpperCase()}
+                </span>
+                <div className="min-w-0">
+                  <div className="text-sm font-black text-slate-900 dark:text-white truncate">
+                    {prediction.homeTeam}
+                  </div>
+                  <div className="text-[10px] font-bold text-slate-400">Local</div>
+                </div>
+              </div>
+
+              <div className="shrink-0 flex flex-col items-center">
+                <span className="rounded-lg bg-slate-200 px-2 py-0.5 text-[11px] font-black text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                  VS
+                </span>
+              </div>
+
+              <div className="flex items-center justify-end gap-2.5 flex-1 min-w-0 text-right">
+                <div className="min-w-0">
+                  <div className="text-sm font-black text-slate-900 dark:text-white truncate">
+                    {prediction.awayTeam}
+                  </div>
+                  <div className="text-[10px] font-bold text-slate-400">Visitante</div>
+                </div>
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-xs font-black text-slate-900 shadow-xs border border-slate-200 dark:bg-slate-900 dark:text-white dark:border-slate-800 shrink-0">
+                  {prediction.awayTeam.substring(0, 2).toUpperCase()}
+                </span>
+              </div>
+            </div>
           </div>
 
           {/* Main Pick Highlight Box with Side-by-Side Odds and Model Odds */}
-          <div className="mt-4 rounded-2xl border border-emerald-300 bg-emerald-50/60 p-3.5 dark:border-emerald-500/30 dark:bg-emerald-950/20 space-y-3">
+          <div
+            className={`mt-4 rounded-2xl p-3.5 space-y-3 border ${
+              isWon
+                ? "border-emerald-400 bg-emerald-50/70 dark:border-emerald-500/50 dark:bg-emerald-950/25"
+                : isLost
+                ? "border-rose-400 bg-rose-50/70 dark:border-rose-500/50 dark:bg-rose-950/25"
+                : "border-emerald-300 bg-emerald-50/60 dark:border-emerald-500/30 dark:bg-emerald-950/20"
+            }`}
+          >
             <div className="flex items-center justify-between flex-wrap gap-1">
-              <div className="text-[10px] font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-400">
-                🎯 PRONÓSTICO SMARTBETBOT
+              <div className={`text-[10px] font-black uppercase tracking-wider ${
+                isWon ? "text-emerald-800 dark:text-emerald-400" : isLost ? "text-rose-800 dark:text-rose-400" : "text-emerald-800 dark:text-emerald-400"
+              }`}>
+                {isWon ? "✓ PRONÓSTICO ACERTADO (GANADA)" : isLost ? "✗ PRONÓSTICO NO ACERTADO (PERDIDA)" : "🎯 PRONÓSTICO SMARTBETBOT"}
               </div>
               <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
                 Valor / Ventaja: <strong className="text-emerald-700 dark:text-emerald-300">+{prediction.edge}%</strong>
@@ -638,10 +742,9 @@ export function PredictionCard({
           )}
         </div>
 
-        {/* Action Footer: Visual Image Sharing Buttons (WhatsApp, Telegram, Copiar Imagen) */}
+        {/* Action Footer: Visual Image Sharing Buttons */}
         <div className="mt-5 border-t border-slate-100 pt-3 dark:border-slate-800/80 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-1.5">
-            {/* Share as Image to WhatsApp */}
             <button
               onClick={handleShareWhatsAppImage}
               title="Compartir tarjeta gráfica en WhatsApp"
@@ -651,7 +754,6 @@ export function PredictionCard({
               <span>WhatsApp</span>
             </button>
 
-            {/* Share as Image to Telegram */}
             <button
               onClick={handleShareTelegramImage}
               title="Compartir tarjeta gráfica en Telegram"
@@ -661,7 +763,6 @@ export function PredictionCard({
               <span>Telegram</span>
             </button>
 
-            {/* Copy Card Image Directly */}
             <button
               onClick={handleCopyImage}
               title="Copiar imagen de la tarjeta al portapapeles (para pegar con Ctrl+V)"
@@ -671,7 +772,6 @@ export function PredictionCard({
               <span>{copySuccess ? "✓ ¡Copiada!" : copyingImage ? "Generando..." : "Copiar Imagen"}</span>
             </button>
 
-            {/* Download Image */}
             <button
               onClick={handleDownloadImage}
               title="Descargar imagen PNG de la tarjeta"
@@ -699,7 +799,6 @@ export function PredictionCard({
             )}
           </div>
 
-          {/* View Details Button */}
           <button
             onClick={(e) => {
               e.stopPropagation();

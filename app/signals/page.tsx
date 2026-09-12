@@ -315,6 +315,47 @@ export default function SignalsPage() {
           </div>
         )}
 
+        {/* Results Banner when finished matches exist */}
+        {(wonCount > 0 || lostCount > 0) && (
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-3.5 text-white shadow-md dark:border dark:border-slate-800">
+            <div className="flex items-center gap-2">
+              <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 text-sm font-black">
+                📊
+              </span>
+              <div>
+                <span className="text-xs font-black">Resumen de Alertas Evaluadas:</span>
+                <span className="text-[11px] text-slate-300 ml-2">
+                  Marcadores liquidados
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setMatchStatusFilter("WON")}
+                className="flex items-center gap-1 rounded-xl bg-emerald-500/20 border border-emerald-500/40 px-3 py-1 text-xs font-black text-emerald-300 hover:bg-emerald-500/30 transition cursor-pointer"
+              >
+                <span>✓ Ganadas:</span>
+                <span className="text-emerald-200 font-extrabold">{wonCount}</span>
+              </button>
+
+              <button
+                onClick={() => setMatchStatusFilter("LOST")}
+                className="flex items-center gap-1 rounded-xl bg-rose-500/20 border border-rose-500/40 px-3 py-1 text-xs font-black text-rose-300 hover:bg-rose-500/30 transition cursor-pointer"
+              >
+                <span>✗ Perdidas:</span>
+                <span className="text-rose-200 font-extrabold">{lostCount}</span>
+              </button>
+
+              {wonCount + lostCount > 0 && (
+                <span className="rounded-xl bg-slate-800 px-3 py-1 text-xs font-black text-amber-300 border border-slate-700">
+                  📈 {Math.round((wonCount / (wonCount + lostCount)) * 100)}% Acierto
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Status and Badge Filter Pills */}
         <div className="mb-4 flex flex-wrap items-center gap-1.5 sm:gap-2">
           <button
@@ -371,8 +412,8 @@ export default function SignalsPage() {
             onClick={() => setMatchStatusFilter("WON")}
             className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
               matchStatusFilter === "WON"
-                ? "bg-emerald-600 text-white shadow-sm"
-                : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+                ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30 border border-emerald-500"
+                : "bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800"
             }`}
           >
             ✓ Ganadas ({wonCount})
@@ -381,8 +422,8 @@ export default function SignalsPage() {
             onClick={() => setMatchStatusFilter("LOST")}
             className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
               matchStatusFilter === "LOST"
-                ? "bg-rose-600 text-white shadow-sm"
-                : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+                ? "bg-rose-600 text-white shadow-md shadow-rose-600/30 border border-rose-500"
+                : "bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800"
             }`}
           >
             ✗ Perdidas ({lostCount})
