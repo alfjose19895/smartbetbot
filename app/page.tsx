@@ -33,23 +33,25 @@ export default async function HomePage() {
       </div>
 
       {/* 2. Navigation Header */}
-      <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-3.5 py-3 sm:px-6 sm:py-3.5 lg:px-8 gap-3 sm:gap-6">
-          <Link href="/" className="flex items-center gap-2 sm:gap-2.5 mr-auto shrink-0 pr-2">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 text-base sm:text-lg font-black text-slate-950 shadow-lg shadow-emerald-500/20">
+      <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/95 backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3.5 gap-2 sm:gap-4">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2 sm:gap-2.5 shrink-0 select-none min-w-0">
+            <span className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 text-sm sm:text-base font-black text-slate-950 shadow-md shadow-emerald-500/20 shrink-0">
               🎯
             </span>
-            <div className="flex flex-col">
-              <span className="text-lg sm:text-xl font-black tracking-tight text-white leading-none">
+            <div className="flex flex-col min-w-0">
+              <span className="text-base sm:text-xl font-black tracking-tight text-white leading-none truncate">
                 Smart<span className="text-emerald-400">Bet</span>Bot
               </span>
-              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 leading-none">
+              <span className="hidden md:block text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 leading-none">
                 ANALIZA · IDENTIFICA · TU VENTAJA
               </span>
             </div>
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-6 text-xs sm:text-sm font-bold text-slate-300">
+          {/* Desktop Links */}
+          <nav className="hidden lg:flex items-center gap-5 xl:gap-6 text-xs xl:text-sm font-bold text-slate-300">
             <a href="#caracteristicas" className="transition hover:text-emerald-400">
               Características
             </a>
@@ -67,19 +69,29 @@ export default async function HomePage() {
             </a>
           </nav>
 
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            <ThemeToggle />
+          {/* Actions: Always fully visible without clipping */}
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+            <div className="hidden sm:block">
+              <ThemeToggle />
+            </div>
+
+            {/* Iniciar Sesión Link */}
             <Link
               href="/login"
-              className="hidden sm:inline-flex rounded-xl px-3 py-2 text-xs sm:text-sm font-bold text-slate-300 transition hover:text-white"
+              className="inline-flex items-center gap-1 rounded-xl border border-slate-700/80 bg-slate-900/90 hover:bg-slate-800 hover:border-slate-600 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-bold text-slate-200 hover:text-white transition shadow-xs whitespace-nowrap"
             >
-              Iniciar Sesión
+              <span>🔑</span>
+              <span>Iniciar Sesión</span>
             </Link>
+
+            {/* Obtener Acceso CTA Button */}
             <a
               href="#oferta-lanzamiento"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-3.5 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-black text-slate-950 shadow-lg shadow-emerald-500/20 transition hover:from-emerald-400 hover:to-teal-400 hover:scale-105 cursor-pointer"
+              className="inline-flex items-center gap-1 sm:gap-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 px-2.5 sm:px-4 py-1.5 sm:py-2 text-xs font-black text-slate-950 shadow-md shadow-emerald-500/20 transition hover:scale-105 cursor-pointer whitespace-nowrap"
             >
-              <span>🔥 Obtener Acceso ($19.99)</span>
+              <span>🔥</span>
+              <span className="hidden sm:inline">Obtener Acceso ($19.99)</span>
+              <span className="sm:hidden">Acceso $19.99</span>
             </a>
           </div>
         </div>
@@ -106,7 +118,7 @@ export default async function HomePage() {
             </h1>
 
             <p className="text-sm sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-              Enfocados en <strong className="text-emerald-400 font-bold">victorias locales</strong> y partidos con <strong className="text-emerald-400 font-bold">más de 2.5 goles</strong>, con análisis estadísticos claros para pre-match y en vivo.
+              Enfocados en <strong className="text-emerald-400 font-bold">victorias locales</strong> y partidos con <strong className="text-emerald-400 font-bold">más de 2.5 goles</strong>, con análisis estadísticos claros para pre-match.
             </p>
           </div>
 
