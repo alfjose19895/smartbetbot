@@ -101,7 +101,42 @@ export default async function HomePage() {
       <section className="relative overflow-hidden pt-10 pb-16 sm:pt-16 sm:pb-24">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(16,185,129,0.20),rgba(255,255,255,0))]" />
 
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-10 text-center">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10 text-center">
+          {/* Top Hero Banner at the very beginning of the page */}
+          <div className="relative mx-auto max-w-5xl">
+            <div className="relative rounded-3xl border border-emerald-500/30 bg-slate-900/70 p-2 sm:p-3 shadow-2xl shadow-emerald-950/60 backdrop-blur-xl group">
+              {/* Image Frame */}
+              <div className="relative w-full rounded-2xl overflow-hidden shadow-inner bg-slate-950">
+                <img
+                  src="/index-hero-banner.jpg"
+                  alt="SmartBetBot - La IA Analiza. Tú decides mejor. Pronósticos inteligentes con IA"
+                  className="w-full h-auto object-cover rounded-2xl transition-transform duration-700 group-hover:scale-[1.01] block"
+                  loading="eager"
+                />
+              </div>
+
+              {/* Decorative Floating Badges */}
+              <div className="hidden sm:flex absolute -bottom-4 -left-3 rounded-2xl bg-slate-900/95 border border-emerald-500/40 p-3 shadow-2xl items-center gap-3 backdrop-blur-md">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 text-lg font-black">
+                  ⚽
+                </span>
+                <div className="text-left">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Filosofía Cuantitativa</span>
+                  <span className="text-xs font-black text-white">DISCIPLINA HOY · RESULTADOS MAÑANA</span>
+                </div>
+              </div>
+
+              <div className="hidden sm:flex absolute -top-4 -right-3 rounded-2xl bg-slate-900/95 border border-emerald-500/40 p-3 shadow-2xl items-center gap-3 backdrop-blur-md">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 text-lg font-black">
+                  📈
+                </span>
+                <div className="text-left">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Verificación de Mercado</span>
+                  <span className="text-xs font-black text-emerald-400">EL FÚTBOL TAMBIÉN SE ANALIZA</span>
+                </div>
+              </div>
+            </div>
+          </div>
           {/* Tagline Badge */}
           <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-950/60 px-4 py-1.5 text-xs font-black text-emerald-300 backdrop-blur-md shadow-lg shadow-emerald-950/40">
             <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
@@ -159,42 +194,6 @@ export default async function HomePage() {
           <p className="text-xs text-slate-400 font-medium">
             ⚡ Pago único de por vida si compras antes del <strong className="text-emerald-400">31 de Octubre del 2026</strong>. Sin cuotas mensuales.
           </p>
-
-          {/* Visual Showcase: Hero Banner Image */}
-          <div className="relative mx-auto max-w-5xl pt-4">
-            <div className="relative rounded-3xl border border-emerald-500/30 bg-slate-900/70 p-2 sm:p-3 shadow-2xl shadow-emerald-950/60 backdrop-blur-xl group">
-              {/* Image Frame with direct resilient img */}
-              <div className="relative w-full rounded-2xl overflow-hidden shadow-inner bg-slate-950">
-                <img
-                  src="/index-hero-banner.jpg"
-                  alt="SmartBetBot - La IA Analiza. Tú decides mejor. Pronósticos inteligentes con IA"
-                  className="w-full h-auto object-cover rounded-2xl transition-transform duration-700 group-hover:scale-[1.01] block"
-                  loading="eager"
-                />
-              </div>
-
-              {/* Decorative Floating Badges */}
-              <div className="hidden sm:flex absolute -bottom-4 -left-3 rounded-2xl bg-slate-900/95 border border-emerald-500/40 p-3 shadow-2xl items-center gap-3 backdrop-blur-md">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 text-lg font-black">
-                  ⚽
-                </span>
-                <div className="text-left">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Filosofía Cuantitativa</span>
-                  <span className="text-xs font-black text-white">DISCIPLINA HOY · RESULTADOS MAÑANA</span>
-                </div>
-              </div>
-
-              <div className="hidden sm:flex absolute -top-4 -right-3 rounded-2xl bg-slate-900/95 border border-emerald-500/40 p-3 shadow-2xl items-center gap-3 backdrop-blur-md">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 text-lg font-black">
-                  📈
-                </span>
-                <div className="text-left">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Verificación de Mercado</span>
-                  <span className="text-xs font-black text-emerald-400">EL FÚTBOL TAMBIÉN SE ANALIZA</span>
-                </div>
-              </div>
-            </div>
-          </div>
 
           {/* 4 Key Real Numbers Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 max-w-4xl mx-auto pt-6">
