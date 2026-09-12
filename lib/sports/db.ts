@@ -860,7 +860,7 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
   // Daily alert strategy: 15 on weekdays (Lunes a Viernes), 20 on weekends (Sábados y Domingos)
   const dailyLimit = getDailyAlertLimit(new Date());
 
-  const initialTopPicks = rankedPicks.slice(0, Math.max(dailyLimit, 25)).map((p) => {
+  const initialTopPicks: MarketOpportunity[] = rankedPicks.slice(0, Math.max(dailyLimit, 25)).map((p) => {
     const prob = p.probability || 50;
     const conf: "Muy Alta" | "Alta" | "Media" | "Moderada" =
       prob >= 70 ? "Muy Alta" : prob >= 58 ? "Alta" : prob >= 50 ? "Media" : "Moderada";
@@ -875,7 +875,7 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
   });
 
   // RECOMENDACIÓN 4: Auditor de Veto Táctico con Google Gemini ("Abogado del Diablo")
-  let topPicks = initialTopPicks;
+  let topPicks: MarketOpportunity[] = initialTopPicks;
   try {
     const vetoResult = await auditPredictionsWithGeminiVeto(initialTopPicks);
     if (vetoResult && vetoResult.approvedPicks && vetoResult.approvedPicks.length > 0) {
