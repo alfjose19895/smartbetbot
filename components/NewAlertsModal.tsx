@@ -90,10 +90,10 @@ export function NewAlertsModal({
             <div>
               <div className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-xs font-black tracking-wide uppercase backdrop-blur-sm">
                 <span className="animate-ping inline-flex h-2 w-2 rounded-full bg-emerald-300 opacity-75"></span>
-                <span>✨ Modelo 60/25/15 Sincronizado</span>
+                <span>✨ Modelo 60/25/15 — Mercado de Hoy</span>
               </div>
               <h2 className="mt-2 text-xl sm:text-2xl font-black tracking-tight">
-                ¡{newAlerts.length} {newAlerts.length === 1 ? "Nueva Alerta Encontrada" : "Nuevas Alertas Encontradas"}!
+                ¡{newAlerts.length} {newAlerts.length === 1 ? "Alerta Disponible de Hoy" : "Alertas Disponibles de Hoy"}!
               </h2>
               
               {/* Portfolio Distribution Pill Counters */}

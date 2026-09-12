@@ -52,9 +52,13 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
         });
         const data = await res.json();
         if (data.success) {
+          const newAlerts = (data.newAlerts && data.newAlerts.length > 0)
+            ? data.newAlerts
+            : (Array.isArray(data.predictions) ? data.predictions.filter((p: any) => p.status === "pending") : []);
+
           window.dispatchEvent(
             new CustomEvent("new-alerts-discovered", {
-              detail: { newAlerts: data.newAlerts || [], totalCount: data.count },
+              detail: { newAlerts, totalCount: data.count },
             })
           );
           window.dispatchEvent(

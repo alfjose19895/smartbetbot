@@ -200,15 +200,23 @@ export default function DashboardPage() {
       });
       const data = await res.json();
       if (data.success) {
+        const cleanPicks = Array.isArray(data.predictions) ? deduplicatePicksList(data.predictions) : predictions;
         if (data.newAlerts && data.newAlerts.length > 0) {
           setNewlyDiscoveredAlerts(data.newAlerts);
           setNewAlertsModalOpen(true);
           setSyncMessage(`✓ ¡Se encontraron ${data.newAlerts.length} nuevas alertas de hoy! Agregadas al panel.`);
         } else {
-          setSyncMessage(`✓ Mercado de hoy al día (${data.count || predictions.length} alertas activas).`);
+          // If already in snapshot, display active pending/upcoming alerts in modal
+          const todayPending = cleanPicks.filter(
+            (p: MarketOpportunity) => p.status === "pending" || (!p.actualScore && p.status !== "won" && p.status !== "lost")
+          );
+          if (todayPending.length > 0) {
+            setNewlyDiscoveredAlerts(todayPending);
+            setNewAlertsModalOpen(true);
+          }
+          setSyncMessage(`✓ Mercado de hoy al día (${data.count || cleanPicks.length} alertas activas).`);
         }
         if (Array.isArray(data.predictions)) {
-          const cleanPicks = deduplicatePicksList(data.predictions);
           setPredictions(cleanPicks);
           window.dispatchEvent(new CustomEvent("predictions-updated", { detail: cleanPicks }));
         } else {

@@ -243,15 +243,23 @@ export default function SignalsPage() {
       });
       const data = await res.json();
       if (data.success) {
+        const cleanPicks = Array.isArray(data.predictions) ? deduplicatePicksList(data.predictions) : signals;
         if (data.newAlerts && data.newAlerts.length > 0) {
           setNewlyDiscoveredAlerts(data.newAlerts);
           setNewAlertsModalOpen(true);
           setSyncMessage(`✓ ¡Se encontraron ${data.newAlerts.length} nuevas alertas de hoy! Agregadas al panel.`);
         } else {
-          setSyncMessage(`✓ Mercado de hoy al día (${data.count || signals.length} alertas activas).`);
+          // If all picks were already in snapshot, display active upcoming/pending alerts in modal
+          const todayPending = cleanPicks.filter(
+            (p: MarketOpportunity) => p.status === "pending" || (!p.actualScore && p.status !== "won" && p.status !== "lost")
+          );
+          if (todayPending.length > 0) {
+            setNewlyDiscoveredAlerts(todayPending);
+            setNewAlertsModalOpen(true);
+          }
+          setSyncMessage(`✓ Mercado de hoy al día (${data.count || cleanPicks.length} alertas activas).`);
         }
         if (Array.isArray(data.predictions)) {
-          const cleanPicks = deduplicatePicksList(data.predictions);
           setSignals(cleanPicks);
           window.dispatchEvent(new CustomEvent("predictions-updated", { detail: cleanPicks }));
         } else {
@@ -374,7 +382,9 @@ export default function SignalsPage() {
     if (selectedConfidence.length > 0) {
       const isMatch = selectedConfidence.some((c) => {
         if (c === "muy_alta") return s.confidence === "Muy Alta" || s.probability >= 70;
-        if (c === "alta") return s.confidence === "Alta" || (s.probability >= 55 && s.probability < 70);
+        if (c === "alta") return s.confidence === "Alta" || (s.probability >= 58 && s.probability < 70);
+        if (c === "media") return s.confidence === "Media" || (s.probability >= 50 && s.probability < 58);
+        if (c === "moderada") return s.confidence === "Moderada" || s.probability < 50;
         return false;
       });
       if (!isMatch) return false;
