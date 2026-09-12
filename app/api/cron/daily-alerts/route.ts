@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generatePredictionsForUpcoming } from "@/lib/sports/db";
-import { buildTripleExclusiveParlays } from "@/lib/sports/parlay-generator";
+import { getImmutableDailyParlays } from "@/lib/sports/parlay-generator";
 import {
   sendDailyMcpPushNotification,
   sendIndividualHighConfidenceAlerts,
@@ -37,8 +37,8 @@ async function handleDailyAlertsDispatch(req: NextRequest) {
     // 1. Generate / load today's verified MCP predictions
     const predictions = await generatePredictionsForUpcoming(undefined, false);
 
-    // 2. Build 3 exclusive parlays
-    const parlays = buildTripleExclusiveParlays(predictions);
+    // 2. Load / generate immutable 3 parlays for today
+    const parlays = getImmutableDailyParlays(predictions);
 
     // 3. Dispatch individual high-confidence alerts for each top match
     const individualResults = await sendIndividualHighConfidenceAlerts(predictions);
