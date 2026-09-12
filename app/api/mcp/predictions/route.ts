@@ -121,6 +121,8 @@ export async function POST(req: Request) {
       maxOdds,
       market = "",
       parlay,
+      autoPublish,
+      publish,
     } = body;
 
     // Direct publish action: Add MCP-discovered alerts to active daily dashboard and signals
@@ -182,7 +184,7 @@ export async function POST(req: Request) {
       requestedMarket = "local";
     } else if (qLower.includes("empate") || qLower.includes("draw")) {
       requestedMarket = "empate";
-    }
+    } 
 
     // 1. DYNAMIC MARKET SEARCH: Query live API-Football upcoming fixtures & genuine bookmaker odds
     const dynamicMarketOpps = await searchLiveMarketDynamic({
@@ -349,6 +351,7 @@ export async function POST(req: Request) {
     if (requestedMarket) {
       const matchMarket = filtered.filter((p) => {
         const pMarket = (p.market || "").toLowerCase();
+        
         if (requestedMarket === "over") {
           return pMarket.includes("over") || pMarket.includes("goles") || pMarket.includes("más");
         }
@@ -496,11 +499,20 @@ export async function POST(req: Request) {
       parlayRecommendation: parlayData,
     };
 
+    // Auto-publish discovered picks if requested or by default on search so they immediately show in Dashboard & Pre-Match
+    const shouldAutoPublish = autoPublish === true || publish === true;
+    let publishedCount = 0;
+    if (shouldAutoPublish && filtered.length > 0) {
+      const pubResult = addPredictionsToDailySnapshot(filtered);
+      publishedCount = pubResult.addedCount;
+    }
+
     return NextResponse.json({
       success: true,
       count: filtered.length,
       countryDetected: matchedByLeague ? (topPick?.league || "Europa") : "Global",
-      autoPublished: false,
+      autoPublished: shouldAutoPublish,
+      publishedCount,
       aiAnalysis,
       metrics: {
         totalMatches: filtered.length,

@@ -54,7 +54,7 @@ export default function SignalsPage() {
 
   // Search & Filters
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [matchStatusFilter, setMatchStatusFilter] = useState<"ALL" | "VALOR" | "BOMBA" | "WON" | "LOST" | "SCHEDULED" | "IN_PLAY" | "FINISHED">("ALL");
+  const [matchStatusFilter, setMatchStatusFilter] = useState<"ALL" | "VALOR" | "BOMBA" | "MCP" | "WON" | "LOST" | "SCHEDULED" | "IN_PLAY" | "FINISHED">("ALL");
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
@@ -203,6 +203,7 @@ export default function SignalsPage() {
   const lostCount = signals.filter((s) => matchesStatusBadgeFilter(s, "LOST")).length;
   const valorCount = signals.filter((s) => matchesStatusBadgeFilter(s, "VALOR")).length;
   const bombaCount = signals.filter((s) => matchesStatusBadgeFilter(s, "BOMBA")).length;
+  const mcpCount = signals.filter((s) => matchesStatusBadgeFilter(s, "MCP")).length;
 
   // Filter signals strictly matching all active constraints
   const filteredCandidates = signals.filter((s) => {
@@ -345,6 +346,16 @@ export default function SignalsPage() {
             }`}
           >
             💎 Valor ({valorCount})
+          </button>
+          <button
+            onClick={() => setMatchStatusFilter("MCP")}
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
+              matchStatusFilter === "MCP"
+                ? "bg-purple-600 text-white shadow-md shadow-purple-600/30 border border-purple-500"
+                : "bg-purple-50 text-purple-800 border border-purple-200 hover:bg-purple-100 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800"
+            }`}
+          >
+            <span>🤖 Agente MCP ({mcpCount})</span>
           </button>
           <button
             onClick={() => setMatchStatusFilter("BOMBA")}

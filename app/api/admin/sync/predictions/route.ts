@@ -8,14 +8,14 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json().catch(() => ({}));
     
-    // If admin explicitly requested to search and append new alerts for remaining today matches
+    // If admin explicitly requested to search and append new alerts for remaining matches
     if (body.refreshRemaining) {
       const result = await refreshRemainingLivePredictions();
       return NextResponse.json({
         success: true,
         message: result.count > 0 
-          ? `✓ Se agregaron ${result.count} nuevas alertas para los partidos restantes del día. Total actual: ${result.totalAlerts}`
-          : `✓ El mercado actual está al día con ${result.totalAlerts} alertas. No hay partidos nuevos adicionales por comenzar.`,
+          ? `✓ Se agregaron ${result.count} nuevas alertas para los partidos restantes. Total actual: ${result.totalAlerts}`
+          : `✓ El mercado actual está al día con ${result.totalAlerts} alertas.`,
         count: result.count,
         totalAlerts: result.totalAlerts,
         predictions: result.predictions,
@@ -25,13 +25,15 @@ export async function POST(request: NextRequest) {
     const leagueIds = body.leagueIds || ALL_LEAGUE_IDS;
 
     // 1. First ensure upcoming fixtures are synchronized
-    await syncUpcomingFixtures(leagueIds, 7);
+    await syncUpcomingFixtures(leagueIds, 7).catch((err) => {
+      console.warn("[API /api/admin/sync/predictions] Fixture sync warning:", err);
+    });
 
-    // 2. Generate predictions across all target leagues
-    const predictions = await generatePredictionsForUpcoming(leagueIds);
+    // 2. Generate predictions across all target leagues with forceRefresh: true
+    const predictions = await generatePredictionsForUpcoming(leagueIds, true);
 
     // 3. Reconcile and settle finished matches into immutable history
-    const settlement = await reconcileAndSettleAllSnapshots().catch(() => ({ settledCount: 0 }));
+    await reconcileAndSettleAllSnapshots().catch(() => ({ settledCount: 0 }));
 
     return NextResponse.json({
       success: true,

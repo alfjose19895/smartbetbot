@@ -3,7 +3,11 @@
 import React, { useState } from "react";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 import { useLanguage } from "@/context/LanguageContext";
-import { shareCardAsImage, copyCardImageToClipboard, downloadCardImage } from "@/lib/sports/card-image-generator";
+import {
+  copyCardImageToClipboard,
+  downloadCardImage,
+  shareCardAsImage,
+} from "@/lib/sports/card-image-generator";
 
 interface PredictionCardProps {
   prediction: MarketOpportunity;
@@ -13,13 +17,16 @@ interface PredictionCardProps {
   isPublished?: boolean;
 }
 
-function getMatchLiveStatusBadge(kickoff: string) {
-  if (!kickoff) return null;
-  const nowMs = Date.now();
-  const kickoffMs = new Date(kickoff).getTime();
-  const diffMinutes = Math.floor((nowMs - kickoffMs) / 60000);
+export function getMatchLiveStatusBadge(kickoffStr?: string): {
+  label: string;
+  cls: string;
+} | null {
+  if (!kickoffStr) return null;
+  const matchDate = new Date(kickoffStr);
+  const now = new Date();
+  const diffMinutes = Math.floor((now.getTime() - matchDate.getTime()) / (1000 * 60));
 
-  if (diffMinutes < -60) {
+  if (diffMinutes < -120) {
     const hours = Math.floor(Math.abs(diffMinutes) / 60);
     const mins = Math.abs(diffMinutes) % 60;
     return {
@@ -45,6 +52,25 @@ function getMatchLiveStatusBadge(kickoff: string) {
   };
 }
 
+export function formatMatchKickoffTime(kickoff?: string): { time: string; date: string } {
+  if (!kickoff) return { time: "--:--", date: "" };
+  try {
+    const dateObj = new Date(kickoff);
+    if (isNaN(dateObj.getTime())) return { time: "--:--", date: "" };
+    const time = dateObj.toLocaleTimeString("es-ES", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    const date = dateObj.toLocaleDateString("es-ES", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+    });
+    return { time, date };
+  } catch {
+    return { time: "--:--", date: "" };
+  }
+}
 
 export function getDisplayMarketSelection(market: string, selection?: string): string {
   const normM = (market || "").toLowerCase().trim();
@@ -75,16 +101,36 @@ export function getDisplayMarketSelection(market: string, selection?: string): s
   return market;
 }
 
-export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = false, onPublishAlert, isPublished = false }: PredictionCardProps) {
+export function PredictionCard({
+  prediction,
+  onOpenDetail,
+  defaultExpanded = false,
+  onPublishAlert,
+  isPublished = false,
+}: PredictionCardProps) {
   const { language } = useLanguage();
   const [isMobileExpanded, setIsMobileExpanded] = useState(defaultExpanded);
   const [copyingImage, setCopyingImage] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
 
   const statusBadge = getMatchLiveStatusBadge(prediction.kickoff);
-  const isWon = prediction.status === "won" || (prediction as any).result === "WON" || (prediction.status as string) === "WON";
-  const isLost = prediction.status === "lost" || (prediction as any).result === "LOST" || (prediction.status as string) === "LOST";
-  const isMcp = Boolean(prediction.isMcp || prediction.isMcpPick || prediction.source === "mcp" || prediction.pickBadge === "mcp" || (prediction.explanation && prediction.explanation.includes("MCP")));
+  const { time: formattedTime, date: formattedDateShort } = formatMatchKickoffTime(prediction.kickoff);
+
+  const isWon =
+    prediction.status === "won" ||
+    (prediction as any).result === "WON" ||
+    (prediction.status as string) === "WON";
+  const isLost =
+    prediction.status === "lost" ||
+    (prediction as any).result === "LOST" ||
+    (prediction.status as string) === "LOST";
+  const isMcp = Boolean(
+    prediction.isMcp ||
+      prediction.isMcpPick ||
+      prediction.source === "mcp" ||
+      prediction.pickBadge === "mcp" ||
+      (prediction.explanation && prediction.explanation.includes("MCP"))
+  );
 
   const handleCopyImage = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -117,20 +163,27 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
     downloadCardImage(prediction);
   };
 
-  const formattedTime = new Date(prediction.kickoff).toLocaleTimeString("es-ES", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
   const pVal = typeof prediction.probability === "number" ? prediction.probability : 50;
   const confidenceBadge =
     pVal >= 70.0
-      ? { label: "⭐⭐⭐ Muy Alta", cls: "bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700 font-extrabold" }
+      ? {
+          label: "⭐⭐⭐ Muy Alta",
+          cls: "bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700 font-extrabold",
+        }
       : pVal >= 58.0
-      ? { label: "⭐⭐ Alta", cls: "bg-cyan-100 text-cyan-900 border-cyan-300 dark:bg-cyan-950/80 dark:text-cyan-300 dark:border-cyan-700 font-bold" }
+      ? {
+          label: "⭐⭐ Alta",
+          cls: "bg-cyan-100 text-cyan-900 border-cyan-300 dark:bg-cyan-950/80 dark:text-cyan-300 dark:border-cyan-700 font-bold",
+        }
       : pVal >= 50.0
-      ? { label: "⭐ Media", cls: "bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950/80 dark:text-amber-300 dark:border-amber-700 font-bold" }
-      : { label: "⚠️ Moderada", cls: "bg-purple-100 text-purple-900 border-purple-300 dark:bg-purple-950/80 dark:text-purple-300 dark:border-purple-700 font-bold" };
+      ? {
+          label: "⭐ Media",
+          cls: "bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950/80 dark:text-amber-300 dark:border-amber-700 font-bold",
+        }
+      : {
+          label: "⚠️ Moderada",
+          cls: "bg-purple-100 text-purple-900 border-purple-300 dark:bg-purple-950/80 dark:text-purple-300 dark:border-purple-700 font-bold",
+        };
 
   return (
     <>
@@ -153,8 +206,14 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
                 <div className="text-xs font-black text-slate-900 dark:text-white truncate">
                   {prediction.homeTeam} <span className="text-slate-400 font-normal">vs</span> {prediction.awayTeam}
                 </div>
-                <div className="text-[10px] font-bold text-slate-500 dark:text-slate-400 truncate">
-                  {prediction.league} {prediction.country ? `(${prediction.country})` : ""} • ⏰ {formattedTime}
+                <div className="text-[10px] font-bold text-slate-500 dark:text-slate-400 truncate flex items-center gap-1.5 mt-0.5">
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-black text-[10px]">
+                    ⏰ {formattedTime}
+                  </span>
+                  <span className="text-slate-400 font-normal">•</span>
+                  <span className="truncate">
+                    {prediction.league} {prediction.country ? `(${prediction.country})` : ""}
+                  </span>
                 </div>
               </div>
             </div>
@@ -258,6 +317,19 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
                 </div>
               </div>
 
+              {/* Match Kickoff Time Banner */}
+              <div className="mt-2.5 flex items-center justify-between px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 text-xs font-bold text-slate-700 dark:text-slate-300">
+                <div className="flex items-center gap-1.5 font-black text-emerald-700 dark:text-emerald-400">
+                  <span>⏰</span>
+                  <span>Hora: {formattedTime}</span>
+                </div>
+                {formattedDateShort && (
+                  <span className="text-[10px] font-extrabold text-slate-500 dark:text-slate-400 capitalize">
+                    {formattedDateShort}
+                  </span>
+                )}
+              </div>
+
               {/* Match Header (Teams) */}
               <div className="mt-2.5 rounded-xl bg-slate-50 p-2.5 border border-slate-100 dark:bg-slate-950/80 dark:border-slate-800/80">
                 <div className="text-sm font-black text-slate-900 dark:text-white leading-snug">
@@ -297,15 +369,21 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
                 <div className="grid grid-cols-3 gap-1.5 pt-1">
                   <div className="rounded-lg bg-white p-1.5 border border-sky-200 dark:bg-slate-900 dark:border-sky-900/60 text-center">
                     <div className="text-[8px] font-bold text-sky-600 dark:text-sky-400 truncate">🏢 Casa</div>
-                    <div className="text-xs font-black text-slate-900 dark:text-white">@{(prediction.odds ?? 1.5).toFixed(2)}</div>
+                    <div className="text-xs font-black text-slate-900 dark:text-white">
+                      @{(prediction.odds ?? 1.5).toFixed(2)}
+                    </div>
                   </div>
                   <div className="rounded-lg bg-white p-1.5 border border-indigo-200 dark:bg-slate-900 dark:border-indigo-900/60 text-center">
                     <div className="text-[8px] font-bold text-indigo-600 dark:text-indigo-400 truncate">🤖 Modelo</div>
-                    <div className="text-xs font-black text-slate-900 dark:text-white">@{(prediction.fairOdds ?? prediction.odds ?? 1.5).toFixed(2)}</div>
+                    <div className="text-xs font-black text-slate-900 dark:text-white">
+                      @{(prediction.fairOdds ?? prediction.odds ?? 1.5).toFixed(2)}
+                    </div>
                   </div>
                   <div className="rounded-lg bg-white p-1.5 border border-emerald-200 dark:bg-slate-900 dark:border-emerald-900/60 text-center">
                     <div className="text-[8px] font-bold text-emerald-600 dark:text-emerald-400 truncate">📈 Prob.</div>
-                    <div className="text-xs font-black text-emerald-700 dark:text-emerald-400">{prediction.probability}%</div>
+                    <div className="text-xs font-black text-emerald-700 dark:text-emerald-400">
+                      {prediction.probability}%
+                    </div>
                   </div>
                 </div>
               </div>
@@ -385,7 +463,7 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
         className="hidden md:flex flex-col justify-between overflow-hidden rounded-3xl border border-slate-200/90 bg-white p-5 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/50 hover:shadow-xl dark:border-slate-800/80 dark:bg-slate-900/90 cursor-pointer"
       >
         <div>
-          {/* Top Bar: League, Country, Status Badge & Confidence */}
+          {/* Top Bar: League, Country, Match Time, Status Badge */}
           <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3 dark:border-slate-800/80">
             <div className="flex items-center gap-1.5 flex-wrap">
               <span className="inline-flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1 text-[11px] font-black text-slate-800 dark:bg-slate-800 dark:text-slate-200">
@@ -401,6 +479,12 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
             </div>
 
             <div className="flex items-center gap-2">
+              {/* Prominent Match Kickoff Time Badge in Header */}
+              <span className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 text-xs font-black text-emerald-700 dark:text-emerald-300 shadow-xs">
+                <span>⏰</span>
+                <span>{formattedTime}</span>
+              </span>
+
               {isWon ? (
                 <span className="inline-flex items-center gap-1 rounded-xl px-3 py-1 text-xs font-black bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30">
                   ✓ Ganada
@@ -420,8 +504,9 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
           {/* Kickoff Date/Time & Badges (Bomba / Valor / Confidence) */}
           <div className="mt-3 flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                ⏰ {formattedTime}
+              <span className="inline-flex items-center gap-1.5 rounded-xl bg-slate-100 px-2.5 py-1 text-xs font-black text-slate-800 dark:bg-slate-800 dark:text-slate-200">
+                <span>⏰</span>
+                <span>Hora del Partido: {formattedTime}</span>
               </span>
               <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                 🕒 PRE-MATCH
@@ -430,32 +515,47 @@ export function PredictionCard({ prediction, onOpenDetail, defaultExpanded = fal
 
             <div className="flex items-center gap-1.5 flex-wrap">
               {isMcp && (
-                <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-sm border border-purple-400">
+                <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-gradient-to-r from-purple-600 to-indigo-600 text-white border border-purple-400 shadow-sm">
                   🤖 Agente MCP
                 </span>
               )}
+
               {prediction.pickBadge === "bomba" && (
-                <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-rose-500 text-white animate-pulse shadow-sm shadow-rose-500/30">
+                <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-rose-500 text-white shadow-sm shadow-rose-500/20 animate-pulse">
                   💣 BOMBA
                 </span>
               )}
+
               {prediction.pickBadge === "valor" && (
-                <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-sm border border-emerald-400 font-extrabold">
+                <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-emerald-500 text-slate-950 font-extrabold shadow-sm shadow-emerald-500/20">
                   💎 VALOR
                 </span>
               )}
-              <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black border ${confidenceBadge.cls}`}>
-                <span>{confidenceBadge.label}</span>
+
+              <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] border ${confidenceBadge.cls}`}>
+                {confidenceBadge.label}
               </span>
             </div>
           </div>
 
-          {/* Match Header (Teams) */}
+          {/* Teams Header Container with Match Kickoff Time Header */}
           <div className="mt-3 rounded-2xl bg-slate-50 p-3.5 border border-slate-100 dark:bg-slate-950/80 dark:border-slate-800/80">
+            <div className="flex items-center justify-between mb-2 pb-1.5 border-b border-slate-200/60 dark:border-slate-800/60 text-[11px]">
+              <div className="flex items-center gap-1.5 font-bold text-slate-600 dark:text-slate-300">
+                <span>🕒 Hora de Inicio:</span>
+                <span className="font-black text-emerald-700 dark:text-emerald-400 text-xs">⏰ {formattedTime}</span>
+              </div>
+              {formattedDateShort && (
+                <span className="text-[10px] font-extrabold text-slate-500 dark:text-slate-400 capitalize">
+                  {formattedDateShort}
+                </span>
+              )}
+            </div>
+
             <div className="text-base font-black text-slate-900 dark:text-white leading-snug">
               {prediction.homeTeam}
             </div>
-            <div className="text-xs font-bold text-slate-600 dark:text-slate-400 my-0.5">vs</div>
+            <div className="text-xs font-bold text-slate-400 my-0.5">vs</div>
             <div className="text-base font-black text-slate-900 dark:text-white leading-snug">
               {prediction.awayTeam}
             </div>

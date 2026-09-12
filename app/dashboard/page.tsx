@@ -131,6 +131,8 @@ export default function DashboardPage() {
       setSyncMessage("⚡ Consultando los mejores partidos y cuotas del día en API-Football...");
       const res = await fetch("/api/admin/sync/predictions", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ forceRefresh: true, refreshRemaining: true }),
       });
       const data = await res.json();
       if (data.success) {

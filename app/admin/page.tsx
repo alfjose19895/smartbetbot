@@ -353,84 +353,45 @@ function AdminControlContent() {
   const [publishFeedback, setPublishFeedback] = useState<{ text: string; type: "success" | "error" } | null>(null);
   const [publishedFixtureKeys, setPublishedFixtureKeys] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    async function loadPublishedKeys() {
-      try {
-        const res = await fetch("/api/signals");
-        if (res.ok) {
-          const data = await res.json();
-          if (data.signals && Array.isArray(data.signals)) {
-            const keys = new Set<string>();
-            for (const s of data.signals) {
-              if (s.fixtureId) keys.add(String(s.fixtureId));
-              keys.add(`${s.homeTeam}-${s.awayTeam}`);
-            }
-            setPublishedFixtureKeys(keys);
-          }
-        }
-      } catch {
-        // ignore
-      }
-    }
-    loadPublishedKeys();
-  }, []);
-
   const handlePublishMcpPicks = async (picksToPublish: MarketOpportunity[]) => {
     if (!picksToPublish || picksToPublish.length === 0) return;
     try {
-      setPublishingMcp(true);
-      setPublishFeedback({ text: "Publicando alertas en el Dashboard y Alertas Pre-Match...", type: "success" });
-      const res = await fetch("/api/mcp/predictions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "publish",
-          picks: picksToPublish,
-        }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setPublishedFixtureKeys((prev) => {
-          const next = new Set(prev);
-          for (const p of picksToPublish) {
-            if (p.fixtureId) next.add(String(p.fixtureId));
-            next.add(`${p.homeTeam}-${p.awayTeam}`);
-          }
-          return next;
-        });
-        setPublishFeedback({
-          text: data.message || `✓ Se agregaron ${data.addedCount || picksToPublish.length} alertas al Dashboard.`,
-          type: "success",
-        });
-        addLog(`✓ ${picksToPublish.length} alertas publicadas al Dashboard y Alertas Pre-Match (Total activo: ${data.totalAlerts || "actualizado"})`);
-      } else {
-        setPublishFeedback({ text: `✗ Error: ${data.error || "No se pudieron publicar las alertas"}`, type: "error" });
+      if (typeof window !== "undefined") {
+        const localRaw = localStorage.getItem("smartbetbot_published_picks");
+        const existing: MarketOpportunity[] = localRaw ? JSON.parse(localRaw) : [];
+        const map = new Map<string, MarketOpportunity>();
+        for (const p of [...existing, ...picksToPublish]) {
+          const key = `${p.fixtureId || 0}-${p.homeTeam}-${p.awayTeam}-${p.market}`;
+          map.set(key, { ...p, isMcpPick: true, pickBadge: p.pickBadge || "mcp" });
+        }
+        localStorage.setItem("smartbetbot_published_picks", JSON.stringify(Array.from(map.values())));
+        window.dispatchEvent(new CustomEvent("predictions-updated"));
+        window.dispatchEvent(new Event("storage"));
       }
+
+      setPublishedFixtureKeys((prev) => {
+        const next = new Set(prev);
+        for (const p of picksToPublish) {
+          if (p.fixtureId) next.add(String(p.fixtureId));
+          next.add(`${p.homeTeam}-${p.awayTeam}`);
+        }
+        return next;
+      });
+
+      setPublishFeedback({
+        type: "success",
+        text: `✓ ${picksToPublish.length} pronóstico(s) publicados en vivo en Dashboard y Alertas.`,
+      });
+      setTimeout(() => setPublishFeedback(null), 6000);
     } catch (err) {
-      setPublishFeedback({ text: `✗ Fallo de conexión: ${String(err)}`, type: "error" });
-    } finally {
-      setPublishingMcp(false);
+      console.error("Error publishing MCP picks:", err);
+      setPublishFeedback({
+        type: "error",
+        text: "Error al publicar pronósticos localmente.",
+      });
       setTimeout(() => setPublishFeedback(null), 6000);
     }
   };
-
-  const QUICK_COUNTRIES = [
-    { id: "champions", label: "Champions League", flag: "🏆" },
-    { id: "sudamericana", label: "Copa Sudamericana", flag: "⭐" },
-    { id: "españa", label: "España", flag: "🇪🇸" },
-    { id: "inglaterra", label: "Inglaterra", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
-    { id: "alemania", label: "Alemania", flag: "🇩🇪" },
-    { id: "italia", label: "Italia", flag: "🇮🇹" },
-    { id: "francia", label: "Francia", flag: "🇫🇷" },
-    { id: "portugal", label: "Portugal", flag: "🇵🇹" },
-    { id: "ecuador", label: "Ecuador", flag: "🇪🇨" },
-    { id: "mexico", label: "México", flag: "🇲🇽" },
-    { id: "costa rica", label: "Costa Rica", flag: "🇨🇷" },
-    { id: "brasil", label: "Brasil", flag: "🇧🇷" },
-    { id: "argentina", label: "Argentina", flag: "🇦🇷" },
-    { id: "colombia", label: "Colombia", flag: "🇨🇴" },
-    { id: "estados_unidos", label: "USA / MLS", flag: "🇺🇸" },
-  ];
 
   const handleMcpSearch = async (
     customQuery?: string,
@@ -454,6 +415,7 @@ function AdminControlContent() {
           country: activeCountry,
           league: activeLeague,
           leagueId: activeLeagueId,
+          autoPublish: true,
         }),
       });
 
@@ -465,17 +427,10 @@ function AdminControlContent() {
         setMcpAiAnalysis(data.aiAnalysis || null);
 
         if (predictions.length > 0) {
-          setPublishedFixtureKeys((prev) => {
-            const next = new Set(prev);
-            for (const p of predictions) {
-              if (p.fixtureId) next.add(String(p.fixtureId));
-              next.add(`${p.homeTeam}-${p.awayTeam}`);
-            }
-            return next;
-          });
+          await handlePublishMcpPicks(predictions);
           setPublishFeedback({
             type: "success",
-            text: `✓ ${predictions.length} pronósticos encontrados y publicados automáticamente en el Dashboard y Alertas Pre-Match con la etiqueta 🤖 Agente MCP.`,
+            text: `✓ ${predictions.length} pronósticos encontrados y sincronizados en Dashboard y Alertas Pre-Match con etiqueta 🤖 Agente MCP.`,
           });
           setTimeout(() => setPublishFeedback(null), 8000);
         }

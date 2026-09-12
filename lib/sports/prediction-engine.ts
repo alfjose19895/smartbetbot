@@ -1263,7 +1263,7 @@ export function evaluateFixturePrediction(params: {
   const awayRecentForm = generateTeamRecentForm(awayTeam, canonicalLeague, rAway, kickoff);
   const h2hHistory = generateH2HClashes(homeTeam, awayTeam, canonicalLeague, rHomeBase, rAway, kickoff);
 
-    const buildOpportunity = (item: { market: string; selection: string; prob: number; odds: number }): MarketOpportunity => {
+  const buildOpportunity = (item: { market: string; selection: string; prob: number; odds: number }): MarketOpportunity => {
     const probPercent = Math.round(item.prob * 1000) / 10;
     const fairOdds = Math.round((1 / item.prob) * 100) / 100;
     const impliedProb = Math.round((1 / item.odds) * 1000) / 10;
