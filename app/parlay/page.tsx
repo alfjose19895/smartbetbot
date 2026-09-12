@@ -10,7 +10,7 @@ import {
   downloadParlayCardImage,
   shareParlayCardAsImage,
 } from "@/lib/sports/card-image-generator";
-import { buildTripleExclusiveParlays } from "@/lib/sports/parlay-generator";
+import { getImmutableDailyParlays } from "@/lib/sports/parlay-generator";
 
 function formatKickoffTime(dateString: string): string {
   try {
@@ -135,7 +135,7 @@ export default function DailyParlayPage() {
   });
 
   // Generate 3 mutually exclusive parlays with 3 picks each
-  const { parlay1, parlay2, parlay3 } = buildTripleExclusiveParlays(signals);
+  const { parlay1, parlay2, parlay3 } = getImmutableDailyParlays(signals);
 
   let selectedPicks: MarketOpportunity[] = [];
   let parlayTitle = "🛡️ Parley Seguro (3 Picks)";

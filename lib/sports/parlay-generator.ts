@@ -10,7 +10,7 @@ export function getEcuadorDateString(d: Date | number | string = Date.now()): st
       day: "2-digit",
     }).format(dateObj);
   } catch {
-    return "today";
+    return new Date().toISOString().split("T")[0];
   }
 }
 
@@ -24,6 +24,47 @@ export interface TripleExclusiveParlays {
 }
 
 export type DualParlays = TripleExclusiveParlays;
+
+// In-memory cache
+const memoryParlaysCache: Record<string, TripleExclusiveParlays> = {};
+
+function getNodeFs() {
+  if (typeof window === "undefined") {
+    try {
+      const fs = eval("require")("fs");
+      const path = eval("require")("path");
+      return { fs, path };
+    } catch {}
+  }
+  return null;
+}
+
+function safeReadParlaysFile(filePath: string): Record<string, TripleExclusiveParlays> {
+  const node = getNodeFs();
+  if (!node) return {};
+  try {
+    if (node.fs.existsSync(filePath)) {
+      const content = node.fs.readFileSync(filePath, "utf8");
+      if (content && content.trim()) {
+        const parsed = JSON.parse(content);
+        if (typeof parsed === "object" && parsed !== null) return parsed;
+      }
+    }
+  } catch {}
+  return {};
+}
+
+function safeWriteParlaysFile(filePath: string, data: Record<string, TripleExclusiveParlays>) {
+  const node = getNodeFs();
+  if (!node) return;
+  try {
+    const dir = node.path.dirname(filePath);
+    if (!node.fs.existsSync(dir)) {
+      node.fs.mkdirSync(dir, { recursive: true });
+    }
+    node.fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf8");
+  } catch {}
+}
 
 /**
  * Normalizes market descriptions into distinct categories to guarantee market diversity in parlays.
@@ -54,24 +95,15 @@ export function getMarketCategory(marketName: string): string {
  * 1. Parley 1 (Seguro / Élite): 3 highest probability & confidence selections (Max Winrate).
  * 2. Parley 2 (Valor / Oro): 3 highest Expected Value (+EV) selections from distinct matches.
  * 3. Parley 3 (Bomba / Platino): 3 bold / high-yield multiplier selections from distinct matches.
- * 
- * Strict Guarantee:
- * - ZERO match repetition across the 3 parlays (9 completely distinct matches).
- * - Maximum market diversification across legs (1X2, Over 2.5, BTTS).
  */
 export function buildTripleExclusiveParlays(predictions: MarketOpportunity[]): TripleExclusiveParlays {
-  const todayStr = getEcuadorDateString(Date.now());
-
-  // Filter candidate pool (prioritize today, then general upcoming)
   const validPool = [...predictions].filter((p) => p.odds >= 1.25 && p.probability >= 35);
-
   const usedMatchKeys = new Set<string>();
 
   const getMatchKey = (p: MarketOpportunity): string => {
     return `${p.fixtureId || 0}-${p.homeTeam.trim().toLowerCase()}-${p.awayTeam.trim().toLowerCase()}`;
   };
 
-  // Helper to build a 3-pick parlay given a candidate list and criteria
   const select3Picks = (
     pool: MarketOpportunity[],
     sorter: (a: MarketOpportunity, b: MarketOpportunity) => number
@@ -83,7 +115,6 @@ export function buildTripleExclusiveParlays(predictions: MarketOpportunity[]): T
       .filter((p) => !usedMatchKeys.has(getMatchKey(p)))
       .sort(sorter);
 
-    // Pass 1: Select picks with unique market categories to enforce diversity
     for (const p of sorted) {
       if (selected.length >= 3) break;
       const key = getMatchKey(p);
@@ -95,7 +126,6 @@ export function buildTripleExclusiveParlays(predictions: MarketOpportunity[]): T
       }
     }
 
-    // Pass 2: If we couldn't find 3 distinct categories, pick any remaining unused match
     if (selected.length < 3) {
       for (const p of sorted) {
         if (selected.length >= 3) break;
@@ -110,7 +140,6 @@ export function buildTripleExclusiveParlays(predictions: MarketOpportunity[]): T
     return selected;
   };
 
-  // 1. Build Parley 1: Seguro (Highest Probability & SmartScore)
   const parlay1 = select3Picks(validPool, (a, b) => {
     const aTier = a.leagueTier || 3;
     const bTier = b.leagueTier || 3;
@@ -119,7 +148,6 @@ export function buildTripleExclusiveParlays(predictions: MarketOpportunity[]): T
     return (b.smartScore || 0) - (a.smartScore || 0);
   });
 
-  // 2. Build Parley 2: Valor (Highest Expected Value (+EV) and Edge)
   const parlay2 = select3Picks(validPool, (a, b) => {
     const bEv = b.expectedValue || (b.probability * b.odds - 100);
     const aEv = a.expectedValue || (a.probability * a.odds - 100);
@@ -128,7 +156,6 @@ export function buildTripleExclusiveParlays(predictions: MarketOpportunity[]): T
     return b.probability - a.probability;
   });
 
-  // 3. Build Parley 3: Bomba / Multiplicador (Highest Odds with Value)
   const parlay3 = select3Picks(validPool, (a, b) => {
     if (b.odds !== a.odds) return b.odds - a.odds;
     return (b.expectedValue || 0) - (a.expectedValue || 0);
@@ -143,5 +170,84 @@ export function buildTripleExclusiveParlays(predictions: MarketOpportunity[]): T
   };
 }
 
-// Backward compatible alias
+/**
+ * Returns IMMUTABLE daily parlays for the specified date (defaults to today in Ecuador timezone).
+ * Once calculated for a date, they are persisted and NEVER change or mutate during the day.
+ */
+export function getImmutableDailyParlays(
+  predictions: MarketOpportunity[],
+  dateStr?: string
+): TripleExclusiveParlays {
+  const targetDate = dateStr || getEcuadorDateString(Date.now());
+
+  // 1. Check in-memory cache
+  if (memoryParlaysCache[targetDate] && memoryParlaysCache[targetDate].parlay1?.length > 0) {
+    return memoryParlaysCache[targetDate];
+  }
+
+  // 2. Check localStorage in browser
+  if (typeof window !== "undefined") {
+    try {
+      const local = localStorage.getItem(`smartbetbot_immutable_parlays_${targetDate}`);
+      if (local) {
+        const parsed = JSON.parse(local);
+        if (parsed?.parlay1?.length > 0) {
+          memoryParlaysCache[targetDate] = parsed;
+          return parsed;
+        }
+      }
+    } catch {}
+  }
+
+  // 3. Check disk /tmp and data/ on server
+  const node = getNodeFs();
+  if (node) {
+    const parlaysFile = node.path.join(process.cwd(), "data", "daily_parlays.json");
+    const tmpParlaysFile = node.path.join("/tmp", "daily_parlays.json");
+
+    const tmpData = safeReadParlaysFile(tmpParlaysFile);
+    if (tmpData[targetDate] && tmpData[targetDate].parlay1?.length > 0) {
+      memoryParlaysCache[targetDate] = tmpData[targetDate];
+      return tmpData[targetDate];
+    }
+
+    const diskData = safeReadParlaysFile(parlaysFile);
+    if (diskData[targetDate] && diskData[targetDate].parlay1?.length > 0) {
+      memoryParlaysCache[targetDate] = diskData[targetDate];
+      return diskData[targetDate];
+    }
+  }
+
+  // 4. Generate once from available predictions
+  const generated = buildTripleExclusiveParlays(predictions);
+
+  if (generated.parlay1.length > 0 || generated.parlay2.length > 0 || generated.parlay3.length > 0) {
+    memoryParlaysCache[targetDate] = generated;
+
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem(`smartbetbot_immutable_parlays_${targetDate}`, JSON.stringify(generated));
+      } catch {}
+    }
+
+    if (node) {
+      const parlaysFile = node.path.join(process.cwd(), "data", "daily_parlays.json");
+      const tmpParlaysFile = node.path.join("/tmp", "daily_parlays.json");
+
+      const diskData = safeReadParlaysFile(parlaysFile);
+      const tmpData = safeReadParlaysFile(tmpParlaysFile);
+
+      diskData[targetDate] = generated;
+      tmpData[targetDate] = generated;
+
+      safeWriteParlaysFile(parlaysFile, diskData);
+      safeWriteParlaysFile(tmpParlaysFile, tmpData);
+    }
+  }
+
+  return generated;
+}
+
+// Backward compatible aliases
 export const buildDualExclusiveParlays = buildTripleExclusiveParlays;
+export const getImmutableDualParlays = getImmutableDailyParlays;

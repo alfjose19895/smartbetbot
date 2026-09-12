@@ -25,6 +25,10 @@ export interface PushNotificationPayload {
   data?: Record<string, any>;
 }
 
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 /**
  * Sends a push notification to a single subscriber.
  * Automatically cleans up expired or unsubscribed endpoints (HTTP 404 / 410).
@@ -84,17 +88,15 @@ export async function broadcastPushNotification(
   let failedCount = 0;
   let cleanedExpired = 0;
 
-  await Promise.all(
-    subscriptions.map(async (sub) => {
-      const res = await sendNotificationToSubscription(sub, payload);
-      if (res.success) {
-        sentCount++;
-      } else {
-        failedCount++;
-        if (res.expired) cleanedExpired++;
-      }
-    })
-  );
+  for (const sub of subscriptions) {
+    const res = await sendNotificationToSubscription(sub, payload);
+    if (res.success) {
+      sentCount++;
+    } else {
+      failedCount++;
+      if (res.expired) cleanedExpired++;
+    }
+  }
 
   return {
     totalSubscribers: subscriptions.length,
@@ -105,8 +107,8 @@ export async function broadcastPushNotification(
 }
 
 /**
- * Sends individual push notification alerts for all high-confidence / high-probability matches.
- * Each alert contains the specific match, league, recommended market, odds, and confidence/probability.
+ * Sends individual push notification alerts for all high-confidence / high-probability matches of the day.
+ * Dispatches sequentially with a small delay so every notification pops up individually on phone screens.
  */
 export async function sendIndividualHighConfidenceAlerts(
   predictions: MarketOpportunity[],
@@ -155,7 +157,7 @@ export async function sendIndividualHighConfidenceAlerts(
       icon: "/icon-192.png",
       badge: "/badge-72.png",
       url: `/signals?id=${pick.id || pick.fixtureId}`,
-      id: `high-conf-${pick.id || pick.fixtureId}-${idx}-${Date.now()}`,
+      id: `pick-${pick.id || pick.fixtureId}-${idx}`,
       data: {
         type: "individual_high_confidence_alert",
         fixtureId: pick.fixtureId,
@@ -171,7 +173,8 @@ export async function sendIndividualHighConfidenceAlerts(
   let sentCount = 0;
   let failedCount = 0;
 
-  for (const payload of payloads) {
+  for (let i = 0; i < payloads.length; i++) {
+    const payload = payloads[i];
     if (targetSubscription) {
       const res = await sendNotificationToSubscription(targetSubscription, payload);
       if (res.success) sentCount++;
@@ -180,6 +183,10 @@ export async function sendIndividualHighConfidenceAlerts(
       const res = await broadcastPushNotification(payload);
       sentCount += res.sentCount;
       failedCount += res.failedCount;
+    }
+    // Small delay between pushes to ensure individual delivery on devices
+    if (i < payloads.length - 1) {
+      await delay(250);
     }
   }
 
@@ -227,7 +234,7 @@ export async function sendDailyMcpPushNotification(
     icon: "/icon-192.png",
     badge: "/badge-72.png",
     url: "/signals",
-    id: `daily-alert-${new Date().toISOString().split("T")[0]}`,
+    id: `daily-summary-${new Date().toISOString().split("T")[0]}`,
     data: {
       type: "daily_mcp_alert",
       picksCount: topPicks.length,

@@ -17,16 +17,24 @@ export async function GET(request: NextRequest) {
 
     let predictions: MarketOpportunity[] = [];
 
-    try {
-      // Always call generatePredictionsForUpcoming so it evaluates finished match scores & statuses (won/lost)
-      predictions = await generatePredictionsForUpcoming(undefined, forceRefresh);
-    } catch (genErr) {
-      console.warn("[API /api/signals] Generation error, loading latest stored:", genErr);
+    // Cache-first: Read from stored disk/memory snapshot unless explicitly told to refresh
+    if (forceRefresh) {
+      try {
+        predictions = await generatePredictionsForUpcoming(undefined, true);
+      } catch (genErr) {
+        console.warn("[API /api/signals] Generation error on force refresh:", genErr);
+        predictions = getStoredPredictions();
+      }
+    } else {
       predictions = getStoredPredictions();
-    }
-
-    if (!predictions || predictions.length === 0) {
-      predictions = getStoredPredictions();
+      // If store is completely empty, initialize once
+      if (!predictions || predictions.length === 0) {
+        try {
+          predictions = await generatePredictionsForUpcoming(undefined, false);
+        } catch {
+          predictions = [];
+        }
+      }
     }
 
     if (leagueFilter) {

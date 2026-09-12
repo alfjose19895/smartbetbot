@@ -9,11 +9,12 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('push', (event) => {
   let data = {
-    title: '⚽ SmartBetBot - Nueva Alerta MCP',
-    body: 'Nuevos pronósticos de alto valor (+EV) disponibles.',
+    title: '⚽ SmartBetBot - Alerta MCP',
+    body: 'Nuevo pronóstico de alta confianza disponible.',
     icon: '/icon-192.png',
     badge: '/badge-72.png',
     url: '/signals',
+    id: 'smartbetbot-' + Date.now(),
   };
 
   if (event.data) {
@@ -25,21 +26,26 @@ self.addEventListener('push', (event) => {
     }
   }
 
+  const notificationTag = data.id || ('smartbetbot-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7));
+
   const options = {
     body: data.body,
     icon: data.icon || '/icon-192.png',
     badge: data.badge || '/badge-72.png',
+    tag: notificationTag,
+    renotify: true,
     vibrate: [200, 100, 200, 100, 200],
     data: {
       url: data.url || '/signals',
       dateOfArrival: Date.now(),
-      primaryKey: data.id || 'smartbetbot-alert',
+      primaryKey: notificationTag,
+      ...data.data,
     },
     actions: [
       { action: 'open_app', title: '👀 Ver Pronósticos' },
       { action: 'view_parlay', title: '🔥 Ver Parleys' },
     ],
-    requireInteraction: true,
+    requireInteraction: false,
   };
 
   event.waitUntil(self.registration.showNotification(data.title, options));
