@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { searchAndAddNewAlerts, syncUpcomingFixtures, reconcileAndSettleAllSnapshots } from "@/lib/sports/db";
 import { ALL_LEAGUE_IDS } from "@/lib/sports/api-football";
+import { sendIndividualHighConfidenceAlerts } from "@/lib/push/web-push-sender";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +20,13 @@ export async function POST(request: NextRequest) {
 
     // 3. Reconcile and settle finished matches into immutable history
     await reconcileAndSettleAllSnapshots().catch(() => ({ settledCount: 0 }));
+
+    // 4. Dispatch push notifications to all registered subscribers if new alerts were found
+    if (result.newAlerts && result.newAlerts.length > 0) {
+      sendIndividualHighConfidenceAlerts(result.newAlerts).catch((pushErr) => {
+        console.warn("[API /api/admin/sync/predictions] Push notification broadcast warning:", pushErr);
+      });
+    }
 
     return NextResponse.json(
       {

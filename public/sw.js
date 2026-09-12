@@ -13,6 +13,8 @@ self.addEventListener('push', (event) => {
     body: 'Nuevo pronóstico de alta confianza disponible.',
     url: '/signals',
     id: 'smartbetbot-' + Date.now(),
+    icon: '/icon-192.png',
+    badge: '/badge-72.png',
   };
 
   if (event.data) {
@@ -30,6 +32,8 @@ self.addEventListener('push', (event) => {
 
   const options = {
     body: data.body,
+    icon: data.icon || '/icon-192.png',
+    badge: data.badge || '/badge-72.png',
     tag: notificationTag,
     renotify: true,
     vibrate: [200, 100, 200, 100, 200],
@@ -63,7 +67,9 @@ self.addEventListener('notificationclick', (event) => {
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
       for (const client of clientList) {
         if (client.url.includes(self.location.origin) && 'focus' in client) {
-          client.navigate(targetUrl);
+          if ('navigate' in client) {
+            client.navigate(targetUrl);
+          }
           return client.focus();
         }
       }

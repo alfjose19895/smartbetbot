@@ -53,7 +53,31 @@ export function PushNotificationManager({
     if (typeof window !== "undefined" && "serviceWorker" in navigator && "PushManager" in window) {
       setIsSupported(true);
       setPermission(Notification.permission);
-      checkExistingSubscription();
+
+      // Register SW and check active subscription
+      navigator.serviceWorker
+        .register("/sw.js", { scope: "/" })
+        .then((reg) => reg.pushManager.getSubscription())
+        .then((sub) => {
+          if (sub) {
+            setIsSubscribed(true);
+            // Re-sync subscription with server store
+            const subJSON = sub.toJSON();
+            fetch("/api/push/subscribe", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                endpoint: sub.endpoint,
+                keys: subJSON.keys,
+              }),
+            }).catch(() => {});
+          } else {
+            setIsSubscribed(false);
+          }
+        })
+        .catch((err) => {
+          console.warn("ServiceWorker initialization check:", err);
+        });
     }
 
     const handleOpenEvent = () => setInternalIsOpen(true);
@@ -67,45 +91,37 @@ export function PushNotificationManager({
     };
   }, []);
 
-  const checkExistingSubscription = async () => {
-    try {
-      const reg = await navigator.serviceWorker.getRegistration("/sw.js");
-      if (reg) {
-        const sub = await reg.pushManager.getSubscription();
-        setIsSubscribed(Boolean(sub));
-      }
-    } catch (err) {
-      console.warn("Could not check push subscription:", err);
-    }
-  };
-
   const subscribeToPush = async () => {
     setLoading(true);
     setStatusMessage(null);
     try {
-      // 0. Check secure context
-      if (typeof window !== "undefined" && !window.isSecureContext && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+      if (
+        typeof window !== "undefined" &&
+        !window.isSecureContext &&
+        window.location.hostname !== "localhost" &&
+        window.location.hostname !== "127.0.0.1"
+      ) {
         throw new Error("Las notificaciones Push requieren conexión segura HTTPS.");
       }
 
-      // 1. Request Permission
+      // 1. Request Browser Permission
       const perm = await Notification.requestPermission();
       setPermission(perm);
 
       if (perm !== "granted") {
-        setStatusMessage("Permiso de notificaciones denegado en el navegador.");
+        setStatusMessage("Permiso de notificaciones denegado en el navegador. Por favor habilítalo en los ajustes del sitio.");
         setLoading(false);
         return;
       }
 
-      // 2. Register Service Worker & Wait for Ready
-      let reg = await navigator.serviceWorker.getRegistration("/sw.js");
+      // 2. Ensure Service Worker is ready
+      let reg = await navigator.serviceWorker.getRegistration();
       if (!reg) {
         reg = await navigator.serviceWorker.register("/sw.js", { scope: "/" });
       }
-      await navigator.serviceWorker.ready;
+      reg = await navigator.serviceWorker.ready;
 
-      // 3. Auto-clean existing stale subscription to avoid push service key mismatch error
+      // 3. Clean any existing stale subscription to avoid mismatch
       try {
         const existingSub = await reg.pushManager.getSubscription();
         if (existingSub) {
@@ -144,7 +160,22 @@ export function PushNotificationManager({
       const saveResult = await saveRes.json();
       if (saveResult.success) {
         setIsSubscribed(true);
-        setStatusMessage("✅ ¡Teléfono vinculado con éxito! Recibirás las alertas individuales de alta confianza.");
+        setStatusMessage("✅ ¡Teléfono vinculado con éxito! Enviando alerta de bienvenida a tu pantalla...");
+
+        // Send automatic welcome test notification
+        try {
+          await fetch("/api/push/send-test", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              endpoint: subscription.endpoint,
+              keys: subJSON.keys,
+              subscription: subJSON,
+              title: "🚀 ¡SmartBetBot Conectado!",
+              message: "Tu dispositivo está listo. Recibirás las alertas individuales de cada partido de alta confianza.",
+            }),
+          });
+        } catch (_) {}
       } else {
         throw new Error(saveResult.error || "Error al registrar en servidor");
       }
@@ -152,7 +183,7 @@ export function PushNotificationManager({
       console.error("Subscription error:", err);
       let errMsg = err.message || "No se pudo activar las alertas";
       if (errMsg.includes("push service error")) {
-        errMsg = "Error de conexión con el servicio Push de Google/FCM. Por favor verifica tu conexión a internet o intenta reiniciar el navegador.";
+        errMsg = "Error de conexión con el servicio Push. Reinicia el navegador o verifica la conexión a internet.";
       }
       setStatusMessage(`Error: ${errMsg}`);
     } finally {
@@ -164,17 +195,15 @@ export function PushNotificationManager({
     setLoading(true);
     setStatusMessage(null);
     try {
-      const reg = await navigator.serviceWorker.getRegistration("/sw.js");
-      if (reg) {
-        const sub = await reg.pushManager.getSubscription();
-        if (sub) {
-          await fetch("/api/push/subscribe", {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ endpoint: sub.endpoint }),
-          });
-          await sub.unsubscribe();
-        }
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.getSubscription();
+      if (sub) {
+        await fetch("/api/push/subscribe", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ endpoint: sub.endpoint }),
+        });
+        await sub.unsubscribe();
       }
       setIsSubscribed(false);
       setStatusMessage("Notificaciones desactivadas para este dispositivo.");
@@ -190,11 +219,11 @@ export function PushNotificationManager({
     setTestSending(true);
     setStatusMessage(null);
     try {
-      const reg = await navigator.serviceWorker.getRegistration("/sw.js");
-      const sub = reg ? await reg.pushManager.getSubscription() : null;
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.getSubscription();
 
       if (!sub) {
-        setStatusMessage("Primero debes vincular este teléfono pulsando 'Vincular y Activar Alertas'.");
+        setStatusMessage("Primero debes vincular este dispositivo pulsando 'Vincular y Activar Alertas'.");
         setTestSending(false);
         return;
       }
@@ -208,16 +237,16 @@ export function PushNotificationManager({
           endpoint: sub.endpoint,
           keys: subJSON.keys,
           subscription: subJSON,
-          title: "🔔 SmartBetBot: ¡Alerta Push Activa!",
-          message: "⭐ Tu teléfono está listo para recibir alertas individuales de partidos con confianza muy alta.",
+          title: "⚽ Alerta de Prueba SmartBetBot",
+          message: "⭐ Notificación push funcionando al 100% en tu pantalla.",
         }),
       });
 
       const data = await res.json();
       if (data.success) {
-        setStatusMessage("📲 ¡Notificación de prueba enviada! Revisa tu pantalla.");
+        setStatusMessage("📲 ¡Notificación de prueba enviada a tu pantalla!");
       } else {
-        setStatusMessage(`Error: ${data.error || "No se pudo enviar la prueba"}`);
+        setStatusMessage(`Error al enviar prueba: ${data.error || "Fallo desconocido"}`);
       }
     } catch (err: any) {
       console.error("Send test error:", err);
@@ -231,8 +260,8 @@ export function PushNotificationManager({
     setIndividualSending(true);
     setStatusMessage(null);
     try {
-      const reg = await navigator.serviceWorker.getRegistration("/sw.js");
-      const sub = reg ? await reg.pushManager.getSubscription() : null;
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.getSubscription();
 
       if (!sub) {
         setStatusMessage("Primero debes vincular este teléfono pulsando 'Vincular y Activar Alertas'.");
