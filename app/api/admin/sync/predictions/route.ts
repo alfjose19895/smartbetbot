@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       }
     );
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Error al buscar nuevas alertas";
+    const message = error instanceof Error ? error.message : "Error al buscar alertas de hoy";
     console.error("[API /api/admin/sync/predictions] Error:", error);
     return NextResponse.json(
       { success: false, error: message },

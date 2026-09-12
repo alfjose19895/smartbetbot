@@ -1265,8 +1265,6 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
 }> {
   const nowMs = Date.now();
   const todayDateStr = getEcuadorDateString(nowMs);
-  const tomorrowMs = nowMs + 24 * 60 * 60 * 1000;
-  const tomorrowDateStr = getEcuadorDateString(tomorrowMs);
 
   // 1. Auto-liquidar marcadores reales de partidos finalizados antes de buscar
   await settleActiveSnapshotWithRealScores(todayDateStr);
@@ -1283,22 +1281,14 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     existingSnapshot.map((p) => Number(p.fixtureId)).filter(Boolean)
   );
 
-  // 2. Fetch upcoming fixtures and bulk odds for TODAY (afternoon/evening) AND TOMORROW in Ecuador timezone
-  const [todayFixtures, todayOddsList, tomorrowFixtures, tomorrowOddsList] = await Promise.all([
+  // 2. Fetch upcoming fixtures and bulk odds STRICTLY FOR TODAY (afternoon/evening/night) in Ecuador timezone (America/Guayaquil)
+  const [todayFixtures, todayOddsList] = await Promise.all([
     apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil").catch(() => []),
     apiFootball.getOddsByDate(todayDateStr, "America/Guayaquil").catch(() => [] as ApiFootballOddsItem[]),
-    apiFootball.getFixturesByDate(tomorrowDateStr, "America/Guayaquil").catch(() => []),
-    apiFootball.getOddsByDate(tomorrowDateStr, "America/Guayaquil").catch(() => [] as ApiFootballOddsItem[]),
   ]);
 
-  const candidateFixtures = [
-    ...(Array.isArray(todayFixtures) ? todayFixtures : []),
-    ...(Array.isArray(tomorrowFixtures) ? tomorrowFixtures : []),
-  ];
-  const allOdds = [
-    ...(Array.isArray(todayOddsList) ? todayOddsList : []),
-    ...(Array.isArray(tomorrowOddsList) ? tomorrowOddsList : []),
-  ];
+  const candidateFixtures = Array.isArray(todayFixtures) ? todayFixtures : [];
+  const allOdds = Array.isArray(todayOddsList) ? todayOddsList : [];
 
   const oddsMapByFixture: Record<number, ApiFootballOddsItem> = {};
   for (const item of allOdds) {
@@ -1319,6 +1309,10 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     if (["1H", "2H", "HT", "ET", "BT", "P", "LIVE", "INT", "SUSP", "FT", "AET", "PEN", "PST", "CANC", "ABD", "AWD", "WO", "POST"].includes(shortStatus)) continue;
     if (kickoffMs <= nowMs) continue;
     if (shortStatus !== "NS" && shortStatus !== "TBD") continue;
+
+    // Strict validation: must belong to today's date in Ecuador
+    const fixDateStr = getEcuadorDateString(kickoffMs);
+    if (fixDateStr !== todayDateStr) continue;
 
     const hNorm = getCanonicalTeamKey(item.teams.home.name);
     const aNorm = getCanonicalTeamKey(item.teams.away.name);

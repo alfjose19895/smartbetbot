@@ -264,7 +264,7 @@ export default function SignalsPage() {
   const handleSyncSignals = async () => {
     try {
       setSyncing(true);
-      setSyncMessage("⚡ Buscando nuevas alertas del mercado de hoy con modelos cuantitativos...");
+      setSyncMessage("⚡ Buscando alertas del mercado de hoy con modelos cuantitativos...");
       const res = await fetch("/api/admin/sync/predictions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -275,9 +275,9 @@ export default function SignalsPage() {
         if (data.newAlerts && data.newAlerts.length > 0) {
           setNewlyDiscoveredAlerts(data.newAlerts);
           setNewAlertsModalOpen(true);
-          setSyncMessage(`✓ ¡Se encontraron ${data.newAlerts.length} nuevas alertas! Agregadas al panel.`);
+          setSyncMessage(`✓ ¡Se encontraron ${data.newAlerts.length} nuevas alertas de hoy! Agregadas al panel.`);
         } else {
-          setSyncMessage(`✓ Mercado al día: no hay nuevas alertas pendientes (${data.count || signals.length} activas).`);
+          setSyncMessage(`✓ Mercado de hoy al día (${data.count || signals.length} alertas activas).`);
         }
         if (Array.isArray(data.predictions)) {
           const cleanPicks = deduplicatePicksList(data.predictions);
@@ -287,10 +287,10 @@ export default function SignalsPage() {
           await fetchSignals();
         }
       } else {
-        setSyncMessage(`⚠️ ${data.message || "Error al buscar nuevas alertas"}`);
+        setSyncMessage(`⚠️ ${data.message || "Error al buscar alertas de hoy"}`);
       }
     } catch {
-      setSyncMessage("❌ Error de conexión al buscar nuevas alertas");
+      setSyncMessage("❌ Error de conexión al buscar alertas de hoy");
     } finally {
       setSyncing(false);
       setTimeout(() => setSyncMessage(null), 5000);
@@ -463,10 +463,10 @@ export default function SignalsPage() {
                 onClick={handleSyncSignals}
                 disabled={syncing}
                 className="inline-flex items-center gap-1.5 rounded-2xl bg-emerald-600 px-4 py-2 text-xs font-black text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-500 transition cursor-pointer disabled:opacity-50"
-                title="Buscar nuevas alertas del día (Solo Administrador)"
+                title="Buscar alertas de Hoy (Solo Administrador)"
               >
                 <span className={syncing ? "animate-spin" : ""}>⚡</span>
-                <span>{syncing ? "Buscando..." : "⚡ Buscar Nuevas Alertas"}</span>
+                <span>{syncing ? "Buscando..." : "⚡ Buscar alertas de Hoy"}</span>
               </button>
             )}
           </div>

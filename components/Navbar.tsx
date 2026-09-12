@@ -264,10 +264,10 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
               onClick={handleAdminSync}
               disabled={isSyncInProgress}
               className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-2.5 lg:px-3 py-1.5 text-xs font-black text-emerald-700 transition hover:bg-emerald-500/20 dark:text-emerald-400 cursor-pointer disabled:opacity-50 whitespace-nowrap shadow-xs"
-              title="Buscar nuevas alertas de mercado (Solo Administrador)"
+              title="Buscar alertas de Hoy (Solo Administrador)"
             >
               <span className={isSyncInProgress ? "animate-spin" : ""}>⚡</span>
-              <span>{isSyncInProgress ? t("navSyncing") : "Buscar nuevas alertas"}</span>
+              <span>{isSyncInProgress ? t("navSyncing") : "Buscar alertas de Hoy"}</span>
             </button>
           )}
 
