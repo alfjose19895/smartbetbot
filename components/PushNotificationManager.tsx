@@ -8,15 +8,17 @@ export function openPushModal() {
   }
 }
 
-function urlBase64ToUint8Array(base64String: string) {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+function urlBase64ToUint8Array(base64String: string): ArrayBuffer {
+  const clean = base64String.trim().replace(/^["']|["']$/g, "");
+  const padding = "=".repeat((4 - (clean.length % 4)) % 4);
+  const base64 = (clean + padding).replace(/-/g, "+").replace(/_/g, "/");
   const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
+  const buffer = new ArrayBuffer(rawData.length);
+  const outputArray = new Uint8Array(buffer);
   for (let i = 0; i < rawData.length; ++i) {
     outputArray[i] = rawData.charCodeAt(i);
   }
-  return outputArray;
+  return buffer;
 }
 
 interface PushNotificationManagerProps {
@@ -81,6 +83,11 @@ export function PushNotificationManager({
     setLoading(true);
     setStatusMessage(null);
     try {
+      // 0. Check secure context
+      if (typeof window !== "undefined" && !window.isSecureContext && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+        throw new Error("Las notificaciones Push requieren conexión segura HTTPS.");
+      }
+
       // 1. Request Permission
       const perm = await Notification.requestPermission();
       setPermission(perm);
@@ -91,11 +98,24 @@ export function PushNotificationManager({
         return;
       }
 
-      // 2. Register Service Worker
-      const reg = await navigator.serviceWorker.register("/sw.js", { scope: "/" });
+      // 2. Register Service Worker & Wait for Ready
+      let reg = await navigator.serviceWorker.getRegistration("/sw.js");
+      if (!reg) {
+        reg = await navigator.serviceWorker.register("/sw.js", { scope: "/" });
+      }
       await navigator.serviceWorker.ready;
 
-      // 3. Fetch VAPID Public Key
+      // 3. Auto-clean existing stale subscription to avoid push service key mismatch error
+      try {
+        const existingSub = await reg.pushManager.getSubscription();
+        if (existingSub) {
+          await existingSub.unsubscribe();
+        }
+      } catch (unsubErr) {
+        console.warn("Could not clean old subscription:", unsubErr);
+      }
+
+      // 4. Fetch VAPID Public Key from Server
       const keyRes = await fetch("/api/push/subscribe");
       const keyData = await keyRes.json();
       if (!keyData.vapidPublicKey) {
@@ -104,13 +124,13 @@ export function PushNotificationManager({
 
       const applicationServerKey = urlBase64ToUint8Array(keyData.vapidPublicKey);
 
-      // 4. Subscribe with PushManager
+      // 5. Subscribe with PushManager
       const subscription = await reg.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey,
+        applicationServerKey: applicationServerKey as BufferSource,
       });
 
-      // 5. Send subscription to server
+      // 6. Send subscription to server
       const subJSON = subscription.toJSON();
       const saveRes = await fetch("/api/push/subscribe", {
         method: "POST",
@@ -130,7 +150,11 @@ export function PushNotificationManager({
       }
     } catch (err: any) {
       console.error("Subscription error:", err);
-      setStatusMessage(`Error: ${err.message || "No se pudo activar las alertas"}`);
+      let errMsg = err.message || "No se pudo activar las alertas";
+      if (errMsg.includes("push service error")) {
+        errMsg = "Error de conexión con el servicio Push de Google/FCM. Por favor verifica tu conexión a internet o intenta reiniciar el navegador.";
+      }
+      setStatusMessage(`Error: ${errMsg}`);
     } finally {
       setLoading(false);
     }
