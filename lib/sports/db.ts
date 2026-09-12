@@ -1205,10 +1205,32 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     }
   }
 
-  // Sort each pool by quantitative conviction
-  poolSeguras.sort((a, b) => b.probability - a.probability || (b.smartScore || 0) - (a.smartScore || 0));
-  poolValor.sort((a, b) => b.edge - a.edge || b.probability - a.probability);
-  poolBombas.sort((a, b) => b.odds * b.probability - a.odds * a.probability || b.odds - a.odds);
+  // Sort each pool by League Tier Priority + Quantitative Conviction
+  poolSeguras.sort((a, b) => {
+    const aTier = a.leagueTier || 3;
+    const bTier = b.leagueTier || 3;
+    if (aTier !== bTier) return aTier - bTier; // Tier 1 before Tier 2 before Tier 3
+    if (b.probability !== a.probability) return b.probability - a.probability;
+    return (b.smartScore || 0) - (a.smartScore || 0);
+  });
+
+  poolValor.sort((a, b) => {
+    const aTier = a.leagueTier || 3;
+    const bTier = b.leagueTier || 3;
+    if (aTier !== bTier) return aTier - bTier; // Tier 1 & 2 prioritized for value stability
+    const bEv = b.expectedValue || (b.probability * b.odds - 100);
+    const aEv = a.expectedValue || (a.probability * a.odds - 100);
+    if (bEv !== aEv) return bEv - aEv;
+    return b.edge - a.edge || b.probability - a.probability;
+  });
+
+  poolBombas.sort((a, b) => {
+    const aTierMult = (a.leagueTier === 1 ? 1.25 : a.leagueTier === 2 ? 1.0 : 0.85);
+    const bTierMult = (b.leagueTier === 1 ? 1.25 : b.leagueTier === 2 ? 1.0 : 0.85);
+    const bScore = b.odds * b.probability * bTierMult;
+    const aScore = a.odds * a.probability * aTierMult;
+    return bScore - aScore || b.odds - a.odds;
+  });
 
   const chosenMatchKeys = new Set<string>();
   const chosenTeams = new Set<string>();

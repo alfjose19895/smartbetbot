@@ -12,6 +12,7 @@
     "leagueId": 116,
     "leagueLogo": "https://media.api-sports.io/football/leagues/116.png",
     "country": "Bielorrusia",
+    "leagueTier": 1,
     "kickoff": "2026-09-12T08:00:00-05:00",
     "market": "Over 2.5 Goles",
     "selection": "Over 2.5",
@@ -26,7 +27,7 @@
     "expectedValue": 0,
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
-    "smartScore": 96,
+    "smartScore": 99,
     "explanation": "Dinámica ofensiva y pegada en ataque: Arsenal llega con 3 victorias en sus últimos 5 compromisos y promedia 3.40 xG en casa, mientras Baranovichi genera 0.40 xG como visitante. El modelo cuantitativo Poisson proyecta 3.80 goles esperados conjuntos, otorgando un sólido 71.5% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.40 (valor +1%).",
     "status": "pending",
     "isMcpPick": true,
@@ -144,10 +145,9 @@
     ],
     "homeElo": 1990,
     "awayElo": 1526,
-    "leagueTier": 1,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:48:17.808Z"
+    "addedAt": "2026-09-12T11:53:00.065Z"
   },
   {
     "fixtureId": 1575163,
@@ -162,6 +162,7 @@
     "leagueId": 78,
     "leagueLogo": "https://media.api-sports.io/football/leagues/78.png",
     "country": "Alemania",
+    "leagueTier": 1,
     "kickoff": "2026-09-12T08:30:00-05:00",
     "market": "Over 2.5 Goles",
     "selection": "Over 2.5",
@@ -294,10 +295,9 @@
     ],
     "homeElo": 1495,
     "awayElo": 1780,
-    "leagueTier": 1,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:48:17.808Z"
+    "addedAt": "2026-09-12T11:53:00.065Z"
   },
   {
     "fixtureId": 1575160,
@@ -312,6 +312,7 @@
     "leagueId": 78,
     "leagueLogo": "https://media.api-sports.io/football/leagues/78.png",
     "country": "Alemania",
+    "leagueTier": 1,
     "kickoff": "2026-09-12T08:30:00-05:00",
     "market": "Over 2.5 Goles",
     "selection": "Over 2.5",
@@ -444,10 +445,9 @@
     ],
     "homeElo": 1488,
     "awayElo": 1790,
-    "leagueTier": 1,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:48:17.808Z"
+    "addedAt": "2026-09-12T11:53:00.065Z"
   },
   {
     "fixtureId": 1575158,
@@ -462,6 +462,7 @@
     "leagueId": 78,
     "leagueLogo": "https://media.api-sports.io/football/leagues/78.png",
     "country": "Alemania",
+    "leagueTier": 1,
     "kickoff": "2026-09-12T08:30:00-05:00",
     "market": "Over 2.5 Goles",
     "selection": "Over 2.5",
@@ -594,10 +595,9 @@
     ],
     "homeElo": 1870,
     "awayElo": 1642,
-    "leagueTier": 1,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:48:17.808Z"
+    "addedAt": "2026-09-12T11:53:00.065Z"
   },
   {
     "fixtureId": 1575161,
@@ -612,6 +612,7 @@
     "leagueId": 78,
     "leagueLogo": "https://media.api-sports.io/football/leagues/78.png",
     "country": "Alemania",
+    "leagueTier": 1,
     "kickoff": "2026-09-12T08:30:00-05:00",
     "market": "Ganador Local",
     "selection": "1",
@@ -626,7 +627,7 @@
     "expectedValue": -0.7,
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
-    "smartScore": 97,
+    "smartScore": 99,
     "explanation": "Dominio estadístico de SC Freiburg: La solidez defensiva del local y su promedio de más de 1.7 goles por encuentro justifican una alta certeza matemática del 71.9% para el triunfo en casa.",
     "status": "pending",
     "isMcpPick": true,
@@ -744,10 +745,9 @@
     ],
     "homeElo": 1584,
     "awayElo": 1485,
-    "leagueTier": 1,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:48:17.808Z"
+    "addedAt": "2026-09-12T11:53:00.065Z"
   },
   {
     "fixtureId": 1575162,
@@ -762,6 +762,7 @@
     "leagueId": 78,
     "leagueLogo": "https://media.api-sports.io/football/leagues/78.png",
     "country": "Alemania",
+    "leagueTier": 1,
     "kickoff": "2026-09-12T08:30:00-05:00",
     "market": "Over 2.5 Goles",
     "selection": "Over 2.5",
@@ -776,7 +777,7 @@
     "expectedValue": 0.2,
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
-    "smartScore": 97,
+    "smartScore": 99,
     "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de FC Augsburg con la pegada en contragolpe de Bayer Leverkusen (3.81 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 71.6% de confianza a cuota @1.40.",
     "status": "pending",
     "isMcpPick": true,
@@ -894,10 +895,9 @@
     ],
     "homeElo": 1581,
     "awayElo": 1950,
-    "leagueTier": 1,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:48:17.808Z"
+    "addedAt": "2026-09-12T11:53:00.065Z"
   },
   {
     "fixtureId": 1557401,
@@ -912,6 +912,7 @@
     "leagueId": 39,
     "leagueLogo": "https://media.api-sports.io/football/leagues/39.png",
     "country": "Inglaterra",
+    "leagueTier": 1,
     "kickoff": "2026-09-12T09:00:00-05:00",
     "market": "Ganador Local",
     "selection": "1",
@@ -926,7 +927,7 @@
     "expectedValue": -1.2,
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
-    "smartScore": 98,
+    "smartScore": 99,
     "explanation": "Jerarquía y solvencia territorial: Crystal Palace (Elo 1660) llega en gran momento con 3 victorias en sus 5 cotejos más recientes, superando a Ipswich en xG (2.44 vs 0.78). El modelo Poisson proyecta un contundente 72.7% de probabilidad de triunfo local a cuota @1.36.",
     "status": "pending",
     "isMcpPick": true,
@@ -1044,10 +1045,9 @@
     ],
     "homeElo": 1660,
     "awayElo": 1540,
-    "leagueTier": 1,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:48:17.808Z"
+    "addedAt": "2026-09-12T11:53:00.065Z"
   },
   {
     "fixtureId": 1557399,
@@ -1062,6 +1062,7 @@
     "leagueId": 39,
     "leagueLogo": "https://media.api-sports.io/football/leagues/39.png",
     "country": "Inglaterra",
+    "leagueTier": 1,
     "kickoff": "2026-09-12T09:00:00-05:00",
     "market": "Over 2.5 Goles",
     "selection": "Over 2.5",
@@ -1076,7 +1077,7 @@
     "expectedValue": 2.2,
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
-    "smartScore": 98,
+    "smartScore": 99,
     "explanation": "Dinámica ofensiva y pegada en ataque: Chelsea llega con 4 victorias en sus últimos 5 compromisos y promedia 3.40 xG en casa, mientras Hull City genera 0.46 xG como visitante. El modelo cuantitativo Poisson proyecta 3.86 goles esperados conjuntos, otorgando un sólido 72.5% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.41 (valor +1.6%).",
     "status": "pending",
     "isMcpPick": true,
@@ -1194,10 +1195,9 @@
     ],
     "homeElo": 1850,
     "awayElo": 1606,
-    "leagueTier": 1,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:48:17.808Z"
+    "addedAt": "2026-09-12T11:53:00.065Z"
   },
   {
     "fixtureId": 1557403,
@@ -1212,6 +1212,7 @@
     "leagueId": 39,
     "leagueLogo": "https://media.api-sports.io/football/leagues/39.png",
     "country": "Inglaterra",
+    "leagueTier": 1,
     "kickoff": "2026-09-12T09:00:00-05:00",
     "market": "Over 2.5 Goles",
     "selection": "Over 2.5",
@@ -1226,7 +1227,7 @@
     "expectedValue": -0.7,
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
-    "smartScore": 96,
+    "smartScore": 99,
     "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Liverpool con la pegada en contragolpe de Fulham (3.80 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 71.5% de confianza a cuota @1.39.",
     "status": "pending",
     "isMcpPick": true,
@@ -1344,10 +1345,9 @@
     ],
     "homeElo": 2010,
     "awayElo": 1680,
-    "leagueTier": 1,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:48:17.808Z"
+    "addedAt": "2026-09-12T11:53:00.065Z"
   },
   {
     "fixtureId": 1494760,
@@ -1362,6 +1362,7 @@
     "leagueId": 103,
     "leagueLogo": "https://media.api-sports.io/football/leagues/103.png",
     "country": "Noruega",
+    "leagueTier": 1,
     "kickoff": "2026-09-12T09:00:00-05:00",
     "market": "Ganador Local",
     "selection": "1",
@@ -1376,7 +1377,7 @@
     "expectedValue": 22.6,
     "confidence": "Alta",
     "pickBadge": "valor",
-    "smartScore": 72,
+    "smartScore": 98,
     "explanation": "Jerarquía y solvencia territorial: Lillestrom (Elo 1800) llega en gran momento con 4 victorias en sus 5 cotejos más recientes, superando a Valerenga en xG (3.40 vs 0.40). El modelo Poisson proyecta un contundente 62.9% de probabilidad de triunfo local a cuota @1.95.",
     "status": "pending",
     "isMcpPick": true,
@@ -1494,10 +1495,159 @@
     ],
     "homeElo": 1800,
     "awayElo": 1497,
-    "leagueTier": 1,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:48:17.808Z"
+    "addedAt": "2026-09-12T11:53:00.065Z"
+  },
+  {
+    "fixtureId": 1558627,
+    "match": "SK Beveren vs St. Truiden",
+    "homeTeam": "SK Beveren",
+    "awayTeam": "St. Truiden",
+    "homeTeamId": 738,
+    "awayTeamId": 735,
+    "homeLogo": "https://media.api-sports.io/football/teams/738.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/735.png",
+    "league": "Jupiler Pro League",
+    "leagueId": 144,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/144.png",
+    "country": "Bélgica",
+    "leagueTier": 1,
+    "kickoff": "2026-09-12T09:00:00-05:00",
+    "market": "Ganador Visitante",
+    "selection": "2",
+    "odds": 1.77,
+    "bookmaker": "Bet365",
+    "bookmakerOdds": 1.77,
+    "modelOdds": 1.73,
+    "fairOdds": 1.73,
+    "probability": 57.7,
+    "impliedProbability": 56.5,
+    "edge": 1.2,
+    "expectedValue": 2.2,
+    "confidence": "Media",
+    "pickBadge": "valor",
+    "smartScore": 99,
+    "explanation": "Superioridad cualitativa y jerarquía de St. Truiden: A pesar de jugar fuera, su diferencial Elo (1588) y xG de 1.95 superan con claridad la estructura de SK Beveren. Con 1 triunfos en sus 5 salidas recientes, la victoria visitante alcanza 57.7% de probabilidad a cuota @1.77.",
+    "status": "pending",
+    "isMcpPick": true,
+    "isMcp": true,
+    "source": "mcp",
+    "h2h": [
+      {
+        "date": "2026-07-14",
+        "homeTeam": "SK Beveren",
+        "awayTeam": "St. Truiden",
+        "score": "1-2",
+        "winner": "away",
+        "competition": "Jupiler Pro League"
+      },
+      {
+        "date": "2026-03-16",
+        "homeTeam": "St. Truiden",
+        "awayTeam": "SK Beveren",
+        "score": "2-0",
+        "winner": "home",
+        "competition": "Jupiler Pro League"
+      },
+      {
+        "date": "2025-09-17",
+        "homeTeam": "SK Beveren",
+        "awayTeam": "St. Truiden",
+        "score": "1-3",
+        "winner": "away",
+        "competition": "Jupiler Pro League"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-08",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Jupiler Pro League"
+      },
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Jupiler Pro League"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "0-0",
+        "result": "D",
+        "competition": "Jupiler Pro League"
+      },
+      {
+        "date": "2026-08-24",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Jupiler Pro League"
+      },
+      {
+        "date": "2026-08-19",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "1-3",
+        "result": "L",
+        "competition": "Jupiler Pro League"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-08",
+        "opponent": "Rival A",
+        "isHome": true,
+        "score": "1-2",
+        "result": "L",
+        "competition": "Jupiler Pro League"
+      },
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Jupiler Pro League"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Jupiler Pro League"
+      },
+      {
+        "date": "2026-08-24",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Jupiler Pro League"
+      },
+      {
+        "date": "2026-08-19",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Jupiler Pro League"
+      }
+    ],
+    "homeElo": 1481,
+    "awayElo": 1588,
+    "isNew": true,
+    "isNewlyDiscovered": true,
+    "addedAt": "2026-09-12T11:53:00.065Z"
   },
   {
     "fixtureId": 1551106,
@@ -1512,6 +1662,7 @@
     "leagueId": 172,
     "leagueLogo": "https://media.api-sports.io/football/leagues/172.png",
     "country": "Bulgaria",
+    "leagueTier": 1,
     "kickoff": "2026-09-12T11:00:00-05:00",
     "market": "Ganador Local",
     "selection": "1",
@@ -1526,7 +1677,7 @@
     "expectedValue": -0.4,
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
-    "smartScore": 81,
+    "smartScore": 99,
     "explanation": "Jerarquía y solvencia territorial: CSKA 1948 (Elo 1656) llega en gran momento con 2 victorias en sus 5 cotejos más recientes, superando a Dunav Ruse en xG (2.47 vs 0.78). El modelo Poisson proyecta un contundente 73.3% de probabilidad de triunfo local a cuota @1.36.",
     "status": "pending",
     "isMcpPick": true,
@@ -1644,160 +1795,9 @@
     ],
     "homeElo": 1656,
     "awayElo": 1537,
-    "leagueTier": 1,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:48:17.808Z"
-  },
-  {
-    "fixtureId": 1558628,
-    "match": "KVC Westerlo vs Standard Liege",
-    "homeTeam": "KVC Westerlo",
-    "awayTeam": "Standard Liege",
-    "homeTeamId": 261,
-    "awayTeamId": 733,
-    "homeLogo": "https://media.api-sports.io/football/teams/261.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/733.png",
-    "league": "Jupiler Pro League",
-    "leagueId": 144,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/144.png",
-    "country": "Bélgica",
-    "kickoff": "2026-09-12T11:15:00-05:00",
-    "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
-    "odds": 1.73,
-    "bookmaker": "Bet365",
-    "bookmakerOdds": 1.73,
-    "modelOdds": 1.69,
-    "fairOdds": 1.69,
-    "probability": 59,
-    "impliedProbability": 57.8,
-    "edge": 1.2,
-    "expectedValue": 2.1,
-    "confidence": "Alta",
-    "pickBadge": "valor",
-    "smartScore": 84,
-    "explanation": "Análisis cuantitativo avanzado: 59% de probabilidad estadística con valor positivo (+1.2%) frente a la cuota del mercado @1.73.",
-    "status": "pending",
-    "isMcpPick": true,
-    "isMcp": true,
-    "source": "mcp",
-    "h2h": [
-      {
-        "date": "2026-07-14",
-        "homeTeam": "KVC Westerlo",
-        "awayTeam": "Standard Liege",
-        "score": "1-2",
-        "winner": "away",
-        "competition": "Jupiler Pro League"
-      },
-      {
-        "date": "2026-03-16",
-        "homeTeam": "Standard Liege",
-        "awayTeam": "KVC Westerlo",
-        "score": "2-0",
-        "winner": "home",
-        "competition": "Jupiler Pro League"
-      },
-      {
-        "date": "2025-09-17",
-        "homeTeam": "KVC Westerlo",
-        "awayTeam": "Standard Liege",
-        "score": "1-1",
-        "winner": "draw",
-        "competition": "Jupiler Pro League"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-08",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "0-0",
-        "result": "D",
-        "competition": "Jupiler Pro League"
-      },
-      {
-        "date": "2026-09-03",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Jupiler Pro League"
-      },
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "Jupiler Pro League"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "0-0",
-        "result": "D",
-        "competition": "Jupiler Pro League"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Jupiler Pro League"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-08",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Jupiler Pro League"
-      },
-      {
-        "date": "2026-09-03",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Jupiler Pro League"
-      },
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Jupiler Pro League"
-      },
-      {
-        "date": "2026-08-24",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Jupiler Pro League"
-      },
-      {
-        "date": "2026-08-19",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Jupiler Pro League"
-      }
-    ],
-    "homeElo": 1513,
-    "awayElo": 1555,
-    "leagueTier": 1,
-    "isNew": true,
-    "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:48:17.808Z"
+    "addedAt": "2026-09-12T11:53:00.065Z"
   },
   {
     "fixtureId": 1573578,
@@ -1812,6 +1812,7 @@
     "leagueId": 142,
     "leagueLogo": "https://media.api-sports.io/football/leagues/142.png",
     "country": "España",
+    "leagueTier": 1,
     "kickoff": "2026-09-12T12:00:00-05:00",
     "market": "Ganador Local",
     "selection": "1",
@@ -1944,10 +1945,159 @@
     ],
     "homeElo": 2010,
     "awayElo": 1880,
-    "leagueTier": 1,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:48:17.808Z"
+    "addedAt": "2026-09-12T11:53:00.065Z"
+  },
+  {
+    "fixtureId": 1584403,
+    "match": "Alanyaspor vs Göztepe",
+    "homeTeam": "Alanyaspor",
+    "awayTeam": "Göztepe",
+    "homeTeamId": 996,
+    "awayTeamId": 994,
+    "homeLogo": "https://media.api-sports.io/football/teams/996.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/994.png",
+    "league": "Süper Lig",
+    "leagueId": 203,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/203.png",
+    "country": "Turquía",
+    "leagueTier": 1,
+    "kickoff": "2026-09-12T12:00:00-05:00",
+    "market": "Ambos Equipos Anotan",
+    "selection": "Sí",
+    "odds": 1.84,
+    "bookmaker": "Bet365",
+    "bookmakerOdds": 1.84,
+    "modelOdds": 1.8,
+    "fairOdds": 1.8,
+    "probability": 55.5,
+    "impliedProbability": 54.3,
+    "edge": 1.2,
+    "expectedValue": 2.2,
+    "confidence": "Media",
+    "pickBadge": "valor",
+    "smartScore": 99,
+    "explanation": "Análisis cuantitativo avanzado: 55.5% de probabilidad estadística con valor positivo (+1.2%) frente a la cuota del mercado @1.84.",
+    "status": "pending",
+    "isMcpPick": true,
+    "isMcp": true,
+    "source": "mcp",
+    "h2h": [
+      {
+        "date": "2026-07-14",
+        "homeTeam": "Alanyaspor",
+        "awayTeam": "Göztepe",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "Süper Lig"
+      },
+      {
+        "date": "2026-03-16",
+        "homeTeam": "Göztepe",
+        "awayTeam": "Alanyaspor",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "Süper Lig"
+      },
+      {
+        "date": "2025-09-17",
+        "homeTeam": "Alanyaspor",
+        "awayTeam": "Göztepe",
+        "score": "3-0",
+        "winner": "home",
+        "competition": "Süper Lig"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-08",
+        "opponent": "Rival A",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Süper Lig"
+      },
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Süper Lig"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Süper Lig"
+      },
+      {
+        "date": "2026-08-24",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Süper Lig"
+      },
+      {
+        "date": "2026-08-19",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "1-2",
+        "result": "L",
+        "competition": "Süper Lig"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-08",
+        "opponent": "Rival A",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Süper Lig"
+      },
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival B",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "Süper Lig"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival C",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "Süper Lig"
+      },
+      {
+        "date": "2026-08-24",
+        "opponent": "Rival D",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "Süper Lig"
+      },
+      {
+        "date": "2026-08-19",
+        "opponent": "Rival E",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "Süper Lig"
+      }
+    ],
+    "homeElo": 1630,
+    "awayElo": 1629,
+    "isNew": true,
+    "isNewlyDiscovered": true,
+    "addedAt": "2026-09-12T11:53:00.065Z"
   },
   {
     "fixtureId": 1550117,
@@ -1962,6 +2112,7 @@
     "leagueId": 135,
     "leagueLogo": "https://media.api-sports.io/football/leagues/135.png",
     "country": "Italia",
+    "leagueTier": 1,
     "kickoff": "2026-09-12T13:45:00-05:00",
     "market": "Over 2.5 Goles",
     "selection": "Over 2.5",
@@ -1976,7 +2127,7 @@
     "expectedValue": 1.5,
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
-    "smartScore": 97,
+    "smartScore": 99,
     "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Atalanta con la pegada en contragolpe de Cagliari (3.80 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 71.5% de confianza a cuota @1.42.",
     "status": "pending",
     "isMcpPick": true,
@@ -2094,10 +2245,9 @@
     ],
     "homeElo": 1880,
     "awayElo": 1556,
-    "leagueTier": 1,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:48:17.808Z"
+    "addedAt": "2026-09-12T11:53:00.065Z"
   },
   {
     "fixtureId": 1558630,
@@ -2112,6 +2262,7 @@
     "leagueId": 144,
     "leagueLogo": "https://media.api-sports.io/football/leagues/144.png",
     "country": "Bélgica",
+    "leagueTier": 1,
     "kickoff": "2026-09-12T13:45:00-05:00",
     "market": "Ambos Equipos Anotan",
     "selection": "Sí",
@@ -2126,7 +2277,7 @@
     "expectedValue": 2.3,
     "confidence": "Media",
     "pickBadge": "valor",
-    "smartScore": 83,
+    "smartScore": 99,
     "explanation": "Análisis cuantitativo avanzado: 57.5% de probabilidad estadística con valor positivo (+1.3%) frente a la cuota del mercado @1.78.",
     "status": "pending",
     "isMcpPick": true,
@@ -2244,10 +2395,9 @@
     ],
     "homeElo": 1514,
     "awayElo": 1483,
-    "leagueTier": 1,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:48:17.808Z"
+    "addedAt": "2026-09-12T11:53:00.065Z"
   },
   {
     "fixtureId": 1570379,
@@ -2262,6 +2412,7 @@
     "leagueId": 140,
     "leagueLogo": "https://media.api-sports.io/football/leagues/140.png",
     "country": "España",
+    "leagueTier": 1,
     "kickoff": "2026-09-12T14:00:00-05:00",
     "market": "Over 2.5 Goles",
     "selection": "Over 2.5",
@@ -2276,7 +2427,7 @@
     "expectedValue": 1.5,
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
-    "smartScore": 97,
+    "smartScore": 99,
     "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Real Madrid con la pegada en contragolpe de Rayo Vallecano (3.80 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 71.5% de confianza a cuota @1.42.",
     "status": "pending",
     "isMcpPick": true,
@@ -2394,10 +2545,9 @@
     ],
     "homeElo": 2040,
     "awayElo": 1610,
-    "leagueTier": 1,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:48:17.808Z"
+    "addedAt": "2026-09-12T11:53:00.065Z"
   },
   {
     "fixtureId": 1492370,
@@ -2412,6 +2562,7 @@
     "leagueId": 71,
     "leagueLogo": "https://media.api-sports.io/football/leagues/71.png",
     "country": "Brasil",
+    "leagueTier": 1,
     "kickoff": "2026-09-12T14:00:00-05:00",
     "market": "Ganador Local",
     "selection": "1",
@@ -2426,7 +2577,7 @@
     "expectedValue": 29.6,
     "confidence": "Alta",
     "pickBadge": "bomba",
-    "smartScore": 72,
+    "smartScore": 95,
     "explanation": "Diferencial de calidad y localía (+254 Elo): Atletico-MG impone condiciones en posesión y presión alta ante un Fluminense que ha sufrido 1 derrotas en sus últimas salidas. Victoria directa asignada con 60.3% de probabilidad y +13.8% de valor.",
     "status": "pending",
     "isMcpPick": true,
@@ -2544,10 +2695,9 @@
     ],
     "homeElo": 1880,
     "awayElo": 1626,
-    "leagueTier": 1,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:48:17.808Z"
+    "addedAt": "2026-09-12T11:53:00.065Z"
   },
   {
     "fixtureId": 1492376,
@@ -2562,6 +2712,7 @@
     "leagueId": 71,
     "leagueLogo": "https://media.api-sports.io/football/leagues/71.png",
     "country": "Brasil",
+    "leagueTier": 1,
     "kickoff": "2026-09-12T14:00:00-05:00",
     "market": "Ganador Visitante",
     "selection": "2",
@@ -2576,7 +2727,7 @@
     "expectedValue": 10.1,
     "confidence": "Media",
     "pickBadge": "bomba",
-    "smartScore": 72,
+    "smartScore": 71,
     "explanation": "Contragolpe letal y efectividad foránea: Vasco DA Gama explota los espacios concedidos por Gremio en transiciones defensivas. El algoritmo Poisson proyecta 42% de solvencia matemática para el triunfo visitante.",
     "status": "pending",
     "isMcpPick": true,
@@ -2694,10 +2845,9 @@
     ],
     "homeElo": 1551,
     "awayElo": 1659,
-    "leagueTier": 1,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:48:17.808Z"
+    "addedAt": "2026-09-12T11:53:00.065Z"
   },
   {
     "fixtureId": 1551683,
@@ -2712,6 +2862,7 @@
     "leagueId": 162,
     "leagueLogo": "https://media.api-sports.io/football/leagues/162.png",
     "country": "Costa Rica",
+    "leagueTier": 1,
     "kickoff": "2026-09-12T18:00:00-05:00",
     "market": "Over 2.5 Goles",
     "selection": "Over 2.5",
@@ -2726,7 +2877,7 @@
     "expectedValue": 1.5,
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
-    "smartScore": 80,
+    "smartScore": 99,
     "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Inter San Carlos con la pegada en contragolpe de Puntarenas FC (3.80 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 71.5% de confianza a cuota @1.42.",
     "status": "pending",
     "isMcpPick": true,
@@ -2844,10 +2995,9 @@
     ],
     "homeElo": 1960,
     "awayElo": 1626,
-    "leagueTier": 1,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:48:17.808Z"
+    "addedAt": "2026-09-12T11:53:00.065Z"
   },
   {
     "fixtureId": 1549776,
@@ -2862,6 +3012,7 @@
     "leagueId": 239,
     "leagueLogo": "https://media.api-sports.io/football/leagues/239.png",
     "country": "Colombia",
+    "leagueTier": 1,
     "kickoff": "2026-09-12T18:10:00-05:00",
     "market": "Ganador Local",
     "selection": "1",
@@ -2876,7 +3027,7 @@
     "expectedValue": 2.3,
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
-    "smartScore": 82,
+    "smartScore": 99,
     "explanation": "Diferencial de calidad y localía (+104 Elo): Chico impone condiciones en posesión y presión alta ante un Independiente Medellin que ha sufrido 2 derrotas en sus últimas salidas. Victoria directa asignada con 73.6% de probabilidad y +1.7% de valor.",
     "status": "pending",
     "isMcpPick": true,
@@ -2994,10 +3145,9 @@
     ],
     "homeElo": 1606,
     "awayElo": 1502,
-    "leagueTier": 1,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:48:17.808Z"
+    "addedAt": "2026-09-12T11:53:00.065Z"
   },
   {
     "fixtureId": 1490469,
@@ -3012,6 +3162,7 @@
     "leagueId": 253,
     "leagueLogo": "https://media.api-sports.io/football/leagues/253.png",
     "country": "Estados Unidos",
+    "leagueTier": 1,
     "kickoff": "2026-09-12T18:30:00-05:00",
     "market": "Ganador Local",
     "selection": "1",
@@ -3026,7 +3177,7 @@
     "expectedValue": 3.3,
     "confidence": "Media",
     "pickBadge": "valor",
-    "smartScore": 72,
+    "smartScore": 88,
     "explanation": "Dominio estadístico de Orlando City SC: La solidez defensiva del local y su promedio de más de 1.7 goles por encuentro justifican una alta certeza matemática del 55.8% para el triunfo en casa.",
     "status": "pending",
     "isMcpPick": true,
@@ -3144,10 +3295,9 @@
     ],
     "homeElo": 1562,
     "awayElo": 1506,
-    "leagueTier": 1,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:48:17.808Z"
+    "addedAt": "2026-09-12T11:53:00.065Z"
   },
   {
     "fixtureId": 1490466,
@@ -3162,6 +3312,7 @@
     "leagueId": 253,
     "leagueLogo": "https://media.api-sports.io/football/leagues/253.png",
     "country": "Estados Unidos",
+    "leagueTier": 1,
     "kickoff": "2026-09-12T18:30:00-05:00",
     "market": "Ganador Local",
     "selection": "1",
@@ -3176,7 +3327,7 @@
     "expectedValue": 26.7,
     "confidence": "Alta",
     "pickBadge": "bomba",
-    "smartScore": 72,
+    "smartScore": 96,
     "explanation": "Jerarquía y solvencia territorial: Inter Miami (Elo 1960) llega en gran momento con 2 victorias en sus 5 cotejos más recientes, superando a Nashville SC en xG (3.40 vs 0.40). El modelo Poisson proyecta un contundente 61.8% de probabilidad de triunfo local a cuota @2.05.",
     "status": "pending",
     "isMcpPick": true,
@@ -3294,10 +3445,9 @@
     ],
     "homeElo": 1960,
     "awayElo": 1516,
-    "leagueTier": 1,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:48:17.808Z"
+    "addedAt": "2026-09-12T11:53:00.065Z"
   },
   {
     "fixtureId": 1549483,
@@ -3312,6 +3462,7 @@
     "leagueId": 281,
     "leagueLogo": "https://media.api-sports.io/football/leagues/281.png",
     "country": "Perú",
+    "leagueTier": 1,
     "kickoff": "2026-09-12T20:00:00-05:00",
     "market": "Ambos Equipos Anotan",
     "selection": "Sí",
@@ -3326,7 +3477,7 @@
     "expectedValue": 2.3,
     "confidence": "Media",
     "pickBadge": "valor",
-    "smartScore": 72,
+    "smartScore": 89,
     "explanation": "Análisis cuantitativo avanzado: 57.5% de probabilidad estadística con valor positivo (+1.3%) frente a la cuota del mercado @1.78.",
     "status": "pending",
     "isMcpPick": true,
@@ -3444,10 +3595,9 @@
     ],
     "homeElo": 1523,
     "awayElo": 1616,
-    "leagueTier": 1,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:48:17.808Z"
+    "addedAt": "2026-09-12T11:53:00.065Z"
   },
   {
     "fixtureId": 1490476,
@@ -3462,6 +3612,7 @@
     "leagueId": 253,
     "leagueLogo": "https://media.api-sports.io/football/leagues/253.png",
     "country": "Estados Unidos",
+    "leagueTier": 1,
     "kickoff": "2026-09-12T21:30:00-05:00",
     "market": "Ganador Visitante",
     "selection": "2",
@@ -3476,7 +3627,7 @@
     "expectedValue": 20.4,
     "confidence": "Media",
     "pickBadge": "bomba",
-    "smartScore": 72,
+    "smartScore": 70,
     "explanation": "Contragolpe letal y efectividad foránea: Seattle Sounders explota los espacios concedidos por Los Angeles Galaxy en transiciones defensivas. El algoritmo Poisson proyecta 40.1% de solvencia matemática para el triunfo visitante.",
     "status": "pending",
     "isMcpPick": true,
@@ -3594,159 +3745,8 @@
     ],
     "homeElo": 1543,
     "awayElo": 1645,
-    "leagueTier": 1,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:48:17.808Z"
-  },
-  {
-    "fixtureId": 1550961,
-    "match": "Cruz Azul vs Club America",
-    "homeTeam": "Cruz Azul",
-    "awayTeam": "Club America",
-    "homeTeamId": 2295,
-    "awayTeamId": 2287,
-    "homeLogo": "https://media.api-sports.io/football/teams/2295.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/2287.png",
-    "league": "Liga MX",
-    "leagueId": 262,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/262.png",
-    "country": "México",
-    "kickoff": "2026-09-12T22:15:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.73,
-    "bookmaker": "Bet365",
-    "bookmakerOdds": 1.73,
-    "modelOdds": 1.7,
-    "fairOdds": 1.7,
-    "probability": 59,
-    "impliedProbability": 57.8,
-    "edge": 1.2,
-    "expectedValue": 2,
-    "confidence": "Alta",
-    "pickBadge": "valor",
-    "smartScore": 72,
-    "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con Cruz Azul sumando en 4 de sus últimos 5 cotejos y la vocación ofensiva de Club America, el algoritmo estima un 59% de certeza para más de 2.5 goles.",
-    "status": "pending",
-    "isMcpPick": true,
-    "isMcp": true,
-    "source": "mcp",
-    "h2h": [
-      {
-        "date": "2026-07-15",
-        "homeTeam": "Cruz Azul",
-        "awayTeam": "Club America",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "Liga MX"
-      },
-      {
-        "date": "2026-03-17",
-        "homeTeam": "Club America",
-        "awayTeam": "Cruz Azul",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "Liga MX"
-      },
-      {
-        "date": "2025-09-18",
-        "homeTeam": "Cruz Azul",
-        "awayTeam": "Club America",
-        "score": "1-1",
-        "winner": "draw",
-        "competition": "Liga MX"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-09",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Liga MX"
-      },
-      {
-        "date": "2026-09-04",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Liga MX"
-      },
-      {
-        "date": "2026-08-30",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "1-2",
-        "result": "L",
-        "competition": "Liga MX"
-      },
-      {
-        "date": "2026-08-25",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-1",
-        "result": "D",
-        "competition": "Liga MX"
-      },
-      {
-        "date": "2026-08-20",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "Liga MX"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-09",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Liga MX"
-      },
-      {
-        "date": "2026-09-04",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "1-3",
-        "result": "L",
-        "competition": "Liga MX"
-      },
-      {
-        "date": "2026-08-30",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "0-2",
-        "result": "L",
-        "competition": "Liga MX"
-      },
-      {
-        "date": "2026-08-25",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "0-0",
-        "result": "D",
-        "competition": "Liga MX"
-      },
-      {
-        "date": "2026-08-20",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "1-0",
-        "result": "W",
-        "competition": "Liga MX"
-      }
-    ],
-    "homeElo": 1624,
-    "awayElo": 1512,
-    "leagueTier": 1,
-    "isNew": true,
-    "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:48:17.808Z"
+    "addedAt": "2026-09-12T11:53:00.065Z"
   }
 ]

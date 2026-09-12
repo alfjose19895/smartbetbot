@@ -1428,13 +1428,15 @@ export function evaluateFixturePrediction(params: {
 
     const isEuroPriority = isPriorityEuropeanLeague(leagueId, canonicalLeague, country);
     const tierBonus = isEuroPriority
-      ? (tier === 1 ? 25 : tier === 2 ? 18 : 12)
-      : (tier === 1 ? 8 : tier === 2 ? 4 : 0);
+      ? (tier === 1 ? 25 : tier === 2 ? 18 : 10)
+      : (tier === 1 ? 14 : tier === 2 ? 7 : 0);
+
+    const tierMultiplier = tier === 1 ? 1.25 : tier === 2 ? 1.00 : 0.85;
 
     const rawScore = Math.round(
-      item.prob * 100 + (item.prob - 1 / item.odds) * 10 + tierBonus
+      (item.prob * 100 + (item.prob - 1 / item.odds) * 10 + tierBonus) * tierMultiplier
     );
-    const smartScore = Math.min(99, Math.max(72, rawScore));
+    const smartScore = Math.min(99, Math.max(70, rawScore));
 
     return {
       fixtureId,
@@ -1449,6 +1451,7 @@ export function evaluateFixturePrediction(params: {
       leagueId,
       leagueLogo,
       country,
+      leagueTier: tier,
       kickoff,
       market: item.market,
       selection: item.selection,
@@ -1489,7 +1492,6 @@ export function evaluateFixturePrediction(params: {
       awayLast5: awayRecentForm,
       homeElo: rHomeBase,
       awayElo: rAway,
-      leagueTier: tier,
     };
   };
 
