@@ -1,3 +1,4 @@
+import { getImmutableDailyParlays } from "./parlay-generator";
 import { auditPredictionsWithGeminiVeto } from "@/lib/ai/claude-analyst";
 import { auditPredictionsBatchWithClaude, isClaudeConfigured } from "../ai/claude-analyst";
 /**
@@ -1076,53 +1077,6 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
   const nowMs = Date.now();
   const todayDateStr = getEcuadorDateString(nowMs);
   let existingSnapshot = loadDailySnapshot(todayDateStr) || [];
-  if (existingSnapshot.length === 0) {
-    existingSnapshot = getStoredPredictions();
-  }
-
-  // 1. First ensure all finished matches in the existing snapshot are settled with real scores
-  try {
-    const allTodayFixtures = await apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil").catch(() => []);
-    if (Array.isArray(allTodayFixtures) && allTodayFixtures.length > 0) {
-      let snapshotUpdated = false;
-      for (const item of allTodayFixtures) {
-        const s = item.fixture?.status?.short;
-        const isFinished = ["FT", "AET", "PEN", "120", "POST"].includes(s) || (typeof item.goals?.home === "number" && typeof item.goals?.away === "number" && !["NS", "1H", "2H", "HT"].includes(s));
-        if (isFinished) {
-          const hGoals = item.goals?.home ?? item.score?.fulltime?.home;
-          const aGoals = item.goals?.away ?? item.score?.fulltime?.away;
-          if (typeof hGoals === "number" && typeof aGoals === "number") {
-            const hNorm = getCanonicalTeamKey(item.teams?.home?.name || "");
-            const aNorm = getCanonicalTeamKey(item.teams?.away?.name || "");
-            const fixId = Number(item.fixture?.id);
-
-            for (const p of existingSnapshot) {
-              const pFixId = Number(p.fixtureId);
-              const pHNorm = getCanonicalTeamKey(p.homeTeam);
-              const pANorm = getCanonicalTeamKey(p.awayTeam);
-              const isMatch = (pFixId && fixId && pFixId === fixId) || (hNorm === pHNorm && aNorm === pANorm) || (hNorm.length > 3 && pHNorm.length > 3 && (hNorm.includes(pHNorm) || pHNorm.includes(hNorm)) && (aNorm.includes(pANorm) || pANorm.includes(aNorm)));
-
-              if (isMatch) {
-                const evalRes = evaluateMarketResult(p.market, hGoals, aGoals);
-                const targetStatus = evalRes.isWon ? "won" : "lost";
-                if (p.status !== targetStatus || p.actualScore !== evalRes.actualScoreText) {
-                  p.status = targetStatus;
-                  p.actualScore = evalRes.actualScoreText;
-                  snapshotUpdated = true;
-                }
-              }
-            }
-          }
-        }
-      }
-
-      if (snapshotUpdated) {
-        saveDailySnapshot(todayDateStr, existingSnapshot);
-      }
-    }
-  } catch (err) {
-    console.warn("Could not refresh finished match scores:", err);
-  }
 
   const existingMatchKeys = new Set(
     existingSnapshot.map((p) => {
@@ -1135,7 +1089,7 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     existingSnapshot.map((p) => Number(p.fixtureId)).filter(Boolean)
   );
 
-  // 2. Fetch upcoming fixtures and odds strictly for TODAY only in Ecuador timezone
+  // 1. Fetch upcoming fixtures and bulk odds strictly for TODAY in Ecuador timezone
   const [todayFixtures, todayOddsList] = await Promise.all([
     apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil").catch(() => []),
     apiFootball.getOddsByDate(todayDateStr, "America/Guayaquil").catch(() => [] as ApiFootballOddsItem[]),
@@ -1151,22 +1105,14 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     }
   }
 
-  const candidates = allFixtures.filter((item) => {
-    if (!item.fixture?.id || !item.teams?.home?.name || !item.teams?.away?.name) return false;
-    const legName = (item.league?.name || "").toLowerCase();
-    if (legName.includes("primavera") || legName.includes("u19") || legName.includes("u20") || legName.includes("u21") || legName.includes("reserve") || legName.includes("next pro")) return false;
-    return isCuratedLeague(item.league?.id, item.league?.name, item.league?.country);
-  });
-
-  // Enrich candidate matches with real bookmaker odds
-  await enrichCandidateFixturesWithOdds(candidates, oddsMapByFixture);
-
   const newOpportunities: MarketOpportunity[] = [];
+  const usedTeams = new Set<string>();
+
   for (const item of allFixtures) {
-    if (!item.fixture?.id || !item.teams?.home?.name || !item.teams?.away?.name) continue;
+    if (!item.fixture?.id || !item.teams?.home?.name || !item.teams?.away?.name || !item.fixture?.date) continue;
 
     const kickoff = item.fixture.date;
-    const fixtureDateStr = kickoff ? getEcuadorDateString(kickoff) : todayDateStr;
+    const fixtureDateStr = getEcuadorDateString(kickoff);
     if (fixtureDateStr !== todayDateStr) continue;
 
     const shortStatus = item.fixture.status?.short || "NS";
@@ -1177,10 +1123,13 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     const matchKey = `${hNorm}-${aNorm}`;
     const fixId = Number(item.fixture.id);
 
-    if (existingMatchKeys.has(matchKey) || (fixId && existingFixIds.has(fixId))) continue;
+    if (existingMatchKeys.has(matchKey) || (fixId && existingFixIds.has(fixId)) || usedTeams.has(hNorm) || usedTeams.has(aNorm)) continue;
 
     const legName = (item.league?.name || "").toLowerCase();
-    if (legName.includes("primavera") || legName.includes("u19") || legName.includes("u20") || legName.includes("u21") || legName.includes("reserve") || legName.includes("next pro")) continue;
+    const hName = (item.teams.home.name || "").toLowerCase();
+    const aName = (item.teams.away.name || "").toLowerCase();
+    if (legName.includes("primavera") || legName.includes("u18") || legName.includes("u19") || legName.includes("u20") || legName.includes("u21") || legName.includes("reserve") || legName.includes("next pro") || legName.includes("lowland") || legName.includes("non league")) continue;
+    if (hName.endsWith(" ii") || hName.endsWith(" 2") || aName.endsWith(" ii") || aName.endsWith(" 2")) continue;
     if (!isCuratedLeague(item.league?.id, item.league?.name, item.league?.country)) continue;
 
     const realMarketOdds = extractMarketOddsFromBookmaker(oddsMapByFixture[item.fixture.id]);
@@ -1218,12 +1167,13 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
         source: "mcp",
         status: "pending",
       });
-      existingMatchKeys.add(matchKey);
-      if (fixId) existingFixIds.add(fixId);
+      usedTeams.add(hNorm);
+      usedTeams.add(aNorm);
     }
   }
 
-  const addedPicks = newOpportunities.sort((a, b) => {
+  // Sort candidate opportunities by high probability and tier
+  const sortedNew = newOpportunities.sort((a, b) => {
     const aTier = a.leagueTier || 3;
     const bTier = b.leagueTier || 3;
     if (aTier !== bTier) return aTier - bTier;
@@ -1231,27 +1181,45 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     return (b.smartScore || 0) - (a.smartScore || 0) || b.edge - a.edge;
   });
 
-  const merged = [...existingSnapshot, ...addedPicks].sort(
-    (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
-  );
+  let newlyAdded: MarketOpportunity[] = [];
+  let merged: MarketOpportunity[] = [];
 
-  if (addedPicks.length > 0) {
+  if (existingSnapshot.length === 0) {
+    // Initial slate generation: select top 25 high conviction picks
+    newlyAdded = sortedNew.slice(0, 25);
+    merged = newlyAdded;
+  } else {
+    // Incremental search: take up to 10 newly found picks
+    newlyAdded = sortedNew.slice(0, 10);
+    merged = [...existingSnapshot, ...newlyAdded].sort(
+      (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
+    );
+  }
+
+  if (newlyAdded.length > 0) {
     saveDailySnapshot(todayDateStr, merged);
     cachedLivePredictions = merged;
     cacheTimestamp = nowMs;
-    cachedSettledHistory = []; // Invalidate history cache so settled matches reflect immediately
+    cachedSettledHistory = [];
+
+    // Dynamically build/refresh daily parlays if needed
+    try {
+      getImmutableDailyParlays(merged, todayDateStr);
+    } catch (parlayErr) {
+      console.warn("Could not generate parlays on sync:", parlayErr);
+    }
   }
 
   return {
     success: true,
     count: merged.length,
-    newCount: addedPicks.length,
-    newAlerts: addedPicks,
+    newCount: newlyAdded.length,
+    newAlerts: newlyAdded,
     totalAlerts: merged.length,
     predictions: merged,
-    message: addedPicks.length > 0
-      ? `✓ ¡Se encontraron y agregaron ${addedPicks.length} nuevas alertas al panel de hoy! Total: ${merged.length} alertas.`
-      : `✓ El mercado de hoy está completamente al día (${merged.length} alertas activas).`,
+    message: newlyAdded.length > 0
+      ? `✓ ¡Búsqueda completada! Se sincronizaron ${newlyAdded.length} alertas cuantitativas de hoy. Total: ${merged.length} alertas.`
+      : `✓ El mercado de hoy está completamente al día con ${merged.length} alertas activas.`,
   };
 }
 

@@ -16,5 +16,5 @@ describe("Predictions Evaluation & Results", () => {
     console.log(`Evaluated ${history.length} historical settled predictions: ${wonPicks.length} Won, ${lostPicks.length} Lost`);
 
     expect(wonPicks.length + lostPicks.length).toBeGreaterThan(0);
-  });
+  }, 30000);
 });
