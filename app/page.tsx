@@ -167,7 +167,7 @@ export default async function HomePage() {
               <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-inner">
                 <Image
                   src="/smartbetbot-hero-mockup.jpg"
-                  alt="SmartBetBot - Tablet App Preview con Pronósticos Automáticos"
+                  alt="SmartBetBot - La IA Analiza. Tú decides mejor. Pronósticos inteligentes con IA"
                   fill
                   priority
                   className="object-cover transition-transform duration-700 group-hover:scale-[1.01]"
