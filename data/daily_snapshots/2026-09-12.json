@@ -1712,7 +1712,7 @@
     "pickBadge": "estandar",
     "smartScore": 99,
     "explanation": "Jerarquía y solvencia territorial: CSKA 1948 (Elo 1656) llega en gran momento con 2 victorias en sus 5 cotejos más recientes, superando a Dunav Ruse en xG (2.47 vs 0.78). El modelo Poisson proyecta un contundente 73.3% de probabilidad de triunfo local a cuota @1.36.",
-    "status": "lost",
+    "status": "pending",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -1831,9 +1831,11 @@
     "isNew": true,
     "isNewlyDiscovered": true,
     "addedAt": "2026-09-12T11:53:00.065Z",
-    "actualScore": "1 - 1",
-    "result": "LOST",
-    "profit": -100
+    "profit": -100,
+    "currentScore": "1 - 1",
+    "matchTiming": "live",
+    "livePeriod": "2H",
+    "liveMinute": "78"
   },
   {
     "fixtureId": 1573578,
@@ -1865,7 +1867,7 @@
     "pickBadge": "estandar",
     "smartScore": 99,
     "explanation": "Jerarquía y solvencia territorial: Barcelona W (Elo 2010) llega en gran momento con 3 victorias en sus 5 cotejos más recientes, superando a Atletico Madrid W en xG (2.57 vs 0.75). El modelo Poisson proyecta un contundente 75.5% de probabilidad de triunfo local a cuota @1.35.",
-    "status": "lost",
+    "status": "pending",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -1984,9 +1986,11 @@
     "isNew": true,
     "isNewlyDiscovered": true,
     "addedAt": "2026-09-12T11:53:00.065Z",
-    "actualScore": "1 - 1",
-    "result": "LOST",
-    "profit": -100
+    "profit": -100,
+    "currentScore": "1 - 1",
+    "matchTiming": "live",
+    "livePeriod": "1H",
+    "liveMinute": "33"
   },
   {
     "fixtureId": 1584403,
@@ -2018,7 +2022,7 @@
     "pickBadge": "valor",
     "smartScore": 99,
     "explanation": "Análisis cuantitativo avanzado: 55.5% de probabilidad estadística con valor positivo (+1.2%) frente a la cuota del mercado @1.84.",
-    "status": "lost",
+    "status": "pending",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -2137,9 +2141,11 @@
     "isNew": true,
     "isNewlyDiscovered": true,
     "addedAt": "2026-09-12T11:53:00.065Z",
-    "actualScore": "0 - 0 (No)",
-    "result": "LOST",
-    "profit": -100
+    "profit": -100,
+    "currentScore": "0 - 1",
+    "matchTiming": "live",
+    "livePeriod": "1H",
+    "liveMinute": "33"
   },
   {
     "fixtureId": 1550117,

@@ -219,20 +219,24 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string): Prom
   }
 
   try {
-    const realScoresMap: Record<string, { home: number; away: number; short: string; isFinished: boolean }> = {};
+    const realScoresMap: Record<string, { home: number; away: number; short: string; isFinished: boolean; isLive: boolean; elapsed?: number }> = {};
 
-    const registerScore = (homeName: string, awayName: string, homeGoals: number, awayGoals: number, shortStatus: string, fixtureId?: number) => {
+    const registerScore = (homeName: string, awayName: string, homeGoals: number, awayGoals: number, shortStatus: string, fixtureId?: number, elapsed?: number) => {
       const hNorm = getCanonicalTeamKey(homeName);
       const aNorm = getCanonicalTeamKey(awayName);
-      const isFin =
-        ["FT", "AET", "PEN", "120", "POST"].includes(shortStatus) ||
-        (typeof homeGoals === "number" && typeof awayGoals === "number" && !["NS", "1H", "2H", "HT", "LIVE", "INT", "SUSP", "TBD"].includes(shortStatus));
+      
+      // STRICTLY require official finished match status (FT = Full Time, AET = After Extra Time, PEN = Penalties, POST = Match Completed)
+      const isFinished = ["FT", "AET", "PEN", "120", "POST"].includes(shortStatus);
+      // LIVE in-play statuses must NEVER be settled as final results
+      const isLive = ["1H", "2H", "HT", "ET", "BT", "P", "LIVE", "INT", "SUSP"].includes(shortStatus);
 
       const entry = {
         home: homeGoals,
         away: awayGoals,
         short: shortStatus,
-        isFinished: isFin,
+        isFinished,
+        isLive,
+        elapsed,
       };
       if (fixtureId) {
         realScoresMap[`fix-${fixtureId}`] = entry;
@@ -270,8 +274,9 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string): Prom
         const s = item.fixture?.status?.short || "NS";
         const homeGoals = item.goals?.home ?? item.score?.fulltime?.home;
         const awayGoals = item.goals?.away ?? item.score?.fulltime?.away;
+        const elapsed = typeof item.fixture?.status?.elapsed === 'number' ? item.fixture.status.elapsed : undefined;
         if (typeof homeGoals === "number" && typeof awayGoals === "number") {
-          registerScore(item.teams.home.name, item.teams.away.name, homeGoals, awayGoals, s, item.fixture?.id);
+          registerScore(item.teams.home.name, item.teams.away.name, homeGoals, awayGoals, s, item.fixture?.id, elapsed);
         }
       }
     }
@@ -294,7 +299,8 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string): Prom
       const fixKey = p.fixtureId ? `fix-${p.fixtureId}` : "";
       const scoreData = (fixKey ? realScoresMap[fixKey] : undefined) || realScoresMap[`${hNorm}-${aNorm}`];
 
-      if (scoreData && (scoreData.isFinished || typeof scoreData.home === "number")) {
+      // 1. MATCH IS FULLY FINISHED (FT, AET, PEN) -> Evaluate market result and permanently settle
+      if (scoreData && scoreData.isFinished && typeof scoreData.home === "number" && typeof scoreData.away === "number") {
         const evaluation = evaluateMarketResult(p.market, scoreData.home, scoreData.away, {
           selection: p.selection,
           homeTeam: p.homeTeam,
@@ -320,9 +326,48 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string): Prom
             actualScore: newScore,
             result: newResult,
             profit: newProfit,
+            matchTiming: p.matchTiming,
+          };
+        }
+        return p;
+      }
+
+      // 2. MATCH IS LIVE IN PLAY (1H, 2H, HT, LIVE, ET, etc.) -> NEVER SETTLE AS WON/LOST! Keep pending, update live score
+      if (scoreData && scoreData.isLive) {
+        const liveScoreText = `${scoreData.home} - ${scoreData.away}`;
+        const shouldResetStatus = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore);
+        const shouldUpdateLive = p.currentScore !== liveScoreText || p.matchTiming !== "live";
+
+        if (shouldResetStatus || shouldUpdateLive) {
+          hasUpdates = true;
+          return {
+            ...p,
+            status: "pending" as const,
+            result: undefined,
+            actualScore: undefined,
+            currentScore: liveScoreText,
+            matchTiming: "live" as const,
+            livePeriod: ["1H", "HT", "2H", "ET"].includes(scoreData.short) ? (scoreData.short as "1H" | "HT" | "2H" | "ET") : undefined,
+            liveMinute: scoreData.elapsed ? String(scoreData.elapsed) : undefined,
+          };
+        }
+        return p;
+      }
+
+      // 3. MATCH IS NOT STARTED (NS, TBD, PST) -> Ensure status is pending if previously mis-marked
+      if (p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore)) {
+        if (!scoreData || !scoreData.isFinished) {
+          hasUpdates = true;
+          return {
+            ...p,
+            status: "pending" as const,
+            result: undefined,
+            actualScore: undefined,
+            matchTiming: "prematch" as const,
           };
         }
       }
+
       return p;
     });
 
