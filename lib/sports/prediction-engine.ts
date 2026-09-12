@@ -1250,7 +1250,6 @@ export function evaluateFixturePrediction(params: {
         odds: effHomeWin,
         minOddsThreshold: 1.15,
         minProbThreshold: 0.35,
-        isPriorityFocus: true,
       });
     }
 
@@ -1263,7 +1262,6 @@ export function evaluateFixturePrediction(params: {
         odds: effOver25,
         minOddsThreshold: 1.25,
         minProbThreshold: 0.35,
-        isPriorityFocus: true,
       });
     }
 
@@ -1276,7 +1274,6 @@ export function evaluateFixturePrediction(params: {
         odds: effAwayWin,
         minOddsThreshold: 1.25,
         minProbThreshold: 0.40,
-        isPriorityFocus: false,
       });
     }
 
@@ -1289,7 +1286,6 @@ export function evaluateFixturePrediction(params: {
         odds: effBtts,
         minOddsThreshold: 1.25,
         minProbThreshold: 0.45,
-        isPriorityFocus: false,
       });
     }
   }
