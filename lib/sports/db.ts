@@ -164,6 +164,8 @@ function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
             ...p,
             status: p.status || existing.status || "pending",
             actualScore: p.actualScore || existing.actualScore,
+            result: (p as any).result || (existing as any).result,
+            profit: typeof (p as any).profit === "number" ? (p as any).profit : (existing as any).profit,
             pickBadge: existing.pickBadge || p.pickBadge,
             isMcpPick: existing.isMcpPick || p.isMcpPick,
             source: existing.source || p.source,
@@ -198,6 +200,147 @@ function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
     fs.writeFileSync(filePath, JSON.stringify(mergedPicks, null, 2), "utf-8");
   } catch (err) {
     console.warn(`Could not save daily snapshot for ${dateStr}:`, err);
+  }
+}
+
+
+/**
+ * Auto-liquidación en tiempo real:
+ * Al cargar o sincronizar /signals y /dashboard, consultar los marcadores finales de la API (FT, AET, PEN),
+ * evaluar el mercado (evaluateMarketResult) y persistir de inmediato status = "won" | "lost" y
+ * actualScore = "2 - 1" en el snapshot activo y en la tarjeta.
+ */
+export async function settleActiveSnapshotWithRealScores(dateStr?: string): Promise<MarketOpportunity[]> {
+  const nowMs = Date.now();
+  const targetDate = dateStr || getEcuadorDateString(nowMs);
+  let snapshot = loadDailySnapshot(targetDate);
+  if (!snapshot || !Array.isArray(snapshot) || snapshot.length === 0) {
+    return [];
+  }
+
+  try {
+    const realScoresMap: Record<string, { home: number; away: number; short: string; isFinished: boolean }> = {};
+
+    const registerScore = (homeName: string, awayName: string, homeGoals: number, awayGoals: number, shortStatus: string, fixtureId?: number) => {
+      const hNorm = getCanonicalTeamKey(homeName);
+      const aNorm = getCanonicalTeamKey(awayName);
+      const isFin =
+        ["FT", "AET", "PEN", "120", "POST"].includes(shortStatus) ||
+        (typeof homeGoals === "number" && typeof awayGoals === "number" && !["NS", "1H", "2H", "HT", "LIVE", "INT", "SUSP", "TBD"].includes(shortStatus));
+
+      const entry = {
+        home: homeGoals,
+        away: awayGoals,
+        short: shortStatus,
+        isFinished: isFin,
+      };
+      if (fixtureId) {
+        realScoresMap[`fix-${fixtureId}`] = entry;
+      }
+      realScoresMap[`${hNorm}-${aNorm}`] = entry;
+    };
+
+    // 1. Fetch fixtures from API-Football for targetDate
+    const [allFixtures, supabaseFixtures] = await Promise.all([
+      apiFootball.getFixturesByDate(targetDate, "America/Guayaquil").catch(() => [] as ApiFootballFixtureItem[]),
+      (async () => {
+        const supabase = getAdminClient();
+        if (!supabase) return [];
+        const { data } = await supabase
+          .from("fixtures")
+          .select(`
+            id,
+            kickoff_at,
+            home_score,
+            away_score,
+            home_team:teams!home_team_id (name),
+            away_team:teams!away_team_id (name)
+          `)
+          .gte("kickoff_at", `${targetDate}T00:00:00Z`)
+          .lte("kickoff_at", `${targetDate}T23:59:59Z`)
+          .not("home_score", "is", null)
+          .not("away_score", "is", null);
+        return data || [];
+      })().catch(() => []),
+    ]);
+
+    if (Array.isArray(allFixtures)) {
+      for (const item of allFixtures) {
+        if (!item.teams?.home?.name || !item.teams?.away?.name) continue;
+        const s = item.fixture?.status?.short || "NS";
+        const homeGoals = item.goals?.home ?? item.score?.fulltime?.home;
+        const awayGoals = item.goals?.away ?? item.score?.fulltime?.away;
+        if (typeof homeGoals === "number" && typeof awayGoals === "number") {
+          registerScore(item.teams.home.name, item.teams.away.name, homeGoals, awayGoals, s, item.fixture?.id);
+        }
+      }
+    }
+
+    if (Array.isArray(supabaseFixtures)) {
+      for (const item of supabaseFixtures) {
+        const f = item as any;
+        const homeName = f.home_team?.name || (Array.isArray(f.home_team) ? f.home_team[0]?.name : null);
+        const awayName = f.away_team?.name || (Array.isArray(f.away_team) ? f.away_team[0]?.name : null);
+        if (homeName && awayName && typeof f.home_score === "number" && typeof f.away_score === "number") {
+          registerScore(homeName, awayName, f.home_score, f.away_score, "FT", f.id);
+        }
+      }
+    }
+
+    let hasUpdates = false;
+    const settledSnapshot = snapshot.map((p) => {
+      const hNorm = getCanonicalTeamKey(p.homeTeam);
+      const aNorm = getCanonicalTeamKey(p.awayTeam);
+      const fixKey = p.fixtureId ? `fix-${p.fixtureId}` : "";
+      const scoreData = (fixKey ? realScoresMap[fixKey] : undefined) || realScoresMap[`${hNorm}-${aNorm}`];
+
+      if (scoreData && (scoreData.isFinished || typeof scoreData.home === "number")) {
+        const evaluation = evaluateMarketResult(p.market, scoreData.home, scoreData.away, {
+          selection: p.selection,
+          homeTeam: p.homeTeam,
+          awayTeam: p.awayTeam,
+          league: p.league,
+          country: p.country,
+          probability: p.probability,
+        });
+
+        const newStatus: "won" | "lost" = evaluation.isWon ? "won" : "lost";
+        const newScore = evaluation.actualScoreText;
+        const newResult: "WON" | "LOST" = evaluation.isWon ? "WON" : "LOST";
+        const unitStake = (p as any).unitStake || 100;
+        const newProfit = evaluation.isWon
+          ? Number(((p.odds - 1) * unitStake).toFixed(2))
+          : -Number(unitStake);
+
+        if (p.status !== newStatus || p.actualScore !== newScore || (p as any).result !== newResult) {
+          hasUpdates = true;
+          return {
+            ...p,
+            status: newStatus,
+            actualScore: newScore,
+            result: newResult,
+            profit: newProfit,
+          };
+        }
+      }
+      return p;
+    });
+
+    if (hasUpdates) {
+      const filePath = path.join(SNAPSHOTS_DIR, `${targetDate}.json`);
+      if (fs.existsSync(filePath) && !process.env.VITEST && process.env.NODE_ENV !== "test") {
+        fs.writeFileSync(filePath, JSON.stringify(settledSnapshot, null, 2), "utf-8");
+      }
+      cachedLivePredictions = settledSnapshot;
+      cacheTimestamp = nowMs;
+      cachedSettledHistory = [];
+      historyCacheTimestamp = 0;
+    }
+
+    return settledSnapshot;
+  } catch (err) {
+    console.warn(`[settleActiveSnapshotWithRealScores] Error settling snapshot for ${targetDate}:`, err);
+    return snapshot;
   }
 }
 
@@ -1077,6 +1220,11 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
 }> {
   const nowMs = Date.now();
   const todayDateStr = getEcuadorDateString(nowMs);
+  const tomorrowMs = nowMs + 24 * 60 * 60 * 1000;
+  const tomorrowDateStr = getEcuadorDateString(tomorrowMs);
+
+  // 1. Auto-liquidar marcadores reales de partidos finalizados antes de buscar
+  await settleActiveSnapshotWithRealScores(todayDateStr);
   let existingSnapshot = loadDailySnapshot(todayDateStr) || [];
 
   const existingMatchKeys = new Set(
@@ -1090,14 +1238,22 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     existingSnapshot.map((p) => Number(p.fixtureId)).filter(Boolean)
   );
 
-  // 1. Fetch upcoming fixtures and bulk odds strictly for TODAY in Ecuador timezone
-  const [todayFixtures, todayOddsList] = await Promise.all([
+  // 2. Fetch upcoming fixtures and bulk odds for TODAY (afternoon/evening) AND TOMORROW in Ecuador timezone
+  const [todayFixtures, todayOddsList, tomorrowFixtures, tomorrowOddsList] = await Promise.all([
     apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil").catch(() => []),
     apiFootball.getOddsByDate(todayDateStr, "America/Guayaquil").catch(() => [] as ApiFootballOddsItem[]),
+    apiFootball.getFixturesByDate(tomorrowDateStr, "America/Guayaquil").catch(() => []),
+    apiFootball.getOddsByDate(tomorrowDateStr, "America/Guayaquil").catch(() => [] as ApiFootballOddsItem[]),
   ]);
 
-  const allFixtures = Array.isArray(todayFixtures) ? todayFixtures : [];
-  const allOdds = Array.isArray(todayOddsList) ? todayOddsList : [];
+  const candidateFixtures = [
+    ...(Array.isArray(todayFixtures) ? todayFixtures : []),
+    ...(Array.isArray(tomorrowFixtures) ? tomorrowFixtures : []),
+  ];
+  const allOdds = [
+    ...(Array.isArray(todayOddsList) ? todayOddsList : []),
+    ...(Array.isArray(tomorrowOddsList) ? tomorrowOddsList : []),
+  ];
 
   const oddsMapByFixture: Record<number, ApiFootballOddsItem> = {};
   for (const item of allOdds) {
@@ -1109,15 +1265,12 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
   const candidateOpportunities: MarketOpportunity[] = [];
   const usedTeams = new Set<string>();
 
-  for (const item of allFixtures) {
+  for (const item of candidateFixtures) {
     if (!item.fixture?.id || !item.teams?.home?.name || !item.teams?.away?.name || !item.fixture?.date) continue;
 
     const kickoff = item.fixture.date;
-    const fixtureDateStr = getEcuadorDateString(kickoff);
-    if (fixtureDateStr !== todayDateStr) continue;
-
-    const shortStatus = item.fixture.status?.short || "NS";
     const kickoffMs = new Date(kickoff).getTime();
+    const shortStatus = item.fixture.status?.short || "NS";
     if (["1H", "2H", "HT", "ET", "BT", "P", "LIVE", "INT", "SUSP", "FT", "AET", "PEN", "PST", "CANC", "ABD", "AWD", "WO", "POST"].includes(shortStatus)) continue;
     if (kickoffMs <= nowMs) continue;
     if (shortStatus !== "NS" && shortStatus !== "TBD") continue;
@@ -1162,7 +1315,7 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     }
   }
 
-  // 2. Separate into 3 High-Yield Portfolio Tiers (60% Seguras / 25% Valor / 15% Bombas)
+  // 3. Separate into 3 High-Yield Portfolio Tiers (Seguras, Valor, Bombas)
   const poolSeguras: MarketOpportunity[] = [];
   const poolValor: MarketOpportunity[] = [];
   const poolBombas: MarketOpportunity[] = [];
@@ -1182,7 +1335,7 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
         source: "mcp",
         status: "pending",
       });
-    } else if (opp.odds >= 1.72 && opp.odds < 2.05) {
+    } else if (opp.odds >= 1.70 && opp.odds < 2.05) {
       poolValor.push({
         ...opp,
         confidence: conf,
@@ -1192,7 +1345,7 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
         source: "mcp",
         status: "pending",
       });
-    } else if (opp.odds >= 1.25 && opp.odds < 1.72) {
+    } else if (opp.odds >= 1.25 && opp.odds < 1.70) {
       poolSeguras.push({
         ...opp,
         confidence: conf,
@@ -1209,7 +1362,7 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
   poolSeguras.sort((a, b) => {
     const aTier = a.leagueTier || 3;
     const bTier = b.leagueTier || 3;
-    if (aTier !== bTier) return aTier - bTier; // Tier 1 before Tier 2 before Tier 3
+    if (aTier !== bTier) return aTier - bTier;
     if (b.probability !== a.probability) return b.probability - a.probability;
     return (b.smartScore || 0) - (a.smartScore || 0);
   });
@@ -1217,16 +1370,16 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
   poolValor.sort((a, b) => {
     const aTier = a.leagueTier || 3;
     const bTier = b.leagueTier || 3;
-    if (aTier !== bTier) return aTier - bTier; // Tier 1 & 2 prioritized for value stability
+    if (aTier !== bTier) return aTier - bTier;
     const bEv = b.expectedValue || (b.probability * b.odds - 100);
     const aEv = a.expectedValue || (a.probability * a.odds - 100);
     if (bEv !== aEv) return bEv - aEv;
-    return b.edge - a.edge || b.probability - a.probability;
+    return (b.edge - a.edge) || (b.probability - a.probability);
   });
 
   poolBombas.sort((a, b) => {
-    const aTierMult = (a.leagueTier === 1 ? 1.25 : a.leagueTier === 2 ? 1.0 : 0.85);
-    const bTierMult = (b.leagueTier === 1 ? 1.25 : b.leagueTier === 2 ? 1.0 : 0.85);
+    const aTierMult = a.leagueTier === 1 ? 1.25 : a.leagueTier === 2 ? 1.0 : 0.85;
+    const bTierMult = b.leagueTier === 1 ? 1.25 : b.leagueTier === 2 ? 1.0 : 0.85;
     const bScore = b.odds * b.probability * bTierMult;
     const aScore = a.odds * a.probability * aTierMult;
     return bScore - aScore || b.odds - a.odds;
@@ -1266,7 +1419,6 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
   let merged: MarketOpportunity[] = [];
 
   if (existingSnapshot.length === 0) {
-    // 60 / 25 / 15 Portfolio Strategy (25 picks total: 15 Seguras, 6 Valor, 4 Bombas)
     const selSeguras = pickUniqueFromPool(poolSeguras, 15);
     const selValor = pickUniqueFromPool(poolValor, 6);
     const selBombas = pickUniqueFromPool(poolBombas, 4);
@@ -1279,8 +1431,8 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     }));
     merged = newlyAdded.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
   } else {
-    // Incremental search: take up to 5 seguras, 3 valor, 2 bombas
-    const selSeguras = pickUniqueFromPool(poolSeguras, 5);
+    // Incremental search: take up to 4 seguras, 3 valor, 2 bombas
+    const selSeguras = pickUniqueFromPool(poolSeguras, 4);
     const selValor = pickUniqueFromPool(poolValor, 3);
     const selBombas = pickUniqueFromPool(poolBombas, 2);
 
@@ -1301,7 +1453,6 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     cacheTimestamp = nowMs;
     cachedSettledHistory = [];
 
-    // Dynamically build and save immutable daily parlays (Conservative, Moderate, Aggressive)
     try {
       getImmutableDailyParlays(merged, todayDateStr);
     } catch (parlayErr) {
@@ -1321,7 +1472,7 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     totalAlerts: merged.length,
     predictions: merged,
     message: newlyAdded.length > 0
-      ? `✓ ¡Búsqueda completada! Se sincronizaron ${newlyAdded.length} alertas (${segurasCount} Seguras, ${valorCount} Valor, ${bombasCount} Bombas). Total: ${merged.length} alertas.`
+      ? `✓ ¡Búsqueda inteligente expandida completada! Se descubrieron ${newlyAdded.length} nuevas alertas (+EV > 5%): ${segurasCount} Seguras, ${valorCount} Valor y ${bombasCount} Bombas.`
       : `✓ El mercado de hoy está completamente al día con ${merged.length} alertas activas.`,
   };
 }

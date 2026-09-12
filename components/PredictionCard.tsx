@@ -266,11 +266,11 @@ export function PredictionCard({
               )}
               {isWon ? (
                 <span className="rounded-xl px-2.5 py-1 text-[10px] font-black bg-emerald-500 text-slate-950 shadow-sm border border-emerald-400 flex items-center gap-1">
-                  <span>✓</span> Ganada
+                  <span>✓</span> Ganada {finalScoreText ? `(${finalScoreText})` : ""}
                 </span>
               ) : isLost ? (
                 <span className="rounded-xl px-2.5 py-1 text-[10px] font-black bg-rose-600 text-white shadow-sm border border-rose-400 flex items-center gap-1">
-                  <span>✗</span> Perdida
+                  <span>✗</span> Perdida {finalScoreText ? `(${finalScoreText})` : ""}
                 </span>
               ) : statusBadge ? (
                 <span className={`inline-flex items-center rounded-xl px-2 py-0.5 text-[9px] font-black border ${statusBadge.cls}`}>
@@ -538,12 +538,12 @@ export function PredictionCard({
               </span>
 
               {isWon ? (
-                <span className="inline-flex items-center gap-1 rounded-xl px-3 py-1 text-xs font-black bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30 border border-emerald-400">
-                  ✓ Ganada
+                <span className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1 text-xs font-black bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30 border border-emerald-400">
+                  <span>✓</span> Ganada {finalScoreText ? `(${finalScoreText})` : ""}
                 </span>
               ) : isLost ? (
-                <span className="inline-flex items-center gap-1 rounded-xl px-3 py-1 text-xs font-black bg-rose-600 text-white shadow-md shadow-rose-600/30 border border-rose-400">
-                  ✗ Perdida
+                <span className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1 text-xs font-black bg-rose-600 text-white shadow-md shadow-rose-600/30 border border-rose-400">
+                  <span>✗</span> Perdida {finalScoreText ? `(${finalScoreText})` : ""}
                 </span>
               ) : statusBadge ? (
                 <span className={`inline-flex items-center rounded-xl px-2.5 py-1 text-[10px] font-black border ${statusBadge.cls}`}>

@@ -139,7 +139,7 @@ export default function DashboardPage() {
       const json = await res.json();
       const todayDateStr = getEcuadorDateString(Date.now());
       let serverSignals: MarketOpportunity[] = Array.isArray(json.signals)
-        ? json.signals.filter((p: MarketOpportunity) => getEcuadorDateString(p.kickoff) === todayDateStr)
+        ? json.signals
         : [];
 
       try {

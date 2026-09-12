@@ -29,7 +29,7 @@
     "pickBadge": "estandar",
     "smartScore": 99,
     "explanation": "Dinámica ofensiva y pegada en ataque: Arsenal llega con 3 victorias en sus últimos 5 compromisos y promedia 3.40 xG en casa, mientras Baranovichi genera 0.40 xG como visitante. El modelo cuantitativo Poisson proyecta 3.80 goles esperados conjuntos, otorgando un sólido 71.5% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.40 (valor +1%).",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -147,7 +147,10 @@
     "awayElo": 1526,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:53:00.065Z"
+    "addedAt": "2026-09-12T11:53:00.065Z",
+    "actualScore": "0 - 0 (0 Goles)",
+    "result": "LOST",
+    "profit": -100
   },
   {
     "fixtureId": 1575163,
@@ -179,7 +182,7 @@
     "pickBadge": "estandar",
     "smartScore": 99,
     "explanation": "Tendencia anotadora sostenida: Tanto FSV Mainz 05 como Eintracht Frankfurt promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.99, la expectativa de un marcador con 3 o más tantos alcanza el 74.6% de probabilidad.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -297,7 +300,10 @@
     "awayElo": 1780,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:53:00.065Z"
+    "addedAt": "2026-09-12T11:53:00.065Z",
+    "actualScore": "1 - 3 (4 Goles)",
+    "result": "WON",
+    "profit": 35
   },
   {
     "fixtureId": 1575160,
@@ -329,7 +335,7 @@
     "pickBadge": "estandar",
     "smartScore": 99,
     "explanation": "Dinámica ofensiva y pegada en ataque: 1899 Hoffenheim llega con 1 victorias en sus últimos 5 compromisos y promedia 0.56 xG en casa, mientras VfB Stuttgart genera 3.40 xG como visitante. El modelo cuantitativo Poisson proyecta 3.96 goles esperados conjuntos, otorgando un sólido 74.1% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.37 (valor +1.1%).",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -447,7 +453,10 @@
     "awayElo": 1790,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:53:00.065Z"
+    "addedAt": "2026-09-12T11:53:00.065Z",
+    "actualScore": "2 - 1 (3 Goles)",
+    "result": "WON",
+    "profit": 37
   },
   {
     "fixtureId": 1575158,
@@ -479,7 +488,7 @@
     "pickBadge": "estandar",
     "smartScore": 99,
     "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Borussia Dortmund con la pegada en contragolpe de SC Paderborn 07 (3.93 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 73.7% de confianza a cuota @1.38.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -597,7 +606,10 @@
     "awayElo": 1642,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:53:00.065Z"
+    "addedAt": "2026-09-12T11:53:00.065Z",
+    "actualScore": "3 - 0 (3 Goles)",
+    "result": "WON",
+    "profit": 38
   },
   {
     "fixtureId": 1575161,
@@ -629,7 +641,7 @@
     "pickBadge": "estandar",
     "smartScore": 99,
     "explanation": "Dominio estadístico de SC Freiburg: La solidez defensiva del local y su promedio de más de 1.7 goles por encuentro justifican una alta certeza matemática del 71.9% para el triunfo en casa.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -747,7 +759,10 @@
     "awayElo": 1485,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:53:00.065Z"
+    "addedAt": "2026-09-12T11:53:00.065Z",
+    "actualScore": "5 - 0",
+    "result": "WON",
+    "profit": 38
   },
   {
     "fixtureId": 1575162,
@@ -779,7 +794,7 @@
     "pickBadge": "estandar",
     "smartScore": 99,
     "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de FC Augsburg con la pegada en contragolpe de Bayer Leverkusen (3.81 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 71.6% de confianza a cuota @1.40.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -897,7 +912,10 @@
     "awayElo": 1950,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:53:00.065Z"
+    "addedAt": "2026-09-12T11:53:00.065Z",
+    "actualScore": "2 - 2 (4 Goles)",
+    "result": "WON",
+    "profit": 40
   },
   {
     "fixtureId": 1557401,
@@ -929,7 +947,7 @@
     "pickBadge": "estandar",
     "smartScore": 99,
     "explanation": "Jerarquía y solvencia territorial: Crystal Palace (Elo 1660) llega en gran momento con 3 victorias en sus 5 cotejos más recientes, superando a Ipswich en xG (2.44 vs 0.78). El modelo Poisson proyecta un contundente 72.7% de probabilidad de triunfo local a cuota @1.36.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -1047,7 +1065,10 @@
     "awayElo": 1540,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:53:00.065Z"
+    "addedAt": "2026-09-12T11:53:00.065Z",
+    "actualScore": "2 - 3",
+    "result": "LOST",
+    "profit": -100
   },
   {
     "fixtureId": 1557399,
@@ -1079,7 +1100,7 @@
     "pickBadge": "estandar",
     "smartScore": 99,
     "explanation": "Dinámica ofensiva y pegada en ataque: Chelsea llega con 4 victorias en sus últimos 5 compromisos y promedia 3.40 xG en casa, mientras Hull City genera 0.46 xG como visitante. El modelo cuantitativo Poisson proyecta 3.86 goles esperados conjuntos, otorgando un sólido 72.5% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.41 (valor +1.6%).",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -1197,7 +1218,10 @@
     "awayElo": 1606,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:53:00.065Z"
+    "addedAt": "2026-09-12T11:53:00.065Z",
+    "actualScore": "2 - 2 (4 Goles)",
+    "result": "WON",
+    "profit": 41
   },
   {
     "fixtureId": 1557403,
@@ -1229,7 +1253,7 @@
     "pickBadge": "estandar",
     "smartScore": 99,
     "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Liverpool con la pegada en contragolpe de Fulham (3.80 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 71.5% de confianza a cuota @1.39.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -1347,7 +1371,10 @@
     "awayElo": 1680,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:53:00.065Z"
+    "addedAt": "2026-09-12T11:53:00.065Z",
+    "actualScore": "0 - 0 (0 Goles)",
+    "result": "LOST",
+    "profit": -100
   },
   {
     "fixtureId": 1494760,
@@ -1379,7 +1406,7 @@
     "pickBadge": "valor",
     "smartScore": 98,
     "explanation": "Jerarquía y solvencia territorial: Lillestrom (Elo 1800) llega en gran momento con 4 victorias en sus 5 cotejos más recientes, superando a Valerenga en xG (3.40 vs 0.40). El modelo Poisson proyecta un contundente 62.9% de probabilidad de triunfo local a cuota @1.95.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -1497,7 +1524,10 @@
     "awayElo": 1497,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:53:00.065Z"
+    "addedAt": "2026-09-12T11:53:00.065Z",
+    "actualScore": "2 - 0",
+    "result": "WON",
+    "profit": 95
   },
   {
     "fixtureId": 1558627,
@@ -1529,7 +1559,7 @@
     "pickBadge": "valor",
     "smartScore": 99,
     "explanation": "Superioridad cualitativa y jerarquía de St. Truiden: A pesar de jugar fuera, su diferencial Elo (1588) y xG de 1.95 superan con claridad la estructura de SK Beveren. Con 1 triunfos en sus 5 salidas recientes, la victoria visitante alcanza 57.7% de probabilidad a cuota @1.77.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -1647,7 +1677,10 @@
     "awayElo": 1588,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:53:00.065Z"
+    "addedAt": "2026-09-12T11:53:00.065Z",
+    "actualScore": "2 - 0",
+    "result": "LOST",
+    "profit": -100
   },
   {
     "fixtureId": 1551106,
@@ -1679,7 +1712,7 @@
     "pickBadge": "estandar",
     "smartScore": 99,
     "explanation": "Jerarquía y solvencia territorial: CSKA 1948 (Elo 1656) llega en gran momento con 2 victorias en sus 5 cotejos más recientes, superando a Dunav Ruse en xG (2.47 vs 0.78). El modelo Poisson proyecta un contundente 73.3% de probabilidad de triunfo local a cuota @1.36.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -1797,7 +1830,10 @@
     "awayElo": 1537,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:53:00.065Z"
+    "addedAt": "2026-09-12T11:53:00.065Z",
+    "actualScore": "1 - 1",
+    "result": "LOST",
+    "profit": -100
   },
   {
     "fixtureId": 1573578,
@@ -1829,7 +1865,7 @@
     "pickBadge": "estandar",
     "smartScore": 99,
     "explanation": "Jerarquía y solvencia territorial: Barcelona W (Elo 2010) llega en gran momento con 3 victorias en sus 5 cotejos más recientes, superando a Atletico Madrid W en xG (2.57 vs 0.75). El modelo Poisson proyecta un contundente 75.5% de probabilidad de triunfo local a cuota @1.35.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -1947,7 +1983,10 @@
     "awayElo": 1880,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:53:00.065Z"
+    "addedAt": "2026-09-12T11:53:00.065Z",
+    "actualScore": "1 - 1",
+    "result": "LOST",
+    "profit": -100
   },
   {
     "fixtureId": 1584403,
@@ -1979,7 +2018,7 @@
     "pickBadge": "valor",
     "smartScore": 99,
     "explanation": "Análisis cuantitativo avanzado: 55.5% de probabilidad estadística con valor positivo (+1.2%) frente a la cuota del mercado @1.84.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -2097,7 +2136,10 @@
     "awayElo": 1629,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:53:00.065Z"
+    "addedAt": "2026-09-12T11:53:00.065Z",
+    "actualScore": "0 - 0 (No)",
+    "result": "LOST",
+    "profit": -100
   },
   {
     "fixtureId": 1550117,

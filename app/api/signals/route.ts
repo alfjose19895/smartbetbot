@@ -3,6 +3,7 @@ import {
   generatePredictionsForUpcoming,
   getStoredPredictions,
   getEcuadorDateString,
+  settleActiveSnapshotWithRealScores,
 } from "@/lib/sports/db";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 
@@ -15,6 +16,14 @@ export async function GET(request: NextRequest) {
     const marketFilter = searchParams.get("market");
     const minProb = parseFloat(searchParams.get("minProb") || "0");
     const forceRefresh = searchParams.get("refresh") === "true";
+
+    const todayDateStr = getEcuadorDateString(Date.now());
+
+    // Auto-liquidación en tiempo real: consultar marcadores finales de la API (FT, AET, PEN),
+    // evaluar mercado y persistir de inmediato status = "won" | "lost" y actualScore
+    await settleActiveSnapshotWithRealScores(todayDateStr).catch((settleErr) => {
+      console.warn("[API /api/signals] Auto-settlement non-fatal error:", settleErr);
+    });
 
     let predictions: MarketOpportunity[] = [];
 
@@ -49,13 +58,6 @@ export async function GET(request: NextRequest) {
         p.market.toLowerCase().includes(marketFilter.toLowerCase())
       );
     }
-
-    // REGLA ESTRICTA: Filtrar exclusivamente pronósticos de la fecha actual en Ecuador (UTC-5)
-    const todayDateStr = getEcuadorDateString(Date.now());
-    predictions = predictions.filter((p) => {
-      const pDate = p.kickoff ? getEcuadorDateString(p.kickoff) : todayDateStr;
-      return pDate === todayDateStr;
-    });
 
     if (minProb > 0) {
       predictions = predictions.filter((p) => p.probability >= minProb);
