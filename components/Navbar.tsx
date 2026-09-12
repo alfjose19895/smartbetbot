@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { ThemeToggle } from "./ThemeToggle";
 import { logoutAction } from "@/features/auth/actions";
 import { useLanguage } from "@/context/LanguageContext";
+import { openPushModal } from "@/components/PushNotificationManager";
 
 interface NavbarProps {
   onSync?: () => Promise<void>;
@@ -21,6 +22,7 @@ interface NavLinkItem {
   subtitle: string;
   adminOnly?: boolean;
   isLive?: boolean;
+  isAction?: boolean;
 }
 
 export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarProps = {}) {
@@ -82,7 +84,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
     setDesktopMenuOpen(false);
   }, [pathname]);
 
-  // Close desktop dropdown on click outside
+  // Close desktop dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -124,6 +126,13 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
     { href: "/history", label: t("navHistory"), icon: "📜", subtitle: language === "es" ? "Resultados y balance" : "Past results & track record" },
     { href: "/reports", label: t("navReports"), icon: "📈", subtitle: language === "es" ? "Métricas y rendimiento" : "Analytics & win rate stats" },
     { href: "/settings", label: t("navSettings"), icon: "⚙️", subtitle: language === "es" ? "Ajustes y notificaciones" : "Preferences & alerts" },
+    {
+      href: "#push-alerts",
+      label: language === "es" ? "Alertas Móvil (Push)" : "Mobile Alerts (Push)",
+      icon: "🔔",
+      subtitle: language === "es" ? "Vincular teléfono para alertas diarias" : "Link phone for daily push alerts",
+      isAction: true,
+    },
   ];
 
   if (currentRole === "admin") {
@@ -255,52 +264,63 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
             </button>
           )}
 
+          {/* Direct Push Alerts Trigger Button */}
+          <button
+            onClick={openPushModal}
+            className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-2.5 lg:px-3 py-1.5 text-xs font-black text-emerald-700 transition hover:bg-emerald-500/20 dark:text-emerald-400 cursor-pointer whitespace-nowrap shadow-xs"
+            title={language === "es" ? "Vincular alertas push al teléfono" : "Link push alerts to phone"}
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span>🔔 {language === "es" ? "Alertas" : "Alerts"}</span>
+          </button>
+
           {/* Language Selector */}
           <button
             onClick={toggleLanguage}
-            className="flex items-center gap-1 rounded-xl border border-slate-200 bg-slate-50 px-2 lg:px-2.5 py-1.5 text-xs font-black text-slate-700 transition hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 cursor-pointer whitespace-nowrap"
-            title="Cambiar idioma / Switch language"
+            className="flex items-center gap-1 rounded-xl border border-slate-200/80 bg-slate-50 px-2.5 py-1.5 text-xs font-black text-slate-700 transition hover:bg-slate-100 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-850 cursor-pointer shadow-xs"
+            title={language === "es" ? "Switch to English" : "Cambiar a Español"}
           >
             <span className="text-xs">{language === "es" ? "🇪🇸" : "🇺🇸"}</span>
-            <span className="uppercase text-[11px] font-black">{language}</span>
+            <span className="text-[11px] font-bold">{language.toUpperCase()}</span>
           </button>
 
           {/* Theme Toggle */}
-          <div className="shrink-0">
-            <ThemeToggle />
-          </div>
+          <ThemeToggle />
 
-          {/* Desktop "Módulos" Mega-Menu Toggle Button */}
+          {/* Desktop Mega-Menu Trigger Button ("Módulos") */}
           <button
             data-desktop-menu-toggle="true"
             onClick={() => setDesktopMenuOpen(!desktopMenuOpen)}
-            className={`flex items-center gap-1.5 rounded-xl border px-2.5 lg:px-3 py-1.5 text-xs font-black transition cursor-pointer whitespace-nowrap ${
+            className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-black transition cursor-pointer shadow-xs ${
               desktopMenuOpen
-                ? "border-emerald-500 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400"
-                : "border-slate-200 bg-slate-50 text-slate-800 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+                ? "border-emerald-500 bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
+                : "border-slate-200 bg-slate-100 text-slate-800 hover:bg-slate-200 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-850"
             }`}
-            title="Abrir menú de navegación de módulos"
+            aria-expanded={desktopMenuOpen}
           >
-            <span>☰</span>
-            <span>Módulos</span>
-            <span className={`text-[9px] transition-transform duration-200 ${desktopMenuOpen ? "rotate-180" : ""}`}>
-              ▼
-            </span>
+            <span>🧩</span>
+            <span>{t("navModules")}</span>
+            <span className="text-[10px] opacity-70">{desktopMenuOpen ? "▲" : "▼"}</span>
           </button>
         </div>
 
-        {/* Mobile Hamburger Button */}
-        <div className="flex md:hidden items-center gap-1.5 shrink-0">
-          {currentRole === "admin" && (
-            <button
-              onClick={handleAdminSync}
-              disabled={isSyncInProgress}
-              className="inline-flex items-center rounded-xl bg-emerald-500/10 p-2 text-xs font-black text-emerald-600 dark:text-emerald-400 cursor-pointer"
-              title="Sincronizar"
-            >
-              <span className={isSyncInProgress ? "animate-spin" : ""}>⚡</span>
-            </button>
-          )}
+        {/* Right: Mobile Menu Buttons */}
+        <div className="flex items-center gap-1.5 md:hidden">
+          {/* Mobile Direct Alert Button */}
+          <button
+            onClick={openPushModal}
+            className="flex items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-2 text-emerald-700 dark:text-emerald-400 cursor-pointer"
+            title="Alertas Push"
+          >
+            <span className="relative flex h-2 w-2 mr-1">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span className="text-xs font-bold">🔔</span>
+          </button>
 
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -358,6 +378,36 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
             </div>
             <nav className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
               {navLinks.map((link) => {
+                if (link.isAction) {
+                  return (
+                    <button
+                      key={link.label}
+                      onClick={() => {
+                        setDesktopMenuOpen(false);
+                        openPushModal();
+                      }}
+                      className="group relative flex items-start gap-3 rounded-2xl p-3.5 transition-all cursor-pointer text-left bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/30 hover:border-emerald-500 dark:bg-emerald-950/30 dark:border-emerald-800/60 dark:hover:border-emerald-500"
+                    >
+                      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-xl shadow-xs border border-emerald-200 dark:bg-slate-800 dark:border-emerald-800/80 shrink-0 group-hover:scale-110 transition-transform">
+                        {link.icon}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-1">
+                          <span className="text-xs font-black truncate text-emerald-700 dark:text-emerald-400">
+                            {link.label}
+                          </span>
+                          <span className="rounded-full bg-emerald-500 text-slate-950 px-1.5 py-0.2 text-[9px] font-black">
+                            Push
+                          </span>
+                        </div>
+                        <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                          {link.subtitle}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                }
+
                 const isActive = pathname === link.href;
                 return (
                   <Link
@@ -423,6 +473,23 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
           {/* Navigation Links Grid (2 columns on mobile) */}
           <nav className="grid grid-cols-2 gap-2">
             {navLinks.map((link) => {
+              if (link.isAction) {
+                return (
+                  <button
+                    key={link.label}
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      openPushModal();
+                    }}
+                    className="flex items-center gap-2 rounded-xl p-3 text-xs font-bold transition bg-emerald-500/10 text-emerald-800 border border-emerald-500/30 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-500/30 cursor-pointer text-left col-span-2 sm:col-span-1"
+                  >
+                    <span className="text-base">{link.icon}</span>
+                    <span className="truncate">{link.label}</span>
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse ml-auto shrink-0" />
+                  </button>
+                );
+              }
+
               const isActive = pathname === link.href;
               return (
                 <Link

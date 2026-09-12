@@ -18,26 +18,65 @@ export interface StoredPushSubscription {
 
 const DATA_DIR = path.join(process.cwd(), "data");
 const SUBSCRIPTIONS_FILE = path.join(DATA_DIR, "push_subscriptions.json");
+const TMP_SUBSCRIPTIONS_FILE = path.join("/tmp", "push_subscriptions.json");
 
-function ensureDirectoryExists() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+// In-memory fallback cache across lambda invocations within the same container
+let memoryCache: StoredPushSubscription[] | null = null;
+
+function safeReadFile(filePath: string): StoredPushSubscription[] {
+  try {
+    if (fs.existsSync(filePath)) {
+      const content = fs.readFileSync(filePath, "utf8");
+      if (content && content.trim()) {
+        const parsed = JSON.parse(content);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    }
+  } catch (e) {
+    // Ignore read errors
+  }
+  return [];
+}
+
+function safeWriteFile(filePath: string, data: StoredPushSubscription[]) {
+  try {
+    const dir = path.dirname(filePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf8");
+  } catch (e) {
+    // Write may fail in read-only environments
   }
 }
 
 export function getAllPushSubscriptions(): StoredPushSubscription[] {
-  try {
-    ensureDirectoryExists();
-    if (!fs.existsSync(SUBSCRIPTIONS_FILE)) {
-      return [];
+  const map = new Map<string, StoredPushSubscription>();
+
+  // 1. Check memory cache
+  if (memoryCache) {
+    for (const sub of memoryCache) {
+      if (sub && sub.endpoint) map.set(sub.endpoint, sub);
     }
-    const content = fs.readFileSync(SUBSCRIPTIONS_FILE, "utf8");
-    if (!content.trim()) return [];
-    return JSON.parse(content);
-  } catch (error) {
-    console.error("[PushStore] Error reading push subscriptions:", error);
-    return [];
   }
+
+  // 2. Check /tmp file (Vercel serverless writable path)
+  const tmpSubs = safeReadFile(TMP_SUBSCRIPTIONS_FILE);
+  for (const sub of tmpSubs) {
+    if (sub && sub.endpoint) map.set(sub.endpoint, sub);
+  }
+
+  // 3. Check workspace data/ file
+  const dataSubs = safeReadFile(SUBSCRIPTIONS_FILE);
+  for (const sub of dataSubs) {
+    if (sub && sub.endpoint && !map.has(sub.endpoint)) {
+      map.set(sub.endpoint, sub);
+    }
+  }
+
+  const all = Array.from(map.values());
+  memoryCache = all;
+  return all;
 }
 
 export function savePushSubscription(sub: {
@@ -45,7 +84,6 @@ export function savePushSubscription(sub: {
   keys: PushSubscriptionKeys;
   userAgent?: string;
 }): StoredPushSubscription {
-  ensureDirectoryExists();
   const current = getAllPushSubscriptions();
   const existingIdx = current.findIndex((s) => s.endpoint === sub.endpoint);
 
@@ -55,7 +93,7 @@ export function savePushSubscription(sub: {
   const deviceType = isMobile ? "mobile" : "desktop";
 
   const entry: StoredPushSubscription = {
-    id: `sub_${Buffer.from(sub.endpoint).toString("base64").slice(0, 16)}`,
+    id: `sub_${Buffer.from(sub.endpoint).toString("base64").replace(/[^a-zA-Z0-9]/g, "").slice(0, 16)}`,
     endpoint: sub.endpoint,
     keys: sub.keys,
     userAgent: ua,
@@ -70,22 +108,23 @@ export function savePushSubscription(sub: {
     current.push(entry);
   }
 
-  try {
-    fs.writeFileSync(SUBSCRIPTIONS_FILE, JSON.stringify(current, null, 2), "utf8");
-  } catch (error) {
-    console.error("[PushStore] Error writing push subscriptions:", error);
-  }
+  memoryCache = current;
+
+  // Persist to both /tmp and data/
+  safeWriteFile(TMP_SUBSCRIPTIONS_FILE, current);
+  safeWriteFile(SUBSCRIPTIONS_FILE, current);
 
   return entry;
 }
 
 export function removePushSubscription(endpoint: string): boolean {
   try {
-    ensureDirectoryExists();
     const current = getAllPushSubscriptions();
     const filtered = current.filter((s) => s.endpoint !== endpoint);
     if (filtered.length !== current.length) {
-      fs.writeFileSync(SUBSCRIPTIONS_FILE, JSON.stringify(filtered, null, 2), "utf8");
+      memoryCache = filtered;
+      safeWriteFile(TMP_SUBSCRIPTIONS_FILE, filtered);
+      safeWriteFile(SUBSCRIPTIONS_FILE, filtered);
       return true;
     }
     return false;
