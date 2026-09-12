@@ -33,6 +33,7 @@ export function PushNotificationManager({
   const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [testSending, setTestSending] = useState<boolean>(false);
+  const [individualSending, setIndividualSending] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [internalIsOpen, setInternalIsOpen] = useState<boolean>(false);
 
@@ -123,7 +124,7 @@ export function PushNotificationManager({
       const saveResult = await saveRes.json();
       if (saveResult.success) {
         setIsSubscribed(true);
-        setStatusMessage("✅ ¡Teléfono vinculado con éxito! Recibirás las alertas diarias.");
+        setStatusMessage("✅ ¡Teléfono vinculado con éxito! Recibirás las alertas individuales de alta confianza.");
       } else {
         throw new Error(saveResult.error || "Error al registrar en servidor");
       }
@@ -184,13 +185,13 @@ export function PushNotificationManager({
           keys: subJSON.keys,
           subscription: subJSON,
           title: "🔔 SmartBetBot: ¡Alerta Push Activa!",
-          message: "⭐ Tu teléfono está listo. Recibirás las mejores alertas de Ganador Local, Over 2.5 y los 3 Parleys diarios.",
+          message: "⭐ Tu teléfono está listo para recibir alertas individuales de partidos con confianza muy alta.",
         }),
       });
 
       const data = await res.json();
       if (data.success) {
-        setStatusMessage("📲 ¡Notificación de prueba enviada! Revisa la pantalla o barra de tu teléfono.");
+        setStatusMessage("📲 ¡Notificación de prueba enviada! Revisa tu pantalla.");
       } else {
         setStatusMessage(`Error: ${data.error || "No se pudo enviar la prueba"}`);
       }
@@ -199,6 +200,46 @@ export function PushNotificationManager({
       setStatusMessage("Error de conexión al enviar la prueba push.");
     } finally {
       setTestSending(false);
+    }
+  };
+
+  const sendIndividualPicksAlerts = async () => {
+    setIndividualSending(true);
+    setStatusMessage(null);
+    try {
+      const reg = await navigator.serviceWorker.getRegistration("/sw.js");
+      const sub = reg ? await reg.pushManager.getSubscription() : null;
+
+      if (!sub) {
+        setStatusMessage("Primero debes vincular este teléfono pulsando 'Vincular y Activar Alertas'.");
+        setIndividualSending(false);
+        return;
+      }
+
+      const subJSON = sub.toJSON();
+
+      const res = await fetch("/api/push/send-test", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mode: "individual_picks",
+          endpoint: sub.endpoint,
+          keys: subJSON.keys,
+          subscription: subJSON,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setStatusMessage(`🔥 ¡${data.sentCount || data.totalPicks || "Varias"} alertas individuales enviadas a tu teléfono con su pronóstico y cuota!`);
+      } else {
+        setStatusMessage(`Error: ${data.error || "No se pudieron enviar las alertas individuales"}`);
+      }
+    } catch (err: any) {
+      console.error("Send individual alerts error:", err);
+      setStatusMessage("Error al enviar alertas individuales.");
+    } finally {
+      setIndividualSending(false);
     }
   };
 
@@ -217,7 +258,7 @@ export function PushNotificationManager({
             </div>
             <div>
               <h3 className="font-extrabold text-base text-white">Alertas Push al Teléfono</h3>
-              <p className="text-xs text-slate-400">Notificaciones automáticas diarias</p>
+              <p className="text-xs text-slate-400">Pronósticos individuales de confianza alta</p>
             </div>
           </div>
           <button
@@ -249,11 +290,11 @@ export function PushNotificationManager({
           <div className="text-xs text-slate-300 leading-relaxed">
             {isSubscribed ? (
               <p>
-                Recibirás en tu pantalla de bloqueo los mejores pronósticos de <strong className="text-emerald-400">Ganador Local</strong>, <strong className="text-emerald-400">Over 2.5 Goles</strong> y los <strong className="text-teal-400">3 Parleys exclusivos</strong> cada mañana.
+                Recibirás <strong className="text-emerald-400">alertas individuales en tu pantalla de bloqueo</strong> para cada partido con <strong className="text-emerald-400">confianza muy alta</strong> (Ganador Local y Over 2.5), además de los <strong className="text-teal-400">3 Parleys exclusivos</strong>.
               </p>
             ) : (
               <p>
-                Activa las notificaciones en este dispositivo móvil o navegador para recibir las mejores selecciones con valor matemático (+EV) del motor MCP.
+                Activa las notificaciones en este dispositivo para que el motor MCP te envíe una alerta individual por cada partido de confianza muy alta.
               </p>
             )}
           </div>
@@ -295,20 +336,31 @@ export function PushNotificationManager({
           ) : (
             <div className="space-y-2">
               <button
+                onClick={sendIndividualPicksAlerts}
+                disabled={individualSending || testSending}
+                className="w-full py-2.5 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2 transition cursor-pointer"
+              >
+                {individualSending ? (
+                  <span className="animate-spin">⏳ Enviando alertas individuales...</span>
+                ) : (
+                  <span>🔥 Probar Alertas Individuales (Picks Alta Confianza)</span>
+                )}
+              </button>
+              <button
                 onClick={sendTestAlert}
-                disabled={testSending}
-                className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow flex items-center justify-center gap-2 transition cursor-pointer"
+                disabled={testSending || individualSending}
+                className="w-full py-2 px-4 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-300 font-bold text-xs rounded-xl border border-slate-700 flex items-center justify-center gap-2 transition cursor-pointer"
               >
                 {testSending ? (
                   <span className="animate-spin">⏳ Enviando...</span>
                 ) : (
-                  <span>📲 Enviar Alerta de Prueba Inmediata</span>
+                  <span>📲 Prueba Rápida de Conexión</span>
                 )}
               </button>
               <button
                 onClick={unsubscribeFromPush}
                 disabled={loading}
-                className="w-full py-2 px-4 bg-slate-800 hover:bg-rose-950/40 text-slate-400 hover:text-rose-400 border border-slate-700 font-medium text-xs rounded-xl transition cursor-pointer"
+                className="w-full py-2 px-4 bg-slate-900 hover:bg-rose-950/40 text-slate-400 hover:text-rose-400 border border-slate-800 font-medium text-xs rounded-xl transition cursor-pointer"
               >
                 Desvincular Notificaciones
               </button>

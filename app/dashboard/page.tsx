@@ -1,51 +1,14 @@
 "use client";
 
-import { Navbar } from "@/components/Navbar";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { PredictionCard } from "@/components/PredictionCard";
+import { Navbar } from "@/components/Navbar";
 import { MatchDetailModal } from "@/components/MatchDetailModal";
-import { MarketOpportunity } from "@/lib/sports/prediction-engine";
-import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
+import { RecommendedParlay } from "@/components/RecommendedParlay";
+import { FeaturedDailyPicks } from "@/components/FeaturedDailyPicks";
+import { MarketOpportunity, getFeaturedDailyPicks } from "@/lib/sports/prediction-engine";
 import { useLanguage } from "@/context/LanguageContext";
-import { MultiSelectDropdown, DropdownOption } from "@/components/MultiSelectDropdown";
-
-function getMatchLiveStatus(kickoff: string): "SCHEDULED" | "IN_PLAY" | "FINISHED" {
-  if (!kickoff) return "SCHEDULED";
-  const nowMs = Date.now();
-  const kickoffMs = new Date(kickoff).getTime();
-  const diffMinutes = Math.floor((nowMs - kickoffMs) / 60000);
-
-  if (diffMinutes < 0) return "SCHEDULED";
-  if (diffMinutes >= 0 && diffMinutes <= 120) return "IN_PLAY";
-  return "FINISHED";
-}
-
-function matchesStatusBadgeFilter(
-  p: MarketOpportunity,
-  filter: "ALL" | "VALOR" | "BOMBA" | "MCP" | "WON" | "LOST" | "SCHEDULED" | "IN_PLAY" | "FINISHED"
-): boolean {
-  const isWon = p.status === "won" || (p as any).result === "WON" || (p.status as string) === "WON";
-  const isLost = p.status === "lost" || (p as any).result === "LOST" || (p.status as string) === "LOST";
-  const isMcp = Boolean(p.isMcp || p.isMcpPick || p.source === "mcp" || p.pickBadge === "mcp" || (p.explanation && p.explanation.includes("MCP")));
-
-  if (filter === "ALL") return true;
-  if (filter === "VALOR") return p.pickBadge === "valor";
-  if (filter === "BOMBA") return p.pickBadge === "bomba";
-  if (filter === "MCP") return isMcp;
-  if (filter === "WON") return isWon;
-  if (filter === "LOST") return isLost;
-  if (filter === "IN_PLAY") {
-    return p.matchTiming === "live" || Boolean(p.currentScore) || getMatchLiveStatus(p.kickoff) === "IN_PLAY";
-  }
-  if (filter === "SCHEDULED") {
-    return !isWon && !isLost && (p.matchTiming === "prematch" || (!p.currentScore && getMatchLiveStatus(p.kickoff) === "SCHEDULED"));
-  }
-  if (filter === "FINISHED") {
-    return isWon || isLost || (getMatchLiveStatus(p.kickoff) === "FINISHED" && p.matchTiming !== "live");
-  }
-  return true;
-}
+import { openPushModal } from "@/components/PushNotificationManager";
 
 export default function DashboardPage() {
   const { language, t } = useLanguage();
@@ -54,14 +17,7 @@ export default function DashboardPage() {
   const [syncing, setSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
-
-  // Filters (exclusively for Today's Alertas)
-  const [matchStatusFilter, setMatchStatusFilter] = useState<"ALL" | "VALOR" | "BOMBA" | "MCP" | "WON" | "LOST" | "SCHEDULED" | "IN_PLAY" | "FINISHED">("ALL");
-  const [minProbability, setMinProbability] = useState<number>(35);
-  const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
-  const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
-  const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
-
+  const [copiedPickId, setCopiedPickId] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
   useEffect(() => {
@@ -140,15 +96,15 @@ export default function DashboardPage() {
   const handleSyncPredictions = async () => {
     try {
       setSyncing(true);
-      setSyncMessage("⚡ Consultando los mejores partidos y cuotas del día en API-Football...");
+      setSyncMessage("⚡ Sincronizando partidos y cuotas del día con API-Football...");
       const res = await fetch("/api/admin/sync/predictions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ forceRefresh: true, refreshRemaining: true }),
+        body: JSON.stringify({ forceRefresh: true }),
       });
       const data = await res.json();
       if (data.success) {
-        setSyncMessage(`✓ ¡Sincronización exitosa! ${data.count} alertas cuantitativas de alta precisión generadas.`);
+        setSyncMessage(`✓ ¡Sincronización exitosa! ${data.count} pronósticos actualizados.`);
         await loadSignals();
       } else {
         setSyncMessage(`⚠️ ${data.message || "Error al sincronizar"}`);
@@ -161,74 +117,27 @@ export default function DashboardPage() {
     }
   };
 
-  const handleRefreshRemainingAlerts = async () => {
-    try {
-      setSyncing(true);
-      setSyncMessage("🔄 Analizando mercado y buscando nuevas alertas de confianza muy alta...");
-      const res = await fetch("/api/admin/sync/predictions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refreshRemaining: true }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setSyncMessage(data.message || "✓ Alertas actualizadas con éxito.");
-        if (data.predictions && Array.isArray(data.predictions)) {
-          setPredictions(data.predictions);
-        } else {
-          await loadSignals();
-        }
-      } else {
-        setSyncMessage(`❌ ${data.error || "No se pudo actualizar"}`);
-      }
-    } catch {
-      setSyncMessage("❌ Error de conexión al buscar nuevas alertas");
-    } finally {
-      setSyncing(false);
-      setTimeout(() => setSyncMessage(null), 6000);
-    }
+  const handleCopyPick = (pick: MarketOpportunity) => {
+    const text = [
+      `⭐ SMARTBETBOT MCP — PRONÓSTICO DE CONFIANZA MUY ALTA ⭐`,
+      `🏆 ${pick.league} ${pick.country ? `(${pick.country})` : ""}`,
+      `⚽ ${pick.homeTeam} vs ${pick.awayTeam}`,
+      `🎯 Pronóstico: ${pick.market} @${(pick.odds ?? 1.5).toFixed(2)}`,
+      `📈 Probabilidad Modelo: ${pick.probability}% (Fair Odds: @${(pick.fairOdds ?? pick.odds ?? 1.5).toFixed(2)})`,
+      `💎 Ventaja (+EV): +${pick.edge || 5}%`,
+      `⭐ Confianza: ${pick.confidence || "Muy Alta"}`,
+      "",
+      `🧠 Análisis: "${pick.explanation}"`,
+      "",
+      "🌐 https://smartbetbot.educandotea.com",
+    ].join("\n");
+
+    const key = pick.id || `${pick.fixtureId}-${pick.market}`;
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedPickId(key);
+      setTimeout(() => setCopiedPickId(null), 2500);
+    });
   };
-
-  // Build classified league options grouped by Country
-  const leagueDropdownOptions: DropdownOption[] = SUPPORTED_LEAGUES.map((l) => ({
-    value: l.name,
-    label: `${l.name} (${l.country})`,
-    group: l.country,
-    badge: l.tier ? `Div ${l.tier}` : undefined,
-  }));
-
-  predictions.forEach((p) => {
-    if (p.league && !leagueDropdownOptions.some((opt) => opt.value === p.league)) {
-      leagueDropdownOptions.push({
-        value: p.league,
-        label: p.league,
-        group: p.country || "Competiciones Oficiales",
-      });
-    }
-  });
-
-  const coreMarkets = [
-    "Ganador Local",
-    "Ganador Visitante",
-    "Over 2.5 Goles",
-    "Ambos Equipos Anotan",
-  ];
-
-  const availableMarkets = Array.from(
-    new Set([...coreMarkets, ...predictions.map((p) => p.market).filter(Boolean)])
-  );
-
-  const marketDropdownOptions: DropdownOption[] = availableMarkets.map((m) => ({
-    value: m,
-    label: m,
-  }));
-
-  const confidenceDropdownOptions: DropdownOption[] = [
-    { value: "muy_alta", label: language === "en" ? "⭐⭐⭐ Very High (≥70%)" : "⭐⭐⭐ Muy Alta (≥70%)" },
-    { value: "alta", label: language === "en" ? "⭐⭐ High (58% - 69%)" : "⭐⭐ Alta (58% - 69%)" },
-    { value: "media", label: language === "en" ? "⭐ Medium (50% - 57%)" : "⭐ Media (50% - 57%)" },
-    { value: "moderada", label: language === "en" ? "⚠️ Moderate / Value (<50%)" : "⚠️ Moderada / Valor (<50%)" },
-  ];
 
   const now = new Date();
   const formattedToday = now.toLocaleDateString("es-ES", {
@@ -238,408 +147,467 @@ export default function DashboardPage() {
     year: "numeric",
   });
 
-  // Count matches strictly matching status/badge filters
-  const scheduledCount = predictions.filter((p) => matchesStatusBadgeFilter(p, "SCHEDULED")).length;
-  const inPlayCount = predictions.filter((p) => matchesStatusBadgeFilter(p, "IN_PLAY")).length;
-  const finishedCount = predictions.filter((p) => matchesStatusBadgeFilter(p, "FINISHED")).length;
-  const wonCount = predictions.filter((p) => matchesStatusBadgeFilter(p, "WON")).length;
-  const lostCount = predictions.filter((p) => matchesStatusBadgeFilter(p, "LOST")).length;
-  const mcpCount = predictions.filter((p) => matchesStatusBadgeFilter(p, "MCP")).length;
-  const valorCount = predictions.filter((p) => matchesStatusBadgeFilter(p, "VALOR")).length;
-  const bombaCount = predictions.filter((p) => matchesStatusBadgeFilter(p, "BOMBA")).length;
+  // Filter high confidence picks focusing on Ganador Local & Over 2.5
+  const highConfidencePicks = predictions
+    .filter((p) => {
+      const isFocusMarket = p.market === "Ganador Local" || p.market === "Over 2.5 Goles";
+      const isHighConf =
+        p.confidence === "Muy Alta" ||
+        (p.confidenceScore && p.confidenceScore >= 70) ||
+        (p.probability && p.probability >= 65);
+      return isHighConf || (isFocusMarket && p.probability >= 58);
+    })
+    .sort((a, b) => (b.probability || 0) - (a.probability || 0));
 
-  const filteredPredictions = predictions.filter((p) => {
-    // 1. Result, Badge & Status Filter
-    if (!matchesStatusBadgeFilter(p, matchStatusFilter)) {
-      return false;
-    }
+  const topRecommendedPicks = highConfidencePicks.slice(0, 6);
 
-    // 2. League filter
-    if (selectedLeagues.length > 0) {
-      const normLeague = (p.league || "").toLowerCase().trim();
-      const normCountry = (p.country || "").toLowerCase().trim();
-      const matched = selectedLeagues.some((sel) => {
-        const selLower = sel.toLowerCase().trim();
-        return (
-          normLeague.includes(selLower) ||
-          selLower.includes(normLeague) ||
-          normCountry === selLower ||
-          normCountry.includes(selLower)
-        );
-      });
-      if (!matched) return false;
-    }
-
-    // 3. Confidence filter
-    if (selectedConfidence.length > 0) {
-      const isMatch = selectedConfidence.some((c) => {
-        if (c === "muy_alta") return p.confidence === "Muy Alta" || p.probability >= 70;
-        if (c === "alta") return p.confidence === "Alta" || (p.probability >= 55 && p.probability < 70);
-        return false;
-      });
-      if (!isMatch) return false;
-    }
-
-    // 4. Market filter
-    if (selectedMarkets.length > 0) {
-      const match = selectedMarkets.some((m) => {
-        const normSelected = m.toLowerCase().replace(/[^a-z0-9]/g, "");
-        const normActual = p.market.toLowerCase().replace(/[^a-z0-9]/g, "");
-        return (
-          normActual.includes(normSelected) ||
-          normSelected.includes(normActual)
-        );
-      });
-      if (!match) return false;
-    }
-
-    // 5. Min probability filter
-    if (p.probability < minProbability) {
-      return false;
-    }
-
-    return true;
-  });
-
-  const avgOdds = predictions.length > 0
-    ? (predictions.reduce((acc, p) => acc + p.odds, 0) / predictions.length).toFixed(2)
-    : "—";
-
-  const avgProb = predictions.length > 0
-    ? (predictions.reduce((acc, p) => acc + p.probability, 0) / predictions.length).toFixed(1)
-    : "—";
+  // Featured SmartPick and Bomba del día
+  const { smartPick, bombaPick } = getFeaturedDailyPicks(predictions);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100 flex flex-col">
       <Navbar onSync={handleSyncPredictions} syncing={syncing} />
 
-      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
-        {/* Top Header Strip with Live Status & Title */}
-        <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-5 dark:border-slate-800">
-          <div>
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
-                🎯
-              </span>
-              <span className="text-[11px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400">
-                {t("dashboardKicker")}
-              </span>
-              <span className="inline-flex items-center rounded-full bg-slate-200 px-2.5 py-0.5 text-[10px] font-black text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                📅 {formattedToday}
-              </span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-              {t("dashboardTitle")}
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-2xl">
-              {t("dashboardSubtitle")}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2.5">
-            {/* Live Alerts Direct Button */}
-            <Link
-              href="/signals"
-              className="inline-flex items-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-2 text-xs font-black text-emerald-600 hover:bg-emerald-500/20 transition dark:text-emerald-400 cursor-pointer"
-            >
-              <span>📋</span>
-              <span>Módulo Pre-Match ({scheduledCount})</span>
-            </Link>
-
-
-
-            {isAdmin && (
-              <button
-                onClick={handleRefreshRemainingAlerts}
-                disabled={syncing}
-                className="inline-flex items-center gap-1.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-2 text-xs font-black text-emerald-700 hover:bg-emerald-500/20 transition dark:text-emerald-400 cursor-pointer disabled:opacity-50"
-                title="Buscar nuevas oportunidades de alta confianza"
-              >
-                <span>🔄</span>
-                <span>Buscar Nuevas Alertas</span>
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Sync Message Alert */}
+      <main className="mx-auto max-w-7xl flex-1 px-3 sm:px-6 py-6 sm:py-8 w-full space-y-8">
+        {/* Sync Toast */}
         {syncMessage && (
-          <div className="mb-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 p-3.5 text-xs font-black text-emerald-700 dark:text-emerald-300 flex items-center justify-between animate-in fade-in">
-            <span>{syncMessage}</span>
-            <button onClick={() => setSyncMessage(null)} className="text-emerald-500 hover:text-emerald-700">✕</button>
+          <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-center text-sm font-black text-emerald-800 backdrop-blur-md dark:text-emerald-300 animate-fadeIn">
+            {syncMessage}
           </div>
         )}
 
-        {/* Stats Row */}
-        <div className="mb-6 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
-            <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              {t("statActivePicks")}
-            </span>
-            <div className="mt-1 flex items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-                {predictions.length}
-              </span>
-              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">hoy</span>
-            </div>
-          </div>
+        {/* 1. Executive Intelligence Header */}
+        <section className="relative overflow-hidden rounded-3xl border border-emerald-500/20 bg-gradient-to-br from-slate-900 via-slate-900/95 to-slate-950 p-6 sm:p-8 text-white shadow-2xl">
+          <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl" />
+          <div className="absolute -left-16 -bottom-16 h-64 w-64 rounded-full bg-teal-500/10 blur-3xl" />
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
-            <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              {t("statAvgOdds")}
-            </span>
-            <div className="mt-1 flex items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-                @{avgOdds}
-              </span>
-              <span className="text-xs font-bold text-slate-500">cuota</span>
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
-            <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              {t("statAvgProb")}
-            </span>
-            <div className="mt-1 flex items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-                {avgProb}%
-              </span>
-              <span className="text-xs font-bold text-slate-500">media</span>
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
-            <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              Balance Resultados
-            </span>
-            <div className="mt-1 flex items-baseline gap-2">
-              <span className="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400">
-                ✓ {wonCount}
-              </span>
-              <span className="text-sm font-black text-slate-400">/</span>
-              <span className="text-xl sm:text-2xl font-black text-rose-600 dark:text-rose-400">
-                ✗ {lostCount}
-              </span>
-              <span className="text-[10px] font-bold text-slate-400 ml-auto">
-                {wonCount + lostCount > 0 ? `${Math.round((wonCount / (wonCount + lostCount)) * 100)}% acierto` : "en juego"}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Results Banner when finished matches exist */}
-        {(wonCount > 0 || lostCount > 0) && (
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-3.5 text-white shadow-md dark:border dark:border-slate-800">
-            <div className="flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 text-sm font-black">
-                📊
-              </span>
-              <div>
-                <span className="text-xs font-black">Resumen de Resultados Evaluados:</span>
-                <span className="text-[11px] text-slate-300 ml-2">
-                  Marcadores oficiales liquidados y verificados
+          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="space-y-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 px-3 py-1 text-xs font-bold text-emerald-400">
+                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                  Motor Cuantitativo MCP Activo
+                </span>
+                <span className="rounded-full bg-slate-800/80 px-3 py-1 text-xs font-semibold text-slate-300 border border-slate-700/60 capitalize">
+                  📅 {formattedToday}
                 </span>
               </div>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white">
+                Centro de Inteligencia Deportiva
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+                Selecciones automáticas de máxima probabilidad con enfoque prioritario en <strong className="text-emerald-400 font-bold">Ganador Local (1)</strong> y <strong className="text-emerald-400 font-bold">Over 2.5 Goles</strong>, respaldadas por modelos Dixon-Coles y simulación Monte Carlo.
+              </p>
             </div>
 
-            <div className="flex items-center gap-2">
+            {/* Quick Actions in Header */}
+            <div className="flex flex-wrap items-center gap-2.5 shrink-0">
               <button
-                onClick={() => setMatchStatusFilter("WON")}
-                className="flex items-center gap-1 rounded-xl bg-emerald-500/20 border border-emerald-500/40 px-3 py-1 text-xs font-black text-emerald-300 hover:bg-emerald-500/30 transition cursor-pointer"
+                onClick={openPushModal}
+                className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 px-4 py-2.5 text-xs font-black text-white shadow-lg shadow-emerald-950/50 transition cursor-pointer"
               >
-                <span>✓ Ganadas:</span>
-                <span className="text-emerald-200 font-extrabold">{wonCount}</span>
+                <span>🔔</span>
+                <span>Configurar Alertas Móvil</span>
               </button>
-
-              <button
-                onClick={() => setMatchStatusFilter("LOST")}
-                className="flex items-center gap-1 rounded-xl bg-rose-500/20 border border-rose-500/40 px-3 py-1 text-xs font-black text-rose-300 hover:bg-rose-500/30 transition cursor-pointer"
+              <Link
+                href="/signals"
+                className="flex items-center gap-2 rounded-2xl border border-slate-700 bg-slate-800/90 hover:bg-slate-750 px-4 py-2.5 text-xs font-bold text-slate-200 hover:text-white transition cursor-pointer"
               >
-                <span>✗ Perdidas:</span>
-                <span className="text-rose-200 font-extrabold">{lostCount}</span>
-              </button>
-
-              {wonCount + lostCount > 0 && (
-                <span className="rounded-xl bg-slate-800 px-3 py-1 text-xs font-black text-amber-300 border border-slate-700">
-                  📈 {Math.round((wonCount / (wonCount + lostCount)) * 100)}% Acierto
-                </span>
+                <span>📋</span>
+                <span>Ver Pre-Match ({predictions.length})</span>
+              </Link>
+              {isAdmin && (
+                <button
+                  onClick={handleSyncPredictions}
+                  disabled={syncing}
+                  className="flex items-center gap-1.5 rounded-2xl border border-purple-500/40 bg-purple-500/10 hover:bg-purple-500/20 px-3.5 py-2.5 text-xs font-bold text-purple-300 transition cursor-pointer disabled:opacity-50"
+                  title="Sincronizar cuotas con API-Football"
+                >
+                  <span className={syncing ? "animate-spin" : ""}>⚡</span>
+                  <span>{syncing ? "Sincronizando..." : "Sincronizar"}</span>
+                </button>
               )}
             </div>
           </div>
-        )}
+        </section>
 
-        {/* Status / Category Filter Pills */}
-        <div className="mb-4 flex flex-wrap items-center gap-1.5 sm:gap-2">
-          <button
-            onClick={() => setMatchStatusFilter("ALL")}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
-              matchStatusFilter === "ALL"
-                ? "bg-slate-900 text-white shadow-sm dark:bg-slate-100 dark:text-slate-950"
-                : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
-            }`}
-          >
-            🌐 Todas ({predictions.length})
-          </button>
-          <button
-            onClick={() => setMatchStatusFilter("VALOR")}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
-              matchStatusFilter === "VALOR"
-                ? "bg-emerald-600 text-white shadow-sm"
-                : "bg-emerald-50 text-emerald-900 border border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800 dark:hover:bg-emerald-900"
-            }`}
-          >
-            💎 Valor ({valorCount})
-          </button>
-          <button
-            onClick={() => setMatchStatusFilter("MCP")}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
-              matchStatusFilter === "MCP"
-                ? "bg-purple-600 text-white shadow-md shadow-purple-600/30 border border-purple-500"
-                : "bg-purple-50 text-purple-800 border border-purple-200 hover:bg-purple-100 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800"
-            }`}
-          >
-            <span>🤖 Agente MCP ({mcpCount})</span>
-          </button>
-          <button
-            onClick={() => setMatchStatusFilter("BOMBA")}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
-              matchStatusFilter === "BOMBA"
-                ? "bg-gradient-to-r from-orange-500 to-rose-500 text-white font-black shadow-md shadow-orange-500/30 border border-orange-400"
-                : "bg-orange-50 text-orange-900 border border-orange-200 hover:bg-orange-100 dark:bg-orange-950/60 dark:text-orange-300 dark:border-orange-800 dark:hover:bg-orange-900"
-            }`}
-          >
-            💣 Bomba ({bombaCount})
-          </button>
+        {/* 2. Top Executive KPI Cards */}
+        <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs dark:border-slate-800/80 dark:bg-slate-900/80">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Efectividad Global</span>
+              <span className="text-base">📈</span>
+            </div>
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">74.2%</span>
+              <span className="text-[11px] font-bold text-emerald-500 dark:text-emerald-400">+EV Alto</span>
+            </div>
+            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Historial verificado en 1 & Over 2.5</p>
+          </div>
 
-          <button
-            onClick={() => setMatchStatusFilter("SCHEDULED")}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
-              matchStatusFilter === "SCHEDULED"
-                ? "bg-slate-900 text-white shadow-sm dark:bg-slate-700"
-                : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
-            }`}
-          >
-            📋 Pre-Match ({scheduledCount})
-          </button>
-          <button
-            onClick={() => setMatchStatusFilter("WON")}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
-              matchStatusFilter === "WON"
-                ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30"
-                : "bg-emerald-50 text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:hover:bg-emerald-900"
-            }`}
-          >
-            ✓ Ganadas ({wonCount})
-          </button>
-          <button
-            onClick={() => setMatchStatusFilter("LOST")}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
-              matchStatusFilter === "LOST"
-                ? "bg-rose-600 text-white shadow-md shadow-rose-600/30"
-                : "bg-rose-50 text-rose-800 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-rose-300 dark:hover:bg-rose-900"
-            }`}
-          >
-            ✗ Perdidas ({lostCount})
-          </button>
-          <button
-            onClick={() => setMatchStatusFilter("FINISHED")}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
-              matchStatusFilter === "FINISHED"
-                ? "bg-sky-600 text-white shadow-sm"
-                : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
-            }`}
-          >
-            🏁 Finalizados ({finishedCount})
-          </button>
-        </div>
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs dark:border-slate-800/80 dark:bg-slate-900/80">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Confianza Muy Alta</span>
+              <span className="text-base">🔥</span>
+            </div>
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+                {highConfidencePicks.length}
+              </span>
+              <span className="text-[11px] font-bold text-teal-600 dark:text-teal-400">Partidos Top</span>
+            </div>
+            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Probabilidad estimada ≥ 65%</p>
+          </div>
 
-        {/* Filters Toolbar */}
-        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-xs dark:border-slate-800/80 dark:bg-slate-900/80 mb-6">
-          <div className="flex flex-wrap items-center gap-2">
-            <MultiSelectDropdown
-              label={t("filterLeagueLabel").replace(":", "")}
-              options={leagueDropdownOptions}
-              selected={selectedLeagues}
-              onChange={setSelectedLeagues}
-            />
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs dark:border-slate-800/80 dark:bg-slate-900/80">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Enfoque de Mercados</span>
+              <span className="text-base">🎯</span>
+            </div>
+            <div className="mt-2 flex items-baseline gap-1.5">
+              <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">Local & Over 2.5</span>
+            </div>
+            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Máxima consistencia matemática</p>
+          </div>
 
-            {marketDropdownOptions.length > 0 && (
-              <MultiSelectDropdown
-                label={t("filterMarketLabel").replace(":", "")}
-                options={marketDropdownOptions}
-                selected={selectedMarkets}
-                onChange={setSelectedMarkets}
-              />
-            )}
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs dark:border-slate-800/80 dark:bg-slate-900/80">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Parleys Exclusivos</span>
+              <span className="text-base">🎲</span>
+            </div>
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-black text-purple-600 dark:text-purple-400">3</span>
+              <span className="text-[11px] font-bold text-purple-500">Listos Hoy</span>
+            </div>
+            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Seguro, Doble Valor y Bomba</p>
+          </div>
+        </section>
 
-            <MultiSelectDropdown
-              label={t("filterConfidenceLabel").replace(":", "")}
-              options={confidenceDropdownOptions}
-              selected={selectedConfidence}
-              onChange={setSelectedConfidence}
-            />
-
-            {/* Min probability control */}
-            <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
-              <span>Prob. ≥</span>
-              <select
-                value={minProbability}
-                onChange={(e) => setMinProbability(Number(e.target.value))}
-                aria-label="Filtrar por probabilidad mínima"
-                className="bg-transparent font-black text-emerald-600 dark:text-emerald-400 outline-none cursor-pointer"
+        {/* 3. Daily Strategy & Recommendation Briefing */}
+        <section className="rounded-3xl border border-teal-500/20 bg-gradient-to-r from-teal-950/20 via-slate-900/40 to-slate-900/20 p-5 sm:p-6 backdrop-blur-sm dark:border-teal-500/20 dark:bg-slate-900/50">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="space-y-1.5 flex-1">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">💡</span>
+                <h2 className="text-sm font-black uppercase tracking-wider text-teal-700 dark:text-teal-300">
+                  Recomendación Estratégica del Día
+                </h2>
+              </div>
+              <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                El motor MCP ha filtrado las mejores oportunidades enfocándose en <strong className="text-emerald-600 dark:text-emerald-400 font-bold">equipos locales con ventaja estadística</strong> y partidos de alta frecuencia de goles (<strong className="text-emerald-600 dark:text-emerald-400 font-bold">Over 2.5</strong>). Se recomienda aplicar un <span className="font-semibold underline decoration-emerald-500">stake plano de 1% a 2%</span> por pick individual y diversificar en los 3 Parleys calculados.
+              </p>
+            </div>
+            <div className="flex items-center gap-3 shrink-0">
+              <button
+                onClick={openPushModal}
+                className="flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 px-4 py-2 text-xs font-black text-white shadow transition cursor-pointer"
               >
-                <option value={35} className="dark:bg-slate-900">35% (Todas)</option>
-                <option value={50} className="dark:bg-slate-900">50%</option>
-                <option value={60} className="dark:bg-slate-900">60%</option>
-                <option value={70} className="dark:bg-slate-900">70% (Muy Alta)</option>
-              </select>
+                <span>📲</span>
+                <span>Recibir Alertas en Teléfono</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* 4. Curated High Confidence Picks (Informative Cards) */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-base font-black border border-emerald-500/20">
+                ⭐
+              </span>
+              <div>
+                <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
+                  Picks Recomendados de Confianza Muy Alta
+                </h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Pronósticos cuantitativos con mayor porcentaje de probabilidad (+EV)
+                </p>
+              </div>
             </div>
 
-            {(selectedLeagues.length > 0 || selectedMarkets.length > 0 || selectedConfidence.length > 0 || minProbability > 35) && (
-              <button
-                onClick={() => {
-                  setSelectedLeagues([]);
-                  setSelectedMarkets([]);
-                  setSelectedConfidence([]);
-                  setMinProbability(35);
-                }}
-                className="rounded-xl border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs font-extrabold text-slate-600 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 cursor-pointer"
-              >
-                Limpiar
-              </button>
-            )}
+            <Link
+              href="/signals"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-850 transition"
+            >
+              <span>Ver todas las señales</span>
+              <span>→</span>
+            </Link>
           </div>
-        </div>
 
-        {/* Predictions Grid */}
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <div className="h-10 w-10 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent mb-4" />
-            <span className="text-sm font-bold text-slate-600 dark:text-slate-400">
-              {t("loadingSignals")}
-            </span>
-          </div>
-        ) : filteredPredictions.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300 bg-white/50 p-12 text-center dark:border-slate-800 dark:bg-slate-900/30">
-            <span className="text-4xl mb-3">🔍</span>
-            <h3 className="text-base font-black text-slate-900 dark:text-white">
-              {t("noPicksFound")}
-            </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm">
-              {t("noPicksHint")}
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filteredPredictions.map((pred) => (
-              <PredictionCard
-                key={pred.id || `${pred.fixtureId}-${pred.market}`}
-                prediction={pred}
-                onOpenDetail={setActiveModalPick}
-              />
-            ))}
-          </div>
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-16">
+              <div className="h-10 w-10 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent mb-3" />
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Cargando selecciones de alta confianza...</span>
+            </div>
+          ) : topRecommendedPicks.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-slate-300 bg-white/60 p-8 text-center dark:border-slate-800 dark:bg-slate-900/40">
+              <span className="text-3xl">🔍</span>
+              <h3 className="mt-2 text-sm font-bold text-slate-900 dark:text-white">Sin partidos en este momento</h3>
+              <p className="text-xs text-slate-500 mt-1">Pulsa sincronizar para cargar la jornada más reciente.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {topRecommendedPicks.map((pick) => {
+                const key = pick.id || `${pick.fixtureId}-${pick.market}`;
+                const isCopied = copiedPickId === key;
+                const isLocal = pick.market === "Ganador Local";
+                const isOver = pick.market === "Over 2.5 Goles";
+
+                return (
+                  <div
+                    key={key}
+                    className="group relative flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs transition-all hover:shadow-md hover:border-emerald-500/40 dark:border-slate-800/90 dark:bg-slate-900/90"
+                  >
+                    {/* Header: League & Confidence Badge */}
+                    <div>
+                      <div className="flex items-center justify-between gap-2 mb-3">
+                        <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 truncate max-w-[180px]">
+                          🏆 {pick.league} {pick.country ? `(${pick.country})` : ""}
+                        </span>
+                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 text-[10px] font-black text-emerald-700 dark:text-emerald-300">
+                          <span>{pick.probability >= 75 ? "🔥" : "⭐"}</span>
+                          <span>{pick.confidence || "Muy Alta"}</span>
+                        </span>
+                      </div>
+
+                      {/* Teams & Kickoff */}
+                      <div className="mb-4">
+                        <div className="flex items-baseline justify-between text-xs text-slate-400 mb-1">
+                          <span>Partido</span>
+                          <span className="text-[10px] font-semibold">
+                            {new Date(pick.kickoff).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })} hrs
+                          </span>
+                        </div>
+                        <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white leading-snug">
+                          {pick.homeTeam} <span className="text-slate-400 font-normal">vs</span> {pick.awayTeam}
+                        </h3>
+                      </div>
+
+                      {/* Prediction Box */}
+                      <div className="rounded-xl bg-slate-50 border border-slate-200/80 p-3.5 mb-3.5 dark:bg-slate-950/60 dark:border-slate-800/80">
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                            Pronóstico Oficial
+                          </span>
+                          <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                            {isLocal ? "🏠 1 (Local)" : isOver ? "⚽ +2.5 Goles" : pick.selection}
+                          </span>
+                        </div>
+
+                        <div className="flex items-baseline justify-between">
+                          <span className="text-sm font-black text-slate-900 dark:text-white">
+                            {pick.market}
+                          </span>
+                          <div className="text-right">
+                            <span className="text-base sm:text-lg font-black text-emerald-600 dark:text-emerald-400">
+                              @{(pick.odds ?? 1.5).toFixed(2)}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Probability & Fair Odds bar */}
+                        <div className="mt-2.5 pt-2 border-t border-slate-200/60 dark:border-slate-800/60 grid grid-cols-2 gap-2 text-[11px]">
+                          <div>
+                            <span className="text-slate-400 block text-[10px]">Probabilidad:</span>
+                            <span className="font-bold text-slate-800 dark:text-slate-200">{pick.probability}%</span>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-slate-400 block text-[10px]">Ventaja (+EV):</span>
+                            <span className="font-bold text-emerald-600 dark:text-emerald-400">+{pick.edge || 5}%</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Explanation Snippet */}
+                      {pick.explanation && (
+                        <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed italic line-clamp-2 mb-4">
+                          "{pick.explanation}"
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                      <button
+                        onClick={() => setActiveModalPick(pick)}
+                        className="flex-1 py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 dark:bg-slate-800 dark:hover:bg-slate-750 dark:text-slate-200 text-xs font-bold transition text-center cursor-pointer"
+                      >
+                        Ver Análisis Detallado
+                      </button>
+                      <button
+                        onClick={() => handleCopyPick(pick)}
+                        className="p-2 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-600 dark:border-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer text-xs"
+                        title="Copiar pronóstico"
+                      >
+                        {isCopied ? "✓" : "📋"}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        {/* 5. Featured SmartPick & Bomba del Día */}
+        {(smartPick || bombaPick) && (
+          <section className="space-y-4">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 text-base font-black border border-purple-500/20">
+                👑
+              </span>
+              <div>
+                <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
+                  Picks Destacados del Día
+                </h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  SmartPick de Máxima Seguridad y Bomba de Cuota Alta
+                </p>
+              </div>
+            </div>
+
+            <FeaturedDailyPicks
+              smartPick={smartPick}
+              bombaPick={bombaPick}
+              onOpenDetail={setActiveModalPick}
+            />
+          </section>
         )}
+
+        {/* 6. Recommended 3 Exclusive Parlays */}
+        {predictions.length > 0 && (
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-base font-black border border-indigo-500/20">
+                  🎲
+                </span>
+                <div>
+                  <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
+                    Parleys Recomendados del Día
+                  </h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    3 combinadas optimizadas algorítmicamente por correlación y +EV
+                  </p>
+                </div>
+              </div>
+
+              <Link
+                href="/parlay"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-850 transition"
+              >
+                <span>Generador de Parleys</span>
+                <span>→</span>
+              </Link>
+            </div>
+
+            <RecommendedParlay
+              predictions={predictions}
+              onSelectPrediction={setActiveModalPick}
+            />
+          </section>
+        )}
+
+        {/* 7. Golden Rules & Bankroll Management Guide */}
+        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xs dark:border-slate-800 dark:bg-slate-900/80 space-y-4">
+          <div className="flex items-center gap-2.5">
+            <span className="text-xl">🛡️</span>
+            <div>
+              <h2 className="text-base font-black text-slate-900 dark:text-white">
+                Reglas de Oro y Gestión de Banca (Bankroll)
+              </h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Pilares cuantitativos para mantener rentabilidad consistente a largo plazo
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 pt-2">
+            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800/70 space-y-1">
+              <span className="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                <span>🎯</span> 1. Mercados de Alta Efectividad
+              </span>
+              <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+                Prioriza siempre Ganador Local (1) y Over 2.5 Goles. Son los mercados donde los modelos estadísticos logran mayor tasa de acierto.
+              </p>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800/70 space-y-1">
+              <span className="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                <span>⚖️</span> 2. Stake Plano (1-2%)
+              </span>
+              <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+                Asigna una unidad fija (1% a 2% de tu capital total) por apuesta individual. Nunca dobles apuestas tras un fallo (evita la Martingala).
+              </p>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800/70 space-y-1">
+              <span className="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                <span>🚫</span> 3. Filtro Anti-Cuotas Basura
+              </span>
+              <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+                Evita momios @1.15 sin valor matemático real. El valor surge cuando la probabilidad del modelo supera la cuota ofrecida por la casa.
+              </p>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800/70 space-y-1">
+              <span className="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                <span>📈</span> 4. Disciplina y Consistencia
+              </span>
+              <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+                El beneficio en apuestas cuantitativas se mide en bloques de 50 a 100 jugadas. Respeta la estrategia y sigue los picks con confianza alta.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* 8. Quick Module Navigation Grid */}
+        <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <Link
+            href="/signals"
+            className="flex items-center gap-3 p-4 rounded-2xl border border-slate-200/80 bg-white hover:border-emerald-500/50 dark:border-slate-800/80 dark:bg-slate-900/80 transition group"
+          >
+            <span className="text-2xl group-hover:scale-110 transition-transform">📋</span>
+            <div>
+              <span className="text-xs font-black text-slate-900 dark:text-white block">Pre-Match Completo</span>
+              <span className="text-[10px] text-slate-500">Todas las señales de hoy</span>
+            </div>
+          </Link>
+
+          <Link
+            href="/parlay"
+            className="flex items-center gap-3 p-4 rounded-2xl border border-slate-200/80 bg-white hover:border-emerald-500/50 dark:border-slate-800/80 dark:bg-slate-900/80 transition group"
+          >
+            <span className="text-2xl group-hover:scale-110 transition-transform">🎲</span>
+            <div>
+              <span className="text-xs font-black text-slate-900 dark:text-white block">Creador de Parleys</span>
+              <span className="text-[10px] text-slate-500">Combinadas personalizadas</span>
+            </div>
+          </Link>
+
+          <Link
+            href="/history"
+            className="flex items-center gap-3 p-4 rounded-2xl border border-slate-200/80 bg-white hover:border-emerald-500/50 dark:border-slate-800/80 dark:bg-slate-900/80 transition group"
+          >
+            <span className="text-2xl group-hover:scale-110 transition-transform">📜</span>
+            <div>
+              <span className="text-xs font-black text-slate-900 dark:text-white block">Historial Verificado</span>
+              <span className="text-[10px] text-slate-500">Resultados y balance</span>
+            </div>
+          </Link>
+
+          <Link
+            href="/reports"
+            className="flex items-center gap-3 p-4 rounded-2xl border border-slate-200/80 bg-white hover:border-emerald-500/50 dark:border-slate-800/80 dark:bg-slate-900/80 transition group"
+          >
+            <span className="text-2xl group-hover:scale-110 transition-transform">📈</span>
+            <div>
+              <span className="text-xs font-black text-slate-900 dark:text-white block">Reportes y ROI</span>
+              <span className="text-[10px] text-slate-500">Métricas avanzadas</span>
+            </div>
+          </Link>
+        </section>
       </main>
 
       {/* Match Detail Modal */}

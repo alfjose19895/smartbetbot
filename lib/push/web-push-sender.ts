@@ -105,6 +105,93 @@ export async function broadcastPushNotification(
 }
 
 /**
+ * Sends individual push notification alerts for all high-confidence / high-probability matches.
+ * Each alert contains the specific match, league, recommended market, odds, and confidence/probability.
+ */
+export async function sendIndividualHighConfidenceAlerts(
+  predictions: MarketOpportunity[],
+  targetSubscription?: StoredPushSubscription
+): Promise<{
+  totalEligible: number;
+  sentCount: number;
+  failedCount: number;
+  alerts: PushNotificationPayload[];
+}> {
+  if (!predictions || predictions.length === 0) {
+    return { totalEligible: 0, sentCount: 0, failedCount: 0, alerts: [] };
+  }
+
+  // 1. Filter for High Confidence and High Probability picks focusing on Ganador Local & Over 2.5
+  const eligiblePicks = predictions.filter((p) => {
+    const isFocusMarket = p.market === "Ganador Local" || p.market === "Over 2.5 Goles";
+    const isVeryHighConfidence =
+      p.confidence === "Muy Alta" ||
+      (p.confidenceScore && p.confidenceScore >= 70) ||
+      (p.probability && p.probability >= 65);
+    return isVeryHighConfidence || (isFocusMarket && p.probability >= 58);
+  });
+
+  // Sort by probability and edge descending
+  const sortedPicks = (eligiblePicks.length > 0 ? eligiblePicks : predictions)
+    .sort((a, b) => {
+      if ((b.probability || 0) !== (a.probability || 0)) {
+        return (b.probability || 0) - (a.probability || 0);
+      }
+      return (b.edge || 0) - (a.edge || 0);
+    })
+    .slice(0, 6); // Top 6 high confidence picks
+
+  const payloads: PushNotificationPayload[] = sortedPicks.map((pick, idx) => {
+    const marketEmoji = pick.market === "Ganador Local" ? "🏠" : pick.market === "Over 2.5 Goles" ? "⚽" : "🎯";
+    const confidenceBadge = pick.confidence || (pick.probability >= 70 ? "Muy Alta" : "Alta");
+    const leagueStr = pick.league ? `[${pick.league}]` : "";
+
+    const matchTitle = `🔥 ${pick.homeTeam} vs ${pick.awayTeam} ${leagueStr}`.trim();
+    const alertBody = `${marketEmoji} Pronóstico: ${pick.market} @${(pick.odds ?? 1.5).toFixed(2)} | Confianza: ${confidenceBadge} (${pick.probability}% Prob.)\n💡 ${pick.explanation ? pick.explanation.slice(0, 85) : "Valor cuantitativo +EV detectado por MCP"}`;
+
+    return {
+      title: matchTitle,
+      body: alertBody,
+      icon: "/icon-192.png",
+      badge: "/badge-72.png",
+      url: `/signals?id=${pick.id || pick.fixtureId}`,
+      id: `high-conf-${pick.id || pick.fixtureId}-${idx}-${Date.now()}`,
+      data: {
+        type: "individual_high_confidence_alert",
+        fixtureId: pick.fixtureId,
+        match: pick.match,
+        market: pick.market,
+        odds: pick.odds,
+        probability: pick.probability,
+        confidence: pick.confidence,
+      },
+    };
+  });
+
+  let sentCount = 0;
+  let failedCount = 0;
+
+  for (const payload of payloads) {
+    if (targetSubscription) {
+      const res = await sendNotificationToSubscription(targetSubscription, payload);
+      if (res.success) sentCount++;
+      else failedCount++;
+    } else {
+      const res = await broadcastPushNotification(payload);
+      sentCount += res.sentCount;
+      failedCount += res.failedCount;
+    }
+  }
+
+  return {
+    totalEligible: sortedPicks.length,
+    sentCount,
+    failedCount,
+    alerts: payloads,
+  };
+}
+
+/**
  * Sends the daily morning MCP Sports Intelligence Push Notification with top Ganador Local & Over 2.5 picks.
  */
 export async function sendDailyMcpPushNotification(

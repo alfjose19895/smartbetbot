@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generatePredictionsForUpcoming } from "@/lib/sports/db";
 import { buildTripleExclusiveParlays } from "@/lib/sports/parlay-generator";
-import { sendDailyMcpPushNotification } from "@/lib/push/web-push-sender";
+import {
+  sendDailyMcpPushNotification,
+  sendIndividualHighConfidenceAlerts,
+} from "@/lib/push/web-push-sender";
 import { getAllPushSubscriptions } from "@/lib/push/push-store";
 
 export const dynamic = "force-dynamic";
@@ -37,17 +40,20 @@ async function handleDailyAlertsDispatch(req: NextRequest) {
     // 2. Build 3 exclusive parlays
     const parlays = buildTripleExclusiveParlays(predictions);
 
-    // 3. Dispatch Web Push notification
+    // 3. Dispatch individual high-confidence alerts for each top match
+    const individualResults = await sendIndividualHighConfidenceAlerts(predictions);
+
+    // 4. Dispatch daily parlay summary push
     const pushResult = await sendDailyMcpPushNotification(predictions, parlays);
 
     return NextResponse.json({
       success: true,
       timestamp: new Date().toISOString(),
       dispatched: true,
-      totalSubscribers: pushResult.broadcastResult.totalSubscribers,
-      sentCount: pushResult.broadcastResult.sentCount,
-      failedCount: pushResult.broadcastResult.failedCount,
-      payload: pushResult.payload,
+      totalSubscribers: subscriptions.length,
+      individualAlertsSent: individualResults.sentCount,
+      individualAlertsTotal: individualResults.totalEligible,
+      summaryAlertSent: pushResult.broadcastResult.sentCount,
     });
   } catch (error: any) {
     console.error("[API /api/cron/daily-alerts] Error running daily alerts push cron:", error);
