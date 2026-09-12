@@ -124,11 +124,6 @@ export function PredictionCard({
     prediction.status === "lost" ||
     (prediction as any).result === "LOST" ||
     (prediction.status as string) === "LOST";
-  const isNewAlert = Boolean(
-    prediction.isNew ||
-      (prediction as any).isNewlyDiscovered ||
-      prediction.pickBadge === "nuevo"
-  );
 
   const isMcp = Boolean(
     prediction.isMcp ||
@@ -253,11 +248,7 @@ export function PredictionCard({
 
             {/* Right: Badges, Status & Expand Button */}
             <div className="flex items-center gap-1.5 shrink-0">
-              {isNewAlert && (
-                <span className="rounded-lg px-1.5 py-0.5 text-[9px] font-black bg-emerald-500 text-slate-950 shadow-xs border border-emerald-300 flex items-center gap-0.5 animate-pulse">
-                  ✨ NUEVA
-                </span>
-              )}
+              
               {isMcp && (
                 <span className="rounded-lg px-1.5 py-0.5 text-[9px] font-black bg-purple-600 text-white shadow-sm border border-purple-400 flex items-center gap-0.5">
                   🤖 MCP
@@ -328,11 +319,7 @@ export function PredictionCard({
                 </span>
 
                 <div className="flex items-center gap-1.5">
-                  {isNewAlert && (
-                    <span className="inline-flex items-center gap-1 rounded-xl bg-emerald-500 text-slate-950 px-2 py-0.5 text-[10px] font-black border border-emerald-300 shadow-xs animate-pulse">
-                      ✨ NUEVA ALERTA
-                    </span>
-                  )}
+                  
                   {isWon ? (
                     <span className="inline-flex items-center gap-1 rounded-xl px-2.5 py-0.5 text-[10px] font-black bg-emerald-500 text-slate-950 shadow-sm border border-emerald-400">
                       ✓ Ganada
@@ -543,11 +530,7 @@ export function PredictionCard({
             </div>
 
             <div className="flex items-center gap-2">
-              {isNewAlert && (
-                <span className="inline-flex items-center gap-1 rounded-xl bg-emerald-500 text-slate-950 px-2.5 py-1 text-xs font-black shadow-md shadow-emerald-500/30 border border-emerald-300 animate-pulse">
-                  ✨ NUEVA ALERTA
-                </span>
-              )}
+              
               {/* Kickoff Time Badge */}
               <span className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 text-xs font-black text-emerald-700 dark:text-emerald-300 shadow-xs">
                 <span>⏰</span>

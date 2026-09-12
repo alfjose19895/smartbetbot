@@ -720,8 +720,9 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
         if (fixtureDateStr !== todayDateStr) continue; // REGLA ESTRICTA: Solo partidos de la fecha actual
 
         const shortStatus = item.fixture.status?.short || "NS";
-        if (["FT", "AET", "PEN", "PST", "CANC", "ABD"].includes(shortStatus)) continue;
-        if (kickoffMs < nowMs - 15 * 60 * 1000) continue;
+        if (["1H", "2H", "HT", "ET", "BT", "P", "LIVE", "INT", "SUSP", "FT", "AET", "PEN", "PST", "CANC", "ABD", "AWD", "WO", "POST"].includes(shortStatus)) continue;
+        if (kickoffMs <= nowMs) continue;
+        if (shortStatus !== "NS" && shortStatus !== "TBD") continue;
 
         // Skip non-curated leagues ("Otras Ligas") & youth leagues
         const legName = (item.league?.name || "").toLowerCase();
@@ -1116,7 +1117,10 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     if (fixtureDateStr !== todayDateStr) continue;
 
     const shortStatus = item.fixture.status?.short || "NS";
-    if (["FT", "AET", "PEN", "PST", "CANC", "ABD"].includes(shortStatus)) continue;
+    const kickoffMs = new Date(kickoff).getTime();
+    if (["1H", "2H", "HT", "ET", "BT", "P", "LIVE", "INT", "SUSP", "FT", "AET", "PEN", "PST", "CANC", "ABD", "AWD", "WO", "POST"].includes(shortStatus)) continue;
+    if (kickoffMs <= nowMs) continue;
+    if (shortStatus !== "NS" && shortStatus !== "TBD") continue;
 
     const hNorm = getCanonicalTeamKey(item.teams.home.name);
     const aNorm = getCanonicalTeamKey(item.teams.away.name);
@@ -1206,14 +1210,44 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
   poolValor.sort((a, b) => b.edge - a.edge || b.probability - a.probability);
   poolBombas.sort((a, b) => b.odds * b.probability - a.odds * a.probability || b.odds - a.odds);
 
+  const chosenMatchKeys = new Set<string>();
+  const chosenTeams = new Set<string>();
+
+  const pickUniqueFromPool = (pool: MarketOpportunity[], targetCount: number): MarketOpportunity[] => {
+    const selected: MarketOpportunity[] = [];
+    for (const p of pool) {
+      if (selected.length >= targetCount) break;
+      const hNorm = getCanonicalTeamKey(p.homeTeam);
+      const aNorm = getCanonicalTeamKey(p.awayTeam);
+      const matchKey = `${hNorm}-${aNorm}`;
+      const fixId = Number(p.fixtureId) || 0;
+
+      if (
+        chosenMatchKeys.has(matchKey) ||
+        (fixId && existingFixIds.has(fixId)) ||
+        chosenTeams.has(hNorm) ||
+        chosenTeams.has(aNorm) ||
+        existingMatchKeys.has(matchKey)
+      ) {
+        continue;
+      }
+
+      chosenMatchKeys.add(matchKey);
+      chosenTeams.add(hNorm);
+      chosenTeams.add(aNorm);
+      selected.push(p);
+    }
+    return selected;
+  };
+
   let newlyAdded: MarketOpportunity[] = [];
   let merged: MarketOpportunity[] = [];
 
   if (existingSnapshot.length === 0) {
-    // 60 / 25 / 15 Portfolio Strategy (25 picks total)
-    const selSeguras = poolSeguras.slice(0, 15);
-    const selValor = poolValor.slice(0, 6);
-    const selBombas = poolBombas.slice(0, 4);
+    // 60 / 25 / 15 Portfolio Strategy (25 picks total: 15 Seguras, 6 Valor, 4 Bombas)
+    const selSeguras = pickUniqueFromPool(poolSeguras, 15);
+    const selValor = pickUniqueFromPool(poolValor, 6);
+    const selBombas = pickUniqueFromPool(poolBombas, 4);
 
     newlyAdded = [...selSeguras, ...selValor, ...selBombas].map((p) => ({
       ...p,
@@ -1224,9 +1258,9 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     merged = newlyAdded.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
   } else {
     // Incremental search: take up to 5 seguras, 3 valor, 2 bombas
-    const selSeguras = poolSeguras.slice(0, 5);
-    const selValor = poolValor.slice(0, 3);
-    const selBombas = poolBombas.slice(0, 2);
+    const selSeguras = pickUniqueFromPool(poolSeguras, 5);
+    const selValor = pickUniqueFromPool(poolValor, 3);
+    const selBombas = pickUniqueFromPool(poolBombas, 2);
 
     newlyAdded = [...selSeguras, ...selValor, ...selBombas].map((p) => ({
       ...p,
