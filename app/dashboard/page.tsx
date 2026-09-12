@@ -135,7 +135,7 @@ export default function DashboardPage() {
   const loadSignals = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/signals");
+      const res = await fetch(`/api/signals?_t=${Date.now()}`, { cache: "no-store" });
       const json = await res.json();
       const todayDateStr = getEcuadorDateString(Date.now());
       let serverSignals: MarketOpportunity[] = Array.isArray(json.signals)

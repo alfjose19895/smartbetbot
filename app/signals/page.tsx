@@ -178,7 +178,7 @@ export default function SignalsPage() {
   const fetchSignals = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/signals");
+      const res = await fetch(`/api/signals?_t=${Date.now()}`, { cache: "no-store" });
       const json = await res.json();
       const todayDateStr = getEcuadorDateString(Date.now());
       let serverSignals: MarketOpportunity[] = Array.isArray(json.signals)
@@ -458,16 +458,14 @@ export default function SignalsPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            {isAdmin && (
-              <button
-                onClick={handleSyncSignals}
-                disabled={syncing}
-                className="inline-flex items-center gap-1.5 rounded-2xl bg-emerald-600 px-4 py-2 text-xs font-black text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-500 transition cursor-pointer disabled:opacity-50"
-              >
-                <span className={syncing ? "animate-spin" : ""}>⚡</span>
-                <span>{syncing ? "Buscando..." : "⚡ Buscar Nuevas Alertas"}</span>
-              </button>
-            )}
+            <button
+              onClick={handleSyncSignals}
+              disabled={syncing}
+              className="inline-flex items-center gap-1.5 rounded-2xl bg-emerald-600 px-4 py-2 text-xs font-black text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-500 transition cursor-pointer disabled:opacity-50"
+            >
+              <span className={syncing ? "animate-spin" : ""}>⚡</span>
+              <span>{syncing ? "Buscando..." : "⚡ Buscar Nuevas Alertas"}</span>
+            </button>
           </div>
         </div>
 

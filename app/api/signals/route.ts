@@ -61,11 +61,20 @@ export async function GET(request: NextRequest) {
       predictions = predictions.filter((p) => p.probability >= minProb);
     }
 
-    return NextResponse.json({
-      success: true,
-      count: predictions.length,
-      signals: predictions,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        count: predictions.length,
+        signals: predictions,
+      },
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+          "CDN-Cache-Control": "no-store",
+          "Vercel-CDN-Cache-Control": "no-store",
+        },
+      }
+    );
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Failed to load signals";
     console.error("[API /api/signals] Error:", error);
