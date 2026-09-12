@@ -7,7 +7,6 @@ import type { VerifiedIdentity } from "@/features/auth/lib/session";
 
 const navigation = [
   { href: "/dashboard", label: "Resumen", icon: "⌁" },
-  { href: "/live", label: "En vivo", icon: "◉" },
   { href: "/prematch", label: "Señales", icon: "↗" },
   { href: "/track-record", label: "Historial", icon: "◷" },
   { href: "/backtesting", label: "Backtest", icon: "⌬" },
