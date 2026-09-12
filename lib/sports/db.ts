@@ -836,8 +836,13 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
     }
   }
 
-  // Prioritize Top Leagues, High Probability, and Smart Value
+  // Prioritize Top Focus Markets: Ganador Local & Over 2.5 Goles with Highest Effectiveness (MCP Driven)
   const rankedPicks = [...allOpportunities].sort((a, b) => {
+    const aIsFocus = a.market === "Ganador Local" || a.market === "Over 2.5 Goles";
+    const bIsFocus = b.market === "Ganador Local" || b.market === "Over 2.5 Goles";
+    if (aIsFocus !== bIsFocus) {
+      return aIsFocus ? -1 : 1;
+    }
     const aTier = a.leagueTier || 3;
     const bTier = b.leagueTier || 3;
     if (aTier !== bTier) {
@@ -862,6 +867,10 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
     return {
       ...p,
       confidence: conf,
+      isMcpPick: true,
+      isMcp: true,
+      source: "mcp" as const,
+      pickBadge: (p.pickBadge || "mcp") as "bomba" | "valor" | "estandar" | "mcp",
     };
   });
 

@@ -1240,7 +1240,8 @@ export function evaluateFixturePrediction(params: {
     const effOver25 = marketOdds.over25 || resolvedOver25Odds;
     const effBtts = marketOdds.bttsYes || resolvedBttsOdds;
 
-    // 1. Ganador Local (1)
+    // ENFOQUE PRINCIPAL MCP (MÁXIMA EFECTIVIDAD): Ganador Local y Over 2.5 Goles
+    // 1. Ganador Local (1) - Prioridad #1
     if (effHomeWin && effHomeWin >= 1.05 && pHome >= 0.35) {
       candidates.push({
         market: "Ganador Local",
@@ -1249,22 +1250,11 @@ export function evaluateFixturePrediction(params: {
         odds: effHomeWin,
         minOddsThreshold: 1.15,
         minProbThreshold: 0.35,
+        isPriorityFocus: true,
       });
     }
 
-    // 2. Ganador Visitante (2)
-    if (effAwayWin && effAwayWin >= 1.05 && pAway >= 0.30) {
-      candidates.push({
-        market: "Ganador Visitante",
-        selection: "2",
-        prob: pAway,
-        odds: effAwayWin,
-        minOddsThreshold: 1.15,
-        minProbThreshold: 0.30,
-      });
-    }
-
-    // 3. Over 2.5 Goles
+    // 2. Over 2.5 Goles - Prioridad #1
     if (effOver25 && effOver25 >= 1.05 && pOver25 >= 0.35) {
       candidates.push({
         market: "Over 2.5 Goles",
@@ -1273,18 +1263,33 @@ export function evaluateFixturePrediction(params: {
         odds: effOver25,
         minOddsThreshold: 1.25,
         minProbThreshold: 0.35,
+        isPriorityFocus: true,
       });
     }
 
-    // 4. Ambos Equipos Anotan (BTTS)
-    if (effBtts && effBtts >= 1.05 && pBttsYes >= 0.35) {
+    // 3. Ganador Visitante (2) - Mercado Secundario
+    if (effAwayWin && effAwayWin >= 1.05 && pAway >= 0.40) {
+      candidates.push({
+        market: "Ganador Visitante",
+        selection: "2",
+        prob: pAway,
+        odds: effAwayWin,
+        minOddsThreshold: 1.25,
+        minProbThreshold: 0.40,
+        isPriorityFocus: false,
+      });
+    }
+
+    // 4. Ambos Equipos Anotan (BTTS) - Mercado Secundario
+    if (effBtts && effBtts >= 1.05 && pBttsYes >= 0.45) {
       candidates.push({
         market: "Ambos Equipos Anotan",
         selection: "Sí",
         prob: pBttsYes,
         odds: effBtts,
         minOddsThreshold: 1.25,
-        minProbThreshold: 0.35,
+        minProbThreshold: 0.45,
+        isPriorityFocus: false,
       });
     }
   }
@@ -1391,6 +1396,9 @@ export function evaluateFixturePrediction(params: {
         awayRecentForm
       ),
       status: "pending",
+      isMcpPick: true,
+      isMcp: true,
+      source: "mcp" as const,
       h2h: h2hHistory,
       homeLast5: homeRecentForm,
       awayLast5: awayRecentForm,
@@ -1439,7 +1447,18 @@ export function evaluateFixturePrediction(params: {
     }
   }
 
-  return opportunities.sort((a, b) => b.probability - a.probability || b.smartScore - a.smartScore);
+  // Prioritize Over 2.5 Goles & Ganador Local with highest effectiveness & probability
+  return opportunities.sort((a, b) => {
+    const aIsFocus = a.market === "Ganador Local" || a.market === "Over 2.5 Goles";
+    const bIsFocus = b.market === "Ganador Local" || b.market === "Over 2.5 Goles";
+    if (aIsFocus !== bIsFocus) {
+      return aIsFocus ? -1 : 1;
+    }
+    if (b.probability !== a.probability) {
+      return b.probability - a.probability;
+    }
+    return b.smartScore - a.smartScore;
+  });
 }
 
 export const LEAGUE_ROSTERS: Record<string, string[]> = {
