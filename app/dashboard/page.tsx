@@ -320,6 +320,16 @@ export default function DashboardPage() {
           </div>
         )}
 
+        {/* Top Hero Brand Banner */}
+        <div className="relative overflow-hidden rounded-3xl border border-emerald-500/30 bg-slate-950 shadow-2xl shadow-emerald-950/40 group">
+          <img
+            src="/dashboard-banner.png"
+            alt="SmartBetBot - La IA Analiza. Tú decides mejor."
+            className="w-full h-auto object-cover rounded-3xl max-h-[300px] sm:max-h-[380px] lg:max-h-[440px] transition-transform duration-500 group-hover:scale-[1.01]"
+            loading="eager"
+          />
+        </div>
+
         {/* 1. Executive Intelligence Header */}
         <section className="relative overflow-hidden rounded-3xl border border-emerald-500/20 bg-gradient-to-br from-slate-900 via-slate-900/95 to-slate-950 p-6 sm:p-8 text-white shadow-2xl">
           <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl" />
