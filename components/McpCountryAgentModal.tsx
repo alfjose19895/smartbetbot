@@ -59,6 +59,7 @@ const QUICK_CHIPS: QuickChip[] = [
   { id: "laliga", label: "La Liga", icon: "🇪🇸", query: "Pronósticos de La Liga España", leagueId: 140, league: "La Liga", country: "España" },
   { id: "seriea", label: "Serie A", icon: "🇮🇹", query: "Pronósticos de Serie A Italia", leagueId: 135, league: "Serie A", country: "Italia" },
   { id: "bundesliga", label: "Bundesliga", icon: "🇩🇪", query: "Pronósticos de Bundesliga Alemania", leagueId: 78, league: "Bundesliga", country: "Alemania" },
+  { id: "3liga", label: "3. Liga Alemania", icon: "🇩🇪", query: "Pronósticos de 3. Liga Alemania", leagueId: 80, league: "3. Liga", country: "Alemania" },
   { id: "ligue1", label: "Ligue 1", icon: "🇫🇷", query: "Pronósticos de Ligue 1 Francia", leagueId: 61, league: "Ligue 1", country: "Francia" },
   { id: "brasileirao", label: "Brasileirão", icon: "🇧🇷", query: "Pronósticos de Brasileirão Série A", leagueId: 71, league: "Brasileirão Série A", country: "Brasil" },
   { id: "argentina", label: "Liga Argentina", icon: "🇦🇷", query: "Pronósticos de Liga Profesional Argentina", leagueId: 128, league: "Liga Profesional Argentina", country: "Argentina" },

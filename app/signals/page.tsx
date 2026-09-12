@@ -167,19 +167,19 @@ export default function SignalsPage() {
   const handleSyncSignals = async () => {
     try {
       setSyncing(true);
-      setSyncMessage("⚡ Sincronizando alertas pre-match con modelos cuantitativos...");
+      setSyncMessage("⚡ Buscando nuevas alertas pre-match con modelos cuantitativos...");
       const res = await fetch("/api/admin/sync/predictions", {
         method: "POST",
       });
       const data = await res.json();
       if (data.success) {
-        setSyncMessage(`✓ ¡Sincronización exitosa! ${data.count} alertas cuantitativas generadas.`);
+        setSyncMessage(`✓ ¡Búsqueda completada! ${data.count} alertas cuantitativas activas.`);
         await fetchSignals();
       } else {
-        setSyncMessage(`⚠️ ${data.message || "Error al sincronizar"}`);
+        setSyncMessage(`⚠️ ${data.message || "Error al buscar nuevas alertas"}`);
       }
     } catch {
-      setSyncMessage("❌ Error de conexión al sincronizar");
+      setSyncMessage("❌ Error de conexión al buscar nuevas alertas");
     } finally {
       setSyncing(false);
       setTimeout(() => setSyncMessage(null), 4000);
@@ -354,7 +354,7 @@ export default function SignalsPage() {
                 className="inline-flex items-center gap-1.5 rounded-2xl bg-emerald-600 px-4 py-2 text-xs font-black text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-500 transition cursor-pointer disabled:opacity-50"
               >
                 <span className={syncing ? "animate-spin" : ""}>⚡</span>
-                <span>{syncing ? "Sincronizando..." : "Sincronizar Alertas"}</span>
+                <span>{syncing ? "Buscando..." : "⚡ Buscar Nuevas Alertas"}</span>
               </button>
             )}
           </div>

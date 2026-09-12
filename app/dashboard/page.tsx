@@ -124,7 +124,7 @@ export default function DashboardPage() {
   const handleSyncPredictions = async () => {
     try {
       setSyncing(true);
-      setSyncMessage("⚡ Sincronizando partidos y cuotas del día con API-Football...");
+      setSyncMessage("⚡ Buscando partidos y cuotas del día con modelos cuantitativos...");
       const res = await fetch("/api/admin/sync/predictions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -132,13 +132,13 @@ export default function DashboardPage() {
       });
       const data = await res.json();
       if (data.success) {
-        setSyncMessage(`✓ ¡Sincronización exitosa! ${data.count} pronósticos actualizados.`);
+        setSyncMessage(`✓ ¡Búsqueda completada! ${data.count} pronósticos actualizados.`);
         await loadSignals();
       } else {
-        setSyncMessage(`⚠️ ${data.message || "Error al sincronizar"}`);
+        setSyncMessage(`⚠️ ${data.message || "Error al buscar nuevas alertas"}`);
       }
     } catch {
-      setSyncMessage("❌ Error de conexión al sincronizar");
+      setSyncMessage("❌ Error de conexión al buscar nuevas alertas");
     } finally {
       setSyncing(false);
       setTimeout(() => setSyncMessage(null), 4000);
@@ -256,10 +256,10 @@ export default function DashboardPage() {
                   onClick={handleSyncPredictions}
                   disabled={syncing}
                   className="flex items-center gap-1.5 rounded-2xl border border-purple-500/40 bg-purple-500/10 hover:bg-purple-500/20 px-3.5 py-2.5 text-xs font-bold text-purple-300 transition cursor-pointer disabled:opacity-50"
-                  title="Sincronizar cuotas con API-Football"
+                  title="Buscar nuevas alertas del día"
                 >
                   <span className={syncing ? "animate-spin" : ""}>⚡</span>
-                  <span>{syncing ? "Sincronizando..." : "Sincronizar"}</span>
+                  <span>{syncing ? "Buscando..." : "⚡ Buscar Nuevas Alertas"}</span>
                 </button>
               )}
             </div>
@@ -379,7 +379,7 @@ export default function DashboardPage() {
             <div className="rounded-2xl border border-dashed border-slate-300 bg-white/60 p-8 text-center dark:border-slate-800 dark:bg-slate-900/40">
               <span className="text-3xl">🔍</span>
               <h3 className="mt-2 text-sm font-bold text-slate-900 dark:text-white">Sin partidos en este momento</h3>
-              <p className="text-xs text-slate-500 mt-1">Pulsa sincronizar para cargar la jornada más reciente.</p>
+              <p className="text-xs text-slate-500 mt-1">Pulsa buscar nuevas alertas para cargar las oportunidades más recientes.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
