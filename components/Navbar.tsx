@@ -261,16 +261,18 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
 
         {/* Right: Actions (Desktop) */}
         <div className="hidden md:flex items-center gap-1.5 lg:gap-2 shrink-0">
-          {/* Search New Alerts Button */}
-          <button
-            onClick={handleAdminSync}
-            disabled={isSyncInProgress}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-2.5 lg:px-3 py-1.5 text-xs font-black text-emerald-700 transition hover:bg-emerald-500/20 dark:text-emerald-400 cursor-pointer disabled:opacity-50 whitespace-nowrap shadow-xs"
-            title="Buscar nuevas alertas de mercado"
-          >
-            <span className={isSyncInProgress ? "animate-spin" : ""}>⚡</span>
-            <span>{isSyncInProgress ? t("navSyncing") : "Buscar nuevas alertas"}</span>
-          </button>
+          {/* Admin Only: Search New Alerts Button */}
+          {currentRole === "admin" && (
+            <button
+              onClick={handleAdminSync}
+              disabled={isSyncInProgress}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-2.5 lg:px-3 py-1.5 text-xs font-black text-emerald-700 transition hover:bg-emerald-500/20 dark:text-emerald-400 cursor-pointer disabled:opacity-50 whitespace-nowrap shadow-xs"
+              title="Buscar nuevas alertas de mercado (Solo Administrador)"
+            >
+              <span className={isSyncInProgress ? "animate-spin" : ""}>⚡</span>
+              <span>{isSyncInProgress ? t("navSyncing") : "Buscar nuevas alertas"}</span>
+            </button>
+          )}
 
           {/* Direct Push Alerts Trigger Button */}
           <button
