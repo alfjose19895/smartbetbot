@@ -354,18 +354,17 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string): Prom
         return p;
       }
 
-      // 3. MATCH IS NOT STARTED (NS, TBD, PST) -> Ensure status is pending if previously mis-marked
-      if (p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore)) {
-        if (!scoreData || !scoreData.isFinished) {
-          hasUpdates = true;
-          return {
-            ...p,
-            status: "pending" as const,
-            result: undefined,
-            actualScore: undefined,
-            matchTiming: "prematch" as const,
-          };
-        }
+      // 3. MATCH IS UNSTARTED IN THE FUTURE (kickoffMs > nowMs) -> If mistakenly marked as won/lost, reset to pending
+      const pKickoffMs = p.kickoff ? new Date(p.kickoff).getTime() : 0;
+      if (pKickoffMs > nowMs && (p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore))) {
+        hasUpdates = true;
+        return {
+          ...p,
+          status: "pending" as const,
+          result: undefined,
+          actualScore: undefined,
+          matchTiming: "prematch" as const,
+        };
       }
 
       return p;
@@ -2244,16 +2243,17 @@ export async function searchLiveMarketDynamic(params: {
         return false;
       }
 
-      // Direct League ID match
-      if (targetLeagueId && f.league?.id === targetLeagueId) {
-        return true;
+      // Strict League Filtering: If a specific league ID or name/country was targeted, ONLY accept matches from that league!
+      if (targetLeagueId) {
+        return f.league?.id === targetLeagueId;
       }
 
-      // Direct League Name or Country string match
-      if (lLower && lLower !== "all" && lLower !== "todas") {
-        if (legName.includes(lLower) || lLower.includes(legName) || countryName.includes(lLower)) {
-          return true;
-        }
+      if (lLower && lLower !== "all" && lLower !== "todas" && lLower !== "todas las ligas") {
+        return legName.includes(lLower) || lLower.includes(legName) || countryName.includes(lLower);
+      }
+
+      if (cLower && cLower !== "all" && cLower !== "todos") {
+        return countryName.includes(cLower) || cLower.includes(countryName);
       }
 
       return isCuratedLeague(f.league?.id, f.league?.name, f.league?.country);
@@ -2273,9 +2273,34 @@ export async function searchLiveMarketDynamic(params: {
       else if (qLower.includes("empate") || qLower.includes("draw")) targetMarket = "Empate";
     }
 
+    // Fast bulk odds retrieval for today + parallel fallback
+    const todayOddsList = await apiFootball.getOddsByDate(todayDateStr, "America/Guayaquil").catch(() => [] as ApiFootballOddsItem[]);
+    const oddsMapByFixture: Record<number, ApiFootballOddsItem> = {};
+    for (const item of (Array.isArray(todayOddsList) ? todayOddsList : [])) {
+      if (item.fixture?.id) {
+        oddsMapByFixture[item.fixture.id] = item;
+      }
+    }
+
+    // Parallel odds retrieval for fixtures not in bulk cache
+    const oddsByFixtureId: Record<number, any> = { ...oddsMapByFixture };
+    const missingOddsFixtures = targetFixtures.filter((f) => !oddsByFixtureId[f.fixture.id]);
+    if (missingOddsFixtures.length > 0) {
+      await Promise.all(
+        missingOddsFixtures.slice(0, 10).map(async (f) => {
+          try {
+            const oddsItem = await apiFootball.getOddsByFixture(f.fixture.id);
+            if (oddsItem) {
+              oddsByFixtureId[f.fixture.id] = oddsItem;
+            }
+          } catch {}
+        })
+      );
+    }
+
     for (const f of targetFixtures) {
       try {
-        const oddsItem = await apiFootball.getOddsByFixture(f.fixture.id);
+        const oddsItem = oddsByFixtureId[f.fixture.id];
         const realMarketOdds = extractMarketOddsFromBookmaker(oddsItem);
 
         // Only evaluate if real authentic odds exist from bookmaker

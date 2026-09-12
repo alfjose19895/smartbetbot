@@ -62,6 +62,12 @@ const FORBIDDEN_RESERVE_TEAMS = [
 ];
 
 const LEAGUE_KEYWORDS: Record<string, string[]> = {
+  mls: ["mls", "major league soccer", "estados unidos", "usa"],
+  ligamx: ["liga mx", "mexico", "méxico", "expansion mx"],
+  colombia: ["colombia", "primera a", "liga betplay"],
+  ecuador: ["ecuador", "liga pro"],
+  peru: ["peru", "perú", "liga 1"],
+  chile: ["chile", "primera division", "campeonato nacional"],
   champions: ["champions", "ucl", "uefa champions league", "champions league", "uefa"],
   europa: ["europa league", "uel", "uefa europa league", "europa"],
   sudamericana: ["sudamericana", "conmebol sudamericana", "copa sudamericana", "sudamerica"],
@@ -74,6 +80,12 @@ const LEAGUE_KEYWORDS: Record<string, string[]> = {
   saudi: ["saudi", "pro league", "arabia"],
   brasil: ["brasileirao", "brasileirão", "brasil", "copa do brasil"],
   argentina: ["argentina", "liga profesional", "copa argentina"],
+  norway: ["noruega", "norway", "obos-ligaen", "eliteserien"],
+  croatia: ["croacia", "croatia", "hnl"],
+  belgium: ["belgica", "bélgica", "belgium", "jupiler"],
+  turkey: ["turquia", "turquía", "turkey", "super lig", "süper lig"],
+  netherlands: ["eredivisie", "paises bajos", "países bajos", "holanda"],
+  portugal: ["portugal", "primeira liga"],
   finland: ["veikkausliiga", "finlandia"],
   korea: ["k league", "corea"],
 };
@@ -260,39 +272,26 @@ export async function POST(req: Request) {
     let matchedByLeague = false;
 
     if (targetLeagueId) {
-      const idMatches = pool.filter((p) => p.leagueId === targetLeagueId);
-      if (idMatches.length > 0) {
-        filtered = idMatches;
-        matchedByLeague = true;
-      }
-    }
-
-    if (!matchedByLeague && lLower && lLower !== "all" && lLower !== "todas" && lLower !== "todas las ligas") {
-      const nameMatches = pool.filter((p) => {
+      filtered = pool.filter((p) => p.leagueId === targetLeagueId);
+      matchedByLeague = true;
+    } else if (lLower && lLower !== "all" && lLower !== "todas" && lLower !== "todas las ligas") {
+      filtered = pool.filter((p) => {
         const pLeague = (p.league || "").toLowerCase();
         const pCountry = (p.country || "").toLowerCase();
         return pLeague.includes(lLower) || lLower.includes(pLeague) || pCountry.includes(lLower);
       });
-      if (nameMatches.length > 0) {
-        filtered = nameMatches;
-        matchedByLeague = true;
-      }
-    }
-
-    // 2. NLP League Filter Recognition from Prompt or Country Parameter
-    if (!matchedByLeague) {
+      matchedByLeague = true;
+    } else {
+      // 2. NLP League Filter Recognition from Prompt or Country Parameter
       for (const [leagueKey, keywords] of Object.entries(LEAGUE_KEYWORDS)) {
         if (keywords.some((kw) => qLower.includes(kw) || cLower.includes(kw) || kw === cLower)) {
-          const leagueMatches = pool.filter((p) => {
+          filtered = pool.filter((p) => {
             const l = (p.league || "").toLowerCase();
             const c = (p.country || "").toLowerCase();
             return keywords.some((kw) => l.includes(kw) || kw.includes(l) || c.includes(kw));
           });
-          if (leagueMatches.length > 0) {
-            filtered = leagueMatches;
-            matchedByLeague = true;
-            break;
-          }
+          matchedByLeague = true;
+          break;
         }
       }
     }

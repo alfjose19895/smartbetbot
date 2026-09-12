@@ -150,7 +150,8 @@
     "addedAt": "2026-09-12T11:53:00.065Z",
     "actualScore": "0 - 0 (0 Goles)",
     "result": "LOST",
-    "profit": -100
+    "profit": -100,
+    "pick": "Over 2.5 Goles"
   },
   {
     "fixtureId": 1575163,
@@ -303,7 +304,8 @@
     "addedAt": "2026-09-12T11:53:00.065Z",
     "actualScore": "1 - 3 (4 Goles)",
     "result": "WON",
-    "profit": 35
+    "profit": 35,
+    "pick": "Over 2.5 Goles"
   },
   {
     "fixtureId": 1575160,
@@ -456,7 +458,8 @@
     "addedAt": "2026-09-12T11:53:00.065Z",
     "actualScore": "2 - 1 (3 Goles)",
     "result": "WON",
-    "profit": 37
+    "profit": 37,
+    "pick": "Over 2.5 Goles"
   },
   {
     "fixtureId": 1575158,
@@ -609,7 +612,8 @@
     "addedAt": "2026-09-12T11:53:00.065Z",
     "actualScore": "3 - 0 (3 Goles)",
     "result": "WON",
-    "profit": 38
+    "profit": 38,
+    "pick": "Over 2.5 Goles"
   },
   {
     "fixtureId": 1575161,
@@ -762,7 +766,8 @@
     "addedAt": "2026-09-12T11:53:00.065Z",
     "actualScore": "5 - 0",
     "result": "WON",
-    "profit": 38
+    "profit": 38,
+    "pick": "SC Freiburg"
   },
   {
     "fixtureId": 1575162,
@@ -915,7 +920,8 @@
     "addedAt": "2026-09-12T11:53:00.065Z",
     "actualScore": "2 - 2 (4 Goles)",
     "result": "WON",
-    "profit": 40
+    "profit": 40,
+    "pick": "Over 2.5 Goles"
   },
   {
     "fixtureId": 1557401,
@@ -1068,7 +1074,8 @@
     "addedAt": "2026-09-12T11:53:00.065Z",
     "actualScore": "2 - 3",
     "result": "LOST",
-    "profit": -100
+    "profit": -100,
+    "pick": "Crystal Palace"
   },
   {
     "fixtureId": 1557399,
@@ -1221,7 +1228,8 @@
     "addedAt": "2026-09-12T11:53:00.065Z",
     "actualScore": "2 - 2 (4 Goles)",
     "result": "WON",
-    "profit": 41
+    "profit": 41,
+    "pick": "Over 2.5 Goles"
   },
   {
     "fixtureId": 1557403,
@@ -1374,7 +1382,8 @@
     "addedAt": "2026-09-12T11:53:00.065Z",
     "actualScore": "0 - 0 (0 Goles)",
     "result": "LOST",
-    "profit": -100
+    "profit": -100,
+    "pick": "Over 2.5 Goles"
   },
   {
     "fixtureId": 1494760,
@@ -1527,7 +1536,8 @@
     "addedAt": "2026-09-12T11:53:00.065Z",
     "actualScore": "2 - 0",
     "result": "WON",
-    "profit": 95
+    "profit": 95,
+    "pick": "Lillestrom"
   },
   {
     "fixtureId": 1558627,
@@ -1680,7 +1690,8 @@
     "addedAt": "2026-09-12T11:53:00.065Z",
     "actualScore": "2 - 0",
     "result": "LOST",
-    "profit": -100
+    "profit": -100,
+    "pick": "St. Truiden"
   },
   {
     "fixtureId": 1551106,
@@ -1835,7 +1846,8 @@
     "currentScore": "1 - 1",
     "matchTiming": "live",
     "livePeriod": "2H",
-    "liveMinute": "78"
+    "liveMinute": "78",
+    "pick": "CSKA 1948"
   },
   {
     "fixtureId": 1573578,
@@ -1990,7 +2002,8 @@
     "currentScore": "1 - 1",
     "matchTiming": "live",
     "livePeriod": "1H",
-    "liveMinute": "33"
+    "liveMinute": "33",
+    "pick": "Barcelona W"
   },
   {
     "fixtureId": 1584403,
@@ -2145,7 +2158,8 @@
     "currentScore": "0 - 1",
     "matchTiming": "live",
     "livePeriod": "1H",
-    "liveMinute": "33"
+    "liveMinute": "33",
+    "pick": "Ambos Equipos Anotan"
   },
   {
     "fixtureId": 1550117,
@@ -2295,7 +2309,8 @@
     "awayElo": 1556,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:53:00.065Z"
+    "addedAt": "2026-09-12T11:53:00.065Z",
+    "pick": "Over 2.5 Goles"
   },
   {
     "fixtureId": 1558630,
@@ -2445,7 +2460,8 @@
     "awayElo": 1483,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:53:00.065Z"
+    "addedAt": "2026-09-12T11:53:00.065Z",
+    "pick": "Ambos Equipos Anotan"
   },
   {
     "fixtureId": 1570379,
@@ -2595,7 +2611,8 @@
     "awayElo": 1610,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:53:00.065Z"
+    "addedAt": "2026-09-12T11:53:00.065Z",
+    "pick": "Over 2.5 Goles"
   },
   {
     "fixtureId": 1492370,
@@ -2745,7 +2762,8 @@
     "awayElo": 1626,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:53:00.065Z"
+    "addedAt": "2026-09-12T11:53:00.065Z",
+    "pick": "Atletico-MG"
   },
   {
     "fixtureId": 1492376,
@@ -2895,7 +2913,8 @@
     "awayElo": 1659,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:53:00.065Z"
+    "addedAt": "2026-09-12T11:53:00.065Z",
+    "pick": "Vasco DA Gama"
   },
   {
     "fixtureId": 1551683,
@@ -3045,7 +3064,8 @@
     "awayElo": 1626,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:53:00.065Z"
+    "addedAt": "2026-09-12T11:53:00.065Z",
+    "pick": "Over 2.5 Goles"
   },
   {
     "fixtureId": 1549776,
@@ -3195,7 +3215,8 @@
     "awayElo": 1502,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:53:00.065Z"
+    "addedAt": "2026-09-12T11:53:00.065Z",
+    "pick": "Chico"
   },
   {
     "fixtureId": 1490469,
@@ -3345,7 +3366,8 @@
     "awayElo": 1506,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:53:00.065Z"
+    "addedAt": "2026-09-12T11:53:00.065Z",
+    "pick": "Orlando City SC"
   },
   {
     "fixtureId": 1490466,
@@ -3495,7 +3517,8 @@
     "awayElo": 1516,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:53:00.065Z"
+    "addedAt": "2026-09-12T11:53:00.065Z",
+    "pick": "Inter Miami"
   },
   {
     "fixtureId": 1549483,
@@ -3645,7 +3668,8 @@
     "awayElo": 1616,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:53:00.065Z"
+    "addedAt": "2026-09-12T11:53:00.065Z",
+    "pick": "Ambos Equipos Anotan"
   },
   {
     "fixtureId": 1490476,
@@ -3795,6 +3819,7 @@
     "awayElo": 1645,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-09-12T11:53:00.065Z"
+    "addedAt": "2026-09-12T11:53:00.065Z",
+    "pick": "Seattle Sounders"
   }
 ]

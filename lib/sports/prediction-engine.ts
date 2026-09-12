@@ -1,3 +1,18 @@
+export function getPickDisplayName(market: string, selection: string, homeTeam: string, awayTeam: string): string {
+  const m = (market || "").toLowerCase();
+  const s = (selection || "").toLowerCase();
+  if (m.includes("local") || s === "1") return homeTeam;
+  if (m.includes("visitante") || s === "2") return awayTeam;
+  if (m.includes("empate") || s === "x" || s === "draw") return "Empate";
+  if (m.includes("ambos") || m.includes("btts")) return "Ambos Equipos Anotan";
+  if (m.includes("over 2.5")) return "Over 2.5 Goles";
+  if (m.includes("over 1.5")) return "Over 1.5 Goles";
+  if (m.includes("over 0.5")) return "Over 0.5 Goles";
+  if (m.includes("under 2.5")) return "Under 2.5 Goles";
+  if (m.includes("under 3.5")) return "Under 3.5 Goles";
+  return selection || market;
+}
+
 /**
  * Production-ready TypeScript SmartBetBot Quantitative Prediction Engine (MVP).
  * Combines Team Elo ratings, Poisson Expected Goals (xG), market valuation,
@@ -70,6 +85,8 @@ export interface MarketOpportunity {
   explanation: string;
   status: "pending" | "won" | "lost" | "void";
   actualScore?: string;
+  pick?: string;
+  profit?: number;
   h2h?: H2HMatch[];
   homeLast5?: TeamFormMatch[];
   awayLast5?: TeamFormMatch[];
@@ -1455,6 +1472,7 @@ export function evaluateFixturePrediction(params: {
       kickoff,
       market: item.market,
       selection: item.selection,
+      pick: getPickDisplayName(item.market, item.selection, homeTeam, awayTeam),
       odds: item.odds,
       bookmaker: "Bet365",
       bookmakerOdds: item.odds,

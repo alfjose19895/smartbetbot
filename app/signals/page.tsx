@@ -27,62 +27,34 @@ function getMatchDeduplicationKey(p: MarketOpportunity): string {
   if (fixId > 0) return `fix-${fixId}`;
   const h = (p.homeTeam || "").toLowerCase().replace(/[^a-z0-9]/gi, "").trim();
   const a = (p.awayTeam || "").toLowerCase().replace(/[^a-z0-9]/gi, "").trim();
-  
-  // Canonical aliases
-  let hKey = h;
-  let aKey = a;
-  if (h.includes("chico")) hKey = "boyacachico";
-  if (a.includes("chico")) aKey = "boyacachico";
-  if (h.includes("medellin")) hKey = "independientemedellin";
-  if (a.includes("medellin")) aKey = "independientemedellin";
-  if (h.includes("cruzazul")) hKey = "cruzazul";
-  if (a.includes("cruzazul")) aKey = "cruzazul";
-  if (h.includes("america") && !h.includes("cali")) hKey = "clubamerica";
-  if (a.includes("america") && !a.includes("cali")) aKey = "clubamerica";
-  if (h.includes("columbus")) hKey = "columbuscrew";
-  if (a.includes("columbus")) aKey = "columbuscrew";
-  if (h.includes("redbulls")) hKey = "newyorkredbulls";
-  if (a.includes("redbulls")) aKey = "newyorkredbulls";
-  if (h.includes("dallas")) hKey = "fcdallas";
-  if (a.includes("dallas")) aKey = "fcdallas";
-  if (h.includes("portland")) hKey = "portlandtimbers";
-  if (a.includes("portland")) aKey = "portlandtimbers";
-  
-  return `${hKey}-${aKey}`;
+  return `${h}-${a}`;
 }
 
 function deduplicatePicksList(picks: MarketOpportunity[]): MarketOpportunity[] {
   const map = new Map<string, MarketOpportunity>();
-  const seenTeams = new Set<string>();
 
   for (const p of picks) {
     const key = getMatchDeduplicationKey(p);
+    const fixId = Number(p.fixtureId) || 0;
     const h = (p.homeTeam || "").toLowerCase().replace(/[^a-z0-9]/gi, "").trim();
     const a = (p.awayTeam || "").toLowerCase().replace(/[^a-z0-9]/gi, "").trim();
-    let hKey = h.includes("chico") ? "boyacachico" : h.includes("cruzazul") ? "cruzazul" : h;
-    let aKey = a.includes("chico") ? "boyacachico" : a.includes("cruzazul") ? "cruzazul" : a;
 
     let matchedExistingKey: string | null = null;
-    for (const [exKey, ex] of map.entries()) {
-      if (exKey === key) {
-        matchedExistingKey = exKey;
-        break;
-      }
-      const exFixId = Number(ex.fixtureId) || 0;
-      const fixId = Number(p.fixtureId) || 0;
-      if (fixId > 0 && exFixId > 0 && fixId === exFixId) {
-        matchedExistingKey = exKey;
-        break;
-      }
-      const exH = (ex.homeTeam || "").toLowerCase().replace(/[^a-z0-9]/gi, "").trim();
-      const exA = (ex.awayTeam || "").toLowerCase().replace(/[^a-z0-9]/gi, "").trim();
-      let exHKey = exH.includes("chico") ? "boyacachico" : exH.includes("cruzazul") ? "cruzazul" : exH;
-      let exAKey = exA.includes("chico") ? "boyacachico" : exA.includes("cruzazul") ? "cruzazul" : exA;
-
-      if ((hKey === exHKey && aKey === exAKey) ||
-          ((hKey.includes(exHKey) || exHKey.includes(hKey)) && (aKey.includes(exAKey) || exAKey.includes(aKey)))) {
-        matchedExistingKey = exKey;
-        break;
+    if (map.has(key)) {
+      matchedExistingKey = key;
+    } else {
+      for (const [exKey, ex] of map.entries()) {
+        const exFixId = Number(ex.fixtureId) || 0;
+        if (fixId > 0 && exFixId > 0 && fixId === exFixId) {
+          matchedExistingKey = exKey;
+          break;
+        }
+        const exH = (ex.homeTeam || "").toLowerCase().replace(/[^a-z0-9]/gi, "").trim();
+        const exA = (ex.awayTeam || "").toLowerCase().replace(/[^a-z0-9]/gi, "").trim();
+        if (h && a && exH && exA && h === exH && a === exA) {
+          matchedExistingKey = exKey;
+          break;
+        }
       }
     }
 
@@ -91,15 +63,13 @@ function deduplicatePicksList(picks: MarketOpportunity[]): MarketOpportunity[] {
       map.set(matchedExistingKey, {
         ...existing,
         ...p,
-        status: existing.status !== "pending" ? existing.status : p.status || "pending",
+        status: existing.status && existing.status !== "pending" ? existing.status : p.status || "pending",
         actualScore: existing.actualScore || p.actualScore,
+        result: existing.result || (p as any).result,
+        profit: typeof (existing as any).profit === "number" ? (existing as any).profit : (p as any).profit,
       });
     } else {
-      if (!seenTeams.has(hKey) && !seenTeams.has(aKey)) {
-        map.set(key, p);
-        seenTeams.add(hKey);
-        seenTeams.add(aKey);
-      }
+      map.set(key, p);
     }
   }
 
@@ -432,7 +402,7 @@ export default function SignalsPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
-      <Navbar />
+      <Navbar onSync={handleSyncSignals} syncing={syncing} />
 
       <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
         {/* Header Strip with Pre-Match Title & Date */}
