@@ -391,7 +391,7 @@ export default function DashboardPage() {
                 Centro de Inteligencia Deportiva
               </h1>
               <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
-                Selecciones automáticas de máxima probabilidad con enfoque prioritario en <strong className="text-emerald-400 font-bold">Ganador Local (1)</strong> y <strong className="text-emerald-400 font-bold">Over 2.5 Goles</strong>, respaldadas por modelos Dixon-Coles y simulación Monte Carlo.
+                Pronósticos inteligentes seleccionados automáticamente con apoyo de <strong className="text-emerald-400 font-bold">Inteligencia Artificial</strong>, según las mejores oportunidades del día, con especial enfoque en <strong className="text-emerald-400 font-bold">victorias del equipo local</strong> y <strong className="text-emerald-400 font-bold">partidos con más de 2.5 goles</strong>. SmartBetBot combina IA, estadísticas, rendimiento y tendencias para mostrarte las opciones con mayor potencial de forma clara, rápida y sencilla.
               </p>
             </div>
 

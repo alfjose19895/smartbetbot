@@ -36,7 +36,7 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     // Dashboard
     dashboardKicker: "Panel Principal",
     dashboardTitle: "Centro de Inteligencia Deportiva",
-    dashboardSubtitle: "Selecciones automáticas de máxima probabilidad con enfoque prioritario en Ganador Local (1) y Over 2.5 Goles, respaldadas por modelos Dixon-Coles y simulación Monte Carlo.",
+    dashboardSubtitle: "Pronósticos inteligentes seleccionados automáticamente con apoyo de Inteligencia Artificial, según las mejores oportunidades del día, con especial enfoque en victorias del equipo local y partidos con más de 2.5 goles. SmartBetBot combina IA, estadísticas, rendimiento y tendencias para mostrarte las opciones con mayor potencial de forma clara, rápida y sencilla.",
     statActivePicks: "Alertas Activas",
     statAvgOdds: "Cuota Promedio",
     statAvgProb: "Probabilidad Media",
@@ -161,7 +161,7 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     // Dashboard
     dashboardKicker: "Main Dashboard",
     dashboardTitle: "Sports Intelligence Center",
-    dashboardSubtitle: "Automated maximum-probability selections with primary focus on Home Win (1) and Over 2.5 Goals, backed by Dixon-Coles models and Monte Carlo simulations.",
+    dashboardSubtitle: "Smart forecasts automatically selected with AI support based on the best daily opportunities, with special focus on home wins and over 2.5 goals. SmartBetBot combines AI, stats, form, and trends to highlight high-potential picks clearly and simply.",
     statActivePicks: "Active Alerts",
     statAvgOdds: "Average Odds",
     statAvgProb: "Average Probability",
