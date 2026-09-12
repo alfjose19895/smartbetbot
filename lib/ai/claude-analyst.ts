@@ -249,6 +249,173 @@ Devuelve un JSON estrictamente estructurado:
   };
 }
 
+export interface GeminiVetoAuditResult {
+  fixtureId: number | string;
+  match: string;
+  vetoed: boolean;
+  vetoReason?: string;
+  riskScore: number; // 0 to 100
+  tacticalNote?: string;
+  recommendedConfidence?: "Muy Alta" | "Alta" | "Media" | "Moderada";
+}
+
+/**
+ * RECOMENDACIÓN 4: Auditor "Abogado del Diablo" con Google Gemini / Motor Cuantitativo.
+ * Somete a estrés los pronósticos para detectar trampas estructurales:
+ * - Fatiga de calendario (partidos de Copa o torneo internacional en < 72h).
+ * - Derbis de fricción extrema que distorsionan modelos estadísticos.
+ * - Dependencia crítica de jugadores lesionados o rotación masiva.
+ * - Desmotivación por objetivos ya cumplidos o descensos consumados.
+ */
+export async function auditPredictionsWithGeminiVeto(
+  predictions: MarketOpportunity[]
+): Promise<{
+  approvedPicks: MarketOpportunity[];
+  vetoedPicks: MarketOpportunity[];
+  audits: GeminiVetoAuditResult[];
+  usedAi: boolean;
+  provider: AiProvider;
+}> {
+  if (!predictions || predictions.length === 0) {
+    return { approvedPicks: [], vetoedPicks: [], audits: [], usedAi: false, provider: "none" };
+  }
+
+  const provider = getActiveAiProvider();
+
+  // 1. Try Live Gemini / Claude Devil's Advocate Prompt
+  if (provider !== "none") {
+    try {
+      const candidatesPayload = predictions.slice(0, 12).map((p) => ({
+        fixtureId: p.fixtureId,
+        match: p.match,
+        league: p.league,
+        kickoff: p.kickoff,
+        market: p.market,
+        selection: p.selection,
+        odds: p.odds,
+        probability: p.probability,
+        edge: p.edge,
+        confidence: p.confidence,
+      }));
+
+      const vetoPrompt = `Actúa como el Auditor Senior de Riesgo Táctico Deportivo ("Abogado del Diablo") para apuestas de fútbol profesional.
+Tu misión es someter a estrés y auditar rigurosamente cada una de las siguientes selecciones matemáticas candidatas:
+${JSON.stringify(candidatesPayload, null, 2)}
+
+Para cada partido, busca activamente razones estructurales o trampas cualitativas para VETAR la selección o advertir de riesgo oculto:
+1. Fatiga de calendario y rotaciones (ej. jugar Champions League, Copa Libertadores o fecha intersemanal en menos de 72 horas).
+2. Clásicos regionales de fricción extrema o partidos de alta tensión disciplinaria.
+3. Partidos de final de temporada con asimetría de motivación (ej. equipo campeón vs equipo jugándose la permanencia).
+4. Cuotas trampa sobrevaloradas por el mercado.
+
+Devuelve estrictamente un array JSON con el formato:
+[
+  {
+    "fixtureId": (número o string del fixtureId),
+    "match": "Equipo Local vs Equipo Visitante",
+    "vetoed": true / false,
+    "vetoReason": "Explicación concisa del veto si fue vetado, o null si está aprobado",
+    "riskScore": (número del 0 al 100, donde > 75 es riesgo crítico),
+    "tacticalNote": "Comentario táctico conciso",
+    "recommendedConfidence": "Muy Alta" | "Alta" | "Media" | "Moderada"
+  }
+]`;
+
+      const responseText = provider === "gemini" ? await callGemini(vetoPrompt) : await callClaude(vetoPrompt);
+      const jsonMatch = responseText.match(/\[[\s\S]*\]/);
+
+      if (jsonMatch) {
+        const parsedAudits: GeminiVetoAuditResult[] = JSON.parse(jsonMatch[0]);
+        const auditMap = new Map<string, GeminiVetoAuditResult>();
+        for (const a of parsedAudits) {
+          auditMap.set(String(a.fixtureId), a);
+        }
+
+        const approvedPicks: MarketOpportunity[] = [];
+        const vetoedPicks: MarketOpportunity[] = [];
+
+        for (const p of predictions) {
+          const audit = auditMap.get(String(p.fixtureId));
+          if (audit && (audit.vetoed || audit.riskScore >= 80)) {
+            vetoedPicks.push({
+              ...p,
+              explanation: `⚠️ [VETO TÁCTICO GEMINI]: ${audit.vetoReason || "Alto riesgo estructural detectado"}. ${p.explanation}`,
+              confidence: "Moderada",
+            });
+          } else {
+            const adjustedPick = {
+              ...p,
+              confidence: audit?.recommendedConfidence || p.confidence,
+              explanation: audit?.tacticalNote ? `${p.explanation} [Auditoría AI: ${audit.tacticalNote}]` : p.explanation,
+            };
+            approvedPicks.push(adjustedPick);
+          }
+        }
+
+        return {
+          approvedPicks: approvedPicks.length > 0 ? approvedPicks : predictions,
+          vetoedPicks,
+          audits: parsedAudits,
+          usedAi: true,
+          provider,
+        };
+      }
+    } catch (err) {
+      console.warn(`[auditPredictionsWithGeminiVeto (${provider})] AI request failed, applying Quantitative Devil's Advocate Engine:`, err);
+    }
+  }
+
+  // 2. High-Precision Quantitative Devil's Advocate Engine (Rule-based Fallback)
+  const approvedPicks: MarketOpportunity[] = [];
+  const vetoedPicks: MarketOpportunity[] = [];
+  const audits: GeminiVetoAuditResult[] = [];
+
+  for (const p of predictions) {
+    let vetoed = false;
+    let vetoReason: string | undefined = undefined;
+    let riskScore = 20;
+
+    // Rule 1: High odds with low edge (negative EV trap)
+    if (p.odds >= 2.20 && (p.expectedValue || 0) < 1.0) {
+      vetoed = true;
+      vetoReason = "Cuota alta con valor esperado insuficiente (< +1.0% EV)";
+      riskScore = 85;
+    }
+
+    // Rule 2: Ultra-low odds trap (< 1.30) with edge < 2%
+    if (p.odds < 1.30 && (p.edge || 0) < 2.0) {
+      vetoed = true;
+      vetoReason = "Cuota trampa baja sin ventaja de valor suficiente";
+      riskScore = 80;
+    }
+
+    const audit: GeminiVetoAuditResult = {
+      fixtureId: p.fixtureId,
+      match: p.match,
+      vetoed,
+      vetoReason,
+      riskScore,
+      tacticalNote: vetoed ? vetoReason : "Validación matemática cuantitativa superada",
+      recommendedConfidence: p.confidence,
+    };
+    audits.push(audit);
+
+    if (vetoed) {
+      vetoedPicks.push(p);
+    } else {
+      approvedPicks.push(p);
+    }
+  }
+
+  return {
+    approvedPicks: approvedPicks.length > 0 ? approvedPicks : predictions,
+    vetoedPicks,
+    audits,
+    usedAi: false,
+    provider: "none",
+  };
+}
+
 export async function auditPredictionsBatchWithClaude(
   predictions: MarketOpportunity[]
 ): Promise<{
@@ -257,10 +424,27 @@ export async function auditPredictionsBatchWithClaude(
   usedAi: boolean;
   provider: AiProvider;
 }> {
+  const vetoResult = await auditPredictionsWithGeminiVeto(predictions);
   return {
-    approvedPicks: predictions,
-    audits: [],
-    usedAi: true,
-    provider: getActiveAiProvider(),
+    approvedPicks: vetoResult.approvedPicks,
+    audits: vetoResult.audits.map((a) => {
+      const pred = predictions.find((p) => String(p.fixtureId) === String(a.fixtureId)) || predictions[0];
+      return {
+        fixtureId: a.fixtureId,
+        homeTeam: pred?.homeTeam || "Equipo Local",
+        awayTeam: pred?.awayTeam || "Equipo Visitante",
+        market: pred?.market || "1X2",
+        selection: pred?.selection || "1",
+        odds: pred?.odds || 1.80,
+        approved: !a.vetoed,
+        convictionScore: 100 - a.riskScore,
+        trapRisk: a.riskScore >= 75 ? "Alto" : a.riskScore >= 50 ? "Moderado" : "Bajo",
+        keyRiskFactor: a.vetoReason || "Ninguno",
+        tacticalReasoning: a.tacticalNote || "Validación cuantitativa exitosa",
+        recommendedStake: "Stake 2 (2%)",
+      };
+    }),
+    usedAi: vetoResult.usedAi,
+    provider: vetoResult.provider,
   };
 }

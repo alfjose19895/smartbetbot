@@ -588,6 +588,33 @@ export function poissonProbability(k: number, lambda: number): number {
   return (Math.pow(lambda, k) * Math.exp(-lambda)) / factorial(k);
 }
 
+/**
+ * Dixon & Coles (1997) bivariate low-scoring correlation correction factor:
+ * tau(x, y, lambda, mu, rho) adjusts the independent Poisson probabilities for 0-0, 1-0, 0-1, and 1-1.
+ * Standard empirical rho = -0.11 for professional football leagues.
+ */
+export function dixonColesTau(
+  homeGoals: number,
+  awayGoals: number,
+  hXg: number,
+  aXg: number,
+  rho: number = -0.11
+): number {
+  if (homeGoals === 0 && awayGoals === 0) {
+    return Math.max(0.05, 1.0 - (hXg * aXg * rho));
+  }
+  if (homeGoals === 0 && awayGoals === 1) {
+    return Math.max(0.05, 1.0 + (hXg * rho));
+  }
+  if (homeGoals === 1 && awayGoals === 0) {
+    return Math.max(0.05, 1.0 + (aXg * rho));
+  }
+  if (homeGoals === 1 && awayGoals === 1) {
+    return Math.max(0.05, 1.0 - rho);
+  }
+  return 1.0;
+}
+
 export function calculateBookmakerOdds(fairProbability: number, marginMultiplier: number = 0.95): number {
   if (fairProbability <= 0) return 25.0;
   const rawOdds = 1.0 / fairProbability;
@@ -937,11 +964,25 @@ export function evaluateFixturePrediction(params: {
 
   const maxGoals = 6;
   const scoreMatrix: number[][] = [];
+  let matrixProbSum = 0;
 
   for (let h = 0; h <= maxGoals; h++) {
     scoreMatrix[h] = [];
     for (let a = 0; a <= maxGoals; a++) {
-      scoreMatrix[h][a] = poissonProbability(h, hXg) * poissonProbability(a, aXg);
+      const indP = poissonProbability(h, hXg) * poissonProbability(a, aXg);
+      const tau = dixonColesTau(h, a, hXg, aXg, -0.11);
+      const adjP = indP * tau;
+      scoreMatrix[h][a] = adjP;
+      matrixProbSum += adjP;
+    }
+  }
+
+  // Normalize matrix so probabilities sum strictly to 1.0
+  if (matrixProbSum > 0) {
+    for (let h = 0; h <= maxGoals; h++) {
+      for (let a = 0; a <= maxGoals; a++) {
+        scoreMatrix[h][a] = scoreMatrix[h][a] / matrixProbSum;
+      }
     }
   }
 
@@ -1359,12 +1400,30 @@ export function evaluateFixturePrediction(params: {
     };
   };
 
+  // RECOMENDACIÓN 3: SWEET SPOT Y FILTRO ANTI-CUOTAS TRAMPA
+  // Tier-based safety edge: Tier 1 requires >= 1.5% edge; Tier 2/3 requires >= 3.0% edge
+  const minRequiredEdge = tier === 1 ? 1.5 : tier === 2 ? 3.0 : 4.5;
+
   for (const item of candidates) {
     if (!item.odds || item.odds < item.minOddsThreshold) continue;
     if (item.prob < item.minProbThreshold) continue;
 
     const evPercent = Math.round((item.prob * item.odds - 1) * 1000) / 10;
-    if (item.odds >= 2.10 && evPercent < 1.0) continue;
+    const impliedProbability = 1 / item.odds;
+    const edgePercent = Math.round((item.prob - impliedProbability) * 1000) / 10;
+
+    // 1. Anti-Trap Rule: Cuotas menores a 1.35 deben tener probabilidad >= 78% y EV positivo claro
+    if (item.odds < 1.35) {
+      if (item.prob < 0.78 || evPercent < 2.5) continue;
+    }
+
+    // 2. High Odds Guard: Cuotas >= 2.15 deben tener EV >= 3.0% para compensar varianza
+    if (item.odds >= 2.15) {
+      if (evPercent < 3.0 || item.prob < 0.38) continue;
+    }
+
+    // 3. Tier safety margin check
+    if (edgePercent < minRequiredEdge && evPercent < 1.0) continue;
 
     opportunities.push(buildOpportunity(item));
   }
