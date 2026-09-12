@@ -11,8 +11,6 @@ self.addEventListener('push', (event) => {
   let data = {
     title: '⚽ SmartBetBot - Alerta MCP',
     body: 'Nuevo pronóstico de alta confianza disponible.',
-    icon: '/icon-192.png',
-    badge: '/badge-72.png',
     url: '/signals',
     id: 'smartbetbot-' + Date.now(),
   };
@@ -22,7 +20,9 @@ self.addEventListener('push', (event) => {
       const parsed = event.data.json();
       data = { ...data, ...parsed };
     } catch (e) {
-      data.body = event.data.text();
+      try {
+        data.body = event.data.text();
+      } catch (_) {}
     }
   }
 
@@ -30,8 +30,6 @@ self.addEventListener('push', (event) => {
 
   const options = {
     body: data.body,
-    icon: data.icon || '/icon-192.png',
-    badge: data.badge || '/badge-72.png',
     tag: notificationTag,
     renotify: true,
     vibrate: [200, 100, 200, 100, 200],
