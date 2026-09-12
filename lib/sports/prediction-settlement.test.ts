@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { generatePredictionsForUpcoming, loadDailySnapshot } from "./db";
+import { generatePredictionsForUpcoming, getHistoricalSettledPredictions } from "./db";
 
 describe("Predictions Evaluation & Results", () => {
   it("evaluates finished matches and returns won and lost statuses", async () => {
@@ -7,9 +7,13 @@ describe("Predictions Evaluation & Results", () => {
     expect(preds).toBeDefined();
     expect(preds.length).toBeGreaterThan(0);
 
-    const wonPicks = preds.filter((p) => p.status === "won");
-    const lostPicks = preds.filter((p) => p.status === "lost");
-    console.log(`Evaluated ${preds.length} predictions: ${wonPicks.length} Won, ${lostPicks.length} Lost`);
+    const history = await getHistoricalSettledPredictions();
+    expect(history).toBeDefined();
+    expect(history.length).toBeGreaterThan(0);
+
+    const wonPicks = history.filter((p) => p.result === "WON");
+    const lostPicks = history.filter((p) => p.result === "LOST");
+    console.log(`Evaluated ${history.length} historical settled predictions: ${wonPicks.length} Won, ${lostPicks.length} Lost`);
 
     expect(wonPicks.length + lostPicks.length).toBeGreaterThan(0);
   });

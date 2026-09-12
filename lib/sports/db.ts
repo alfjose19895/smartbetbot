@@ -527,24 +527,13 @@ export function getStoredPredictions(): MarketOpportunity[] {
   const nowMs = Date.now();
   const todayDateStr = getEcuadorDateString(nowMs);
 
-  // 1. Load today's active snapshot (e.g. today's date)
+  // 1. Load today's active snapshot (strictly matching today's date in Ecuador timezone)
   const todaySnapshot = loadDailySnapshot(todayDateStr);
   if (todaySnapshot && Array.isArray(todaySnapshot) && todaySnapshot.length > 0) {
-    return todaySnapshot;
-  }
-
-  // 2. Search all disk snapshots in descending date order for the most recent valid active snapshot
-  const allSnaps = getAllDailySnapshots();
-  const sortedDates = Object.keys(allSnaps)
-    .filter((d) => d >= HISTORY_START_DATE)
-    .sort()
-    .reverse();
-
-  for (const dateKey of sortedDates) {
-    const snap = allSnaps[dateKey];
-    if (Array.isArray(snap) && snap.length > 0) {
-      return snap;
-    }
+    return todaySnapshot.filter((p) => {
+      const pDate = p.kickoff ? getEcuadorDateString(p.kickoff) : todayDateStr;
+      return pDate === todayDateStr;
+    });
   }
 
   return [];
@@ -644,7 +633,10 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
   const usedTeamsOnDate = new Set<string>();
 
   const addUniqueMatchPick = (opp: MarketOpportunity) => {
-    const dateStr = opp.kickoff ? opp.kickoff.split("T")[0] : "nodate";
+    const dateStr = opp.kickoff ? getEcuadorDateString(opp.kickoff) : todayDateStr;
+    if (dateStr !== todayDateStr) {
+      return; // REGLA ESTRICTA: Solo partidos del día actual
+    }
     const hNorm = getCanonicalTeamKey(opp.homeTeam);
     const aNorm = getCanonicalTeamKey(opp.awayTeam);
     const matchKey = `${hNorm}-${aNorm}-${dateStr}`;
@@ -991,12 +983,7 @@ export function addPredictionsToDailySnapshot(newPicks: MarketOpportunity[]): {
 
   let addedCount = 0;
   for (const pick of newPicks) {
-    const h = getCanonicalTeamKey(pick.homeTeam);
-    const a = getCanonicalTeamKey(pick.awayTeam);
-    const fixId = Number(pick.fixtureId) || 0;
-    const key = `${fixId}-${h}-${a}-${pick.market}`;
     const pickDate = pick.kickoff ? getEcuadorDateString(pick.kickoff) : activeDateStr;
-
     const prob = typeof pick.probability === "number" ? pick.probability : 50;
     const conf: "Muy Alta" | "Alta" | "Media" | "Moderada" =
       prob >= 70 ? "Muy Alta" : prob >= 58 ? "Alta" : prob >= 50 ? "Media" : "Moderada";
@@ -1011,17 +998,24 @@ export function addPredictionsToDailySnapshot(newPicks: MarketOpportunity[]): {
       status: pick.status || "pending",
     };
 
-    if (existingMap.has(key)) {
-      const existing = existingMap.get(key)!;
-      existingMap.set(key, {
-        ...existing,
-        ...taggedPick,
-        status: existing.status !== "pending" ? existing.status : taggedPick.status,
-      });
-      addedCount++;
-    } else {
-      existingMap.set(key, taggedPick);
-      addedCount++;
+    if (pickDate === activeDateStr) {
+      const h = getCanonicalTeamKey(pick.homeTeam);
+      const a = getCanonicalTeamKey(pick.awayTeam);
+      const fixId = Number(pick.fixtureId) || 0;
+      const key = `${fixId}-${h}-${a}-${pick.market}`;
+
+      if (existingMap.has(key)) {
+        const existing = existingMap.get(key)!;
+        existingMap.set(key, {
+          ...existing,
+          ...taggedPick,
+          status: existing.status !== "pending" ? existing.status : taggedPick.status,
+        });
+        addedCount++;
+      } else {
+        existingMap.set(key, taggedPick);
+        addedCount++;
+      }
     }
 
     if (!picksByDate.has(pickDate)) {
@@ -1923,49 +1917,10 @@ export async function searchLiveMarketDynamic(params: {
 
     let allFixtures: ApiFootballFixtureItem[] = [];
 
-    // Strategy 1: Fetch today's official fixtures schedule in Ecuador timezone
+    // Strategy: Fetch today's official fixtures schedule strictly in Ecuador timezone
     const todayFixtures = await apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil").catch(() => []);
     if (Array.isArray(todayFixtures) && todayFixtures.length > 0) {
       allFixtures.push(...todayFixtures);
-    }
-
-    // Strategy 2: If specific league is targeted and today has few matches, fetch upcoming fixtures for that league
-    if (targetLeagueId) {
-      try {
-        const upcomingLeagueFixtures = await apiFootball.getUpcomingFixtures(targetLeagueId, 10, "America/Guayaquil");
-        if (Array.isArray(upcomingLeagueFixtures) && upcomingLeagueFixtures.length > 0) {
-          allFixtures.push(...upcomingLeagueFixtures);
-        }
-      } catch (err) {
-        console.warn(`Could not fetch upcoming fixtures for league ${targetLeagueId}:`, err);
-      }
-    }
-
-    // Strategy 2: If no fixtures found or general search, fetch upcoming for top tier leagues + today/tomorrow fixtures
-    if (allFixtures.length === 0) {
-      const topLeagueIds = [2, 39, 140, 135, 78, 61, 71, 128, 253, 307];
-      const selectedTopLeagues = targetLeagueId ? [targetLeagueId] : topLeagueIds.slice(0, 5);
-
-      await Promise.all(
-        selectedTopLeagues.map(async (lid) => {
-          try {
-            const fixs = await apiFootball.getUpcomingFixtures(lid, 6, "America/Guayaquil");
-            if (Array.isArray(fixs)) {
-              allFixtures.push(...fixs);
-            }
-          } catch {}
-        })
-      );
-
-      // Also get today's and tomorrow's general slate
-      try {
-        const [todayFixs, tomFixs] = await Promise.all([
-          apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil").catch(() => []),
-          apiFootball.getFixturesByDate(getEcuadorDateString(nowMs + 24 * 60 * 60 * 1000), "America/Guayaquil").catch(() => []),
-        ]);
-        if (Array.isArray(todayFixs)) allFixtures.push(...todayFixs);
-        if (Array.isArray(tomFixs)) allFixtures.push(...tomFixs);
-      } catch {}
     }
 
     if (allFixtures.length === 0) return [];
@@ -1980,11 +1935,15 @@ export async function searchLiveMarketDynamic(params: {
       }
     }
 
-    // Filter candidate fixtures STRICTLY to those that have NOT started yet (pre-match upcoming only)
+    // Filter candidate fixtures STRICTLY to those that belong to TODAY in Ecuador timezone and have NOT started yet
     const candidates = uniqueFixtures.filter((f) => {
       if (!f.fixture?.id || !f.teams?.home?.name || !f.teams?.away?.name) return false;
 
       const kickoffMs = new Date(f.fixture.date).getTime();
+
+      // REGLA ESTRICTA: El partido DEBE ser de la fecha actual en Ecuador
+      const fDateStr = getEcuadorDateString(kickoffMs);
+      if (fDateStr !== todayDateStr) return false;
 
       // REGLA ESTRICTA 1: El partido NO DEBE HABER INICIADO (kickoff estrictamente en el futuro)
       if (isNaN(kickoffMs) || kickoffMs <= nowMs) return false;

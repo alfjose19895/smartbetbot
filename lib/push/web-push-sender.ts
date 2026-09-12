@@ -1,3 +1,16 @@
+function getEcuadorDateString(d: Date | number | string = Date.now()): string {
+  try {
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone: "America/Guayaquil",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date(d));
+  } catch {
+    return new Date().toISOString().split("T")[0];
+  }
+}
+
 import webpush from "web-push";
 import { VAPID_CONFIG } from "./vapid-config";
 import {
@@ -123,8 +136,11 @@ export async function sendIndividualHighConfidenceAlerts(
     return { totalEligible: 0, sentCount: 0, failedCount: 0, alerts: [] };
   }
 
-  // 1. Filter for High Confidence and High Probability picks focusing on Ganador Local & Over 2.5
+  const todayDateStr = getEcuadorDateString(Date.now());
+  // 1. Filter strictly for TODAY matches with High Confidence / High Probability focusing on Ganador Local & Over 2.5
   const eligiblePicks = predictions.filter((p) => {
+    const pDate = p.kickoff ? getEcuadorDateString(p.kickoff) : todayDateStr;
+    if (pDate !== todayDateStr) return false;
     const isFocusMarket = p.market === "Ganador Local" || p.market === "Over 2.5 Goles";
     const isVeryHighConfidence =
       p.confidence === "Muy Alta" ||
@@ -234,7 +250,7 @@ export async function sendDailyMcpPushNotification(
     icon: "/icon-192.png",
     badge: "/badge-72.png",
     url: "/signals",
-    id: `daily-summary-${new Date().toISOString().split("T")[0]}`,
+    id: `daily-summary-${getEcuadorDateString(Date.now())}`,
     data: {
       type: "daily_mcp_alert",
       picksCount: topPicks.length,

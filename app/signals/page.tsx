@@ -20,6 +20,19 @@ function getMatchLiveStatus(kickoff: string): "SCHEDULED" | "IN_PLAY" | "FINISHE
   return "FINISHED";
 }
 
+function getEcuadorDateString(d: Date | number | string = Date.now()): string {
+  try {
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone: "America/Guayaquil",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date(d));
+  } catch {
+    return new Date().toISOString().split("T")[0];
+  }
+}
+
 function matchesStatusBadgeFilter(
   p: MarketOpportunity,
   filter: "ALL" | "VALOR" | "BOMBA" | "MCP" | "WON" | "LOST" | "SCHEDULED" | "IN_PLAY" | "FINISHED"
@@ -79,19 +92,32 @@ export default function SignalsPage() {
       setLoading(true);
       const res = await fetch("/api/signals");
       const json = await res.json();
-      let serverSignals: MarketOpportunity[] = Array.isArray(json.signals) ? [...json.signals] : [];
+      const todayDateStr = getEcuadorDateString(Date.now());
+      let serverSignals: MarketOpportunity[] = Array.isArray(json.signals)
+        ? json.signals.filter((p: MarketOpportunity) => getEcuadorDateString(p.kickoff) === todayDateStr)
+        : [];
 
       try {
         const localRaw = typeof window !== "undefined" ? localStorage.getItem("smartbetbot_published_picks") : null;
         if (localRaw) {
           const localPicks = JSON.parse(localRaw);
           if (Array.isArray(localPicks)) {
+            // Strictly retain and merge picks matching today's date in Ecuador (UTC-5)
+            const validTodayLocalPicks = localPicks.filter(
+              (lp: MarketOpportunity) => getEcuadorDateString(lp.kickoff) === todayDateStr
+            );
+            if (validTodayLocalPicks.length !== localPicks.length) {
+              try {
+                localStorage.setItem("smartbetbot_published_picks", JSON.stringify(validTodayLocalPicks));
+              } catch {}
+            }
+
             const map = new Map<string, MarketOpportunity>();
             for (const p of serverSignals) {
               const key = `${p.fixtureId || 0}-${p.homeTeam}-${p.awayTeam}-${p.market}`;
               map.set(key, p);
             }
-            for (const lp of localPicks) {
+            for (const lp of validTodayLocalPicks) {
               const key = `${lp.fixtureId || 0}-${lp.homeTeam}-${lp.awayTeam}-${lp.market}`;
               const existing = map.get(key);
               if (existing) {
@@ -107,7 +133,9 @@ export default function SignalsPage() {
                 map.set(key, { ...lp, isMcpPick: true, pickBadge: lp.pickBadge || "mcp" });
               }
             }
-            serverSignals = Array.from(map.values());
+            serverSignals = Array.from(map.values()).filter(
+              (p) => getEcuadorDateString(p.kickoff) === todayDateStr
+            );
             serverSignals.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
           }
         }
@@ -207,18 +235,31 @@ export default function SignalsPage() {
     year: "numeric",
   });
 
-  // Count matches strictly matching filter conditions
-  const scheduledCount = signals.filter((s) => matchesStatusBadgeFilter(s, "SCHEDULED")).length;
-  const inPlayCount = signals.filter((s) => matchesStatusBadgeFilter(s, "IN_PLAY")).length;
-  const finishedCount = signals.filter((s) => matchesStatusBadgeFilter(s, "FINISHED")).length;
-  const wonCount = signals.filter((s) => matchesStatusBadgeFilter(s, "WON")).length;
-  const lostCount = signals.filter((s) => matchesStatusBadgeFilter(s, "LOST")).length;
-  const valorCount = signals.filter((s) => matchesStatusBadgeFilter(s, "VALOR")).length;
-  const bombaCount = signals.filter((s) => matchesStatusBadgeFilter(s, "BOMBA")).length;
-  const mcpCount = signals.filter((s) => matchesStatusBadgeFilter(s, "MCP")).length;
+  // Current active date strictly in Ecuador timezone (UTC-5)
+  const todayDateStr = getEcuadorDateString(Date.now());
+  const todaySignals = signals.filter((s) => {
+    const sDate = s.kickoff ? getEcuadorDateString(s.kickoff) : todayDateStr;
+    return sDate === todayDateStr;
+  });
+
+  // Count matches strictly matching filter conditions exclusively for today
+  const scheduledCount = todaySignals.filter((s) => matchesStatusBadgeFilter(s, "SCHEDULED")).length;
+  const inPlayCount = todaySignals.filter((s) => matchesStatusBadgeFilter(s, "IN_PLAY")).length;
+  const finishedCount = todaySignals.filter((s) => matchesStatusBadgeFilter(s, "FINISHED")).length;
+  const wonCount = todaySignals.filter((s) => matchesStatusBadgeFilter(s, "WON")).length;
+  const lostCount = todaySignals.filter((s) => matchesStatusBadgeFilter(s, "LOST")).length;
+  const valorCount = todaySignals.filter((s) => matchesStatusBadgeFilter(s, "VALOR")).length;
+  const bombaCount = todaySignals.filter((s) => matchesStatusBadgeFilter(s, "BOMBA")).length;
+  const mcpCount = todaySignals.filter((s) => matchesStatusBadgeFilter(s, "MCP")).length;
 
   // Filter signals strictly matching all active constraints
-  const filteredCandidates = signals.filter((s) => {
+  const filteredCandidates = todaySignals.filter((s) => {
+    // 0. Strict Today Date Filter
+    const sDate = s.kickoff ? getEcuadorDateString(s.kickoff) : todayDateStr;
+    if (sDate !== todayDateStr) {
+      return false;
+    }
+
     // 1. Text Search Query Filter
     if (searchQuery.trim().length > 0) {
       const q = searchQuery.toLowerCase().trim();

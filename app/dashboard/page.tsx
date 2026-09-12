@@ -10,6 +10,19 @@ import { MarketOpportunity, getFeaturedDailyPicks } from "@/lib/sports/predictio
 import { useLanguage } from "@/context/LanguageContext";
 import { openPushModal } from "@/components/PushNotificationManager";
 
+function getEcuadorDateString(d: Date | number | string = Date.now()): string {
+  try {
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone: "America/Guayaquil",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date(d));
+  } catch {
+    return new Date().toISOString().split("T")[0];
+  }
+}
+
 export default function DashboardPage() {
   const { language, t } = useLanguage();
   const [predictions, setPredictions] = useState<MarketOpportunity[]>([]);
@@ -36,19 +49,32 @@ export default function DashboardPage() {
       setLoading(true);
       const res = await fetch("/api/signals");
       const json = await res.json();
-      let serverSignals: MarketOpportunity[] = Array.isArray(json.signals) ? [...json.signals] : [];
+      const todayDateStr = getEcuadorDateString(Date.now());
+      let serverSignals: MarketOpportunity[] = Array.isArray(json.signals)
+        ? json.signals.filter((p: MarketOpportunity) => getEcuadorDateString(p.kickoff) === todayDateStr)
+        : [];
 
       try {
         const localRaw = typeof window !== "undefined" ? localStorage.getItem("smartbetbot_published_picks") : null;
         if (localRaw) {
           const localPicks = JSON.parse(localRaw);
           if (Array.isArray(localPicks)) {
+            // Strictly retain only today's picks in localStorage
+            const validTodayLocalPicks = localPicks.filter(
+              (lp: MarketOpportunity) => getEcuadorDateString(lp.kickoff) === todayDateStr
+            );
+            if (validTodayLocalPicks.length !== localPicks.length) {
+              try {
+                localStorage.setItem("smartbetbot_published_picks", JSON.stringify(validTodayLocalPicks));
+              } catch {}
+            }
+
             const map = new Map<string, MarketOpportunity>();
             for (const p of serverSignals) {
               const key = `${p.fixtureId || 0}-${p.homeTeam}-${p.awayTeam}-${p.market}`;
               map.set(key, p);
             }
-            for (const lp of localPicks) {
+            for (const lp of validTodayLocalPicks) {
               const key = `${lp.fixtureId || 0}-${lp.homeTeam}-${lp.awayTeam}-${lp.market}`;
               const existing = map.get(key);
               if (existing) {
@@ -64,7 +90,9 @@ export default function DashboardPage() {
                 map.set(key, { ...lp, isMcpPick: true, pickBadge: lp.pickBadge || "mcp" });
               }
             }
-            serverSignals = Array.from(map.values());
+            serverSignals = Array.from(map.values()).filter(
+              (p) => getEcuadorDateString(p.kickoff) === todayDateStr
+            );
             serverSignals.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
           }
         }
@@ -147,8 +175,15 @@ export default function DashboardPage() {
     year: "numeric",
   });
 
-  // Filter high confidence picks focusing on Ganador Local & Over 2.5
-  const highConfidencePicks = predictions
+  // Current active date strictly in Ecuador timezone (UTC-5)
+  const todayDateStr = getEcuadorDateString(Date.now());
+  const todayPredictions = predictions.filter((p) => {
+    const pDate = p.kickoff ? getEcuadorDateString(p.kickoff) : todayDateStr;
+    return pDate === todayDateStr;
+  });
+
+  // Filter high confidence picks focusing on Ganador Local & Over 2.5 strictly on today's matches
+  const highConfidencePicks = todayPredictions
     .filter((p) => {
       const isFocusMarket = p.market === "Ganador Local" || p.market === "Over 2.5 Goles";
       const isHighConf =
@@ -161,8 +196,8 @@ export default function DashboardPage() {
 
   const topRecommendedPicks = highConfidencePicks.slice(0, 6);
 
-  // Featured SmartPick and Bomba del día
-  const { smartPick, bombaPick } = getFeaturedDailyPicks(predictions);
+  // Featured SmartPick and Bomba del día strictly for today
+  const { smartPick, bombaPick } = getFeaturedDailyPicks(todayPredictions);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100 flex flex-col">
@@ -503,7 +538,7 @@ export default function DashboardPage() {
             </div>
 
             <RecommendedParlay
-              predictions={predictions}
+              predictions={todayPredictions}
               onSelectPrediction={setActiveModalPick}
             />
           </section>

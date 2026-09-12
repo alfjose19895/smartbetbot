@@ -1,5 +1,18 @@
 "use client";
 
+function getEcuadorDateString(d: Date | number | string = Date.now()): string {
+  try {
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone: "America/Guayaquil",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date(d));
+  } catch {
+    return new Date().toISOString().split("T")[0];
+  }
+}
+
 import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
@@ -357,12 +370,16 @@ function AdminControlContent() {
     if (!picksToPublish || picksToPublish.length === 0) return;
     try {
       if (typeof window !== "undefined") {
+        const todayDateStr = getEcuadorDateString(Date.now());
         const localRaw = localStorage.getItem("smartbetbot_published_picks");
         const existing: MarketOpportunity[] = localRaw ? JSON.parse(localRaw) : [];
         const map = new Map<string, MarketOpportunity>();
         for (const p of [...existing, ...picksToPublish]) {
-          const key = `${p.fixtureId || 0}-${p.homeTeam}-${p.awayTeam}-${p.market}`;
-          map.set(key, { ...p, isMcpPick: true, pickBadge: p.pickBadge || "mcp" });
+          const pDate = p.kickoff ? getEcuadorDateString(p.kickoff) : todayDateStr;
+          if (pDate === todayDateStr) {
+            const key = `${p.fixtureId || 0}-${p.homeTeam}-${p.awayTeam}-${p.market}`;
+            map.set(key, { ...p, isMcpPick: true, pickBadge: p.pickBadge || "mcp" });
+          }
         }
         localStorage.setItem("smartbetbot_published_picks", JSON.stringify(Array.from(map.values())));
         window.dispatchEvent(new CustomEvent("predictions-updated"));

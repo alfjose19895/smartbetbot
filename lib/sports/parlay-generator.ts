@@ -96,8 +96,15 @@ export function getMarketCategory(marketName: string): string {
  * 2. Parley 2 (Valor / Oro): 3 highest Expected Value (+EV) selections from distinct matches.
  * 3. Parley 3 (Bomba / Platino): 3 bold / high-yield multiplier selections from distinct matches.
  */
-export function buildTripleExclusiveParlays(predictions: MarketOpportunity[]): TripleExclusiveParlays {
-  const validPool = [...predictions].filter((p) => p.odds >= 1.25 && p.probability >= 35);
+export function buildTripleExclusiveParlays(
+  predictions: MarketOpportunity[],
+  dateStr?: string
+): TripleExclusiveParlays {
+  const targetDate = dateStr || getEcuadorDateString(Date.now());
+  const validPool = [...predictions].filter((p) => {
+    const pDate = p.kickoff ? getEcuadorDateString(p.kickoff) : targetDate;
+    return pDate === targetDate && p.odds >= 1.25 && p.probability >= 35;
+  });
   const usedMatchKeys = new Set<string>();
 
   const getMatchKey = (p: MarketOpportunity): string => {
@@ -218,8 +225,8 @@ export function getImmutableDailyParlays(
     }
   }
 
-  // 4. Generate once from available predictions
-  const generated = buildTripleExclusiveParlays(predictions);
+  // 4. Generate once from available predictions strictly for target date
+  const generated = buildTripleExclusiveParlays(predictions, targetDate);
 
   if (generated.parlay1.length > 0 || generated.parlay2.length > 0 || generated.parlay3.length > 0) {
     memoryParlaysCache[targetDate] = generated;

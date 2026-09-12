@@ -1,5 +1,18 @@
 "use client";
 
+function getEcuadorDateString(d: Date | number | string = Date.now()): string {
+  try {
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone: "America/Guayaquil",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date(d));
+  } catch {
+    return new Date().toISOString().split("T")[0];
+  }
+}
+
 import React, { useState, useEffect } from "react";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 import { SUPPORTED_LEAGUES, SupportedLeague } from "@/lib/sports/api-football";
@@ -195,14 +208,18 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction }: Mc
         pickBadge: (p.pickBadge || "mcp") as "bomba" | "valor" | "estandar" | "mcp",
       }));
 
-      // Store in localStorage for client instant merge
+      // Store in localStorage for client instant merge (strictly today)
       if (typeof window !== "undefined") {
+        const todayDateStr = getEcuadorDateString(Date.now());
         const localRaw = localStorage.getItem("smartbetbot_published_picks");
         const existing: MarketOpportunity[] = localRaw ? JSON.parse(localRaw) : [];
         const map = new Map<string, MarketOpportunity>();
         for (const p of [...existing, ...taggedPicks]) {
-          const key = `${p.fixtureId || 0}-${p.homeTeam}-${p.awayTeam}-${p.market}`;
-          map.set(key, p);
+          const pDate = p.kickoff ? getEcuadorDateString(p.kickoff) : todayDateStr;
+          if (pDate === todayDateStr) {
+            const key = `${p.fixtureId || 0}-${p.homeTeam}-${p.awayTeam}-${p.market}`;
+            map.set(key, p);
+          }
         }
         localStorage.setItem("smartbetbot_published_picks", JSON.stringify(Array.from(map.values())));
 

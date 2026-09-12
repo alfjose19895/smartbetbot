@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   generatePredictionsForUpcoming,
   getStoredPredictions,
+  getEcuadorDateString,
 } from "@/lib/sports/db";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 
@@ -48,6 +49,13 @@ export async function GET(request: NextRequest) {
         p.market.toLowerCase().includes(marketFilter.toLowerCase())
       );
     }
+
+    // REGLA ESTRICTA: Filtrar exclusivamente pronósticos de la fecha actual en Ecuador (UTC-5)
+    const todayDateStr = getEcuadorDateString(Date.now());
+    predictions = predictions.filter((p) => {
+      const pDate = p.kickoff ? getEcuadorDateString(p.kickoff) : todayDateStr;
+      return pDate === todayDateStr;
+    });
 
     if (minProb > 0) {
       predictions = predictions.filter((p) => p.probability >= minProb);
