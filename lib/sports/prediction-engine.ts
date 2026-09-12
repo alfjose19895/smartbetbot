@@ -77,7 +77,7 @@ export interface MarketOpportunity {
   isMcp?: boolean;
   result?: "WON" | "LOST" | "VOID" | string;
   source?: "algorithm" | "mcp" | "manual";
-  matchTiming?: "prematch" | "live";
+  matchTiming?: "prematch" | "live" | "finished";
   livePeriod?: "1H" | "HT" | "2H" | "ET";
   liveMinute?: number | string;
   currentScore?: string;

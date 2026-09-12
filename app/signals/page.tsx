@@ -171,30 +171,31 @@ export default function SignalsPage() {
             }
 
             const map = new Map<string, MarketOpportunity>();
-            for (const p of serverSignals) {
-              const key = `${p.fixtureId || 0}-${p.homeTeam}-${p.awayTeam}-${p.market}`;
-              map.set(key, p);
-            }
+            // 1. Put local picks first
             for (const lp of validTodayLocalPicks) {
               const key = `${lp.fixtureId || 0}-${lp.homeTeam}-${lp.awayTeam}-${lp.market}`;
-              const existing = map.get(key);
-              if (existing) {
-                map.set(key, {
-                  ...existing,
-                  ...lp,
-                  status: existing.status && existing.status !== "pending" ? existing.status : lp.status || "pending",
-                  actualScore: existing.actualScore || lp.actualScore,
-                  isMcpPick: true,
-                  pickBadge: lp.pickBadge || existing.pickBadge || "mcp",
-                });
-              } else {
-                map.set(key, { ...lp, isMcpPick: true, pickBadge: lp.pickBadge || "mcp" });
-              }
+              map.set(key, { ...lp, isMcpPick: true, pickBadge: lp.pickBadge || "mcp" });
+            }
+            // 2. Put server signals second so server evaluations (actualScore, status, result) take 100% precedence
+            for (const p of serverSignals) {
+              const key = `${p.fixtureId || 0}-${p.homeTeam}-${p.awayTeam}-${p.market}`;
+              const existingLocal = map.get(key);
+              map.set(key, {
+                ...(existingLocal || {}),
+                ...p,
+                isMcpPick: p.isMcpPick || p.isMcp || Boolean(existingLocal),
+                pickBadge: p.pickBadge || (existingLocal ? existingLocal.pickBadge : undefined) || (p.isMcp ? "mcp" : undefined),
+              });
             }
             serverSignals = Array.from(map.values()).filter(
               (p) => getEcuadorDateString(p.kickoff) === todayDateStr
             );
             serverSignals.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
+
+            // Synchronize sanitized list back to localStorage
+            try {
+              localStorage.setItem("smartbetbot_published_picks", JSON.stringify(serverSignals.filter(s => s.isMcp || s.isMcpPick)));
+            } catch {}
           }
         }
       } catch (err) {

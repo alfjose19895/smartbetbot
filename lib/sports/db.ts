@@ -326,7 +326,10 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string): Prom
             actualScore: newScore,
             result: newResult,
             profit: newProfit,
-            matchTiming: p.matchTiming,
+            matchTiming: "finished" as const,
+            currentScore: undefined,
+            livePeriod: undefined,
+            liveMinute: undefined,
           };
         }
         return p;

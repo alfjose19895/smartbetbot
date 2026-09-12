@@ -523,14 +523,13 @@ export function PredictionCard({
                 {prediction.country && (
                   <>
                     <span className="text-slate-400 font-normal">•</span>
-                    <span className="text-emerald-700 dark:text-emerald-400">{prediction.country}</span>
+                    <span className="text-emerald-700 dark:text-emerald-400 font-bold">{prediction.country}</span>
                   </>
                 )}
               </span>
             </div>
 
             <div className="flex items-center gap-2">
-              
               {/* Kickoff Time Badge */}
               <span className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 text-xs font-black text-emerald-700 dark:text-emerald-300 shadow-xs">
                 <span>⏰</span>
@@ -539,11 +538,11 @@ export function PredictionCard({
 
               {isWon ? (
                 <span className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1 text-xs font-black bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30 border border-emerald-400">
-                  <span>✓</span> Ganada {finalScoreText ? `(${finalScoreText})` : ""}
+                  <span>✓</span> GANADA
                 </span>
               ) : isLost ? (
                 <span className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1 text-xs font-black bg-rose-600 text-white shadow-md shadow-rose-600/30 border border-rose-400">
-                  <span>✗</span> Perdida {finalScoreText ? `(${finalScoreText})` : ""}
+                  <span>✗</span> PERDIDA
                 </span>
               ) : statusBadge ? (
                 <span className={`inline-flex items-center rounded-xl px-2.5 py-1 text-[10px] font-black border ${statusBadge.cls}`}>
@@ -553,19 +552,18 @@ export function PredictionCard({
             </div>
           </div>
 
-          {/* Kickoff Date/Time & Badges (Bomba / Valor / Confidence) */}
+          {/* Sub Bar: Match Date & Intelligence Badges (Agente MCP / Bomba / Valor / Confianza) */}
           <div className="mt-3 flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-xl bg-slate-100 px-2.5 py-1 text-xs font-black text-slate-800 dark:bg-slate-800 dark:text-slate-200">
-                <span>⏰</span>
-                <span>Hora del Partido: {formattedTime}</span>
-              </span>
-              <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-                🕒 PRE-MATCH
-              </span>
+              {formattedDateShort && (
+                <span className="inline-flex items-center gap-1.5 rounded-xl bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-300 capitalize">
+                  <span>📅</span>
+                  <span>{formattedDateShort}</span>
+                </span>
+              )}
             </div>
 
-            <div className="flex items-center gap-1.5 flex-wrap">
+            <div className="flex items-center gap-1.5 flex-wrap ml-auto">
               {isMcp && (
                 <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-gradient-to-r from-purple-600 to-indigo-600 text-white border border-purple-400 shadow-sm">
                   🤖 Agente MCP
@@ -590,7 +588,7 @@ export function PredictionCard({
             </div>
           </div>
 
-          {/* Teams Container with Final Score Banner */}
+          {/* Teams Container with Prominent Score Banner */}
           <div
             className={`mt-3 rounded-2xl p-3.5 border ${
               isWon
@@ -600,40 +598,32 @@ export function PredictionCard({
                 : "bg-slate-50 border-slate-100 dark:bg-slate-950/80 dark:border-slate-800/80"
             }`}
           >
-            <div className="flex items-center justify-between mb-2 pb-1.5 border-b border-slate-200/60 dark:border-slate-800/60 text-[11px]">
-              <div className="flex items-center gap-1.5 font-bold text-slate-600 dark:text-slate-300">
-                <span>🕒 Hora de Inicio:</span>
-                <span className="font-black text-emerald-700 dark:text-emerald-400 text-xs">⏰ {formattedTime}</span>
-              </div>
-              {formattedDateShort && (
-                <span className="text-[10px] font-extrabold text-slate-500 dark:text-slate-400 capitalize">
-                  {formattedDateShort}
-                </span>
-              )}
-            </div>
-
-            {/* Prominent Score Banner for Finished Matches */}
-            {finalScoreText && (
-              <div
-                className={`mb-3 flex items-center justify-center gap-2.5 rounded-xl py-1.5 px-3 border shadow-xs ${
-                  isWon
-                    ? "bg-emerald-500/15 border-emerald-400 text-emerald-900 dark:bg-emerald-950/80 dark:text-emerald-200"
-                    : isLost
-                    ? "bg-rose-500/15 border-rose-400 text-rose-900 dark:bg-rose-950/80 dark:text-rose-200"
-                    : "bg-slate-200 border-slate-300 text-slate-900 dark:bg-slate-800 dark:text-slate-200"
-                }`}
-              >
+            {/* Prominent Score Banner for Finished or Live Matches */}
+            {isWon ? (
+              <div className="mb-3 flex items-center justify-center gap-2.5 rounded-xl py-2 px-3 border shadow-sm bg-emerald-500/15 border-emerald-400 text-emerald-900 dark:bg-emerald-950/80 dark:text-emerald-200">
                 <span className="text-xs font-bold">⚽ Marcador Final:</span>
                 <span className="text-base font-black tracking-wider">{finalScoreText}</span>
-                <span
-                  className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase ${
-                    isWon ? "bg-emerald-500 text-slate-950" : isLost ? "bg-rose-600 text-white" : "bg-slate-700 text-white"
-                  }`}
-                >
-                  {isWon ? "Acertada" : isLost ? "No Acertada" : "Final"}
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase bg-emerald-500 text-slate-950 shadow-xs">
+                  ✓ Ganada
                 </span>
               </div>
-            )}
+            ) : isLost ? (
+              <div className="mb-3 flex items-center justify-center gap-2.5 rounded-xl py-2 px-3 border shadow-sm bg-rose-500/15 border-rose-400 text-rose-900 dark:bg-rose-950/80 dark:text-rose-200">
+                <span className="text-xs font-bold">⚽ Marcador Final:</span>
+                <span className="text-base font-black tracking-wider">{finalScoreText}</span>
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase bg-rose-600 text-white shadow-xs">
+                  ✗ Perdida
+                </span>
+              </div>
+            ) : (prediction.matchTiming === "live" || Boolean(prediction.currentScore)) ? (
+              <div className="mb-3 flex items-center justify-center gap-2.5 rounded-xl py-2 px-3 border shadow-sm bg-red-500/15 border-red-400 text-red-900 dark:bg-red-950/80 dark:text-red-200 animate-pulse">
+                <span className="text-xs font-bold">🔴 En Vivo:</span>
+                <span className="text-base font-black tracking-wider">{prediction.currentScore || "0 - 0"}</span>
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase bg-red-600 text-white shadow-xs">
+                  En Juego {prediction.liveMinute ? `(${prediction.liveMinute}')` : ""}
+                </span>
+              </div>
+            ) : null}
 
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-2.5 flex-1 min-w-0">

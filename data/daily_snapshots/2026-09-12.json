@@ -151,7 +151,9 @@
     "actualScore": "0 - 0 (0 Goles)",
     "result": "LOST",
     "profit": -100,
-    "pick": "Over 2.5 Goles"
+    "pick": "Over 2.5 Goles",
+    "score": "0 - 0 (0 Goles)",
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1575163,
@@ -305,7 +307,9 @@
     "actualScore": "1 - 3 (4 Goles)",
     "result": "WON",
     "profit": 35,
-    "pick": "Over 2.5 Goles"
+    "pick": "Over 2.5 Goles",
+    "score": "1 - 3 (4 Goles)",
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1575160,
@@ -459,7 +463,9 @@
     "actualScore": "2 - 1 (3 Goles)",
     "result": "WON",
     "profit": 37,
-    "pick": "Over 2.5 Goles"
+    "pick": "Over 2.5 Goles",
+    "score": "2 - 1 (3 Goles)",
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1575158,
@@ -613,7 +619,9 @@
     "actualScore": "3 - 0 (3 Goles)",
     "result": "WON",
     "profit": 38,
-    "pick": "Over 2.5 Goles"
+    "pick": "Over 2.5 Goles",
+    "score": "3 - 0 (3 Goles)",
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1575161,
@@ -767,7 +775,9 @@
     "actualScore": "5 - 0",
     "result": "WON",
     "profit": 38,
-    "pick": "SC Freiburg"
+    "pick": "SC Freiburg",
+    "score": "5 - 0",
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1575162,
@@ -921,7 +931,9 @@
     "actualScore": "2 - 2 (4 Goles)",
     "result": "WON",
     "profit": 40,
-    "pick": "Over 2.5 Goles"
+    "pick": "Over 2.5 Goles",
+    "score": "2 - 2 (4 Goles)",
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1557401,
@@ -1075,7 +1087,9 @@
     "actualScore": "2 - 3",
     "result": "LOST",
     "profit": -100,
-    "pick": "Crystal Palace"
+    "pick": "Crystal Palace",
+    "score": "2 - 3",
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1557399,
@@ -1229,7 +1243,9 @@
     "actualScore": "2 - 2 (4 Goles)",
     "result": "WON",
     "profit": 41,
-    "pick": "Over 2.5 Goles"
+    "pick": "Over 2.5 Goles",
+    "score": "2 - 2 (4 Goles)",
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1557403,
@@ -1383,7 +1399,9 @@
     "actualScore": "0 - 0 (0 Goles)",
     "result": "LOST",
     "profit": -100,
-    "pick": "Over 2.5 Goles"
+    "pick": "Over 2.5 Goles",
+    "score": "0 - 0 (0 Goles)",
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1494760,
@@ -1537,7 +1555,9 @@
     "actualScore": "2 - 0",
     "result": "WON",
     "profit": 95,
-    "pick": "Lillestrom"
+    "pick": "Lillestrom",
+    "score": "2 - 0",
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1558627,
@@ -1691,7 +1711,9 @@
     "actualScore": "2 - 0",
     "result": "LOST",
     "profit": -100,
-    "pick": "St. Truiden"
+    "pick": "St. Truiden",
+    "score": "2 - 0",
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1551106,
@@ -1723,7 +1745,7 @@
     "pickBadge": "estandar",
     "smartScore": 99,
     "explanation": "Jerarquía y solvencia territorial: CSKA 1948 (Elo 1656) llega en gran momento con 2 victorias en sus 5 cotejos más recientes, superando a Dunav Ruse en xG (2.47 vs 0.78). El modelo Poisson proyecta un contundente 73.3% de probabilidad de triunfo local a cuota @1.36.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -1842,12 +1864,12 @@
     "isNew": true,
     "isNewlyDiscovered": true,
     "addedAt": "2026-09-12T11:53:00.065Z",
-    "profit": -100,
-    "currentScore": "1 - 1",
-    "matchTiming": "live",
-    "livePeriod": "2H",
-    "liveMinute": "78",
-    "pick": "CSKA 1948"
+    "profit": 36,
+    "matchTiming": "finished",
+    "pick": "CSKA 1948",
+    "result": "WON",
+    "actualScore": "2 - 1",
+    "score": "2 - 1"
   },
   {
     "fixtureId": 1573578,
@@ -1879,7 +1901,7 @@
     "pickBadge": "estandar",
     "smartScore": 99,
     "explanation": "Jerarquía y solvencia territorial: Barcelona W (Elo 2010) llega en gran momento con 3 victorias en sus 5 cotejos más recientes, superando a Atletico Madrid W en xG (2.57 vs 0.75). El modelo Poisson proyecta un contundente 75.5% de probabilidad de triunfo local a cuota @1.35.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -1998,12 +2020,12 @@
     "isNew": true,
     "isNewlyDiscovered": true,
     "addedAt": "2026-09-12T11:53:00.065Z",
-    "profit": -100,
-    "currentScore": "1 - 1",
-    "matchTiming": "live",
-    "livePeriod": "1H",
-    "liveMinute": "33",
-    "pick": "Barcelona W"
+    "profit": 35,
+    "matchTiming": "finished",
+    "pick": "Barcelona W",
+    "result": "WON",
+    "actualScore": "4 - 2",
+    "score": "4 - 2"
   },
   {
     "fixtureId": 1584403,
@@ -2035,7 +2057,7 @@
     "pickBadge": "valor",
     "smartScore": 99,
     "explanation": "Análisis cuantitativo avanzado: 55.5% de probabilidad estadística con valor positivo (+1.2%) frente a la cuota del mercado @1.84.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -2154,12 +2176,12 @@
     "isNew": true,
     "isNewlyDiscovered": true,
     "addedAt": "2026-09-12T11:53:00.065Z",
-    "profit": -100,
-    "currentScore": "0 - 1",
-    "matchTiming": "live",
-    "livePeriod": "1H",
-    "liveMinute": "33",
-    "pick": "Ambos Equipos Anotan"
+    "profit": 84,
+    "matchTiming": "finished",
+    "pick": "Ambos Equipos Anotan",
+    "result": "WON",
+    "actualScore": "2 - 2 (Ambos Sí)",
+    "score": "2 - 2 (Ambos Sí)"
   },
   {
     "fixtureId": 1550117,
@@ -2191,7 +2213,7 @@
     "pickBadge": "estandar",
     "smartScore": 99,
     "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Atalanta con la pegada en contragolpe de Cagliari (3.80 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 71.5% de confianza a cuota @1.42.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -2310,7 +2332,12 @@
     "isNew": true,
     "isNewlyDiscovered": true,
     "addedAt": "2026-09-12T11:53:00.065Z",
-    "pick": "Over 2.5 Goles"
+    "pick": "Over 2.5 Goles",
+    "result": "WON",
+    "actualScore": "1 - 2 (3 Goles)",
+    "score": "1 - 2 (3 Goles)",
+    "profit": 42,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1558630,
@@ -2342,7 +2369,7 @@
     "pickBadge": "valor",
     "smartScore": 99,
     "explanation": "Análisis cuantitativo avanzado: 57.5% de probabilidad estadística con valor positivo (+1.3%) frente a la cuota del mercado @1.78.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -2461,7 +2488,12 @@
     "isNew": true,
     "isNewlyDiscovered": true,
     "addedAt": "2026-09-12T11:53:00.065Z",
-    "pick": "Ambos Equipos Anotan"
+    "pick": "Ambos Equipos Anotan",
+    "result": "LOST",
+    "actualScore": "5 - 0 (No)",
+    "score": "5 - 0 (No)",
+    "profit": -100,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1570379,
@@ -2493,7 +2525,7 @@
     "pickBadge": "estandar",
     "smartScore": 99,
     "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Real Madrid con la pegada en contragolpe de Rayo Vallecano (3.80 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 71.5% de confianza a cuota @1.42.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -2612,7 +2644,12 @@
     "isNew": true,
     "isNewlyDiscovered": true,
     "addedAt": "2026-09-12T11:53:00.065Z",
-    "pick": "Over 2.5 Goles"
+    "pick": "Over 2.5 Goles",
+    "result": "WON",
+    "actualScore": "4 - 1 (5 Goles)",
+    "score": "4 - 1 (5 Goles)",
+    "profit": 42,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1492370,
@@ -2644,7 +2681,7 @@
     "pickBadge": "bomba",
     "smartScore": 95,
     "explanation": "Diferencial de calidad y localía (+254 Elo): Atletico-MG impone condiciones en posesión y presión alta ante un Fluminense que ha sufrido 1 derrotas en sus últimas salidas. Victoria directa asignada con 60.3% de probabilidad y +13.8% de valor.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -2763,7 +2800,12 @@
     "isNew": true,
     "isNewlyDiscovered": true,
     "addedAt": "2026-09-12T11:53:00.065Z",
-    "pick": "Atletico-MG"
+    "pick": "Atletico-MG",
+    "result": "WON",
+    "actualScore": "3 - 1",
+    "score": "3 - 1",
+    "profit": 115,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1492376,
@@ -2795,7 +2837,7 @@
     "pickBadge": "bomba",
     "smartScore": 71,
     "explanation": "Contragolpe letal y efectividad foránea: Vasco DA Gama explota los espacios concedidos por Gremio en transiciones defensivas. El algoritmo Poisson proyecta 42% de solvencia matemática para el triunfo visitante.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -2914,7 +2956,12 @@
     "isNew": true,
     "isNewlyDiscovered": true,
     "addedAt": "2026-09-12T11:53:00.065Z",
-    "pick": "Vasco DA Gama"
+    "pick": "Vasco DA Gama",
+    "result": "WON",
+    "actualScore": "1 - 2",
+    "score": "1 - 2",
+    "profit": 162,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1551683,
@@ -3065,7 +3112,8 @@
     "isNew": true,
     "isNewlyDiscovered": true,
     "addedAt": "2026-09-12T11:53:00.065Z",
-    "pick": "Over 2.5 Goles"
+    "pick": "Over 2.5 Goles",
+    "matchTiming": "prematch"
   },
   {
     "fixtureId": 1549776,
@@ -3216,7 +3264,8 @@
     "isNew": true,
     "isNewlyDiscovered": true,
     "addedAt": "2026-09-12T11:53:00.065Z",
-    "pick": "Chico"
+    "pick": "Chico",
+    "matchTiming": "prematch"
   },
   {
     "fixtureId": 1490469,
@@ -3367,7 +3416,8 @@
     "isNew": true,
     "isNewlyDiscovered": true,
     "addedAt": "2026-09-12T11:53:00.065Z",
-    "pick": "Orlando City SC"
+    "pick": "Orlando City SC",
+    "matchTiming": "prematch"
   },
   {
     "fixtureId": 1490466,
@@ -3518,7 +3568,8 @@
     "isNew": true,
     "isNewlyDiscovered": true,
     "addedAt": "2026-09-12T11:53:00.065Z",
-    "pick": "Inter Miami"
+    "pick": "Inter Miami",
+    "matchTiming": "prematch"
   },
   {
     "fixtureId": 1549483,
@@ -3669,7 +3720,8 @@
     "isNew": true,
     "isNewlyDiscovered": true,
     "addedAt": "2026-09-12T11:53:00.065Z",
-    "pick": "Ambos Equipos Anotan"
+    "pick": "Ambos Equipos Anotan",
+    "matchTiming": "prematch"
   },
   {
     "fixtureId": 1490476,
@@ -3820,6 +3872,7 @@
     "isNew": true,
     "isNewlyDiscovered": true,
     "addedAt": "2026-09-12T11:53:00.065Z",
-    "pick": "Seattle Sounders"
+    "pick": "Seattle Sounders",
+    "matchTiming": "prematch"
   }
 ]
