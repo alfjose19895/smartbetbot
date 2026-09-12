@@ -27,7 +27,7 @@
     "pickBadge": "bomba",
     "smartScore": 72,
     "explanation": "Superioridad cualitativa y jerarquía de Inter Turku: A pesar de jugar fuera, su diferencial Elo (1960) y xG de 3.40 superan con claridad la estructura de HJK Helsinki. Con 3 triunfos en sus 5 salidas recientes, la victoria visitante alcanza 52.9% de probabilidad a cuota @2.55.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-11",
@@ -143,7 +143,10 @@
     "leagueTier": 1,
     "actualScore": "2 - 1",
     "result": "WON",
-    "profit": 1.55
+    "profit": 1.55,
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.899Z"
   },
   {
     "fixtureId": 1635628,
@@ -287,13 +290,16 @@
     "homeElo": 2010,
     "awayElo": 1810,
     "leagueTier": 1,
-    "actualScore": "3 - 1",
+    "actualScore": "5 - 1 (Ambos Sí)",
     "isMcp": true,
     "isMcpPick": true,
     "source": "mcp",
     "bookmaker": "Bet365",
     "result": "WON",
-    "profit": 0.75
+    "profit": 0.75,
+    "actualGoalsHome": 5,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.899Z"
   },
   {
     "fixtureId": 1635741,
@@ -438,9 +444,12 @@
     "awayElo": 1556,
     "leagueTier": 1,
     "bookmaker": "Bet365",
-    "actualScore": "2 - 1",
+    "actualScore": "3 - 1",
     "result": "WON",
-    "profit": 0.4
+    "profit": 0.4,
+    "actualGoalsHome": 3,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.899Z"
   },
   {
     "fixtureId": 1635686,
@@ -587,7 +596,10 @@
     "bookmaker": "Bet365",
     "actualScore": "2 - 1",
     "result": "WON",
-    "profit": 0.5
+    "profit": 0.5,
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.899Z"
   },
   {
     "fixtureId": 1635736,
@@ -732,9 +744,12 @@
     "awayElo": 1530,
     "leagueTier": 1,
     "bookmaker": "Bet365",
-    "actualScore": "2 - 1",
+    "actualScore": "3 - 1",
     "result": "WON",
-    "profit": 0.55
+    "profit": 0.55,
+    "actualGoalsHome": 3,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.899Z"
   },
   {
     "fixtureId": 1635698,
@@ -879,9 +894,12 @@
     "awayElo": 1990,
     "leagueTier": 1,
     "bookmaker": "Bet365",
-    "actualScore": "2 - 1",
+    "actualScore": "0 - 1",
     "result": "WON",
-    "profit": 1.15
+    "profit": 1.15,
+    "actualGoalsHome": 0,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.899Z"
   },
   {
     "fixtureId": 1635705,
@@ -1026,9 +1044,12 @@
     "awayElo": 1552,
     "leagueTier": 1,
     "bookmaker": "Bet365",
-    "actualScore": "2 - 1",
+    "actualScore": "6 - 1 (7 Goles)",
     "result": "WON",
-    "profit": 0.36
+    "profit": 0.36,
+    "actualGoalsHome": 6,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.899Z"
   },
   {
     "fixtureId": 1631507,
@@ -1173,9 +1194,12 @@
     "awayElo": 1620,
     "leagueTier": 1,
     "bookmaker": "Bet365",
-    "actualScore": "2 - 1",
+    "actualScore": "1 - 0",
     "result": "WON",
-    "profit": 0.45
+    "profit": 0.45,
+    "actualGoalsHome": 1,
+    "actualGoalsAway": 0,
+    "settledAt": "2026-09-12T04:31:15.899Z"
   },
   {
     "fixtureId": 1490451,
@@ -1320,9 +1344,12 @@
     "awayElo": 1593,
     "leagueTier": 1,
     "bookmaker": "Bet365",
-    "actualScore": "2 - 1",
+    "actualScore": "5 - 0",
     "result": "WON",
-    "profit": 0.85
+    "profit": 0.85,
+    "actualGoalsHome": 5,
+    "actualGoalsAway": 0,
+    "settledAt": "2026-09-12T04:31:15.899Z"
   },
   {
     "fixtureId": 1490458,
@@ -1352,7 +1379,7 @@
     "pickBadge": "bomba",
     "smartScore": 75,
     "explanation": "Diferencial de calidad y localía (+98 Elo): Minnesota United FC impone condiciones en posesión y presión alta ante un FC Dallas que ha sufrido 2 derrotas en sus últimas salidas. Victoria directa asignada con 53.5% de probabilidad y +6.9% de valor.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-12",
@@ -1467,9 +1494,12 @@
     "awayElo": 1522,
     "leagueTier": 1,
     "bookmaker": "Bet365",
-    "actualScore": "2 - 1",
+    "actualScore": "1 - 2",
     "result": "WON",
-    "profit": 0.95
+    "profit": 0.95,
+    "actualGoalsHome": 1,
+    "actualGoalsAway": 2,
+    "settledAt": "2026-09-12T04:31:15.899Z"
   },
   {
     "fixtureId": 1490462,
@@ -1614,9 +1644,12 @@
     "awayElo": 1543,
     "leagueTier": 1,
     "bookmaker": "Bet365",
-    "actualScore": "2 - 1",
+    "actualScore": "3 - 0 (3 Goles)",
     "result": "WON",
-    "profit": 0.53
+    "profit": 0.53,
+    "actualGoalsHome": 3,
+    "actualGoalsAway": 0,
+    "settledAt": "2026-09-12T04:31:15.899Z"
   },
   {
     "fixtureId": 1490461,
@@ -1764,8 +1797,11 @@
     "isMcpPick": true,
     "source": "mcp",
     "bookmaker": "Bet365",
-    "actualScore": "2 - 1",
+    "actualScore": "2 - 0",
     "result": "WON",
-    "profit": 0.62
+    "profit": 0.62,
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 0,
+    "settledAt": "2026-09-12T04:31:15.899Z"
   }
 ]

@@ -85,7 +85,10 @@
     "isMcp": true,
     "isMcpPick": true,
     "source": "mcp",
-    "actualScore": "3 - 1"
+    "actualScore": "2 - 0",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 0,
+    "settledAt": "2026-09-12T04:31:15.875Z"
   },
   {
     "fixtureId": 1635663,
@@ -170,7 +173,10 @@
         "competition": "Veikkausliiga"
       }
     ],
-    "actualScore": "2 - 1"
+    "actualScore": "2 - 1",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.876Z"
   },
   {
     "fixtureId": 1635655,
@@ -255,7 +261,10 @@
         "competition": "UEFA Champions League"
       }
     ],
-    "actualScore": "1 - 2"
+    "actualScore": "2 - 3 (5 Goles)",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 3,
+    "settledAt": "2026-09-12T04:31:15.876Z"
   },
   {
     "fixtureId": 1635655,
@@ -343,7 +352,10 @@
     "isMcp": true,
     "isMcpPick": true,
     "source": "mcp",
-    "actualScore": "1 - 2"
+    "actualScore": "2 - 3",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 3,
+    "settledAt": "2026-09-12T04:31:15.876Z"
   },
   {
     "fixtureId": 1635661,
@@ -428,7 +440,10 @@
         "competition": "Saudi Pro League"
       }
     ],
-    "actualScore": "3 - 0"
+    "actualScore": "2 - 1",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.876Z"
   },
   {
     "fixtureId": 1635661,
@@ -513,7 +528,10 @@
         "competition": "Saudi Pro League"
       }
     ],
-    "actualScore": "3 - 0"
+    "actualScore": "2 - 1 (3 Goles)",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.876Z"
   },
   {
     "fixtureId": 1635658,
@@ -601,7 +619,10 @@
     "isMcp": true,
     "isMcpPick": true,
     "source": "mcp",
-    "actualScore": "1 - 2"
+    "actualScore": "0 - 1",
+    "actualGoalsHome": 0,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.876Z"
   },
   {
     "fixtureId": 1635658,
@@ -631,7 +652,7 @@
     "pickBadge": "estandar",
     "smartScore": 75,
     "explanation": "Intensidad de copa inglesa. Probabilidad de Over 2.5 del 59.0% a cuota @1.65.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -686,7 +707,10 @@
         "competition": "League Cup"
       }
     ],
-    "actualScore": "1 - 2"
+    "actualScore": "0 - 1 (1 Goles)",
+    "actualGoalsHome": 0,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.876Z"
   },
   {
     "fixtureId": 1635659,
@@ -771,7 +795,10 @@
         "competition": "League Cup"
       }
     ],
-    "actualScore": "0 - 2"
+    "actualScore": "2 - 3",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 3,
+    "settledAt": "2026-09-12T04:31:15.876Z"
   },
   {
     "fixtureId": 1635652,
@@ -859,7 +886,10 @@
     "isMcp": true,
     "isMcpPick": true,
     "source": "mcp",
-    "actualScore": "2 - 1"
+    "actualScore": "3 - 2",
+    "actualGoalsHome": 3,
+    "actualGoalsAway": 2,
+    "settledAt": "2026-09-12T04:31:15.876Z"
   },
   {
     "fixtureId": 1635652,
@@ -944,7 +974,10 @@
         "competition": "UEFA Champions League"
       }
     ],
-    "actualScore": "2 - 1"
+    "actualScore": "3 - 2 (5 Goles)",
+    "actualGoalsHome": 3,
+    "actualGoalsAway": 2,
+    "settledAt": "2026-09-12T04:31:15.876Z"
   },
   {
     "fixtureId": 1635652,
@@ -1029,7 +1062,10 @@
         "competition": "UEFA Champions League"
       }
     ],
-    "actualScore": "2 - 1"
+    "actualScore": "3 - 2 (Ambos Sí)",
+    "actualGoalsHome": 3,
+    "actualGoalsAway": 2,
+    "settledAt": "2026-09-12T04:31:15.876Z"
   },
   {
     "fixtureId": 1635653,
@@ -1117,7 +1153,10 @@
     "isMcp": true,
     "isMcpPick": true,
     "source": "mcp",
-    "actualScore": "2 - 1"
+    "actualScore": "2 - 1",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.876Z"
   },
   {
     "fixtureId": 1635653,
@@ -1202,7 +1241,10 @@
         "competition": "UEFA Champions League"
       }
     ],
-    "actualScore": "2 - 1"
+    "actualScore": "2 - 1 (3 Goles)",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.876Z"
   },
   {
     "fixtureId": 1635654,
@@ -1287,7 +1329,10 @@
         "competition": "UEFA Champions League"
       }
     ],
-    "actualScore": "1 - 3"
+    "actualScore": "0 - 2",
+    "actualGoalsHome": 0,
+    "actualGoalsAway": 2,
+    "settledAt": "2026-09-12T04:31:15.876Z"
   },
   {
     "fixtureId": 1635654,
@@ -1317,7 +1362,7 @@
     "pickBadge": "estandar",
     "smartScore": 74,
     "explanation": "Presión alta de los citizens genera espacios defensivos en O Dragão. Probabilidad del 58.0% a cuota @1.70.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -1375,7 +1420,10 @@
     "isMcp": true,
     "isMcpPick": true,
     "source": "mcp",
-    "actualScore": "1 - 3"
+    "actualScore": "0 - 2 (2 Goles)",
+    "actualGoalsHome": 0,
+    "actualGoalsAway": 2,
+    "settledAt": "2026-09-12T04:31:15.876Z"
   },
   {
     "fixtureId": 1635656,
@@ -1460,7 +1508,10 @@
         "competition": "UEFA Champions League"
       }
     ],
-    "actualScore": "2 - 1"
+    "actualScore": "2 - 3 (5 Goles)",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 3,
+    "settledAt": "2026-09-12T04:31:15.876Z"
   },
   {
     "fixtureId": 1635656,
@@ -1490,7 +1541,7 @@
     "pickBadge": "bomba",
     "smartScore": 79,
     "explanation": "Solidez en casa de Lille frente al Real Betis. Cuota real Bet365 @2.10 con probabilidad estimada del 56.0%.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -1545,7 +1596,10 @@
         "competition": "UEFA Champions League"
       }
     ],
-    "actualScore": "2 - 1"
+    "actualScore": "2 - 3",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 3,
+    "settledAt": "2026-09-12T04:31:15.876Z"
   },
   {
     "fixtureId": 1635660,
@@ -1633,7 +1687,10 @@
     "isMcp": true,
     "isMcpPick": true,
     "source": "mcp",
-    "actualScore": "2 - 0"
+    "actualScore": "3 - 0",
+    "actualGoalsHome": 3,
+    "actualGoalsAway": 0,
+    "settledAt": "2026-09-12T04:31:15.876Z"
   },
   {
     "fixtureId": 1635660,
@@ -1663,7 +1720,7 @@
     "pickBadge": "estandar",
     "smartScore": 75,
     "explanation": "Eficacia en League Cup. Over 2.5 a cuota @1.60 con 58.6% de probabilidad.",
-    "status": "lost",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -1718,7 +1775,10 @@
         "competition": "League Cup"
       }
     ],
-    "actualScore": "2 - 0"
+    "actualScore": "3 - 0 (3 Goles)",
+    "actualGoalsHome": 3,
+    "actualGoalsAway": 0,
+    "settledAt": "2026-09-12T04:31:15.876Z"
   },
   {
     "fixtureId": 1635657,
@@ -1803,7 +1863,10 @@
         "competition": "Copa Sudamericana"
       }
     ],
-    "actualScore": "2 - 1"
+    "actualScore": "1 - 0",
+    "actualGoalsHome": 1,
+    "actualGoalsAway": 0,
+    "settledAt": "2026-09-12T04:31:15.876Z"
   },
   {
     "fixtureId": 1635657,
@@ -1833,7 +1896,7 @@
     "pickBadge": "bomba",
     "smartScore": 80,
     "explanation": "BOMBA DE VALOR: Clásico sudamericano de ida y vuelta. Cuota real Bet365 @2.10 para Ambos Anotan.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-10",
@@ -1891,6 +1954,9 @@
     "isMcp": true,
     "isMcpPick": true,
     "source": "mcp",
-    "actualScore": "2 - 1"
+    "actualScore": "1 - 0 (No)",
+    "actualGoalsHome": 1,
+    "actualGoalsAway": 0,
+    "settledAt": "2026-09-12T04:31:15.876Z"
   }
 ]

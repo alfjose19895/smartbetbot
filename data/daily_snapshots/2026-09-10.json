@@ -22,11 +22,15 @@
     "probability": 65.8,
     "confidence": "Alta",
     "smartScore": 89,
-    "status": "pending",
+    "status": "lost",
     "matchTiming": "prematch",
     "isMcpPick": false,
     "pickBadge": "estandar",
-    "explanation": "Choque de alta intensidad ofensiva en Estambul. Fenerbahçe promedia 2.3 goles a favor en casa y la Roma llega con Dybala y Dovbyk en punta generando más de 1.8 xG por partido."
+    "explanation": "Choque de alta intensidad ofensiva en Estambul. Fenerbahçe promedia 2.3 goles a favor en casa y la Roma llega con Dybala y Dovbyk en punta generando más de 1.8 xG por partido.",
+    "actualScore": "1 - 1 (2 Goles)",
+    "actualGoalsHome": 1,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.911Z"
   },
   {
     "id": "snap-2026-09-10-2",
@@ -51,11 +55,15 @@
     "probability": 67.5,
     "confidence": "Alta",
     "smartScore": 91,
-    "status": "pending",
+    "status": "lost",
     "matchTiming": "prematch",
     "isMcpPick": false,
     "pickBadge": "estandar",
-    "explanation": "El Philips Stadion es una fortaleza para el PSV con Luuk de Jong comandando el ataque (14 victorias en sus últimos 16 duelos oficiales en casa)."
+    "explanation": "El Philips Stadion es una fortaleza para el PSV con Luuk de Jong comandando el ataque (14 victorias en sus últimos 16 duelos oficiales en casa).",
+    "actualScore": "1 - 1",
+    "actualGoalsHome": 1,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.911Z"
   },
   {
     "id": "snap-2026-09-10-3",
@@ -80,11 +88,15 @@
     "probability": 88.5,
     "confidence": "Muy Alta",
     "smartScore": 93,
-    "status": "pending",
+    "status": "won",
     "matchTiming": "prematch",
     "isMcpPick": false,
     "pickBadge": "bomba",
-    "explanation": "El Allianz Arena espera una noche de alto poder ofensivo con Kane, Musiala y Olise. El modelo cuantitativo proyecta una contundente probabilidad del 88.5% para superar la línea de 2.5 goles."
+    "explanation": "El Allianz Arena espera una noche de alto poder ofensivo con Kane, Musiala y Olise. El modelo cuantitativo proyecta una contundente probabilidad del 88.5% para superar la línea de 2.5 goles.",
+    "actualScore": "5 - 0 (5 Goles)",
+    "actualGoalsHome": 5,
+    "actualGoalsAway": 0,
+    "settledAt": "2026-09-12T04:31:15.911Z"
   },
   {
     "id": "snap-2026-09-10-4",
@@ -107,11 +119,15 @@
     "probability": 89.2,
     "confidence": "Muy Alta",
     "smartScore": 95,
-    "status": "pending",
+    "status": "won",
     "matchTiming": "prematch",
     "isMcpPick": false,
     "pickBadge": "estandar",
-    "explanation": "Old Trafford recibe una notable disparidad de plantillas (+450 Elo a favor de los Red Devils). El modelo proyecta un triunfo amplio con más de 2.5 goles."
+    "explanation": "Old Trafford recibe una notable disparidad de plantillas (+450 Elo a favor de los Red Devils). El modelo proyecta un triunfo amplio con más de 2.5 goles.",
+    "actualScore": "4 - 0 (4 Goles)",
+    "actualGoalsHome": 4,
+    "actualGoalsAway": 0,
+    "settledAt": "2026-09-12T04:31:15.911Z"
   },
   {
     "id": "snap-2026-09-10-5",
@@ -134,11 +150,15 @@
     "probability": 67.1,
     "confidence": "Alta",
     "smartScore": 88,
-    "status": "pending",
+    "status": "won",
     "matchTiming": "prematch",
     "isMcpPick": false,
     "pickBadge": "estandar",
-    "explanation": "Encuentro con transiciones verticales rápidas en Praga. Lens concede 1.35 goles de visitante en suelo europeo y Slavia anota con frecuencia en balones parados."
+    "explanation": "Encuentro con transiciones verticales rápidas en Praga. Lens concede 1.35 goles de visitante en suelo europeo y Slavia anota con frecuencia en balones parados.",
+    "actualScore": "2 - 3 (5 Goles)",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 3,
+    "settledAt": "2026-09-12T04:31:15.911Z"
   },
   {
     "id": "snap-2026-09-10-6",
@@ -161,11 +181,15 @@
     "probability": 70.9,
     "confidence": "Alta",
     "smartScore": 90,
-    "status": "pending",
+    "status": "lost",
     "matchTiming": "prematch",
     "isMcpPick": false,
     "pickBadge": "estandar",
-    "explanation": "SC Braga domina el historial directo con 4 triunfos al hilo sobre Estrela. La diferencia de posesión e índice xG (+1.25) inclina el pronóstico a favor de los visitantes."
+    "explanation": "SC Braga domina el historial directo con 4 triunfos al hilo sobre Estrela. La diferencia de posesión e índice xG (+1.25) inclina el pronóstico a favor de los visitantes.",
+    "actualScore": "2 - 1",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.911Z"
   },
   {
     "id": "snap-2026-09-10-7",
@@ -188,11 +212,15 @@
     "probability": 54.2,
     "confidence": "Media",
     "smartScore": 87,
-    "status": "pending",
+    "status": "lost",
     "matchTiming": "prematch",
     "isMcpPick": false,
     "pickBadge": "valor",
-    "explanation": "Factor localía determinante en la altura de Quito. Cumbayá ha ganado 4 de sus últimos 5 compromisos de liga como anfitrión frente a un Gualaceo con baja producción foránea."
+    "explanation": "Factor localía determinante en la altura de Quito. Cumbayá ha ganado 4 de sus últimos 5 compromisos de liga como anfitrión frente a un Gualaceo con baja producción foránea.",
+    "actualScore": "0 - 1",
+    "actualGoalsHome": 0,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.911Z"
   },
   {
     "id": "snap-2026-09-10-8",
@@ -215,11 +243,15 @@
     "probability": 72.9,
     "confidence": "Muy Alta",
     "smartScore": 92,
-    "status": "pending",
+    "status": "won",
     "matchTiming": "prematch",
     "isMcpPick": false,
     "pickBadge": "valor",
-    "explanation": "El factor altitud de Cusco (3.400 msnm) y el invicto continental del Papá en el Garcilaso de la Vega otorgan una ventaja determinante sobre Atletico Torque."
+    "explanation": "El factor altitud de Cusco (3.400 msnm) y el invicto continental del Papá en el Garcilaso de la Vega otorgan una ventaja determinante sobre Atletico Torque.",
+    "actualScore": "2 - 0",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 0,
+    "settledAt": "2026-09-12T04:31:15.911Z"
   },
   {
     "id": "snap-2026-09-10-9",
@@ -242,11 +274,15 @@
     "probability": 58.8,
     "confidence": "Alta",
     "smartScore": 91,
-    "status": "pending",
+    "status": "lost",
     "matchTiming": "prematch",
     "isMcpPick": false,
     "pickBadge": "valor",
-    "explanation": "Duelo estelar de Copa Libertadores con el poderío ofensivo de Flamengo (Pedro, De Arrascaeta) y la verticalidad de IDV en casa. Proyección del 58.8% de que ambos clubes marquen en Quito."
+    "explanation": "Duelo estelar de Copa Libertadores con el poderío ofensivo de Flamengo (Pedro, De Arrascaeta) y la verticalidad de IDV en casa. Proyección del 58.8% de que ambos clubes marquen en Quito.",
+    "actualScore": "0 - 2 (No)",
+    "actualGoalsHome": 0,
+    "actualGoalsAway": 2,
+    "settledAt": "2026-09-12T04:31:15.911Z"
   },
   {
     "id": "snap-2026-09-10-10",
@@ -269,11 +305,15 @@
     "probability": 63.2,
     "confidence": "Alta",
     "smartScore": 89,
-    "status": "pending",
+    "status": "lost",
     "matchTiming": "prematch",
     "isMcpPick": false,
     "pickBadge": "estandar",
-    "explanation": "Clásico colombiano en El Campín de Bogotá con Falcao liderando el ataque albiazul ante un Deportivo Cali en crisis defensiva (6 derrotas en sus últimas 8 visitas)."
+    "explanation": "Clásico colombiano en El Campín de Bogotá con Falcao liderando el ataque albiazul ante un Deportivo Cali en crisis defensiva (6 derrotas en sus últimas 8 visitas).",
+    "actualScore": "1 - 1",
+    "actualGoalsHome": 1,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.911Z"
   },
   {
     "id": "snap-2026-09-10-11",
@@ -296,11 +336,15 @@
     "probability": 59.5,
     "confidence": "Alta",
     "smartScore": 88,
-    "status": "pending",
+    "status": "won",
     "matchTiming": "prematch",
     "isMcpPick": false,
     "pickBadge": "estandar",
-    "explanation": "Compromiso de alta intensidad en San Pedro Sula por la Copa Centroamericana. Marathon anota con regularidad en casa y Alajuelense dispone de pegada en transiciones rápidas."
+    "explanation": "Compromiso de alta intensidad en San Pedro Sula por la Copa Centroamericana. Marathon anota con regularidad en casa y Alajuelense dispone de pegada en transiciones rápidas.",
+    "actualScore": "2 - 2 (Ambos Sí)",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 2,
+    "settledAt": "2026-09-12T04:31:15.911Z"
   },
   {
     "id": "snap-2026-09-10-12",
@@ -323,10 +367,14 @@
     "probability": 64.1,
     "confidence": "Alta",
     "smartScore": 90,
-    "status": "pending",
+    "status": "won",
     "matchTiming": "prematch",
     "isMcpPick": false,
     "pickBadge": "estandar",
-    "explanation": "El Olímpico Universitario suele ofrecer duelos abiertos de ida y vuelta: 7 de los últimos 8 enfrentamientos directos entre Pumas y León superaron los 2.5 goles."
+    "explanation": "El Olímpico Universitario suele ofrecer duelos abiertos de ida y vuelta: 7 de los últimos 8 enfrentamientos directos entre Pumas y León superaron los 2.5 goles.",
+    "actualScore": "3 - 1 (4 Goles)",
+    "actualGoalsHome": 3,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.911Z"
   }
 ]

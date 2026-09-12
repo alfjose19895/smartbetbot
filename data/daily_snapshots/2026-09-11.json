@@ -142,7 +142,10 @@
     "homeElo": 1585,
     "awayElo": 1482,
     "leagueTier": 1,
-    "actualScore": "2 - 0"
+    "actualScore": "2 - 0",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 0,
+    "settledAt": "2026-09-12T04:31:15.924Z"
   },
   {
     "fixtureId": 1494277,
@@ -287,7 +290,10 @@
     "homeElo": 1519,
     "awayElo": 1535,
     "leagueTier": 1,
-    "actualScore": "1 - 1 (2 Goles)"
+    "actualScore": "1 - 1 (2 Goles)",
+    "actualGoalsHome": 1,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.924Z"
   },
   {
     "fixtureId": 1525980,
@@ -432,7 +438,10 @@
     "homeElo": 1623,
     "awayElo": 1585,
     "leagueTier": 1,
-    "actualScore": "1 - 0 (No)"
+    "actualScore": "1 - 0 (No)",
+    "actualGoalsHome": 1,
+    "actualGoalsAway": 0,
+    "settledAt": "2026-09-12T04:31:15.924Z"
   },
   {
     "fixtureId": 1561926,
@@ -577,7 +586,10 @@
     "homeElo": 1508,
     "awayElo": 1628,
     "leagueTier": 1,
-    "actualScore": "1 - 1 (2 Goles)"
+    "actualScore": "1 - 1 (2 Goles)",
+    "actualGoalsHome": 1,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.924Z"
   },
   {
     "fixtureId": 1575164,
@@ -722,7 +734,10 @@
     "homeElo": 1557,
     "awayElo": 1580,
     "leagueTier": 1,
-    "actualScore": "1 - 3 (Ambos Sí)"
+    "actualScore": "1 - 3 (Ambos Sí)",
+    "actualGoalsHome": 1,
+    "actualGoalsAway": 3,
+    "settledAt": "2026-09-12T04:31:15.924Z"
   },
   {
     "fixtureId": 1552763,
@@ -867,7 +882,10 @@
     "homeElo": 1559,
     "awayElo": 1790,
     "leagueTier": 1,
-    "actualScore": "1 - 0 (1 Goles)"
+    "actualScore": "1 - 0 (1 Goles)",
+    "actualGoalsHome": 1,
+    "actualGoalsAway": 0,
+    "settledAt": "2026-09-12T04:31:15.924Z"
   },
   {
     "fixtureId": 1492770,
@@ -1012,7 +1030,10 @@
     "homeElo": 1522,
     "awayElo": 1647,
     "leagueTier": 1,
-    "actualScore": "1 - 1 (Ambos Sí)"
+    "actualScore": "1 - 1 (Ambos Sí)",
+    "actualGoalsHome": 1,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.924Z"
   },
   {
     "fixtureId": 1550126,
@@ -1157,7 +1178,10 @@
     "homeElo": 1482,
     "awayElo": 1750,
     "leagueTier": 1,
-    "actualScore": "2 - 4 (6 Goles)"
+    "actualScore": "2 - 4 (6 Goles)",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 4,
+    "settledAt": "2026-09-12T04:31:15.924Z"
   },
   {
     "fixtureId": 1492767,
@@ -1302,7 +1326,10 @@
     "homeElo": 1482,
     "awayElo": 1498,
     "leagueTier": 1,
-    "actualScore": "2 - 3 (Ambos Sí)"
+    "actualScore": "2 - 3 (Ambos Sí)",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 3,
+    "settledAt": "2026-09-12T04:31:15.924Z"
   },
   {
     "fixtureId": 1492768,
@@ -1447,7 +1474,10 @@
     "homeElo": 1627,
     "awayElo": 1539,
     "leagueTier": 1,
-    "actualScore": "0 - 1 (1 Goles)"
+    "actualScore": "0 - 1 (1 Goles)",
+    "actualGoalsHome": 0,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.924Z"
   },
   {
     "fixtureId": 1492769,
@@ -1592,7 +1622,10 @@
     "homeElo": 1614,
     "awayElo": 1537,
     "leagueTier": 1,
-    "actualScore": "2 - 0 (No)"
+    "actualScore": "2 - 0 (No)",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 0,
+    "settledAt": "2026-09-12T04:31:15.924Z"
   },
   {
     "fixtureId": 1549484,
@@ -1737,7 +1770,10 @@
     "homeElo": 1551,
     "awayElo": 1513,
     "leagueTier": 1,
-    "actualScore": "1 - 2"
+    "actualScore": "1 - 2",
+    "actualGoalsHome": 1,
+    "actualGoalsAway": 2,
+    "settledAt": "2026-09-12T04:31:15.924Z"
   },
   {
     "fixtureId": 1492374,
@@ -1882,7 +1918,10 @@
     "homeElo": 1573,
     "awayElo": 1880,
     "leagueTier": 1,
-    "actualScore": "3 - 3"
+    "actualScore": "3 - 3",
+    "actualGoalsHome": 3,
+    "actualGoalsAway": 3,
+    "settledAt": "2026-09-12T04:31:15.924Z"
   },
   {
     "fixtureId": 1549486,
@@ -2027,7 +2066,10 @@
     "homeElo": 1629,
     "awayElo": 1595,
     "leagueTier": 1,
-    "actualScore": "0 - 1 (No)"
+    "actualScore": "0 - 1 (No)",
+    "actualGoalsHome": 0,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.924Z"
   },
   {
     "fixtureId": 1493125,
@@ -2172,6 +2214,9 @@
     "homeElo": 1551,
     "awayElo": 1490,
     "leagueTier": 1,
-    "actualScore": "3 - 1"
+    "actualScore": "3 - 1",
+    "actualGoalsHome": 3,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.924Z"
   }
 ]
