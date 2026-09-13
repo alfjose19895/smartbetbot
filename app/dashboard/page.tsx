@@ -112,56 +112,18 @@ export default function DashboardPage() {
       setLoading(true);
       const res = await fetch(`/api/signals?_t=${Date.now()}`, { cache: "no-store" });
       const json = await res.json();
-      const todayDateStr = getEcuadorDateString(Date.now());
-      let serverSignals: MarketOpportunity[] = Array.isArray(json.signals)
+      const serverSignals: MarketOpportunity[] = Array.isArray(json.signals)
         ? json.signals
         : [];
 
-      try {
-        const localRaw = typeof window !== "undefined" ? localStorage.getItem("smartbetbot_published_picks") : null;
-        if (localRaw) {
-          const localPicks = JSON.parse(localRaw);
-          if (Array.isArray(localPicks)) {
-            // Strictly retain only today's picks in localStorage
-            const validTodayLocalPicks = localPicks.filter(
-              (lp: MarketOpportunity) => getEcuadorDateString(lp.kickoff) === todayDateStr
-            );
-            if (validTodayLocalPicks.length !== localPicks.length) {
-              try {
-                localStorage.setItem("smartbetbot_published_picks", JSON.stringify(validTodayLocalPicks));
-              } catch {}
-            }
-
-            const map = new Map<string, MarketOpportunity>();
-            // 1. Put local picks first
-            for (const lp of validTodayLocalPicks) {
-              const key = `${lp.fixtureId || 0}-${lp.homeTeam}-${lp.awayTeam}-${lp.market}`;
-              map.set(key, { ...lp, isMcpPick: true, pickBadge: lp.pickBadge || "mcp" });
-            }
-            // 2. Put server signals second so server evaluations (actualScore, status, result) take 100% precedence
-            for (const p of serverSignals) {
-              const key = `${p.fixtureId || 0}-${p.homeTeam}-${p.awayTeam}-${p.market}`;
-              const existingLocal = map.get(key);
-              map.set(key, {
-                ...(existingLocal || {}),
-                ...p,
-                isMcpPick: p.isMcpPick || p.isMcp || Boolean(existingLocal),
-                pickBadge: p.pickBadge || (existingLocal ? existingLocal.pickBadge : undefined) || (p.isMcp ? "mcp" : undefined),
-              });
-            }
-            serverSignals = Array.from(map.values()).filter(
-              (p) => getEcuadorDateString(p.kickoff) === todayDateStr
-            );
-            serverSignals.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
-
-            // Synchronize sanitized list back to localStorage
-            try {
-              localStorage.setItem("smartbetbot_published_picks", JSON.stringify(serverSignals.filter(s => s.isMcp || s.isMcpPick)));
-            } catch {}
-          }
-        }
-      } catch (err) {
-        console.warn("Could not merge local published picks in dashboard:", err);
+      // Server is the single authoritative source of truth. Clean browser localStorage to eliminate stale cache.
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem(
+            "smartbetbot_published_picks",
+            JSON.stringify(serverSignals.filter((s) => s.isMcp || s.isMcpPick))
+          );
+        } catch {}
       }
 
       const cleanUniqueSignals = deduplicatePicksList(serverSignals);
