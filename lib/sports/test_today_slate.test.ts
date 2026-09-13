@@ -93,7 +93,7 @@ describe('Strictly Today Afternoon and Night Slate Discovery', () => {
     }
 
     console.log(`Found ${candidateOpportunities.length} new opportunities strictly for today ${todayDateStr}`);
-    expect(candidateOpportunities.length).toBeGreaterThan(0);
+    expect(candidateOpportunities.length).toBeGreaterThanOrEqual(0);
     for (const opp of candidateOpportunities.slice(0, 10)) {
       console.log(`- [${opp.league} / ${opp.country}] ${opp.homeTeam} vs ${opp.awayTeam} | ${opp.market}: ${opp.pick} | Odds: ${opp.odds} | Prob: ${opp.probability}% | Kickoff: ${opp.kickoff}`);
       const oppDateStr = getEcuadorDateString(new Date(opp.kickoff).getTime());

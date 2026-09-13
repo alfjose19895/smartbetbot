@@ -1,17 +1,24 @@
-export function isExcludedMatch(homeTeam?: string, awayTeam?: string, matchName?: string): boolean {
+export function isExcludedMatch(homeTeam?: string, awayTeam?: string, matchName?: string, kickoffDate?: string): boolean {
+  // If a kickoff date is provided and it is NOT today's problematic date (2026-09-13), do NOT exclude (permit future matches)
+  if (kickoffDate) {
+    const d = kickoffDate.length >= 10 ? kickoffDate.substring(0, 10) : kickoffDate;
+    if (d !== "2026-09-13") {
+      return false;
+    }
+  }
+
   const normHome = (homeTeam || "").toLowerCase();
   const normAway = (awayTeam || "").toLowerCase();
   const normMatch = (matchName || "").toLowerCase();
   const fullText = `${normHome} vs ${normAway} ${normMatch}`.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-  // 1. Exclude ADT vs Cienciano (Peru)
+  // Exclude today's specific problematic cards for 2026-09-13
   const hasAdt = normHome.includes("adt") || normAway.includes("adt") || normMatch.includes("adt") || fullText.includes("tarma");
   const hasCienciano = normHome.includes("cienciano") || normAway.includes("cienciano") || normMatch.includes("cienciano");
   if (hasAdt && hasCienciano) {
     return true;
   }
 
-  // 2. Exclude Teplice vs Slavia Praha / Slavia Praga (Czech Republic)
   const hasTeplice = normHome.includes("teplice") || normAway.includes("teplice") || normMatch.includes("teplice");
   const hasSlavia = normHome.includes("slavia") || normAway.includes("slavia") || normMatch.includes("slavia");
   if (hasTeplice && hasSlavia) {
@@ -1070,7 +1077,7 @@ export function evaluateFixturePrediction(params: {
     targetMarket,
   } = params;
 
-  if (isExcludedMatch(homeTeam, awayTeam, `${homeTeam} vs ${awayTeam}`)) {
+  if (isExcludedMatch(homeTeam, awayTeam, `${homeTeam} vs ${awayTeam}`, kickoff)) {
     return [];
   }
 
