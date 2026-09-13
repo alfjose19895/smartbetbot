@@ -1063,9 +1063,13 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
     console.warn("[Prediction Engine] Gemini Veto audit warning:", vetoErr);
   }
 
-  // Merge with existing snapshot so NO previously created or published MCP alerts are lost
+  // Merge with existing snapshot: if forceRefresh, only preserve user-published MCP picks, otherwise preserve active snapshot
   const mergedMap = new Map<string, MarketOpportunity>();
-  for (const p of existingSnapshot) {
+  const snapshotToMerge = forceRefresh 
+    ? existingSnapshot.filter((p) => p.source === "mcp" && p.isMcpPick)
+    : existingSnapshot;
+
+  for (const p of snapshotToMerge) {
     const h = getCanonicalTeamKey(p.homeTeam);
     const a = getCanonicalTeamKey(p.awayTeam);
     const fixId = Number(p.fixtureId) || 0;
