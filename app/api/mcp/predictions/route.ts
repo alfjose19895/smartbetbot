@@ -1,5 +1,6 @@
 "use server";
 
+import { isExcludedMatch } from "@/lib/sports/prediction-engine";
 import { NextResponse } from "next/server";
 import {
   searchLiveMarketDynamic,
@@ -146,6 +147,7 @@ export async function POST(req: Request) {
           const h = (p.homeTeam || "").toLowerCase();
           const a = (p.awayTeam || "").toLowerCase();
           const l = (p.league || "").toLowerCase();
+          if (isExcludedMatch(p.homeTeam, p.awayTeam, p.match)) return false;
           if (FORBIDDEN_RESERVE_TEAMS.some((t) => h.includes(t) || a.includes(t))) return false;
           if (l.includes("next pro") || l.includes("reserve") || h.endsWith(" ii") || a.endsWith(" ii")) return false;
           return true;
@@ -258,6 +260,9 @@ export async function POST(req: Request) {
       const h = (p.homeTeam || "").toLowerCase();
       const a = (p.awayTeam || "").toLowerCase();
       const leg = (p.league || "").toLowerCase();
+
+      // Exclude banned / problematic matches
+      if (isExcludedMatch(p.homeTeam, p.awayTeam, p.match)) return false;
 
       // Exclude reserve development leagues & reserve teams
       if (FORBIDDEN_RESERVE_TEAMS.some((t) => h.includes(t) || a.includes(t))) return false;

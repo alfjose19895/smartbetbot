@@ -1,3 +1,4 @@
+import { isExcludedMatch } from "./prediction-engine";
 import { getImmutableDailyParlays } from "./parlay-generator";
 import { auditPredictionsWithGeminiVeto } from "@/lib/ai/claude-analyst";
 import { auditPredictionsBatchWithClaude, isClaudeConfigured } from "../ai/claude-analyst";
@@ -82,7 +83,7 @@ export function loadDailySnapshot(dateStr: string): MarketOpportunity[] | null {
       const data = fs.readFileSync(filePath, "utf-8");
       const picks = JSON.parse(data);
       if (Array.isArray(picks)) {
-        return picks;
+        return picks.filter((p) => !isExcludedMatch(p.homeTeam, p.awayTeam, p.match));
       }
     }
   } catch (err) {
@@ -722,6 +723,7 @@ export function getStoredPredictions(): MarketOpportunity[] {
   const todaySnapshot = loadDailySnapshot(todayDateStr);
   if (todaySnapshot && Array.isArray(todaySnapshot) && todaySnapshot.length > 0) {
     return todaySnapshot.filter((p) => {
+      if (isExcludedMatch(p.homeTeam, p.awayTeam, p.match)) return false;
       const pDate = p.kickoff ? getEcuadorDateString(p.kickoff) : todayDateStr;
       return pDate === todayDateStr;
     });
@@ -870,6 +872,7 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
         if (legName.includes("primavera") || legName.includes("u19") || legName.includes("u20") || legName.includes("u21") || legName.includes("next pro") || legName.includes("reserve")) return false;
         if (hName.endsWith(" ii") || hName.endsWith(" 2") || hName.endsWith(" b") || aName.endsWith(" ii") || aName.endsWith(" 2") || aName.endsWith(" b")) return false;
         if (hName.includes("the town") || aName.includes("the town") || hName.includes("tacoma defiance") || aName.includes("tacoma defiance")) return false;
+        if (isExcludedMatch(hName, aName)) return false;
         return isCuratedLeague(item.league?.id, item.league?.name, item.league?.country);
       });
 
@@ -913,6 +916,7 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
         if (["1H", "2H", "HT", "ET", "BT", "P", "LIVE", "INT", "SUSP", "FT", "AET", "PEN", "PST", "CANC", "ABD", "AWD", "WO", "POST"].includes(shortStatus)) continue;
         if (kickoffMs <= nowMs) continue;
         if (shortStatus !== "NS" && shortStatus !== "TBD") continue;
+      if (isExcludedMatch(item.teams?.home?.name, item.teams?.away?.name)) continue;
 
         // Skip non-curated leagues ("Otras Ligas") & youth leagues
         const legName = (item.league?.name || "").toLowerCase();
@@ -1327,6 +1331,7 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     const hName = (item.teams.home.name || "").toLowerCase();
     const aName = (item.teams.away.name || "").toLowerCase();
     if (legName.includes("primavera") || legName.includes("u18") || legName.includes("u19") || legName.includes("u20") || legName.includes("u21") || legName.includes("reserve") || legName.includes("next pro") || legName.includes("lowland") || legName.includes("non league")) continue;
+    if (isExcludedMatch(hName, aName)) continue;
     if (hName.endsWith(" ii") || hName.endsWith(" 2") || aName.endsWith(" ii") || aName.endsWith(" 2")) continue;
     if (!isCuratedLeague(item.league?.id, item.league?.name, item.league?.country)) continue;
 
@@ -2244,6 +2249,8 @@ export async function searchLiveMarketDynamic(params: {
       const aName = (f.teams.away.name || "").toLowerCase();
       const legName = (f.league?.name || "").toLowerCase();
       const countryName = (f.league?.country || "").toLowerCase();
+
+      if (isExcludedMatch(f.teams.home.name, f.teams.away.name)) return false;
 
       // Exclude reserve development leagues & reserve teams
       if (hName.endsWith(" ii") || aName.endsWith(" ii") || legName.includes("reserve") || legName.includes("primavera") || legName.includes("next pro")) {

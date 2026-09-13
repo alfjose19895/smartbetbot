@@ -86,7 +86,7 @@ describe("Prediction Engine (TypeScript MVP)", () => {
       league: "Bundesliga",
       leagueId: 78,
       country: "Alemania",
-      kickoff: "2026-09-12T13:30:00Z",
+      kickoff: new Date().toISOString(),
       market: "Over 2.5 Goles",
       selection: "Over 2.5",
       odds: 1.65,

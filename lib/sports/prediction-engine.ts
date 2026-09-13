@@ -1,3 +1,26 @@
+export function isExcludedMatch(homeTeam?: string, awayTeam?: string, matchName?: string): boolean {
+  const normHome = (homeTeam || "").toLowerCase();
+  const normAway = (awayTeam || "").toLowerCase();
+  const normMatch = (matchName || "").toLowerCase();
+  const fullText = `${normHome} vs ${normAway} ${normMatch}`.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+  // 1. Exclude ADT vs Cienciano (Peru)
+  const hasAdt = normHome.includes("adt") || normAway.includes("adt") || normMatch.includes("adt") || fullText.includes("tarma");
+  const hasCienciano = normHome.includes("cienciano") || normAway.includes("cienciano") || normMatch.includes("cienciano");
+  if (hasAdt && hasCienciano) {
+    return true;
+  }
+
+  // 2. Exclude Teplice vs Slavia Praha / Slavia Praga (Czech Republic)
+  const hasTeplice = normHome.includes("teplice") || normAway.includes("teplice") || normMatch.includes("teplice");
+  const hasSlavia = normHome.includes("slavia") || normAway.includes("slavia") || normMatch.includes("slavia");
+  if (hasTeplice && hasSlavia) {
+    return true;
+  }
+
+  return false;
+}
+
 export function getPickDisplayName(market: string, selection: string, homeTeam: string, awayTeam: string): string {
   const m = (market || "").toLowerCase();
   const s = (selection || "").toLowerCase();
@@ -210,6 +233,12 @@ export function getCanonicalTeamKey(name: string): string {
     .replace(/\b(fc|cf|rc|rcd|ud|ca|afc|sc|sd|gd|sl|de|la|el|los|las|the|club|balompie|futbol|fútbol|de futbol|de fútbol|de madrid|de bilbao|de barcelona|de vigo|sad|praia|sports|sporting|asociacion|corporacion|cd)\b/gi, " ")
     .replace(/[^a-z0-9]/gi, "")
     .trim();
+
+  // Peru & Czech
+  if (norm.includes("adt") || norm.includes("tarma")) return "adt";
+  if (norm.includes("cienciano")) return "cienciano";
+  if (norm.includes("teplice")) return "teplice";
+  if (norm.includes("slaviapraha") || norm.includes("slaviapraga") || (norm.includes("slavia") && !norm.includes("mozyr"))) return "slaviapraha";
 
   // Colombia
   if (norm.includes("chico") || norm.includes("boyacachico")) return "boyacachico";
@@ -1040,6 +1069,10 @@ export function evaluateFixturePrediction(params: {
     liveContext,
     targetMarket,
   } = params;
+
+  if (isExcludedMatch(homeTeam, awayTeam, `${homeTeam} vs ${awayTeam}`)) {
+    return [];
+  }
 
   const { canonicalLeague, country, tier } = normalizeLeagueInfo(league, rawCountry, leagueId);
 

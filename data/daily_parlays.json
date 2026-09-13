@@ -1,1 +1,2581 @@
-{}
+{
+  "2026-09-13": {
+    "parlay1": [
+      {
+        "fixtureId": 1557404,
+        "match": "Manchester United vs Manchester City",
+        "homeTeam": "Manchester United",
+        "awayTeam": "Manchester City",
+        "homeTeamId": 33,
+        "awayTeamId": 50,
+        "homeLogo": "https://media.api-sports.io/football/teams/33.png",
+        "awayLogo": "https://media.api-sports.io/football/teams/50.png",
+        "league": "Premier League",
+        "leagueId": 39,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/39.png",
+        "country": "Inglaterra",
+        "leagueTier": 1,
+        "kickoff": "2026-09-13T10:30:00-05:00",
+        "market": "Over 2.5 Goles",
+        "selection": "Over 2.5",
+        "pick": "Over 2.5 Goles",
+        "odds": 1.36,
+        "bookmaker": "Bet365",
+        "bookmakerOdds": 1.36,
+        "modelOdds": 1.37,
+        "fairOdds": 1.37,
+        "probability": 73.1,
+        "impliedProbability": 73.5,
+        "edge": 1,
+        "expectedValue": -0.6,
+        "confidence": "Muy Alta",
+        "pickBadge": "estandar",
+        "smartScore": 99,
+        "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Manchester United con la pegada en contragolpe de Manchester City (3.90 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 73.1% de confianza a cuota @1.36.",
+        "status": "pending",
+        "isMcpPick": true,
+        "isMcp": true,
+        "source": "mcp",
+        "h2h": [
+          {
+            "date": "2026-07-15",
+            "homeTeam": "Manchester United",
+            "awayTeam": "Manchester City",
+            "score": "1-2",
+            "winner": "away",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-03-17",
+            "homeTeam": "Manchester City",
+            "awayTeam": "Manchester United",
+            "score": "2-0",
+            "winner": "home",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2025-09-18",
+            "homeTeam": "Manchester United",
+            "awayTeam": "Manchester City",
+            "score": "1-1",
+            "winner": "draw",
+            "competition": "Premier League"
+          }
+        ],
+        "homeLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": false,
+            "score": "2-0",
+            "result": "W",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": true,
+            "score": "3-1",
+            "result": "W",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": false,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": true,
+            "score": "3-1",
+            "result": "W",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": false,
+            "score": "2-0",
+            "result": "W",
+            "competition": "Premier League"
+          }
+        ],
+        "awayLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": false,
+            "score": "2-0",
+            "result": "W",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": true,
+            "score": "3-1",
+            "result": "W",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": false,
+            "score": "1-2",
+            "result": "L",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": true,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": false,
+            "score": "2-0",
+            "result": "W",
+            "competition": "Premier League"
+          }
+        ],
+        "homeElo": 1770,
+        "awayElo": 2060,
+        "isNew": true,
+        "isNewlyDiscovered": true,
+        "addedAt": "2026-09-13T13:06:45.109Z"
+      },
+      {
+        "fixtureId": 1565473,
+        "match": "Bukovyna vs Zorya Luhansk",
+        "homeTeam": "Bukovyna",
+        "awayTeam": "Zorya Luhansk",
+        "homeTeamId": 6486,
+        "awayTeamId": 599,
+        "homeLogo": "https://media.api-sports.io/football/teams/6486.png",
+        "awayLogo": "https://media.api-sports.io/football/teams/599.png",
+        "league": "Premier League",
+        "leagueId": 333,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/333.png",
+        "country": "Ucrania",
+        "leagueTier": 1,
+        "kickoff": "2026-09-13T10:00:00-05:00",
+        "market": "Ganador Local",
+        "selection": "1",
+        "pick": "Bukovyna",
+        "odds": 1.39,
+        "bookmaker": "Bet365",
+        "bookmakerOdds": 1.39,
+        "modelOdds": 1.39,
+        "fairOdds": 1.39,
+        "probability": 72.2,
+        "impliedProbability": 71.9,
+        "edge": 1,
+        "expectedValue": 0.3,
+        "confidence": "Muy Alta",
+        "pickBadge": "estandar",
+        "smartScore": 99,
+        "explanation": "Dominio estadístico de Bukovyna: La solidez defensiva del local y su promedio de más de 1.7 goles por encuentro justifican una alta certeza matemática del 72.2% para el triunfo en casa.",
+        "status": "pending",
+        "isMcpPick": true,
+        "isMcp": true,
+        "source": "mcp",
+        "h2h": [
+          {
+            "date": "2026-07-15",
+            "homeTeam": "Bukovyna",
+            "awayTeam": "Zorya Luhansk",
+            "score": "2-1",
+            "winner": "home",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-03-17",
+            "homeTeam": "Zorya Luhansk",
+            "awayTeam": "Bukovyna",
+            "score": "0-2",
+            "winner": "away",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2025-09-18",
+            "homeTeam": "Bukovyna",
+            "awayTeam": "Zorya Luhansk",
+            "score": "1-1",
+            "winner": "draw",
+            "competition": "Premier League"
+          }
+        ],
+        "homeLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": false,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": true,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": false,
+            "score": "1-0",
+            "result": "W",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": true,
+            "score": "1-2",
+            "result": "L",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": false,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Premier League"
+          }
+        ],
+        "awayLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": false,
+            "score": "2-1",
+            "result": "W",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": true,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": false,
+            "score": "0-0",
+            "result": "D",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": true,
+            "score": "1-0",
+            "result": "W",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": false,
+            "score": "1-3",
+            "result": "L",
+            "competition": "Premier League"
+          }
+        ],
+        "homeElo": 1607,
+        "awayElo": 1511,
+        "isNew": true,
+        "isNewlyDiscovered": true,
+        "addedAt": "2026-09-13T13:06:45.109Z"
+      },
+      {
+        "fixtureId": 1493130,
+        "match": "Independiente vs San Lorenzo",
+        "homeTeam": "Independiente",
+        "awayTeam": "San Lorenzo",
+        "homeTeamId": 453,
+        "awayTeamId": 460,
+        "homeLogo": "https://media.api-sports.io/football/teams/453.png",
+        "awayLogo": "https://media.api-sports.io/football/teams/460.png",
+        "league": "Liga Profesional Argentina",
+        "leagueId": 128,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/128.png",
+        "country": "Argentina",
+        "leagueTier": 1,
+        "kickoff": "2026-09-13T17:15:00-05:00",
+        "market": "Ambos Equipos Anotan",
+        "selection": "Sí",
+        "pick": "Ambos Equipos Anotan",
+        "odds": 1.99,
+        "bookmaker": "Bet365",
+        "bookmakerOdds": 1.99,
+        "modelOdds": 1.95,
+        "fairOdds": 1.95,
+        "probability": 51.4,
+        "impliedProbability": 50.3,
+        "edge": 1.1,
+        "expectedValue": 2.2,
+        "confidence": "Media",
+        "pickBadge": "valor",
+        "smartScore": 82,
+        "explanation": "Análisis cuantitativo avanzado: 51.4% de probabilidad estadística con valor positivo (+1.1%) frente a la cuota del mercado @1.99.",
+        "status": "pending",
+        "isMcpPick": true,
+        "isMcp": true,
+        "source": "mcp",
+        "h2h": [
+          {
+            "date": "2026-07-15",
+            "homeTeam": "Independiente",
+            "awayTeam": "San Lorenzo",
+            "score": "1-2",
+            "winner": "away",
+            "competition": "Liga Profesional Argentina"
+          },
+          {
+            "date": "2026-03-17",
+            "homeTeam": "San Lorenzo",
+            "awayTeam": "Independiente",
+            "score": "2-0",
+            "winner": "home",
+            "competition": "Liga Profesional Argentina"
+          },
+          {
+            "date": "2025-09-18",
+            "homeTeam": "Independiente",
+            "awayTeam": "San Lorenzo",
+            "score": "1-3",
+            "winner": "away",
+            "competition": "Liga Profesional Argentina"
+          }
+        ],
+        "homeLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": true,
+            "score": "2-1",
+            "result": "W",
+            "competition": "Liga Profesional Argentina"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": false,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Liga Profesional Argentina"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": true,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Liga Profesional Argentina"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": false,
+            "score": "1-0",
+            "result": "W",
+            "competition": "Liga Profesional Argentina"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": true,
+            "score": "1-2",
+            "result": "L",
+            "competition": "Liga Profesional Argentina"
+          }
+        ],
+        "awayLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": false,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Liga Profesional Argentina"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": true,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Liga Profesional Argentina"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": false,
+            "score": "1-0",
+            "result": "W",
+            "competition": "Liga Profesional Argentina"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": true,
+            "score": "1-2",
+            "result": "L",
+            "competition": "Liga Profesional Argentina"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": false,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Liga Profesional Argentina"
+          }
+        ],
+        "homeElo": 1640,
+        "awayElo": 1647,
+        "isNew": true,
+        "isNewlyDiscovered": true,
+        "addedAt": "2026-09-13T13:06:45.109Z"
+      }
+    ],
+    "parlay2": [
+      {
+        "fixtureId": 1603031,
+        "match": "Al Riyadh vs Al Kholood",
+        "homeTeam": "Al Riyadh",
+        "awayTeam": "Al Kholood",
+        "homeTeamId": 10511,
+        "awayTeamId": 10509,
+        "homeLogo": "https://media.api-sports.io/football/teams/10511.png",
+        "awayLogo": "https://media.api-sports.io/football/teams/10509.png",
+        "league": "Saudi Pro League",
+        "leagueId": 307,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/307.png",
+        "country": "Arabia Saudita",
+        "leagueTier": 1,
+        "kickoff": "2026-09-13T13:00:00-05:00",
+        "market": "Over 2.5 Goles",
+        "selection": "Over 2.5",
+        "pick": "Over 2.5 Goles",
+        "odds": 1.85,
+        "bookmaker": "Bet365",
+        "bookmakerOdds": 1.85,
+        "modelOdds": 1.81,
+        "fairOdds": 1.81,
+        "probability": 55.3,
+        "impliedProbability": 54.1,
+        "edge": 1.2,
+        "expectedValue": 2.2,
+        "confidence": "Media",
+        "pickBadge": "valor",
+        "smartScore": 87,
+        "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con Al Riyadh sumando en 4 de sus últimos 5 cotejos y la vocación ofensiva de Al Kholood, el algoritmo estima un 55.3% de certeza para más de 2.5 goles.",
+        "status": "pending",
+        "isMcpPick": true,
+        "isMcp": true,
+        "source": "mcp",
+        "h2h": [
+          {
+            "date": "2026-07-15",
+            "homeTeam": "Al Riyadh",
+            "awayTeam": "Al Kholood",
+            "score": "2-1",
+            "winner": "home",
+            "competition": "Saudi Pro League"
+          },
+          {
+            "date": "2026-03-17",
+            "homeTeam": "Al Kholood",
+            "awayTeam": "Al Riyadh",
+            "score": "0-2",
+            "winner": "away",
+            "competition": "Saudi Pro League"
+          },
+          {
+            "date": "2025-09-18",
+            "homeTeam": "Al Riyadh",
+            "awayTeam": "Al Kholood",
+            "score": "3-0",
+            "winner": "home",
+            "competition": "Saudi Pro League"
+          }
+        ],
+        "homeLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": true,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Saudi Pro League"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": false,
+            "score": "1-0",
+            "result": "W",
+            "competition": "Saudi Pro League"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": true,
+            "score": "1-2",
+            "result": "L",
+            "competition": "Saudi Pro League"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": false,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Saudi Pro League"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": true,
+            "score": "2-1",
+            "result": "W",
+            "competition": "Saudi Pro League"
+          }
+        ],
+        "awayLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": false,
+            "score": "0-0",
+            "result": "D",
+            "competition": "Saudi Pro League"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": true,
+            "score": "1-0",
+            "result": "W",
+            "competition": "Saudi Pro League"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": false,
+            "score": "1-3",
+            "result": "L",
+            "competition": "Saudi Pro League"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": true,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Saudi Pro League"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": false,
+            "score": "0-0",
+            "result": "D",
+            "competition": "Saudi Pro League"
+          }
+        ],
+        "homeElo": 1574,
+        "awayElo": 1505,
+        "isNew": true,
+        "isNewlyDiscovered": true,
+        "addedAt": "2026-09-13T13:06:45.109Z"
+      },
+      {
+        "fixtureId": 1548529,
+        "match": "Istra 1961 vs Rudes",
+        "homeTeam": "Istra 1961",
+        "awayTeam": "Rudes",
+        "homeTeamId": 1016,
+        "awayTeamId": 1019,
+        "homeLogo": "https://media.api-sports.io/football/teams/1016.png",
+        "awayLogo": "https://media.api-sports.io/football/teams/1019.png",
+        "league": "HNL",
+        "leagueId": 210,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/210.png",
+        "country": "Croacia",
+        "leagueTier": 1,
+        "kickoff": "2026-09-13T10:00:00-05:00",
+        "market": "Ganador Visitante",
+        "selection": "2",
+        "pick": "Rudes",
+        "odds": 1.93,
+        "bookmaker": "Bet365",
+        "bookmakerOdds": 1.93,
+        "modelOdds": 1.89,
+        "fairOdds": 1.89,
+        "probability": 53,
+        "impliedProbability": 51.8,
+        "edge": 1.2,
+        "expectedValue": 2.2,
+        "confidence": "Media",
+        "pickBadge": "valor",
+        "smartScore": 84,
+        "explanation": "Superioridad cualitativa y jerarquía de Rudes: A pesar de jugar fuera, su diferencial Elo (1635) y xG de 1.82 superan con claridad la estructura de Istra 1961. Con 2 triunfos en sus 5 salidas recientes, la victoria visitante alcanza 53% de probabilidad a cuota @1.93.",
+        "status": "pending",
+        "isMcpPick": true,
+        "isMcp": true,
+        "source": "mcp",
+        "h2h": [
+          {
+            "date": "2026-07-15",
+            "homeTeam": "Istra 1961",
+            "awayTeam": "Rudes",
+            "score": "1-2",
+            "winner": "away",
+            "competition": "HNL"
+          },
+          {
+            "date": "2026-03-17",
+            "homeTeam": "Rudes",
+            "awayTeam": "Istra 1961",
+            "score": "2-0",
+            "winner": "home",
+            "competition": "HNL"
+          },
+          {
+            "date": "2025-09-18",
+            "homeTeam": "Istra 1961",
+            "awayTeam": "Rudes",
+            "score": "1-3",
+            "winner": "away",
+            "competition": "HNL"
+          }
+        ],
+        "homeLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": true,
+            "score": "0-2",
+            "result": "L",
+            "competition": "HNL"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": false,
+            "score": "0-0",
+            "result": "D",
+            "competition": "HNL"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": true,
+            "score": "1-0",
+            "result": "W",
+            "competition": "HNL"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": false,
+            "score": "1-3",
+            "result": "L",
+            "competition": "HNL"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": true,
+            "score": "0-0",
+            "result": "D",
+            "competition": "HNL"
+          }
+        ],
+        "awayLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": false,
+            "score": "1-1",
+            "result": "D",
+            "competition": "HNL"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": true,
+            "score": "2-1",
+            "result": "W",
+            "competition": "HNL"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": false,
+            "score": "0-2",
+            "result": "L",
+            "competition": "HNL"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": true,
+            "score": "1-1",
+            "result": "D",
+            "competition": "HNL"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": false,
+            "score": "1-0",
+            "result": "W",
+            "competition": "HNL"
+          }
+        ],
+        "homeElo": 1516,
+        "awayElo": 1635,
+        "isNew": true,
+        "isNewlyDiscovered": true,
+        "addedAt": "2026-09-13T13:06:45.109Z"
+      },
+      {
+        "fixtureId": 1553865,
+        "match": "IMT Novi Beograd vs FK Crvena Zvezda",
+        "homeTeam": "IMT Novi Beograd",
+        "awayTeam": "FK Crvena Zvezda",
+        "homeTeamId": 12316,
+        "awayTeamId": 598,
+        "homeLogo": "https://media.api-sports.io/football/teams/12316.png",
+        "awayLogo": "https://media.api-sports.io/football/teams/598.png",
+        "league": "Super Liga",
+        "leagueId": 286,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/286.png",
+        "country": "Serbia",
+        "leagueTier": 1,
+        "kickoff": "2026-09-13T12:00:00-05:00",
+        "market": "Ambos Equipos Anotan",
+        "selection": "Sí",
+        "pick": "Ambos Equipos Anotan",
+        "odds": 2.14,
+        "bookmaker": "Bet365",
+        "bookmakerOdds": 2.14,
+        "modelOdds": 2.1,
+        "fairOdds": 2.1,
+        "probability": 47.6,
+        "impliedProbability": 46.7,
+        "edge": 1,
+        "expectedValue": 1.9,
+        "confidence": "Media",
+        "pickBadge": "bomba",
+        "smartScore": 77,
+        "explanation": "Análisis cuantitativo avanzado: 47.6% de probabilidad estadística con valor positivo (+1%) frente a la cuota del mercado @2.14.",
+        "status": "pending",
+        "isMcpPick": true,
+        "isMcp": true,
+        "source": "mcp",
+        "h2h": [
+          {
+            "date": "2026-07-15",
+            "homeTeam": "IMT Novi Beograd",
+            "awayTeam": "FK Crvena Zvezda",
+            "score": "2-1",
+            "winner": "home",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-03-17",
+            "homeTeam": "FK Crvena Zvezda",
+            "awayTeam": "IMT Novi Beograd",
+            "score": "0-2",
+            "winner": "away",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2025-09-18",
+            "homeTeam": "IMT Novi Beograd",
+            "awayTeam": "FK Crvena Zvezda",
+            "score": "1-1",
+            "winner": "draw",
+            "competition": "Super Liga"
+          }
+        ],
+        "homeLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": true,
+            "score": "2-1",
+            "result": "W",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": false,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": true,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": false,
+            "score": "1-0",
+            "result": "W",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": true,
+            "score": "2-1",
+            "result": "W",
+            "competition": "Super Liga"
+          }
+        ],
+        "awayLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": true,
+            "score": "0-0",
+            "result": "D",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": false,
+            "score": "2-1",
+            "result": "W",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": true,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": false,
+            "score": "0-0",
+            "result": "D",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": true,
+            "score": "1-0",
+            "result": "W",
+            "competition": "Super Liga"
+          }
+        ],
+        "homeElo": 1622,
+        "awayElo": 1484,
+        "isNew": true,
+        "isNewlyDiscovered": true,
+        "addedAt": "2026-09-13T13:06:45.109Z"
+      }
+    ],
+    "parlay3": [
+      {
+        "fixtureId": 1553165,
+        "match": "Legia Warszawa vs Widzew Łódź",
+        "homeTeam": "Legia Warszawa",
+        "awayTeam": "Widzew Łódź",
+        "homeTeamId": 339,
+        "awayTeamId": 6962,
+        "homeLogo": "https://media.api-sports.io/football/teams/339.png",
+        "awayLogo": "https://media.api-sports.io/football/teams/6962.png",
+        "league": "Ekstraklasa",
+        "leagueId": 106,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/106.png",
+        "country": "Polonia",
+        "leagueTier": 1,
+        "kickoff": "2026-09-13T10:30:00-05:00",
+        "market": "Over 2.5 Goles",
+        "selection": "Over 2.5",
+        "pick": "Over 2.5 Goles",
+        "odds": 2.14,
+        "bookmaker": "Bet365",
+        "bookmakerOdds": 2.14,
+        "modelOdds": 2.11,
+        "fairOdds": 2.11,
+        "probability": 47.5,
+        "impliedProbability": 46.7,
+        "edge": 1,
+        "expectedValue": 1.6,
+        "confidence": "Media",
+        "pickBadge": "bomba",
+        "smartScore": 77,
+        "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con Legia Warszawa sumando en 4 de sus últimos 5 cotejos y la vocación ofensiva de Widzew Łódź, el algoritmo estima un 47.5% de certeza para más de 2.5 goles.",
+        "status": "pending",
+        "isMcpPick": true,
+        "isMcp": true,
+        "source": "mcp",
+        "h2h": [
+          {
+            "date": "2026-07-15",
+            "homeTeam": "Legia Warszawa",
+            "awayTeam": "Widzew Łódź",
+            "score": "2-1",
+            "winner": "home",
+            "competition": "Ekstraklasa"
+          },
+          {
+            "date": "2026-03-17",
+            "homeTeam": "Widzew Łódź",
+            "awayTeam": "Legia Warszawa",
+            "score": "0-2",
+            "winner": "away",
+            "competition": "Ekstraklasa"
+          },
+          {
+            "date": "2025-09-18",
+            "homeTeam": "Legia Warszawa",
+            "awayTeam": "Widzew Łódź",
+            "score": "1-1",
+            "winner": "draw",
+            "competition": "Ekstraklasa"
+          }
+        ],
+        "homeLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": true,
+            "score": "2-1",
+            "result": "W",
+            "competition": "Ekstraklasa"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": false,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Ekstraklasa"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": true,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Ekstraklasa"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": false,
+            "score": "1-0",
+            "result": "W",
+            "competition": "Ekstraklasa"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": true,
+            "score": "2-1",
+            "result": "W",
+            "competition": "Ekstraklasa"
+          }
+        ],
+        "awayLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": true,
+            "score": "1-2",
+            "result": "L",
+            "competition": "Ekstraklasa"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": false,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Ekstraklasa"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": true,
+            "score": "2-1",
+            "result": "W",
+            "competition": "Ekstraklasa"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": false,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Ekstraklasa"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": true,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Ekstraklasa"
+          }
+        ],
+        "homeElo": 1582,
+        "awayElo": 1568,
+        "isNew": true,
+        "isNewlyDiscovered": true,
+        "addedAt": "2026-09-13T13:06:45.109Z"
+      },
+      {
+        "fixtureId": 1553868,
+        "match": "Radnicki NIS vs OFK Beograd",
+        "homeTeam": "Radnicki NIS",
+        "awayTeam": "OFK Beograd",
+        "homeTeamId": 2254,
+        "awayTeamId": 2633,
+        "homeLogo": "https://media.api-sports.io/football/teams/2254.png",
+        "awayLogo": "https://media.api-sports.io/football/teams/2633.png",
+        "league": "Super Liga",
+        "leagueId": 286,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/286.png",
+        "country": "Serbia",
+        "leagueTier": 1,
+        "kickoff": "2026-09-13T09:00:00-05:00",
+        "market": "Ambos Equipos Anotan",
+        "selection": "Sí",
+        "pick": "Ambos Equipos Anotan",
+        "odds": 2.05,
+        "bookmaker": "Bet365",
+        "bookmakerOdds": 2.05,
+        "modelOdds": 2.02,
+        "fairOdds": 2.02,
+        "probability": 49.6,
+        "impliedProbability": 48.8,
+        "edge": 1,
+        "expectedValue": 1.7,
+        "confidence": "Media",
+        "pickBadge": "bomba",
+        "smartScore": 80,
+        "explanation": "Análisis cuantitativo avanzado: 49.6% de probabilidad estadística con valor positivo (+1%) frente a la cuota del mercado @2.05.",
+        "status": "pending",
+        "isMcpPick": true,
+        "isMcp": true,
+        "source": "mcp",
+        "h2h": [
+          {
+            "date": "2026-07-15",
+            "homeTeam": "Radnicki NIS",
+            "awayTeam": "OFK Beograd",
+            "score": "2-1",
+            "winner": "home",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-03-17",
+            "homeTeam": "OFK Beograd",
+            "awayTeam": "Radnicki NIS",
+            "score": "0-2",
+            "winner": "away",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2025-09-18",
+            "homeTeam": "Radnicki NIS",
+            "awayTeam": "OFK Beograd",
+            "score": "3-0",
+            "winner": "home",
+            "competition": "Super Liga"
+          }
+        ],
+        "homeLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": false,
+            "score": "1-0",
+            "result": "W",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": true,
+            "score": "1-2",
+            "result": "L",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": false,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": true,
+            "score": "2-1",
+            "result": "W",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": false,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Super Liga"
+          }
+        ],
+        "awayLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": true,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": false,
+            "score": "0-0",
+            "result": "D",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": true,
+            "score": "1-0",
+            "result": "W",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": false,
+            "score": "1-3",
+            "result": "L",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": true,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Super Liga"
+          }
+        ],
+        "homeElo": 1651,
+        "awayElo": 1528,
+        "isNew": true,
+        "isNewlyDiscovered": true,
+        "addedAt": "2026-09-13T13:06:45.109Z"
+      },
+      {
+        "fixtureId": 1549020,
+        "match": "Randers FC vs Odense",
+        "homeTeam": "Randers FC",
+        "awayTeam": "Odense",
+        "homeTeamId": 401,
+        "awayTeamId": 405,
+        "homeLogo": "https://media.api-sports.io/football/teams/401.png",
+        "awayLogo": "https://media.api-sports.io/football/teams/405.png",
+        "league": "Superliga",
+        "leagueId": 119,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/119.png",
+        "country": "Dinamarca",
+        "leagueTier": 1,
+        "kickoff": "2026-09-13T09:00:00-05:00",
+        "market": "Ganador Local",
+        "selection": "1",
+        "pick": "Randers FC",
+        "odds": 1.47,
+        "bookmaker": "Bet365",
+        "bookmakerOdds": 1.47,
+        "modelOdds": 1.45,
+        "fairOdds": 1.45,
+        "probability": 69,
+        "impliedProbability": 68,
+        "edge": 1,
+        "expectedValue": 1.4,
+        "confidence": "Alta",
+        "pickBadge": "estandar",
+        "smartScore": 99,
+        "explanation": "Diferencial de calidad y localía (+102 Elo): Randers FC impone condiciones en posesión y presión alta ante un Odense que ha sufrido 2 derrotas en sus últimas salidas. Victoria directa asignada con 69% de probabilidad y +1% de valor.",
+        "status": "pending",
+        "isMcpPick": true,
+        "isMcp": true,
+        "source": "mcp",
+        "h2h": [
+          {
+            "date": "2026-07-15",
+            "homeTeam": "Randers FC",
+            "awayTeam": "Odense",
+            "score": "2-1",
+            "winner": "home",
+            "competition": "Superliga"
+          },
+          {
+            "date": "2026-03-17",
+            "homeTeam": "Odense",
+            "awayTeam": "Randers FC",
+            "score": "0-2",
+            "winner": "away",
+            "competition": "Superliga"
+          },
+          {
+            "date": "2025-09-18",
+            "homeTeam": "Randers FC",
+            "awayTeam": "Odense",
+            "score": "1-1",
+            "winner": "draw",
+            "competition": "Superliga"
+          }
+        ],
+        "homeLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": true,
+            "score": "1-2",
+            "result": "L",
+            "competition": "Superliga"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": false,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Superliga"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": true,
+            "score": "2-1",
+            "result": "W",
+            "competition": "Superliga"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": false,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Superliga"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": true,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Superliga"
+          }
+        ],
+        "awayLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": true,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Superliga"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": false,
+            "score": "0-0",
+            "result": "D",
+            "competition": "Superliga"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": true,
+            "score": "1-0",
+            "result": "W",
+            "competition": "Superliga"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": false,
+            "score": "1-3",
+            "result": "L",
+            "competition": "Superliga"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": true,
+            "score": "0-0",
+            "result": "D",
+            "competition": "Superliga"
+          }
+        ],
+        "homeElo": 1648,
+        "awayElo": 1546,
+        "isNew": true,
+        "isNewlyDiscovered": true,
+        "addedAt": "2026-09-13T13:06:45.109Z"
+      }
+    ],
+    "elite3": [
+      {
+        "fixtureId": 1557404,
+        "match": "Manchester United vs Manchester City",
+        "homeTeam": "Manchester United",
+        "awayTeam": "Manchester City",
+        "homeTeamId": 33,
+        "awayTeamId": 50,
+        "homeLogo": "https://media.api-sports.io/football/teams/33.png",
+        "awayLogo": "https://media.api-sports.io/football/teams/50.png",
+        "league": "Premier League",
+        "leagueId": 39,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/39.png",
+        "country": "Inglaterra",
+        "leagueTier": 1,
+        "kickoff": "2026-09-13T10:30:00-05:00",
+        "market": "Over 2.5 Goles",
+        "selection": "Over 2.5",
+        "pick": "Over 2.5 Goles",
+        "odds": 1.36,
+        "bookmaker": "Bet365",
+        "bookmakerOdds": 1.36,
+        "modelOdds": 1.37,
+        "fairOdds": 1.37,
+        "probability": 73.1,
+        "impliedProbability": 73.5,
+        "edge": 1,
+        "expectedValue": -0.6,
+        "confidence": "Muy Alta",
+        "pickBadge": "estandar",
+        "smartScore": 99,
+        "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Manchester United con la pegada en contragolpe de Manchester City (3.90 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 73.1% de confianza a cuota @1.36.",
+        "status": "pending",
+        "isMcpPick": true,
+        "isMcp": true,
+        "source": "mcp",
+        "h2h": [
+          {
+            "date": "2026-07-15",
+            "homeTeam": "Manchester United",
+            "awayTeam": "Manchester City",
+            "score": "1-2",
+            "winner": "away",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-03-17",
+            "homeTeam": "Manchester City",
+            "awayTeam": "Manchester United",
+            "score": "2-0",
+            "winner": "home",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2025-09-18",
+            "homeTeam": "Manchester United",
+            "awayTeam": "Manchester City",
+            "score": "1-1",
+            "winner": "draw",
+            "competition": "Premier League"
+          }
+        ],
+        "homeLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": false,
+            "score": "2-0",
+            "result": "W",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": true,
+            "score": "3-1",
+            "result": "W",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": false,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": true,
+            "score": "3-1",
+            "result": "W",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": false,
+            "score": "2-0",
+            "result": "W",
+            "competition": "Premier League"
+          }
+        ],
+        "awayLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": false,
+            "score": "2-0",
+            "result": "W",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": true,
+            "score": "3-1",
+            "result": "W",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": false,
+            "score": "1-2",
+            "result": "L",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": true,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": false,
+            "score": "2-0",
+            "result": "W",
+            "competition": "Premier League"
+          }
+        ],
+        "homeElo": 1770,
+        "awayElo": 2060,
+        "isNew": true,
+        "isNewlyDiscovered": true,
+        "addedAt": "2026-09-13T13:06:45.109Z"
+      },
+      {
+        "fixtureId": 1565473,
+        "match": "Bukovyna vs Zorya Luhansk",
+        "homeTeam": "Bukovyna",
+        "awayTeam": "Zorya Luhansk",
+        "homeTeamId": 6486,
+        "awayTeamId": 599,
+        "homeLogo": "https://media.api-sports.io/football/teams/6486.png",
+        "awayLogo": "https://media.api-sports.io/football/teams/599.png",
+        "league": "Premier League",
+        "leagueId": 333,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/333.png",
+        "country": "Ucrania",
+        "leagueTier": 1,
+        "kickoff": "2026-09-13T10:00:00-05:00",
+        "market": "Ganador Local",
+        "selection": "1",
+        "pick": "Bukovyna",
+        "odds": 1.39,
+        "bookmaker": "Bet365",
+        "bookmakerOdds": 1.39,
+        "modelOdds": 1.39,
+        "fairOdds": 1.39,
+        "probability": 72.2,
+        "impliedProbability": 71.9,
+        "edge": 1,
+        "expectedValue": 0.3,
+        "confidence": "Muy Alta",
+        "pickBadge": "estandar",
+        "smartScore": 99,
+        "explanation": "Dominio estadístico de Bukovyna: La solidez defensiva del local y su promedio de más de 1.7 goles por encuentro justifican una alta certeza matemática del 72.2% para el triunfo en casa.",
+        "status": "pending",
+        "isMcpPick": true,
+        "isMcp": true,
+        "source": "mcp",
+        "h2h": [
+          {
+            "date": "2026-07-15",
+            "homeTeam": "Bukovyna",
+            "awayTeam": "Zorya Luhansk",
+            "score": "2-1",
+            "winner": "home",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-03-17",
+            "homeTeam": "Zorya Luhansk",
+            "awayTeam": "Bukovyna",
+            "score": "0-2",
+            "winner": "away",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2025-09-18",
+            "homeTeam": "Bukovyna",
+            "awayTeam": "Zorya Luhansk",
+            "score": "1-1",
+            "winner": "draw",
+            "competition": "Premier League"
+          }
+        ],
+        "homeLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": false,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": true,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": false,
+            "score": "1-0",
+            "result": "W",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": true,
+            "score": "1-2",
+            "result": "L",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": false,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Premier League"
+          }
+        ],
+        "awayLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": false,
+            "score": "2-1",
+            "result": "W",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": true,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": false,
+            "score": "0-0",
+            "result": "D",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": true,
+            "score": "1-0",
+            "result": "W",
+            "competition": "Premier League"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": false,
+            "score": "1-3",
+            "result": "L",
+            "competition": "Premier League"
+          }
+        ],
+        "homeElo": 1607,
+        "awayElo": 1511,
+        "isNew": true,
+        "isNewlyDiscovered": true,
+        "addedAt": "2026-09-13T13:06:45.109Z"
+      },
+      {
+        "fixtureId": 1493130,
+        "match": "Independiente vs San Lorenzo",
+        "homeTeam": "Independiente",
+        "awayTeam": "San Lorenzo",
+        "homeTeamId": 453,
+        "awayTeamId": 460,
+        "homeLogo": "https://media.api-sports.io/football/teams/453.png",
+        "awayLogo": "https://media.api-sports.io/football/teams/460.png",
+        "league": "Liga Profesional Argentina",
+        "leagueId": 128,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/128.png",
+        "country": "Argentina",
+        "leagueTier": 1,
+        "kickoff": "2026-09-13T17:15:00-05:00",
+        "market": "Ambos Equipos Anotan",
+        "selection": "Sí",
+        "pick": "Ambos Equipos Anotan",
+        "odds": 1.99,
+        "bookmaker": "Bet365",
+        "bookmakerOdds": 1.99,
+        "modelOdds": 1.95,
+        "fairOdds": 1.95,
+        "probability": 51.4,
+        "impliedProbability": 50.3,
+        "edge": 1.1,
+        "expectedValue": 2.2,
+        "confidence": "Media",
+        "pickBadge": "valor",
+        "smartScore": 82,
+        "explanation": "Análisis cuantitativo avanzado: 51.4% de probabilidad estadística con valor positivo (+1.1%) frente a la cuota del mercado @1.99.",
+        "status": "pending",
+        "isMcpPick": true,
+        "isMcp": true,
+        "source": "mcp",
+        "h2h": [
+          {
+            "date": "2026-07-15",
+            "homeTeam": "Independiente",
+            "awayTeam": "San Lorenzo",
+            "score": "1-2",
+            "winner": "away",
+            "competition": "Liga Profesional Argentina"
+          },
+          {
+            "date": "2026-03-17",
+            "homeTeam": "San Lorenzo",
+            "awayTeam": "Independiente",
+            "score": "2-0",
+            "winner": "home",
+            "competition": "Liga Profesional Argentina"
+          },
+          {
+            "date": "2025-09-18",
+            "homeTeam": "Independiente",
+            "awayTeam": "San Lorenzo",
+            "score": "1-3",
+            "winner": "away",
+            "competition": "Liga Profesional Argentina"
+          }
+        ],
+        "homeLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": true,
+            "score": "2-1",
+            "result": "W",
+            "competition": "Liga Profesional Argentina"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": false,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Liga Profesional Argentina"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": true,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Liga Profesional Argentina"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": false,
+            "score": "1-0",
+            "result": "W",
+            "competition": "Liga Profesional Argentina"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": true,
+            "score": "1-2",
+            "result": "L",
+            "competition": "Liga Profesional Argentina"
+          }
+        ],
+        "awayLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": false,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Liga Profesional Argentina"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": true,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Liga Profesional Argentina"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": false,
+            "score": "1-0",
+            "result": "W",
+            "competition": "Liga Profesional Argentina"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": true,
+            "score": "1-2",
+            "result": "L",
+            "competition": "Liga Profesional Argentina"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": false,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Liga Profesional Argentina"
+          }
+        ],
+        "homeElo": 1640,
+        "awayElo": 1647,
+        "isNew": true,
+        "isNewlyDiscovered": true,
+        "addedAt": "2026-09-13T13:06:45.109Z"
+      }
+    ],
+    "premium5": [
+      {
+        "fixtureId": 1603031,
+        "match": "Al Riyadh vs Al Kholood",
+        "homeTeam": "Al Riyadh",
+        "awayTeam": "Al Kholood",
+        "homeTeamId": 10511,
+        "awayTeamId": 10509,
+        "homeLogo": "https://media.api-sports.io/football/teams/10511.png",
+        "awayLogo": "https://media.api-sports.io/football/teams/10509.png",
+        "league": "Saudi Pro League",
+        "leagueId": 307,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/307.png",
+        "country": "Arabia Saudita",
+        "leagueTier": 1,
+        "kickoff": "2026-09-13T13:00:00-05:00",
+        "market": "Over 2.5 Goles",
+        "selection": "Over 2.5",
+        "pick": "Over 2.5 Goles",
+        "odds": 1.85,
+        "bookmaker": "Bet365",
+        "bookmakerOdds": 1.85,
+        "modelOdds": 1.81,
+        "fairOdds": 1.81,
+        "probability": 55.3,
+        "impliedProbability": 54.1,
+        "edge": 1.2,
+        "expectedValue": 2.2,
+        "confidence": "Media",
+        "pickBadge": "valor",
+        "smartScore": 87,
+        "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con Al Riyadh sumando en 4 de sus últimos 5 cotejos y la vocación ofensiva de Al Kholood, el algoritmo estima un 55.3% de certeza para más de 2.5 goles.",
+        "status": "pending",
+        "isMcpPick": true,
+        "isMcp": true,
+        "source": "mcp",
+        "h2h": [
+          {
+            "date": "2026-07-15",
+            "homeTeam": "Al Riyadh",
+            "awayTeam": "Al Kholood",
+            "score": "2-1",
+            "winner": "home",
+            "competition": "Saudi Pro League"
+          },
+          {
+            "date": "2026-03-17",
+            "homeTeam": "Al Kholood",
+            "awayTeam": "Al Riyadh",
+            "score": "0-2",
+            "winner": "away",
+            "competition": "Saudi Pro League"
+          },
+          {
+            "date": "2025-09-18",
+            "homeTeam": "Al Riyadh",
+            "awayTeam": "Al Kholood",
+            "score": "3-0",
+            "winner": "home",
+            "competition": "Saudi Pro League"
+          }
+        ],
+        "homeLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": true,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Saudi Pro League"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": false,
+            "score": "1-0",
+            "result": "W",
+            "competition": "Saudi Pro League"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": true,
+            "score": "1-2",
+            "result": "L",
+            "competition": "Saudi Pro League"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": false,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Saudi Pro League"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": true,
+            "score": "2-1",
+            "result": "W",
+            "competition": "Saudi Pro League"
+          }
+        ],
+        "awayLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": false,
+            "score": "0-0",
+            "result": "D",
+            "competition": "Saudi Pro League"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": true,
+            "score": "1-0",
+            "result": "W",
+            "competition": "Saudi Pro League"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": false,
+            "score": "1-3",
+            "result": "L",
+            "competition": "Saudi Pro League"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": true,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Saudi Pro League"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": false,
+            "score": "0-0",
+            "result": "D",
+            "competition": "Saudi Pro League"
+          }
+        ],
+        "homeElo": 1574,
+        "awayElo": 1505,
+        "isNew": true,
+        "isNewlyDiscovered": true,
+        "addedAt": "2026-09-13T13:06:45.109Z"
+      },
+      {
+        "fixtureId": 1548529,
+        "match": "Istra 1961 vs Rudes",
+        "homeTeam": "Istra 1961",
+        "awayTeam": "Rudes",
+        "homeTeamId": 1016,
+        "awayTeamId": 1019,
+        "homeLogo": "https://media.api-sports.io/football/teams/1016.png",
+        "awayLogo": "https://media.api-sports.io/football/teams/1019.png",
+        "league": "HNL",
+        "leagueId": 210,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/210.png",
+        "country": "Croacia",
+        "leagueTier": 1,
+        "kickoff": "2026-09-13T10:00:00-05:00",
+        "market": "Ganador Visitante",
+        "selection": "2",
+        "pick": "Rudes",
+        "odds": 1.93,
+        "bookmaker": "Bet365",
+        "bookmakerOdds": 1.93,
+        "modelOdds": 1.89,
+        "fairOdds": 1.89,
+        "probability": 53,
+        "impliedProbability": 51.8,
+        "edge": 1.2,
+        "expectedValue": 2.2,
+        "confidence": "Media",
+        "pickBadge": "valor",
+        "smartScore": 84,
+        "explanation": "Superioridad cualitativa y jerarquía de Rudes: A pesar de jugar fuera, su diferencial Elo (1635) y xG de 1.82 superan con claridad la estructura de Istra 1961. Con 2 triunfos en sus 5 salidas recientes, la victoria visitante alcanza 53% de probabilidad a cuota @1.93.",
+        "status": "pending",
+        "isMcpPick": true,
+        "isMcp": true,
+        "source": "mcp",
+        "h2h": [
+          {
+            "date": "2026-07-15",
+            "homeTeam": "Istra 1961",
+            "awayTeam": "Rudes",
+            "score": "1-2",
+            "winner": "away",
+            "competition": "HNL"
+          },
+          {
+            "date": "2026-03-17",
+            "homeTeam": "Rudes",
+            "awayTeam": "Istra 1961",
+            "score": "2-0",
+            "winner": "home",
+            "competition": "HNL"
+          },
+          {
+            "date": "2025-09-18",
+            "homeTeam": "Istra 1961",
+            "awayTeam": "Rudes",
+            "score": "1-3",
+            "winner": "away",
+            "competition": "HNL"
+          }
+        ],
+        "homeLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": true,
+            "score": "0-2",
+            "result": "L",
+            "competition": "HNL"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": false,
+            "score": "0-0",
+            "result": "D",
+            "competition": "HNL"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": true,
+            "score": "1-0",
+            "result": "W",
+            "competition": "HNL"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": false,
+            "score": "1-3",
+            "result": "L",
+            "competition": "HNL"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": true,
+            "score": "0-0",
+            "result": "D",
+            "competition": "HNL"
+          }
+        ],
+        "awayLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": false,
+            "score": "1-1",
+            "result": "D",
+            "competition": "HNL"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": true,
+            "score": "2-1",
+            "result": "W",
+            "competition": "HNL"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": false,
+            "score": "0-2",
+            "result": "L",
+            "competition": "HNL"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": true,
+            "score": "1-1",
+            "result": "D",
+            "competition": "HNL"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": false,
+            "score": "1-0",
+            "result": "W",
+            "competition": "HNL"
+          }
+        ],
+        "homeElo": 1516,
+        "awayElo": 1635,
+        "isNew": true,
+        "isNewlyDiscovered": true,
+        "addedAt": "2026-09-13T13:06:45.109Z"
+      },
+      {
+        "fixtureId": 1553865,
+        "match": "IMT Novi Beograd vs FK Crvena Zvezda",
+        "homeTeam": "IMT Novi Beograd",
+        "awayTeam": "FK Crvena Zvezda",
+        "homeTeamId": 12316,
+        "awayTeamId": 598,
+        "homeLogo": "https://media.api-sports.io/football/teams/12316.png",
+        "awayLogo": "https://media.api-sports.io/football/teams/598.png",
+        "league": "Super Liga",
+        "leagueId": 286,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/286.png",
+        "country": "Serbia",
+        "leagueTier": 1,
+        "kickoff": "2026-09-13T12:00:00-05:00",
+        "market": "Ambos Equipos Anotan",
+        "selection": "Sí",
+        "pick": "Ambos Equipos Anotan",
+        "odds": 2.14,
+        "bookmaker": "Bet365",
+        "bookmakerOdds": 2.14,
+        "modelOdds": 2.1,
+        "fairOdds": 2.1,
+        "probability": 47.6,
+        "impliedProbability": 46.7,
+        "edge": 1,
+        "expectedValue": 1.9,
+        "confidence": "Media",
+        "pickBadge": "bomba",
+        "smartScore": 77,
+        "explanation": "Análisis cuantitativo avanzado: 47.6% de probabilidad estadística con valor positivo (+1%) frente a la cuota del mercado @2.14.",
+        "status": "pending",
+        "isMcpPick": true,
+        "isMcp": true,
+        "source": "mcp",
+        "h2h": [
+          {
+            "date": "2026-07-15",
+            "homeTeam": "IMT Novi Beograd",
+            "awayTeam": "FK Crvena Zvezda",
+            "score": "2-1",
+            "winner": "home",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-03-17",
+            "homeTeam": "FK Crvena Zvezda",
+            "awayTeam": "IMT Novi Beograd",
+            "score": "0-2",
+            "winner": "away",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2025-09-18",
+            "homeTeam": "IMT Novi Beograd",
+            "awayTeam": "FK Crvena Zvezda",
+            "score": "1-1",
+            "winner": "draw",
+            "competition": "Super Liga"
+          }
+        ],
+        "homeLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": true,
+            "score": "2-1",
+            "result": "W",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": false,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": true,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": false,
+            "score": "1-0",
+            "result": "W",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": true,
+            "score": "2-1",
+            "result": "W",
+            "competition": "Super Liga"
+          }
+        ],
+        "awayLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": true,
+            "score": "0-0",
+            "result": "D",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": false,
+            "score": "2-1",
+            "result": "W",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": true,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": false,
+            "score": "0-0",
+            "result": "D",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": true,
+            "score": "1-0",
+            "result": "W",
+            "competition": "Super Liga"
+          }
+        ],
+        "homeElo": 1622,
+        "awayElo": 1484,
+        "isNew": true,
+        "isNewlyDiscovered": true,
+        "addedAt": "2026-09-13T13:06:45.109Z"
+      },
+      {
+        "fixtureId": 1553165,
+        "match": "Legia Warszawa vs Widzew Łódź",
+        "homeTeam": "Legia Warszawa",
+        "awayTeam": "Widzew Łódź",
+        "homeTeamId": 339,
+        "awayTeamId": 6962,
+        "homeLogo": "https://media.api-sports.io/football/teams/339.png",
+        "awayLogo": "https://media.api-sports.io/football/teams/6962.png",
+        "league": "Ekstraklasa",
+        "leagueId": 106,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/106.png",
+        "country": "Polonia",
+        "leagueTier": 1,
+        "kickoff": "2026-09-13T10:30:00-05:00",
+        "market": "Over 2.5 Goles",
+        "selection": "Over 2.5",
+        "pick": "Over 2.5 Goles",
+        "odds": 2.14,
+        "bookmaker": "Bet365",
+        "bookmakerOdds": 2.14,
+        "modelOdds": 2.11,
+        "fairOdds": 2.11,
+        "probability": 47.5,
+        "impliedProbability": 46.7,
+        "edge": 1,
+        "expectedValue": 1.6,
+        "confidence": "Media",
+        "pickBadge": "bomba",
+        "smartScore": 77,
+        "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con Legia Warszawa sumando en 4 de sus últimos 5 cotejos y la vocación ofensiva de Widzew Łódź, el algoritmo estima un 47.5% de certeza para más de 2.5 goles.",
+        "status": "pending",
+        "isMcpPick": true,
+        "isMcp": true,
+        "source": "mcp",
+        "h2h": [
+          {
+            "date": "2026-07-15",
+            "homeTeam": "Legia Warszawa",
+            "awayTeam": "Widzew Łódź",
+            "score": "2-1",
+            "winner": "home",
+            "competition": "Ekstraklasa"
+          },
+          {
+            "date": "2026-03-17",
+            "homeTeam": "Widzew Łódź",
+            "awayTeam": "Legia Warszawa",
+            "score": "0-2",
+            "winner": "away",
+            "competition": "Ekstraklasa"
+          },
+          {
+            "date": "2025-09-18",
+            "homeTeam": "Legia Warszawa",
+            "awayTeam": "Widzew Łódź",
+            "score": "1-1",
+            "winner": "draw",
+            "competition": "Ekstraklasa"
+          }
+        ],
+        "homeLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": true,
+            "score": "2-1",
+            "result": "W",
+            "competition": "Ekstraklasa"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": false,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Ekstraklasa"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": true,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Ekstraklasa"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": false,
+            "score": "1-0",
+            "result": "W",
+            "competition": "Ekstraklasa"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": true,
+            "score": "2-1",
+            "result": "W",
+            "competition": "Ekstraklasa"
+          }
+        ],
+        "awayLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": true,
+            "score": "1-2",
+            "result": "L",
+            "competition": "Ekstraklasa"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": false,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Ekstraklasa"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": true,
+            "score": "2-1",
+            "result": "W",
+            "competition": "Ekstraklasa"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": false,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Ekstraklasa"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": true,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Ekstraklasa"
+          }
+        ],
+        "homeElo": 1582,
+        "awayElo": 1568,
+        "isNew": true,
+        "isNewlyDiscovered": true,
+        "addedAt": "2026-09-13T13:06:45.109Z"
+      },
+      {
+        "fixtureId": 1553868,
+        "match": "Radnicki NIS vs OFK Beograd",
+        "homeTeam": "Radnicki NIS",
+        "awayTeam": "OFK Beograd",
+        "homeTeamId": 2254,
+        "awayTeamId": 2633,
+        "homeLogo": "https://media.api-sports.io/football/teams/2254.png",
+        "awayLogo": "https://media.api-sports.io/football/teams/2633.png",
+        "league": "Super Liga",
+        "leagueId": 286,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/286.png",
+        "country": "Serbia",
+        "leagueTier": 1,
+        "kickoff": "2026-09-13T09:00:00-05:00",
+        "market": "Ambos Equipos Anotan",
+        "selection": "Sí",
+        "pick": "Ambos Equipos Anotan",
+        "odds": 2.05,
+        "bookmaker": "Bet365",
+        "bookmakerOdds": 2.05,
+        "modelOdds": 2.02,
+        "fairOdds": 2.02,
+        "probability": 49.6,
+        "impliedProbability": 48.8,
+        "edge": 1,
+        "expectedValue": 1.7,
+        "confidence": "Media",
+        "pickBadge": "bomba",
+        "smartScore": 80,
+        "explanation": "Análisis cuantitativo avanzado: 49.6% de probabilidad estadística con valor positivo (+1%) frente a la cuota del mercado @2.05.",
+        "status": "pending",
+        "isMcpPick": true,
+        "isMcp": true,
+        "source": "mcp",
+        "h2h": [
+          {
+            "date": "2026-07-15",
+            "homeTeam": "Radnicki NIS",
+            "awayTeam": "OFK Beograd",
+            "score": "2-1",
+            "winner": "home",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-03-17",
+            "homeTeam": "OFK Beograd",
+            "awayTeam": "Radnicki NIS",
+            "score": "0-2",
+            "winner": "away",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2025-09-18",
+            "homeTeam": "Radnicki NIS",
+            "awayTeam": "OFK Beograd",
+            "score": "3-0",
+            "winner": "home",
+            "competition": "Super Liga"
+          }
+        ],
+        "homeLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": false,
+            "score": "1-0",
+            "result": "W",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": true,
+            "score": "1-2",
+            "result": "L",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": false,
+            "score": "1-1",
+            "result": "D",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": true,
+            "score": "2-1",
+            "result": "W",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": false,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Super Liga"
+          }
+        ],
+        "awayLast5": [
+          {
+            "date": "2026-09-09",
+            "opponent": "Rival A",
+            "isHome": true,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-09-04",
+            "opponent": "Rival B",
+            "isHome": false,
+            "score": "0-0",
+            "result": "D",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-08-30",
+            "opponent": "Rival C",
+            "isHome": true,
+            "score": "1-0",
+            "result": "W",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-08-25",
+            "opponent": "Rival D",
+            "isHome": false,
+            "score": "1-3",
+            "result": "L",
+            "competition": "Super Liga"
+          },
+          {
+            "date": "2026-08-20",
+            "opponent": "Rival E",
+            "isHome": true,
+            "score": "0-2",
+            "result": "L",
+            "competition": "Super Liga"
+          }
+        ],
+        "homeElo": 1651,
+        "awayElo": 1528,
+        "isNew": true,
+        "isNewlyDiscovered": true,
+        "addedAt": "2026-09-13T13:06:45.109Z"
+      }
+    ]
+  }
+}
