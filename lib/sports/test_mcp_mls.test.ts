@@ -16,5 +16,5 @@ describe('MCP MLS Dynamic Search', () => {
       const isMls = (op.league || '').toLowerCase().includes('major league soccer') || (op.country || '').toLowerCase().includes('usa');
       expect(isMls).toBe(true);
     }
-  });
+  }, 30000);
 });

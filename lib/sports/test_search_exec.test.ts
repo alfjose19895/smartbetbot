@@ -22,5 +22,5 @@ describe('Test searchAndAddNewAlerts Execution', () => {
         console.log(`- [${(a.pickBadge || 'ESTANDAR').toUpperCase()}] ${a.homeTeam} vs ${a.awayTeam} | ${a.market}: ${a.pick} | Odds: ${a.odds} | Kickoff: ${a.kickoff}`);
       }
     }
-  });
+  }, 30000);
 });

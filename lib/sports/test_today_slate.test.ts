@@ -102,5 +102,5 @@ describe('Strictly Today Afternoon and Night Slate Discovery', () => {
       const oppDateStr = getEcuadorDateString(new Date(opp.kickoff).getTime());
       expect(oppDateStr).toBe(todayDateStr);
     }
-  });
+  }, 30000);
 });

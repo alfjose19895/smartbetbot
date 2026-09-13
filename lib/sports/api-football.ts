@@ -452,7 +452,7 @@ class ApiFootballClient {
 
   async getOddsByDate(dateStr: string, timezone: string = this.defaultTimezone): Promise<ApiFootballOddsItem[]> {
     const allOdds: ApiFootballOddsItem[] = [];
-    for (let page = 1; page <= 6; page++) {
+    for (let page = 1; page <= 30; page++) {
       try {
         const pageData = await this.request<ApiFootballOddsItem>("odds", {
           date: dateStr,

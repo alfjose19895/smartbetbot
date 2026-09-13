@@ -925,7 +925,16 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
         if (legName.includes("primavera") || legName.includes("u19") || legName.includes("u20")) continue;
         if (!isCuratedLeague(item.league?.id, item.league?.name, item.league?.country)) continue;
 
-        const oddsItem = oddsMapByFixture[item.fixture.id];
+        let oddsItem = oddsMapByFixture[item.fixture.id];
+        if (!oddsItem) {
+          try {
+            const direct = await apiFootball.getOddsByFixture(item.fixture.id);
+            if (direct) {
+              oddsItem = direct;
+              oddsMapByFixture[item.fixture.id] = direct;
+            }
+          } catch {}
+        }
         const realMarketOdds = (oddsItem && oddsItem.bookmakers && oddsItem.bookmakers.length > 0)
           ? extractMarketOddsFromBookmaker(oddsItem)
           : undefined;
