@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import { PredictionCard } from "@/components/PredictionCard";
 import { MatchDetailModal } from "@/components/MatchDetailModal";
 import { NewAlertsModal } from "@/components/NewAlertsModal";
-import { MarketOpportunity } from "@/lib/sports/prediction-engine";
+import { MarketOpportunity, getTimeSlot } from "@/lib/sports/prediction-engine";
 import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
 import { useLanguage } from "@/context/LanguageContext";
 import { MultiSelectDropdown, DropdownOption } from "@/components/MultiSelectDropdown";
@@ -131,6 +131,7 @@ export default function SignalsPage() {
   // Search & Filters
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [matchStatusFilter, setMatchStatusFilter] = useState<"ALL" | "VALOR" | "BOMBA" | "MCP" | "WON" | "LOST" | "SCHEDULED" | "IN_PLAY" | "FINISHED">("ALL");
+  const [timeSlotFilter, setTimeSlotFilter] = useState<"ALL" | "TOP" | "MORNING" | "AFTERNOON" | "NIGHT">("ALL");
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
@@ -309,6 +310,10 @@ export default function SignalsPage() {
   const valorCount = todaySignals.filter((s) => matchesStatusBadgeFilter(s, "VALOR")).length;
   const bombaCount = todaySignals.filter((s) => matchesStatusBadgeFilter(s, "BOMBA")).length;
   const mcpCount = todaySignals.filter((s) => matchesStatusBadgeFilter(s, "MCP")).length;
+  const topPickCount = todaySignals.filter((s) => s.isTopPick || s.probability >= 68.0 || s.confidence === "Muy Alta").length;
+  const morningCount = todaySignals.filter((s) => (s.timeSlot === "morning" || getTimeSlot(s.kickoff) === "morning")).length;
+  const afternoonCount = todaySignals.filter((s) => (s.timeSlot === "afternoon" || getTimeSlot(s.kickoff) === "afternoon")).length;
+  const nightCount = todaySignals.filter((s) => (s.timeSlot === "night" || getTimeSlot(s.kickoff) === "night")).length;
 
   // Filter signals strictly matching all active constraints
   const filteredCandidates = todaySignals.filter((s) => {
@@ -316,6 +321,20 @@ export default function SignalsPage() {
     const sDate = s.kickoff ? getEcuadorDateString(s.kickoff) : todayDateStr;
     if (sDate !== todayDateStr) {
       return false;
+    }
+
+    // 0.5. Franja Horaria / Top Convicción Filter
+    if (timeSlotFilter === "TOP") {
+      if (!s.isTopPick && s.probability < 68.0 && s.confidence !== "Muy Alta") return false;
+    } else if (timeSlotFilter === "MORNING") {
+      const slot = s.timeSlot || getTimeSlot(s.kickoff);
+      if (slot !== "morning") return false;
+    } else if (timeSlotFilter === "AFTERNOON") {
+      const slot = s.timeSlot || getTimeSlot(s.kickoff);
+      if (slot !== "afternoon") return false;
+    } else if (timeSlotFilter === "NIGHT") {
+      const slot = s.timeSlot || getTimeSlot(s.kickoff);
+      if (slot !== "night") return false;
     }
 
     // 1. Text Search Query Filter
@@ -469,6 +488,63 @@ export default function SignalsPage() {
             </div>
           </div>
         )}
+
+        {/* Time Slot & High Conviction Segmentation Pills */}
+        <div className="mb-3 flex flex-wrap items-center gap-1.5 sm:gap-2 bg-slate-100/80 dark:bg-slate-900/80 p-2 rounded-2xl border border-slate-200 dark:border-slate-800/80">
+          <span className="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 px-2 flex items-center gap-1">
+            ⏱️ Franja:
+          </span>
+          <button
+            onClick={() => setTimeSlotFilter("ALL")}
+            className={`rounded-xl px-3 py-1.5 text-xs font-black transition cursor-pointer ${
+              timeSlotFilter === "ALL"
+                ? "bg-slate-900 text-white shadow-sm dark:bg-slate-100 dark:text-slate-950"
+                : "text-slate-600 hover:bg-slate-200/60 dark:text-slate-400 dark:hover:bg-slate-800"
+            }`}
+          >
+            🌟 Toda la Jornada ({todaySignals.length})
+          </button>
+          <button
+            onClick={() => setTimeSlotFilter("TOP")}
+            className={`rounded-xl px-3 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1 ${
+              timeSlotFilter === "TOP"
+                ? "bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20 font-black"
+                : "bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20"
+            }`}
+          >
+            <span>🔥 Top Convicción ({topPickCount})</span>
+          </button>
+          <button
+            onClick={() => setTimeSlotFilter("MORNING")}
+            className={`rounded-xl px-3 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1 ${
+              timeSlotFilter === "MORNING"
+                ? "bg-sky-600 text-white shadow-md shadow-sky-600/20"
+                : "bg-sky-500/10 text-sky-700 dark:text-sky-300 hover:bg-sky-500/20"
+            }`}
+          >
+            <span>☀️ Mañana ({morningCount})</span>
+          </button>
+          <button
+            onClick={() => setTimeSlotFilter("AFTERNOON")}
+            className={`rounded-xl px-3 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1 ${
+              timeSlotFilter === "AFTERNOON"
+                ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/20"
+                : "bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-500/20"
+            }`}
+          >
+            <span>🌤️ Tarde ({afternoonCount})</span>
+          </button>
+          <button
+            onClick={() => setTimeSlotFilter("NIGHT")}
+            className={`rounded-xl px-3 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1 ${
+              timeSlotFilter === "NIGHT"
+                ? "bg-purple-600 text-white shadow-md shadow-purple-600/20"
+                : "bg-purple-500/10 text-purple-700 dark:text-purple-300 hover:bg-purple-500/20"
+            }`}
+          >
+            <span>🌙 Noche ({nightCount})</span>
+          </button>
+        </div>
 
         {/* Status and Badge Filter Pills */}
         <div className="mb-4 flex flex-wrap items-center gap-1.5 sm:gap-2">

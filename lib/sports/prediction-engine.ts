@@ -28,6 +28,33 @@ export function isExcludedMatch(homeTeam?: string, awayTeam?: string, matchName?
   return false;
 }
 
+export function getTimeSlot(kickoffDateStr?: string): "morning" | "afternoon" | "night" {
+  if (!kickoffDateStr) return "afternoon";
+  const date = new Date(kickoffDateStr);
+  if (isNaN(date.getTime())) return "afternoon";
+  const utcHours = date.getUTCHours();
+  const localHours = (utcHours - 5 + 24) % 24;
+  const localMinutes = date.getUTCMinutes();
+  const totalMinutes = localHours * 60 + localMinutes;
+
+  if (totalMinutes < 12 * 60) return "morning";
+  if (totalMinutes < 17 * 60 + 30) return "afternoon";
+  return "night";
+}
+
+export function isQualifiedOpportunity(opp: Partial<MarketOpportunity>): boolean {
+  const prob = typeof opp.probability === "number" ? opp.probability : 0;
+  const odds = typeof opp.odds === "number" ? opp.odds : 0;
+  const edge = typeof opp.edge === "number" ? opp.edge : 0;
+
+  if (prob < 52.0) return false;
+  if (odds < 1.70 && prob < 58.0) return false;
+  if (edge < 1.0) return false;
+  if (odds < 1.25 || (odds > 3.50 && opp.pickBadge !== "bomba")) return false;
+
+  return true;
+}
+
 export function getPickDisplayName(market: string, selection: string, homeTeam: string, awayTeam: string): string {
   const m = (market || "").toLowerCase();
   const s = (selection || "").toLowerCase();
@@ -123,6 +150,8 @@ export interface MarketOpportunity {
   homeElo?: number;
   awayElo?: number;
   leagueTier?: number;
+  timeSlot?: "morning" | "afternoon" | "night";
+  isTopPick?: boolean;
 }
 
 export const TEAM_STAR_PLAYERS: Record<string, string> = {
@@ -1550,6 +1579,8 @@ export function evaluateFixturePrediction(params: {
       awayLast5: awayRecentForm,
       homeElo: rHomeBase,
       awayElo: rAway,
+      timeSlot: getTimeSlot(kickoff),
+      isTopPick: (probPercent >= 68.0 || confidence === "Muy Alta") && smartScore >= 88,
     };
   };
 

@@ -19,6 +19,8 @@ import {
   normalizeTeamName,
   getCanonicalTeamKey,
   normalizeLeagueInfo,
+  getTimeSlot,
+  isQualifiedOpportunity,
 } from "./prediction-engine";
 
 export function getEcuadorDateString(d: Date | number | string = Date.now()): string {
@@ -1035,10 +1037,12 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
     return b.edge - a.edge;
   });
 
-  // Daily alert strategy: 15 on weekdays (Lunes a Viernes), 20 on weekends (Sábados y Domingos)
+  // Daily alert strategy: Dynamic Mathematical Quality Gate (prob >= 52%, edge >= 1%, odds 1.25-3.50)
   const dailyLimit = getDailyAlertLimit(new Date());
+  const qualifiedPicks = rankedPicks.filter(isQualifiedOpportunity);
+  const candidatesToUse = qualifiedPicks.length >= 10 ? qualifiedPicks : rankedPicks.slice(0, Math.max(dailyLimit, 25));
 
-  const initialTopPicks: MarketOpportunity[] = rankedPicks.slice(0, Math.max(dailyLimit, 25)).map((p) => {
+  const initialTopPicks: MarketOpportunity[] = candidatesToUse.map((p) => {
     const prob = p.probability || 50;
     const conf: "Muy Alta" | "Alta" | "Media" | "Moderada" =
       prob >= 70 ? "Muy Alta" : prob >= 58 ? "Alta" : prob >= 50 ? "Media" : "Moderada";
@@ -1049,6 +1053,8 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
       isMcp: true,
       source: "mcp" as const,
       pickBadge: (p.pickBadge || "mcp") as "bomba" | "valor" | "estandar" | "mcp",
+      timeSlot: getTimeSlot(p.kickoff),
+      isTopPick: (prob >= 68.0 || conf === "Muy Alta") && (p.smartScore || 0) >= 88,
     };
   });
 
@@ -1375,6 +1381,9 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     const conf: "Muy Alta" | "Alta" | "Media" | "Moderada" =
       prob >= 70 ? "Muy Alta" : prob >= 58 ? "Alta" : "Media";
 
+    const slot = getTimeSlot(opp.kickoff);
+    const topPick = (prob >= 68.0 || conf === "Muy Alta") && (opp.smartScore || 0) >= 88;
+
     if (opp.odds >= 2.05 || opp.market.includes("Empate") || opp.pickBadge === "bomba") {
       poolBombas.push({
         ...opp,
@@ -1384,6 +1393,8 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
         isMcp: true,
         source: "mcp",
         status: "pending",
+        timeSlot: slot,
+        isTopPick: topPick,
       });
     } else if (opp.odds >= 1.70 && opp.odds < 2.05) {
       poolValor.push({
@@ -1394,6 +1405,8 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
         isMcp: true,
         source: "mcp",
         status: "pending",
+        timeSlot: slot,
+        isTopPick: topPick,
       });
     } else if (opp.odds >= 1.25 && opp.odds < 1.70) {
       poolSeguras.push({
@@ -1404,6 +1417,8 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
         isMcp: true,
         source: "mcp",
         status: "pending",
+        timeSlot: slot,
+        isTopPick: topPick,
       });
     }
   }

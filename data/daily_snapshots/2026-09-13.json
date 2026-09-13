@@ -146,7 +146,10 @@
     ],
     "homeElo": 1620,
     "awayElo": 1519,
-    "actualScore": "1 - 0 (En Vivo)"
+    "actualScore": "1 - 0 (En Vivo)",
+    "timeSlot": "morning",
+    "isTopPick": true,
+    "matchTime": "2026-09-13T07:00:00-05:00"
   },
   {
     "fixtureId": 1494763,
@@ -295,7 +298,10 @@
     ],
     "homeElo": 1556,
     "awayElo": 1492,
-    "actualScore": "5 - 1 (En Vivo)"
+    "actualScore": "5 - 1 (En Vivo)",
+    "timeSlot": "morning",
+    "isTopPick": false,
+    "matchTime": "2026-09-13T07:30:00-05:00"
   },
   {
     "fixtureId": 1561928,
@@ -446,7 +452,9 @@
       }
     ],
     "homeElo": 1595,
-    "awayElo": 1500
+    "awayElo": 1500,
+    "timeSlot": "morning",
+    "isTopPick": true
   },
   {
     "fixtureId": 1552760,
@@ -595,7 +603,10 @@
     ],
     "homeElo": 1800,
     "awayElo": 1574,
-    "actualScore": "0 - 0 (En Vivo)"
+    "actualScore": "0 - 0 (En Vivo)",
+    "timeSlot": "morning",
+    "isTopPick": true,
+    "matchTime": "2026-09-13T08:00:00-05:00"
   },
   {
     "fixtureId": 1560021,
@@ -744,7 +755,10 @@
     ],
     "homeElo": 1641,
     "awayElo": 1483,
-    "actualScore": "0 - 0 (En Vivo)"
+    "actualScore": "0 - 0 (En Vivo)",
+    "timeSlot": "morning",
+    "isTopPick": true,
+    "matchTime": "2026-09-13T08:00:00-05:00"
   },
   {
     "fixtureId": 1575159,
@@ -892,7 +906,10 @@
       }
     ],
     "homeElo": 1850,
-    "awayElo": 1526
+    "awayElo": 1526,
+    "timeSlot": "morning",
+    "isTopPick": true,
+    "matchTime": "2026-09-13T08:30:00-05:00"
   },
   {
     "fixtureId": 1549020,
@@ -1040,7 +1057,10 @@
       }
     ],
     "homeElo": 1648,
-    "awayElo": 1546
+    "awayElo": 1546,
+    "timeSlot": "morning",
+    "isTopPick": true,
+    "matchTime": "2026-09-13T09:00:00-05:00"
   },
   {
     "fixtureId": 1570376,
@@ -1188,7 +1208,10 @@
       }
     ],
     "homeElo": 1659,
-    "awayElo": 2010
+    "awayElo": 2010,
+    "timeSlot": "morning",
+    "isTopPick": true,
+    "matchTime": "2026-09-13T09:15:00-05:00"
   },
   {
     "fixtureId": 1555394,
@@ -1336,7 +1359,10 @@
       }
     ],
     "homeElo": 1569,
-    "awayElo": 1481
+    "awayElo": 1481,
+    "timeSlot": "morning",
+    "isTopPick": true,
+    "matchTime": "2026-09-13T09:30:00-05:00"
   },
   {
     "fixtureId": 1565473,
@@ -1484,7 +1510,10 @@
       }
     ],
     "homeElo": 1607,
-    "awayElo": 1511
+    "awayElo": 1511,
+    "timeSlot": "morning",
+    "isTopPick": true,
+    "matchTime": "2026-09-13T10:00:00-05:00"
   },
   {
     "fixtureId": 1557404,
@@ -1632,7 +1661,10 @@
       }
     ],
     "homeElo": 1770,
-    "awayElo": 2060
+    "awayElo": 2060,
+    "timeSlot": "morning",
+    "isTopPick": true,
+    "matchTime": "2026-09-13T10:30:00-05:00"
   },
   {
     "fixtureId": 1575166,
@@ -1780,7 +1812,10 @@
       }
     ],
     "homeElo": 1642,
-    "awayElo": 2000
+    "awayElo": 2000,
+    "timeSlot": "morning",
+    "isTopPick": true,
+    "matchTime": "2026-09-13T10:30:00-05:00"
   },
   {
     "fixtureId": 1582798,
@@ -1928,7 +1963,10 @@
       }
     ],
     "homeElo": 1608,
-    "awayElo": 1512
+    "awayElo": 1512,
+    "timeSlot": "morning",
+    "isTopPick": true,
+    "matchTime": "2026-09-13T11:30:00-05:00"
   },
   {
     "fixtureId": 1570375,
@@ -2076,7 +2114,10 @@
       }
     ],
     "homeElo": 1580,
-    "awayElo": 1489
+    "awayElo": 1489,
+    "timeSlot": "morning",
+    "isTopPick": true,
+    "matchTime": "2026-09-13T11:30:00-05:00"
   },
   {
     "fixtureId": 1575493,
@@ -2224,7 +2265,10 @@
       }
     ],
     "homeElo": 1850,
-    "awayElo": 1550
+    "awayElo": 1550,
+    "timeSlot": "afternoon",
+    "isTopPick": true,
+    "matchTime": "2026-09-13T12:00:00-05:00"
   },
   {
     "fixtureId": 1548528,
@@ -2372,7 +2416,10 @@
       }
     ],
     "homeElo": 1632,
-    "awayElo": 1489
+    "awayElo": 1489,
+    "timeSlot": "afternoon",
+    "isTopPick": true,
+    "matchTime": "2026-09-13T13:00:00-05:00"
   },
   {
     "fixtureId": 1552757,
@@ -2520,7 +2567,10 @@
       }
     ],
     "homeElo": 1551,
-    "awayElo": 1970
+    "awayElo": 1970,
+    "timeSlot": "afternoon",
+    "isTopPick": true,
+    "matchTime": "2026-09-13T13:45:00-05:00"
   },
   {
     "fixtureId": 1490479,
@@ -2668,7 +2718,10 @@
       }
     ],
     "homeElo": 1508,
-    "awayElo": 1638
+    "awayElo": 1638,
+    "timeSlot": "afternoon",
+    "isTopPick": false,
+    "matchTime": "2026-09-13T16:30:00-05:00"
   },
   {
     "fixtureId": 1551685,
@@ -2816,7 +2869,10 @@
       }
     ],
     "homeElo": 1649,
-    "awayElo": 1506
+    "awayElo": 1506,
+    "timeSlot": "afternoon",
+    "isTopPick": true,
+    "matchTime": "2026-09-13T17:00:00-05:00"
   },
   {
     "fixtureId": 1490478,
@@ -2964,6 +3020,9 @@
       }
     ],
     "homeElo": 1601,
-    "awayElo": 1568
+    "awayElo": 1568,
+    "timeSlot": "night",
+    "isTopPick": false,
+    "matchTime": "2026-09-13T17:30:00-05:00"
   }
 ]
