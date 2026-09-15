@@ -1897,100 +1897,101 @@ export async function getHistoricalSettledParlays(): Promise<HistoricalSettledPa
   const settledHistory = await getHistoricalSettledPredictions();
   const dateGroups: Record<string, typeof settledHistory> = {};
 
+  // Build quick map of settled results by match / fixture / market key for fast lookup
+  const settledLookup = new Map<string, typeof settledHistory[0]>();
   for (const pick of settledHistory) {
     const d = pick.date || (pick.kickoff ? pick.kickoff.split("T")[0] : HISTORY_START_DATE);
     if (d < HISTORY_START_DATE) continue;
     if (!dateGroups[d]) dateGroups[d] = [];
     dateGroups[d].push(pick);
+
+    const hNorm = normalizeTeamName(pick.homeTeam || "").toLowerCase();
+    const aNorm = normalizeTeamName(pick.awayTeam || "").toLowerCase();
+    settledLookup.set(`${hNorm}-${aNorm}-${d}-${pick.market}`, pick);
+    settledLookup.set(`${pick.homeTeam?.toLowerCase()}-${pick.awayTeam?.toLowerCase()}-${d}-${pick.market}`, pick);
+    settledLookup.set(`${pick.match?.toLowerCase()}-${d}-${pick.market}`, pick);
+    settledLookup.set(`${pick.match?.toLowerCase()}-${d}`, pick);
+    settledLookup.set(`${hNorm}-${aNorm}-${d}`, pick);
   }
 
   const result: HistoricalSettledParlay[] = [];
 
-  for (const [dateStr, picks] of Object.entries(dateGroups)) {
+  // Sort dates descending (newest first)
+  const sortedDates = Object.keys(dateGroups).sort((a, b) => b.localeCompare(a));
+
+  for (const dateStr of sortedDates) {
     if (dateStr < HISTORY_START_DATE) continue;
 
-    // Filter unique matches (one pick per match) and sort by probability
-    const seenMatches = new Set<string>();
-    const uniquePicks: typeof picks = [];
-    for (const p of [...picks].sort((a, b) => b.probability - a.probability || b.odds - a.odds)) {
-      if (!seenMatches.has(p.match)) {
-        seenMatches.add(p.match);
-        uniquePicks.push(p);
-      }
+    // Load raw snapshot picks or fall back to settled history picks for that date
+    let rawPicks: MarketOpportunity[] = loadDailySnapshot(dateStr) || [];
+    if (!rawPicks || rawPicks.length === 0) {
+      rawPicks = dateGroups[dateStr] as any;
     }
+    if (!rawPicks || rawPicks.length < 3) continue;
 
-    if (uniquePicks.length < 3) continue;
+    const dailyParlays = getImmutableDailyParlays(rawPicks, dateStr);
 
-    // Bankers: Only picks with high probability (>= 78%) or "Muy Alta" confidence can be anchored across combinations
-    const bankers = uniquePicks.filter((p) => p.probability >= 78);
-    const topBanker = bankers.length > 0 ? bankers[0] : null;
+    const parlayConfigs = [
+      { key: "parlay1" as const, title: "🛡️ Parley Seguro (3 Selecciones)", idSuffix: "seguro", size: 3 },
+      { key: "parlay2" as const, title: "💎 Parley Valor (3 Selecciones)", idSuffix: "valor", size: 3 },
+      { key: "parlay3" as const, title: "💣 Parley Bomba (3 Selecciones)", idSuffix: "bomba", size: 3 },
+    ];
 
-    // Non-banker pool
-    const nonBankerPool = uniquePicks.filter((p) => !topBanker || p.match !== topBanker.match);
+    for (const config of parlayConfigs) {
+      const parlayLegs = dailyParlays[config.key];
+      if (!parlayLegs || parlayLegs.length < 3) continue;
 
-    const sizes = [3, 4, 5] as const;
-    const startOffsets: Record<number, number> = { 3: 0, 4: 2, 5: 5 };
+      const evaluatedLegs = parlayLegs.map((leg) => {
+        const hNorm = normalizeTeamName(leg.homeTeam || "").toLowerCase();
+        const aNorm = normalizeTeamName(leg.awayTeam || "").toLowerCase();
+        
+        // Find matching settled pick
+        const matchPick =
+          settledLookup.get(`${hNorm}-${aNorm}-${dateStr}-${leg.market}`) ||
+          settledLookup.get(`${leg.homeTeam?.toLowerCase()}-${leg.awayTeam?.toLowerCase()}-${dateStr}-${leg.market}`) ||
+          settledLookup.get(`${leg.match?.toLowerCase()}-${dateStr}-${leg.market}`) ||
+          settledLookup.get(`${leg.match?.toLowerCase()}-${dateStr}`) ||
+          settledLookup.get(`${hNorm}-${aNorm}-${dateStr}`) ||
+          dateGroups[dateStr]?.find((p) => p.homeTeam === leg.homeTeam && p.awayTeam === leg.awayTeam);
 
-    for (const size of sizes) {
-      const parlayLegs: typeof picks = [];
-      const usedInParlay = new Set<string>();
+        const score = matchPick?.score || leg.actualScore || leg.currentScore || "-";
+        const result: "WON" | "LOST" | "VOID" = matchPick
+          ? (matchPick.result as "WON" | "LOST")
+          : leg.status === "won" || leg.result === "WON"
+          ? "WON"
+          : leg.status === "lost" || leg.result === "LOST"
+          ? "LOST"
+          : "LOST";
 
-      // 1. Anchor with top high-confidence banker (if available)
-      if (topBanker) {
-        parlayLegs.push(topBanker);
-        usedInParlay.add(topBanker.match);
-      }
+        return {
+          match: leg.match,
+          league: leg.league,
+          country: leg.country,
+          kickoff: leg.kickoff,
+          market: leg.market,
+          odds: leg.odds,
+          probability: leg.probability,
+          score: score,
+          result: result,
+        };
+      });
 
-      // 2. Fill remaining legs from nonBankerPool using diversified rotational offset
-      const offset = startOffsets[size] || 0;
-      const poolLen = nonBankerPool.length;
+      const totalOdds = Math.round(evaluatedLegs.reduce((acc, p) => acc * p.odds, 1) * 100) / 100;
+      const combinedProb = Math.round(evaluatedLegs.reduce((acc, p) => acc * (p.probability / 100), 1) * 1000) / 10;
+      const allWon = evaluatedLegs.every((p) => p.result === "WON");
+      const profit = allWon ? Math.round((totalOdds - 1) * 100) / 100 : -1;
 
-      for (let i = 0; i < poolLen && parlayLegs.length < size; i++) {
-        const pick = nonBankerPool[(offset + i) % poolLen];
-        if (!usedInParlay.has(pick.match)) {
-          parlayLegs.push(pick);
-          usedInParlay.add(pick.match);
-        }
-      }
-
-      // 3. Fallback if pool is small
-      if (parlayLegs.length < size) {
-        for (const pick of uniquePicks) {
-          if (!usedInParlay.has(pick.match) && parlayLegs.length < size) {
-            parlayLegs.push(pick);
-            usedInParlay.add(pick.match);
-          }
-        }
-      }
-
-      if (parlayLegs.length >= size) {
-        const totalOdds = parlayLegs.reduce((acc, p) => acc * p.odds, 1);
-        const combinedProb = parlayLegs.reduce((acc, p) => acc * (p.probability / 100), 1) * 100;
-        const allWon = parlayLegs.every((p) => p.result === "WON");
-        const profit = allWon ? Math.round((totalOdds - 1) * 100) / 100 : -1;
-
-        result.push({
-          id: `parlay-${dateStr}-${size}`,
-          date: dateStr,
-          parlaySize: size,
-          title: size === 3 ? "Trío Élite (3 Jugadas)" : size === 4 ? "Cuarteta Pro (4 Jugadas)" : "Quíntuple Estrella (5 Jugadas)",
-          totalOdds: Math.round(totalOdds * 100) / 100,
-          combinedProbability: Math.round(combinedProb * 10) / 10,
-          result: allWon ? "WON" : "LOST",
-          profit,
-          legs: parlayLegs.map((l) => ({
-            match: l.match,
-            league: l.league,
-            country: l.country,
-            kickoff: l.kickoff,
-            market: l.market,
-            odds: l.odds,
-            probability: l.probability,
-            score: l.score,
-            result: l.result,
-          })),
-        });
-      }
+      result.push({
+        id: `parlay-${dateStr}-${config.idSuffix}`,
+        date: dateStr,
+        parlaySize: config.size,
+        title: config.title,
+        totalOdds,
+        combinedProbability: combinedProb,
+        result: allWon ? "WON" : "LOST",
+        profit,
+        legs: evaluatedLegs,
+      });
     }
   }
 
