@@ -4,6 +4,7 @@ import {
   getStoredPredictions,
   getEcuadorDateString,
   settleActiveSnapshotWithRealScores,
+  settleAllSnapshotsWithRealScores,
 } from "@/lib/sports/db";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 
@@ -21,7 +22,7 @@ export async function GET(request: NextRequest) {
 
     // Auto-liquidación en tiempo real: consultar marcadores finales de la API (FT, AET, PEN),
     // evaluar mercado y persistir de inmediato status = "won" | "lost" y actualScore
-    await settleActiveSnapshotWithRealScores(todayDateStr).catch((settleErr) => {
+    await settleAllSnapshotsWithRealScores().catch((settleErr) => {
       console.warn("[API /api/signals] Auto-settlement non-fatal error:", settleErr);
     });
 

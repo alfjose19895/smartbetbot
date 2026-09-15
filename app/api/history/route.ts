@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getHistoricalSettledPredictions, getHistoricalSettledParlays } from "@/lib/sports/db";
+import { getHistoricalSettledPredictions, getHistoricalSettledParlays, settleAllSnapshotsWithRealScores } from "@/lib/sports/db";
 
 export const dynamic = "force-dynamic";
 
@@ -10,6 +10,9 @@ export async function GET(request: NextRequest) {
     const result = searchParams.get("result");
     const date = searchParams.get("date");
     const type = searchParams.get("type"); // "picks" | "parlays" | "all"
+
+    // Auto-liquidar todas las alertas finalizadas antes de servir historial
+    await settleAllSnapshotsWithRealScores().catch(() => {});
 
     const [history, parlays] = await Promise.all([
       getHistoricalSettledPredictions(),

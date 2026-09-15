@@ -213,6 +213,42 @@ function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
  * evaluar el mercado (evaluateMarketResult) y persistir de inmediato status = "won" | "lost" y
  * actualScore = "2 - 1" en el snapshot activo y en la tarjeta.
  */
+/**
+ * Settles all snapshots across all historical dates that have un-settled pending matches whose kickoff is in the past.
+ */
+export async function settleAllSnapshotsWithRealScores(): Promise<{ settledDates: string[]; totalSettled: number }> {
+  const nowMs = Date.now();
+  const todayDateStr = getEcuadorDateString(nowMs);
+  const snapshots = getAllDailySnapshots();
+  const allDates = Array.from(new Set([...Object.keys(snapshots), todayDateStr])).sort();
+  
+  let totalSettled = 0;
+  const settledDates: string[] = [];
+
+  for (const dateStr of allDates) {
+    if (dateStr < HISTORY_START_DATE) continue;
+    const snap = snapshots[dateStr] || loadDailySnapshot(dateStr) || [];
+    const hasPendingPastKickoff = snap.some((p) => {
+      const pKick = p.kickoff ? new Date(p.kickoff).getTime() : 0;
+      return p.status === "pending" && pKick <= nowMs;
+    });
+
+    if (hasPendingPastKickoff || dateStr === todayDateStr) {
+      try {
+        const settled = await settleActiveSnapshotWithRealScores(dateStr);
+        if (settled && settled.length > 0) {
+          settledDates.push(dateStr);
+          totalSettled += settled.filter((p) => p.status === "won" || p.status === "lost").length;
+        }
+      } catch (err) {
+        console.warn(`[Auto-Settle] Error settling snapshot ${dateStr}:`, err);
+      }
+    }
+  }
+
+  return { settledDates, totalSettled };
+}
+
 export async function settleActiveSnapshotWithRealScores(dateStr?: string): Promise<MarketOpportunity[]> {
   const nowMs = Date.now();
   const targetDate = dateStr || getEcuadorDateString(nowMs);
@@ -914,10 +950,9 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
         const fixtureDateStr = getEcuadorDateString(kickoffMs);
         if (fixtureDateStr !== todayDateStr) continue; // REGLA ESTRICTA: Solo partidos de la fecha actual
 
+        // Allow evaluating all fixtures of today's slate to build complete full-day snapshot
         const shortStatus = item.fixture.status?.short || "NS";
-        if (["1H", "2H", "HT", "ET", "BT", "P", "LIVE", "INT", "SUSP", "FT", "AET", "PEN", "PST", "CANC", "ABD", "AWD", "WO", "POST"].includes(shortStatus)) continue;
-        if (kickoffMs <= nowMs) continue;
-        if (shortStatus !== "NS" && shortStatus !== "TBD") continue;
+        if (["PST", "CANC", "ABD", "AWD", "WO", "POST"].includes(shortStatus)) continue;
       if (isExcludedMatch(item.teams?.home?.name, item.teams?.away?.name)) continue;
 
         // Skip non-curated leagues ("Otras Ligas") & youth leagues
