@@ -26,7 +26,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 81,
-    "explanation": "Superioridad táctica de Ilves en Tampere. 65.3% de probabilidad a cuota real Bet365 @1.53.",
+    "explanation": "Superioridad t\u00e1ctica de Ilves en Tampere. 65.3% de probabilidad a cuota real Bet365 @1.53.",
     "status": "won",
     "h2h": [
       {
@@ -88,7 +88,9 @@
     "actualScore": "2 - 0",
     "actualGoalsHome": 2,
     "actualGoalsAway": 0,
-    "settledAt": "2026-09-12T04:31:15.875Z"
+    "settledAt": "2026-09-12T04:31:15.875Z",
+    "result": "WON",
+    "profit": 0.53
   },
   {
     "fixtureId": 1635663,
@@ -176,7 +178,9 @@
     "actualScore": "2 - 1",
     "actualGoalsHome": 2,
     "actualGoalsAway": 1,
-    "settledAt": "2026-09-12T04:31:15.876Z"
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "WON",
+    "profit": 0.55
   },
   {
     "fixtureId": 1635655,
@@ -264,7 +268,9 @@
     "actualScore": "2 - 3 (5 Goles)",
     "actualGoalsHome": 2,
     "actualGoalsAway": 3,
-    "settledAt": "2026-09-12T04:31:15.876Z"
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "WON",
+    "profit": 0.75
   },
   {
     "fixtureId": 1635655,
@@ -293,7 +299,7 @@
     "confidence": "Moderada",
     "pickBadge": "bomba",
     "smartScore": 61,
-    "explanation": "Oportunidad de alto rendimiento: Aston Villa de Unai Emery tiene pegada para imponerse en Bélgica a cuota Bet365 @2.70.",
+    "explanation": "Oportunidad de alto rendimiento: Aston Villa de Unai Emery tiene pegada para imponerse en B\u00e9lgica a cuota Bet365 @2.70.",
     "status": "won",
     "h2h": [
       {
@@ -355,7 +361,9 @@
     "actualScore": "2 - 3",
     "actualGoalsHome": 2,
     "actualGoalsAway": 3,
-    "settledAt": "2026-09-12T04:31:15.876Z"
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "WON",
+    "profit": 1.7
   },
   {
     "fixtureId": 1635661,
@@ -443,7 +451,9 @@
     "actualScore": "2 - 1",
     "actualGoalsHome": 2,
     "actualGoalsAway": 1,
-    "settledAt": "2026-09-12T04:31:15.876Z"
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "WON",
+    "profit": 0.4
   },
   {
     "fixtureId": 1635661,
@@ -531,7 +541,9 @@
     "actualScore": "2 - 1 (3 Goles)",
     "actualGoalsHome": 2,
     "actualGoalsAway": 1,
-    "settledAt": "2026-09-12T04:31:15.876Z"
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "WON",
+    "profit": 0.48
   },
   {
     "fixtureId": 1635658,
@@ -560,7 +572,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 81,
-    "explanation": "Diferencia de jerarquía técnica en The Den. Newcastle a cuota Bet365 @1.55 con 64.7% de probabilidad.",
+    "explanation": "Diferencia de jerarqu\u00eda t\u00e9cnica en The Den. Newcastle a cuota Bet365 @1.55 con 64.7% de probabilidad.",
     "status": "won",
     "h2h": [
       {
@@ -622,7 +634,9 @@
     "actualScore": "0 - 1",
     "actualGoalsHome": 0,
     "actualGoalsAway": 1,
-    "settledAt": "2026-09-12T04:31:15.876Z"
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "WON",
+    "profit": 0.55
   },
   {
     "fixtureId": 1635658,
@@ -710,7 +724,9 @@
     "actualScore": "0 - 1 (1 Goles)",
     "actualGoalsHome": 0,
     "actualGoalsAway": 1,
-    "settledAt": "2026-09-12T04:31:15.876Z"
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "LOST",
+    "profit": -1.0
   },
   {
     "fixtureId": 1635659,
@@ -739,7 +755,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 76,
-    "explanation": "West Ham impone su jerarquía de Premier League ante Bolton. Cuota Bet365 @1.57.",
+    "explanation": "West Ham impone su jerarqu\u00eda de Premier League ante Bolton. Cuota Bet365 @1.57.",
     "status": "won",
     "h2h": [
       {
@@ -798,7 +814,9 @@
     "actualScore": "2 - 3",
     "actualGoalsHome": 2,
     "actualGoalsAway": 3,
-    "settledAt": "2026-09-12T04:31:15.876Z"
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "WON",
+    "profit": 0.57
   },
   {
     "fixtureId": 1635652,
@@ -827,7 +845,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 94,
-    "explanation": "Poderío en Signal Iduna Park: Borussia Dortmund registra un promedio de 2.2 goles a favor por partido. Las probabilidades matemáticas respaldan su victoria ante Villarreal con un 68.0% de probabilidad frente a cuota Bet365 @1.75.",
+    "explanation": "Poder\u00edo en Signal Iduna Park: Borussia Dortmund registra un promedio de 2.2 goles a favor por partido. Las probabilidades matem\u00e1ticas respaldan su victoria ante Villarreal con un 68.0% de probabilidad frente a cuota Bet365 @1.75.",
     "status": "won",
     "h2h": [
       {
@@ -889,7 +907,9 @@
     "actualScore": "3 - 2",
     "actualGoalsHome": 3,
     "actualGoalsAway": 2,
-    "settledAt": "2026-09-12T04:31:15.876Z"
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "WON",
+    "profit": 0.75
   },
   {
     "fixtureId": 1635652,
@@ -918,7 +938,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 79,
-    "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Borussia Dortmund con la pegada en contragolpe de Villarreal (3.17 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 62.5% de confianza a cuota @1.50.",
+    "explanation": "Eficacia en \u00e1reas rivales: La proyecci\u00f3n matem\u00e1tica combina la alta producci\u00f3n de llegadas claras de Borussia Dortmund con la pegada en contragolpe de Villarreal (3.17 xG acumulado). El an\u00e1lisis probabil\u00edstico respalda el Over 2.5 con 62.5% de confianza a cuota @1.50.",
     "status": "won",
     "h2h": [
       {
@@ -977,7 +997,9 @@
     "actualScore": "3 - 2 (5 Goles)",
     "actualGoalsHome": 3,
     "actualGoalsAway": 2,
-    "settledAt": "2026-09-12T04:31:15.876Z"
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "WON",
+    "profit": 0.5
   },
   {
     "fixtureId": 1635652,
@@ -994,7 +1016,7 @@
     "country": "Europa",
     "kickoff": "2026-09-08T14:00:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "odds": 1.65,
     "bookmakerOdds": 1.65,
     "modelOdds": 1.67,
@@ -1006,7 +1028,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 76,
-    "explanation": "Ofensivas dinámicas: Ambos clubes presentan transiciones verticales muy rápidas. La probabilidad de que ambos anoten se sitúa en 60.0% a cuota @1.65 en Bet365.",
+    "explanation": "Ofensivas din\u00e1micas: Ambos clubes presentan transiciones verticales muy r\u00e1pidas. La probabilidad de que ambos anoten se sit\u00faa en 60.0% a cuota @1.65 en Bet365.",
     "status": "won",
     "h2h": [
       {
@@ -1062,10 +1084,12 @@
         "competition": "UEFA Champions League"
       }
     ],
-    "actualScore": "3 - 2 (Ambos Sí)",
+    "actualScore": "3 - 2 (Ambos S\u00ed)",
     "actualGoalsHome": 3,
     "actualGoalsAway": 2,
-    "settledAt": "2026-09-12T04:31:15.876Z"
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "WON",
+    "profit": 0.65
   },
   {
     "fixtureId": 1635653,
@@ -1094,7 +1118,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 87,
-    "explanation": "Jerarquía en el Santiago Bernabéu: El Real Madrid cuenta con un 67.0% de probabilidad de triunfo ante un Inter competitivo, con cuota real de Bet365 @1.62 ofreciendo valor positivo.",
+    "explanation": "Jerarqu\u00eda en el Santiago Bernab\u00e9u: El Real Madrid cuenta con un 67.0% de probabilidad de triunfo ante un Inter competitivo, con cuota real de Bet365 @1.62 ofreciendo valor positivo.",
     "status": "won",
     "h2h": [
       {
@@ -1156,7 +1180,9 @@
     "actualScore": "2 - 1",
     "actualGoalsHome": 2,
     "actualGoalsAway": 1,
-    "settledAt": "2026-09-12T04:31:15.876Z"
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "WON",
+    "profit": 0.62
   },
   {
     "fixtureId": 1635653,
@@ -1185,7 +1211,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 78,
-    "explanation": "Duelo de alta tensión: El volumen de remates esperados supera los 2.9 goles combinados. Modelo asigna 62.2% de probabilidad al Over 2.5 con cuota Bet365 @1.44.",
+    "explanation": "Duelo de alta tensi\u00f3n: El volumen de remates esperados supera los 2.9 goles combinados. Modelo asigna 62.2% de probabilidad al Over 2.5 con cuota Bet365 @1.44.",
     "status": "won",
     "h2h": [
       {
@@ -1244,7 +1270,9 @@
     "actualScore": "2 - 1 (3 Goles)",
     "actualGoalsHome": 2,
     "actualGoalsAway": 1,
-    "settledAt": "2026-09-12T04:31:15.876Z"
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "WON",
+    "profit": 0.44
   },
   {
     "fixtureId": 1635654,
@@ -1273,7 +1301,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 84,
-    "explanation": "Dominio de posesión y volumen de llegadas: Manchester City promedia más de 65% de tenencia y 2.1 xG de visitante. Cuota real Bet365 @1.65 con 65.0% de probabilidad.",
+    "explanation": "Dominio de posesi\u00f3n y volumen de llegadas: Manchester City promedia m\u00e1s de 65% de tenencia y 2.1 xG de visitante. Cuota real Bet365 @1.65 con 65.0% de probabilidad.",
     "status": "won",
     "h2h": [
       {
@@ -1332,7 +1360,9 @@
     "actualScore": "0 - 2",
     "actualGoalsHome": 0,
     "actualGoalsAway": 2,
-    "settledAt": "2026-09-12T04:31:15.876Z"
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "WON",
+    "profit": 0.65
   },
   {
     "fixtureId": 1635654,
@@ -1361,7 +1391,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 74,
-    "explanation": "Presión alta de los citizens genera espacios defensivos en O Dragão. Probabilidad del 58.0% a cuota @1.70.",
+    "explanation": "Presi\u00f3n alta de los citizens genera espacios defensivos en O Drag\u00e3o. Probabilidad del 58.0% a cuota @1.70.",
     "status": "lost",
     "h2h": [
       {
@@ -1423,7 +1453,9 @@
     "actualScore": "0 - 2 (2 Goles)",
     "actualGoalsHome": 0,
     "actualGoalsAway": 2,
-    "settledAt": "2026-09-12T04:31:15.876Z"
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "LOST",
+    "profit": -1.0
   },
   {
     "fixtureId": 1635656,
@@ -1511,7 +1543,9 @@
     "actualScore": "2 - 3 (5 Goles)",
     "actualGoalsHome": 2,
     "actualGoalsAway": 3,
-    "settledAt": "2026-09-12T04:31:15.876Z"
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "WON",
+    "profit": 0.8
   },
   {
     "fixtureId": 1635656,
@@ -1599,7 +1633,9 @@
     "actualScore": "2 - 3",
     "actualGoalsHome": 2,
     "actualGoalsAway": 3,
-    "settledAt": "2026-09-12T04:31:15.876Z"
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "LOST",
+    "profit": -1.0
   },
   {
     "fixtureId": 1635660,
@@ -1690,7 +1726,9 @@
     "actualScore": "3 - 0",
     "actualGoalsHome": 3,
     "actualGoalsAway": 0,
-    "settledAt": "2026-09-12T04:31:15.876Z"
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "WON",
+    "profit": 0.65
   },
   {
     "fixtureId": 1635660,
@@ -1778,7 +1816,9 @@
     "actualScore": "3 - 0 (3 Goles)",
     "actualGoalsHome": 3,
     "actualGoalsAway": 0,
-    "settledAt": "2026-09-12T04:31:15.876Z"
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "WON",
+    "profit": 0.6
   },
   {
     "fixtureId": 1635657,
@@ -1792,7 +1832,7 @@
     "league": "Copa Sudamericana",
     "leagueId": 11,
     "leagueLogo": "https://media.api-sports.io/football/leagues/11.png",
-    "country": "Sudamérica",
+    "country": "Sudam\u00e9rica",
     "kickoff": "2026-09-08T19:30:00-05:00",
     "market": "Ganador Local",
     "selection": "Boca Juniors",
@@ -1807,7 +1847,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 86,
-    "explanation": "Mística en La Bombonera: Boca Juniors se hace fuerte ante Sao Paulo. Cuota real Bet365 @1.75 con 64.0% de probabilidad.",
+    "explanation": "M\u00edstica en La Bombonera: Boca Juniors se hace fuerte ante Sao Paulo. Cuota real Bet365 @1.75 con 64.0% de probabilidad.",
     "status": "won",
     "h2h": [
       {
@@ -1866,7 +1906,9 @@
     "actualScore": "1 - 0",
     "actualGoalsHome": 1,
     "actualGoalsAway": 0,
-    "settledAt": "2026-09-12T04:31:15.876Z"
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "WON",
+    "profit": 0.75
   },
   {
     "fixtureId": 1635657,
@@ -1880,10 +1922,10 @@
     "league": "Copa Sudamericana",
     "leagueId": 11,
     "leagueLogo": "https://media.api-sports.io/football/leagues/11.png",
-    "country": "Sudamérica",
+    "country": "Sudam\u00e9rica",
     "kickoff": "2026-09-08T19:30:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "odds": 2.1,
     "bookmakerOdds": 2.1,
     "modelOdds": 1.78,
@@ -1895,7 +1937,7 @@
     "confidence": "Media",
     "pickBadge": "bomba",
     "smartScore": 80,
-    "explanation": "BOMBA DE VALOR: Clásico sudamericano de ida y vuelta. Cuota real Bet365 @2.10 para Ambos Anotan.",
+    "explanation": "BOMBA DE VALOR: Cl\u00e1sico sudamericano de ida y vuelta. Cuota real Bet365 @2.10 para Ambos Anotan.",
     "status": "lost",
     "h2h": [
       {
@@ -1957,6 +1999,8 @@
     "actualScore": "1 - 0 (No)",
     "actualGoalsHome": 1,
     "actualGoalsAway": 0,
-    "settledAt": "2026-09-12T04:31:15.876Z"
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "LOST",
+    "profit": -1.0
   }
 ]

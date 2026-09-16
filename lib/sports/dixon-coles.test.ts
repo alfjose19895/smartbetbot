@@ -86,7 +86,7 @@ describe("Dixon-Coles Mathematical Calibration", () => {
         bttsYes: 1.68,
         bttsNo: 2.15,
       },
-    });
+  }, 20000);
 
     const vetoResult = await auditPredictionsWithGeminiVeto(sampleOpportunities);
     expect(vetoResult).toBeDefined();

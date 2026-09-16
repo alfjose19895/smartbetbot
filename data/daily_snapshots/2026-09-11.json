@@ -27,7 +27,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 77,
-    "explanation": "Jerarquía y solvencia territorial: FC Copenhagen (Elo 1585) llega en gran momento con 2 victorias en sus 5 cotejos más recientes, superando a AC Horsens en xG (2.28 vs 0.84). El modelo Poisson proyecta un contundente 69.9% de probabilidad de triunfo local a cuota @1.33.",
+    "explanation": "Jerarqu\u00eda y solvencia territorial: FC Copenhagen (Elo 1585) llega en gran momento con 2 victorias en sus 5 cotejos m\u00e1s recientes, superando a AC Horsens en xG (2.28 vs 0.84). El modelo Poisson proyecta un contundente 69.9% de probabilidad de triunfo local a cuota @1.33.",
     "status": "won",
     "h2h": [
       {
@@ -145,7 +145,9 @@
     "actualScore": "2 - 0",
     "actualGoalsHome": 2,
     "actualGoalsAway": 0,
-    "settledAt": "2026-09-12T04:31:15.924Z"
+    "settledAt": "2026-09-12T04:31:15.924Z",
+    "result": "WON",
+    "profit": 0.33
   },
   {
     "fixtureId": 1494277,
@@ -175,7 +177,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 72,
-    "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de BK Hacken con la pegada en contragolpe de Mjallby AIF (2.81 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 59.2% de confianza a cuota @1.50.",
+    "explanation": "Eficacia en \u00e1reas rivales: La proyecci\u00f3n matem\u00e1tica combina la alta producci\u00f3n de llegadas claras de BK Hacken con la pegada en contragolpe de Mjallby AIF (2.81 xG acumulado). El an\u00e1lisis probabil\u00edstico respalda el Over 2.5 con 59.2% de confianza a cuota @1.50.",
     "status": "lost",
     "h2h": [
       {
@@ -293,7 +295,9 @@
     "actualScore": "1 - 1 (2 Goles)",
     "actualGoalsHome": 1,
     "actualGoalsAway": 1,
-    "settledAt": "2026-09-12T04:31:15.924Z"
+    "settledAt": "2026-09-12T04:31:15.924Z",
+    "result": "LOST",
+    "profit": -1.0
   },
   {
     "fixtureId": 1525980,
@@ -310,7 +314,7 @@
     "country": "Bielorrusia",
     "kickoff": "2026-09-11T12:10:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "odds": 1.76,
     "bookmaker": "Bet365",
     "bookmakerOdds": 1.76,
@@ -323,7 +327,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 78,
-    "explanation": "Análisis cuantitativo avanzado: 53.3% de probabilidad estadística con valor positivo (+1%) frente a la cuota del mercado @1.76.",
+    "explanation": "An\u00e1lisis cuantitativo avanzado: 53.3% de probabilidad estad\u00edstica con valor positivo (+1%) frente a la cuota del mercado @1.76.",
     "status": "lost",
     "h2h": [
       {
@@ -441,7 +445,9 @@
     "actualScore": "1 - 0 (No)",
     "actualGoalsHome": 1,
     "actualGoalsAway": 0,
-    "settledAt": "2026-09-12T04:31:15.924Z"
+    "settledAt": "2026-09-12T04:31:15.924Z",
+    "result": "LOST",
+    "profit": -1.0
   },
   {
     "fixtureId": 1561926,
@@ -471,7 +477,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 86,
-    "explanation": "Dinámica ofensiva y pegada en ataque: Ried llega con 1 victorias en sus últimos 5 compromisos y promedia 1.14 xG en casa, mientras Red Bull Salzburg genera 2.03 xG como visitante. El modelo cuantitativo Poisson proyecta 3.17 goles esperados conjuntos, otorgando un sólido 61.9% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.50 (valor +1%).",
+    "explanation": "Din\u00e1mica ofensiva y pegada en ataque: Ried llega con 1 victorias en sus \u00faltimos 5 compromisos y promedia 1.14 xG en casa, mientras Red Bull Salzburg genera 2.03 xG como visitante. El modelo cuantitativo Poisson proyecta 3.17 goles esperados conjuntos, otorgando un s\u00f3lido 61.9% de probabilidad para superar la l\u00ednea de 2.5 tantos a cuota rentable @1.50 (valor +1%).",
     "status": "lost",
     "h2h": [
       {
@@ -589,7 +595,9 @@
     "actualScore": "1 - 1 (2 Goles)",
     "actualGoalsHome": 1,
     "actualGoalsAway": 1,
-    "settledAt": "2026-09-12T04:31:15.924Z"
+    "settledAt": "2026-09-12T04:31:15.924Z",
+    "result": "LOST",
+    "profit": -1.0
   },
   {
     "fixtureId": 1575164,
@@ -606,7 +614,7 @@
     "country": "Alemania",
     "kickoff": "2026-09-11T13:30:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "odds": 1.53,
     "bookmaker": "Bet365",
     "bookmakerOdds": 1.53,
@@ -619,7 +627,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 85,
-    "explanation": "Análisis cuantitativo avanzado: 60.9% de probabilidad estadística con valor positivo (+1%) frente a la cuota del mercado @1.53.",
+    "explanation": "An\u00e1lisis cuantitativo avanzado: 60.9% de probabilidad estad\u00edstica con valor positivo (+1%) frente a la cuota del mercado @1.53.",
     "status": "won",
     "h2h": [
       {
@@ -734,10 +742,12 @@
     "homeElo": 1557,
     "awayElo": 1580,
     "leagueTier": 1,
-    "actualScore": "1 - 3 (Ambos Sí)",
+    "actualScore": "1 - 3 (Ambos S\u00ed)",
     "actualGoalsHome": 1,
     "actualGoalsAway": 3,
-    "settledAt": "2026-09-12T04:31:15.924Z"
+    "settledAt": "2026-09-12T04:31:15.924Z",
+    "result": "WON",
+    "profit": 0.53
   },
   {
     "fixtureId": 1552763,
@@ -767,7 +777,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 88,
-    "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Rennes con la pegada en contragolpe de Marseille (3.46 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 62.9% de confianza a cuota @1.53.",
+    "explanation": "Eficacia en \u00e1reas rivales: La proyecci\u00f3n matem\u00e1tica combina la alta producci\u00f3n de llegadas claras de Rennes con la pegada en contragolpe de Marseille (3.46 xG acumulado). El an\u00e1lisis probabil\u00edstico respalda el Over 2.5 con 62.9% de confianza a cuota @1.53.",
     "status": "lost",
     "h2h": [
       {
@@ -885,7 +895,9 @@
     "actualScore": "1 - 0 (1 Goles)",
     "actualGoalsHome": 1,
     "actualGoalsAway": 0,
-    "settledAt": "2026-09-12T04:31:15.924Z"
+    "settledAt": "2026-09-12T04:31:15.924Z",
+    "result": "LOST",
+    "profit": -1.0
   },
   {
     "fixtureId": 1492770,
@@ -902,7 +914,7 @@
     "country": "Irlanda",
     "kickoff": "2026-09-11T13:45:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "odds": 1.5,
     "bookmaker": "Bet365",
     "bookmakerOdds": 1.5,
@@ -915,7 +927,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 72,
-    "explanation": "Análisis cuantitativo avanzado: 59.3% de probabilidad estadística con valor positivo (+1%) frente a la cuota del mercado @1.50.",
+    "explanation": "An\u00e1lisis cuantitativo avanzado: 59.3% de probabilidad estad\u00edstica con valor positivo (+1%) frente a la cuota del mercado @1.50.",
     "status": "won",
     "h2h": [
       {
@@ -1030,10 +1042,12 @@
     "homeElo": 1522,
     "awayElo": 1647,
     "leagueTier": 1,
-    "actualScore": "1 - 1 (Ambos Sí)",
+    "actualScore": "1 - 1 (Ambos S\u00ed)",
     "actualGoalsHome": 1,
     "actualGoalsAway": 1,
-    "settledAt": "2026-09-12T04:31:15.924Z"
+    "settledAt": "2026-09-12T04:31:15.924Z",
+    "result": "WON",
+    "profit": 0.5
   },
   {
     "fixtureId": 1550126,
@@ -1063,7 +1077,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 84,
-    "explanation": "Tendencia anotadora sostenida: Tanto Venezia como Fiorentina promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.60, la expectativa de un marcador con 3 o más tantos alcanza el 58.8% de probabilidad.",
+    "explanation": "Tendencia anotadora sostenida: Tanto Venezia como Fiorentina promedian m\u00e1s de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.60, la expectativa de un marcador con 3 o m\u00e1s tantos alcanza el 58.8% de probabilidad.",
     "status": "won",
     "h2h": [
       {
@@ -1181,7 +1195,9 @@
     "actualScore": "2 - 4 (6 Goles)",
     "actualGoalsHome": 2,
     "actualGoalsAway": 4,
-    "settledAt": "2026-09-12T04:31:15.924Z"
+    "settledAt": "2026-09-12T04:31:15.924Z",
+    "result": "WON",
+    "profit": 0.73
   },
   {
     "fixtureId": 1492767,
@@ -1198,7 +1214,7 @@
     "country": "Irlanda",
     "kickoff": "2026-09-11T13:45:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "odds": 1.62,
     "bookmaker": "Bet365",
     "bookmakerOdds": 1.62,
@@ -1211,7 +1227,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 72,
-    "explanation": "Análisis cuantitativo avanzado: 57.2% de probabilidad estadística con valor positivo (+1%) frente a la cuota del mercado @1.62.",
+    "explanation": "An\u00e1lisis cuantitativo avanzado: 57.2% de probabilidad estad\u00edstica con valor positivo (+1%) frente a la cuota del mercado @1.62.",
     "status": "won",
     "h2h": [
       {
@@ -1326,10 +1342,12 @@
     "homeElo": 1482,
     "awayElo": 1498,
     "leagueTier": 1,
-    "actualScore": "2 - 3 (Ambos Sí)",
+    "actualScore": "2 - 3 (Ambos S\u00ed)",
     "actualGoalsHome": 2,
     "actualGoalsAway": 3,
-    "settledAt": "2026-09-12T04:31:15.924Z"
+    "settledAt": "2026-09-12T04:31:15.924Z",
+    "result": "WON",
+    "profit": 0.62
   },
   {
     "fixtureId": 1492768,
@@ -1359,7 +1377,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 72,
-    "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Shelbourne con la pegada en contragolpe de Derry City (3.23 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 55.7% de confianza a cuota @1.80.",
+    "explanation": "Eficacia en \u00e1reas rivales: La proyecci\u00f3n matem\u00e1tica combina la alta producci\u00f3n de llegadas claras de Shelbourne con la pegada en contragolpe de Derry City (3.23 xG acumulado). El an\u00e1lisis probabil\u00edstico respalda el Over 2.5 con 55.7% de confianza a cuota @1.80.",
     "status": "lost",
     "h2h": [
       {
@@ -1477,7 +1495,9 @@
     "actualScore": "0 - 1 (1 Goles)",
     "actualGoalsHome": 0,
     "actualGoalsAway": 1,
-    "settledAt": "2026-09-12T04:31:15.924Z"
+    "settledAt": "2026-09-12T04:31:15.924Z",
+    "result": "LOST",
+    "profit": -1.0
   },
   {
     "fixtureId": 1492769,
@@ -1494,7 +1514,7 @@
     "country": "Irlanda",
     "kickoff": "2026-09-11T14:00:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "odds": 1.67,
     "bookmaker": "Bet365",
     "bookmakerOdds": 1.67,
@@ -1507,7 +1527,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 72,
-    "explanation": "Análisis cuantitativo avanzado: 54.4% de probabilidad estadística con valor positivo (+1%) frente a la cuota del mercado @1.67.",
+    "explanation": "An\u00e1lisis cuantitativo avanzado: 54.4% de probabilidad estad\u00edstica con valor positivo (+1%) frente a la cuota del mercado @1.67.",
     "status": "lost",
     "h2h": [
       {
@@ -1625,7 +1645,9 @@
     "actualScore": "2 - 0 (No)",
     "actualGoalsHome": 2,
     "actualGoalsAway": 0,
-    "settledAt": "2026-09-12T04:31:15.924Z"
+    "settledAt": "2026-09-12T04:31:15.924Z",
+    "result": "LOST",
+    "profit": -1.0
   },
   {
     "fixtureId": 1549484,
@@ -1639,7 +1661,7 @@
     "league": "Liga 1",
     "leagueId": 281,
     "leagueLogo": "https://media.api-sports.io/football/leagues/281.png",
-    "country": "Perú",
+    "country": "Per\u00fa",
     "kickoff": "2026-09-11T15:00:00-05:00",
     "market": "Ganador Local",
     "selection": "1",
@@ -1655,7 +1677,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 72,
-    "explanation": "Diferencial de calidad y localía (+38 Elo): UTC Cajamarca impone condiciones en posesión y presión alta ante un Juan Pablo II College que ha sufrido 1 derrotas en sus últimas salidas. Victoria directa asignada con 52.8% de probabilidad y +1% de valor.",
+    "explanation": "Diferencial de calidad y local\u00eda (+38 Elo): UTC Cajamarca impone condiciones en posesi\u00f3n y presi\u00f3n alta ante un Juan Pablo II College que ha sufrido 1 derrotas en sus \u00faltimas salidas. Victoria directa asignada con 52.8% de probabilidad y +1% de valor.",
     "status": "lost",
     "h2h": [
       {
@@ -1773,7 +1795,9 @@
     "actualScore": "1 - 2",
     "actualGoalsHome": 1,
     "actualGoalsAway": 2,
-    "settledAt": "2026-09-12T04:31:15.924Z"
+    "settledAt": "2026-09-12T04:31:15.924Z",
+    "result": "LOST",
+    "profit": -1.0
   },
   {
     "fixtureId": 1492374,
@@ -1784,7 +1808,7 @@
     "awayTeamId": 134,
     "homeLogo": "https://media.api-sports.io/football/teams/147.png",
     "awayLogo": "https://media.api-sports.io/football/teams/134.png",
-    "league": "Brasileirão Série A",
+    "league": "Brasileir\u00e3o S\u00e9rie A",
     "leagueId": 71,
     "leagueLogo": "https://media.api-sports.io/football/leagues/71.png",
     "country": "Brasil",
@@ -1803,7 +1827,7 @@
     "confidence": "Media",
     "pickBadge": "bomba",
     "smartScore": 72,
-    "explanation": "Rendimiento estelar fuera de casa: Mayor contundencia en los últimos 20 metros y mejor balance defensivo respaldan la victoria de Atletico Paranaense con un 56.9% de certeza y valor positivo (+13.4%).",
+    "explanation": "Rendimiento estelar fuera de casa: Mayor contundencia en los \u00faltimos 20 metros y mejor balance defensivo respaldan la victoria de Atletico Paranaense con un 56.9% de certeza y valor positivo (+13.4%).",
     "status": "lost",
     "h2h": [
       {
@@ -1812,7 +1836,7 @@
         "awayTeam": "Atletico Paranaense",
         "score": "1-2",
         "winner": "away",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-03-16",
@@ -1820,7 +1844,7 @@
         "awayTeam": "Coritiba",
         "score": "2-0",
         "winner": "home",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2025-09-17",
@@ -1828,7 +1852,7 @@
         "awayTeam": "Atletico Paranaense",
         "score": "1-1",
         "winner": "draw",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       }
     ],
     "homeLast5": [
@@ -1838,7 +1862,7 @@
         "isHome": false,
         "score": "1-0",
         "result": "W",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-09-03",
@@ -1846,7 +1870,7 @@
         "isHome": true,
         "score": "2-1",
         "result": "W",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-29",
@@ -1854,7 +1878,7 @@
         "isHome": false,
         "score": "0-2",
         "result": "L",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-24",
@@ -1862,7 +1886,7 @@
         "isHome": true,
         "score": "1-1",
         "result": "D",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-19",
@@ -1870,7 +1894,7 @@
         "isHome": false,
         "score": "1-0",
         "result": "W",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       }
     ],
     "awayLast5": [
@@ -1880,7 +1904,7 @@
         "isHome": false,
         "score": "2-0",
         "result": "W",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-09-03",
@@ -1888,7 +1912,7 @@
         "isHome": true,
         "score": "3-1",
         "result": "W",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-29",
@@ -1896,7 +1920,7 @@
         "isHome": false,
         "score": "1-2",
         "result": "L",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-24",
@@ -1904,7 +1928,7 @@
         "isHome": true,
         "score": "1-1",
         "result": "D",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-19",
@@ -1912,7 +1936,7 @@
         "isHome": false,
         "score": "2-0",
         "result": "W",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       }
     ],
     "homeElo": 1573,
@@ -1921,7 +1945,9 @@
     "actualScore": "3 - 3",
     "actualGoalsHome": 3,
     "actualGoalsAway": 3,
-    "settledAt": "2026-09-12T04:31:15.924Z"
+    "settledAt": "2026-09-12T04:31:15.924Z",
+    "result": "LOST",
+    "profit": -1.0
   },
   {
     "fixtureId": 1549486,
@@ -1935,10 +1961,10 @@
     "league": "Liga 1",
     "leagueId": 281,
     "leagueLogo": "https://media.api-sports.io/football/leagues/281.png",
-    "country": "Perú",
+    "country": "Per\u00fa",
     "kickoff": "2026-09-11T19:00:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "odds": 1.67,
     "bookmaker": "Bet365",
     "bookmakerOdds": 1.67,
@@ -1951,7 +1977,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 72,
-    "explanation": "Análisis cuantitativo avanzado: 55.3% de probabilidad estadística con valor positivo (+1%) frente a la cuota del mercado @1.67.",
+    "explanation": "An\u00e1lisis cuantitativo avanzado: 55.3% de probabilidad estad\u00edstica con valor positivo (+1%) frente a la cuota del mercado @1.67.",
     "status": "lost",
     "h2h": [
       {
@@ -2069,7 +2095,9 @@
     "actualScore": "0 - 1 (No)",
     "actualGoalsHome": 0,
     "actualGoalsAway": 1,
-    "settledAt": "2026-09-12T04:31:15.924Z"
+    "settledAt": "2026-09-12T04:31:15.924Z",
+    "result": "LOST",
+    "profit": -1.0
   },
   {
     "fixtureId": 1493125,
@@ -2099,7 +2127,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 72,
-    "explanation": "Dominio estadístico de Boca Juniors: La solidez defensiva del local y su promedio de más de 1.7 goles por encuentro justifican una alta certeza matemática del 62.5% para el triunfo en casa.",
+    "explanation": "Dominio estad\u00edstico de Boca Juniors: La solidez defensiva del local y su promedio de m\u00e1s de 1.7 goles por encuentro justifican una alta certeza matem\u00e1tica del 62.5% para el triunfo en casa.",
     "status": "won",
     "h2h": [
       {
@@ -2217,6 +2245,8 @@
     "actualScore": "3 - 1",
     "actualGoalsHome": 3,
     "actualGoalsAway": 1,
-    "settledAt": "2026-09-12T04:31:15.924Z"
+    "settledAt": "2026-09-12T04:31:15.924Z",
+    "result": "WON",
+    "profit": 0.42
   }
 ]

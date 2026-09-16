@@ -81,8 +81,12 @@ class SettlementEngine:
             status = SettlementStatus.WON if selection == outcome else SettlementStatus.LOST
             reason = f"match_winner_{outcome}"
         elif market == "double_chance":
-            won = (selection == "1x" and home >= away) or (selection == "x2" and away >= home)
-            if selection not in {"1x", "x2"}:
+            won = (
+                (selection == "1x" and home >= away)
+                or (selection == "x2" and away >= home)
+                or (selection == "12" and home != away)
+            )
+            if selection not in {"1x", "x2", "12"}:
                 status, reason = SettlementStatus.VOID, "unsupported_double_chance_selection"
             else:
                 status = SettlementStatus.WON if won else SettlementStatus.LOST

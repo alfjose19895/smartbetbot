@@ -294,34 +294,26 @@ export default function SignalsPage() {
     year: "numeric",
   });
 
-  // Current active date strictly in Ecuador timezone (UTC-5)
+  // Current active signals loaded from server
   const todayDateStr = getEcuadorDateString(Date.now());
-  const todaySignals = signals.filter((s) => {
-    const sDate = s.kickoff ? getEcuadorDateString(s.kickoff) : todayDateStr;
-    return sDate === todayDateStr;
-  });
+  const activeSignals = signals;
 
-  // Count matches strictly matching filter conditions exclusively for today
-  const scheduledCount = todaySignals.filter((s) => matchesStatusBadgeFilter(s, "SCHEDULED")).length;
-  const inPlayCount = todaySignals.filter((s) => matchesStatusBadgeFilter(s, "IN_PLAY")).length;
-  const finishedCount = todaySignals.filter((s) => matchesStatusBadgeFilter(s, "FINISHED")).length;
-  const wonCount = todaySignals.filter((s) => matchesStatusBadgeFilter(s, "WON")).length;
-  const lostCount = todaySignals.filter((s) => matchesStatusBadgeFilter(s, "LOST")).length;
-  const valorCount = todaySignals.filter((s) => matchesStatusBadgeFilter(s, "VALOR")).length;
-  const bombaCount = todaySignals.filter((s) => matchesStatusBadgeFilter(s, "BOMBA")).length;
-  const mcpCount = todaySignals.filter((s) => matchesStatusBadgeFilter(s, "MCP")).length;
-  const topPickCount = todaySignals.filter((s) => s.isTopPick || s.probability >= 68.0 || s.confidence === "Muy Alta").length;
-  const morningCount = todaySignals.filter((s) => (s.timeSlot === "morning" || getTimeSlot(s.kickoff) === "morning")).length;
-  const afternoonCount = todaySignals.filter((s) => (s.timeSlot === "afternoon" || getTimeSlot(s.kickoff) === "afternoon")).length;
-  const nightCount = todaySignals.filter((s) => (s.timeSlot === "night" || getTimeSlot(s.kickoff) === "night")).length;
+  // Count matches strictly matching filter conditions
+  const scheduledCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "SCHEDULED")).length;
+  const inPlayCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "IN_PLAY")).length;
+  const finishedCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "FINISHED")).length;
+  const wonCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "WON")).length;
+  const lostCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "LOST")).length;
+  const valorCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "VALOR")).length;
+  const bombaCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "BOMBA")).length;
+  const mcpCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "MCP")).length;
+  const topPickCount = activeSignals.filter((s) => s.isTopPick || s.probability >= 68.0 || s.confidence === "Muy Alta").length;
+  const morningCount = activeSignals.filter((s) => (s.timeSlot === "morning" || getTimeSlot(s.kickoff) === "morning")).length;
+  const afternoonCount = activeSignals.filter((s) => (s.timeSlot === "afternoon" || getTimeSlot(s.kickoff) === "afternoon")).length;
+  const nightCount = activeSignals.filter((s) => (s.timeSlot === "night" || getTimeSlot(s.kickoff) === "night")).length;
 
   // Filter signals strictly matching all active constraints
-  const filteredCandidates = todaySignals.filter((s) => {
-    // 0. Strict Today Date Filter
-    const sDate = s.kickoff ? getEcuadorDateString(s.kickoff) : todayDateStr;
-    if (sDate !== todayDateStr) {
-      return false;
-    }
+  const filteredCandidates = activeSignals.filter((s) => {
 
     // 0.5. Franja Horaria / Top Convicción Filter
     if (timeSlotFilter === "TOP") {
@@ -502,7 +494,7 @@ export default function SignalsPage() {
                 : "text-slate-600 hover:bg-slate-200/60 dark:text-slate-400 dark:hover:bg-slate-800"
             }`}
           >
-            🌟 Toda la Jornada ({todaySignals.length})
+            🌟 Toda la Jornada ({activeSignals.length})
           </button>
           <button
             onClick={() => setTimeSlotFilter("TOP")}

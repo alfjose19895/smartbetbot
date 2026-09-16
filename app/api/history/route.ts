@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     await settleAllSnapshotsWithRealScores().catch(() => {});
 
     const [history, parlays] = await Promise.all([
-      getHistoricalSettledPredictions(),
+      getHistoricalSettledPredictions(true),
       getHistoricalSettledParlays(),
     ]);
 

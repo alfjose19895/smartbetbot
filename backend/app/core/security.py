@@ -83,6 +83,7 @@ class SupabaseJwtVerifier:
                 algorithms=[algorithm],
                 audience=self._audience,
                 issuer=self._issuer,
+                leeway=10,
                 options={"require": ["exp", "iat", "sub", "role"]},
             )
             user_id = UUID(str(claims["sub"]))

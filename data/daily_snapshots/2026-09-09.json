@@ -26,7 +26,7 @@
     "confidence": "Media",
     "pickBadge": "bomba",
     "smartScore": 72,
-    "explanation": "Superioridad cualitativa y jerarquía de Inter Turku: A pesar de jugar fuera, su diferencial Elo (1960) y xG de 3.40 superan con claridad la estructura de HJK Helsinki. Con 3 triunfos en sus 5 salidas recientes, la victoria visitante alcanza 52.9% de probabilidad a cuota @2.55.",
+    "explanation": "Superioridad cualitativa y jerarqu\u00eda de Inter Turku: A pesar de jugar fuera, su diferencial Elo (1960) y xG de 3.40 superan con claridad la estructura de HJK Helsinki. Con 3 triunfos en sus 5 salidas recientes, la victoria visitante alcanza 52.9% de probabilidad a cuota @2.55.",
     "status": "lost",
     "h2h": [
       {
@@ -142,8 +142,8 @@
     "awayElo": 1960,
     "leagueTier": 1,
     "actualScore": "2 - 1",
-    "result": "WON",
-    "profit": 1.55,
+    "result": "LOST",
+    "profit": -1.0,
     "actualGoalsHome": 2,
     "actualGoalsAway": 1,
     "settledAt": "2026-09-12T04:31:15.899Z"
@@ -163,7 +163,7 @@
     "country": "Europa",
     "kickoff": "2026-09-09T11:45:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Ambos Anotan: Sí",
+    "selection": "Ambos Anotan: S\u00ed",
     "odds": 1.75,
     "bookmakerOdds": 1.75,
     "modelOdds": 1.7,
@@ -175,7 +175,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 99,
-    "explanation": "Feyenoord anota en el 85% de sus visitas europeas y Barcelona tiene un juego ultra ofensivo con líneas adelantadas. Cuota real Bet365 para Ambos Anotan a 1.75 con alta probabilidad estadística.",
+    "explanation": "Feyenoord anota en el 85% de sus visitas europeas y Barcelona tiene un juego ultra ofensivo con l\u00edneas adelantadas. Cuota real Bet365 para Ambos Anotan a 1.75 con alta probabilidad estad\u00edstica.",
     "status": "won",
     "h2h": [
       {
@@ -290,7 +290,7 @@
     "homeElo": 2010,
     "awayElo": 1810,
     "leagueTier": 1,
-    "actualScore": "5 - 1 (Ambos Sí)",
+    "actualScore": "5 - 1 (Ambos S\u00ed)",
     "isMcp": true,
     "isMcpPick": true,
     "source": "mcp",
@@ -328,7 +328,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 89,
-    "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con VfB Stuttgart sumando en 4 de sus últimos 5 cotejos y la vocación ofensiva de Viking, el algoritmo estima un 57.5% de certeza para más de 2.5 goles.",
+    "explanation": "Ritmo vertical y transiciones r\u00e1pidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (m\u00e1s de 1.25 goles permitidos por jornada). Con VfB Stuttgart sumando en 4 de sus \u00faltimos 5 cotejos y la vocaci\u00f3n ofensiva de Viking, el algoritmo estima un 57.5% de certeza para m\u00e1s de 2.5 goles.",
     "status": "won",
     "h2h": [
       {
@@ -478,7 +478,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 87,
-    "explanation": "Dominio estadístico de Liverpool: La solidez defensiva del local y su promedio de más de 1.7 goles por encuentro justifican una alta certeza matemática del 69.8% para el triunfo en casa.",
+    "explanation": "Dominio estad\u00edstico de Liverpool: La solidez defensiva del local y su promedio de m\u00e1s de 1.7 goles por encuentro justifican una alta certeza matem\u00e1tica del 69.8% para el triunfo en casa.",
     "status": "won",
     "h2h": [
       {
@@ -628,7 +628,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 85,
-    "explanation": "Dominio estadístico de Sporting CP: La solidez defensiva del local y su promedio de más de 1.7 goles por encuentro justifican una alta certeza matemática del 69% para el triunfo en casa.",
+    "explanation": "Dominio estad\u00edstico de Sporting CP: La solidez defensiva del local y su promedio de m\u00e1s de 1.7 goles por encuentro justifican una alta certeza matem\u00e1tica del 69% para el triunfo en casa.",
     "status": "won",
     "h2h": [
       {
@@ -778,7 +778,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 91,
-    "explanation": "Contragolpe letal y efectividad foránea: Arsenal explota los espacios concedidos por Napoli en transiciones defensivas. El algoritmo Poisson proyecta 56.5% de solvencia matemática para el triunfo visitante.",
+    "explanation": "Contragolpe letal y efectividad for\u00e1nea: Arsenal explota los espacios concedidos por Napoli en transiciones defensivas. El algoritmo Poisson proyecta 56.5% de solvencia matem\u00e1tica para el triunfo visitante.",
     "status": "won",
     "h2h": [
       {
@@ -928,7 +928,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Dinámica ofensiva y pegada en ataque: Paris Saint Germain llega con 3 victorias en sus últimos 5 compromisos y promedia 2.39 xG en casa, mientras Slovan Bratislava genera 0.82 xG como visitante. El modelo cuantitativo Poisson proyecta 3.21 goles esperados conjuntos, otorgando un sólido 56.2% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.73 (valor +1%).",
+    "explanation": "Din\u00e1mica ofensiva y pegada en ataque: Paris Saint Germain llega con 3 victorias en sus \u00faltimos 5 compromisos y promedia 2.39 xG en casa, mientras Slovan Bratislava genera 0.82 xG como visitante. El modelo cuantitativo Poisson proyecta 3.21 goles esperados conjuntos, otorgando un s\u00f3lido 56.2% de probabilidad para superar la l\u00ednea de 2.5 tantos a cuota rentable @1.73 (valor +1%).",
     "status": "won",
     "h2h": [
       {
@@ -1063,7 +1063,7 @@
     "league": "Copa Libertadores",
     "leagueId": 13,
     "leagueLogo": "https://media.api-sports.io/football/leagues/13.png",
-    "country": "Sudamérica",
+    "country": "Sudam\u00e9rica",
     "kickoff": "2026-09-09T17:00:00-05:00",
     "market": "Ganador Local",
     "selection": "Palmeiras",
@@ -1078,7 +1078,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 86,
-    "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Palmeiras con la pegada en contragolpe de LDU de Quito (2.91 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 55.6% de confianza a cuota @1.67.",
+    "explanation": "Eficacia en \u00e1reas rivales: La proyecci\u00f3n matem\u00e1tica combina la alta producci\u00f3n de llegadas claras de Palmeiras con la pegada en contragolpe de LDU de Quito (2.91 xG acumulado). El an\u00e1lisis probabil\u00edstico respalda el Over 2.5 con 55.6% de confianza a cuota @1.67.",
     "status": "won",
     "h2h": [
       {
@@ -1228,7 +1228,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 78,
-    "explanation": "Jerarquía y solvencia territorial: Philadelphia Union (Elo 1634) llega en gran momento con 2 victorias en sus 5 cotejos más recientes, superando a FC Cincinnati en xG (2.10 vs 1.04). El modelo Poisson proyecta un contundente 58.4% de probabilidad de triunfo local a cuota @1.67.",
+    "explanation": "Jerarqu\u00eda y solvencia territorial: Philadelphia Union (Elo 1634) llega en gran momento con 2 victorias en sus 5 cotejos m\u00e1s recientes, superando a FC Cincinnati en xG (2.10 vs 1.04). El modelo Poisson proyecta un contundente 58.4% de probabilidad de triunfo local a cuota @1.67.",
     "status": "won",
     "h2h": [
       {
@@ -1378,7 +1378,7 @@
     "confidence": "Media",
     "pickBadge": "bomba",
     "smartScore": 75,
-    "explanation": "Diferencial de calidad y localía (+98 Elo): Minnesota United FC impone condiciones en posesión y presión alta ante un FC Dallas que ha sufrido 2 derrotas en sus últimas salidas. Victoria directa asignada con 53.5% de probabilidad y +6.9% de valor.",
+    "explanation": "Diferencial de calidad y local\u00eda (+98 Elo): Minnesota United FC impone condiciones en posesi\u00f3n y presi\u00f3n alta ante un FC Dallas que ha sufrido 2 derrotas en sus \u00faltimas salidas. Victoria directa asignada con 53.5% de probabilidad y +6.9% de valor.",
     "status": "lost",
     "h2h": [
       {
@@ -1495,8 +1495,8 @@
     "leagueTier": 1,
     "bookmaker": "Bet365",
     "actualScore": "1 - 2",
-    "result": "WON",
-    "profit": 0.95,
+    "result": "LOST",
+    "profit": -1.0,
     "actualGoalsHome": 1,
     "actualGoalsAway": 2,
     "settledAt": "2026-09-12T04:31:15.899Z"
@@ -1528,7 +1528,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 87,
-    "explanation": "Dominio estadístico de Vancouver Whitecaps: La solidez defensiva del local y su promedio de más de 1.7 goles por encuentro justifican una alta certeza matemática del 66.2% para el triunfo en casa.",
+    "explanation": "Dominio estad\u00edstico de Vancouver Whitecaps: La solidez defensiva del local y su promedio de m\u00e1s de 1.7 goles por encuentro justifican una alta certeza matem\u00e1tica del 66.2% para el triunfo en casa.",
     "status": "won",
     "h2h": [
       {
@@ -1678,7 +1678,7 @@
     "confidence": "Alta",
     "pickBadge": "mcp",
     "smartScore": 82,
-    "explanation": "Dominio estadístico de Los Angeles FC: La solidez defensiva del local y su promedio de más de 1.7 goles por encuentro justifican una alta certeza matemática del 56.2% para el triunfo en casa.",
+    "explanation": "Dominio estad\u00edstico de Los Angeles FC: La solidez defensiva del local y su promedio de m\u00e1s de 1.7 goles por encuentro justifican una alta certeza matem\u00e1tica del 56.2% para el triunfo en casa.",
     "status": "won",
     "h2h": [
       {

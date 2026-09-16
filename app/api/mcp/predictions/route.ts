@@ -1,4 +1,38 @@
-"use server";
+export async function GET(req: Request) {
+  try {
+    const url = new URL(req.url);
+    const query = url.searchParams.get("query") || url.searchParams.get("q") || "";
+    const country = url.searchParams.get("country") || undefined;
+    const league = url.searchParams.get("league") || undefined;
+    const market = url.searchParams.get("market") || undefined;
+    const minOdds = url.searchParams.get("minOdds") ? parseFloat(url.searchParams.get("minOdds")!) : undefined;
+    const maxOdds = url.searchParams.get("maxOdds") ? parseFloat(url.searchParams.get("maxOdds")!) : undefined;
+    const minProb = url.searchParams.get("minProb") ? parseFloat(url.searchParams.get("minProb")!) : undefined;
+    const autoPublish = url.searchParams.get("autoPublish") === "true" || url.searchParams.get("publish") === "true";
+
+    const fakeReq = new Request(req.url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        query,
+        country,
+        league,
+        market,
+        minOdds,
+        maxOdds,
+        minProb,
+        autoPublish,
+      }),
+    });
+    return POST(fakeReq);
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, error: error instanceof Error ? error.message : "Error en Agente MCP GET" },
+      { status: 500 }
+    );
+  }
+}
+
 
 import { isExcludedMatch } from "@/lib/sports/prediction-engine";
 import { NextResponse } from "next/server";

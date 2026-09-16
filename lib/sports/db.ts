@@ -65,6 +65,17 @@ function getAdminClient() {
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const SNAPSHOTS_DIR = path.join(process.cwd(), "data", "daily_snapshots");
+
+export function getOpportunityKey(p: { fixtureId?: number | string; match?: string; market?: string }): string {
+  const fixId = p.fixtureId || '0';
+  const mkt = (p.market || '').toLowerCase().trim();
+  if (fixId && fixId !== '0') {
+    return `fix-${fixId}-${mkt}`;
+  }
+  const match = (p.match || '').toLowerCase().trim();
+  return `match-${match}-${mkt}`;
+}
+
 export const HISTORY_START_DATE = "2026-09-07"; // Historial oficial reiniciado desde hoy (7 de Septiembre de 2026)
 
 function ensureSnapshotsDir() {
@@ -117,32 +128,18 @@ function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
 
     const mergedMap = new Map<string, MarketOpportunity>();
 
-    // Put all existing picks first (preserving their settled status, scores, odds, badges)
+    // Put all existing picks first indexed strictly by fixtureId + mercado
     for (const p of existingPicks) {
-      const hNorm = getCanonicalTeamKey(p.homeTeam);
-      const aNorm = getCanonicalTeamKey(p.awayTeam);
-      const fixId = Number(p.fixtureId) || 0;
-      const selNorm = (p.selection || p.market || "").toLowerCase().trim();
-      const key = `${fixId}-${hNorm}-${aNorm}-${p.market}-${selNorm}`;
-      const genericKey = `${fixId}-${hNorm}-${aNorm}-${p.market}`;
+      const key = getOpportunityKey(p);
       mergedMap.set(key, p);
-      if (!mergedMap.has(genericKey)) {
-        mergedMap.set(genericKey, p);
-      }
     }
 
+    // Merge incoming picks strictly by fixtureId + mercado (updating existing or appending new)
     for (const p of picks) {
-      const hNorm = getCanonicalTeamKey(p.homeTeam);
-      const aNorm = getCanonicalTeamKey(p.awayTeam);
-      const fixId = Number(p.fixtureId) || 0;
-      const selNorm = (p.selection || p.market || "").toLowerCase().trim();
-      const key = `${fixId}-${hNorm}-${aNorm}-${p.market}-${selNorm}`;
-      const genericKey = `${fixId}-${hNorm}-${aNorm}-${p.market}`;
+      const key = getOpportunityKey(p);
 
-      const matchedKey = mergedMap.has(key) ? key : mergedMap.has(genericKey) ? genericKey : null;
-
-      if (matchedKey) {
-        const existing = mergedMap.get(matchedKey)!;
+      if (mergedMap.has(key)) {
+        const existing = mergedMap.get(key)!;
         const isSettled =
           existing.status === "won" ||
           existing.status === "lost" ||
@@ -159,7 +156,6 @@ function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
             leagueLogo: existing.leagueLogo || p.leagueLogo,
           };
           mergedMap.set(key, updated);
-          mergedMap.set(genericKey, updated);
         } else {
           // Update active pending pick without deleting its tags
           const updated = {
@@ -175,27 +171,13 @@ function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
             explanation: existing.explanation || p.explanation,
           };
           mergedMap.set(key, updated);
-          mergedMap.set(genericKey, updated);
         }
       } else {
-        // Append new pick smoothly without deleting any existing alerts
         mergedMap.set(key, p);
-        if (!mergedMap.has(genericKey)) {
-          mergedMap.set(genericKey, p);
-        }
       }
     }
 
-    // Deduplicate Map values by unique match + market
-    const uniqueMap = new Map<string, MarketOpportunity>();
-    for (const p of mergedMap.values()) {
-      const fixId = Number(p.fixtureId) || 0;
-      const hNorm = getCanonicalTeamKey(p.homeTeam);
-      const aNorm = getCanonicalTeamKey(p.awayTeam);
-      const selNorm = (p.selection || p.market || "").toLowerCase().trim();
-      const uniqueKey = `${fixId}-${hNorm}-${aNorm}-${p.market}-${selNorm}`;
-      uniqueMap.set(uniqueKey, p);
-    }
+    const uniqueMap = mergedMap;
 
     const mergedPicks = Array.from(uniqueMap.values());
     mergedPicks.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
@@ -220,6 +202,10 @@ export async function settleAllSnapshotsWithRealScores(): Promise<{ settledDates
   const nowMs = Date.now();
   const todayDateStr = getEcuadorDateString(nowMs);
   const snapshots = getAllDailySnapshots();
+  const todaySnap = loadDailySnapshot(todayDateStr) || getStoredPredictions();
+  if (todaySnap && todaySnap.length > 0 && !snapshots[todayDateStr]) {
+    snapshots[todayDateStr] = todaySnap;
+  }
   const allDates = Array.from(new Set([...Object.keys(snapshots), todayDateStr])).sort();
   
   let totalSettled = 0;
@@ -1615,6 +1601,10 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
   };
 
   const snapshots = getAllDailySnapshots();
+  const todaySnap = loadDailySnapshot(todayDateStr) || getStoredPredictions();
+  if (todaySnap && todaySnap.length > 0 && !snapshots[todayDateStr]) {
+    snapshots[todayDateStr] = todaySnap;
+  }
   const snapshotDates = Array.from(new Set([...Object.keys(snapshots), todayDateStr])).filter(
     (d) => d >= HISTORY_START_DATE
   );
@@ -1722,6 +1712,8 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
         }
       }
 
+      const isPreSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST";
+
       if (parsedHomeGoals !== null && parsedAwayGoals !== null) {
         const evaluation = evaluateMarketResult(p.market, parsedHomeGoals, parsedAwayGoals, {
           selection: p.selection,
@@ -1732,9 +1724,49 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
           probability: p.probability,
         });
 
-        const isWon = evaluation.isWon;
+        const isWon = isPreSettled ? (p.status === "won" || (p as any).result === "WON") : evaluation.isWon;
         const scoreText = p.actualScore || evaluation.actualScoreText;
-        const matchKey = `${hNorm}-${aNorm}-${trueMatchDate}-${p.market}`;
+        const matchKey = `${hNorm}-${aNorm}-${trueMatchDate}-${(p.market || '').toLowerCase().trim()}`;
+        if (!processedMatchKeys.has(matchKey)) {
+          processedMatchKeys.add(matchKey);
+          settledPicks.push({
+            id: p.id || `snapshot-settled-${hNorm}-${aNorm}-${trueMatchDate}-${p.market}`,
+            date: trueMatchDate,
+            kickoff: p.kickoff,
+            match: p.match,
+            homeTeam: p.homeTeam,
+            awayTeam: p.awayTeam,
+            homeLogo: p.homeLogo,
+            awayLogo: p.awayLogo,
+            score: scoreText,
+            league: p.league,
+            leagueLogo: p.leagueLogo,
+            country: p.country,
+            market: p.market,
+            selection: p.selection || p.market,
+            odds: p.odds,
+            fairOdds: p.fairOdds || Math.max(1.10, Math.round((100 / (p.probability || 60)) * 100) / 100),
+            edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
+            probability: p.probability,
+            confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
+            pickBadge: p.pickBadge,
+            matchTiming: isLiveMatch ? "live" : "prematch",
+            isLive: isLiveMatch,
+            isMcp: isMcpPick,
+            livePeriod: p.livePeriod,
+            liveMinute: p.liveMinute ? String(p.liveMinute) : undefined,
+            result: isWon ? "WON" : "LOST",
+            profit: isWon ? Math.round((p.odds - 1) * 100) / 100 : -1,
+            explanation: p.explanation,
+          });
+        }
+        continue;
+      }
+
+      if (isPreSettled) {
+        const isWon = p.status === "won" || (p as any).result === "WON";
+        const scoreText = p.actualScore || (isWon ? "Ganada" : "Perdida");
+        const matchKey = `${hNorm}-${aNorm}-${trueMatchDate}-${(p.market || '').toLowerCase().trim()}`;
         if (!processedMatchKeys.has(matchKey)) {
           processedMatchKeys.add(matchKey);
           settledPicks.push({

@@ -50,13 +50,13 @@ export async function GET(request: NextRequest) {
 
     if (leagueFilter) {
       predictions = predictions.filter((p) =>
-        p.league.toLowerCase().includes(leagueFilter.toLowerCase())
+        (p.league || '').toLowerCase().includes(leagueFilter.toLowerCase())
       );
     }
 
     if (marketFilter) {
       predictions = predictions.filter((p) =>
-        p.market.toLowerCase().includes(marketFilter.toLowerCase())
+        (p.market || '').toLowerCase().includes(marketFilter.toLowerCase())
       );
     }
 

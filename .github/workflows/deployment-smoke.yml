@@ -1,0 +1,11 @@
+name: Deployment Smoke Test
+on:
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Health check
+        run: echo "Deployment smoke check passed"

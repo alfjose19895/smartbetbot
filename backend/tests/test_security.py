@@ -17,7 +17,7 @@ def token_for(
     expires_at: datetime,
     role: str = "authenticated",
 ) -> str:
-    now = datetime.now(UTC)
+    now = datetime.now(UTC) - timedelta(seconds=2)
     return jwt.encode(
         {
             "sub": "11111111-1111-4111-8111-111111111111",

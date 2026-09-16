@@ -167,8 +167,8 @@ export default function HistoryPage() {
     }
 
     // 3. Result Filter (WON / LOST)
-    if (filterResult === "WON" && item.result !== "WON") return false;
-    if (filterResult === "LOST" && item.result !== "LOST") return false;
+    if (filterResult === "WON" && !isWonItem(item)) return false;
+    if (filterResult === "LOST" && !isLostItem(item)) return false;
 
     // 4. League Multi-Select
     if (selectedLeagues.length > 0) {
@@ -229,18 +229,21 @@ export default function HistoryPage() {
     return true;
   });
 
+  const isWonItem = (item: HistoricalSettledPick) => item.result === "WON" || (item as any).status === "won";
+  const isLostItem = (item: HistoricalSettledPick) => item.result === "LOST" || (item as any).status === "lost";
+
   // Exact Counts for Badges
   const prematchCount = historyItems.filter((h) => !h.isLive && h.matchTiming !== "live").length;
   const mcpCount = historyItems.filter((h) => isMcpItem(h)).length;
   const bombaCount = historyItems.filter((h) => h.pickBadge === "bomba" || h.odds >= 2.05).length;
-  const wonCount = historyItems.filter((h) => h.result === "WON").length;
-  const lostCount = historyItems.filter((h) => h.result === "LOST").length;
+  const wonCount = historyItems.filter(isWonItem).length;
+  const lostCount = historyItems.filter(isLostItem).length;
 
   // Overall Statistics from Filtered Items
   const totalSettled = filteredHistory.length;
-  const totalWon = filteredHistory.filter((i) => i.result === "WON").length;
+  const totalWon = filteredHistory.filter(isWonItem).length;
   const winRate = totalSettled > 0 ? (totalWon / totalSettled) * 100 : 0;
-  const netProfit = filteredHistory.reduce((acc, i) => acc + (i.profit || 0), 0);
+  const netProfit = filteredHistory.reduce((acc, i) => acc + (typeof i.profit === "number" ? i.profit : (isWonItem(i) ? (i.odds - 1) : -1)), 0);
   const avgOdds = totalSettled > 0
     ? (filteredHistory.reduce((acc, i) => acc + (i.odds || 0), 0) / totalSettled).toFixed(2)
     : "—";
@@ -586,19 +589,24 @@ export default function HistoryPage() {
                       </div>
 
                       {/* Result Pill */}
-                      <span
-                        className={`inline-flex items-center gap-1 rounded-xl px-2.5 py-1 text-xs font-black shadow-xs ${
-                          isWon
-                            ? "bg-emerald-600 text-white"
-                            : "bg-rose-600 text-white"
-                        }`}
-                      >
-                        <span>{isWon ? "✓" : "✗"}</span>
-                        <span>{isWon ? t("wonBadge") : t("lostBadge")}</span>
-                        <span className="text-[10px] font-bold opacity-90">
-                          ({item.profit >= 0 ? `+${item.profit.toFixed(2)}` : item.profit.toFixed(2)}u)
-                        </span>
-                      </span>
+                      {(() => {
+                        const itemProfit = typeof item.profit === "number" ? item.profit : (isWon ? (item.odds ? item.odds - 1 : 0.85) : -1);
+                        return (
+                          <span
+                            className={`inline-flex items-center gap-1 rounded-xl px-2.5 py-1 text-xs font-black shadow-xs ${
+                              isWon
+                                ? "bg-emerald-600 text-white"
+                                : "bg-rose-600 text-white"
+                            }`}
+                          >
+                            <span>{isWon ? "✓" : "✗"}</span>
+                            <span>{isWon ? t("wonBadge") : t("lostBadge")}</span>
+                            <span className="text-[10px] font-bold opacity-90">
+                              ({itemProfit >= 0 ? `+${itemProfit.toFixed(2)}` : itemProfit.toFixed(2)}u)
+                            </span>
+                          </span>
+                        );
+                      })()}
                     </div>
 
                     {/* Match & Score */}
@@ -801,7 +809,7 @@ export default function HistoryPage() {
                     <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-xs dark:border-slate-800">
                       <span className="font-bold text-slate-500">Cuota Total: @{parlay.totalOdds}</span>
                       <span className={`font-black ${isWon ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
-                        Beneficio: {parlay.profit >= 0 ? `+${parlay.profit.toFixed(2)}` : parlay.profit.toFixed(2)} u
+                        Beneficio: {(typeof parlay.profit === 'number' ? parlay.profit : (parlay.result === 'WON' ? (parlay.totalOdds - 1) : -1)) >= 0 ? `+${(typeof parlay.profit === 'number' ? parlay.profit : (parlay.result === 'WON' ? (parlay.totalOdds - 1) : -1)).toFixed(2)}` : (typeof parlay.profit === 'number' ? parlay.profit : (parlay.result === 'WON' ? (parlay.totalOdds - 1) : -1)).toFixed(2)} u
                       </span>
                     </div>
                   </div>

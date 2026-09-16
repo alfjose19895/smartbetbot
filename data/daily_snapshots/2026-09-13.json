@@ -11,7 +11,7 @@
     "league": "La Liga",
     "leagueId": 140,
     "leagueLogo": "https://media.api-sports.io/football/leagues/140.png",
-    "country": "España",
+    "country": "Espa\u00f1a",
     "leagueTier": 1,
     "kickoff": "2026-09-13T07:00:00-05:00",
     "market": "Ganador Local",
@@ -29,7 +29,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "valor",
     "smartScore": 99,
-    "explanation": "Diferencial de calidad y localía (+101 Elo): Celta Vigo impone condiciones en posesión y presión alta ante un Malaga que ha sufrido 3 derrotas en sus últimas salidas. Victoria directa asignada con 72% de probabilidad y +1.1% de valor.",
+    "explanation": "Diferencial de calidad y local\u00eda (+101 Elo): Celta Vigo impone condiciones en posesi\u00f3n y presi\u00f3n alta ante un Malaga que ha sufrido 3 derrotas en sus \u00faltimas salidas. Victoria directa asignada con 72% de probabilidad y +1.1% de valor.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -151,8 +151,10 @@
     "isTopPick": true,
     "matchTime": "2026-09-13T07:00:00-05:00",
     "result": "LOST",
-    "profit": -100,
-    "matchTiming": "finished"
+    "profit": -1.0,
+    "matchTiming": "finished",
+    "actualGoalsHome": 1,
+    "actualGoalsAway": 1
   },
   {
     "fixtureId": 1494763,
@@ -184,7 +186,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 97,
-    "explanation": "Dinámica ofensiva y pegada en ataque: Viking llega con 2 victorias en sus últimos 5 compromisos y promedia 1.92 xG en casa, mientras Kristiansund BK genera 0.99 xG como visitante. El modelo cuantitativo Poisson proyecta 2.90 goles esperados conjuntos, otorgando un sólido 64.5% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.36 (valor +1%).",
+    "explanation": "Din\u00e1mica ofensiva y pegada en ataque: Viking llega con 2 victorias en sus \u00faltimos 5 compromisos y promedia 1.92 xG en casa, mientras Kristiansund BK genera 0.99 xG como visitante. El modelo cuantitativo Poisson proyecta 2.90 goles esperados conjuntos, otorgando un s\u00f3lido 64.5% de probabilidad para superar la l\u00ednea de 2.5 tantos a cuota rentable @1.36 (valor +1%).",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -306,8 +308,10 @@
     "isTopPick": false,
     "matchTime": "2026-09-13T07:30:00-05:00",
     "result": "WON",
-    "profit": 36,
-    "matchTiming": "finished"
+    "profit": 0.36,
+    "matchTiming": "finished",
+    "actualGoalsHome": 8,
+    "actualGoalsAway": 1
   },
   {
     "fixtureId": 1561928,
@@ -342,7 +346,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 98,
-    "explanation": "Ritmo ofensivo y transición rápida: WSG Tirol y TSV Hartberg promedian más de 3.2 goles esperados combinados en Bundesliga austriaca. El modelo cuantitativo Poisson proyecta un partido abierto respaldando la línea de Over 2.5 con 69.4% de probabilidad.",
+    "explanation": "Ritmo ofensivo y transici\u00f3n r\u00e1pida: WSG Tirol y TSV Hartberg promedian m\u00e1s de 3.2 goles esperados combinados en Bundesliga austriaca. El modelo cuantitativo Poisson proyecta un partido abierto respaldando la l\u00ednea de Over 2.5 con 69.4% de probabilidad.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -463,8 +467,10 @@
     "isTopPick": true,
     "actualScore": "2 - 2 (4 Goles)",
     "result": "WON",
-    "profit": 85,
-    "matchTiming": "finished"
+    "profit": 0.85,
+    "matchTiming": "finished",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 2
   },
   {
     "fixtureId": 1552760,
@@ -496,7 +502,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Tendencia anotadora sostenida: Tanto Lille como Estac Troyes promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.89, la expectativa de un marcador con 3 o más tantos alcanza el 73% de probabilidad.",
+    "explanation": "Tendencia anotadora sostenida: Tanto Lille como Estac Troyes promedian m\u00e1s de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.89, la expectativa de un marcador con 3 o m\u00e1s tantos alcanza el 73% de probabilidad.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -618,8 +624,10 @@
     "isTopPick": true,
     "matchTime": "2026-09-13T08:00:00-05:00",
     "result": "LOST",
-    "profit": -100,
-    "matchTiming": "finished"
+    "profit": -1.0,
+    "matchTiming": "finished",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 0
   },
   {
     "fixtureId": 1560021,
@@ -633,7 +641,7 @@
     "league": "Czech Liga",
     "leagueId": 345,
     "leagueLogo": "https://media.api-sports.io/football/leagues/345.png",
-    "country": "República Checa",
+    "country": "Rep\u00fablica Checa",
     "leagueTier": 1,
     "kickoff": "2026-09-13T08:00:00-05:00",
     "market": "Over 2.5 Goles",
@@ -651,7 +659,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con Plzen sumando en 3 de sus últimos 5 cotejos y la vocación ofensiva de Sigma Olomouc, el algoritmo estima un 71% de certeza para más de 2.5 goles.",
+    "explanation": "Ritmo vertical y transiciones r\u00e1pidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (m\u00e1s de 1.25 goles permitidos por jornada). Con Plzen sumando en 3 de sus \u00faltimos 5 cotejos y la vocaci\u00f3n ofensiva de Sigma Olomouc, el algoritmo estima un 71% de certeza para m\u00e1s de 2.5 goles.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -773,8 +781,10 @@
     "isTopPick": true,
     "matchTime": "2026-09-13T08:00:00-05:00",
     "result": "WON",
-    "profit": 65,
-    "matchTiming": "finished"
+    "profit": 0.65,
+    "matchTiming": "finished",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 3
   },
   {
     "fixtureId": 1575159,
@@ -806,7 +816,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de RB Leipzig con la pegada en contragolpe de Hamburger SV (3.80 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 71.5% de confianza a cuota @1.39.",
+    "explanation": "Eficacia en \u00e1reas rivales: La proyecci\u00f3n matem\u00e1tica combina la alta producci\u00f3n de llegadas claras de RB Leipzig con la pegada en contragolpe de Hamburger SV (3.80 xG acumulado). El an\u00e1lisis probabil\u00edstico respalda el Over 2.5 con 71.5% de confianza a cuota @1.39.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -928,8 +938,10 @@
     "matchTime": "2026-09-13T08:30:00-05:00",
     "actualScore": "5 - 0 (5 Goles)",
     "result": "WON",
-    "profit": 28,
-    "matchTiming": "finished"
+    "profit": 0.28,
+    "matchTiming": "finished",
+    "actualGoalsHome": 5,
+    "actualGoalsAway": 0
   },
   {
     "fixtureId": 1549020,
@@ -961,7 +973,7 @@
     "confidence": "Alta",
     "pickBadge": "bomba",
     "smartScore": 99,
-    "explanation": "Diferencial de calidad y localía (+102 Elo): Randers FC impone condiciones en posesión y presión alta ante un Odense que ha sufrido 2 derrotas en sus últimas salidas. Victoria directa asignada con 69% de probabilidad y +1% de valor.",
+    "explanation": "Diferencial de calidad y local\u00eda (+102 Elo): Randers FC impone condiciones en posesi\u00f3n y presi\u00f3n alta ante un Odense que ha sufrido 2 derrotas en sus \u00faltimas salidas. Victoria directa asignada con 69% de probabilidad y +1% de valor.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -1083,8 +1095,10 @@
     "matchTime": "2026-09-13T09:00:00-05:00",
     "actualScore": "1 - 2",
     "result": "LOST",
-    "profit": -100,
-    "matchTiming": "finished"
+    "profit": -1.0,
+    "matchTiming": "finished",
+    "actualGoalsHome": 1,
+    "actualGoalsAway": 2
   },
   {
     "fixtureId": 1570376,
@@ -1098,7 +1112,7 @@
     "league": "La Liga",
     "leagueId": 140,
     "leagueLogo": "https://media.api-sports.io/football/leagues/140.png",
-    "country": "España",
+    "country": "Espa\u00f1a",
     "leagueTier": 1,
     "kickoff": "2026-09-13T09:15:00-05:00",
     "market": "Over 2.5 Goles",
@@ -1116,7 +1130,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Dinámica ofensiva y pegada en ataque: Levante llega con 2 victorias en sus últimos 5 compromisos y promedia 0.40 xG en casa, mientras Barcelona genera 3.40 xG como visitante. El modelo cuantitativo Poisson proyecta 3.80 goles esperados conjuntos, otorgando un sólido 71.5% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.41 (valor +1%).",
+    "explanation": "Din\u00e1mica ofensiva y pegada en ataque: Levante llega con 2 victorias en sus \u00faltimos 5 compromisos y promedia 0.40 xG en casa, mientras Barcelona genera 3.40 xG como visitante. El modelo cuantitativo Poisson proyecta 3.80 goles esperados conjuntos, otorgando un s\u00f3lido 71.5% de probabilidad para superar la l\u00ednea de 2.5 tantos a cuota rentable @1.41 (valor +1%).",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -1238,8 +1252,10 @@
     "matchTime": "2026-09-13T09:15:00-05:00",
     "actualScore": "2 - 4 (6 Goles)",
     "result": "WON",
-    "profit": 25,
-    "matchTiming": "finished"
+    "profit": 0.25,
+    "matchTiming": "finished",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 4
   },
   {
     "fixtureId": 1555394,
@@ -1271,7 +1287,7 @@
     "confidence": "Alta",
     "pickBadge": "bomba",
     "smartScore": 99,
-    "explanation": "Diferencial de calidad y localía (+88 Elo): FC Luzern impone condiciones en posesión y presión alta ante un FC Basel 1893 que ha sufrido 2 derrotas en sus últimas salidas. Victoria directa asignada con 68.3% de probabilidad y +1% de valor.",
+    "explanation": "Diferencial de calidad y local\u00eda (+88 Elo): FC Luzern impone condiciones en posesi\u00f3n y presi\u00f3n alta ante un FC Basel 1893 que ha sufrido 2 derrotas en sus \u00faltimas salidas. Victoria directa asignada con 68.3% de probabilidad y +1% de valor.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -1393,8 +1409,10 @@
     "matchTime": "2026-09-13T09:30:00-05:00",
     "actualScore": "2 - 4",
     "result": "LOST",
-    "profit": -100,
-    "matchTiming": "finished"
+    "profit": -1.0,
+    "matchTiming": "finished",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 4
   },
   {
     "fixtureId": 1565473,
@@ -1426,7 +1444,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "bomba",
     "smartScore": 99,
-    "explanation": "Dominio estadístico de Bukovyna: La solidez defensiva del local y su promedio de más de 1.7 goles por encuentro justifican una alta certeza matemática del 72.2% para el triunfo en casa.",
+    "explanation": "Dominio estad\u00edstico de Bukovyna: La solidez defensiva del local y su promedio de m\u00e1s de 1.7 goles por encuentro justifican una alta certeza matem\u00e1tica del 72.2% para el triunfo en casa.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -1548,8 +1566,10 @@
     "matchTime": "2026-09-13T10:00:00-05:00",
     "actualScore": "1 - 1",
     "result": "LOST",
-    "profit": -100,
-    "matchTiming": "finished"
+    "profit": -1.0,
+    "matchTiming": "finished",
+    "actualGoalsHome": 1,
+    "actualGoalsAway": 1
   },
   {
     "fixtureId": 1557404,
@@ -1581,7 +1601,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Manchester United con la pegada en contragolpe de Manchester City (3.90 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 73.1% de confianza a cuota @1.36.",
+    "explanation": "Eficacia en \u00e1reas rivales: La proyecci\u00f3n matem\u00e1tica combina la alta producci\u00f3n de llegadas claras de Manchester United con la pegada en contragolpe de Manchester City (3.90 xG acumulado). El an\u00e1lisis probabil\u00edstico respalda el Over 2.5 con 73.1% de confianza a cuota @1.36.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -1703,14 +1723,16 @@
     "matchTime": "2026-09-13T10:30:00-05:00",
     "actualScore": "0 - 1 (1 Goles)",
     "result": "LOST",
-    "profit": -100,
-    "matchTiming": "finished"
+    "profit": -1.0,
+    "matchTiming": "finished",
+    "actualGoalsHome": 0,
+    "actualGoalsAway": 1
   },
   {
     "fixtureId": 1575166,
-    "match": "SV Elversberg vs Bayern München",
+    "match": "SV Elversberg vs Bayern M\u00fcnchen",
     "homeTeam": "SV Elversberg",
-    "awayTeam": "Bayern München",
+    "awayTeam": "Bayern M\u00fcnchen",
     "homeTeamId": 1660,
     "awayTeamId": 157,
     "homeLogo": "https://media.api-sports.io/football/teams/1660.png",
@@ -1736,7 +1758,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Tendencia anotadora sostenida: Tanto SV Elversberg como Bayern München promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.85, la expectativa de un marcador con 3 o más tantos alcanza el 72.4% de probabilidad.",
+    "explanation": "Tendencia anotadora sostenida: Tanto SV Elversberg como Bayern M\u00fcnchen promedian m\u00e1s de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.85, la expectativa de un marcador con 3 o m\u00e1s tantos alcanza el 72.4% de probabilidad.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -1745,14 +1767,14 @@
       {
         "date": "2026-07-15",
         "homeTeam": "SV Elversberg",
-        "awayTeam": "Bayern München",
+        "awayTeam": "Bayern M\u00fcnchen",
         "score": "1-2",
         "winner": "away",
         "competition": "Bundesliga"
       },
       {
         "date": "2026-03-17",
-        "homeTeam": "Bayern München",
+        "homeTeam": "Bayern M\u00fcnchen",
         "awayTeam": "SV Elversberg",
         "score": "2-0",
         "winner": "home",
@@ -1761,7 +1783,7 @@
       {
         "date": "2025-09-18",
         "homeTeam": "SV Elversberg",
-        "awayTeam": "Bayern München",
+        "awayTeam": "Bayern M\u00fcnchen",
         "score": "1-1",
         "winner": "draw",
         "competition": "Bundesliga"
@@ -1858,8 +1880,10 @@
     "matchTime": "2026-09-13T10:30:00-05:00",
     "actualScore": "1 - 2 (3 Goles)",
     "result": "WON",
-    "profit": 12,
-    "matchTiming": "finished"
+    "profit": 0.12,
+    "matchTiming": "finished",
+    "actualGoalsHome": 1,
+    "actualGoalsAway": 2
   },
   {
     "fixtureId": 1582798,
@@ -1891,7 +1915,7 @@
     "confidence": "Alta",
     "pickBadge": "bomba",
     "smartScore": 99,
-    "explanation": "Diferencial de calidad y localía (+96 Elo): Sloga Doboj impone condiciones en posesión y presión alta ante un Zeljeznicar Sarajevo que ha sufrido 2 derrotas en sus últimas salidas. Victoria directa asignada con 69.6% de probabilidad y +1% de valor.",
+    "explanation": "Diferencial de calidad y local\u00eda (+96 Elo): Sloga Doboj impone condiciones en posesi\u00f3n y presi\u00f3n alta ante un Zeljeznicar Sarajevo que ha sufrido 2 derrotas en sus \u00faltimas salidas. Victoria directa asignada con 69.6% de probabilidad y +1% de valor.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -2013,8 +2037,10 @@
     "matchTime": "2026-09-13T11:30:00-05:00",
     "actualScore": "1 - 1",
     "result": "LOST",
-    "profit": -100,
-    "matchTiming": "finished"
+    "profit": -1.0,
+    "matchTiming": "finished",
+    "actualGoalsHome": 1,
+    "actualGoalsAway": 1
   },
   {
     "fixtureId": 1570375,
@@ -2028,7 +2054,7 @@
     "league": "La Liga",
     "leagueId": 140,
     "leagueLogo": "https://media.api-sports.io/football/leagues/140.png",
-    "country": "España",
+    "country": "Espa\u00f1a",
     "leagueTier": 1,
     "kickoff": "2026-09-13T11:30:00-05:00",
     "market": "Ganador Local",
@@ -2046,7 +2072,7 @@
     "confidence": "Alta",
     "pickBadge": "bomba",
     "smartScore": 99,
-    "explanation": "Jerarquía y solvencia territorial: Getafe (Elo 1580) llega en gran momento con 1 victorias en sus 5 cotejos más recientes, superando a Deportivo La Coruna en xG (2.16 vs 0.73). El modelo Poisson proyecta un contundente 69.2% de probabilidad de triunfo local a cuota @1.44.",
+    "explanation": "Jerarqu\u00eda y solvencia territorial: Getafe (Elo 1580) llega en gran momento con 1 victorias en sus 5 cotejos m\u00e1s recientes, superando a Deportivo La Coruna en xG (2.16 vs 0.73). El modelo Poisson proyecta un contundente 69.2% de probabilidad de triunfo local a cuota @1.44.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -2168,8 +2194,10 @@
     "matchTime": "2026-09-13T11:30:00-05:00",
     "actualScore": "1 - 1",
     "result": "LOST",
-    "profit": -100,
-    "matchTiming": "finished"
+    "profit": -1.0,
+    "matchTiming": "finished",
+    "actualGoalsHome": 1,
+    "actualGoalsAway": 1
   },
   {
     "fixtureId": 1575493,
@@ -2201,7 +2229,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Dinámica ofensiva y pegada en ataque: Benfica llega con 3 victorias en sus últimos 5 compromisos y promedia 3.40 xG en casa, mientras GIL Vicente genera 0.40 xG como visitante. El modelo cuantitativo Poisson proyecta 3.80 goles esperados conjuntos, otorgando un sólido 71.5% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.41 (valor +1%).",
+    "explanation": "Din\u00e1mica ofensiva y pegada en ataque: Benfica llega con 3 victorias en sus \u00faltimos 5 compromisos y promedia 3.40 xG en casa, mientras GIL Vicente genera 0.40 xG como visitante. El modelo cuantitativo Poisson proyecta 3.80 goles esperados conjuntos, otorgando un s\u00f3lido 71.5% de probabilidad para superar la l\u00ednea de 2.5 tantos a cuota rentable @1.41 (valor +1%).",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -2323,8 +2351,10 @@
     "matchTime": "2026-09-13T12:00:00-05:00",
     "actualScore": "3 - 1 (4 Goles)",
     "result": "WON",
-    "profit": 44,
-    "matchTiming": "finished"
+    "profit": 0.44,
+    "matchTiming": "finished",
+    "actualGoalsHome": 3,
+    "actualGoalsAway": 1
   },
   {
     "fixtureId": 1548528,
@@ -2356,7 +2386,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Dinámica ofensiva y pegada en ataque: HNK Hajduk Split llega con 3 victorias en sus últimos 5 compromisos y promedia 2.92 xG en casa, mientras NK Slaven Belupo genera 0.68 xG como visitante. El modelo cuantitativo Poisson proyecta 3.59 goles esperados conjuntos, otorgando un sólido 68.7% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.44 (valor +1%).",
+    "explanation": "Din\u00e1mica ofensiva y pegada en ataque: HNK Hajduk Split llega con 3 victorias en sus \u00faltimos 5 compromisos y promedia 2.92 xG en casa, mientras NK Slaven Belupo genera 0.68 xG como visitante. El modelo cuantitativo Poisson proyecta 3.59 goles esperados conjuntos, otorgando un s\u00f3lido 68.7% de probabilidad para superar la l\u00ednea de 2.5 tantos a cuota rentable @1.44 (valor +1%).",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -2478,8 +2508,10 @@
     "matchTime": "2026-09-13T13:00:00-05:00",
     "actualScore": "1 - 0 (1 Goles)",
     "result": "LOST",
-    "profit": -100,
-    "matchTiming": "finished"
+    "profit": -1.0,
+    "matchTiming": "finished",
+    "actualGoalsHome": 1,
+    "actualGoalsAway": 0
   },
   {
     "fixtureId": 1552757,
@@ -2511,7 +2543,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Dinámica ofensiva y pegada en ataque: Stade Brestois 29 llega con 2 victorias en sus últimos 5 compromisos y promedia 0.40 xG en casa, mientras Paris Saint Germain genera 3.40 xG como visitante. El modelo cuantitativo Poisson proyecta 3.80 goles esperados conjuntos, otorgando un sólido 71.5% de probabilidad para superar la línea de 2.5 tantos a cuota rentable @1.40 (valor +1%).",
+    "explanation": "Din\u00e1mica ofensiva y pegada en ataque: Stade Brestois 29 llega con 2 victorias en sus \u00faltimos 5 compromisos y promedia 0.40 xG en casa, mientras Paris Saint Germain genera 3.40 xG como visitante. El modelo cuantitativo Poisson proyecta 3.80 goles esperados conjuntos, otorgando un s\u00f3lido 71.5% de probabilidad para superar la l\u00ednea de 2.5 tantos a cuota rentable @1.40 (valor +1%).",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -2633,8 +2665,10 @@
     "matchTime": "2026-09-13T13:45:00-05:00",
     "actualScore": "0 - 1 (1 Goles)",
     "result": "LOST",
-    "profit": -100,
-    "matchTiming": "finished"
+    "profit": -1.0,
+    "matchTiming": "finished",
+    "actualGoalsHome": 0,
+    "actualGoalsAway": 1
   },
   {
     "fixtureId": 1490479,
@@ -2666,7 +2700,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 95,
-    "explanation": "Ritmo vertical y transiciones rápidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (más de 1.25 goles permitidos por jornada). Con Chicago Fire sumando en 2 de sus últimos 5 cotejos y la vocación ofensiva de New England Revolution, el algoritmo estima un 62.3% de certeza para más de 2.5 goles.",
+    "explanation": "Ritmo vertical y transiciones r\u00e1pidas: En sus registros recientes, ambos clubes conceden espacios en repliegue (m\u00e1s de 1.25 goles permitidos por jornada). Con Chicago Fire sumando en 2 de sus \u00faltimos 5 cotejos y la vocaci\u00f3n ofensiva de New England Revolution, el algoritmo estima un 62.3% de certeza para m\u00e1s de 2.5 goles.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -2788,8 +2822,10 @@
     "matchTime": "2026-09-13T16:30:00-05:00",
     "actualScore": "1 - 2 (3 Goles)",
     "result": "WON",
-    "profit": 48,
-    "matchTiming": "finished"
+    "profit": 0.48,
+    "matchTiming": "finished",
+    "actualGoalsHome": 1,
+    "actualGoalsAway": 2
   },
   {
     "fixtureId": 1551685,
@@ -2800,7 +2836,7 @@
     "awayTeamId": 816,
     "homeLogo": "https://media.api-sports.io/football/teams/2047.png",
     "awayLogo": "https://media.api-sports.io/football/teams/816.png",
-    "league": "Primera División (Liga FPD)",
+    "league": "Primera Divisi\u00f3n (Liga FPD)",
     "leagueId": 162,
     "leagueLogo": "https://media.api-sports.io/football/leagues/162.png",
     "country": "Costa Rica",
@@ -2821,7 +2857,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "bomba",
     "smartScore": 99,
-    "explanation": "Dominio estadístico de Sporting San Jose: La solidez defensiva del local y su promedio de más de 1.7 goles por encuentro justifican una alta certeza matemática del 74.6% para el triunfo en casa.",
+    "explanation": "Dominio estad\u00edstico de Sporting San Jose: La solidez defensiva del local y su promedio de m\u00e1s de 1.7 goles por encuentro justifican una alta certeza matem\u00e1tica del 74.6% para el triunfo en casa.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -2833,7 +2869,7 @@
         "awayTeam": "Deportivo Saprissa",
         "score": "2-1",
         "winner": "home",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-03-17",
@@ -2841,7 +2877,7 @@
         "awayTeam": "Sporting San Jose",
         "score": "0-2",
         "winner": "away",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2025-09-18",
@@ -2849,7 +2885,7 @@
         "awayTeam": "Deportivo Saprissa",
         "score": "3-0",
         "winner": "home",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       }
     ],
     "homeLast5": [
@@ -2859,7 +2895,7 @@
         "isHome": false,
         "score": "0-2",
         "result": "L",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-09-04",
@@ -2867,7 +2903,7 @@
         "isHome": true,
         "score": "1-1",
         "result": "D",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-08-30",
@@ -2875,7 +2911,7 @@
         "isHome": false,
         "score": "1-0",
         "result": "W",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-08-25",
@@ -2883,7 +2919,7 @@
         "isHome": true,
         "score": "2-1",
         "result": "W",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-08-20",
@@ -2891,7 +2927,7 @@
         "isHome": false,
         "score": "0-2",
         "result": "L",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       }
     ],
     "awayLast5": [
@@ -2901,7 +2937,7 @@
         "isHome": true,
         "score": "0-2",
         "result": "L",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-09-04",
@@ -2909,7 +2945,7 @@
         "isHome": false,
         "score": "0-0",
         "result": "D",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-08-30",
@@ -2917,7 +2953,7 @@
         "isHome": true,
         "score": "1-0",
         "result": "W",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-08-25",
@@ -2925,7 +2961,7 @@
         "isHome": false,
         "score": "1-3",
         "result": "L",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-08-20",
@@ -2933,7 +2969,7 @@
         "isHome": true,
         "score": "0-0",
         "result": "D",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       }
     ],
     "homeElo": 1649,
@@ -2943,8 +2979,10 @@
     "matchTime": "2026-09-13T17:00:00-05:00",
     "actualScore": "4 - 2",
     "result": "WON",
-    "profit": 138,
-    "matchTiming": "finished"
+    "profit": 1.38,
+    "matchTiming": "finished",
+    "actualGoalsHome": 4,
+    "actualGoalsAway": 2
   },
   {
     "fixtureId": 1490478,
@@ -2976,7 +3014,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 97,
-    "explanation": "Tendencia anotadora sostenida: Tanto Vancouver Whitecaps como Austin promedian más de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.08, la expectativa de un marcador con 3 o más tantos alcanza el 64.4% de probabilidad.",
+    "explanation": "Tendencia anotadora sostenida: Tanto Vancouver Whitecaps como Austin promedian m\u00e1s de 4.2 remates a puerta por partido en sus respectivas ligas. Con un xG global de 3.08, la expectativa de un marcador con 3 o m\u00e1s tantos alcanza el 64.4% de probabilidad.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -3098,7 +3136,9 @@
     "matchTime": "2026-09-13T17:30:00-05:00",
     "actualScore": "1 - 2 (3 Goles)",
     "result": "WON",
-    "profit": 40,
-    "matchTiming": "finished"
+    "profit": 0.4,
+    "matchTiming": "finished",
+    "actualGoalsHome": 1,
+    "actualGoalsAway": 2
   }
 ]
