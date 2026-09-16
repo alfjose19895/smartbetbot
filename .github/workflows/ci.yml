@@ -8,28 +8,54 @@ on:
 jobs:
   test-and-lint:
     runs-on: ubuntu-latest
+    env:
+      CI: "true"
+      NODE_ENV: "test"
+      NEXT_PUBLIC_SUPABASE_URL: "https://mock.supabase.co"
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "mock-anon-key-012345678901234567890123456789"
+      SUPABASE_SERVICE_ROLE_KEY: "mock-service-role-key-012345678901234567890123456789"
+      API_FOOTBALL_KEY: "mock-api-football-key"
+      GEMINI_API_KEY: "mock-gemini-key"
+      JWT_SECRET_KEY: "mock-jwt-secret-key-at-least-32-chars-long"
     steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-      - name: Install pnpm
-        run: corepack enable && corepack prepare pnpm@latest --activate
-      - name: Install dependencies
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install Node dependencies
         run: pnpm install --no-frozen-lockfile
-      - name: Run frontend tests
-        run: pnpm test --run
+
+      - name: Run frontend test suite
+        run: pnpm vitest run
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: backend/requirements.txt
+
       - name: Install backend dependencies
         run: |
           cd backend
           python -m pip install --upgrade pip
-          pip install -r requirements.lock || pip install pytest ruff fastapi sqlalchemy
+          pip install -r requirements.txt
+
       - name: Run backend tests
+        env:
+          JWT_SECRET_KEY: "mock-jwt-secret-key-at-least-32-chars-long"
+          SUPABASE_URL: "https://mock.supabase.co"
+          SUPABASE_SERVICE_KEY: "mock-service-role-key"
         run: |
           cd backend
           pytest
