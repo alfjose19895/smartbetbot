@@ -509,10 +509,32 @@ const HISTORY_CACHE_TTL_MS = 3 * 60 * 1000; // 3 minutes
  * Checks if a fixture's league belongs to our curated supported leagues catalog.
  */
 export function isCuratedLeague(leagueId?: number, leagueName?: string, country?: string): boolean {
-  if (leagueId && ALL_LEAGUE_IDS.includes(leagueId)) return true;
+  if (leagueId) {
+    return ALL_LEAGUE_IDS.includes(leagueId);
+  }
   if (!leagueName) return false;
   const norm = leagueName.toLowerCase().trim();
   const normCountry = (country || "").toLowerCase().trim();
+
+  // Strictly reject youth, amateur, regional, reserve leagues
+  if (
+    norm.includes("u19") ||
+    norm.includes("u20") ||
+    norm.includes("u21") ||
+    norm.includes("u23") ||
+    norm.includes("primavera") ||
+    norm.includes("reserve") ||
+    norm.includes("development") ||
+    norm.includes("isthmian") ||
+    norm.includes("girone") ||
+    norm.includes("lowland") ||
+    norm.includes("regional") ||
+    norm.includes("paulista") ||
+    norm.includes("santa catarina") ||
+    norm.includes("cfl")
+  ) {
+    return false;
+  }
 
   if (normCountry) {
     return SUPPORTED_LEAGUES.some((sl) => {
@@ -1069,7 +1091,7 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
   // Daily alert strategy: Dynamic Mathematical Quality Gate (prob >= 52%, edge >= 1%, odds 1.25-3.50)
   const dailyLimit = getDailyAlertLimit(new Date());
   const qualifiedPicks = rankedPicks.filter(isQualifiedOpportunity);
-  const candidatesToUse = qualifiedPicks.length >= 10 ? qualifiedPicks : rankedPicks.slice(0, Math.max(dailyLimit, 25));
+  const candidatesToUse = qualifiedPicks.length > 0 ? qualifiedPicks.slice(0, Math.max(dailyLimit, 20)) : rankedPicks.slice(0, Math.max(dailyLimit, 20));
 
   const initialTopPicks: MarketOpportunity[] = candidatesToUse.map((p) => {
     const prob = p.probability || 50;

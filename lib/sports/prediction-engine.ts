@@ -407,15 +407,31 @@ export function normalizeLeagueInfo(
     return { canonicalLeague: "Premier League (Kuwait)", country: "Kuwait", tier: 3 };
   }
 
-  // Tier 1: Top 5 European Leagues & UEFA Competitions
-  if (norm.includes("champions league") || norm.includes("ucl")) {
+  // Tier 1: Continental Cups & UEFA Competitions
+  if (norm.includes("afc") || (norm.includes("champions") && (normCountry.includes("asia") || normCountry.includes("china") || normCountry.includes("japan") || normCountry.includes("korea"))) || leagueId === 17 || leagueId === 18) {
+    if (norm.includes("2") || leagueId === 18) return { canonicalLeague: "AFC Champions League Two", country: "Asia", tier: 2 };
+    return { canonicalLeague: "AFC Champions League Elite", country: "Asia", tier: 1 };
+  }
+  if (norm.includes("concacaf") || normCountry.includes("concacaf")) {
+    return { canonicalLeague: "CONCACAF Champions Cup", country: "Norteamérica", tier: 1 };
+  }
+  if (norm.includes("caf") || normCountry.includes("africa") || normCountry.includes("áfrica")) {
+    return { canonicalLeague: "CAF Champions League", country: "África", tier: 1 };
+  }
+  if (norm.includes("uefa champions league") || norm === "champions league" || norm === "ucl" || leagueId === 2) {
     return { canonicalLeague: "UEFA Champions League", country: "Europa", tier: 1 };
   }
-  if (norm.includes("europa league") || norm.includes("uel")) {
+  if (norm.includes("uefa europa league") || norm === "europa league" || norm === "uel" || leagueId === 3) {
     return { canonicalLeague: "UEFA Europa League", country: "Europa", tier: 1 };
   }
-  if (norm.includes("conference league")) {
+  if (norm.includes("conference league") || leagueId === 848) {
     return { canonicalLeague: "UEFA Conference League", country: "Europa", tier: 1 };
+  }
+  if (norm.includes("copa libertadores") || leagueId === 13) {
+    return { canonicalLeague: "Copa Libertadores", country: "Sudamérica", tier: 1 };
+  }
+  if (norm.includes("copa sudamericana") || leagueId === 11) {
+    return { canonicalLeague: "Copa Sudamericana", country: "Sudamérica", tier: 1 };
   }
 
   // England specifically
