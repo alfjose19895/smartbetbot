@@ -558,6 +558,30 @@ export function normalizeLeagueInfo(
   if (normCountry.includes("bolivia")) {
     return { canonicalLeague: "Primera División", country: "Bolivia", tier: 2 };
   }
+  if (normCountry.includes("uruguay")) {
+    if (norm.includes("segunda")) return { canonicalLeague: "Segunda División", country: "Uruguay", tier: 2 };
+    return { canonicalLeague: "Primera División", country: "Uruguay", tier: 1 };
+  }
+  if (normCountry.includes("paraguay")) {
+    if (norm.includes("intermedia")) return { canonicalLeague: "Division Intermedia", country: "Paraguay", tier: 2 };
+    return { canonicalLeague: "Primera División", country: "Paraguay", tier: 1 };
+  }
+  if (normCountry.includes("chile")) {
+    if (norm.includes("primera b") || norm.includes("segunda")) return { canonicalLeague: "Primera B", country: "Chile", tier: 2 };
+    return { canonicalLeague: "Primera División", country: "Chile", tier: 1 };
+  }
+  if (normCountry.includes("peru") || normCountry.includes("perú")) {
+    if (norm.includes("2") || norm.includes("segunda")) return { canonicalLeague: "Segunda División", country: "Perú", tier: 2 };
+    return { canonicalLeague: "Liga 1", country: "Perú", tier: 1 };
+  }
+  if (normCountry.includes("colombia")) {
+    if (norm.includes("primera b") || norm.includes("torneo")) return { canonicalLeague: "Primera B", country: "Colombia", tier: 2 };
+    return { canonicalLeague: "Primera A", country: "Colombia", tier: 1 };
+  }
+  if (normCountry.includes("indonesia")) {
+    if (norm.includes("2") || norm.includes("liga 2")) return { canonicalLeague: "Liga 2", country: "Indonesia", tier: 3 };
+    return { canonicalLeague: "Liga 1", country: "Indonesia", tier: 2 };
+  }
   if (norm.includes("liga mx") || normCountry.includes("mexico")) {
     return { canonicalLeague: "Liga MX", country: "México", tier: 2 };
   }
