@@ -338,10 +338,9 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string): Prom
         const newStatus: "won" | "lost" = evaluation.isWon ? "won" : "lost";
         const newScore = evaluation.actualScoreText;
         const newResult: "WON" | "LOST" = evaluation.isWon ? "WON" : "LOST";
-        const unitStake = (p as any).unitStake || 100;
         const newProfit = evaluation.isWon
-          ? Number(((p.odds - 1) * unitStake).toFixed(2))
-          : -Number(unitStake);
+          ? Number((p.odds - 1).toFixed(2))
+          : -1;
 
         if (p.status !== newStatus || p.actualScore !== newScore || (p as any).result !== newResult) {
           hasUpdates = true;
