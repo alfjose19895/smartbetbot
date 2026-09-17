@@ -65,6 +65,7 @@ function getAdminClient() {
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const SNAPSHOTS_DIR = path.join(process.cwd(), "data", "daily_snapshots");
+const memorySnapshots: Record<string, MarketOpportunity[]> = {};
 
 export function getOpportunityKey(p: { fixtureId?: number | string; match?: string; market?: string }): string {
   const fixId = p.fixtureId || '0';
@@ -89,6 +90,9 @@ function ensureSnapshotsDir() {
 }
 
 export function loadDailySnapshot(dateStr: string): MarketOpportunity[] | null {
+  if (memorySnapshots[dateStr] && Array.isArray(memorySnapshots[dateStr]) && memorySnapshots[dateStr].length > 0) {
+    return memorySnapshots[dateStr].filter((p) => !isExcludedMatch(p.homeTeam, p.awayTeam, p.match));
+  }
   try {
     ensureSnapshotsDir();
     const filePath = path.join(SNAPSHOTS_DIR, `${dateStr}.json`);
@@ -96,7 +100,9 @@ export function loadDailySnapshot(dateStr: string): MarketOpportunity[] | null {
       const data = fs.readFileSync(filePath, "utf-8");
       const picks = JSON.parse(data);
       if (Array.isArray(picks)) {
-        return picks.filter((p) => !isExcludedMatch(p.homeTeam, p.awayTeam, p.match));
+        const filtered = picks.filter((p) => !isExcludedMatch(p.homeTeam, p.awayTeam, p.match));
+        memorySnapshots[dateStr] = filtered;
+        return filtered;
       }
     }
   } catch (err) {
@@ -105,18 +111,44 @@ export function loadDailySnapshot(dateStr: string): MarketOpportunity[] | null {
   return null;
 }
 
+export async function loadDailySnapshotAsync(dateStr: string): Promise<MarketOpportunity[] | null> {
+  const syncSnap = loadDailySnapshot(dateStr);
+  if (syncSnap && syncSnap.length > 0) return syncSnap;
+
+  // Supabase cloud database fetch (guarantees persistence on Vercel Serverless)
+  const supabase = getAdminClient();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("daily_snapshots")
+        .select("picks")
+        .eq("date", dateStr)
+        .maybeSingle();
+      if (!error && data && Array.isArray(data.picks) && data.picks.length > 0) {
+        const filtered = data.picks.filter((p: any) => !isExcludedMatch(p.homeTeam, p.awayTeam, p.match));
+        memorySnapshots[dateStr] = filtered;
+        return filtered;
+      }
+    } catch (err) {
+      console.warn(`[Supabase] Error loading daily snapshot for ${dateStr}:`, err);
+    }
+  }
+  return null;
+}
+
 function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
   // Never write disk snapshots during test execution to prevent test mocks from polluting production data
   if (process.env.VITEST || process.env.NODE_ENV === "test") {
+    memorySnapshots[dateStr] = picks;
     return;
   }
   try {
     ensureSnapshotsDir();
     const filePath = path.join(SNAPSHOTS_DIR, `${dateStr}.json`);
 
-    // Load existing picks if file already exists so we NEVER delete previously given alerts
-    let existingPicks: MarketOpportunity[] = [];
-    if (fs.existsSync(filePath)) {
+    // Load existing picks if file or memory already exists so we NEVER delete previously given alerts
+    let existingPicks: MarketOpportunity[] = memorySnapshots[dateStr] || [];
+    if (existingPicks.length === 0 && fs.existsSync(filePath)) {
       try {
         const raw = fs.readFileSync(filePath, "utf-8");
         const parsed = JSON.parse(raw);
@@ -182,7 +214,34 @@ function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
     const mergedPicks = Array.from(uniqueMap.values());
     mergedPicks.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
 
-    fs.writeFileSync(filePath, JSON.stringify(mergedPicks, null, 2), "utf-8");
+    memorySnapshots[dateStr] = mergedPicks;
+
+    try {
+      fs.writeFileSync(filePath, JSON.stringify(mergedPicks, null, 2), "utf-8");
+    } catch {}
+
+    // Synchronize to Supabase Cloud Database (guarantees persistence across Vercel serverless functions)
+    const supabase = getAdminClient();
+    if (supabase) {
+      supabase
+        .from("daily_snapshots")
+        .upsert(
+          {
+            date: dateStr,
+            picks: mergedPicks,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "date" }
+        )
+        .then(({ error }) => {
+          if (error) {
+            console.warn(`[Supabase] Error saving daily snapshot for ${dateStr}:`, error.message);
+          }
+        })
+        .catch((dbErr) => {
+          console.warn(`[Supabase] Exception upserting daily snapshot for ${dateStr}:`, dbErr);
+        });
+    }
   } catch (err) {
     console.warn(`Could not save daily snapshot for ${dateStr}:`, err);
   }
@@ -201,7 +260,7 @@ function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
 export async function settleAllSnapshotsWithRealScores(): Promise<{ settledDates: string[]; totalSettled: number }> {
   const nowMs = Date.now();
   const todayDateStr = getEcuadorDateString(nowMs);
-  const snapshots = getAllDailySnapshots();
+  const snapshots = await getAllDailySnapshotsAsync();
   const todaySnap = loadDailySnapshot(todayDateStr) || getStoredPredictions();
   if (todaySnap && todaySnap.length > 0 && !snapshots[todayDateStr]) {
     snapshots[todayDateStr] = todaySnap;
@@ -415,8 +474,17 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string): Prom
   }
 }
 
-function getAllDailySnapshots(): Record<string, MarketOpportunity[]> {
+export async function getAllDailySnapshotsAsync(): Promise<Record<string, MarketOpportunity[]>> {
   const result: Record<string, MarketOpportunity[]> = {};
+
+  // 1. Memory snapshots
+  for (const [d, p] of Object.entries(memorySnapshots)) {
+    if (d >= HISTORY_START_DATE && Array.isArray(p) && p.length > 0) {
+      result[d] = p;
+    }
+  }
+
+  // 2. Disk snapshots
   try {
     ensureSnapshotsDir();
     const files = fs.readdirSync(SNAPSHOTS_DIR);
@@ -428,17 +496,64 @@ function getAllDailySnapshots(): Record<string, MarketOpportunity[]> {
         try {
           const content = fs.readFileSync(filePath, "utf-8");
           const parsed = JSON.parse(content);
-          if (Array.isArray(parsed)) {
+          if (Array.isArray(parsed) && parsed.length > 0) {
             result[dateStr] = parsed;
+            memorySnapshots[dateStr] = parsed;
           }
-        } catch {
-          // ignore
-        }
+        } catch {}
       }
     }
-  } catch (err) {
-    console.warn("Could not read snapshots dir:", err);
+  } catch {}
+
+  // 3. Supabase Cloud Database snapshots (authoritative across all Vercel Lambdas)
+  const supabase = getAdminClient();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("daily_snapshots")
+        .select("date, picks")
+        .gte("date", HISTORY_START_DATE);
+      if (!error && Array.isArray(data)) {
+        for (const row of data) {
+          if (row.date && Array.isArray(row.picks) && row.picks.length > 0) {
+            result[row.date] = row.picks;
+            memorySnapshots[row.date] = row.picks;
+          }
+        }
+      }
+    } catch (dbErr) {
+      console.warn("[Supabase] Error fetching all snapshots:", dbErr);
+    }
   }
+
+  return result;
+}
+
+function getAllDailySnapshots(): Record<string, MarketOpportunity[]> {
+  const result: Record<string, MarketOpportunity[]> = {};
+  for (const [d, p] of Object.entries(memorySnapshots)) {
+    if (d >= HISTORY_START_DATE && Array.isArray(p) && p.length > 0) {
+      result[d] = p;
+    }
+  }
+  try {
+    ensureSnapshotsDir();
+    const files = fs.readdirSync(SNAPSHOTS_DIR);
+    for (const f of files) {
+      if (f.endsWith(".json")) {
+        const dateStr = f.replace(".json", "");
+        if (dateStr < HISTORY_START_DATE) continue;
+        const filePath = path.join(SNAPSHOTS_DIR, f);
+        try {
+          const content = fs.readFileSync(filePath, "utf-8");
+          const parsed = JSON.parse(content);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            result[dateStr] = parsed;
+          }
+        } catch {}
+      }
+    }
+  } catch {}
   return result;
 }
 
@@ -1621,7 +1736,7 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
     }
   };
 
-  const snapshots = getAllDailySnapshots();
+  const snapshots = await getAllDailySnapshotsAsync();
   const todaySnap = loadDailySnapshot(todayDateStr) || getStoredPredictions();
   if (todaySnap && todaySnap.length > 0 && !snapshots[todayDateStr]) {
     snapshots[todayDateStr] = todaySnap;

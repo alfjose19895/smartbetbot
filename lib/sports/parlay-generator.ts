@@ -249,6 +249,25 @@ export function getImmutableDailyParlays(
 
       safeWriteParlaysFile(parlaysFile, diskData);
       safeWriteParlaysFile(tmpParlaysFile, tmpData);
+
+      // Cloud database sync (Vercel Serverless persistence)
+      try {
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const supabaseKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+        if (supabaseUrl && supabaseKey) {
+          const { createClient } = eval("require")("@supabase/supabase-js");
+          const supabase = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
+          supabase
+            .from("daily_snapshots")
+            .upsert({
+              date: targetDate,
+              parlays: generated,
+              updated_at: new Date().toISOString(),
+            }, { onConflict: "date" })
+            .then(() => {})
+            .catch(() => {});
+        }
+      } catch {}
     }
   }
 

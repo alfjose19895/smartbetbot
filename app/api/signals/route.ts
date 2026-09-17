@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   generatePredictionsForUpcoming,
   getStoredPredictions,
+  loadDailySnapshotAsync,
   getEcuadorDateString,
   settleActiveSnapshotWithRealScores,
   settleAllSnapshotsWithRealScores,
@@ -38,7 +39,10 @@ export async function GET(request: NextRequest) {
       }
     } else {
       predictions = getStoredPredictions();
-      // If store is completely empty, initialize once
+      if (!predictions || predictions.length === 0) {
+        predictions = (await loadDailySnapshotAsync(todayDateStr)) || [];
+      }
+      // If store and cloud database are completely empty, initialize once
       if (!predictions || predictions.length === 0) {
         try {
           predictions = await generatePredictionsForUpcoming(undefined, false);
