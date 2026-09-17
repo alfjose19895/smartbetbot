@@ -223,24 +223,25 @@ function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
     // Synchronize to Supabase Cloud Database (guarantees persistence across Vercel serverless functions)
     const supabase = getAdminClient();
     if (supabase) {
-      supabase
-        .from("daily_snapshots")
-        .upsert(
-          {
-            date: dateStr,
-            picks: mergedPicks,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: "date" }
-        )
-        .then(({ error }) => {
+      (async () => {
+        try {
+          const { error } = await supabase
+            .from("daily_snapshots")
+            .upsert(
+              {
+                date: dateStr,
+                picks: mergedPicks,
+                updated_at: new Date().toISOString(),
+              },
+              { onConflict: "date" }
+            );
           if (error) {
             console.warn(`[Supabase] Error saving daily snapshot for ${dateStr}:`, error.message);
           }
-        })
-        .catch((dbErr) => {
+        } catch (dbErr) {
           console.warn(`[Supabase] Exception upserting daily snapshot for ${dateStr}:`, dbErr);
-        });
+        }
+      })();
     }
   } catch (err) {
     console.warn(`Could not save daily snapshot for ${dateStr}:`, err);

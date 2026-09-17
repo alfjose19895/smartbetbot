@@ -257,15 +257,17 @@ export function getImmutableDailyParlays(
         if (supabaseUrl && supabaseKey) {
           const { createClient } = eval("require")("@supabase/supabase-js");
           const supabase = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
-          supabase
-            .from("daily_snapshots")
-            .upsert({
-              date: targetDate,
-              parlays: generated,
-              updated_at: new Date().toISOString(),
-            }, { onConflict: "date" })
-            .then(() => {})
-            .catch(() => {});
+          (async () => {
+            try {
+              await supabase
+                .from("daily_snapshots")
+                .upsert({
+                  date: targetDate,
+                  parlays: generated,
+                  updated_at: new Date().toISOString(),
+                }, { onConflict: "date" });
+            } catch {}
+          })();
         }
       } catch {}
     }
