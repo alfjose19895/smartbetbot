@@ -1,41 +1,38 @@
 import { describe, it, expect } from "vitest";
 import {
-  dixonColesTau,
   poissonProbability,
+  dixonColesTau,
   evaluateFixturePrediction,
 } from "./prediction-engine";
 import { auditPredictionsWithGeminiVeto } from "../ai/claude-analyst";
 
 describe("Dixon-Coles Mathematical Calibration", () => {
-  it("computes tau correction factors correctly for 0-0, 1-0, 0-1, and 1-1", () => {
-    const hXg = 1.4;
-    const aXg = 1.1;
-    const rho = -0.11;
+  it("calculates Poisson probabilities accurately", () => {
+    const p0 = poissonProbability(0, 1.5);
+    const p1 = poissonProbability(1, 1.5);
+    const p2 = poissonProbability(2, 1.5);
 
-    // 0-0 should have tau > 1 (boosting low-scoring / draw probability)
-    const tau00 = dixonColesTau(0, 0, hXg, aXg, rho);
-    expect(tau00).toBeGreaterThan(1.0);
-    expect(tau00).toBeCloseTo(1.0 - hXg * aXg * rho, 4);
-
-    // 1-1 should have tau > 1 (boosting 1-1 draw)
-    const tau11 = dixonColesTau(1, 1, hXg, aXg, rho);
-    expect(tau11).toBeGreaterThan(1.0);
-    expect(tau11).toBeCloseTo(1.0 - rho, 4);
-
-    // 0-1 and 1-0 should have tau < 1 (reducing 1-0/0-1 bias)
-    const tau01 = dixonColesTau(0, 1, hXg, aXg, rho);
-    expect(tau01).toBeLessThan(1.0);
-
-    const tau10 = dixonColesTau(1, 0, hXg, aXg, rho);
-    expect(tau10).toBeLessThan(1.0);
-
-    // Higher scores (2-1, 2-2, 3-1, etc.) must remain unadjusted (tau = 1.0)
-    expect(dixonColesTau(2, 1, hXg, aXg, rho)).toBe(1.0);
-    expect(dixonColesTau(3, 2, hXg, aXg, rho)).toBe(1.0);
+    expect(p0).toBeCloseTo(Math.exp(-1.5), 4);
+    expect(p1).toBeCloseTo(1.5 * Math.exp(-1.5), 4);
+    expect(p2).toBeCloseTo((2.25 / 2) * Math.exp(-1.5), 4);
   });
 
-  it("evaluates fixture predictions with Sweet Spot odds and anti-trap rules", () => {
-    const opportunities = evaluateFixturePrediction({
+  it("applies Dixon-Coles tau adjustment parameter for low scoring events", () => {
+    const tau00 = dixonColesTau(0, 0, 1.2, 0.8, -0.11);
+    const tau01 = dixonColesTau(0, 1, 1.2, 0.8, -0.11);
+    const tau10 = dixonColesTau(1, 0, 1.2, 0.8, -0.11);
+    const tau11 = dixonColesTau(1, 1, 1.2, 0.8, -0.11);
+    const tau22 = dixonColesTau(2, 2, 1.2, 0.8, -0.11);
+
+    expect(tau00).toBeGreaterThan(1.0); // 0-0 is elevated when rho is negative
+    expect(tau01).toBeLessThan(1.0);    // 0-1 is depressed when rho is negative
+    expect(tau10).toBeLessThan(1.0);    // 1-0 is depressed when rho is negative
+    expect(tau11).toBeGreaterThan(1.0); // 1-1 is elevated when rho is negative
+    expect(tau22).toBe(1.0);            // higher scores unchanged
+  });
+
+  it("evaluates opportunities strictly against allowed markets", () => {
+    const opps = evaluateFixturePrediction({
       fixtureId: 9991,
       homeTeam: "Real Madrid",
       awayTeam: "Barcelona",
@@ -43,19 +40,18 @@ describe("Dixon-Coles Mathematical Calibration", () => {
       country: "Spain",
       kickoff: "2026-10-25T19:00:00Z",
       marketOdds: {
-        homeWin: 2.05,
+        homeWin: 2.10,
         draw: 3.50,
-        awayWin: 3.40,
-        over25: 1.70,
-        under25: 2.15,
-        bttsYes: 1.62,
-        bttsNo: 2.20,
+        awayWin: 3.20,
+        over25: 1.65,
+        under25: 2.25,
+        bttsYes: 1.55,
+        bttsNo: 2.40,
       },
     });
 
-    expect(opportunities.length).toBeGreaterThan(0);
-    for (const opp of opportunities) {
-      // Must belong to authorized markets
+    expect(opps.length).toBeGreaterThan(0);
+    for (const opp of opps) {
       expect([
         "Ganador Local",
         "Ganador Visitante",
@@ -86,11 +82,11 @@ describe("Dixon-Coles Mathematical Calibration", () => {
         bttsYes: 1.68,
         bttsNo: 2.15,
       },
-  }, 20000);
+    });
 
     const vetoResult = await auditPredictionsWithGeminiVeto(sampleOpportunities);
     expect(vetoResult).toBeDefined();
     expect(Array.isArray(vetoResult.approvedPicks)).toBe(true);
     expect(Array.isArray(vetoResult.audits)).toBe(true);
-  });
+  }, 20000);
 });

@@ -1,4 +1,4 @@
-﻿import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vitest";
 import {
   loadDailySnapshotAsync,
   getAllDailySnapshotsAsync,
@@ -43,5 +43,5 @@ describe("Supabase Cloud Database Resilience Test", () => {
     expect(p16.length).toBe(3);
     console.log(`Parlays 2026-09-15: ${p15.length} parlays`);
     console.log(`Parlays 2026-09-16: ${p16.length} parlays`);
-  });
+  }, 25000);
 });

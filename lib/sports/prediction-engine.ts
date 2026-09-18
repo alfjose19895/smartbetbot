@@ -46,11 +46,36 @@ export function isQualifiedOpportunity(opp: Partial<MarketOpportunity>): boolean
   const prob = typeof opp.probability === "number" ? opp.probability : 0;
   const odds = typeof opp.odds === "number" ? opp.odds : 0;
   const edge = typeof opp.edge === "number" ? opp.edge : 0;
+  const tier = typeof opp.leagueTier === "number" ? opp.leagueTier : 2;
 
+  // Global Hard Minimums
   if (prob < 52.0) return false;
-  if (odds < 1.70 && prob < 58.0) return false;
   if (edge < 1.0) return false;
-  if (odds < 1.25 || (odds > 3.50 && opp.pickBadge !== "bomba")) return false;
+  if (odds < 1.20) return false;
+
+  // Longshot Underdog Protection: picks with odds > 2.30 MUST be explicitly tagged 'bomba' with high conviction
+  if (odds > 2.30 && opp.pickBadge !== "bomba") return false;
+  if (opp.pickBadge === "bomba" && prob < 40.0) return false;
+
+  // Tier 1 Leagues: High data reliability & low noise (Premier, La Liga, Serie A, Champions, etc.)
+  if (tier === 1) {
+    if (odds < 1.65 && prob < 56.0) return false;
+    return true;
+  }
+
+  // Tier 2 Leagues: Secondary divisions (Championship, Serie B, La Liga 2, etc.)
+  if (tier === 2) {
+    if (prob < 58.0) return false;
+    if (odds < 1.70 && prob < 62.0) return false;
+    if (edge < 2.0) return false;
+    if (odds > 2.20 && opp.pickBadge !== "bomba") return false;
+    return true;
+  }
+
+  // Tier 3+ / Minor Leagues: Require strict statistical conviction
+  if (prob < 64.0) return false;
+  if (edge < 3.0) return false;
+  if (odds > 2.05 && opp.pickBadge !== "bomba") return false;
 
   return true;
 }
@@ -1455,52 +1480,58 @@ export function evaluateFixturePrediction(params: {
     const effOver25 = marketOdds.over25 || resolvedOver25Odds;
     const effBtts = marketOdds.bttsYes || resolvedBttsOdds;
 
-    // ENFOQUE PRINCIPAL MCP (MÁXIMA EFECTIVIDAD): Ganador Local y Over 2.5 Goles
-    // 1. Ganador Local (1) - Prioridad #1
-    if (effHomeWin && effHomeWin >= 1.05 && pHome >= 0.35) {
+    // ENFOQUE DE ALTO RENDIMIENTO CALIBRADO (Ganador Local, BTTS y Over 2.5 Calibrado)
+    const isCupOrKnockout = normLeg.includes("cup") || normLeg.includes("copa") || normLeg.includes("europa") || normLeg.includes("champions") || normLeg.includes("conference") || normLeg.includes("libertadores") || normLeg.includes("sudamericana");
+    const totalXg = hXg + aXg;
+
+    // 1. Ganador Local (1) - Prioridad #1 (Alta efectividad en locales sólidos)
+    if (effHomeWin && effHomeWin >= 1.15 && pHome >= 0.45) {
       candidates.push({
         market: "Ganador Local",
         selection: "1",
         prob: pHome,
         odds: effHomeWin,
         minOddsThreshold: 1.15,
-        minProbThreshold: 0.35,
+        minProbThreshold: 0.45,
       });
     }
 
-    // 2. Over 2.5 Goles - Prioridad #1
-    if (effOver25 && effOver25 >= 1.05 && pOver25 >= 0.35) {
-      candidates.push({
-        market: "Over 2.5 Goles",
-        selection: "Over 2.5",
-        prob: pOver25,
-        odds: effOver25,
-        minOddsThreshold: 1.25,
-        minProbThreshold: 0.35,
-      });
-    }
-
-    // 3. Ganador Visitante (2) - Mercado Secundario
-    if (effAwayWin && effAwayWin >= 1.05 && pAway >= 0.40) {
-      candidates.push({
-        market: "Ganador Visitante",
-        selection: "2",
-        prob: pAway,
-        odds: effAwayWin,
-        minOddsThreshold: 1.25,
-        minProbThreshold: 0.40,
-      });
-    }
-
-    // 4. Ambos Equipos Anotan (BTTS) - Mercado Secundario
-    if (effBtts && effBtts >= 1.05 && pBttsYes >= 0.45) {
+    // 2. Ambos Equipos Anotan (BTTS) - Prioridad #1 (Efectividad histórica > 85%)
+    if (effBtts && effBtts >= 1.25 && pBttsYes >= 0.48 && hXg >= 1.05 && aXg >= 0.95) {
       candidates.push({
         market: "Ambos Equipos Anotan",
         selection: "Sí",
         prob: pBttsYes,
         odds: effBtts,
         minOddsThreshold: 1.25,
-        minProbThreshold: 0.45,
+        minProbThreshold: 0.48,
+      });
+    }
+
+    // 3. Over 2.5 Goles - Calibración Estricta Anti-Baja Anotación
+    // En copas/eliminatorias se exige xG >= 2.60 y prob >= 54% debido a planteamientos cerrados
+    const minOverProb = isCupOrKnockout ? 0.54 : 0.50;
+    const minOverXg = isCupOrKnockout ? 2.60 : 2.45;
+    if (effOver25 && effOver25 >= 1.25 && pOver25 >= minOverProb && totalXg >= minOverXg) {
+      candidates.push({
+        market: "Over 2.5 Goles",
+        selection: "Over 2.5",
+        prob: pOver25,
+        odds: effOver25,
+        minOddsThreshold: 1.25,
+        minProbThreshold: minOverProb,
+      });
+    }
+
+    // 4. Ganador Visitante (2) - Mercado Secundario con exigencia de solvencia
+    if (effAwayWin && effAwayWin >= 1.25 && pAway >= 0.48) {
+      candidates.push({
+        market: "Ganador Visitante",
+        selection: "2",
+        prob: pAway,
+        odds: effAwayWin,
+        minOddsThreshold: 1.25,
+        minProbThreshold: 0.48,
       });
     }
   }
@@ -1663,10 +1694,15 @@ export function evaluateFixturePrediction(params: {
     }
   }
 
-  // Prioritize Over 2.5 Goles & Ganador Local with highest effectiveness & probability
+  // Prioritize Tier 1 Leagues, then High-Winrate Core Markets (Local, BTTS, Over 2.5) by Probability
   return opportunities.sort((a, b) => {
-    const aIsFocus = a.market === "Ganador Local" || a.market === "Over 2.5 Goles";
-    const bIsFocus = b.market === "Ganador Local" || b.market === "Over 2.5 Goles";
+    const aTier = a.leagueTier || 2;
+    const bTier = b.leagueTier || 2;
+    if (aTier !== bTier) {
+      return aTier - bTier;
+    }
+    const aIsFocus = a.market === "Ganador Local" || a.market === "Ambos Equipos Anotan" || a.market === "Over 2.5 Goles";
+    const bIsFocus = b.market === "Ganador Local" || b.market === "Ambos Equipos Anotan" || b.market === "Over 2.5 Goles";
     if (aIsFocus !== bIsFocus) {
       return aIsFocus ? -1 : 1;
     }

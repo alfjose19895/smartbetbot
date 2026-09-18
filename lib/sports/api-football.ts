@@ -32,8 +32,6 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
   { id: 41, name: "League One", country: "Inglaterra", category: "nordics_others", tier: 3 },
   { id: 42, name: "League Two", country: "Inglaterra", category: "nordics_others", tier: 4 },
   { id: 43, name: "National League", country: "Inglaterra", category: "nordics_others", tier: 5 },
-  { id: 44, name: "National League - North", country: "Inglaterra", category: "nordics_others", tier: 6 },
-  { id: 45, name: "National League - South", country: "Inglaterra", category: "nordics_others", tier: 6 },
 
   // --- GRANDES SEGUNDAS DIVISIONES DE EUROPA ---
   { id: 141, name: "La Liga 2 (Segunda División)", country: "España", category: "second_divisions", tier: 2 },
@@ -48,10 +46,7 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
   { id: 114, name: "Superettan", country: "Suecia", category: "second_divisions", tier: 2 },
   { id: 120, name: "1. Division", country: "Dinamarca", category: "second_divisions", tier: 2 },
   { id: 208, name: "Challenge League", country: "Suiza", category: "second_divisions", tier: 2 },
-  { id: 219, name: "2. Liga", country: "Austria", category: "second_divisions", tier: 2 },
   { id: 204, name: "1. Lig", country: "Turquía", category: "second_divisions", tier: 2 },
-  { id: 358, name: "First Division", country: "Irlanda", category: "second_divisions", tier: 2 },
-  { id: 382, name: "Liga Leumit (2da Div)", country: "Israel", category: "second_divisions", tier: 2 },
 
   // --- LIGAS PRINCIPALES DE EUROPA (1RA DIVISIÓN & FEMENINA) ---
   { id: 142, name: "Primera División Femenina (Liga F)", country: "España", category: "europe_mid", tier: 1 },
@@ -93,7 +88,6 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
   { id: 263, name: "Liga de Expansión MX", country: "México", category: "second_divisions", tier: 2 },
   { id: 253, name: "Major League Soccer (MLS)", country: "Estados Unidos", category: "americas", tier: 1 },
   { id: 254, name: "USL Championship", country: "Estados Unidos", category: "americas", tier: 2 },
-  { id: 489, name: "USL League One", country: "Estados Unidos", category: "americas", tier: 3 },
   { id: 239, name: "Primera A", country: "Colombia", category: "americas", tier: 1 },
   { id: 281, name: "Liga 1", country: "Perú", category: "americas", tier: 1 },
   { id: 265, name: "Primera División", country: "Chile", category: "americas", tier: 1 },
@@ -119,7 +113,7 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
 export const ALL_LEAGUE_IDS = SUPPORTED_LEAGUES.map((l) => l.id);
 export const TOP_5_LEAGUE_IDS = [39, 140, 135, 78, 61];
 export const PRIORITY_EUROPEAN_LEAGUE_IDS = [
-  39, 40, 45, 48, // England
+  39, 40, 48, // England
   140, 141, 143, // Spain
   135, 136, 137, // Italy
   78, 79, 81, // Germany (Bundesliga, 2. Bundesliga, DFB Pokal)
@@ -130,8 +124,8 @@ export const PRIORITY_EUROPEAN_LEAGUE_IDS = [
   144, 145, // Belgium
   179, 180, // Scotland
   207, // Switzerland
-  218, 219, // Austria
-  203, 204, // Turkey
+  218, // Austria
+  203, // Turkey
 ];
 
 export function isPriorityEuropeanLeague(leagueId?: number, leagueName?: string, country?: string): boolean {
@@ -162,7 +156,7 @@ export function isPriorityEuropeanLeague(leagueId?: number, leagueName?: string,
   return false;
 }
 export const CUPS_LEAGUE_IDS = [2, 3, 848, 5, 13, 11];
-export const AMERICAS_LEAGUE_IDS = [242, 71, 72, 128, 344, 262, 263, 253, 254, 489, 239, 281, 265, 268, 250, 162];
+export const AMERICAS_LEAGUE_IDS = [242, 71, 72, 128, 344, 262, 263, 253, 254, 239, 281, 265, 268, 250, 162];
 
 export interface ApiFootballLeague {
   id: number;

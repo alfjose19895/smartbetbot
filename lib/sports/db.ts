@@ -647,6 +647,7 @@ export function isCuratedLeague(leagueId?: number, leagueName?: string, country?
     norm.includes("regional") ||
     norm.includes("paulista") ||
     norm.includes("santa catarina") ||
+    norm.includes("leumit") ||
     norm.includes("cfl")
   ) {
     return false;
@@ -1183,17 +1184,17 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
     }
   }
 
-  // Prioritize Top Focus Markets: Ganador Local & Over 2.5 Goles with Highest Effectiveness (MCP Driven)
+  // Prioritize League Tier 1 > Tier 2 > Tier 3 and High-Winrate Core Markets (Ganador Local, BTTS, Over 2.5)
   const rankedPicks = [...allOpportunities].sort((a, b) => {
-    const aIsFocus = a.market === "Ganador Local" || a.market === "Over 2.5 Goles";
-    const bIsFocus = b.market === "Ganador Local" || b.market === "Over 2.5 Goles";
-    if (aIsFocus !== bIsFocus) {
-      return aIsFocus ? -1 : 1;
-    }
     const aTier = a.leagueTier || 3;
     const bTier = b.leagueTier || 3;
     if (aTier !== bTier) {
       return aTier - bTier;
+    }
+    const aIsFocus = a.market === "Ganador Local" || a.market === "Ambos Equipos Anotan" || a.market === "Over 2.5 Goles";
+    const bIsFocus = b.market === "Ganador Local" || b.market === "Ambos Equipos Anotan" || b.market === "Over 2.5 Goles";
+    if (aIsFocus !== bIsFocus) {
+      return aIsFocus ? -1 : 1;
     }
     if (b.probability !== a.probability) {
       return b.probability - a.probability;
