@@ -255,7 +255,7 @@ export default function DailyParlayPage() {
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-black text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
                 <span>🎯</span>
-                <span>3 PARLEYS EXCLUSIVOS DE 3 PICKS</span>
+                <span>3 PARLEYS EXCLUSIVOS DE 2 PICKS (DOBLES DE ORO)</span>
               </span>
               <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/10 px-3 py-1 text-xs font-black text-indigo-700 dark:text-indigo-400 border border-indigo-500/30">
                 <span>✨</span>
@@ -266,7 +266,7 @@ export default function DailyParlayPage() {
               Combinadas Inteligentes del Día
             </h1>
             <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-              3 combinadas independientes de 3 pronósticos cada una (9 partidos diferentes en total), seleccionadas con valor esperado positivo (+EV).
+              3 combinadas independientes de 2 pronósticos de alta certeza (6 partidos diferentes en total), seleccionadas con máxima probabilidad (≥ 68% - 85%) y valor esperado positivo (+EV).
             </p>
           </div>
 
@@ -280,7 +280,7 @@ export default function DailyParlayPage() {
         <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
           <div className="flex items-center justify-between mb-3.5 flex-wrap gap-2">
             <span className="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-400">
-              Selecciona tu Parley de 3 Jugadas:
+              Selecciona tu Parley de 2 Jugadas:
             </span>
             <span className="text-xs font-extrabold text-emerald-600 dark:text-emerald-400">
               {parlayTitle}
