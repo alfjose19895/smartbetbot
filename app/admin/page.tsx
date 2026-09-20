@@ -189,7 +189,7 @@ function AdminControlContent() {
   // MCP Agent State (Admin Exclusive)
   const [mcpQuery, setMcpQuery] = useState("");
   const [mcpCountry, setMcpCountry] = useState("");
-  const [selectedMcpLeague, setSelectedMcpLeague] = useState<AvailableLeagueItem | null>(null);
+  const [selectedMcpLeagues, setSelectedMcpLeagues] = useState<AvailableLeagueItem[]>([]);
   const [mcpLeagueCategoryFilter, setMcpLeagueCategoryFilter] = useState<string>("all");
   const [mcpLeagueSearchQuery, setMcpLeagueSearchQuery] = useState<string>("");
   const [mcpMarket, setMcpMarket] = useState<string>("all");
@@ -207,13 +207,20 @@ function AdminControlContent() {
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
   const [publishingMcp, setPublishingMcp] = useState(false);
 
-  const handleSelectLeagueFilter = (league: AvailableLeagueItem | null) => {
-    setSelectedMcpLeague(league);
-    if (league) {
-      setMcpCountry(league.country.toLowerCase());
-    } else {
-      setMcpCountry('');
-    }
+  const handleToggleLeagueFilter = (league: AvailableLeagueItem) => {
+    setSelectedMcpLeagues((prev) => {
+      const exists = prev.some((l) => l.id === league.id);
+      if (exists) {
+        return prev.filter((l) => l.id !== league.id);
+      } else {
+        return [...prev, league];
+      }
+    });
+  };
+
+  const handleSelectAllLeagues = () => {
+    setSelectedMcpLeagues([]);
+    setMcpCountry("");
   };
 
   const [publishFeedback, setPublishFeedback] = useState<{ text: string; type: "success" | "error" } | null>(null);
@@ -267,12 +274,18 @@ function AdminControlContent() {
     customQuery?: string,
     countryParam?: string,
     leagueParam?: string,
-    leagueIdParam?: number
+    leagueIdsParam?: number[]
   ) => {
     const activeQuery = customQuery !== undefined ? customQuery : mcpQuery;
-    const activeCountry = countryParam !== undefined ? countryParam : (selectedMcpLeague?.country.toLowerCase() || mcpCountry);
-    const activeLeague = leagueParam !== undefined ? leagueParam : (selectedMcpLeague?.name || "");
-    const activeLeagueId = leagueIdParam !== undefined ? leagueIdParam : (selectedMcpLeague?.id || undefined);
+    const activeLeagueIds = leagueIdsParam !== undefined
+      ? leagueIdsParam
+      : (selectedMcpLeagues.length > 0 ? selectedMcpLeagues.map((l) => l.id) : undefined);
+    const activeCountry = countryParam !== undefined
+      ? countryParam
+      : (selectedMcpLeagues.length === 1 ? selectedMcpLeagues[0].country.toLowerCase() : mcpCountry);
+    const activeLeague = leagueParam !== undefined
+      ? leagueParam
+      : (selectedMcpLeagues.length === 1 ? selectedMcpLeagues[0].name : "");
 
     setMcpLoading(true);
     setMcpSearched(true);
@@ -284,7 +297,9 @@ function AdminControlContent() {
           query: activeQuery,
           country: activeCountry,
           league: activeLeague,
-          leagueId: activeLeagueId,
+          leagueIds: activeLeagueIds,
+          market: mcpMarket !== "all" ? mcpMarket : undefined,
+          confidence: mcpConfidence !== "all" ? mcpConfidence : undefined,
           autoPublish: true,
         }),
       });
@@ -294,6 +309,7 @@ function AdminControlContent() {
         const predictions = data.predictions || [];
         setMcpResults(predictions);
         setMcpMetrics(data.metrics || null);
+        setSelectedPickKeys(new Set(predictions.map((p: MarketOpportunity) => p.id || `${p.fixtureId || 0}-${p.homeTeam}-${p.awayTeam}-${p.market}`)));
 
         if (predictions.length > 0) {
           await handlePublishMcpPicks(predictions);
@@ -1075,12 +1091,24 @@ function AdminControlContent() {
                 {/* PASO 1: LIGA */}
                 <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4 sm:p-5">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-slate-950 text-xs font-black">1</span>
-                      <h4 className="text-sm font-black text-white">Selecciona la Liga o Competición</h4>
-                      {selectedMcpLeague && (
-                        <span className="rounded-lg bg-emerald-500/20 px-2 py-0.5 text-[10px] font-black text-emerald-300 border border-emerald-500/30">
-                          {selectedMcpLeague.flag} {selectedMcpLeague.name}
+                      <h4 className="text-sm font-black text-white">Selecciona una o Varias Ligas</h4>
+                      {selectedMcpLeagues.length > 0 ? (
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="rounded-lg bg-emerald-500/20 px-2 py-0.5 text-[10px] font-black text-emerald-300 border border-emerald-500/30">
+                            🎯 {selectedMcpLeagues.length} {selectedMcpLeagues.length === 1 ? "liga seleccionada" : "ligas seleccionadas"}
+                          </span>
+                          <button
+                            onClick={() => setSelectedMcpLeagues([])}
+                            className="rounded-lg bg-slate-800 hover:bg-slate-700 px-2 py-0.5 text-[10px] font-bold text-slate-300 transition cursor-pointer"
+                          >
+                            ✕ Limpiar selección
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="rounded-lg bg-slate-800 px-2 py-0.5 text-[10px] font-semibold text-slate-400">
+                          🌐 Todas las Ligas Activas
                         </span>
                       )}
                     </div>
@@ -1125,9 +1153,9 @@ function AdminControlContent() {
                     </div>
 
                     <button
-                      onClick={() => handleSelectLeagueFilter(null)}
+                      onClick={handleSelectAllLeagues}
                       className={`rounded-xl px-3.5 py-2 text-xs font-black transition cursor-pointer border ${
-                        selectedMcpLeague === null
+                        selectedMcpLeagues.length === 0
                           ? "bg-emerald-500 text-slate-950 border-emerald-400 shadow-sm font-black"
                           : "bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700 hover:text-white"
                       }`}
@@ -1147,11 +1175,11 @@ function AdminControlContent() {
                           league.country.toLowerCase().includes(mcpLeagueSearchQuery.toLowerCase());
                         return matchesCategory && matchesSearch;
                       }).map((league) => {
-                        const isSelected = selectedMcpLeague?.id === league.id;
+                        const isSelected = selectedMcpLeagues.some((l) => l.id === league.id);
                         return (
                           <button
                             key={league.id}
-                            onClick={() => handleSelectLeagueFilter(league)}
+                            onClick={() => handleToggleLeagueFilter(league)}
                             className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer border ${
                               isSelected
                                 ? "bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 border-emerald-300 shadow-md font-black scale-[1.02]"
@@ -1160,6 +1188,7 @@ function AdminControlContent() {
                           >
                             <span>{league.flag}</span>
                             <span>{league.name}</span>
+                            {isSelected && <span className="text-[11px] font-black">✓</span>}
                             <span
                               className={`text-[10px] px-1.5 py-0.2 rounded-md font-semibold ${
                                 isSelected ? "bg-slate-950/20 text-slate-900" : "bg-slate-900/80 text-slate-400"
@@ -1366,42 +1395,59 @@ function AdminControlContent() {
                     const key = opp.id || `${opp.fixtureId || 0}-${opp.homeTeam}-${opp.awayTeam}-${opp.market}`;
                     const isSelected = selectedPickKeys.has(key);
                     return (
-                      <div key={key} className="relative group">
-                        {/* Pick Selection Checkbox Overlay */}
+                      <div
+                        key={key}
+                        className={`rounded-2xl border transition-all duration-200 overflow-hidden flex flex-col ${
+                          isSelected
+                            ? "ring-2 ring-emerald-500/80 border-emerald-500/50 shadow-lg shadow-emerald-500/10"
+                            : "border-slate-800 bg-slate-900/40 hover:border-slate-700"
+                        }`}
+                      >
+                        {/* Dedicated Top Selection Strip - ZERO OVERLAP with card elements */}
                         <div
-                          onClick={(e) => {
-                            e.stopPropagation();
+                          onClick={() => {
                             const next = new Set(selectedPickKeys);
                             if (next.has(key)) next.delete(key);
                             else next.add(key);
                             setSelectedPickKeys(next);
                           }}
-                          className={`absolute top-3 right-3 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-xl border shadow-md transition cursor-pointer ${
+                          className={`px-3.5 py-2 flex items-center justify-between cursor-pointer border-b transition-colors select-none ${
                             isSelected
-                              ? "bg-emerald-500 text-slate-950 border-emerald-300 font-black shadow-emerald-500/20"
-                              : "bg-slate-900/90 text-slate-400 border-slate-700 hover:text-white"
+                              ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300"
+                              : "bg-slate-900/90 hover:bg-slate-850 border-slate-800 text-slate-400 hover:text-slate-200"
                           }`}
                         >
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={() => {}}
-                            className="h-3.5 w-3.5 rounded accent-slate-950 cursor-pointer pointer-events-none"
-                          />
-                          <span className="text-[10px] font-extrabold select-none">
-                            {isSelected ? "Seleccionado" : "Elegir"}
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => {}}
+                              className="h-4 w-4 rounded accent-emerald-500 cursor-pointer pointer-events-none"
+                            />
+                            <span className="text-xs font-bold">
+                              {isSelected ? "✓ Pronóstico Seleccionado" : "Seleccionar para Publicar"}
+                            </span>
+                          </div>
+                          <span
+                            className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${
+                              isSelected ? "bg-emerald-500 text-slate-950 font-black" : "bg-slate-800 text-slate-400"
+                            }`}
+                          >
+                            {isSelected ? "Listo" : "Marcar"}
                           </span>
                         </div>
 
-                        <PredictionCard
-                          prediction={opp}
-                          onOpenDetail={(pick) => setActiveModalPick(pick)}
-                          onPublishAlert={(pick) => handlePublishMcpPicks([pick])}
-                          isPublished={
-                            publishedFixtureKeys.has(String(opp.fixtureId)) ||
-                            publishedFixtureKeys.has(`${opp.homeTeam}-${opp.awayTeam}`)
-                          }
-                        />
+                        <div className="flex-1">
+                          <PredictionCard
+                            prediction={opp}
+                            onOpenDetail={(pick) => setActiveModalPick(pick)}
+                            onPublishAlert={(pick) => handlePublishMcpPicks([pick])}
+                            isPublished={
+                              publishedFixtureKeys.has(String(opp.fixtureId)) ||
+                              publishedFixtureKeys.has(`${opp.homeTeam}-${opp.awayTeam}`)
+                            }
+                          />
+                        </div>
                       </div>
                     );
                   })}

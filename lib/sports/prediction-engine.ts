@@ -1632,13 +1632,16 @@ export function evaluateFixturePrediction(params: {
 
     if (cornerResult.status === "SIGNAL" && cornerResult.recommended_candidate) {
       const rec = cornerResult.recommended_candidate;
+      const lineDefaults: Record<number, number> = { 6.5: 1.20, 7.5: 1.35, 8.5: 1.55, 9.5: 1.85, 10.5: 2.25 };
+      const fallbackOdds = lineDefaults[rec.line] || 1.35;
+      const finalOdds = typeof rec.decimal_odds === "number" ? rec.decimal_odds : fallbackOdds;
       candidates.push({
-        market: "Córners",
+        market: "C?rners",
         selection: rec.selection,
         prob: rec.model_probability,
-        odds: typeof rec.decimal_odds === "number" ? rec.decimal_odds : 1.50,
-        minOddsThreshold: 1.20,
-        minProbThreshold: 0.65,
+        odds: finalOdds,
+        minOddsThreshold: 1.14,
+        minProbThreshold: 0.60,
         cornerAnalysis: {
           expectedTotalCorners: cornerResult.expected_total_corners,
           expectedHomeCorners: cornerResult.expected_home_corners,

@@ -30,14 +30,22 @@ export interface CornerMarketConfig {
   lines: Record<CornerLine, CornerLineConfig>;
 }
 
+export const REALISTIC_CORNER_ODDS_BOUNDS: Record<CornerLine, { min: number; max: number }> = {
+  6.5: { min: 1.12, max: 1.35 },
+  7.5: { min: 1.20, max: 1.55 },
+  8.5: { min: 1.35, max: 1.85 },
+  9.5: { min: 1.55, max: 2.35 },
+  10.5: { min: 1.85, max: 3.20 },
+};
+
 export const DEFAULT_CORNER_CONFIG: CornerMarketConfig = {
   strategy_name: "corners_total_over_prematch",
   lines: {
-    6.5: { enabled: true, min_probability: 0.80, min_edge: 0.04, min_odds: 1.25, min_data_quality: 0.80 },
-    7.5: { enabled: true, min_probability: 0.76, min_edge: 0.05, min_odds: 1.30, min_data_quality: 0.80 },
-    8.5: { enabled: true, min_probability: 0.72, min_edge: 0.06, min_odds: 1.40, min_data_quality: 0.82 },
-    9.5: { enabled: true, min_probability: 0.70, min_edge: 0.07, min_odds: 1.50, min_data_quality: 0.85 },
-    10.5: { enabled: true, min_probability: 0.68, min_edge: 0.08, min_odds: 1.60, min_data_quality: 0.88 },
+    6.5: { enabled: true, min_probability: 0.78, min_edge: 0.02, min_odds: 1.14, min_data_quality: 0.80 },
+    7.5: { enabled: true, min_probability: 0.72, min_edge: 0.03, min_odds: 1.22, min_data_quality: 0.80 },
+    8.5: { enabled: true, min_probability: 0.64, min_edge: 0.04, min_odds: 1.38, min_data_quality: 0.80 },
+    9.5: { enabled: true, min_probability: 0.54, min_edge: 0.04, min_odds: 1.60, min_data_quality: 0.82 },
+    10.5: { enabled: true, min_probability: 0.44, min_edge: 0.05, min_odds: 1.90, min_data_quality: 0.85 },
   },
 };
 
@@ -445,7 +453,14 @@ export class CornerLineSelectionEngine {
         continue;
       }
 
-      const decimalOdds = rawOdds;
+      // Calibrate realistic market odds if raw odds are out of authentic line bounds (e.g. Over 6.5 with Over 9.5 odds > 1.35)
+      let decimalOdds = rawOdds;
+      const bounds = REALISTIC_CORNER_ODDS_BOUNDS[line];
+      if (bounds && (rawOdds > bounds.max || rawOdds < bounds.min)) {
+        const fairLineOdds = 1 / Math.max(0.1, modelProb);
+        const calibrated = Math.round((fairLineOdds * 0.96) * 100) / 100;
+        decimalOdds = Math.max(bounds.min, Math.min(bounds.max, calibrated));
+      }
       const impliedProb = 1 / decimalOdds;
       const smartEdge = modelProb - impliedProb;
       const ev = modelProb * decimalOdds - 1;

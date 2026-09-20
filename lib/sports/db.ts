@@ -2577,6 +2577,7 @@ export async function searchLiveMarketDynamic(params: {
   country?: string;
   league?: string;
   leagueId?: number;
+  leagueIds?: number[];
   market?: string;
   limit?: number;
 }): Promise<MarketOpportunity[]> {
@@ -2587,7 +2588,12 @@ export async function searchLiveMarketDynamic(params: {
     const qLower = (params.query || "").toLowerCase().trim();
     const cLower = (params.country || "").toLowerCase().trim();
     const lLower = (params.league || "").toLowerCase().trim();
-    let targetLeagueId = params.leagueId ? Number(params.leagueId) : undefined;
+    let targetLeagueIds: number[] | undefined = Array.isArray(params.leagueIds) && params.leagueIds.length > 0
+      ? params.leagueIds.map(Number)
+      : params.leagueId
+      ? [Number(params.leagueId)]
+      : undefined;
+    let targetLeagueId = targetLeagueIds && targetLeagueIds.length === 1 ? targetLeagueIds[0] : (params.leagueId ? Number(params.leagueId) : undefined);
 
     // Detect league ID from query or params if not explicitly provided
     if (!targetLeagueId) {
@@ -2687,7 +2693,10 @@ export async function searchLiveMarketDynamic(params: {
         return false;
       }
 
-      // Strict League Filtering: If a specific league ID or name/country was targeted, ONLY accept matches from that league!
+      // Strict League Filtering: If specific league ID(s) or name/country was targeted, ONLY accept matches from those leagues!
+      if (targetLeagueIds && targetLeagueIds.length > 0) {
+        return targetLeagueIds.includes(f.league?.id);
+      }
       if (targetLeagueId) {
         return f.league?.id === targetLeagueId;
       }

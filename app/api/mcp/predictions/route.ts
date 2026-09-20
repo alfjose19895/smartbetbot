@@ -211,6 +211,13 @@ export async function POST(req: Request) {
     const cLower = (country || "").toLowerCase().trim();
     const lLower = (league || "").toLowerCase().trim();
     const targetLeagueId = Number(bodyTargetLeagueId || leagueId) || undefined;
+    const rawLeagueIds: number[] = Array.isArray(body.leagueIds)
+      ? body.leagueIds.map(Number).filter((n: number) => !isNaN(n))
+      : typeof body.leagueIds === "string" && body.leagueIds.trim()
+      ? body.leagueIds.split(",").map(Number).filter((n: number) => !isNaN(n))
+      : targetLeagueId
+      ? [targetLeagueId]
+      : [];
 
     // Detect target market before search
     const mLower = (market || "").toLowerCase().trim();
@@ -241,13 +248,14 @@ export async function POST(req: Request) {
       country,
       league,
       leagueId: targetLeagueId,
+      leagueIds: rawLeagueIds.length > 0 ? rawLeagueIds : undefined,
       market: requestedMarket || market,
     });
 
     // 2. If targetLeagueId is provided and dynamic search returned fixtures, use dynamic discoveries exclusively!
     let pool: MarketOpportunity[] = [];
 
-    if (targetLeagueId && dynamicMarketOpps.length > 0) {
+    if ((rawLeagueIds.length > 0 || targetLeagueId) && dynamicMarketOpps.length > 0) {
       pool = dynamicMarketOpps;
     } else {
       // Merge dynamic discoveries + baseline stored predictions
@@ -311,7 +319,10 @@ export async function POST(req: Request) {
     // 1. Direct League Filter Recognition (Exact ID or League Name)
     let matchedByLeague = false;
 
-    if (targetLeagueId) {
+    if (rawLeagueIds.length > 0) {
+      filtered = pool.filter((p) => p.leagueId && rawLeagueIds.includes(Number(p.leagueId)));
+      matchedByLeague = true;
+    } else if (targetLeagueId) {
       filtered = pool.filter((p) => p.leagueId === targetLeagueId);
       matchedByLeague = true;
     } else if (lLower && lLower !== "all" && lLower !== "todas" && lLower !== "todas las ligas") {
@@ -402,6 +413,9 @@ export async function POST(req: Request) {
         }
         if (requestedMarket === "ambos") {
           return pMarket.includes("ambos") || pMarket.includes("btts") || pMarket.includes("anotan");
+        }
+        if (requestedMarket === "corners" || requestedMarket === "c?rners" || requestedMarket === "corner") {
+          return pMarket.includes("c?rners") || pMarket.includes("corners") || ((p as any).pick && String((p as any).pick).toLowerCase().includes("c?rner"));
         }
         return pMarket.includes(requestedMarket);
       });

@@ -27858,5 +27858,2224 @@
         "impliedProbability": 53.8
       }
     ]
+  },
+  "2026-09-20": {
+    "parlay1": [
+      {
+        "h2h": [
+          {
+            "date": "2026-07-22",
+            "score": "2-1",
+            "winner": "home",
+            "awayTeam": "Rangers",
+            "homeTeam": "Celtic",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-03-24",
+            "score": "0-2",
+            "winner": "away",
+            "awayTeam": "Celtic",
+            "homeTeam": "Rangers",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2025-09-25",
+            "score": "1-1",
+            "winner": "draw",
+            "awayTeam": "Rangers",
+            "homeTeam": "Celtic",
+            "competition": "Premiership"
+          }
+        ],
+        "edge": 38.1,
+        "odds": 2.1,
+        "pick": "Over 6.5 Córners",
+        "isMcp": true,
+        "match": "Celtic vs Rangers",
+        "league": "Premiership",
+        "market": "Córners",
+        "source": "mcp",
+        "status": "pending",
+        "awayElo": 1482,
+        "country": "Escocia",
+        "homeElo": 1536,
+        "kickoff": "2026-09-20T06:00:00-05:00",
+        "awayLogo": "https://media.api-sports.io/football/teams/257.png",
+        "awayTeam": "Rangers",
+        "fairOdds": 1.17,
+        "homeLogo": "https://media.api-sports.io/football/teams/247.png",
+        "homeTeam": "Celtic",
+        "leagueId": 179,
+        "timeSlot": "morning",
+        "awayLast5": [
+          {
+            "date": "2026-09-16",
+            "score": "2-1",
+            "isHome": true,
+            "result": "W",
+            "opponent": "Rival A",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-09-11",
+            "score": "1-3",
+            "isHome": false,
+            "result": "L",
+            "opponent": "Rival B",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-09-06",
+            "score": "0-3",
+            "isHome": true,
+            "result": "L",
+            "opponent": "Rival C",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-09-01",
+            "score": "1-2",
+            "isHome": false,
+            "result": "D",
+            "opponent": "Rival D",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-08-27",
+            "score": "2-1",
+            "isHome": true,
+            "result": "W",
+            "opponent": "Rival E",
+            "competition": "Premiership"
+          }
+        ],
+        "bookmaker": "Bet365",
+        "fixtureId": 1556669,
+        "homeLast5": [
+          {
+            "date": "2026-09-16",
+            "score": "0-3",
+            "isHome": true,
+            "result": "L",
+            "opponent": "Rival A",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-09-11",
+            "score": "1-2",
+            "isHome": false,
+            "result": "D",
+            "opponent": "Rival B",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-09-06",
+            "score": "2-1",
+            "isHome": true,
+            "result": "W",
+            "opponent": "Rival C",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-09-01",
+            "score": "1-3",
+            "isHome": false,
+            "result": "L",
+            "opponent": "Rival D",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-08-27",
+            "score": "1-2",
+            "isHome": true,
+            "result": "D",
+            "opponent": "Rival E",
+            "competition": "Premiership"
+          }
+        ],
+        "isMcpPick": true,
+        "isTopPick": true,
+        "modelOdds": 1.17,
+        "pickBadge": "mcp",
+        "selection": "Over 6.5",
+        "awayTeamId": 257,
+        "confidence": "Muy Alta",
+        "homeTeamId": 247,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/179.png",
+        "leagueTier": 1,
+        "smartScore": 99,
+        "explanation": "Patrón de repliegue y rechaces: Celtic sostiene una alta cadencia de llegadas al último tercio generando tiros de esquina constantes, mientras que Rangers concede más de 5.2 córners en promedio cuando juega de visitante.",
+        "probability": 85.7,
+        "bookmakerOdds": 2.1,
+        "expectedValue": 80,
+        "cornerAnalysis": {
+          "dataQuality": 0.85,
+          "allCandidates": [
+            {
+              "line": 6.5,
+              "selection": "Over 6.5",
+              "smart_edge": 0.381,
+              "smart_score": 93,
+              "data_quality": 0.85,
+              "decimal_odds": 2.1,
+              "expected_value": 0.8,
+              "expected_margin": 3.59,
+              "expected_corners": 10.59,
+              "required_corners": 7,
+              "devig_probability": 0.452,
+              "model_probability": 0.857,
+              "rejection_reasons": [],
+              "implied_probability": 0.476,
+              "qualification_status": "QUALIFIED"
+            },
+            {
+              "line": 7.5,
+              "selection": "Over 7.5",
+              "smart_edge": -0.114,
+              "smart_score": 0,
+              "data_quality": 0.85,
+              "decimal_odds": 1.12,
+              "expected_value": -0.128,
+              "expected_margin": 2.59,
+              "expected_corners": 10.59,
+              "required_corners": 8,
+              "devig_probability": 0.848,
+              "model_probability": 0.779,
+              "rejection_reasons": [
+                "Cuota disponible inferior al mínimo requerido: @1.12 < @1.30",
+                "Smart Edge insuficiente: +-11.4% < +5.0%"
+              ],
+              "implied_probability": 0.893,
+              "qualification_status": "REJECTED_ODDS"
+            },
+            {
+              "line": 8.5,
+              "selection": "Over 8.5",
+              "smart_edge": -0.111,
+              "smart_score": 0,
+              "data_quality": 0.85,
+              "decimal_odds": 1.25,
+              "expected_value": -0.139,
+              "expected_margin": 1.59,
+              "expected_corners": 10.59,
+              "required_corners": 9,
+              "devig_probability": 0.76,
+              "model_probability": 0.689,
+              "rejection_reasons": [
+                "Probabilidad del modelo inferior al umbral: 68.9% < 72.0%",
+                "Cuota disponible inferior al mínimo requerido: @1.25 < @1.40",
+                "Smart Edge insuficiente: +-11.1% < +6.0%"
+              ],
+              "implied_probability": 0.8,
+              "qualification_status": "REJECTED_PROB"
+            },
+            {
+              "line": 9.5,
+              "selection": "Over 9.5",
+              "smart_edge": -0.088,
+              "smart_score": 0,
+              "data_quality": 0.85,
+              "decimal_odds": 1.49,
+              "expected_value": -0.131,
+              "expected_margin": 0.59,
+              "expected_corners": 10.59,
+              "required_corners": 10,
+              "devig_probability": 0.638,
+              "model_probability": 0.583,
+              "rejection_reasons": [
+                "Probabilidad del modelo inferior al umbral: 58.3% < 70.0%",
+                "Cuota disponible inferior al mínimo requerido: @1.49 < @1.50",
+                "Smart Edge insuficiente: +-8.8% < +7.0%"
+              ],
+              "implied_probability": 0.671,
+              "qualification_status": "REJECTED_PROB"
+            },
+            {
+              "line": 10.5,
+              "selection": "Over 10.5",
+              "smart_edge": -0.078,
+              "smart_score": 0,
+              "data_quality": 0.85,
+              "decimal_odds": 1.8,
+              "expected_value": -0.14,
+              "expected_margin": -0.41,
+              "expected_corners": 10.59,
+              "required_corners": 11,
+              "devig_probability": 0.528,
+              "model_probability": 0.478,
+              "rejection_reasons": [
+                "Calidad de datos insuficiente: 85% < 88%",
+                "Probabilidad del modelo inferior al umbral: 47.8% < 68.0%",
+                "Smart Edge insuficiente: +-7.8% < +8.0%"
+              ],
+              "implied_probability": 0.556,
+              "qualification_status": "REJECTED_PROB"
+            }
+          ],
+          "recommendedLine": 6.5,
+          "distributionModel": "Negative Binomial",
+          "expectedAwayCorners": 4.45,
+          "expectedHomeCorners": 6.14,
+          "expectedTotalCorners": 10.59
+        },
+        "impliedProbability": 47.6
+      },
+      {
+        "h2h": [
+          {
+            "date": "2026-07-22",
+            "score": "2-1",
+            "winner": "home",
+            "awayTeam": "San Diego",
+            "homeTeam": "Inter Miami",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-03-24",
+            "score": "0-2",
+            "winner": "away",
+            "awayTeam": "Inter Miami",
+            "homeTeam": "San Diego",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2025-09-25",
+            "score": "3-0",
+            "winner": "home",
+            "awayTeam": "San Diego",
+            "homeTeam": "Inter Miami",
+            "competition": "Major League Soccer (MLS)"
+          }
+        ],
+        "edge": 5.3,
+        "odds": 1.44,
+        "pick": "Inter Miami",
+        "isMcp": true,
+        "match": "Inter Miami vs San Diego",
+        "league": "Major League Soccer (MLS)",
+        "market": "Ganador Local",
+        "source": "mcp",
+        "status": "pending",
+        "awayElo": 1570,
+        "country": "Estados Unidos",
+        "homeElo": 1960,
+        "kickoff": "2026-09-20T18:00:00-05:00",
+        "awayLogo": "https://media.api-sports.io/football/teams/25484.png",
+        "awayTeam": "San Diego",
+        "fairOdds": 1.34,
+        "homeLogo": "https://media.api-sports.io/football/teams/9568.png",
+        "homeTeam": "Inter Miami",
+        "leagueId": 253,
+        "timeSlot": "night",
+        "awayLast5": [
+          {
+            "date": "2026-09-16",
+            "score": "2-1",
+            "isHome": true,
+            "result": "W",
+            "opponent": "Rival A",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-09-11",
+            "score": "0-3",
+            "isHome": false,
+            "result": "L",
+            "opponent": "Rival B",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-09-06",
+            "score": "1-2",
+            "isHome": true,
+            "result": "D",
+            "opponent": "Rival C",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-09-01",
+            "score": "3-1",
+            "isHome": false,
+            "result": "W",
+            "opponent": "Rival D",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-08-27",
+            "score": "1-2",
+            "isHome": true,
+            "result": "L",
+            "opponent": "Rival E",
+            "competition": "Major League Soccer (MLS)"
+          }
+        ],
+        "bookmaker": "Bet365",
+        "fixtureId": 1490495,
+        "homeLast5": [
+          {
+            "date": "2026-09-16",
+            "score": "2-3",
+            "isHome": false,
+            "result": "L",
+            "opponent": "Rival A",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-09-11",
+            "score": "2-2",
+            "isHome": true,
+            "result": "D",
+            "opponent": "Rival B",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-09-06",
+            "score": "2-1",
+            "isHome": false,
+            "result": "W",
+            "opponent": "Rival C",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-09-01",
+            "score": "3-1",
+            "isHome": true,
+            "result": "W",
+            "opponent": "Rival D",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-08-27",
+            "score": "2-2",
+            "isHome": false,
+            "result": "D",
+            "opponent": "Rival E",
+            "competition": "Major League Soccer (MLS)"
+          }
+        ],
+        "isMcpPick": true,
+        "isTopPick": true,
+        "modelOdds": 1.34,
+        "pickBadge": "valor",
+        "selection": "1",
+        "awayTeamId": 25484,
+        "confidence": "Muy Alta",
+        "homeTeamId": 9568,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/253.png",
+        "leagueTier": 1,
+        "smartScore": 99,
+        "explanation": "Inter Miami impone una marcada solvencia como anfitrión (2 triunfos en sus últimos 5 compromisos) y promedia 3.4 xG en casa. Su dominio territorial y solidez defensiva ante un San Diego que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+        "probability": 74.7,
+        "bookmakerOdds": 1.44,
+        "expectedValue": 7.6,
+        "impliedProbability": 69.4
+      }
+    ],
+    "parlay2": [
+      {
+        "h2h": [
+          {
+            "date": "2026-07-22",
+            "score": "2-1",
+            "winner": "home",
+            "awayTeam": "1. FC Heidenheim",
+            "homeTeam": "Arminia Bielefeld",
+            "competition": "2. Bundesliga"
+          },
+          {
+            "date": "2026-03-24",
+            "score": "0-2",
+            "winner": "away",
+            "awayTeam": "Arminia Bielefeld",
+            "homeTeam": "1. FC Heidenheim",
+            "competition": "2. Bundesliga"
+          },
+          {
+            "date": "2025-09-25",
+            "score": "3-0",
+            "winner": "home",
+            "awayTeam": "1. FC Heidenheim",
+            "homeTeam": "Arminia Bielefeld",
+            "competition": "2. Bundesliga"
+          }
+        ],
+        "edge": 33.9,
+        "odds": 2,
+        "pick": "Over 6.5 Córners",
+        "isMcp": true,
+        "match": "Arminia Bielefeld vs 1. FC Heidenheim",
+        "league": "2. Bundesliga",
+        "market": "Córners",
+        "source": "mcp",
+        "status": "pending",
+        "awayElo": 1524,
+        "country": "Alemania",
+        "homeElo": 1600,
+        "kickoff": "2026-09-20T06:30:00-05:00",
+        "awayLogo": "https://media.api-sports.io/football/teams/180.png",
+        "awayTeam": "1. FC Heidenheim",
+        "fairOdds": 1.19,
+        "homeLogo": "https://media.api-sports.io/football/teams/188.png",
+        "homeTeam": "Arminia Bielefeld",
+        "leagueId": 79,
+        "timeSlot": "morning",
+        "awayLast5": [
+          {
+            "date": "2026-09-16",
+            "score": "1-2",
+            "isHome": true,
+            "result": "D",
+            "opponent": "Rival A",
+            "competition": "2. Bundesliga"
+          },
+          {
+            "date": "2026-09-11",
+            "score": "1-2",
+            "isHome": false,
+            "result": "W",
+            "opponent": "Rival B",
+            "competition": "2. Bundesliga"
+          },
+          {
+            "date": "2026-09-06",
+            "score": "0-3",
+            "isHome": true,
+            "result": "L",
+            "opponent": "Rival C",
+            "competition": "2. Bundesliga"
+          },
+          {
+            "date": "2026-09-01",
+            "score": "1-2",
+            "isHome": false,
+            "result": "D",
+            "opponent": "Rival D",
+            "competition": "2. Bundesliga"
+          },
+          {
+            "date": "2026-08-27",
+            "score": "2-1",
+            "isHome": true,
+            "result": "W",
+            "opponent": "Rival E",
+            "competition": "2. Bundesliga"
+          }
+        ],
+        "bookmaker": "Bet365",
+        "fixtureId": 1576179,
+        "homeLast5": [
+          {
+            "date": "2026-09-16",
+            "score": "0-3",
+            "isHome": false,
+            "result": "L",
+            "opponent": "Rival A",
+            "competition": "2. Bundesliga"
+          },
+          {
+            "date": "2026-09-11",
+            "score": "1-2",
+            "isHome": true,
+            "result": "D",
+            "opponent": "Rival B",
+            "competition": "2. Bundesliga"
+          },
+          {
+            "date": "2026-09-06",
+            "score": "3-1",
+            "isHome": false,
+            "result": "W",
+            "opponent": "Rival C",
+            "competition": "2. Bundesliga"
+          },
+          {
+            "date": "2026-09-01",
+            "score": "2-1",
+            "isHome": true,
+            "result": "W",
+            "opponent": "Rival D",
+            "competition": "2. Bundesliga"
+          },
+          {
+            "date": "2026-08-27",
+            "score": "0-3",
+            "isHome": false,
+            "result": "L",
+            "opponent": "Rival E",
+            "competition": "2. Bundesliga"
+          }
+        ],
+        "isMcpPick": true,
+        "isTopPick": true,
+        "modelOdds": 1.19,
+        "pickBadge": "mcp",
+        "selection": "Over 6.5",
+        "awayTeamId": 180,
+        "confidence": "Muy Alta",
+        "homeTeamId": 188,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/79.png",
+        "leagueTier": 2,
+        "smartScore": 99,
+        "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.3 córners totales.",
+        "probability": 83.9,
+        "bookmakerOdds": 2,
+        "expectedValue": 67.8,
+        "cornerAnalysis": {
+          "dataQuality": 0.85,
+          "allCandidates": [
+            {
+              "line": 6.5,
+              "selection": "Over 6.5",
+              "smart_edge": 0.339,
+              "smart_score": 92,
+              "data_quality": 0.85,
+              "decimal_odds": 2,
+              "expected_value": 0.678,
+              "expected_margin": 3.31,
+              "expected_corners": 10.31,
+              "required_corners": 7,
+              "devig_probability": 0.475,
+              "model_probability": 0.839,
+              "rejection_reasons": [],
+              "implied_probability": 0.5,
+              "qualification_status": "QUALIFIED"
+            },
+            {
+              "line": 7.5,
+              "selection": "Over 7.5",
+              "smart_edge": -0.13,
+              "smart_score": 0,
+              "data_quality": 0.85,
+              "decimal_odds": 1.13,
+              "expected_value": -0.147,
+              "expected_margin": 2.31,
+              "expected_corners": 10.31,
+              "required_corners": 8,
+              "devig_probability": 0.841,
+              "model_probability": 0.755,
+              "rejection_reasons": [
+                "Probabilidad del modelo inferior al umbral: 75.5% < 76.0%",
+                "Cuota disponible inferior al mínimo requerido: @1.13 < @1.30",
+                "Smart Edge insuficiente: +-13.0% < +5.0%"
+              ],
+              "implied_probability": 0.885,
+              "qualification_status": "REJECTED_PROB"
+            },
+            {
+              "line": 8.5,
+              "selection": "Over 8.5",
+              "smart_edge": -0.124,
+              "smart_score": 0,
+              "data_quality": 0.85,
+              "decimal_odds": 1.28,
+              "expected_value": -0.159,
+              "expected_margin": 1.31,
+              "expected_corners": 10.31,
+              "required_corners": 9,
+              "devig_probability": 0.742,
+              "model_probability": 0.657,
+              "rejection_reasons": [
+                "Probabilidad del modelo inferior al umbral: 65.7% < 72.0%",
+                "Cuota disponible inferior al mínimo requerido: @1.28 < @1.40",
+                "Smart Edge insuficiente: +-12.4% < +6.0%"
+              ],
+              "implied_probability": 0.781,
+              "qualification_status": "REJECTED_PROB"
+            },
+            {
+              "line": 9.5,
+              "selection": "Over 9.5",
+              "smart_edge": -0.114,
+              "smart_score": 0,
+              "data_quality": 0.85,
+              "decimal_odds": 1.5,
+              "expected_value": -0.17,
+              "expected_margin": 0.31,
+              "expected_corners": 10.31,
+              "required_corners": 10,
+              "devig_probability": 0.633,
+              "model_probability": 0.553,
+              "rejection_reasons": [
+                "Probabilidad del modelo inferior al umbral: 55.3% < 70.0%",
+                "Smart Edge insuficiente: +-11.4% < +7.0%"
+              ],
+              "implied_probability": 0.667,
+              "qualification_status": "REJECTED_PROB"
+            },
+            {
+              "line": 10.5,
+              "selection": "Over 10.5",
+              "smart_edge": -0.106,
+              "smart_score": 0,
+              "data_quality": 0.85,
+              "decimal_odds": 1.8,
+              "expected_value": -0.19,
+              "expected_margin": -0.69,
+              "expected_corners": 10.31,
+              "required_corners": 11,
+              "devig_probability": 0.528,
+              "model_probability": 0.45,
+              "rejection_reasons": [
+                "Calidad de datos insuficiente: 85% < 88%",
+                "Probabilidad del modelo inferior al umbral: 45.0% < 68.0%",
+                "Smart Edge insuficiente: +-10.6% < +8.0%"
+              ],
+              "implied_probability": 0.556,
+              "qualification_status": "REJECTED_PROB"
+            }
+          ],
+          "recommendedLine": 6.5,
+          "distributionModel": "Negative Binomial",
+          "expectedAwayCorners": 4.38,
+          "expectedHomeCorners": 5.93,
+          "expectedTotalCorners": 10.31
+        },
+        "impliedProbability": 50
+      },
+      {
+        "edge": 7.5,
+        "odds": 1.65,
+        "isMcp": true,
+        "match": "Bayern Munich vs Borussia Dortmund",
+        "league": "Bundesliga",
+        "market": "Over 2.5 Goles",
+        "source": "mcp",
+        "status": "pending",
+        "country": "Alemania",
+        "kickoff": "2026-09-20T12:15:21.125Z",
+        "awayTeam": "Borussia Dortmund",
+        "homeTeam": "Bayern Munich",
+        "leagueId": 78,
+        "fixtureId": 999199,
+        "isMcpPick": true,
+        "pickBadge": "mcp",
+        "selection": "Over 2.5",
+        "awayTeamId": 165,
+        "confidence": "Muy Alta",
+        "homeTeamId": 157,
+        "smartScore": 85,
+        "probability": 72
+      }
+    ],
+    "parlay3": [
+      {
+        "h2h": [
+          {
+            "date": "2026-07-22",
+            "score": "2-1",
+            "winner": "home",
+            "awayTeam": "Utrecht",
+            "homeTeam": "Feyenoord",
+            "competition": "Eredivisie"
+          },
+          {
+            "date": "2026-03-24",
+            "score": "0-2",
+            "winner": "away",
+            "awayTeam": "Feyenoord",
+            "homeTeam": "Utrecht",
+            "competition": "Eredivisie"
+          },
+          {
+            "date": "2025-09-25",
+            "score": "1-1",
+            "winner": "draw",
+            "awayTeam": "Utrecht",
+            "homeTeam": "Feyenoord",
+            "competition": "Eredivisie"
+          }
+        ],
+        "edge": 28.3,
+        "odds": 2,
+        "pick": "Over 7.5 Córners",
+        "isMcp": true,
+        "match": "Feyenoord vs Utrecht",
+        "league": "Eredivisie",
+        "market": "Córners",
+        "source": "mcp",
+        "status": "pending",
+        "awayElo": 1495,
+        "country": "Países Bajos",
+        "homeElo": 1810,
+        "kickoff": "2026-09-20T05:15:00-05:00",
+        "awayLogo": "https://media.api-sports.io/football/teams/207.png",
+        "awayTeam": "Utrecht",
+        "fairOdds": 1.28,
+        "homeLogo": "https://media.api-sports.io/football/teams/209.png",
+        "homeTeam": "Feyenoord",
+        "leagueId": 88,
+        "timeSlot": "morning",
+        "awayLast5": [
+          {
+            "date": "2026-09-16",
+            "score": "1-2",
+            "isHome": false,
+            "result": "D",
+            "opponent": "Rival A",
+            "competition": "Eredivisie"
+          },
+          {
+            "date": "2026-09-11",
+            "score": "2-1",
+            "isHome": true,
+            "result": "W",
+            "opponent": "Rival B",
+            "competition": "Eredivisie"
+          },
+          {
+            "date": "2026-09-06",
+            "score": "1-3",
+            "isHome": false,
+            "result": "L",
+            "opponent": "Rival C",
+            "competition": "Eredivisie"
+          },
+          {
+            "date": "2026-09-01",
+            "score": "0-3",
+            "isHome": true,
+            "result": "L",
+            "opponent": "Rival D",
+            "competition": "Eredivisie"
+          },
+          {
+            "date": "2026-08-27",
+            "score": "1-2",
+            "isHome": false,
+            "result": "D",
+            "opponent": "Rival E",
+            "competition": "Eredivisie"
+          }
+        ],
+        "bookmaker": "Bet365",
+        "fixtureId": 1552176,
+        "homeLast5": [
+          {
+            "date": "2026-09-16",
+            "score": "2-3",
+            "isHome": false,
+            "result": "L",
+            "opponent": "Rival A",
+            "competition": "Eredivisie"
+          },
+          {
+            "date": "2026-09-11",
+            "score": "2-2",
+            "isHome": true,
+            "result": "D",
+            "opponent": "Rival B",
+            "competition": "Eredivisie"
+          },
+          {
+            "date": "2026-09-06",
+            "score": "2-1",
+            "isHome": false,
+            "result": "W",
+            "opponent": "Rival C",
+            "competition": "Eredivisie"
+          },
+          {
+            "date": "2026-09-01",
+            "score": "3-1",
+            "isHome": true,
+            "result": "W",
+            "opponent": "Rival D",
+            "competition": "Eredivisie"
+          },
+          {
+            "date": "2026-08-27",
+            "score": "2-2",
+            "isHome": false,
+            "result": "D",
+            "opponent": "Rival E",
+            "competition": "Eredivisie"
+          }
+        ],
+        "isMcpPick": true,
+        "isTopPick": true,
+        "modelOdds": 1.28,
+        "pickBadge": "mcp",
+        "selection": "Over 7.5",
+        "awayTeamId": 207,
+        "confidence": "Muy Alta",
+        "homeTeamId": 209,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/88.png",
+        "leagueTier": 1,
+        "smartScore": 99,
+        "explanation": "Volumen constante por las bandas: El cruce táctico entre Feyenoord (6.5 córners de media en casa) y Utrecht (4.3 foráneos) proyecta 10.8 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
+        "probability": 78.3,
+        "bookmakerOdds": 2,
+        "expectedValue": 56.6,
+        "cornerAnalysis": {
+          "dataQuality": 0.85,
+          "allCandidates": [
+            {
+              "line": 6.5,
+              "selection": "Over 6.5",
+              "smart_edge": null,
+              "smart_score": 0,
+              "data_quality": 0.85,
+              "decimal_odds": "ODDS_UNAVAILABLE",
+              "expected_value": null,
+              "expected_margin": 3.8,
+              "expected_corners": 10.8,
+              "required_corners": 7,
+              "devig_probability": null,
+              "model_probability": 0.861,
+              "rejection_reasons": [
+                "Cuota real de casa de apuestas no disponible para esta línea"
+              ],
+              "implied_probability": null,
+              "qualification_status": "ODDS_UNAVAILABLE"
+            },
+            {
+              "line": 7.5,
+              "selection": "Over 7.5",
+              "smart_edge": 0.283,
+              "smart_score": 89,
+              "data_quality": 0.85,
+              "decimal_odds": 2,
+              "expected_value": 0.566,
+              "expected_margin": 2.8,
+              "expected_corners": 10.8,
+              "required_corners": 8,
+              "devig_probability": 0.475,
+              "model_probability": 0.783,
+              "rejection_reasons": [],
+              "implied_probability": 0.5,
+              "qualification_status": "QUALIFIED"
+            },
+            {
+              "line": 8.5,
+              "selection": "Over 8.5",
+              "smart_edge": -0.124,
+              "smart_score": 0,
+              "data_quality": 0.85,
+              "decimal_odds": 1.22,
+              "expected_value": -0.151,
+              "expected_margin": 1.8,
+              "expected_corners": 10.8,
+              "required_corners": 9,
+              "devig_probability": 0.779,
+              "model_probability": 0.696,
+              "rejection_reasons": [
+                "Probabilidad del modelo inferior al umbral: 69.6% < 72.0%",
+                "Cuota disponible inferior al mínimo requerido: @1.22 < @1.40",
+                "Smart Edge insuficiente: +-12.4% < +6.0%"
+              ],
+              "implied_probability": 0.82,
+              "qualification_status": "REJECTED_PROB"
+            },
+            {
+              "line": 9.5,
+              "selection": "Over 9.5",
+              "smart_edge": -0.108,
+              "smart_score": 0,
+              "data_quality": 0.85,
+              "decimal_odds": 1.42,
+              "expected_value": -0.154,
+              "expected_margin": 0.8,
+              "expected_corners": 10.8,
+              "required_corners": 10,
+              "devig_probability": 0.669,
+              "model_probability": 0.596,
+              "rejection_reasons": [
+                "Probabilidad del modelo inferior al umbral: 59.6% < 70.0%",
+                "Cuota disponible inferior al mínimo requerido: @1.42 < @1.50",
+                "Smart Edge insuficiente: +-10.8% < +7.0%"
+              ],
+              "implied_probability": 0.704,
+              "qualification_status": "REJECTED_PROB"
+            },
+            {
+              "line": 10.5,
+              "selection": "Over 10.5",
+              "smart_edge": -0.081,
+              "smart_score": 0,
+              "data_quality": 0.85,
+              "decimal_odds": 1.73,
+              "expected_value": -0.14,
+              "expected_margin": -0.2,
+              "expected_corners": 10.8,
+              "required_corners": 11,
+              "devig_probability": 0.549,
+              "model_probability": 0.497,
+              "rejection_reasons": [
+                "Calidad de datos insuficiente: 85% < 88%",
+                "Probabilidad del modelo inferior al umbral: 49.7% < 68.0%",
+                "Smart Edge insuficiente: +-8.1% < +8.0%"
+              ],
+              "implied_probability": 0.578,
+              "qualification_status": "REJECTED_PROB"
+            }
+          ],
+          "recommendedLine": 7.5,
+          "distributionModel": "Negative Binomial",
+          "expectedAwayCorners": 4.34,
+          "expectedHomeCorners": 6.46,
+          "expectedTotalCorners": 10.8
+        },
+        "impliedProbability": 50
+      },
+      {
+        "h2h": [
+          {
+            "date": "2026-07-22",
+            "score": "2-1",
+            "winner": "home",
+            "awayTeam": "1899 Hoffenheim",
+            "homeTeam": "SC Paderborn 07",
+            "competition": "Bundesliga"
+          },
+          {
+            "date": "2026-03-24",
+            "score": "0-2",
+            "winner": "away",
+            "awayTeam": "SC Paderborn 07",
+            "homeTeam": "1899 Hoffenheim",
+            "competition": "Bundesliga"
+          },
+          {
+            "date": "2025-09-25",
+            "score": "1-1",
+            "winner": "draw",
+            "awayTeam": "1899 Hoffenheim",
+            "homeTeam": "SC Paderborn 07",
+            "competition": "Bundesliga"
+          }
+        ],
+        "edge": 1,
+        "odds": 1.44,
+        "pick": "Over 2.5 Goles",
+        "isMcp": true,
+        "match": "SC Paderborn 07 vs 1899 Hoffenheim",
+        "league": "Bundesliga",
+        "market": "Over 2.5 Goles",
+        "source": "mcp",
+        "status": "pending",
+        "awayElo": 1488,
+        "country": "Alemania",
+        "homeElo": 1642,
+        "kickoff": "2026-09-20T12:30:00-05:00",
+        "awayLogo": "https://media.api-sports.io/football/teams/167.png",
+        "awayTeam": "1899 Hoffenheim",
+        "fairOdds": 1.47,
+        "homeLogo": "https://media.api-sports.io/football/teams/185.png",
+        "homeTeam": "SC Paderborn 07",
+        "leagueId": 78,
+        "timeSlot": "afternoon",
+        "awayLast5": [
+          {
+            "date": "2026-09-16",
+            "score": "0-3",
+            "isHome": true,
+            "result": "L",
+            "opponent": "Rival A",
+            "competition": "Bundesliga"
+          },
+          {
+            "date": "2026-09-11",
+            "score": "1-2",
+            "isHome": false,
+            "result": "D",
+            "opponent": "Rival B",
+            "competition": "Bundesliga"
+          },
+          {
+            "date": "2026-09-06",
+            "score": "2-1",
+            "isHome": true,
+            "result": "W",
+            "opponent": "Rival C",
+            "competition": "Bundesliga"
+          },
+          {
+            "date": "2026-09-01",
+            "score": "1-3",
+            "isHome": false,
+            "result": "L",
+            "opponent": "Rival D",
+            "competition": "Bundesliga"
+          },
+          {
+            "date": "2026-08-27",
+            "score": "0-3",
+            "isHome": true,
+            "result": "L",
+            "opponent": "Rival E",
+            "competition": "Bundesliga"
+          }
+        ],
+        "bookmaker": "Bet365",
+        "fixtureId": 1575175,
+        "homeLast5": [
+          {
+            "date": "2026-09-16",
+            "score": "2-1",
+            "isHome": true,
+            "result": "W",
+            "opponent": "Rival A",
+            "competition": "Bundesliga"
+          },
+          {
+            "date": "2026-09-11",
+            "score": "0-3",
+            "isHome": false,
+            "result": "L",
+            "opponent": "Rival B",
+            "competition": "Bundesliga"
+          },
+          {
+            "date": "2026-09-06",
+            "score": "1-2",
+            "isHome": true,
+            "result": "D",
+            "opponent": "Rival C",
+            "competition": "Bundesliga"
+          },
+          {
+            "date": "2026-09-01",
+            "score": "3-1",
+            "isHome": false,
+            "result": "W",
+            "opponent": "Rival D",
+            "competition": "Bundesliga"
+          },
+          {
+            "date": "2026-08-27",
+            "score": "2-1",
+            "isHome": true,
+            "result": "W",
+            "opponent": "Rival E",
+            "competition": "Bundesliga"
+          }
+        ],
+        "isMcpPick": true,
+        "isTopPick": false,
+        "modelOdds": 1.47,
+        "pickBadge": "estandar",
+        "selection": "Over 2.5",
+        "awayTeamId": 167,
+        "confidence": "Alta",
+        "homeTeamId": 185,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/78.png",
+        "leagueTier": 1,
+        "smartScore": 99,
+        "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 3.8 tantos respaldan un desarrollo con múltiples celebraciones.",
+        "probability": 67.9,
+        "bookmakerOdds": 1.44,
+        "expectedValue": -2.2,
+        "impliedProbability": 69.4
+      }
+    ],
+    "elite3": [
+      {
+        "h2h": [
+          {
+            "date": "2026-07-22",
+            "score": "2-1",
+            "winner": "home",
+            "awayTeam": "Rangers",
+            "homeTeam": "Celtic",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-03-24",
+            "score": "0-2",
+            "winner": "away",
+            "awayTeam": "Celtic",
+            "homeTeam": "Rangers",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2025-09-25",
+            "score": "1-1",
+            "winner": "draw",
+            "awayTeam": "Rangers",
+            "homeTeam": "Celtic",
+            "competition": "Premiership"
+          }
+        ],
+        "edge": 38.1,
+        "odds": 2.1,
+        "pick": "Over 6.5 Córners",
+        "isMcp": true,
+        "match": "Celtic vs Rangers",
+        "league": "Premiership",
+        "market": "Córners",
+        "source": "mcp",
+        "status": "pending",
+        "awayElo": 1482,
+        "country": "Escocia",
+        "homeElo": 1536,
+        "kickoff": "2026-09-20T06:00:00-05:00",
+        "awayLogo": "https://media.api-sports.io/football/teams/257.png",
+        "awayTeam": "Rangers",
+        "fairOdds": 1.17,
+        "homeLogo": "https://media.api-sports.io/football/teams/247.png",
+        "homeTeam": "Celtic",
+        "leagueId": 179,
+        "timeSlot": "morning",
+        "awayLast5": [
+          {
+            "date": "2026-09-16",
+            "score": "2-1",
+            "isHome": true,
+            "result": "W",
+            "opponent": "Rival A",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-09-11",
+            "score": "1-3",
+            "isHome": false,
+            "result": "L",
+            "opponent": "Rival B",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-09-06",
+            "score": "0-3",
+            "isHome": true,
+            "result": "L",
+            "opponent": "Rival C",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-09-01",
+            "score": "1-2",
+            "isHome": false,
+            "result": "D",
+            "opponent": "Rival D",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-08-27",
+            "score": "2-1",
+            "isHome": true,
+            "result": "W",
+            "opponent": "Rival E",
+            "competition": "Premiership"
+          }
+        ],
+        "bookmaker": "Bet365",
+        "fixtureId": 1556669,
+        "homeLast5": [
+          {
+            "date": "2026-09-16",
+            "score": "0-3",
+            "isHome": true,
+            "result": "L",
+            "opponent": "Rival A",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-09-11",
+            "score": "1-2",
+            "isHome": false,
+            "result": "D",
+            "opponent": "Rival B",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-09-06",
+            "score": "2-1",
+            "isHome": true,
+            "result": "W",
+            "opponent": "Rival C",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-09-01",
+            "score": "1-3",
+            "isHome": false,
+            "result": "L",
+            "opponent": "Rival D",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-08-27",
+            "score": "1-2",
+            "isHome": true,
+            "result": "D",
+            "opponent": "Rival E",
+            "competition": "Premiership"
+          }
+        ],
+        "isMcpPick": true,
+        "isTopPick": true,
+        "modelOdds": 1.17,
+        "pickBadge": "mcp",
+        "selection": "Over 6.5",
+        "awayTeamId": 257,
+        "confidence": "Muy Alta",
+        "homeTeamId": 247,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/179.png",
+        "leagueTier": 1,
+        "smartScore": 99,
+        "explanation": "Patrón de repliegue y rechaces: Celtic sostiene una alta cadencia de llegadas al último tercio generando tiros de esquina constantes, mientras que Rangers concede más de 5.2 córners en promedio cuando juega de visitante.",
+        "probability": 85.7,
+        "bookmakerOdds": 2.1,
+        "expectedValue": 80,
+        "cornerAnalysis": {
+          "dataQuality": 0.85,
+          "allCandidates": [
+            {
+              "line": 6.5,
+              "selection": "Over 6.5",
+              "smart_edge": 0.381,
+              "smart_score": 93,
+              "data_quality": 0.85,
+              "decimal_odds": 2.1,
+              "expected_value": 0.8,
+              "expected_margin": 3.59,
+              "expected_corners": 10.59,
+              "required_corners": 7,
+              "devig_probability": 0.452,
+              "model_probability": 0.857,
+              "rejection_reasons": [],
+              "implied_probability": 0.476,
+              "qualification_status": "QUALIFIED"
+            },
+            {
+              "line": 7.5,
+              "selection": "Over 7.5",
+              "smart_edge": -0.114,
+              "smart_score": 0,
+              "data_quality": 0.85,
+              "decimal_odds": 1.12,
+              "expected_value": -0.128,
+              "expected_margin": 2.59,
+              "expected_corners": 10.59,
+              "required_corners": 8,
+              "devig_probability": 0.848,
+              "model_probability": 0.779,
+              "rejection_reasons": [
+                "Cuota disponible inferior al mínimo requerido: @1.12 < @1.30",
+                "Smart Edge insuficiente: +-11.4% < +5.0%"
+              ],
+              "implied_probability": 0.893,
+              "qualification_status": "REJECTED_ODDS"
+            },
+            {
+              "line": 8.5,
+              "selection": "Over 8.5",
+              "smart_edge": -0.111,
+              "smart_score": 0,
+              "data_quality": 0.85,
+              "decimal_odds": 1.25,
+              "expected_value": -0.139,
+              "expected_margin": 1.59,
+              "expected_corners": 10.59,
+              "required_corners": 9,
+              "devig_probability": 0.76,
+              "model_probability": 0.689,
+              "rejection_reasons": [
+                "Probabilidad del modelo inferior al umbral: 68.9% < 72.0%",
+                "Cuota disponible inferior al mínimo requerido: @1.25 < @1.40",
+                "Smart Edge insuficiente: +-11.1% < +6.0%"
+              ],
+              "implied_probability": 0.8,
+              "qualification_status": "REJECTED_PROB"
+            },
+            {
+              "line": 9.5,
+              "selection": "Over 9.5",
+              "smart_edge": -0.088,
+              "smart_score": 0,
+              "data_quality": 0.85,
+              "decimal_odds": 1.49,
+              "expected_value": -0.131,
+              "expected_margin": 0.59,
+              "expected_corners": 10.59,
+              "required_corners": 10,
+              "devig_probability": 0.638,
+              "model_probability": 0.583,
+              "rejection_reasons": [
+                "Probabilidad del modelo inferior al umbral: 58.3% < 70.0%",
+                "Cuota disponible inferior al mínimo requerido: @1.49 < @1.50",
+                "Smart Edge insuficiente: +-8.8% < +7.0%"
+              ],
+              "implied_probability": 0.671,
+              "qualification_status": "REJECTED_PROB"
+            },
+            {
+              "line": 10.5,
+              "selection": "Over 10.5",
+              "smart_edge": -0.078,
+              "smart_score": 0,
+              "data_quality": 0.85,
+              "decimal_odds": 1.8,
+              "expected_value": -0.14,
+              "expected_margin": -0.41,
+              "expected_corners": 10.59,
+              "required_corners": 11,
+              "devig_probability": 0.528,
+              "model_probability": 0.478,
+              "rejection_reasons": [
+                "Calidad de datos insuficiente: 85% < 88%",
+                "Probabilidad del modelo inferior al umbral: 47.8% < 68.0%",
+                "Smart Edge insuficiente: +-7.8% < +8.0%"
+              ],
+              "implied_probability": 0.556,
+              "qualification_status": "REJECTED_PROB"
+            }
+          ],
+          "recommendedLine": 6.5,
+          "distributionModel": "Negative Binomial",
+          "expectedAwayCorners": 4.45,
+          "expectedHomeCorners": 6.14,
+          "expectedTotalCorners": 10.59
+        },
+        "impliedProbability": 47.6
+      },
+      {
+        "h2h": [
+          {
+            "date": "2026-07-22",
+            "score": "2-1",
+            "winner": "home",
+            "awayTeam": "San Diego",
+            "homeTeam": "Inter Miami",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-03-24",
+            "score": "0-2",
+            "winner": "away",
+            "awayTeam": "Inter Miami",
+            "homeTeam": "San Diego",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2025-09-25",
+            "score": "3-0",
+            "winner": "home",
+            "awayTeam": "San Diego",
+            "homeTeam": "Inter Miami",
+            "competition": "Major League Soccer (MLS)"
+          }
+        ],
+        "edge": 5.3,
+        "odds": 1.44,
+        "pick": "Inter Miami",
+        "isMcp": true,
+        "match": "Inter Miami vs San Diego",
+        "league": "Major League Soccer (MLS)",
+        "market": "Ganador Local",
+        "source": "mcp",
+        "status": "pending",
+        "awayElo": 1570,
+        "country": "Estados Unidos",
+        "homeElo": 1960,
+        "kickoff": "2026-09-20T18:00:00-05:00",
+        "awayLogo": "https://media.api-sports.io/football/teams/25484.png",
+        "awayTeam": "San Diego",
+        "fairOdds": 1.34,
+        "homeLogo": "https://media.api-sports.io/football/teams/9568.png",
+        "homeTeam": "Inter Miami",
+        "leagueId": 253,
+        "timeSlot": "night",
+        "awayLast5": [
+          {
+            "date": "2026-09-16",
+            "score": "2-1",
+            "isHome": true,
+            "result": "W",
+            "opponent": "Rival A",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-09-11",
+            "score": "0-3",
+            "isHome": false,
+            "result": "L",
+            "opponent": "Rival B",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-09-06",
+            "score": "1-2",
+            "isHome": true,
+            "result": "D",
+            "opponent": "Rival C",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-09-01",
+            "score": "3-1",
+            "isHome": false,
+            "result": "W",
+            "opponent": "Rival D",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-08-27",
+            "score": "1-2",
+            "isHome": true,
+            "result": "L",
+            "opponent": "Rival E",
+            "competition": "Major League Soccer (MLS)"
+          }
+        ],
+        "bookmaker": "Bet365",
+        "fixtureId": 1490495,
+        "homeLast5": [
+          {
+            "date": "2026-09-16",
+            "score": "2-3",
+            "isHome": false,
+            "result": "L",
+            "opponent": "Rival A",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-09-11",
+            "score": "2-2",
+            "isHome": true,
+            "result": "D",
+            "opponent": "Rival B",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-09-06",
+            "score": "2-1",
+            "isHome": false,
+            "result": "W",
+            "opponent": "Rival C",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-09-01",
+            "score": "3-1",
+            "isHome": true,
+            "result": "W",
+            "opponent": "Rival D",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-08-27",
+            "score": "2-2",
+            "isHome": false,
+            "result": "D",
+            "opponent": "Rival E",
+            "competition": "Major League Soccer (MLS)"
+          }
+        ],
+        "isMcpPick": true,
+        "isTopPick": true,
+        "modelOdds": 1.34,
+        "pickBadge": "valor",
+        "selection": "1",
+        "awayTeamId": 25484,
+        "confidence": "Muy Alta",
+        "homeTeamId": 9568,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/253.png",
+        "leagueTier": 1,
+        "smartScore": 99,
+        "explanation": "Inter Miami impone una marcada solvencia como anfitrión (2 triunfos en sus últimos 5 compromisos) y promedia 3.4 xG en casa. Su dominio territorial y solidez defensiva ante un San Diego que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+        "probability": 74.7,
+        "bookmakerOdds": 1.44,
+        "expectedValue": 7.6,
+        "impliedProbability": 69.4
+      }
+    ],
+    "premium5": [
+      {
+        "h2h": [
+          {
+            "date": "2026-07-22",
+            "score": "2-1",
+            "winner": "home",
+            "awayTeam": "Rangers",
+            "homeTeam": "Celtic",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-03-24",
+            "score": "0-2",
+            "winner": "away",
+            "awayTeam": "Celtic",
+            "homeTeam": "Rangers",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2025-09-25",
+            "score": "1-1",
+            "winner": "draw",
+            "awayTeam": "Rangers",
+            "homeTeam": "Celtic",
+            "competition": "Premiership"
+          }
+        ],
+        "edge": 38.1,
+        "odds": 2.1,
+        "pick": "Over 6.5 Córners",
+        "isMcp": true,
+        "match": "Celtic vs Rangers",
+        "league": "Premiership",
+        "market": "Córners",
+        "source": "mcp",
+        "status": "pending",
+        "awayElo": 1482,
+        "country": "Escocia",
+        "homeElo": 1536,
+        "kickoff": "2026-09-20T06:00:00-05:00",
+        "awayLogo": "https://media.api-sports.io/football/teams/257.png",
+        "awayTeam": "Rangers",
+        "fairOdds": 1.17,
+        "homeLogo": "https://media.api-sports.io/football/teams/247.png",
+        "homeTeam": "Celtic",
+        "leagueId": 179,
+        "timeSlot": "morning",
+        "awayLast5": [
+          {
+            "date": "2026-09-16",
+            "score": "2-1",
+            "isHome": true,
+            "result": "W",
+            "opponent": "Rival A",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-09-11",
+            "score": "1-3",
+            "isHome": false,
+            "result": "L",
+            "opponent": "Rival B",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-09-06",
+            "score": "0-3",
+            "isHome": true,
+            "result": "L",
+            "opponent": "Rival C",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-09-01",
+            "score": "1-2",
+            "isHome": false,
+            "result": "D",
+            "opponent": "Rival D",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-08-27",
+            "score": "2-1",
+            "isHome": true,
+            "result": "W",
+            "opponent": "Rival E",
+            "competition": "Premiership"
+          }
+        ],
+        "bookmaker": "Bet365",
+        "fixtureId": 1556669,
+        "homeLast5": [
+          {
+            "date": "2026-09-16",
+            "score": "0-3",
+            "isHome": true,
+            "result": "L",
+            "opponent": "Rival A",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-09-11",
+            "score": "1-2",
+            "isHome": false,
+            "result": "D",
+            "opponent": "Rival B",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-09-06",
+            "score": "2-1",
+            "isHome": true,
+            "result": "W",
+            "opponent": "Rival C",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-09-01",
+            "score": "1-3",
+            "isHome": false,
+            "result": "L",
+            "opponent": "Rival D",
+            "competition": "Premiership"
+          },
+          {
+            "date": "2026-08-27",
+            "score": "1-2",
+            "isHome": true,
+            "result": "D",
+            "opponent": "Rival E",
+            "competition": "Premiership"
+          }
+        ],
+        "isMcpPick": true,
+        "isTopPick": true,
+        "modelOdds": 1.17,
+        "pickBadge": "mcp",
+        "selection": "Over 6.5",
+        "awayTeamId": 257,
+        "confidence": "Muy Alta",
+        "homeTeamId": 247,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/179.png",
+        "leagueTier": 1,
+        "smartScore": 99,
+        "explanation": "Patrón de repliegue y rechaces: Celtic sostiene una alta cadencia de llegadas al último tercio generando tiros de esquina constantes, mientras que Rangers concede más de 5.2 córners en promedio cuando juega de visitante.",
+        "probability": 85.7,
+        "bookmakerOdds": 2.1,
+        "expectedValue": 80,
+        "cornerAnalysis": {
+          "dataQuality": 0.85,
+          "allCandidates": [
+            {
+              "line": 6.5,
+              "selection": "Over 6.5",
+              "smart_edge": 0.381,
+              "smart_score": 93,
+              "data_quality": 0.85,
+              "decimal_odds": 2.1,
+              "expected_value": 0.8,
+              "expected_margin": 3.59,
+              "expected_corners": 10.59,
+              "required_corners": 7,
+              "devig_probability": 0.452,
+              "model_probability": 0.857,
+              "rejection_reasons": [],
+              "implied_probability": 0.476,
+              "qualification_status": "QUALIFIED"
+            },
+            {
+              "line": 7.5,
+              "selection": "Over 7.5",
+              "smart_edge": -0.114,
+              "smart_score": 0,
+              "data_quality": 0.85,
+              "decimal_odds": 1.12,
+              "expected_value": -0.128,
+              "expected_margin": 2.59,
+              "expected_corners": 10.59,
+              "required_corners": 8,
+              "devig_probability": 0.848,
+              "model_probability": 0.779,
+              "rejection_reasons": [
+                "Cuota disponible inferior al mínimo requerido: @1.12 < @1.30",
+                "Smart Edge insuficiente: +-11.4% < +5.0%"
+              ],
+              "implied_probability": 0.893,
+              "qualification_status": "REJECTED_ODDS"
+            },
+            {
+              "line": 8.5,
+              "selection": "Over 8.5",
+              "smart_edge": -0.111,
+              "smart_score": 0,
+              "data_quality": 0.85,
+              "decimal_odds": 1.25,
+              "expected_value": -0.139,
+              "expected_margin": 1.59,
+              "expected_corners": 10.59,
+              "required_corners": 9,
+              "devig_probability": 0.76,
+              "model_probability": 0.689,
+              "rejection_reasons": [
+                "Probabilidad del modelo inferior al umbral: 68.9% < 72.0%",
+                "Cuota disponible inferior al mínimo requerido: @1.25 < @1.40",
+                "Smart Edge insuficiente: +-11.1% < +6.0%"
+              ],
+              "implied_probability": 0.8,
+              "qualification_status": "REJECTED_PROB"
+            },
+            {
+              "line": 9.5,
+              "selection": "Over 9.5",
+              "smart_edge": -0.088,
+              "smart_score": 0,
+              "data_quality": 0.85,
+              "decimal_odds": 1.49,
+              "expected_value": -0.131,
+              "expected_margin": 0.59,
+              "expected_corners": 10.59,
+              "required_corners": 10,
+              "devig_probability": 0.638,
+              "model_probability": 0.583,
+              "rejection_reasons": [
+                "Probabilidad del modelo inferior al umbral: 58.3% < 70.0%",
+                "Cuota disponible inferior al mínimo requerido: @1.49 < @1.50",
+                "Smart Edge insuficiente: +-8.8% < +7.0%"
+              ],
+              "implied_probability": 0.671,
+              "qualification_status": "REJECTED_PROB"
+            },
+            {
+              "line": 10.5,
+              "selection": "Over 10.5",
+              "smart_edge": -0.078,
+              "smart_score": 0,
+              "data_quality": 0.85,
+              "decimal_odds": 1.8,
+              "expected_value": -0.14,
+              "expected_margin": -0.41,
+              "expected_corners": 10.59,
+              "required_corners": 11,
+              "devig_probability": 0.528,
+              "model_probability": 0.478,
+              "rejection_reasons": [
+                "Calidad de datos insuficiente: 85% < 88%",
+                "Probabilidad del modelo inferior al umbral: 47.8% < 68.0%",
+                "Smart Edge insuficiente: +-7.8% < +8.0%"
+              ],
+              "implied_probability": 0.556,
+              "qualification_status": "REJECTED_PROB"
+            }
+          ],
+          "recommendedLine": 6.5,
+          "distributionModel": "Negative Binomial",
+          "expectedAwayCorners": 4.45,
+          "expectedHomeCorners": 6.14,
+          "expectedTotalCorners": 10.59
+        },
+        "impliedProbability": 47.6
+      },
+      {
+        "h2h": [
+          {
+            "date": "2026-07-22",
+            "score": "2-1",
+            "winner": "home",
+            "awayTeam": "San Diego",
+            "homeTeam": "Inter Miami",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-03-24",
+            "score": "0-2",
+            "winner": "away",
+            "awayTeam": "Inter Miami",
+            "homeTeam": "San Diego",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2025-09-25",
+            "score": "3-0",
+            "winner": "home",
+            "awayTeam": "San Diego",
+            "homeTeam": "Inter Miami",
+            "competition": "Major League Soccer (MLS)"
+          }
+        ],
+        "edge": 5.3,
+        "odds": 1.44,
+        "pick": "Inter Miami",
+        "isMcp": true,
+        "match": "Inter Miami vs San Diego",
+        "league": "Major League Soccer (MLS)",
+        "market": "Ganador Local",
+        "source": "mcp",
+        "status": "pending",
+        "awayElo": 1570,
+        "country": "Estados Unidos",
+        "homeElo": 1960,
+        "kickoff": "2026-09-20T18:00:00-05:00",
+        "awayLogo": "https://media.api-sports.io/football/teams/25484.png",
+        "awayTeam": "San Diego",
+        "fairOdds": 1.34,
+        "homeLogo": "https://media.api-sports.io/football/teams/9568.png",
+        "homeTeam": "Inter Miami",
+        "leagueId": 253,
+        "timeSlot": "night",
+        "awayLast5": [
+          {
+            "date": "2026-09-16",
+            "score": "2-1",
+            "isHome": true,
+            "result": "W",
+            "opponent": "Rival A",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-09-11",
+            "score": "0-3",
+            "isHome": false,
+            "result": "L",
+            "opponent": "Rival B",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-09-06",
+            "score": "1-2",
+            "isHome": true,
+            "result": "D",
+            "opponent": "Rival C",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-09-01",
+            "score": "3-1",
+            "isHome": false,
+            "result": "W",
+            "opponent": "Rival D",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-08-27",
+            "score": "1-2",
+            "isHome": true,
+            "result": "L",
+            "opponent": "Rival E",
+            "competition": "Major League Soccer (MLS)"
+          }
+        ],
+        "bookmaker": "Bet365",
+        "fixtureId": 1490495,
+        "homeLast5": [
+          {
+            "date": "2026-09-16",
+            "score": "2-3",
+            "isHome": false,
+            "result": "L",
+            "opponent": "Rival A",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-09-11",
+            "score": "2-2",
+            "isHome": true,
+            "result": "D",
+            "opponent": "Rival B",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-09-06",
+            "score": "2-1",
+            "isHome": false,
+            "result": "W",
+            "opponent": "Rival C",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-09-01",
+            "score": "3-1",
+            "isHome": true,
+            "result": "W",
+            "opponent": "Rival D",
+            "competition": "Major League Soccer (MLS)"
+          },
+          {
+            "date": "2026-08-27",
+            "score": "2-2",
+            "isHome": false,
+            "result": "D",
+            "opponent": "Rival E",
+            "competition": "Major League Soccer (MLS)"
+          }
+        ],
+        "isMcpPick": true,
+        "isTopPick": true,
+        "modelOdds": 1.34,
+        "pickBadge": "valor",
+        "selection": "1",
+        "awayTeamId": 25484,
+        "confidence": "Muy Alta",
+        "homeTeamId": 9568,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/253.png",
+        "leagueTier": 1,
+        "smartScore": 99,
+        "explanation": "Inter Miami impone una marcada solvencia como anfitrión (2 triunfos en sus últimos 5 compromisos) y promedia 3.4 xG en casa. Su dominio territorial y solidez defensiva ante un San Diego que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+        "probability": 74.7,
+        "bookmakerOdds": 1.44,
+        "expectedValue": 7.6,
+        "impliedProbability": 69.4
+      },
+      {
+        "h2h": [
+          {
+            "date": "2026-07-22",
+            "score": "2-1",
+            "winner": "home",
+            "awayTeam": "1. FC Heidenheim",
+            "homeTeam": "Arminia Bielefeld",
+            "competition": "2. Bundesliga"
+          },
+          {
+            "date": "2026-03-24",
+            "score": "0-2",
+            "winner": "away",
+            "awayTeam": "Arminia Bielefeld",
+            "homeTeam": "1. FC Heidenheim",
+            "competition": "2. Bundesliga"
+          },
+          {
+            "date": "2025-09-25",
+            "score": "3-0",
+            "winner": "home",
+            "awayTeam": "1. FC Heidenheim",
+            "homeTeam": "Arminia Bielefeld",
+            "competition": "2. Bundesliga"
+          }
+        ],
+        "edge": 33.9,
+        "odds": 2,
+        "pick": "Over 6.5 Córners",
+        "isMcp": true,
+        "match": "Arminia Bielefeld vs 1. FC Heidenheim",
+        "league": "2. Bundesliga",
+        "market": "Córners",
+        "source": "mcp",
+        "status": "pending",
+        "awayElo": 1524,
+        "country": "Alemania",
+        "homeElo": 1600,
+        "kickoff": "2026-09-20T06:30:00-05:00",
+        "awayLogo": "https://media.api-sports.io/football/teams/180.png",
+        "awayTeam": "1. FC Heidenheim",
+        "fairOdds": 1.19,
+        "homeLogo": "https://media.api-sports.io/football/teams/188.png",
+        "homeTeam": "Arminia Bielefeld",
+        "leagueId": 79,
+        "timeSlot": "morning",
+        "awayLast5": [
+          {
+            "date": "2026-09-16",
+            "score": "1-2",
+            "isHome": true,
+            "result": "D",
+            "opponent": "Rival A",
+            "competition": "2. Bundesliga"
+          },
+          {
+            "date": "2026-09-11",
+            "score": "1-2",
+            "isHome": false,
+            "result": "W",
+            "opponent": "Rival B",
+            "competition": "2. Bundesliga"
+          },
+          {
+            "date": "2026-09-06",
+            "score": "0-3",
+            "isHome": true,
+            "result": "L",
+            "opponent": "Rival C",
+            "competition": "2. Bundesliga"
+          },
+          {
+            "date": "2026-09-01",
+            "score": "1-2",
+            "isHome": false,
+            "result": "D",
+            "opponent": "Rival D",
+            "competition": "2. Bundesliga"
+          },
+          {
+            "date": "2026-08-27",
+            "score": "2-1",
+            "isHome": true,
+            "result": "W",
+            "opponent": "Rival E",
+            "competition": "2. Bundesliga"
+          }
+        ],
+        "bookmaker": "Bet365",
+        "fixtureId": 1576179,
+        "homeLast5": [
+          {
+            "date": "2026-09-16",
+            "score": "0-3",
+            "isHome": false,
+            "result": "L",
+            "opponent": "Rival A",
+            "competition": "2. Bundesliga"
+          },
+          {
+            "date": "2026-09-11",
+            "score": "1-2",
+            "isHome": true,
+            "result": "D",
+            "opponent": "Rival B",
+            "competition": "2. Bundesliga"
+          },
+          {
+            "date": "2026-09-06",
+            "score": "3-1",
+            "isHome": false,
+            "result": "W",
+            "opponent": "Rival C",
+            "competition": "2. Bundesliga"
+          },
+          {
+            "date": "2026-09-01",
+            "score": "2-1",
+            "isHome": true,
+            "result": "W",
+            "opponent": "Rival D",
+            "competition": "2. Bundesliga"
+          },
+          {
+            "date": "2026-08-27",
+            "score": "0-3",
+            "isHome": false,
+            "result": "L",
+            "opponent": "Rival E",
+            "competition": "2. Bundesliga"
+          }
+        ],
+        "isMcpPick": true,
+        "isTopPick": true,
+        "modelOdds": 1.19,
+        "pickBadge": "mcp",
+        "selection": "Over 6.5",
+        "awayTeamId": 180,
+        "confidence": "Muy Alta",
+        "homeTeamId": 188,
+        "leagueLogo": "https://media.api-sports.io/football/leagues/79.png",
+        "leagueTier": 2,
+        "smartScore": 99,
+        "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.3 córners totales.",
+        "probability": 83.9,
+        "bookmakerOdds": 2,
+        "expectedValue": 67.8,
+        "cornerAnalysis": {
+          "dataQuality": 0.85,
+          "allCandidates": [
+            {
+              "line": 6.5,
+              "selection": "Over 6.5",
+              "smart_edge": 0.339,
+              "smart_score": 92,
+              "data_quality": 0.85,
+              "decimal_odds": 2,
+              "expected_value": 0.678,
+              "expected_margin": 3.31,
+              "expected_corners": 10.31,
+              "required_corners": 7,
+              "devig_probability": 0.475,
+              "model_probability": 0.839,
+              "rejection_reasons": [],
+              "implied_probability": 0.5,
+              "qualification_status": "QUALIFIED"
+            },
+            {
+              "line": 7.5,
+              "selection": "Over 7.5",
+              "smart_edge": -0.13,
+              "smart_score": 0,
+              "data_quality": 0.85,
+              "decimal_odds": 1.13,
+              "expected_value": -0.147,
+              "expected_margin": 2.31,
+              "expected_corners": 10.31,
+              "required_corners": 8,
+              "devig_probability": 0.841,
+              "model_probability": 0.755,
+              "rejection_reasons": [
+                "Probabilidad del modelo inferior al umbral: 75.5% < 76.0%",
+                "Cuota disponible inferior al mínimo requerido: @1.13 < @1.30",
+                "Smart Edge insuficiente: +-13.0% < +5.0%"
+              ],
+              "implied_probability": 0.885,
+              "qualification_status": "REJECTED_PROB"
+            },
+            {
+              "line": 8.5,
+              "selection": "Over 8.5",
+              "smart_edge": -0.124,
+              "smart_score": 0,
+              "data_quality": 0.85,
+              "decimal_odds": 1.28,
+              "expected_value": -0.159,
+              "expected_margin": 1.31,
+              "expected_corners": 10.31,
+              "required_corners": 9,
+              "devig_probability": 0.742,
+              "model_probability": 0.657,
+              "rejection_reasons": [
+                "Probabilidad del modelo inferior al umbral: 65.7% < 72.0%",
+                "Cuota disponible inferior al mínimo requerido: @1.28 < @1.40",
+                "Smart Edge insuficiente: +-12.4% < +6.0%"
+              ],
+              "implied_probability": 0.781,
+              "qualification_status": "REJECTED_PROB"
+            },
+            {
+              "line": 9.5,
+              "selection": "Over 9.5",
+              "smart_edge": -0.114,
+              "smart_score": 0,
+              "data_quality": 0.85,
+              "decimal_odds": 1.5,
+              "expected_value": -0.17,
+              "expected_margin": 0.31,
+              "expected_corners": 10.31,
+              "required_corners": 10,
+              "devig_probability": 0.633,
+              "model_probability": 0.553,
+              "rejection_reasons": [
+                "Probabilidad del modelo inferior al umbral: 55.3% < 70.0%",
+                "Smart Edge insuficiente: +-11.4% < +7.0%"
+              ],
+              "implied_probability": 0.667,
+              "qualification_status": "REJECTED_PROB"
+            },
+            {
+              "line": 10.5,
+              "selection": "Over 10.5",
+              "smart_edge": -0.106,
+              "smart_score": 0,
+              "data_quality": 0.85,
+              "decimal_odds": 1.8,
+              "expected_value": -0.19,
+              "expected_margin": -0.69,
+              "expected_corners": 10.31,
+              "required_corners": 11,
+              "devig_probability": 0.528,
+              "model_probability": 0.45,
+              "rejection_reasons": [
+                "Calidad de datos insuficiente: 85% < 88%",
+                "Probabilidad del modelo inferior al umbral: 45.0% < 68.0%",
+                "Smart Edge insuficiente: +-10.6% < +8.0%"
+              ],
+              "implied_probability": 0.556,
+              "qualification_status": "REJECTED_PROB"
+            }
+          ],
+          "recommendedLine": 6.5,
+          "distributionModel": "Negative Binomial",
+          "expectedAwayCorners": 4.38,
+          "expectedHomeCorners": 5.93,
+          "expectedTotalCorners": 10.31
+        },
+        "impliedProbability": 50
+      },
+      {
+        "edge": 7.5,
+        "odds": 1.65,
+        "isMcp": true,
+        "match": "Bayern Munich vs Borussia Dortmund",
+        "league": "Bundesliga",
+        "market": "Over 2.5 Goles",
+        "source": "mcp",
+        "status": "pending",
+        "country": "Alemania",
+        "kickoff": "2026-09-20T12:15:21.125Z",
+        "awayTeam": "Borussia Dortmund",
+        "homeTeam": "Bayern Munich",
+        "leagueId": 78,
+        "fixtureId": 999199,
+        "isMcpPick": true,
+        "pickBadge": "mcp",
+        "selection": "Over 2.5",
+        "awayTeamId": 165,
+        "confidence": "Muy Alta",
+        "homeTeamId": 157,
+        "smartScore": 85,
+        "probability": 72
+      }
+    ]
   }
 }
