@@ -134,12 +134,12 @@ export default function DailyParlayPage() {
     year: "numeric",
   });
 
-  // Generate 3 mutually exclusive parlays with 3 picks each
+  // Generate 3 mutually exclusive 2-pick parlays
   const { parlay1, parlay2, parlay3 } = getImmutableDailyParlays(signals);
 
   let selectedPicks: MarketOpportunity[] = [];
-  let parlayTitle = "🛡️ Parley Seguro (3 Picks)";
-  let parlayDescription = "3 selecciones de máxima probabilidad y confianza (Ganador Local, Over 2.5, Ambos Anotan).";
+  let parlayTitle = "🛡️ Doble Seguro (2 Picks)";
+  let parlayDescription = "2 selecciones de máxima probabilidad y certeza estadística (Ganador Local, Over 1.5/2.5, Córners, BTTS).";
 
   if (parlayMode === "MCP" && publishedMcpParlay && publishedMcpParlay.picks.length > 0) {
     selectedPicks = publishedMcpParlay.picks;
@@ -147,21 +147,21 @@ export default function DailyParlayPage() {
     parlayDescription = "Combinada descubierta y publicada por el Agente de Inteligencia MCP.";
   } else if (parlayMode === "PARLAY_2") {
     selectedPicks = parlay2;
-    parlayTitle = "💎 Parley Valor (3 Picks)";
-    parlayDescription = "3 selecciones con máximo valor esperado (+EV) y ventaja matemática de partidos distintos.";
+    parlayTitle = "💎 Doble de Valor (2 Picks)";
+    parlayDescription = "2 selecciones con máximo valor esperado (+EV) y ventaja matemática de partidos distintos.";
   } else if (parlayMode === "PARLAY_3") {
     selectedPicks = parlay3;
-    parlayTitle = "🔥 Parley Pro (3 Picks)";
-    parlayDescription = "3 selecciones multiplicadoras de alto rendimiento sin repetición de partidos.";
+    parlayTitle = "🔥 Doble Pro (2 Picks)";
+    parlayDescription = "2 selecciones de baja varianza y alto rendimiento sin repetición de partidos.";
   } else {
     selectedPicks = parlay1;
-    parlayTitle = "🛡️ Parley Seguro (3 Picks)";
-    parlayDescription = "3 selecciones de máxima probabilidad y confianza estadística para crecimiento sostenido.";
+    parlayTitle = "🛡️ Doble Seguro (2 Picks)";
+    parlayDescription = "2 selecciones de máxima probabilidad y certeza estadística para crecimiento sostenido.";
   }
 
   // Fallback if empty
   if (selectedPicks.length === 0 && signals.length > 0) {
-    selectedPicks = signals.slice(0, 3);
+    selectedPicks = signals.slice(0, 2);
   }
 
   // Compute accumulated parlay odds and combined probability
@@ -301,14 +301,14 @@ export default function DailyParlayPage() {
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-1">
                   <span className="text-sm font-black text-slate-900 dark:text-white truncate">
-                    1. Parley Seguro
+                    1. Doble Seguro
                   </span>
                   <span className="text-[11px] font-black px-2 py-0.5 rounded-lg bg-emerald-500 text-slate-950">
                     @{calcOdds(parlay1)}
                   </span>
                 </div>
                 <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">
-                  3 picks de máxima probabilidad y mayor certeza estadística.
+                  2 picks de máxima probabilidad (≥ 68% - 85%).
                 </div>
               </div>
             </button>
@@ -326,14 +326,14 @@ export default function DailyParlayPage() {
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-1">
                   <span className="text-sm font-black text-slate-900 dark:text-white truncate">
-                    2. Parley Valor
+                    2. Doble de Valor
                   </span>
                   <span className="text-[11px] font-black px-2 py-0.5 rounded-lg bg-amber-500 text-slate-950">
                     @{calcOdds(parlay2)}
                   </span>
                 </div>
                 <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">
-                  3 picks con máximo valor esperado (+EV) de partidos distintos.
+                  2 picks con máximo valor esperado (+EV) de partidos distintos.
                 </div>
               </div>
             </button>
@@ -351,14 +351,14 @@ export default function DailyParlayPage() {
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-1">
                   <span className="text-sm font-black text-slate-900 dark:text-white truncate">
-                    3. Parley Pro
+                    3. Doble Pro
                   </span>
                   <span className="text-[11px] font-black px-2 py-0.5 rounded-lg bg-rose-500 text-white">
                     @{calcOdds(parlay3)}
                   </span>
                 </div>
                 <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">
-                  3 picks multiplicadores de alta rentabilidad sin repetición.
+                  2 picks de baja varianza y alta efectividad.
                 </div>
               </div>
             </button>

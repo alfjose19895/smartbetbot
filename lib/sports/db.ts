@@ -2293,19 +2293,19 @@ export async function getHistoricalSettledParlays(): Promise<HistoricalSettledPa
     if (!rawPicks || rawPicks.length === 0) {
       rawPicks = dateGroups[dateStr] as any;
     }
-    if (!rawPicks || rawPicks.length < 3) continue;
+    if (!rawPicks || rawPicks.length < 2) continue;
 
     const dailyParlays = getImmutableDailyParlays(rawPicks, dateStr);
 
     const parlayConfigs = [
-      { key: "parlay1" as const, title: "🛡️ Parley Seguro (3 Selecciones)", idSuffix: "seguro", size: 3 },
-      { key: "parlay2" as const, title: "💎 Parley Valor (3 Selecciones)", idSuffix: "valor", size: 3 },
-      { key: "parlay3" as const, title: "🔥 Parley Pro (3 Selecciones)", idSuffix: "pro", size: 3 },
+      { key: "parlay1" as const, title: "🛡️ Doble Seguro (2 Selecciones)", idSuffix: "seguro", size: 2 },
+      { key: "parlay2" as const, title: "💎 Doble de Valor (2 Selecciones)", idSuffix: "valor", size: 2 },
+      { key: "parlay3" as const, title: "🔥 Doble Pro (2 Selecciones)", idSuffix: "pro", size: 2 },
     ];
 
     for (const config of parlayConfigs) {
       const parlayLegs = dailyParlays[config.key];
-      if (!parlayLegs || parlayLegs.length < 3) continue;
+      if (!parlayLegs || parlayLegs.length < 2) continue;
 
       const evaluatedLegs = parlayLegs.map((leg) => {
         const hNorm = normalizeTeamName(leg.homeTeam || "").toLowerCase();

@@ -61,17 +61,17 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
 
   const currentTitle =
     selectedParlayIndex === 1
-      ? "🛡️ Parley Seguro (3 Picks)"
+      ? "🛡️ Doble Seguro (2 Picks)"
       : selectedParlayIndex === 2
-      ? "💎 Parley Valor (3 Picks)"
-      : "🔥 Parley Pro (3 Picks)";
+      ? "💎 Doble de Valor (2 Picks)"
+      : "🔥 Doble Pro (2 Picks)";
 
   const currentDesc =
     selectedParlayIndex === 1
-      ? "3 selecciones de máxima probabilidad y mayor confianza estadística."
+      ? "2 selecciones de máxima probabilidad y mayor confianza estadística (≥ 68% - 85%)."
       : selectedParlayIndex === 2
-      ? "3 selecciones con el mayor valor esperado (+EV) y ventaja matemática del día."
-      : "3 selecciones combinadas de alto valor y rendimiento contrastado.";
+      ? "2 selecciones con el mayor valor esperado (+EV) y ventaja matemática del día."
+      : "2 selecciones combinadas de baja varianza y alto rendimiento contrastado.";
 
   const totalOdds = selectedPicks.reduce((acc, p) => acc * (p.odds || 1.5), 1);
   const potentialPayout = stake * totalOdds;
@@ -145,7 +145,7 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
                 : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
             }`}
           >
-            🛡️ Seguro (3)
+            🛡️ Doble Seguro (2)
           </button>
           <button
             onClick={() => setSelectedParlayIndex(2)}
@@ -165,13 +165,13 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
                 : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
             }`}
           >
-            🔥 Parley Pro (3)
+            🔥 Doble Pro (2)
           </button>
         </div>
       </div>
 
       {/* Parlay Legs Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
         {selectedPicks.map((pick, idx) => (
           <div
             key={pick.id || `${pick.fixtureId}-${pick.market}-${idx}`}

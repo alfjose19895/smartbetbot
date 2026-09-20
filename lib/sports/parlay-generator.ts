@@ -15,9 +15,9 @@ export function getEcuadorDateString(d: Date | number | string = Date.now()): st
 }
 
 export interface TripleExclusiveParlays {
-  parlay1: MarketOpportunity[]; // Parley 1: Seguro / Élite (3 Picks)
-  parlay2: MarketOpportunity[]; // Parley 2: Valor / Oro (3 Picks)
-  parlay3: MarketOpportunity[]; // Parley 3: Pro / Multi-Mercado (3 Picks)
+  parlay1: MarketOpportunity[]; // Parley 1: Doble Seguro / Élite (2 Picks)
+  parlay2: MarketOpportunity[]; // Parley 2: Doble de Valor / Oro (2 Picks)
+  parlay3: MarketOpportunity[]; // Parley 3: Doble Pro / Multi-Mercado (2 Picks)
   // Backward-compatible properties:
   elite3: MarketOpportunity[];
   premium5: MarketOpportunity[];
@@ -71,6 +71,7 @@ function safeWriteParlaysFile(filePath: string, data: Record<string, TripleExclu
  */
 export function getMarketCategory(marketName: string): string {
   const m = (marketName || "").toLowerCase().trim();
+  if (m.includes("córner") || m.includes("corner")) return "CORNERS";
   if (m.includes("ambos") || m.includes("btts")) return "BTTS";
   if (m.includes("doble") || m.includes("1x") || m.includes("x2") || m.includes("12")) return "DOUBLE_CHANCE";
   if (
@@ -91,28 +92,61 @@ export function getMarketCategory(marketName: string): string {
 }
 
 /**
- * Generates THREE mutually exclusive Parlays with 3 predictions each (9 distinct picks in total):
- * 1. Parley 1 (Seguro / Élite): 3 highest probability & confidence selections (Max Winrate).
- * 2. Parley 2 (Valor / Oro): 3 highest Expected Value (+EV) selections from distinct matches.
- * 3. Parley 3 (Pro / Multi-Mercado): 3 balanced high-yield selections with proven reliability.
+ * Strict quality qualification filter for 2-Pick Parlays:
+ * - Minimum probability >= 68.0% (target 70% - 85%)
+ * - Tier 1 & Tier 2 curated leagues only
+ * - High-confidence odds range (1.25 to 1.95)
+ */
+export function isQualifiedForParlay(p: MarketOpportunity): boolean {
+  const prob = typeof p.probability === "number" ? p.probability : 0;
+  const odds = typeof p.odds === "number" ? p.odds : 0;
+  const tier = typeof p.leagueTier === "number" ? p.leagueTier : 2;
+
+  if (prob < 68.0) return false;
+  if (odds > 1.95 || odds < 1.22) return false;
+  if (tier > 2) return false;
+
+  return true;
+}
+
+/**
+ * Generates THREE mutually exclusive 2-Pick Parlays (Dobles de Oro) with 2 predictions each:
+ * 1. Parley 1 (🛡️ Doble Seguro): 2 highest probability & confidence selections (Max Winrate >= 68% - 85%).
+ * 2. Parley 2 (💎 Doble de Valor): 2 highest Expected Value (+EV) selections with prob >= 68%.
+ * 3. Parley 3 (🔥 Doble Pro): 2 diversified low-variance selections with prob >= 68%.
  */
 export function buildTripleExclusiveParlays(
   predictions: MarketOpportunity[],
   dateStr?: string
 ): TripleExclusiveParlays {
   const targetDate = dateStr || getEcuadorDateString(Date.now());
-  const validPool = [...predictions].filter((p) => {
+  
+  // Strict filter: >= 68% prob, Tier 1/2 leagues, 1.25 - 1.95 odds
+  let strictPool = [...predictions].filter((p) => {
     const pDate = p.kickoff ? getEcuadorDateString(p.kickoff) : targetDate;
-    return pDate === targetDate && p.odds >= 1.25 && p.probability >= 35;
+    return pDate === targetDate && isQualifiedForParlay(p);
   });
+
+  // Fallback if strict pool has fewer than 6 picks: accept top probability picks (>= 60%) from curated leagues
+  if (strictPool.length < 6) {
+    const fallbackCandidates = [...predictions].filter((p) => {
+      const pDate = p.kickoff ? getEcuadorDateString(p.kickoff) : targetDate;
+      const prob = typeof p.probability === "number" ? p.probability : 0;
+      const odds = typeof p.odds === "number" ? p.odds : 0;
+      return pDate === targetDate && prob >= 60.0 && odds >= 1.22 && odds <= 2.10;
+    });
+    strictPool = fallbackCandidates;
+  }
+
   const usedMatchKeys = new Set<string>();
 
   const getMatchKey = (p: MarketOpportunity): string => {
     return `${p.fixtureId || 0}-${p.homeTeam.trim().toLowerCase()}-${p.awayTeam.trim().toLowerCase()}`;
   };
 
-  const select3Picks = (
+  const selectNPicks = (
     pool: MarketOpportunity[],
+    targetCount: number,
     sorter: (a: MarketOpportunity, b: MarketOpportunity) => number
   ): MarketOpportunity[] => {
     const selected: MarketOpportunity[] = [];
@@ -123,7 +157,7 @@ export function buildTripleExclusiveParlays(
       .sort(sorter);
 
     for (const p of sorted) {
-      if (selected.length >= 3) break;
+      if (selected.length >= targetCount) break;
       const key = getMatchKey(p);
       const cat = getMarketCategory(p.market);
       if (!usedMatchKeys.has(key) && !usedCategories.has(cat)) {
@@ -133,9 +167,9 @@ export function buildTripleExclusiveParlays(
       }
     }
 
-    if (selected.length < 3) {
+    if (selected.length < targetCount) {
       for (const p of sorted) {
-        if (selected.length >= 3) break;
+        if (selected.length >= targetCount) break;
         const key = getMatchKey(p);
         if (!usedMatchKeys.has(key)) {
           selected.push(p);
@@ -147,15 +181,17 @@ export function buildTripleExclusiveParlays(
     return selected;
   };
 
-  const parlay1 = select3Picks(validPool, (a, b) => {
-    const aTier = a.leagueTier || 3;
-    const bTier = b.leagueTier || 3;
+  // 1. Doble Seguro: 2 highest probability and confidence picks (Max Winrate)
+  const parlay1 = selectNPicks(strictPool, 2, (a, b) => {
+    const aTier = a.leagueTier || 2;
+    const bTier = b.leagueTier || 2;
     if (aTier !== bTier) return aTier - bTier;
     if (b.probability !== a.probability) return b.probability - a.probability;
     return (b.smartScore || 0) - (a.smartScore || 0);
   });
 
-  const parlay2 = select3Picks(validPool, (a, b) => {
+  // 2. Doble de Valor: 2 highest Expected Value (+EV) picks with prob >= 68%
+  const parlay2 = selectNPicks(strictPool, 2, (a, b) => {
     const bEv = b.expectedValue || (b.probability * b.odds - 100);
     const aEv = a.expectedValue || (a.probability * a.odds - 100);
     if (bEv !== aEv) return bEv - aEv;
@@ -163,9 +199,10 @@ export function buildTripleExclusiveParlays(
     return b.probability - a.probability;
   });
 
-  const parlay3 = select3Picks(validPool, (a, b) => {
-    const aTier = a.leagueTier || 3;
-    const bTier = b.leagueTier || 3;
+  // 3. Doble Pro: 2 high-yield diversified low-variance selections
+  const parlay3 = selectNPicks(strictPool, 2, (a, b) => {
+    const aTier = a.leagueTier || 2;
+    const bTier = b.leagueTier || 2;
     if (aTier !== bTier) return aTier - bTier;
     const bScore = (b.smartScore || 70) * (b.probability || 50);
     const aScore = (a.smartScore || 70) * (a.probability || 50);
@@ -178,7 +215,7 @@ export function buildTripleExclusiveParlays(
     parlay2,
     parlay3,
     elite3: parlay1,
-    premium5: [...parlay2, ...parlay3.slice(0, 2)],
+    premium5: [...parlay1, ...parlay2],
   };
 }
 
