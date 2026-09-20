@@ -176,7 +176,7 @@
     "pickBadge": "valor",
     "smartScore": 99,
     "explanation": "Tanto Barcelona como Feyenoord han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
-    "status": "won",
+    "status": "lost",
     "h2h": [
       {
         "date": "2026-07-11",
@@ -295,8 +295,8 @@
     "isMcpPick": true,
     "source": "mcp",
     "bookmaker": "Bet365",
-    "result": "WON",
-    "profit": 0.75,
+    "result": "LOST",
+    "profit": -1.0,
     "actualGoalsHome": 5,
     "actualGoalsAway": 1,
     "settledAt": "2026-09-12T04:31:15.899Z"

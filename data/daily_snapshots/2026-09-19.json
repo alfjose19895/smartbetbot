@@ -3690,7 +3690,9 @@
     "probability": 71.5,
     "bookmakerOdds": 1.4,
     "expectedValue": 0,
-    "impliedProbability": 71.4
+    "impliedProbability": 71.4,
+    "result": "LOST",
+    "profit": -1.0
   },
   {
     "id": "pred-2026-09-19-1494766-ganador-local",
@@ -3995,7 +3997,9 @@
     "probability": 63.5,
     "bookmakerOdds": 1.36,
     "expectedValue": -13.7,
-    "impliedProbability": 73.5
+    "impliedProbability": 73.5,
+    "result": "LOST",
+    "profit": -1.0
   },
   {
     "id": "pred-2026-09-19-1555396-over-2.5-goles",
@@ -4300,7 +4304,9 @@
     "probability": 63.2,
     "bookmakerOdds": 1.36,
     "expectedValue": -14.1,
-    "impliedProbability": 73.5
+    "impliedProbability": 73.5,
+    "result": "WON",
+    "profit": 0.36
   },
   {
     "id": "pred-2026-09-19-1550128-over-2.5-goles",
@@ -5067,7 +5073,9 @@
     "probability": 66.2,
     "bookmakerOdds": 1.36,
     "expectedValue": -10,
-    "impliedProbability": 73.5
+    "impliedProbability": 73.5,
+    "result": "LOST",
+    "profit": -1.0
   },
   {
     "id": "pred-2026-09-19-1557415-ambos-equipos-anotan",
@@ -5988,7 +5996,9 @@
     "probability": 65.7,
     "bookmakerOdds": 1.4,
     "expectedValue": -8,
-    "impliedProbability": 71.4
+    "impliedProbability": 71.4,
+    "result": "WON",
+    "profit": 0.4
   },
   {
     "id": "pred-2026-09-19-1560243-ambos-equipos-anotan",
@@ -6293,7 +6303,9 @@
     "probability": 63.3,
     "bookmakerOdds": 1.4,
     "expectedValue": -11.4,
-    "impliedProbability": 71.4
+    "impliedProbability": 71.4,
+    "result": "LOST",
+    "profit": -1.0
   },
   {
     "id": "pred-2026-09-19-1550136-over-2.5-goles",
@@ -6598,7 +6610,9 @@
     "probability": 77,
     "bookmakerOdds": 1.36,
     "expectedValue": 4.7,
-    "impliedProbability": 73.5
+    "impliedProbability": 73.5,
+    "result": "LOST",
+    "profit": -1.0
   },
   {
     "id": "pred-2026-09-19-1552175-ambos-equipos-anotan",
@@ -6943,7 +6957,7 @@
     "match": "Sporting CP vs Arouca",
     "league": "Primeira Liga",
     "market": "Over 2.5 Goles",
-    "profit": 0.41,
+    "profit": 0.4,
     "result": "WON",
     "source": "mcp",
     "status": "won",
@@ -7364,7 +7378,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/281.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "actualScore": "4 - 0",
+    "actualScore": "6 - 4 (10 Córners)",
     "explanation": "Volumen constante por las bandas: El cruce táctico entre Deportivo Garcilaso (5.9 córners de media en casa) y Universitario (4.6 foráneos) proyecta 10.5 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
     "probability": 76.2,
     "bookmakerOdds": 1.43,
@@ -7939,7 +7953,9 @@
     "probability": 66,
     "bookmakerOdds": 1.36,
     "expectedValue": -10.3,
-    "impliedProbability": 73.5
+    "impliedProbability": 73.5,
+    "result": "WON",
+    "profit": 0.36
   },
   {
     "h2h": [
@@ -8090,7 +8106,9 @@
     "probability": 63.7,
     "bookmakerOdds": 1.45,
     "expectedValue": -7.6,
-    "impliedProbability": 69
+    "impliedProbability": 69,
+    "result": "WON",
+    "profit": 0.45
   },
   {
     "id": "pred-2026-09-19-1490482-ambos-equipos-anotan",
@@ -8548,7 +8566,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/71.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "actualScore": "5 - 0",
+    "actualScore": "6 - 4 (10 Córners)",
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.5 córners totales.",
     "probability": 84.9,
     "bookmakerOdds": 1.22,
