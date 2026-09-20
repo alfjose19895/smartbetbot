@@ -61,9 +61,8 @@ export function isQualifiedOpportunity(opp: Partial<MarketOpportunity>): boolean
   if (edge < 1.0) return false;
   if (odds < 1.20) return false;
 
-  // Longshot Underdog Protection: picks with odds > 2.30 MUST be explicitly tagged 'bomba' with high conviction
-  if (odds > 2.30 && opp.pickBadge !== "bomba") return false;
-  if (opp.pickBadge === "bomba" && prob < 40.0) return false;
+  // Eliminate unviable high-risk bomba odds & coin-flips
+  if (odds > 2.25) return false;
 
   // Tier 1 Leagues: High data reliability & low noise (Premier, La Liga, Serie A, Champions, etc.)
   if (tier === 1) {
@@ -76,14 +75,14 @@ export function isQualifiedOpportunity(opp: Partial<MarketOpportunity>): boolean
     if (prob < 58.0) return false;
     if (odds < 1.70 && prob < 62.0) return false;
     if (edge < 2.0) return false;
-    if (odds > 2.20 && opp.pickBadge !== "bomba") return false;
+    if (odds > 2.15) return false;
     return true;
   }
 
   // Tier 3+ / Minor Leagues: Require strict statistical conviction
   if (prob < 64.0) return false;
   if (edge < 3.0) return false;
-  if (odds > 2.05 && opp.pickBadge !== "bomba") return false;
+  if (odds > 2.05) return false;
 
   return true;
 }
@@ -1677,9 +1676,9 @@ export function evaluateFixturePrediction(params: {
     }
     let pickBadge: "bomba" | "valor" | "estandar" = "estandar";
 
-    if (item.odds >= 2.00 && edgePercent >= 2.0) {
-      pickBadge = "bomba";
-    } else if (probPercent >= 68.0 && edgePercent >= 3.0) {
+    if (probPercent >= 65.0 && edgePercent >= 2.5) {
+      pickBadge = "valor";
+    } else if (item.odds >= 1.70 && edgePercent >= 2.0) {
       pickBadge = "valor";
     } else {
       pickBadge = "estandar";
@@ -1861,25 +1860,8 @@ export function getFeaturedDailyPicks(predictions: MarketOpportunity[]): {
     return { smartPick: null, bombaPick: null };
   }
 
-  // 1. Bomba del Día: Best candidate with odds >= 2.00 or pickBadge === 'bomba'
-  const bombaCandidates = [...predictions]
-    .filter((p) => p.pickBadge === "bomba" || p.odds >= 2.00 || p.market.includes("Empate"))
-    .sort((a, b) => {
-      if (b.probability !== a.probability) return b.probability - a.probability;
-      if (b.edge !== a.edge) return b.edge - a.edge;
-      return b.odds - a.odds;
-    });
-
-  const bombaPick = bombaCandidates.length > 0
-    ? { ...bombaCandidates[0], pickBadge: "bomba" as const }
-    : { ...[...predictions].sort((a, b) => b.odds - a.odds)[0], pickBadge: "bomba" as const };
-
-  // 2. SmartPick del Día: Best highest probability / highest confidence pick (excluding the match used for Bomba if possible)
-  const nonBombaCandidates = predictions.filter(
-    (p) => !bombaPick || `${p.homeTeam}-${p.awayTeam}` !== `${bombaPick.homeTeam}-${bombaPick.awayTeam}`
-  );
-
-  const smartPickCandidates = (nonBombaCandidates.length > 0 ? nonBombaCandidates : predictions).sort((a, b) => {
+  // 1. SmartPick del Día: Best highest probability / highest confidence pick
+  const smartPickCandidates = [...predictions].sort((a, b) => {
     const aTier = a.leagueTier || 3;
     const bTier = b.leagueTier || 3;
     if (aTier !== bTier) return aTier - bTier;
@@ -1898,6 +1880,21 @@ export function getFeaturedDailyPicks(predictions: MarketOpportunity[]): {
           : "Media") as "Muy Alta" | "Alta" | "Media" | "Moderada",
       }
     : null;
+
+  // 2. Valor del Día (Highest +EV with solid conviction, distinct from SmartPick match)
+  const valueCandidates = [...predictions]
+    .filter((p) => !smartPick || `${p.homeTeam}-${p.awayTeam}` !== `${smartPick.homeTeam}-${smartPick.awayTeam}`)
+    .sort((a, b) => {
+      const bEv = b.expectedValue || (b.probability * b.odds - 100);
+      const aEv = a.expectedValue || (a.probability * a.odds - 100);
+      if (bEv !== aEv) return bEv - aEv;
+      if (b.edge !== a.edge) return b.edge - a.edge;
+      return b.probability - a.probability;
+    });
+
+  const bombaPick = valueCandidates.length > 0
+    ? { ...valueCandidates[0], pickBadge: "valor" as const }
+    : smartPick;
 
   return { smartPick, bombaPick };
 }

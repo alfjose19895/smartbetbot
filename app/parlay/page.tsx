@@ -151,7 +151,7 @@ export default function DailyParlayPage() {
     parlayDescription = "3 selecciones con máximo valor esperado (+EV) y ventaja matemática de partidos distintos.";
   } else if (parlayMode === "PARLAY_3") {
     selectedPicks = parlay3;
-    parlayTitle = "💣 Parley Bomba (3 Picks)";
+    parlayTitle = "🔥 Parley Pro (3 Picks)";
     parlayDescription = "3 selecciones multiplicadoras de alto rendimiento sin repetición de partidos.";
   } else {
     selectedPicks = parlay1;
@@ -351,7 +351,7 @@ export default function DailyParlayPage() {
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-1">
                   <span className="text-sm font-black text-slate-900 dark:text-white truncate">
-                    3. Parley Bomba
+                    3. Parley Pro
                   </span>
                   <span className="text-[11px] font-black px-2 py-0.5 rounded-lg bg-rose-500 text-white">
                     @{calcOdds(parlay3)}

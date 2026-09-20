@@ -318,16 +318,7 @@ export default function ReportsPage() {
             🤖 Agente MCP ({comparativeMetrics.mcp.total})
           </button>
 
-          <button
-            onClick={() => setModalityFilter("bomba")}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
-              modalityFilter === "bomba"
-                ? "bg-gradient-to-r from-orange-500 to-rose-500 text-white font-black shadow-md border border-orange-400"
-                : "bg-orange-50 text-orange-900 border border-orange-200 hover:bg-orange-100 dark:bg-orange-950/60 dark:text-orange-300 dark:border-orange-800"
-            }`}
-          >
-            💣 Bombas ({comparativeMetrics.bomba.total})
-          </button>
+
         </div>
 
         {/* Market Filter Pills */}

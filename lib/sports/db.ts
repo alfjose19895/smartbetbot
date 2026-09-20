@@ -1756,10 +1756,9 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     }
   }
 
-  // 3. Separate into 3 High-Yield Portfolio Tiers (Seguras, Valor, Bombas)
+  // 3. Separate into High-Yield Portfolio Tiers (Seguras & Valor - Excluyendo cuotas bomba de bajo rendimiento)
   const poolSeguras: MarketOpportunity[] = [];
   const poolValor: MarketOpportunity[] = [];
-  const poolBombas: MarketOpportunity[] = [];
 
   for (const opp of candidateOpportunities) {
     const prob = typeof opp.probability === "number" ? opp.probability : 50;
@@ -1769,19 +1768,10 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     const slot = getTimeSlot(opp.kickoff);
     const topPick = (prob >= 68.0 || conf === "Muy Alta") && (opp.smartScore || 0) >= 88;
 
-    if (opp.odds >= 2.05 || opp.market.includes("Empate") || opp.pickBadge === "bomba") {
-      poolBombas.push({
-        ...opp,
-        confidence: conf,
-        pickBadge: "bomba",
-        isMcpPick: true,
-        isMcp: true,
-        source: "mcp",
-        status: "pending",
-        timeSlot: slot,
-        isTopPick: topPick,
-      });
-    } else if (opp.odds >= 1.70 && opp.odds < 2.05) {
+    // Filter out unviable high odds (> 2.20) or low probabilities
+    if (opp.odds > 2.20 || prob < 52) continue;
+
+    if (opp.odds >= 1.65) {
       poolValor.push({
         ...opp,
         confidence: conf,
@@ -1793,7 +1783,7 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
         timeSlot: slot,
         isTopPick: topPick,
       });
-    } else if (opp.odds >= 1.25 && opp.odds < 1.70) {
+    } else if (opp.odds >= 1.25 && opp.odds < 1.65) {
       poolSeguras.push({
         ...opp,
         confidence: conf,
@@ -1825,14 +1815,6 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     const aEv = a.expectedValue || (a.probability * a.odds - 100);
     if (bEv !== aEv) return bEv - aEv;
     return (b.edge - a.edge) || (b.probability - a.probability);
-  });
-
-  poolBombas.sort((a, b) => {
-    const aTierMult = a.leagueTier === 1 ? 1.25 : a.leagueTier === 2 ? 1.0 : 0.85;
-    const bTierMult = b.leagueTier === 1 ? 1.25 : b.leagueTier === 2 ? 1.0 : 0.85;
-    const bScore = b.odds * b.probability * bTierMult;
-    const aScore = a.odds * a.probability * aTierMult;
-    return bScore - aScore || b.odds - a.odds;
   });
 
   const chosenMatchKeys = new Set<string>();
@@ -1869,11 +1851,10 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
   let merged: MarketOpportunity[] = [];
 
   if (existingSnapshot.length === 0) {
-    const selSeguras = pickUniqueFromPool(poolSeguras, 15);
-    const selValor = pickUniqueFromPool(poolValor, 6);
-    const selBombas = pickUniqueFromPool(poolBombas, 4);
+    const selSeguras = pickUniqueFromPool(poolSeguras, 16);
+    const selValor = pickUniqueFromPool(poolValor, 8);
 
-    newlyAdded = [...selSeguras, ...selValor, ...selBombas].map((p) => ({
+    newlyAdded = [...selSeguras, ...selValor].map((p) => ({
       ...p,
       isNew: true,
       isNewlyDiscovered: true,
@@ -1881,12 +1862,11 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     }));
     merged = newlyAdded.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
   } else {
-    // Incremental search: take up to 4 seguras, 3 valor, 2 bombas
-    const selSeguras = pickUniqueFromPool(poolSeguras, 4);
-    const selValor = pickUniqueFromPool(poolValor, 3);
-    const selBombas = pickUniqueFromPool(poolBombas, 2);
+    // Incremental search: take up to 5 seguras, 4 valor
+    const selSeguras = pickUniqueFromPool(poolSeguras, 5);
+    const selValor = pickUniqueFromPool(poolValor, 4);
 
-    newlyAdded = [...selSeguras, ...selValor, ...selBombas].map((p) => ({
+    newlyAdded = [...selSeguras, ...selValor].map((p) => ({
       ...p,
       isNew: true,
       isNewlyDiscovered: true,
@@ -1912,8 +1892,7 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
 
   const segurasCount = newlyAdded.filter((p) => p.pickBadge === "estandar").length;
   const valorCount = newlyAdded.filter((p) => p.pickBadge === "valor").length;
-  const bombasCount = newlyAdded.filter((p) => p.pickBadge === "bomba").length;
-
+  
   return {
     success: true,
     count: merged.length,
@@ -1922,7 +1901,7 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     totalAlerts: merged.length,
     predictions: merged,
     message: newlyAdded.length > 0
-      ? `✓ ¡Búsqueda inteligente expandida completada! Se descubrieron ${newlyAdded.length} nuevas alertas (+EV > 5%): ${segurasCount} Seguras, ${valorCount} Valor y ${bombasCount} Bombas.`
+      ? `✓ ¡Búsqueda inteligente completada! Se descubrieron ${newlyAdded.length} nuevas alertas (+EV > 5%): ${segurasCount} Seguras y ${valorCount} de Valor.`
       : `✓ El mercado de hoy está completamente al día con ${merged.length} alertas activas.`,
   };
 }
@@ -2321,7 +2300,7 @@ export async function getHistoricalSettledParlays(): Promise<HistoricalSettledPa
     const parlayConfigs = [
       { key: "parlay1" as const, title: "🛡️ Parley Seguro (3 Selecciones)", idSuffix: "seguro", size: 3 },
       { key: "parlay2" as const, title: "💎 Parley Valor (3 Selecciones)", idSuffix: "valor", size: 3 },
-      { key: "parlay3" as const, title: "💣 Parley Bomba (3 Selecciones)", idSuffix: "bomba", size: 3 },
+      { key: "parlay3" as const, title: "🔥 Parley Pro (3 Selecciones)", idSuffix: "pro", size: 3 },
     ];
 
     for (const config of parlayConfigs) {

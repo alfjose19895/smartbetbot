@@ -269,11 +269,6 @@ export function PredictionCard({
                   🤖 MCP
                 </span>
               )}
-              {prediction.pickBadge === "bomba" && (
-                <span className="rounded-lg px-1.5 py-0.5 text-[9px] font-black bg-rose-500 text-white animate-pulse">
-                  💣
-                </span>
-              )}
               {prediction.pickBadge === "valor" && (
                 <span className="rounded-lg px-1.5 py-0.5 text-[9px] font-black bg-emerald-500 text-slate-950 font-extrabold">
                   💎
@@ -372,11 +367,6 @@ export function PredictionCard({
                   {isMcp && (
                     <span className="rounded-full px-2 py-0.5 text-[9px] font-black bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
                       🤖 MCP
-                    </span>
-                  )}
-                  {prediction.pickBadge === "bomba" && (
-                    <span className="rounded-full px-2 py-0.5 text-[9px] font-black bg-rose-500 text-white">
-                      💣 BOMBA
                     </span>
                   )}
                   {prediction.pickBadge === "valor" && (
@@ -582,12 +572,6 @@ export function PredictionCard({
               {isMcp && (
                 <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-gradient-to-r from-purple-600 to-indigo-600 text-white border border-purple-400 shadow-sm">
                   🤖 Agente MCP
-                </span>
-              )}
-
-              {prediction.pickBadge === "bomba" && (
-                <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-rose-500 text-white shadow-sm shadow-rose-500/20 animate-pulse">
-                  💣 BOMBA
                 </span>
               )}
 

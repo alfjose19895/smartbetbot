@@ -584,16 +584,7 @@ export default function SignalsPage() {
           >
             <span>🤖 Agente MCP ({mcpCount})</span>
           </button>
-          <button
-            onClick={() => setMatchStatusFilter("BOMBA")}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
-              matchStatusFilter === "BOMBA"
-                ? "bg-gradient-to-r from-orange-500 to-rose-500 text-white font-black shadow-md shadow-orange-500/30 border border-orange-400"
-                : "bg-orange-50 text-orange-900 border border-orange-200 hover:bg-orange-100 dark:bg-orange-950/60 dark:text-orange-300 dark:border-orange-800 dark:hover:bg-orange-900"
-            }`}
-          >
-            💣 Bomba ({bombaCount})
-          </button>
+
           <button
             onClick={() => setMatchStatusFilter("WON")}
             className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${

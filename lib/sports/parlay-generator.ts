@@ -17,7 +17,7 @@ export function getEcuadorDateString(d: Date | number | string = Date.now()): st
 export interface TripleExclusiveParlays {
   parlay1: MarketOpportunity[]; // Parley 1: Seguro / Élite (3 Picks)
   parlay2: MarketOpportunity[]; // Parley 2: Valor / Oro (3 Picks)
-  parlay3: MarketOpportunity[]; // Parley 3: Bomba / Platino (3 Picks)
+  parlay3: MarketOpportunity[]; // Parley 3: Pro / Multi-Mercado (3 Picks)
   // Backward-compatible properties:
   elite3: MarketOpportunity[];
   premium5: MarketOpportunity[];
@@ -94,7 +94,7 @@ export function getMarketCategory(marketName: string): string {
  * Generates THREE mutually exclusive Parlays with 3 predictions each (9 distinct picks in total):
  * 1. Parley 1 (Seguro / Élite): 3 highest probability & confidence selections (Max Winrate).
  * 2. Parley 2 (Valor / Oro): 3 highest Expected Value (+EV) selections from distinct matches.
- * 3. Parley 3 (Bomba / Platino): 3 bold / high-yield multiplier selections from distinct matches.
+ * 3. Parley 3 (Pro / Multi-Mercado): 3 balanced high-yield selections with proven reliability.
  */
 export function buildTripleExclusiveParlays(
   predictions: MarketOpportunity[],
@@ -164,8 +164,13 @@ export function buildTripleExclusiveParlays(
   });
 
   const parlay3 = select3Picks(validPool, (a, b) => {
-    if (b.odds !== a.odds) return b.odds - a.odds;
-    return (b.expectedValue || 0) - (a.expectedValue || 0);
+    const aTier = a.leagueTier || 3;
+    const bTier = b.leagueTier || 3;
+    if (aTier !== bTier) return aTier - bTier;
+    const bScore = (b.smartScore || 70) * (b.probability || 50);
+    const aScore = (a.smartScore || 70) * (a.probability || 50);
+    if (bScore !== aScore) return bScore - aScore;
+    return b.edge - a.edge;
   });
 
   return {

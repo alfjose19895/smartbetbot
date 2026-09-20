@@ -2,21 +2,21 @@
 
 import React, { useState } from "react";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
-import { formatMatchKickoffTime } from "./PredictionCard";
+import { formatMatchKickoffTime } from "@/components/PredictionCard";
 
 interface NewAlertsModalProps {
   isOpen: boolean;
+  onClose: () => void;
   newAlerts: MarketOpportunity[];
   totalCount?: number;
-  onClose: () => void;
   onOpenDetail?: (prediction: MarketOpportunity) => void;
 }
 
 export function NewAlertsModal({
   isOpen,
+  onClose,
   newAlerts,
   totalCount,
-  onClose,
   onOpenDetail,
 }: NewAlertsModalProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -26,12 +26,11 @@ export function NewAlertsModal({
 
   const segurasCount = newAlerts.filter((p) => p.pickBadge === "estandar" || (!p.pickBadge && p.odds < 1.72)).length;
   const valorCount = newAlerts.filter((p) => p.pickBadge === "valor").length;
-  const bombasCount = newAlerts.filter((p) => p.pickBadge === "bomba" || p.odds >= 2.05).length;
 
   const handleCopySingle = (e: React.MouseEvent, pick: MarketOpportunity) => {
     e.stopPropagation();
     const id = String(pick.fixtureId || pick.id || `${pick.homeTeam}-${pick.awayTeam}`);
-    const badgeLabel = pick.pickBadge === "bomba" ? "💣 CUOTA BOMBA" : pick.pickBadge === "valor" ? "💎 VALOR (+EV)" : "🛡️ APUESTA SEGURA";
+    const badgeLabel = pick.pickBadge === "valor" ? "💎 VALOR (+EV)" : "🛡️ APUESTA SEGURA";
     const text = [
       `⭐ SMARTBETBOT MCP — ${badgeLabel} ⭐`,
       `🏆 ${pick.league} ${pick.country ? `(${pick.country})` : ""}`,
@@ -54,13 +53,13 @@ export function NewAlertsModal({
 
   const handleCopyAll = () => {
     const lines = [
-      `🔥 SE HAN AGREGADO ${newAlerts.length} NUEVAS ALERTAS (MODELO 60/25/15) 🔥`,
+      `🔥 SE HAN AGREGADO ${newAlerts.length} NUEVAS ALERTAS 🔥`,
       `📅 Fecha: ${new Date().toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long" })}`,
-      `📊 Distribución: 🛡️ ${segurasCount} Seguras | 💎 ${valorCount} Valor | 💣 ${bombasCount} Bombas`,
+      `📊 Distribución: 🛡️ ${segurasCount} Seguras | 💎 ${valorCount} Valor`,
       "----------------------------------------",
       ...newAlerts.map((pick, i) => {
         const { time } = formatMatchKickoffTime(pick.kickoff);
-        const b = pick.pickBadge === "bomba" ? "💣 BOMBA" : pick.pickBadge === "valor" ? "💎 VALOR" : "🛡️ SEGURA";
+        const b = pick.pickBadge === "valor" ? "💎 VALOR" : "🛡️ SEGURA";
         return [
           `#${i + 1} [${b}] 🏆 ${pick.league} | ⏰ ${time}`,
           `⚽ ${pick.homeTeam} vs ${pick.awayTeam}`,
@@ -69,7 +68,9 @@ export function NewAlertsModal({
           "",
         ].join("\n");
       }),
-      "🌐 Ver todas las alertas en: https://smartbetbot.educandotea.com",
+      "----------------------------------------",
+      "🤖 SmartBetBot AI Quantitative Quantitative Engine",
+      "🌐 https://smartbetbot.educandotea.com",
     ];
 
     navigator.clipboard.writeText(lines.join("\n")).then(() => {
@@ -79,20 +80,18 @@ export function NewAlertsModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="relative flex max-h-[92vh] w-full max-w-2xl flex-col rounded-3xl border-2 border-emerald-500/80 bg-white shadow-2xl dark:border-emerald-500/60 dark:bg-slate-950 overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-fadeIn">
+      <div className="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-emerald-500/40 bg-white shadow-2xl dark:bg-slate-900 flex flex-col max-h-[90vh]">
         
-        {/* Glow Header Banner */}
-        <div className="relative overflow-hidden bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 p-5 text-white">
-          <div className="absolute top-0 right-0 -mt-4 -mr-4 h-24 w-24 rounded-full bg-white/10 blur-xl"></div>
-          
+        {/* Header Ribbon */}
+        <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 p-4 sm:p-5 text-white">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <div className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-xs font-black tracking-wide uppercase backdrop-blur-sm">
-                <span className="animate-ping inline-flex h-2 w-2 rounded-full bg-emerald-300 opacity-75"></span>
-                <span>✨ Modelo 60/25/15 — Mercado de Hoy</span>
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-0.5 text-xs font-black backdrop-blur-md text-emerald-100">
+                <span>🔥</span>
+                <span>NUEVAS ALERTAS DETECTADAS</span>
               </div>
-              <h2 className="mt-2 text-xl sm:text-2xl font-black tracking-tight">
+              <h2 className="mt-1 text-lg sm:text-2xl font-black tracking-tight text-white">
                 ¡{newAlerts.length} {newAlerts.length === 1 ? "Alerta Disponible de Hoy" : "Alertas Disponibles de Hoy"}!
               </h2>
               
@@ -104,9 +103,7 @@ export function NewAlertsModal({
                 <span className="rounded-lg bg-cyan-950/60 px-2.5 py-1 border border-cyan-400/40 text-cyan-200">
                   💎 {valorCount} Valor
                 </span>
-                <span className="rounded-lg bg-rose-950/60 px-2.5 py-1 border border-rose-400/40 text-rose-200 animate-pulse">
-                  💣 {bombasCount} Bombas
-                </span>
+
                 {typeof totalCount === "number" && (
                   <span className="rounded-lg bg-white/10 px-2.5 py-1 text-white/90">
                     Total: {totalCount}
@@ -131,7 +128,6 @@ export function NewAlertsModal({
             const { time } = formatMatchKickoffTime(pick.kickoff);
             const id = String(pick.fixtureId || pick.id || `${pick.homeTeam}-${pick.awayTeam}-${idx}`);
             const isCopied = copiedId === id;
-            const isBomba = pick.pickBadge === "bomba" || pick.odds >= 2.05;
             const isValor = pick.pickBadge === "valor";
 
             return (
@@ -139,9 +135,7 @@ export function NewAlertsModal({
                 key={id}
                 onClick={() => onOpenDetail?.(pick)}
                 className={`group relative rounded-2xl border p-4 transition hover:shadow-lg cursor-pointer ${
-                  isBomba
-                    ? "border-rose-500/60 bg-gradient-to-br from-rose-50/50 via-white to-slate-50/50 dark:from-rose-950/30 dark:via-slate-900/90 dark:to-slate-900/50 dark:border-rose-500/40 hover:border-rose-500"
-                    : isValor
+                  isValor
                     ? "border-cyan-500/60 bg-gradient-to-br from-cyan-50/50 via-white to-slate-50/50 dark:from-cyan-950/30 dark:via-slate-900/90 dark:to-slate-900/50 dark:border-cyan-500/40 hover:border-cyan-500"
                     : "border-emerald-500/40 bg-gradient-to-br from-emerald-50/40 via-white to-slate-50/50 dark:from-emerald-950/20 dark:via-slate-900/90 dark:to-slate-900/50 dark:border-emerald-500/30 hover:border-emerald-500"
                 } ${idx > 0 ? "pt-4.5" : ""}`}
@@ -149,11 +143,7 @@ export function NewAlertsModal({
                 {/* Top Badge strip */}
                 <div className="flex items-center justify-between gap-2 mb-2">
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    {isBomba ? (
-                      <span className="inline-flex items-center gap-1 rounded-lg bg-rose-600 text-white px-2 py-0.5 text-[10px] font-black uppercase tracking-wider shadow-sm animate-pulse border border-rose-400">
-                        💣 BOMBA
-                      </span>
-                    ) : isValor ? (
+                    {isValor ? (
                       <span className="inline-flex items-center gap-1 rounded-lg bg-cyan-600 text-white px-2 py-0.5 text-[10px] font-black uppercase tracking-wider shadow-sm border border-cyan-400">
                         💎 VALOR (+EV)
                       </span>
@@ -192,15 +182,9 @@ export function NewAlertsModal({
 
                 {/* Market & Value Metrics */}
                 <div className="mt-2.5 grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  <div className={`rounded-xl p-2 border ${
-                    isBomba
-                      ? "bg-rose-50/80 dark:bg-rose-950/40 border-rose-200 dark:border-rose-900/60"
-                      : "bg-slate-100/90 dark:bg-slate-800/80 border-slate-200/80 dark:border-slate-700/60"
-                  }`}>
+                  <div className="rounded-xl bg-slate-100/90 dark:bg-slate-800/80 p-2 border border-slate-200/80 dark:border-slate-700/60">
                     <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">Pronóstico</span>
-                    <span className={`font-black text-xs sm:text-sm ${
-                      isBomba ? "text-rose-700 dark:text-rose-300" : "text-emerald-800 dark:text-emerald-400"
-                    }`}>
+                    <span className="font-black text-xs sm:text-sm text-emerald-800 dark:text-emerald-400">
                       {pick.market} <span className="font-extrabold text-sky-600 dark:text-sky-400">@{(pick.odds ?? 1.5).toFixed(2)}</span>
                     </span>
                   </div>
@@ -212,11 +196,7 @@ export function NewAlertsModal({
                     </span>
                   </div>
 
-                  <div className={`col-span-2 sm:col-span-1 rounded-xl p-2 border flex items-center justify-between sm:block ${
-                    isBomba
-                      ? "bg-rose-100/60 dark:bg-rose-950/50 border-rose-300/60 dark:border-rose-800/50 text-rose-900 dark:text-rose-200"
-                      : "bg-emerald-100/60 dark:bg-emerald-950/40 border-emerald-300/60 dark:border-emerald-800/40 text-emerald-900 dark:text-emerald-300"
-                  }`}>
+                  <div className="col-span-2 sm:col-span-1 rounded-xl p-2 border flex items-center justify-between sm:block bg-emerald-100/60 dark:bg-emerald-950/40 border-emerald-300/60 dark:border-emerald-800/40 text-emerald-900 dark:text-emerald-300">
                     <span className="block text-[10px] font-bold uppercase">Valor (+EV)</span>
                     <span className="font-black text-xs sm:text-sm">
                       +{pick.edge || 5}% Ventaja

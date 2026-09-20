@@ -391,16 +391,7 @@ export default function HistoryPage() {
               🤖 Agente MCP ({mcpCount})
             </button>
 
-            <button
-              onClick={() => setTimingFilter("BOMBA")}
-              className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
-                timingFilter === "BOMBA"
-                  ? "bg-gradient-to-r from-orange-500 to-rose-500 text-white font-black shadow-md border border-orange-400"
-                  : "bg-orange-50 text-orange-900 border border-orange-200 hover:bg-orange-100 dark:bg-orange-950/60 dark:text-orange-300 dark:border-orange-800"
-              }`}
-            >
-              💣 Bomba ({bombaCount})
-            </button>
+
 
             <span className="h-4 w-px bg-slate-300 dark:bg-slate-700 mx-1 hidden sm:inline-block" />
 

@@ -18,7 +18,7 @@ export function FeaturedDailyPicks({ smartPick, bombaPick, onOpenDetail }: Featu
   if (!smartPick && !bombaPick) return null;
 
   const handleCopyText = (pick: MarketOpportunity, isBomba: boolean) => {
-    const title = isBomba ? "💣 BOMBA DEL DÍA (ALTA CUOTA CON VALOR)" : "👑 SMARTPICK DEL DÍA (MÁXIMA SEGURIDAD)";
+    const title = isBomba ? "💎 SELECCIÓN DE VALOR DEL DÍA (+EV)" : "👑 SMARTPICK DEL DÍA (MÁXIMA SEGURIDAD)";
     const text = [
       `⭐ ${title} ⭐`,
       `🏆 ${pick.league} ${pick.country ? `(${pick.country})` : ""}`,
@@ -95,12 +95,12 @@ export function FeaturedDailyPicks({ smartPick, bombaPick, onOpenDetail }: Featu
                     : "bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 text-slate-950 shadow-emerald-500/20"
                 }`}
               >
-                <span>{isBomba ? "💣" : "👑"}</span>
-                <span>{isBomba ? "BOMBA DEL DÍA" : "SMARTPICK DEL DÍA"}</span>
+                <span>{isBomba ? "💎" : "👑"}</span>
+                <span>{isBomba ? "VALOR DEL DÍA" : "SMARTPICK DEL DÍA"}</span>
               </span>
 
               <span className="inline-flex items-center gap-1 rounded-full bg-slate-800/80 px-2.5 py-0.5 text-[10px] font-bold text-slate-300 border border-slate-700">
-                {isBomba ? "🔥 Alta Cuota con Valor" : "🛡️ Máxima Seguridad"}
+                {isBomba ? "💎 Máximo Valor (+EV)" : "🛡️ Máxima Seguridad"}
               </span>
             </div>
 
@@ -257,7 +257,7 @@ export function FeaturedDailyPicks({ smartPick, bombaPick, onOpenDetail }: Featu
             <span>Pronósticos Estrella del Día</span>
           </div>
           <h2 className="mt-2 text-xl sm:text-2xl font-black text-white tracking-tight">
-            👑 SmartPick del Día & 💣 Bomba del Día
+            👑 SmartPick del Día & 💎 Valor del Día
           </h2>
           <p className="mt-0.5 text-xs text-slate-400">
             Las dos mejores oportunidades seleccionadas por el modelo cuantitativo para apostar con máxima seguridad y máximo rendimiento.

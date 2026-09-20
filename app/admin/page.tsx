@@ -1224,7 +1224,6 @@ function AdminControlContent() {
                       { id: "muy_alta", label: "⭐⭐⭐ Muy Alta (≥ 70%)", desc: "Máxima certeza probabilística" },
                       { id: "alta", label: "⭐⭐ Alta (58% - 69%)", desc: "Equilibrio ideal probabilidad/cuota" },
                       { id: "media", label: "💎 Valor (Cuota ≥ @1.80)", desc: "Cuotas rentables de alto valor" },
-                      { id: "bomba", label: "💣 Bombas (Cuota ≥ @2.05)", desc: "Cuotas sorpresa +EV" },
                     ].map((conf) => {
                       const isSelected = mcpConfidence === conf.id;
                       return (

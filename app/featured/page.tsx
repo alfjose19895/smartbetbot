@@ -64,7 +64,7 @@ export default function FeaturedPicksPage() {
             </h1>
 
             <p className="mt-2 text-sm sm:text-base text-slate-300 font-medium leading-relaxed">
-              Selección algorítmica de máxima convicción: el <strong className="text-amber-400 font-bold">SmartPick</strong> para apostar con la más alta seguridad estadística y la <strong className="text-rose-400 font-bold">Bomba</strong> para maximizar rendimiento con cuotas de alto valor positivo (+EV).
+              Selección algorítmica de máxima convicción: el <strong className="text-amber-400 font-bold">SmartPick</strong> para apostar con la más alta seguridad estadística y la <strong className="text-cyan-400 font-bold">Selección de Valor</strong> para maximizar rendimiento positivo (+EV) sostenido.
             </p>
 
             <div className="mt-5 flex flex-wrap items-center gap-3 text-xs font-bold text-slate-300">
@@ -89,7 +89,7 @@ export default function FeaturedPicksPage() {
           <div className="flex flex-col items-center justify-center py-20 space-y-4">
             <div className="h-12 w-12 animate-spin rounded-full border-4 border-amber-500 border-t-transparent shadow-lg" />
             <p className="text-sm font-bold text-slate-500 dark:text-slate-400">
-              Analizando candidatos cuantitativos para el SmartPick y la Bomba...
+              Analizando candidatos cuantitativos para el SmartPick y Valor del Día...
             </p>
           </div>
         ) : !smartPick && !bombaPick ? (
@@ -141,7 +141,7 @@ export default function FeaturedPicksPage() {
               <div className="rounded-3xl border border-rose-200 bg-rose-50/50 p-6 shadow-sm dark:border-rose-900/40 dark:bg-rose-950/20 space-y-3">
                 <div className="flex items-center gap-2 text-rose-800 dark:text-rose-400 font-black text-base">
                   <span>💣</span>
-                  <span>Estrategia: Bomba del Día</span>
+                  <span>Estrategia: Valor del Día</span>
                 </div>
                 <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
                   Seleccionada por su <strong>alto rendimiento y cuota superior</strong> (@2.00 o más). El modelo detecta una discrepancia matemática relevante frente a la casa de apuestas con un Valor Esperado positivo (+EV).

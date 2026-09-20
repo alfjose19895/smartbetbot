@@ -379,7 +379,7 @@ export default function DashboardPage() {
               <span className="text-2xl sm:text-3xl font-black text-purple-600 dark:text-purple-400">3</span>
               <span className="text-[11px] font-bold text-purple-500">Listos Hoy</span>
             </div>
-            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Seguro, Doble Valor y Bomba</p>
+            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Seguro, Doble Valor y Pro</p>
           </div>
         </section>
 
@@ -562,7 +562,7 @@ export default function DashboardPage() {
                   Picks Destacados del Día
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  SmartPick de Máxima Seguridad y Bomba de Cuota Alta
+                  SmartPick de Máxima Seguridad y Selección de Valor
                 </p>
               </div>
             </div>

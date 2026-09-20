@@ -64,14 +64,14 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
       ? "🛡️ Parley Seguro (3 Picks)"
       : selectedParlayIndex === 2
       ? "💎 Parley Valor (3 Picks)"
-      : "💣 Parley Bomba (3 Picks)";
+      : "🔥 Parley Pro (3 Picks)";
 
   const currentDesc =
     selectedParlayIndex === 1
       ? "3 selecciones de máxima probabilidad y mayor confianza estadística."
       : selectedParlayIndex === 2
       ? "3 selecciones con el mayor valor esperado (+EV) y ventaja matemática del día."
-      : "3 selecciones audaces con cuota alta y gran multiplicador potencial.";
+      : "3 selecciones combinadas de alto valor y rendimiento contrastado.";
 
   const totalOdds = selectedPicks.reduce((acc, p) => acc * (p.odds || 1.5), 1);
   const potentialPayout = stake * totalOdds;
@@ -165,7 +165,7 @@ export function RecommendedParlay({ predictions, onSelectPrediction }: Recommend
                 : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
             }`}
           >
-            💣 Bomba (3)
+            🔥 Parley Pro (3)
           </button>
         </div>
       </div>
