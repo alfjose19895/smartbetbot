@@ -219,6 +219,22 @@ export async function POST(req: Request) {
       ? [targetLeagueId]
       : [];
 
+    const rawMarkets: string[] = Array.isArray(body.markets)
+      ? body.markets.map((m: any) => String(m).toLowerCase().trim())
+      : typeof body.markets === "string" && body.markets.trim()
+      ? body.markets.split(",").map((m: string) => m.toLowerCase().trim())
+      : body.market && body.market !== "all"
+      ? [String(body.market).toLowerCase().trim()]
+      : [];
+
+    const rawOddsRanges: string[] = Array.isArray(body.oddsRanges)
+      ? body.oddsRanges.map((r: any) => String(r).toLowerCase().trim())
+      : typeof body.oddsRanges === "string" && body.oddsRanges.trim()
+      ? body.oddsRanges.split(",").map((r: string) => r.toLowerCase().trim())
+      : body.confidence && body.confidence !== "all"
+      ? [String(body.confidence).toLowerCase().trim()]
+      : [];
+
     // Detect target market before search
     const mLower = (market || "").toLowerCase().trim();
     let requestedMarket = "";
@@ -397,27 +413,24 @@ export async function POST(req: Request) {
       }
     }
 
-    // 5. Market Filter from natural language
-    if (requestedMarket) {
+    // 5. Market Filter (Multi-Market support & Natural Language)
+    const effectiveMarkets = rawMarkets.length > 0 ? rawMarkets : (requestedMarket ? [requestedMarket] : []);
+    if (effectiveMarkets.length > 0 && !effectiveMarkets.includes("all")) {
       const matchMarket = filtered.filter((p) => {
         const pMarket = (p.market || "").toLowerCase();
-        
-        if (requestedMarket === "over") {
-          return pMarket.includes("over") || pMarket.includes("goles") || pMarket.includes("más");
-        }
-        if (requestedMarket === "local") {
-          return pMarket.includes("local") || pMarket.includes("gana local") || pMarket.includes("ganador local");
-        }
-        if (requestedMarket === "visitante") {
-          return pMarket.includes("visitante") || pMarket.includes("gana visitante") || pMarket.includes("ganador visitante");
-        }
-        if (requestedMarket === "ambos") {
-          return pMarket.includes("ambos") || pMarket.includes("btts") || pMarket.includes("anotan");
-        }
-        if (requestedMarket === "corners" || requestedMarket === "c?rners" || requestedMarket === "corner") {
-          return pMarket.includes("c?rners") || pMarket.includes("corners") || ((p as any).pick && String((p as any).pick).toLowerCase().includes("c?rner"));
-        }
-        return pMarket.includes(requestedMarket);
+        const pPick = (p.pick || "").toLowerCase();
+        return effectiveMarkets.some((mkt) => {
+          const m = mkt.toLowerCase().trim();
+          if (m === "all") return true;
+          if (m === "local") return pMarket.includes("local") || pMarket.includes("gana local") || pMarket.includes("ganador local");
+          if (m === "visitante") return pMarket.includes("visitante") || pMarket.includes("gana visitante") || pMarket.includes("ganador visitante");
+          if (m === "over") return pMarket.includes("over") || pMarket.includes("goles") || pMarket.includes("más");
+          if (m === "ambos") return pMarket.includes("ambos") || pMarket.includes("btts") || pMarket.includes("anotan");
+          if (m === "corners" || m.includes("córner") || m.includes("corner")) {
+            return pMarket.includes("córner") || pMarket.includes("corner") || pPick.includes("córner") || pPick.includes("corner");
+          }
+          return pMarket.includes(m);
+        });
       });
       if (matchMarket.length > 0) {
         filtered = matchMarket;
@@ -436,13 +449,36 @@ export async function POST(req: Request) {
       }
     }
 
-    // 7. Odds filtering
+    // 7. Odds & Confidence Filtering (Multi-Range support)
+    if (rawOddsRanges.length > 0 && !rawOddsRanges.includes("all")) {
+      const oddsMatched = filtered.filter((p) => {
+        const o = Number(p.odds || p.bookmakerOdds || 1.5);
+        const prob = Number(p.probability || 50);
+        return rawOddsRanges.some((range) => {
+          const r = range.toLowerCase().trim();
+          if (r === "all") return true;
+          if (r === "baja" || r === "segura" || r === "muy_alta") {
+            return (o >= 1.14 && o <= 1.45) || prob >= 70;
+          }
+          if (r === "media" || r === "media_prob" || r === "equilibrada") {
+            return (o >= 1.46 && o <= 1.75) || (prob >= 58 && prob < 70);
+          }
+          if (r === "valor") {
+            return (o >= 1.76 && o <= 2.10) || (p.expectedValue && p.expectedValue >= 5);
+          }
+          if (r === "alta" || r === "alta_cuota" || r === "cuotas_altas") {
+            return o >= 2.11;
+          }
+          return true;
+        });
+      });
+      if (oddsMatched.length > 0) {
+        filtered = oddsMatched;
+      }
+    }
+
     let effectiveMinOdds = minOdds || 0;
     let effectiveMaxOdds = maxOdds || 99;
-
-    if (qLower.includes("bomba") || qLower.includes("cuotas altas") || qLower.includes("sorpresa")) {
-      effectiveMinOdds = Math.max(effectiveMinOdds, 2.00);
-    }
 
     if (effectiveMinOdds > 0) {
       const oddsFiltered = filtered.filter((p) => p.odds >= effectiveMinOdds);

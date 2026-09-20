@@ -192,8 +192,8 @@ function AdminControlContent() {
   const [selectedMcpLeagues, setSelectedMcpLeagues] = useState<AvailableLeagueItem[]>([]);
   const [mcpLeagueCategoryFilter, setMcpLeagueCategoryFilter] = useState<string>("all");
   const [mcpLeagueSearchQuery, setMcpLeagueSearchQuery] = useState<string>("");
-  const [mcpMarket, setMcpMarket] = useState<string>("all");
-  const [mcpConfidence, setMcpConfidence] = useState<string>("all");
+  const [selectedMcpMarkets, setSelectedMcpMarkets] = useState<string[]>([]);
+  const [selectedMcpOddsRanges, setSelectedMcpOddsRanges] = useState<string[]>([]);
   const [mcpLoading, setMcpLoading] = useState(false);
   const [mcpResults, setMcpResults] = useState<MarketOpportunity[]>([]);
   const [selectedPickKeys, setSelectedPickKeys] = useState<Set<string>>(new Set());
@@ -221,6 +221,36 @@ function AdminControlContent() {
   const handleSelectAllLeagues = () => {
     setSelectedMcpLeagues([]);
     setMcpCountry("");
+  };
+
+  const handleToggleMarketFilter = (marketId: string) => {
+    if (marketId === "all") {
+      setSelectedMcpMarkets([]);
+      return;
+    }
+    setSelectedMcpMarkets((prev) => {
+      const exists = prev.includes(marketId);
+      if (exists) {
+        return prev.filter((m) => m !== marketId);
+      } else {
+        return [...prev, marketId];
+      }
+    });
+  };
+
+  const handleToggleOddsRangeFilter = (oddsId: string) => {
+    if (oddsId === "all") {
+      setSelectedMcpOddsRanges([]);
+      return;
+    }
+    setSelectedMcpOddsRanges((prev) => {
+      const exists = prev.includes(oddsId);
+      if (exists) {
+        return prev.filter((o) => o !== oddsId);
+      } else {
+        return [...prev, oddsId];
+      }
+    });
   };
 
   const [publishFeedback, setPublishFeedback] = useState<{ text: string; type: "success" | "error" } | null>(null);
@@ -298,8 +328,10 @@ function AdminControlContent() {
           country: activeCountry,
           league: activeLeague,
           leagueIds: activeLeagueIds,
-          market: mcpMarket !== "all" ? mcpMarket : undefined,
-          confidence: mcpConfidence !== "all" ? mcpConfidence : undefined,
+          markets: selectedMcpMarkets.length > 0 ? selectedMcpMarkets : undefined,
+          oddsRanges: selectedMcpOddsRanges.length > 0 ? selectedMcpOddsRanges : undefined,
+          market: selectedMcpMarkets.length === 1 ? selectedMcpMarkets[0] : undefined,
+          confidence: selectedMcpOddsRanges.length === 1 ? selectedMcpOddsRanges[0] : undefined,
           autoPublish: true,
         }),
       });
@@ -1203,11 +1235,30 @@ function AdminControlContent() {
                   </div>
                 </div>
 
-                {/* PASO 2: MERCADO */}
+                {/* PASO 2: MERCADO (SELECCIÓN MÚLTIPLE) */}
                 <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4 sm:p-5">
-                  <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-slate-950 text-xs font-black">2</span>
-                    <h4 className="text-sm font-black text-white">Selecciona el Mercado Objetivo</h4>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-slate-950 text-xs font-black">2</span>
+                      <h4 className="text-sm font-black text-white">Selecciona uno o Varios Mercados</h4>
+                      {selectedMcpMarkets.length > 0 ? (
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="rounded-lg bg-emerald-500/20 px-2 py-0.5 text-[10px] font-black text-emerald-300 border border-emerald-500/30">
+                            🎯 {selectedMcpMarkets.length} {selectedMcpMarkets.length === 1 ? "mercado seleccionado" : "mercados seleccionados"}
+                          </span>
+                          <button
+                            onClick={() => setSelectedMcpMarkets([])}
+                            className="rounded-lg bg-slate-800 hover:bg-slate-700 px-2 py-0.5 text-[10px] font-bold text-slate-300 transition cursor-pointer"
+                          >
+                            ✕ Limpiar
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="rounded-lg bg-slate-800 px-2 py-0.5 text-[10px] font-semibold text-slate-400">
+                          🌐 Todos los Mercados Autorizados
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
@@ -1219,18 +1270,21 @@ function AdminControlContent() {
                       { id: "ambos", label: "⚡ Ambos Anotan", desc: "Ambos equipos marcan (BTTS)" },
                       { id: "corners", label: "🚩 Córners", desc: "Líneas Over 6.5 a 10.5 dinámicas" },
                     ].map((mkt) => {
-                      const isSelected = mcpMarket === mkt.id;
+                      const isSelected = mkt.id === "all" ? selectedMcpMarkets.length === 0 : selectedMcpMarkets.includes(mkt.id);
                       return (
                         <button
                           key={mkt.id}
-                          onClick={() => setMcpMarket(mkt.id)}
+                          onClick={() => handleToggleMarketFilter(mkt.id)}
                           className={`flex flex-col items-start justify-between rounded-xl p-3 text-left transition cursor-pointer border ${
                             isSelected
-                              ? "bg-emerald-500 text-slate-950 border-emerald-300 shadow-md font-black"
+                              ? "bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 border-emerald-300 shadow-md font-black scale-[1.01]"
                               : "bg-slate-800/80 text-slate-300 border-slate-700/80 hover:bg-slate-750 hover:text-white hover:border-slate-600"
                           }`}
                         >
-                          <span className="text-xs font-black">{mkt.label}</span>
+                          <div className="flex items-center justify-between w-full">
+                            <span className="text-xs font-black">{mkt.label}</span>
+                            {isSelected && mkt.id !== "all" && <span className="text-[11px] font-black">✓</span>}
+                          </div>
                           <span className={`text-[10px] mt-1 ${isSelected ? "text-slate-900 font-bold" : "text-slate-400"}`}>
                             {mkt.desc}
                           </span>
@@ -1240,32 +1294,55 @@ function AdminControlContent() {
                   </div>
                 </div>
 
-                {/* PASO 3: CONFIANZA */}
+                {/* PASO 3: CUOTAS Y CONFIANZA (SELECCIÓN MÚLTIPLE) */}
                 <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4 sm:p-5">
-                  <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-slate-950 text-xs font-black">3</span>
-                    <h4 className="text-sm font-black text-white">Nivel de Confianza y Filtro de Valor (+EV)</h4>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-slate-950 text-xs font-black">3</span>
+                      <h4 className="text-sm font-black text-white">Selecciona uno o Varios Rangos de Cuotas (+EV)</h4>
+                      {selectedMcpOddsRanges.length > 0 ? (
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="rounded-lg bg-emerald-500/20 px-2 py-0.5 text-[10px] font-black text-emerald-300 border border-emerald-500/30">
+                            🎯 {selectedMcpOddsRanges.length} {selectedMcpOddsRanges.length === 1 ? "rango seleccionado" : "rangos seleccionados"}
+                          </span>
+                          <button
+                            onClick={() => setSelectedMcpOddsRanges([])}
+                            className="rounded-lg bg-slate-800 hover:bg-slate-700 px-2 py-0.5 text-[10px] font-bold text-slate-300 transition cursor-pointer"
+                          >
+                            ✕ Limpiar
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="rounded-lg bg-slate-800 px-2 py-0.5 text-[10px] font-semibold text-slate-400">
+                          🌟 Todas las Cuotas de Valor Activas
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
                     {[
-                      { id: "all", label: "🌟 Todas (+EV > 0%)", desc: "Todas las opciones con valor positivo" },
-                      { id: "muy_alta", label: "⭐⭐⭐ Muy Alta (≥ 70%)", desc: "Máxima certeza probabilística" },
-                      { id: "alta", label: "⭐⭐ Alta (58% - 69%)", desc: "Equilibrio ideal probabilidad/cuota" },
-                      { id: "media", label: "💎 Valor (Cuota ≥ @1.80)", desc: "Cuotas rentables de alto valor" },
+                      { id: "all", label: "🌟 Todas las Cuotas", desc: "Todo el mercado con valor positivo (+EV)" },
+                      { id: "baja", label: "🛡️ Cuotas Bajas (@1.15 - @1.45)", desc: "Alta probabilidad (≥ 70%), banqueras" },
+                      { id: "media", label: "⚖️ Cuotas Medias (@1.46 - @1.75)", desc: "Equilibrio probabilidad / cuota (58% - 69%)" },
+                      { id: "valor", label: "💎 Cuotas de Valor (@1.76 - @2.10)", desc: "Excelente rendimiento matemático +EV" },
+                      { id: "alta", label: "🚀 Cuotas Altas (@2.11 - @2.60)", desc: "Alto retorno con ventaja probabilística" },
                     ].map((conf) => {
-                      const isSelected = mcpConfidence === conf.id;
+                      const isSelected = conf.id === "all" ? selectedMcpOddsRanges.length === 0 : selectedMcpOddsRanges.includes(conf.id);
                       return (
                         <button
                           key={conf.id}
-                          onClick={() => setMcpConfidence(conf.id)}
+                          onClick={() => handleToggleOddsRangeFilter(conf.id)}
                           className={`flex flex-col items-start justify-between rounded-xl p-3 text-left transition cursor-pointer border ${
                             isSelected
-                              ? "bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 border-emerald-300 shadow-md font-black"
+                              ? "bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 border-emerald-300 shadow-md font-black scale-[1.01]"
                               : "bg-slate-800/80 text-slate-300 border-slate-700/80 hover:bg-slate-750 hover:text-white hover:border-slate-600"
                           }`}
                         >
-                          <span className="text-xs font-black">{conf.label}</span>
+                          <div className="flex items-center justify-between w-full">
+                            <span className="text-xs font-black">{conf.label}</span>
+                            {isSelected && conf.id !== "all" && <span className="text-[11px] font-black">✓</span>}
+                          </div>
                           <span className={`text-[10px] mt-1 ${isSelected ? "text-slate-900 font-bold" : "text-slate-400"}`}>
                             {conf.desc}
                           </span>
