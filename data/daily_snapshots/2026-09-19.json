@@ -3692,7 +3692,7 @@
     "expectedValue": 0,
     "impliedProbability": 71.4,
     "result": "LOST",
-    "profit": -1.0
+    "profit": -1
   },
   {
     "id": "pred-2026-09-19-1494766-ganador-local",
@@ -3999,7 +3999,7 @@
     "expectedValue": -13.7,
     "impliedProbability": 73.5,
     "result": "LOST",
-    "profit": -1.0
+    "profit": -1
   },
   {
     "id": "pred-2026-09-19-1555396-over-2.5-goles",
@@ -5075,7 +5075,7 @@
     "expectedValue": -10,
     "impliedProbability": 73.5,
     "result": "LOST",
-    "profit": -1.0
+    "profit": -1
   },
   {
     "id": "pred-2026-09-19-1557415-ambos-equipos-anotan",
@@ -6305,7 +6305,7 @@
     "expectedValue": -11.4,
     "impliedProbability": 71.4,
     "result": "LOST",
-    "profit": -1.0
+    "profit": -1
   },
   {
     "id": "pred-2026-09-19-1550136-over-2.5-goles",
@@ -6612,7 +6612,7 @@
     "expectedValue": 4.7,
     "impliedProbability": 73.5,
     "result": "LOST",
-    "profit": -1.0
+    "profit": -1
   },
   {
     "id": "pred-2026-09-19-1552175-ambos-equipos-anotan",
@@ -8681,7 +8681,7 @@
       "recommendedLine": 6.5
     },
     "isNewlyDiscovered": true,
-    "impliedProbability": 82.0
+    "impliedProbability": 82
   },
   {
     "h2h": [
@@ -10358,31 +10358,6 @@
     "bookmakerOdds": 1.6,
     "expectedValue": -4.8,
     "impliedProbability": 62.5
-  },
-  {
-    "edge": 7.5,
-    "odds": 1.65,
-    "isMcp": true,
-    "match": "Bayern Munich vs Borussia Dortmund",
-    "league": "Bundesliga",
-    "market": "Over 2.5 Goles",
-    "source": "mcp",
-    "status": "pending",
-    "country": "Alemania",
-    "kickoff": "2026-09-20T02:11:07.448Z",
-    "awayTeam": "Borussia Dortmund",
-    "homeTeam": "Bayern Munich",
-    "leagueId": 78,
-    "fixtureId": 999199,
-    "isMcpPick": true,
-    "pickBadge": "mcp",
-    "selection": "Over 2.5",
-    "awayTeamId": 165,
-    "confidence": "Muy Alta",
-    "homeTeamId": 157,
-    "smartScore": 85,
-    "probability": 72,
-    "explanation": "Alta expectativa anotadora: Bayern Munich genera 1.6 xG en casa y Borussia Dortmund promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos."
   },
   {
     "h2h": [

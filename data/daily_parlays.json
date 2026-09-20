@@ -28532,30 +28532,6 @@
           "expectedTotalCorners": 10.31
         },
         "impliedProbability": 50
-      },
-      {
-        "edge": 7.5,
-        "odds": 1.65,
-        "isMcp": true,
-        "match": "Bayern Munich vs Borussia Dortmund",
-        "league": "Bundesliga",
-        "market": "Over 2.5 Goles",
-        "source": "mcp",
-        "status": "pending",
-        "country": "Alemania",
-        "kickoff": "2026-09-20T12:15:21.125Z",
-        "awayTeam": "Borussia Dortmund",
-        "homeTeam": "Bayern Munich",
-        "leagueId": 78,
-        "fixtureId": 999199,
-        "isMcpPick": true,
-        "pickBadge": "mcp",
-        "selection": "Over 2.5",
-        "awayTeamId": 165,
-        "confidence": "Muy Alta",
-        "homeTeamId": 157,
-        "smartScore": 85,
-        "probability": 72
       }
     ],
     "parlay3": [
@@ -30051,30 +30027,6 @@
           "expectedTotalCorners": 10.31
         },
         "impliedProbability": 50
-      },
-      {
-        "edge": 7.5,
-        "odds": 1.65,
-        "isMcp": true,
-        "match": "Bayern Munich vs Borussia Dortmund",
-        "league": "Bundesliga",
-        "market": "Over 2.5 Goles",
-        "source": "mcp",
-        "status": "pending",
-        "country": "Alemania",
-        "kickoff": "2026-09-20T12:15:21.125Z",
-        "awayTeam": "Borussia Dortmund",
-        "homeTeam": "Bayern Munich",
-        "leagueId": 78,
-        "fixtureId": 999199,
-        "isMcpPick": true,
-        "pickBadge": "mcp",
-        "selection": "Over 2.5",
-        "awayTeamId": 165,
-        "confidence": "Muy Alta",
-        "homeTeamId": 157,
-        "smartScore": 85,
-        "probability": 72
       }
     ]
   }

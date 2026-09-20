@@ -33,10 +33,10 @@
     "match": "Incheon United vs Daejeon Citizen",
     "league": "K League 1",
     "market": "Córners",
-    "profit": 0.53,
-    "result": "WON",
+    "profit": -1,
+    "result": "LOST",
     "source": "mcp",
-    "status": "lost",
+    "status": "won",
     "awayElo": 1492,
     "country": "Corea del Sur",
     "homeElo": 1590,
@@ -145,7 +145,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/292.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "actualScore": "1 - 1",
+    "actualScore": "6 - 5 (11 Córners)",
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.7 córners totales.",
     "probability": 78,
     "bookmakerOdds": 1.53,
@@ -289,8 +289,8 @@
     "match": "Pohang Steelers vs FC Seoul",
     "league": "K League 1",
     "market": "Córners",
-    "profit": 0.46,
-    "result": "WON",
+    "profit": -1,
+    "result": "LOST",
     "source": "mcp",
     "status": "won",
     "awayElo": 1620,
@@ -401,7 +401,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/292.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "actualScore": "2 - 1",
+    "actualScore": "6 - 4 (10 Córners)",
     "explanation": "Patrón de repliegue y rechaces: Pohang Steelers sostiene una alta cadencia de llegadas al último tercio generando tiros de esquina constantes, mientras que FC Seoul concede más de 5.2 córners en promedio cuando juega de visitante.",
     "probability": 76.7,
     "bookmakerOdds": 1.46,
@@ -550,7 +550,7 @@
     "profit": 0.67,
     "result": "WON",
     "source": "mcp",
-    "status": "lost",
+    "status": "won",
     "awayElo": 1690,
     "country": "España",
     "homeElo": 1570,
@@ -659,7 +659,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/142.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "actualScore": "1 - 3",
+    "actualScore": "6 - 4 (10 Córners)",
     "explanation": "Volumen constante por las bandas: El cruce táctico entre Granad. Tenerife W (5.8 córners de media en casa) y Sevilla W (4.6 foráneos) proyecta 10.4 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
     "probability": 76.6,
     "bookmakerOdds": 1.67,
@@ -1328,8 +1328,10 @@
     "match": "Antwerp vs Union St. Gilloise",
     "league": "Jupiler Pro League",
     "market": "Over 2.5 Goles",
+    "profit": -1,
+    "result": "LOST",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1514,
     "country": "Bélgica",
     "homeElo": 1497,
@@ -1438,6 +1440,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/144.png",
     "leagueTier": 1,
     "smartScore": 99,
+    "actualScore": "0 - 2 (2 Goles)",
     "explanation": "Alta expectativa anotadora: Antwerp genera 1.6 xG en casa y Union St. Gilloise promedia 1.3 xG fuera, proyectando 2.9 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
     "probability": 57.8,
     "bookmakerOdds": 1.6,
@@ -1478,8 +1481,10 @@
     "match": "Arminia Bielefeld vs 1. FC Heidenheim",
     "league": "2. Bundesliga",
     "market": "Córners",
+    "profit": 1,
+    "result": "WON",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1524,
     "country": "Alemania",
     "homeElo": 1600,
@@ -1588,6 +1593,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/79.png",
     "leagueTier": 2,
     "smartScore": 99,
+    "actualScore": "6 - 4 (10 Córners)",
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.3 córners totales.",
     "probability": 83.9,
     "bookmakerOdds": 2,
@@ -1738,8 +1744,10 @@
     "match": "Energie Cottbus vs FC St. Pauli",
     "league": "2. Bundesliga",
     "market": "Córners",
+    "profit": 1.85,
+    "result": "WON",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1533,
     "country": "Alemania",
     "homeElo": 1540,
@@ -1848,6 +1856,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/79.png",
     "leagueTier": 2,
     "smartScore": 99,
+    "actualScore": "6 - 4 (10 Córners)",
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.2 córners totales.",
     "probability": 83.3,
     "bookmakerOdds": 2.85,
@@ -3088,15 +3097,15 @@
     "edge": 7.5,
     "odds": 1.65,
     "isMcp": true,
-    "match": "Bayern Munich vs Borussia Dortmund",
+    "match": "Mock Test Home vs Mock Test Away",
     "league": "Bundesliga",
     "market": "Over 2.5 Goles",
     "source": "mcp",
     "status": "pending",
     "country": "Alemania",
-    "kickoff": "2026-09-20T13:24:58.093Z",
-    "awayTeam": "Borussia Dortmund",
-    "homeTeam": "Bayern Munich",
+    "kickoff": "2026-09-20T13:35:03.945Z",
+    "awayTeam": "Mock Test Away",
+    "homeTeam": "Mock Test Home",
     "leagueId": 78,
     "fixtureId": 999199,
     "isMcpPick": true,
@@ -3707,6 +3716,606 @@
     "bookmakerOdds": 1.57,
     "expectedValue": -7.8,
     "impliedProbability": 63.7
+  },
+  {
+    "h2h": [
+      {
+        "date": "2026-07-22",
+        "score": "1-2",
+        "winner": "away",
+        "awayTeam": "Egersund",
+        "homeTeam": "ODD Ballklubb",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-03-24",
+        "score": "2-0",
+        "winner": "home",
+        "awayTeam": "ODD Ballklubb",
+        "homeTeam": "Egersund",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2025-09-25",
+        "score": "1-3",
+        "winner": "away",
+        "awayTeam": "Egersund",
+        "homeTeam": "ODD Ballklubb",
+        "competition": "1. Division (OBOS-ligaen)"
+      }
+    ],
+    "edge": 1,
+    "odds": 1.36,
+    "pick": "Ambos Equipos Anotan",
+    "isMcp": true,
+    "match": "ODD Ballklubb vs Egersund",
+    "league": "1. Division (OBOS-ligaen)",
+    "market": "Ambos Equipos Anotan",
+    "source": "mcp",
+    "status": "pending",
+    "awayElo": 1589,
+    "country": "Noruega",
+    "homeElo": 1554,
+    "kickoff": "2026-09-20T10:00:00-05:00",
+    "awayLogo": "https://media.api-sports.io/football/teams/6976.png",
+    "awayTeam": "Egersund",
+    "fairOdds": 1.54,
+    "homeLogo": "https://media.api-sports.io/football/teams/330.png",
+    "homeTeam": "ODD Ballklubb",
+    "leagueId": 104,
+    "timeSlot": "morning",
+    "awayLast5": [
+      {
+        "date": "2026-09-16",
+        "score": "0-3",
+        "isHome": false,
+        "result": "L",
+        "opponent": "Rival A",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-09-11",
+        "score": "1-2",
+        "isHome": true,
+        "result": "D",
+        "opponent": "Rival B",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-09-06",
+        "score": "3-1",
+        "isHome": false,
+        "result": "W",
+        "opponent": "Rival C",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-09-01",
+        "score": "2-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival D",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-08-27",
+        "score": "0-3",
+        "isHome": false,
+        "result": "L",
+        "opponent": "Rival E",
+        "competition": "1. Division (OBOS-ligaen)"
+      }
+    ],
+    "bookmaker": "Bet365",
+    "fixtureId": 1495955,
+    "homeLast5": [
+      {
+        "date": "2026-09-16",
+        "score": "1-2",
+        "isHome": true,
+        "result": "D",
+        "opponent": "Rival A",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-09-11",
+        "score": "3-1",
+        "isHome": false,
+        "result": "W",
+        "opponent": "Rival B",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-09-06",
+        "score": "1-2",
+        "isHome": true,
+        "result": "L",
+        "opponent": "Rival C",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-09-01",
+        "score": "1-2",
+        "isHome": false,
+        "result": "D",
+        "opponent": "Rival D",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-08-27",
+        "score": "2-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival E",
+        "competition": "1. Division (OBOS-ligaen)"
+      }
+    ],
+    "isMcpPick": true,
+    "isTopPick": false,
+    "modelOdds": 1.54,
+    "pickBadge": "mcp",
+    "selection": "Sí",
+    "awayTeamId": 6976,
+    "confidence": "Alta",
+    "homeTeamId": 330,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/104.png",
+    "leagueTier": 2,
+    "smartScore": 71,
+    "explanation": "Tanto ODD Ballklubb como Egersund han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
+    "probability": 64.9,
+    "bookmakerOdds": 1.36,
+    "expectedValue": -11.8,
+    "impliedProbability": 73.5
+  },
+  {
+    "h2h": [
+      {
+        "date": "2026-07-22",
+        "score": "1-2",
+        "winner": "away",
+        "awayTeam": "Sogndal",
+        "homeTeam": "Stabaek",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-03-24",
+        "score": "2-0",
+        "winner": "home",
+        "awayTeam": "Stabaek",
+        "homeTeam": "Sogndal",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2025-09-25",
+        "score": "1-3",
+        "winner": "away",
+        "awayTeam": "Sogndal",
+        "homeTeam": "Stabaek",
+        "competition": "1. Division (OBOS-ligaen)"
+      }
+    ],
+    "edge": 1,
+    "odds": 1.4,
+    "pick": "Ambos Equipos Anotan",
+    "isMcp": true,
+    "match": "Stabaek vs Sogndal",
+    "league": "1. Division (OBOS-ligaen)",
+    "market": "Ambos Equipos Anotan",
+    "source": "mcp",
+    "status": "pending",
+    "awayElo": 1652,
+    "country": "Noruega",
+    "homeElo": 1639,
+    "kickoff": "2026-09-20T10:00:00-05:00",
+    "awayLogo": "https://media.api-sports.io/football/teams/758.png",
+    "awayTeam": "Sogndal",
+    "fairOdds": 1.58,
+    "homeLogo": "https://media.api-sports.io/football/teams/323.png",
+    "homeTeam": "Stabaek",
+    "leagueId": 104,
+    "timeSlot": "morning",
+    "awayLast5": [
+      {
+        "date": "2026-09-16",
+        "score": "2-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival A",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-09-11",
+        "score": "0-3",
+        "isHome": false,
+        "result": "L",
+        "opponent": "Rival B",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-09-06",
+        "score": "1-2",
+        "isHome": true,
+        "result": "D",
+        "opponent": "Rival C",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-09-01",
+        "score": "3-1",
+        "isHome": false,
+        "result": "W",
+        "opponent": "Rival D",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-08-27",
+        "score": "2-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival E",
+        "competition": "1. Division (OBOS-ligaen)"
+      }
+    ],
+    "bookmaker": "Bet365",
+    "fixtureId": 1495958,
+    "homeLast5": [
+      {
+        "date": "2026-09-16",
+        "score": "0-3",
+        "isHome": false,
+        "result": "L",
+        "opponent": "Rival A",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-09-11",
+        "score": "1-2",
+        "isHome": true,
+        "result": "D",
+        "opponent": "Rival B",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-09-06",
+        "score": "3-1",
+        "isHome": false,
+        "result": "W",
+        "opponent": "Rival C",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-09-01",
+        "score": "2-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival D",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-08-27",
+        "score": "0-3",
+        "isHome": false,
+        "result": "L",
+        "opponent": "Rival E",
+        "competition": "1. Division (OBOS-ligaen)"
+      }
+    ],
+    "isMcpPick": true,
+    "isTopPick": false,
+    "modelOdds": 1.58,
+    "pickBadge": "mcp",
+    "selection": "Sí",
+    "awayTeamId": 758,
+    "confidence": "Alta",
+    "homeTeamId": 323,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/104.png",
+    "leagueTier": 2,
+    "smartScore": 70,
+    "explanation": "Tanto Stabaek como Sogndal han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
+    "probability": 63.3,
+    "bookmakerOdds": 1.4,
+    "expectedValue": -11.4,
+    "impliedProbability": 71.4
+  },
+  {
+    "h2h": [
+      {
+        "date": "2026-07-22",
+        "score": "2-1",
+        "winner": "home",
+        "awayTeam": "Moss",
+        "homeTeam": "Sandnes ULF",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-03-24",
+        "score": "0-2",
+        "winner": "away",
+        "awayTeam": "Sandnes ULF",
+        "homeTeam": "Moss",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2025-09-25",
+        "score": "3-0",
+        "winner": "home",
+        "awayTeam": "Moss",
+        "homeTeam": "Sandnes ULF",
+        "competition": "1. Division (OBOS-ligaen)"
+      }
+    ],
+    "edge": 1,
+    "odds": 1.4,
+    "pick": "Ambos Equipos Anotan",
+    "isMcp": true,
+    "match": "Sandnes ULF vs Moss",
+    "league": "1. Division (OBOS-ligaen)",
+    "market": "Ambos Equipos Anotan",
+    "source": "mcp",
+    "status": "pending",
+    "awayElo": 1538,
+    "country": "Noruega",
+    "homeElo": 1559,
+    "kickoff": "2026-09-20T10:00:00-05:00",
+    "awayLogo": "https://media.api-sports.io/football/teams/7012.png",
+    "awayTeam": "Moss",
+    "fairOdds": 1.59,
+    "homeLogo": "https://media.api-sports.io/football/teams/2146.png",
+    "homeTeam": "Sandnes ULF",
+    "leagueId": 104,
+    "timeSlot": "morning",
+    "awayLast5": [
+      {
+        "date": "2026-09-16",
+        "score": "0-3",
+        "isHome": true,
+        "result": "L",
+        "opponent": "Rival A",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-09-11",
+        "score": "1-2",
+        "isHome": false,
+        "result": "D",
+        "opponent": "Rival B",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-09-06",
+        "score": "2-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival C",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-09-01",
+        "score": "1-3",
+        "isHome": false,
+        "result": "L",
+        "opponent": "Rival D",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-08-27",
+        "score": "0-3",
+        "isHome": true,
+        "result": "L",
+        "opponent": "Rival E",
+        "competition": "1. Division (OBOS-ligaen)"
+      }
+    ],
+    "bookmaker": "Bet365",
+    "fixtureId": 1495957,
+    "homeLast5": [
+      {
+        "date": "2026-09-16",
+        "score": "0-3",
+        "isHome": false,
+        "result": "L",
+        "opponent": "Rival A",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-09-11",
+        "score": "1-2",
+        "isHome": true,
+        "result": "D",
+        "opponent": "Rival B",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-09-06",
+        "score": "3-1",
+        "isHome": false,
+        "result": "W",
+        "opponent": "Rival C",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-09-01",
+        "score": "2-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival D",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-08-27",
+        "score": "0-3",
+        "isHome": false,
+        "result": "L",
+        "opponent": "Rival E",
+        "competition": "1. Division (OBOS-ligaen)"
+      }
+    ],
+    "isMcpPick": true,
+    "isTopPick": false,
+    "modelOdds": 1.59,
+    "pickBadge": "mcp",
+    "selection": "Sí",
+    "awayTeamId": 7012,
+    "confidence": "Alta",
+    "homeTeamId": 2146,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/104.png",
+    "leagueTier": 2,
+    "smartScore": 70,
+    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
+    "probability": 62.9,
+    "bookmakerOdds": 1.4,
+    "expectedValue": -12,
+    "impliedProbability": 71.4
+  },
+  {
+    "h2h": [
+      {
+        "date": "2026-07-22",
+        "score": "1-2",
+        "winner": "away",
+        "awayTeam": "Stromsgodset",
+        "homeTeam": "Raufoss",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-03-24",
+        "score": "2-0",
+        "winner": "home",
+        "awayTeam": "Raufoss",
+        "homeTeam": "Stromsgodset",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2025-09-25",
+        "score": "1-3",
+        "winner": "away",
+        "awayTeam": "Stromsgodset",
+        "homeTeam": "Raufoss",
+        "competition": "1. Division (OBOS-ligaen)"
+      }
+    ],
+    "edge": 1,
+    "odds": 1.44,
+    "pick": "Ambos Equipos Anotan",
+    "isMcp": true,
+    "match": "Raufoss vs Stromsgodset",
+    "league": "1. Division (OBOS-ligaen)",
+    "market": "Ambos Equipos Anotan",
+    "source": "mcp",
+    "status": "pending",
+    "awayElo": 1514,
+    "country": "Noruega",
+    "homeElo": 1499,
+    "kickoff": "2026-09-20T10:00:00-05:00",
+    "awayLogo": "https://media.api-sports.io/football/teams/324.png",
+    "awayTeam": "Stromsgodset",
+    "fairOdds": 1.61,
+    "homeLogo": "https://media.api-sports.io/football/teams/2153.png",
+    "homeTeam": "Raufoss",
+    "leagueId": 104,
+    "timeSlot": "morning",
+    "awayLast5": [
+      {
+        "date": "2026-09-16",
+        "score": "1-2",
+        "isHome": true,
+        "result": "D",
+        "opponent": "Rival A",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-09-11",
+        "score": "1-2",
+        "isHome": false,
+        "result": "W",
+        "opponent": "Rival B",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-09-06",
+        "score": "0-3",
+        "isHome": true,
+        "result": "L",
+        "opponent": "Rival C",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-09-01",
+        "score": "1-2",
+        "isHome": false,
+        "result": "D",
+        "opponent": "Rival D",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-08-27",
+        "score": "2-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival E",
+        "competition": "1. Division (OBOS-ligaen)"
+      }
+    ],
+    "bookmaker": "Bet365",
+    "fixtureId": 1495956,
+    "homeLast5": [
+      {
+        "date": "2026-09-16",
+        "score": "1-3",
+        "isHome": false,
+        "result": "L",
+        "opponent": "Rival A",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-09-11",
+        "score": "0-3",
+        "isHome": true,
+        "result": "L",
+        "opponent": "Rival B",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-09-06",
+        "score": "1-2",
+        "isHome": false,
+        "result": "D",
+        "opponent": "Rival C",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-09-01",
+        "score": "2-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival D",
+        "competition": "1. Division (OBOS-ligaen)"
+      },
+      {
+        "date": "2026-08-27",
+        "score": "1-3",
+        "isHome": false,
+        "result": "L",
+        "opponent": "Rival E",
+        "competition": "1. Division (OBOS-ligaen)"
+      }
+    ],
+    "isMcpPick": true,
+    "isTopPick": false,
+    "modelOdds": 1.61,
+    "pickBadge": "mcp",
+    "selection": "Sí",
+    "awayTeamId": 324,
+    "confidence": "Alta",
+    "homeTeamId": 2153,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/104.png",
+    "leagueTier": 2,
+    "smartScore": 70,
+    "explanation": "Eficacia bilateral en ataque: Raufoss anota con regularidad en su estadio (1.6 xG) pero concede ocasiones (1 goles en contra), mientras que Stromsgodset cuenta con pegada foránea (1.2 xG). El patrón estadístico favorece la anotación mutua.",
+    "probability": 62.2,
+    "bookmakerOdds": 1.44,
+    "expectedValue": -10.4,
+    "impliedProbability": 69.4
   },
   {
     "h2h": [
@@ -5357,6 +5966,259 @@
     "bookmakerOdds": 1.62,
     "expectedValue": 2.4,
     "impliedProbability": 61.7
+  },
+  {
+    "h2h": [
+      {
+        "date": "2026-07-22",
+        "score": "1-2",
+        "winner": "away",
+        "awayTeam": "Paris Saint Germain",
+        "homeTeam": "Marseille",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-03-24",
+        "score": "2-0",
+        "winner": "home",
+        "awayTeam": "Marseille",
+        "homeTeam": "Paris Saint Germain",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2025-09-25",
+        "score": "1-3",
+        "winner": "away",
+        "awayTeam": "Paris Saint Germain",
+        "homeTeam": "Marseille",
+        "competition": "Ligue 1"
+      }
+    ],
+    "edge": 9.8,
+    "odds": 1.83,
+    "pick": "Over 8.5 Córners",
+    "isMcp": true,
+    "match": "Marseille vs Paris Saint Germain",
+    "league": "Ligue 1",
+    "market": "Córners",
+    "source": "mcp",
+    "status": "pending",
+    "awayElo": 1970,
+    "country": "Francia",
+    "homeElo": 1790,
+    "kickoff": "2026-09-20T13:45:00-05:00",
+    "awayLogo": "https://media.api-sports.io/football/teams/85.png",
+    "awayTeam": "Paris Saint Germain",
+    "fairOdds": 1.55,
+    "homeLogo": "https://media.api-sports.io/football/teams/81.png",
+    "homeTeam": "Marseille",
+    "leagueId": 61,
+    "timeSlot": "afternoon",
+    "awayLast5": [
+      {
+        "date": "2026-09-16",
+        "score": "2-1",
+        "isHome": false,
+        "result": "W",
+        "opponent": "Rival A",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-09-11",
+        "score": "3-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival B",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-09-06",
+        "score": "2-2",
+        "isHome": false,
+        "result": "D",
+        "opponent": "Rival C",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-09-01",
+        "score": "3-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival D",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-08-27",
+        "score": "2-1",
+        "isHome": false,
+        "result": "W",
+        "opponent": "Rival E",
+        "competition": "Ligue 1"
+      }
+    ],
+    "bookmaker": "Bet365",
+    "fixtureId": 1552773,
+    "homeLast5": [
+      {
+        "date": "2026-09-16",
+        "score": "2-2",
+        "isHome": true,
+        "result": "D",
+        "opponent": "Rival A",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-09-11",
+        "score": "2-1",
+        "isHome": false,
+        "result": "W",
+        "opponent": "Rival B",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-09-06",
+        "score": "3-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival C",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-09-01",
+        "score": "2-2",
+        "isHome": false,
+        "result": "D",
+        "opponent": "Rival D",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-08-27",
+        "score": "3-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival E",
+        "competition": "Ligue 1"
+      }
+    ],
+    "isMcpPick": true,
+    "isTopPick": false,
+    "modelOdds": 1.55,
+    "pickBadge": "mcp",
+    "selection": "Over 8.5",
+    "awayTeamId": 85,
+    "confidence": "Alta",
+    "homeTeamId": 81,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/61.png",
+    "leagueTier": 1,
+    "smartScore": 99,
+    "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.2 córners totales.",
+    "probability": 64.4,
+    "bookmakerOdds": 1.83,
+    "expectedValue": 17.9,
+    "cornerAnalysis": {
+      "dataQuality": 0.85,
+      "allCandidates": [
+        {
+          "line": 6.5,
+          "selection": "Over 6.5",
+          "smart_edge": -0.016,
+          "smart_score": 0,
+          "data_quality": 0.85,
+          "decimal_odds": 1.18,
+          "expected_value": -0.019,
+          "expected_margin": 3.23,
+          "expected_corners": 10.23,
+          "required_corners": 7,
+          "devig_probability": 0.805,
+          "model_probability": 0.831,
+          "rejection_reasons": [
+            "Smart Edge insuficiente: +-1.6% < +2.0%"
+          ],
+          "implied_probability": 0.847,
+          "qualification_status": "REJECTED_EDGE"
+        },
+        {
+          "line": 7.5,
+          "selection": "Over 7.5",
+          "smart_edge": 0.015,
+          "smart_score": 0,
+          "data_quality": 0.85,
+          "decimal_odds": 1.37,
+          "expected_value": 0.021,
+          "expected_margin": 2.23,
+          "expected_corners": 10.23,
+          "required_corners": 8,
+          "devig_probability": 0.693,
+          "model_probability": 0.745,
+          "rejection_reasons": [
+            "Smart Edge insuficiente: +1.5% < +3.0%"
+          ],
+          "implied_probability": 0.73,
+          "qualification_status": "REJECTED_EDGE"
+        },
+        {
+          "line": 8.5,
+          "selection": "Over 8.5",
+          "smart_edge": 0.098,
+          "smart_score": 66,
+          "data_quality": 0.85,
+          "decimal_odds": 1.83,
+          "expected_value": 0.179,
+          "expected_margin": 1.23,
+          "expected_corners": 10.23,
+          "required_corners": 9,
+          "devig_probability": 0.519,
+          "model_probability": 0.644,
+          "rejection_reasons": [],
+          "implied_probability": 0.546,
+          "qualification_status": "QUALIFIED"
+        },
+        {
+          "line": 9.5,
+          "selection": "Over 9.5",
+          "smart_edge": 0.093,
+          "smart_score": 0,
+          "data_quality": 0.85,
+          "decimal_odds": 2.25,
+          "expected_value": 0.208,
+          "expected_margin": 0.23,
+          "expected_corners": 10.23,
+          "required_corners": 10,
+          "devig_probability": 0.422,
+          "model_probability": 0.537,
+          "rejection_reasons": [
+            "Probabilidad del modelo inferior al umbral: 53.7% < 54.0%"
+          ],
+          "implied_probability": 0.444,
+          "qualification_status": "REJECTED_PROB"
+        },
+        {
+          "line": 10.5,
+          "selection": "Over 10.5",
+          "smart_edge": 0.062,
+          "smart_score": 0,
+          "data_quality": 0.85,
+          "decimal_odds": 2.7,
+          "expected_value": 0.166,
+          "expected_margin": -0.77,
+          "expected_corners": 10.23,
+          "required_corners": 11,
+          "devig_probability": 0.352,
+          "model_probability": 0.432,
+          "rejection_reasons": [
+            "Probabilidad del modelo inferior al umbral: 43.2% < 44.0%"
+          ],
+          "implied_probability": 0.37,
+          "qualification_status": "REJECTED_PROB"
+        }
+      ],
+      "recommendedLine": 8.5,
+      "distributionModel": "Negative Binomial",
+      "expectedAwayCorners": 4.87,
+      "expectedHomeCorners": 5.36,
+      "expectedTotalCorners": 10.23
+    },
+    "impliedProbability": 54.6
   },
   {
     "h2h": [

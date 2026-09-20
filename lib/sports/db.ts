@@ -200,7 +200,7 @@ export async function loadDailySnapshotAsync(dateStr: string): Promise<MarketOpp
   return finalCombined;
 }
 
-function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
+export function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
   // Never write disk snapshots during test execution to prevent test mocks from polluting production data
   if (process.env.VITEST || process.env.NODE_ENV === "test") {
     memorySnapshots[dateStr] = picks;
@@ -474,6 +474,42 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string): Prom
       }
     }
 
+    // Pre-fetch official statistics (Corner Kicks) for finished corner picks
+    const cornerStatsMap: Record<number, { homeCorners: number; awayCorners: number; totalCorners: number }> = {};
+    const finishedCornerPicks = snapshot.filter((p) => {
+      const isCorner = (p.market || "").toLowerCase().includes("corner") || (p.market || "").toLowerCase().includes("córner");
+      if (!isCorner || !p.fixtureId) return false;
+      const hNorm = getCanonicalTeamKey(p.homeTeam);
+      const aNorm = getCanonicalTeamKey(p.awayTeam);
+      const fixKey = `fix-${p.fixtureId}`;
+      const scoreData = realScoresMap[fixKey] || realScoresMap[`${hNorm}-${aNorm}`];
+      return scoreData && scoreData.isFinished;
+    });
+
+    if (finishedCornerPicks.length > 0) {
+      await Promise.all(
+        finishedCornerPicks.map(async (p) => {
+          const fixId = Number(p.fixtureId);
+          if (!fixId || cornerStatsMap[fixId]) return;
+          try {
+            const stats = await apiFootball.getFixtureStatistics(fixId);
+            if (stats && Array.isArray(stats) && stats.length >= 2) {
+              const details = extractMatchDetails(stats);
+              if (details.hasStats) {
+                cornerStatsMap[fixId] = {
+                  homeCorners: details.homeCorners,
+                  awayCorners: details.awayCorners,
+                  totalCorners: details.totalCorners,
+                };
+              }
+            }
+          } catch (err) {
+            console.warn(`[Settlement] Could not fetch stats for fixture ${fixId}:`, err);
+          }
+        })
+      );
+    }
+
     let hasUpdates = false;
     const settledSnapshot = snapshot.map((p) => {
       const hNorm = getCanonicalTeamKey(p.homeTeam);
@@ -483,15 +519,22 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string): Prom
 
       // 1. MATCH IS FULLY FINISHED (FT, AET, PEN) -> Evaluate market result and permanently settle
       if (scoreData && scoreData.isFinished && typeof scoreData.home === "number" && typeof scoreData.away === "number") {
+        const cornerStat = p.fixtureId ? cornerStatsMap[Number(p.fixtureId)] : undefined;
         const evaluation = evaluateMarketResult(p.market, scoreData.home, scoreData.away, {
           selection: p.selection,
+          pick: p.pick,
+          line: (p as any).cornerAnalysis?.recommendedLine,
           homeTeam: p.homeTeam,
           awayTeam: p.awayTeam,
           league: p.league,
           country: p.country,
           probability: p.probability,
+          homeCorners: cornerStat?.homeCorners,
+          awayCorners: cornerStat?.awayCorners,
+          totalCorners: cornerStat?.totalCorners,
           cornerAnalysis: (p as any).cornerAnalysis,
           expectedCorners: (p as any).cornerAnalysis?.expectedTotalCorners,
+          actualScore: p.actualScore || (p as any).score,
         });
 
         const newStatus: "won" | "lost" = evaluation.isWon ? "won" : "lost";

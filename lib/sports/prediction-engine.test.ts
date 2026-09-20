@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import { describe, it, expect } from "vitest";
 import { evaluateFixturePrediction } from "./prediction-engine";
 import {
@@ -5,6 +7,8 @@ import {
   addPredictionsToDailySnapshot,
   getEcuadorDateString,
   getStoredPredictions,
+  loadDailySnapshot,
+  saveDailySnapshot,
 } from "./db";
 
 describe("Prediction Engine (TypeScript MVP)", () => {
@@ -78,9 +82,9 @@ describe("Prediction Engine (TypeScript MVP)", () => {
   it("correctly adds and tags MCP discovered alerts in active daily snapshot", () => {
     const mockMcpPick: any = {
       fixtureId: 999199,
-      match: "Bayern Munich vs Borussia Dortmund",
-      homeTeam: "Bayern Munich",
-      awayTeam: "Borussia Dortmund",
+      match: "Mock Test Home vs Mock Test Away",
+      homeTeam: "Mock Test Home",
+      awayTeam: "Mock Test Away",
       homeTeamId: 157,
       awayTeamId: 165,
       league: "Bundesliga",
@@ -105,6 +109,19 @@ describe("Prediction Engine (TypeScript MVP)", () => {
     expect(found?.isMcpPick).toBe(true);
     expect(found?.source).toBe("mcp");
     expect(found?.pickBadge).toBe("mcp");
+
+    // Clean up disk snapshots directly so test mocks NEVER pollute production files
+    const todayStr = getEcuadorDateString(Date.now());
+    const filePath = path.join(process.cwd(), "data", "daily_snapshots", `${todayStr}.json`);
+    if (fs.existsSync(filePath)) {
+      try {
+        const current = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+        if (Array.isArray(current)) {
+          const cleaned = current.filter((p: any) => p.fixtureId !== 999199);
+          fs.writeFileSync(filePath, JSON.stringify(cleaned, null, 2), "utf-8");
+        }
+      } catch {}
+    }
   });
 
   it("generates predictions with rich market variety from live curated multi-league queries", async () => {
