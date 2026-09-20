@@ -27896,7 +27896,7 @@
         "league": "Premiership",
         "market": "Córners",
         "source": "mcp",
-        "status": "pending",
+        "status": "won",
         "awayElo": 1482,
         "country": "Escocia",
         "homeElo": 1536,
@@ -28119,7 +28119,11 @@
           "expectedHomeCorners": 6.14,
           "expectedTotalCorners": 10.59
         },
-        "impliedProbability": 47.6
+        "impliedProbability": 47.6,
+        "result": "WON",
+        "actualScore": "8 - 4 (12 Córners)",
+        "score": "8 - 4 (12 Córners)",
+        "profit": 1.1
       },
       {
         "h2h": [
@@ -28308,7 +28312,7 @@
         "league": "2. Bundesliga",
         "market": "Córners",
         "source": "mcp",
-        "status": "pending",
+        "status": "won",
         "awayElo": 1524,
         "country": "Alemania",
         "homeElo": 1600,
@@ -28531,7 +28535,11 @@
           "expectedHomeCorners": 5.93,
           "expectedTotalCorners": 10.31
         },
-        "impliedProbability": 50
+        "impliedProbability": 50,
+        "result": "WON",
+        "actualScore": "5 - 6 (11 Córners)",
+        "score": "5 - 6 (11 Córners)",
+        "profit": 1
       }
     ],
     "parlay3": [
@@ -28570,7 +28578,7 @@
         "league": "Eredivisie",
         "market": "Córners",
         "source": "mcp",
-        "status": "pending",
+        "status": "won",
         "awayElo": 1495,
         "country": "Países Bajos",
         "homeElo": 1810,
@@ -28792,7 +28800,11 @@
           "expectedHomeCorners": 6.46,
           "expectedTotalCorners": 10.8
         },
-        "impliedProbability": 50
+        "impliedProbability": 50,
+        "result": "WON",
+        "actualScore": "6 - 3 (9 Córners)",
+        "score": "6 - 3 (9 Córners)",
+        "profit": 1
       },
       {
         "h2h": [
@@ -28981,7 +28993,7 @@
         "league": "Premiership",
         "market": "Córners",
         "source": "mcp",
-        "status": "pending",
+        "status": "won",
         "awayElo": 1482,
         "country": "Escocia",
         "homeElo": 1536,
@@ -29204,7 +29216,11 @@
           "expectedHomeCorners": 6.14,
           "expectedTotalCorners": 10.59
         },
-        "impliedProbability": 47.6
+        "impliedProbability": 47.6,
+        "result": "WON",
+        "actualScore": "8 - 4 (12 Córners)",
+        "score": "8 - 4 (12 Córners)",
+        "profit": 1.1
       },
       {
         "h2h": [
@@ -29393,7 +29409,7 @@
         "league": "Premiership",
         "market": "Córners",
         "source": "mcp",
-        "status": "pending",
+        "status": "won",
         "awayElo": 1482,
         "country": "Escocia",
         "homeElo": 1536,
@@ -29616,7 +29632,11 @@
           "expectedHomeCorners": 6.14,
           "expectedTotalCorners": 10.59
         },
-        "impliedProbability": 47.6
+        "impliedProbability": 47.6,
+        "result": "WON",
+        "actualScore": "8 - 4 (12 Córners)",
+        "score": "8 - 4 (12 Córners)",
+        "profit": 1.1
       },
       {
         "h2h": [
@@ -29803,7 +29823,7 @@
         "league": "2. Bundesliga",
         "market": "Córners",
         "source": "mcp",
-        "status": "pending",
+        "status": "won",
         "awayElo": 1524,
         "country": "Alemania",
         "homeElo": 1600,
@@ -30026,7 +30046,11 @@
           "expectedHomeCorners": 5.93,
           "expectedTotalCorners": 10.31
         },
-        "impliedProbability": 50
+        "impliedProbability": 50,
+        "result": "WON",
+        "actualScore": "5 - 6 (11 Córners)",
+        "score": "5 - 6 (11 Córners)",
+        "profit": 1
       }
     ]
   }
