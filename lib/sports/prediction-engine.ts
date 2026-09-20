@@ -1636,7 +1636,7 @@ export function evaluateFixturePrediction(params: {
       const fallbackOdds = lineDefaults[rec.line] || 1.35;
       const finalOdds = typeof rec.decimal_odds === "number" ? rec.decimal_odds : fallbackOdds;
       candidates.push({
-        market: "C?rners",
+        market: "Córners",
         selection: rec.selection,
         prob: rec.model_probability,
         odds: finalOdds,
