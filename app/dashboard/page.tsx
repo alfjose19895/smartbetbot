@@ -240,7 +240,7 @@ export default function DashboardPage() {
   // Filter high confidence picks focusing on Ganador Local & Over 2.5 strictly on today's matches
   const highConfidencePicks = todayPredictions
     .filter((p) => {
-      const isFocusMarket = p.market === "Ganador Local" || p.market === "Over 2.5 Goles";
+      const isFocusMarket = p.market === "Ganador Local" || p.market === "Over 2.5 Goles" || p.market === "Córners";
       const isHighConf =
         p.confidence === "Muy Alta" ||
         (p.confidenceScore && p.confidenceScore >= 70) ||

@@ -26,6 +26,7 @@ export default function ReportsPage() {
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<TimeRangeFilter>("30d");
   const [modalityFilter, setModalityFilter] = useState<ModalityFilter>("all");
+  const [marketFilter, setMarketFilter] = useState<string>("all");
   const [hoveredBar, setHoveredBar] = useState<string | null>(null);
 
   useEffect(() => {
@@ -73,9 +74,21 @@ export default function ReportsPage() {
       if (modalityFilter === "mcp" && !isMcp) return false;
       if (modalityFilter === "bomba" && !isBomba) return false;
 
+      // Market Filter
+      if (marketFilter !== "all") {
+        const normSelected = marketFilter.toLowerCase().replace(/[^a-z0-9]/g, "");
+        const normActual = (item.market || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+        const isCornerMatch =
+          (normSelected.includes("corner") || normSelected.includes("crner")) &&
+          (normActual.includes("corner") || normActual.includes("crner"));
+        if (!isCornerMatch && !normActual.includes(normSelected) && !normSelected.includes(normActual)) {
+          return false;
+        }
+      }
+
       return true;
     });
-  }, [historyItems, timeRange, modalityFilter]);
+  }, [historyItems, timeRange, modalityFilter, marketFilter]);
 
   // Global KPIs
   const totalSettled = filteredItems.length;
@@ -157,6 +170,7 @@ export default function ReportsPage() {
       else if (canonicalMarket.toLowerCase().includes("ganador visitante") || canonicalMarket.toLowerCase().includes("gana visitante")) canonicalMarket = "Ganador Visitante";
       else if (canonicalMarket.toLowerCase().includes("ambos")) canonicalMarket = "Ambos Equipos Anotan";
       else if (canonicalMarket.toLowerCase().includes("over 1.5")) canonicalMarket = "Over 1.5 Goles";
+      else if (canonicalMarket.toLowerCase().includes("córner") || canonicalMarket.toLowerCase().includes("corner")) canonicalMarket = "Córners";
 
       if (!map[canonicalMarket]) {
         map[canonicalMarket] = { total: 0, won: 0, lost: 0, oddsSum: 0, profit: 0 };
@@ -313,6 +327,78 @@ export default function ReportsPage() {
             }`}
           >
             💣 Bombas ({comparativeMetrics.bomba.total})
+          </button>
+        </div>
+
+        {/* Market Filter Pills */}
+        <div className="mb-6 flex flex-wrap items-center gap-2 border-b border-slate-200 pb-4 dark:border-slate-800">
+          <span className="text-xs font-bold text-slate-400 mr-1">Filtrar por Mercado:</span>
+
+          <button
+            onClick={() => setMarketFilter("all")}
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+              marketFilter === "all"
+                ? "bg-slate-900 text-white shadow-sm dark:bg-slate-100 dark:text-slate-950"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+            }`}
+          >
+            🌐 Todos los Mercados
+          </button>
+
+          <button
+            onClick={() => setMarketFilter("Ganador Local")}
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+              marketFilter === "Ganador Local"
+                ? "bg-emerald-600 text-white shadow-sm"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+            }`}
+          >
+            ⚽ Ganador Local
+          </button>
+
+          <button
+            onClick={() => setMarketFilter("Ganador Visitante")}
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+              marketFilter === "Ganador Visitante"
+                ? "bg-emerald-600 text-white shadow-sm"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+            }`}
+          >
+            🚀 Ganador Visitante
+          </button>
+
+          <button
+            onClick={() => setMarketFilter("Over 2.5 Goles")}
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+              marketFilter === "Over 2.5 Goles"
+                ? "bg-sky-600 text-white shadow-sm"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+            }`}
+          >
+            🔥 Over 2.5 Goles
+          </button>
+
+          <button
+            onClick={() => setMarketFilter("Ambos Equipos Anotan")}
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+              marketFilter === "Ambos Equipos Anotan"
+                ? "bg-indigo-600 text-white shadow-sm"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+            }`}
+          >
+            ⚡ Ambos Anotan
+          </button>
+
+          <button
+            onClick={() => setMarketFilter("Córners")}
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
+              marketFilter === "Córners"
+                ? "bg-amber-600 text-white shadow-sm"
+                : "bg-amber-50 text-amber-900 border border-amber-200 hover:bg-amber-100 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800"
+            }`}
+          >
+            <span>🚩</span>
+            <span>Córners</span>
           </button>
         </div>
 

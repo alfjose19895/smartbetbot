@@ -188,179 +188,31 @@ function AdminControlContent() {
   const [userFilter, setUserFilter] = useState<"all" | "pending" | "approved" | "paused">("all");
   // MCP Agent State (Admin Exclusive)
   const [mcpQuery, setMcpQuery] = useState("");
-  const [mcpCountry, setMcpCountry] = useState("españa");
+  const [mcpCountry, setMcpCountry] = useState("");
   const [selectedMcpLeague, setSelectedMcpLeague] = useState<AvailableLeagueItem | null>(null);
   const [mcpLeagueCategoryFilter, setMcpLeagueCategoryFilter] = useState<string>("all");
   const [mcpLeagueSearchQuery, setMcpLeagueSearchQuery] = useState<string>("");
+  const [mcpMarket, setMcpMarket] = useState<string>("all");
+  const [mcpConfidence, setMcpConfidence] = useState<string>("all");
   const [mcpLoading, setMcpLoading] = useState(false);
   const [mcpResults, setMcpResults] = useState<MarketOpportunity[]>([]);
+  const [selectedPickKeys, setSelectedPickKeys] = useState<Set<string>>(new Set());
   const [mcpMetrics, setMcpMetrics] = useState<{
     totalMatches: number;
     averageProbability: string;
     averageOdds: string;
     highConfidenceCount: number;
   } | null>(null);
-  const [mcpAiAnalysis, setMcpAiAnalysis] = useState<{
-    intent: string;
-    summary: string;
-    insights: string[];
-    recommendation: string;
-    parlayRecommendation?: {
-      totalOdds: string;
-      combinedProbability: string;
-      selectionsCount: number;
-      legs: Array<{ match: string; market: string; selection: string; odds: number }>;
-    };
-  } | null>(null);
   const [mcpSearched, setMcpSearched] = useState(false);
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
   const [publishingMcp, setPublishingMcp] = useState(false);
 
-  const [templateTargetLeague, setTemplateTargetLeague] = useState("Major League Soccer (MLS)");
-  const [templateTargetCountry, setTemplateTargetCountry] = useState("estados_unidos");
-  const [copiedTemplateId, setCopiedTemplateId] = useState<string | null>(null);
-  const [activeTemplateCategory, setActiveTemplateCategory] = useState<"all" | "live" | "prematch" | "bomba" | "parlay" | "tactical">("all");
-  const [customLeagueInput, setCustomLeagueInput] = useState("");
-
-  const leagueTemplatePresets = [
-    { name: "Champions League (UEFA)", country: "champions", flag: "🏆" },
-    { name: "Copa Sudamericana", country: "sudamericana", flag: "⭐" },
-    { name: "Major League Soccer (MLS)", country: "estados_unidos", flag: "🇺🇸" },
-    { name: "USL Championship (USA)", country: "estados_unidos", flag: "🇺🇸" },
-    { name: "La Liga (España)", country: "españa", flag: "🇪🇸" },
-    { name: "Premier League (Inglaterra)", country: "inglaterra", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
-    { name: "Liga Pro (Ecuador)", country: "ecuador", flag: "🇪🇨" },
-    { name: "Primera División (Costa Rica)", country: "costa rica", flag: "🇨🇷" },
-    { name: "Serie A (Italia)", country: "italia", flag: "🇮🇹" },
-    { name: "Bundesliga (Alemania)", country: "alemania", flag: "🇩🇪" },
-    { name: "Liga MX (México)", country: "mexico", flag: "🇲🇽" },
-    { name: "Brasileirão (Brasil)", country: "brasil", flag: "🇧🇷" },
-  ];
-
-  const promptTemplatesList = [
-    {
-      id: "live-1",
-      category: "live",
-      categoryName: "🎯 Mercados de Valor y Goles",
-      badgeColor: "bg-rose-500/10 text-rose-400 border-rose-500/30",
-      title: "Oportunidad de Gol In-Play en Próximos 15 Min",
-      templateText: (league: string) => `Busca alertas en vivo con partidos en juego donde haya alta probabilidad de gol en los próximos 15 minutos en ${league}`,
-    },
-    {
-      id: "live-2",
-      category: "live",
-      categoryName: "🎯 Mercados de Valor y Goles",
-      badgeColor: "bg-rose-500/10 text-rose-400 border-rose-500/30",
-      title: "Empates en 2do Tiempo con Cuota de Ganador",
-      templateText: (league: string) => `Analiza partidos en vivo en ${league} que vayan empatados al segundo tiempo y tengan cuota rentable de ganador o Over 1.5/2.5`,
-    },
-    {
-      id: "live-3",
-      category: "live",
-      categoryName: "🎯 Mercados de Valor y Goles",
-      badgeColor: "bg-rose-500/10 text-rose-400 border-rose-500/30",
-      title: "Partidos Abiertos con Presión de Ataque",
-      templateText: (league: string) => `Encuentra oportunidades en vivo de Over 2.5 o Ambos Anotan en partidos abiertos y con alta presión de ataque en ${league}`,
-    },
-    {
-      id: "prematch-1",
-      category: "prematch",
-      categoryName: "📋 Pre-Match & Mercados",
-      badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
-      title: "Over 2.5 Goles Más Rentables",
-      templateText: (league: string) => `Busca cuotas de over 2.5 mas rentables con los partidos de la ${league} que estan por comenzar`,
-    },
-    {
-      id: "prematch-2",
-      category: "prematch",
-      categoryName: "📋 Pre-Match & Mercados",
-      badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
-      title: "Ganador Local con Probabilidad > 65%",
-      templateText: (league: string) => `Encuentra pronósticos de Ganador Local con probabilidad superior al 65% y cuota de valor en ${league}`,
-    },
-    {
-      id: "prematch-3",
-      category: "prematch",
-      categoryName: "📋 Pre-Match & Mercados",
-      badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
-      title: "Ambos Equipos Anotan (BTTS)",
-      templateText: (league: string) => `Analiza partidos de ${league} donde Ambos Equipos Anotan (BTTS) tenga alta probabilidad y cuota superior a @1.65`,
-    },
-    {
-      id: "bomba-1",
-      category: "bomba",
-      categoryName: "💣 Bombas & Alto Valor",
-      badgeColor: "bg-orange-500/10 text-orange-400 border-orange-500/30",
-      title: "Picks Bomba Cuota @2.10+ con Valor Esperado",
-      templateText: (league: string) => `Encuentra picks bomba con cuotas superiores a @2.10 y valor matemático positivo (EV+) en ${league}`,
-    },
-    {
-      id: "bomba-2",
-      category: "bomba",
-      categoryName: "💣 Bombas & Alto Valor",
-      badgeColor: "bg-orange-500/10 text-orange-400 border-orange-500/30",
-      title: "Sorpresas con Alta Efectividad",
-      templateText: (league: string) => `Busca sorpresas con cuota alta y alta efectividad en los partidos de hoy de ${league}`,
-    },
-    {
-      id: "parlay-1",
-      category: "parlay",
-      categoryName: "🎲 Parlays & Combinadas",
-      badgeColor: "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
-      title: "Combinada de 3 Selecciones de Alta Confianza",
-      templateText: (league: string) => `Genera una combinada o parley de 3 selecciones de alta confianza con cuota total entre @2.50 y @4.00 combinando ${league} y ligas principales`,
-    },
-    {
-      id: "tactical-1",
-      category: "tactical",
-      categoryName: "🏆 Clásicos & Análisis Táctico",
-      badgeColor: "bg-purple-500/10 text-purple-400 border-purple-500/30",
-      title: "Análisis Profundo de Clásicos / Partidos Estelares",
-      templateText: (league: string) => `Analiza en profundidad el próximo clásico o partido estelar de ${league} evaluando H2H, forma reciente y cuota con mayor valor`,
-    },
-    {
-      id: "tactical-2",
-      category: "tactical",
-      categoryName: "🏆 Clásicos & Análisis Táctico",
-      badgeColor: "bg-purple-500/10 text-purple-400 border-purple-500/30",
-      title: "Top 3 Oportunidades con Mayor Rentabilidad",
-      templateText: (league: string) => `Identifica las 3 selecciones con mayor valor esperado y rentabilidad en la jornada de hoy de ${league}`,
-    },
-  ];
-
-  const handleCopyPromptText = (text: string, id: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedTemplateId(id);
-    setTimeout(() => setCopiedTemplateId(null), 2500);
-  };
-
-  const handleUsePromptInAgent = (text: string, country: string, leagueName?: string, leagueId?: number) => {
-    setMcpQuery(text);
-    setMcpCountry(country);
-    if (leagueId) {
-      const matchLeague = MCP_AVAILABLE_LEAGUES.find((l) => l.id === leagueId);
-      if (matchLeague) setSelectedMcpLeague(matchLeague);
-    }
-    window.scrollTo({ top: 180, behavior: "smooth" });
-    handleMcpSearch(text, country, leagueName, leagueId);
-  };
-
   const handleSelectLeagueFilter = (league: AvailableLeagueItem | null) => {
     setSelectedMcpLeague(league);
     if (league) {
-      setTemplateTargetLeague(league.name);
-      setTemplateTargetCountry(league.country.toLowerCase());
       setMcpCountry(league.country.toLowerCase());
-      const autoQuery = `Pronósticos de ${league.name} para hoy`;
-      setMcpQuery(autoQuery);
-      handleMcpSearch(autoQuery, league.country.toLowerCase(), league.name, league.id);
     } else {
-      setTemplateTargetLeague("Todas las Ligas");
-      setTemplateTargetCountry("");
-      setMcpCountry("");
-      const autoQuery = "Pronósticos de mayor valor para hoy";
-      setMcpQuery(autoQuery);
-      handleMcpSearch(autoQuery, "", "", undefined);
+      setMcpCountry('');
     }
   };
 
@@ -442,7 +294,6 @@ function AdminControlContent() {
         const predictions = data.predictions || [];
         setMcpResults(predictions);
         setMcpMetrics(data.metrics || null);
-        setMcpAiAnalysis(data.aiAnalysis || null);
 
         if (predictions.length > 0) {
           await handlePublishMcpPicks(predictions);
@@ -1175,7 +1026,7 @@ function AdminControlContent() {
         {/* TAB 4: AGENTE MCP DE PRONÓSTICOS (AI INTERNAL AGENT) */}
         {activeTab === "mcp" && (
           <div className="mt-6 space-y-6">
-            {/* AI Agent Header & Command Center */}
+            {/* Header Banner */}
             <div className="relative overflow-hidden rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-slate-900 via-slate-950 to-emerald-950/40 p-6 shadow-2xl text-white">
               <div className="absolute top-0 right-0 -mt-8 -mr-8 h-48 w-48 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
               
@@ -1187,466 +1038,246 @@ function AdminControlContent() {
                   <div>
                     <div className="flex items-center gap-2">
                       <h3 className="text-lg sm:text-xl font-black tracking-tight text-white">
-                        Agente MCP de Inteligencia Cuantitativa
+                        Agente MCP — Motor de Búsqueda y Publicación Inteligente
                       </h3>
                       <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-black text-emerald-300 border border-emerald-500/30 uppercase tracking-wider">
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                        IA Activa
+                        Algoritmo Activo
                       </span>
                     </div>
                     <p className="text-xs text-slate-400 mt-0.5">
-                      Escribe lo que necesitas en lenguaje natural o filtra directamente por liga: el agente interpretará tu instrucción y aplicará el algoritmo cuantitativo en tiempo real.
+                      Configura tu búsqueda en 3 sencillos pasos (Liga, Mercado, Confianza), analiza los pronósticos en tiempo real y publícalos con un solo clic.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleMcpSearch(mcpQuery, mcpCountry, selectedMcpLeague?.name, selectedMcpLeague?.id)}
-                    disabled={mcpLoading}
-                    className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2.5 text-xs font-black text-slate-950 shadow-lg shadow-emerald-500/25 hover:bg-emerald-400 transition cursor-pointer disabled:opacity-50"
-                  >
-                    {mcpLoading ? (
-                      <>
-                        <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-slate-950 border-t-transparent" />
-                        <span>Analizando...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>⚡</span>
-                        <span>Ejecutar Consulta IA</span>
-                      </>
-                    )}
-                  </button>
-                </div>
+                <button
+                  onClick={() => handleMcpSearch()}
+                  disabled={mcpLoading}
+                  className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 px-5 py-3 text-xs font-black text-slate-950 shadow-lg shadow-emerald-500/25 hover:brightness-110 transition cursor-pointer disabled:opacity-50"
+                >
+                  {mcpLoading ? (
+                    <>
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-slate-950 border-t-transparent" />
+                      <span>Analizando Partidos...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>🔍</span>
+                      <span>Buscar y Analizar Pronósticos</span>
+                    </>
+                  )}
+                </button>
               </div>
 
-              {/* Natural Language Prompt Bar */}
-              <div className="mt-5 space-y-3">
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    handleMcpSearch(mcpQuery, mcpCountry, selectedMcpLeague?.name, selectedMcpLeague?.id);
-                  }}
-                  className="relative flex items-center"
-                >
-                  <span className="absolute left-4 text-lg text-emerald-400 pointer-events-none">💬</span>
-                  <input
-                    type="text"
-                    value={mcpQuery}
-                    onChange={(e) => setMcpQuery(e.target.value)}
-                    placeholder="Ejemplo: 'busca partidos de Costa Rica con cuota mayor a 1.80' o 'analiza Alajuelense vs Saprissa' o 'dame un parley de 3 partidos'..."
-                    className="w-full rounded-2xl border border-slate-700 bg-slate-900/90 pl-12 pr-28 py-3.5 text-sm text-white placeholder-slate-400 shadow-inner outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition"
-                  />
-                  <button
-                    type="submit"
-                    disabled={mcpLoading}
-                    className="absolute right-2 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-black text-slate-950 hover:bg-emerald-400 transition cursor-pointer disabled:opacity-50"
-                  >
-                    {mcpLoading ? "Buscando..." : "Enviar"}
-                  </button>
-                </form>
-
-                {/* Active League Badge / Quick Status Bar */}
-                {selectedMcpLeague && (
-                  <div className="flex items-center justify-between rounded-xl bg-emerald-950/60 border border-emerald-500/40 px-3.5 py-2 text-xs">
+              {/* SECUENCIA GUIADA: PASOS 1, 2 Y 3 */}
+              <div className="mt-6 space-y-6">
+                {/* PASO 1: LIGA */}
+                <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4 sm:p-5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-emerald-400 font-bold">🎯 Filtro de Liga Activo:</span>
-                      <span className="font-extrabold text-white flex items-center gap-1.5">
-                        <span>{selectedMcpLeague.flag}</span>
-                        <span>{selectedMcpLeague.name}</span>
-                        <span className="text-emerald-300/80 font-medium">({selectedMcpLeague.country})</span>
-                      </span>
-                      <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-bold text-emerald-300 font-mono">
-                        ID: {selectedMcpLeague.id}
-                      </span>
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-slate-950 text-xs font-black">1</span>
+                      <h4 className="text-sm font-black text-white">Selecciona la Liga o Competición</h4>
+                      {selectedMcpLeague && (
+                        <span className="rounded-lg bg-emerald-500/20 px-2 py-0.5 text-[10px] font-black text-emerald-300 border border-emerald-500/30">
+                          {selectedMcpLeague.flag} {selectedMcpLeague.name}
+                        </span>
+                      )}
                     </div>
+
+                    {/* Category Filter Pills */}
+                    <div className="flex flex-wrap items-center gap-1">
+                      {MCP_LEAGUE_CATEGORIES.map((cat) => (
+                        <button
+                          key={cat.id}
+                          onClick={() => setMcpLeagueCategoryFilter(cat.id)}
+                          className={`rounded-lg px-2.5 py-1 text-[10px] font-bold transition cursor-pointer ${
+                            mcpLeagueCategoryFilter === cat.id
+                              ? "bg-emerald-500 text-slate-950 font-black shadow-xs"
+                              : "bg-slate-800 text-slate-400 hover:text-white"
+                          }`}
+                        >
+                          {cat.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Search bar & All leagues button */}
+                  <div className="mt-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                    <div className="relative flex-1">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 pointer-events-none">🔍</span>
+                      <input
+                        type="text"
+                        value={mcpLeagueSearchQuery}
+                        onChange={(e) => setMcpLeagueSearchQuery(e.target.value)}
+                        placeholder="Buscar por nombre de liga o país (ej. MLS, Premier, Champions, España, Costa Rica, Ecuador, México)..."
+                        className="w-full rounded-xl border border-slate-700 bg-slate-950 pl-9 pr-8 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-emerald-400"
+                      />
+                      {mcpLeagueSearchQuery && (
+                        <button
+                          onClick={() => setMcpLeagueSearchQuery("")}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-white"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+
                     <button
                       onClick={() => handleSelectLeagueFilter(null)}
-                      className="text-[11px] font-extrabold text-emerald-400 hover:text-white underline cursor-pointer"
-                    >
-                      ✕ Quitar Filtro (Todas las Ligas)
-                    </button>
-                  </div>
-                )}
-
-                {/* Quick Action Chips */}
-                <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                  <span className="text-[11px] font-bold text-slate-400 mr-1">Consultas rápidas:</span>
-                  {[
-                    { label: "🏆 Champions League", query: "Busca los mejores pronósticos de Champions League para hoy", leagueId: 2, country: "europa", league: "UEFA Champions League" },
-                    { label: "⭐ Copa Sudamericana", query: "Busca los mejores pronósticos de Copa Sudamericana para hoy", leagueId: 11, country: "sudamérica", league: "Copa Sudamericana" },
-                    { label: "🇺🇸 MLS Over 2.5", query: "Busca cuotas de over 2.5 mas rentables con los partidos de la MLS", leagueId: 253, country: "estados unidos", league: "Major League Soccer (MLS)" },
-                    { label: "🇺🇸 USL Championship", query: "Busca los mejores pronósticos de la USL Championship de Estados Unidos para hoy", leagueId: 254, country: "estados unidos", league: "USL Championship" },
-                    { label: "🇨🇷 Costa Rica Primera", query: "mejores pronósticos de la Primera División de Costa Rica", leagueId: 162, country: "costa rica", league: "Primera División (Liga FPD)" },
-                    { label: "🇪🇨 Ecuador Liga Pro", query: "pronósticos de la Liga Pro de Ecuador para hoy", leagueId: 242, country: "ecuador", league: "Liga Pro" },
-                    { label: "🇪🇸 La Liga", query: "mejores pronósticos de La Liga española para hoy", leagueId: 140, country: "españa", league: "La Liga" },
-                    { label: "🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League", query: "partidos de Premier League con alto valor y Over 2.5", leagueId: 39, country: "inglaterra", league: "Premier League" },
-                    { label: "🔥 Probabilidad > 65%", query: "busca los partidos con probabilidad mayor al 65%" },
-                    { label: "⚽ Ambos Equipos Anotan", query: "partidos con Ambos Equipos Anotan y cuota mayor a 1.70" },
-                    { label: "💣 Bombas Cuota > 2.00", query: "encuentra bombas del día con cuota mayor a 2.00" },
-                    { label: "🎲 Parley de 3 Partidos", query: "genera un parley de 3 selecciones de alta confianza" },
-                  ].map((chip, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => {
-                        if (chip.leagueId) {
-                          const leg = MCP_AVAILABLE_LEAGUES.find((l) => l.id === chip.leagueId);
-                          if (leg) {
-                            setSelectedMcpLeague(leg);
-                            setTemplateTargetLeague(leg.name);
-                            setTemplateTargetCountry(leg.country.toLowerCase());
-                          }
-                          setMcpQuery(chip.query);
-                          setMcpCountry(chip.country || "");
-                          handleMcpSearch(chip.query, chip.country, chip.league, chip.leagueId);
-                        } else {
-                          setMcpQuery(chip.query);
-                          handleMcpSearch(chip.query, mcpCountry, selectedMcpLeague?.name, selectedMcpLeague?.id);
-                        }
-                      }}
-                      className="rounded-lg bg-slate-800/80 px-2.5 py-1 text-[11px] font-bold text-slate-300 hover:bg-emerald-500/20 hover:text-emerald-300 border border-slate-700/60 transition cursor-pointer"
-                    >
-                      {chip.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* SELECCIÓN Y FILTRO DE LIGAS DISPONIBLES EN LA APP */}
-            <div className="rounded-3xl border border-slate-700/80 bg-gradient-to-br from-slate-900 via-slate-900/90 to-slate-950 p-5 sm:p-6 shadow-xl text-white">
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-slate-800 pb-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">🏆</span>
-                    <h4 className="text-base font-black text-white tracking-tight">
-                      Filtro de Ligas Disponibles en la App ({MCP_AVAILABLE_LEAGUES.length} Ligas)
-                    </h4>
-                    <span className="rounded-md bg-emerald-500/20 px-2 py-0.5 text-[10px] font-black text-emerald-400 border border-emerald-500/30">
-                      Coincidencia Exacta 100%
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-400 mt-1">
-                    Selecciona una liga para filtrar el algoritmo de predicción y sincronizar automáticamente los prompts del Agente:
-                  </p>
-                </div>
-
-                {/* Category Tabs */}
-                <div className="flex flex-wrap items-center gap-1.5 bg-slate-800/80 p-1.5 rounded-2xl border border-slate-700">
-                  {MCP_LEAGUE_CATEGORIES.map((cat) => {
-                    const count = cat.id === "all" 
-                      ? MCP_AVAILABLE_LEAGUES.length 
-                      : MCP_AVAILABLE_LEAGUES.filter((l) => l.category === cat.id).length;
-                    return (
-                      <button
-                        key={cat.id}
-                        onClick={() => setMcpLeagueCategoryFilter(cat.id)}
-                        className={`rounded-xl px-2.5 py-1.5 text-[11px] font-extrabold transition cursor-pointer ${
-                          mcpLeagueCategoryFilter === cat.id
-                            ? "bg-emerald-500 text-slate-950 font-black shadow-sm"
-                            : "text-slate-400 hover:text-white"
-                        }`}
-                      >
-                        <span>{cat.label}</span>
-                        <span className="ml-1 opacity-75 text-[10px]">({count})</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Search input & Active League Status Bar */}
-              <div className="mt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                <div className="relative flex-1">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-slate-400 pointer-events-none">🔍</span>
-                  <input
-                    type="text"
-                    value={mcpLeagueSearchQuery}
-                    onChange={(e) => setMcpLeagueSearchQuery(e.target.value)}
-                    placeholder="Buscar liga o país (ej. Champions, Ecuador, Premier, Costa Rica, MLS, Serie A, España)..."
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 pl-10 pr-4 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/30"
-                  />
-                  {mcpLeagueSearchQuery && (
-                    <button
-                      onClick={() => setMcpLeagueSearchQuery("")}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-white"
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-2 shrink-0">
-                  <button
-                    onClick={() => handleSelectLeagueFilter(null)}
-                    className={`rounded-xl px-3.5 py-2 text-xs font-black transition cursor-pointer border ${
-                      selectedMcpLeague === null
-                        ? "bg-emerald-500 text-slate-950 border-emerald-400 shadow-sm"
-                        : "bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700 hover:text-white"
-                    }`}
-                  >
-                    🌐 Ver Todas ({MCP_AVAILABLE_LEAGUES.length})
-                  </button>
-                </div>
-              </div>
-
-              {/* Filtered League Pills Grid */}
-              <div className="mt-4 max-h-56 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-700">
-                <div className="flex flex-wrap items-center gap-2">
-                  {MCP_AVAILABLE_LEAGUES.filter((league) => {
-                    const matchesCategory = mcpLeagueCategoryFilter === "all" || league.category === mcpLeagueCategoryFilter;
-                    const matchesSearch = !mcpLeagueSearchQuery || 
-                      league.name.toLowerCase().includes(mcpLeagueSearchQuery.toLowerCase()) ||
-                      league.country.toLowerCase().includes(mcpLeagueSearchQuery.toLowerCase());
-                    return matchesCategory && matchesSearch;
-                  }).map((league) => {
-                    const isSelected = selectedMcpLeague?.id === league.id;
-                    return (
-                      <button
-                        key={league.id}
-                        onClick={() => handleSelectLeagueFilter(league)}
-                        className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer border ${
-                          isSelected
-                            ? "bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 border-emerald-300 shadow-md shadow-emerald-500/20 font-black scale-[1.02]"
-                            : "bg-slate-800/90 text-slate-200 border-slate-700/80 hover:bg-slate-750 hover:border-emerald-500/50 hover:text-white"
-                        }`}
-                      >
-                        <span className="text-sm">{league.flag}</span>
-                        <span>{league.name}</span>
-                        <span className={`text-[10px] px-1.5 py-0.2 rounded-md font-semibold ${
-                          isSelected ? "bg-slate-950/20 text-slate-900" : "bg-slate-900/80 text-slate-400"
-                        }`}>
-                          {league.country}
-                        </span>
-                      </button>
-                    );
-                  })}
-                  {MCP_AVAILABLE_LEAGUES.filter((league) => {
-                    const matchesCategory = mcpLeagueCategoryFilter === "all" || league.category === mcpLeagueCategoryFilter;
-                    const matchesSearch = !mcpLeagueSearchQuery || 
-                      league.name.toLowerCase().includes(mcpLeagueSearchQuery.toLowerCase()) ||
-                      league.country.toLowerCase().includes(mcpLeagueSearchQuery.toLowerCase());
-                    return matchesCategory && matchesSearch;
-                  }).length === 0 && (
-                    <div className="w-full text-center py-6 text-xs text-slate-400">
-                      No se encontraron ligas que coincidan con la búsqueda "{mcpLeagueSearchQuery}".
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* BIBLIOTECA DE PROMPTS Y TEXTOS PREDETERMINADOS LISTOS PARA COPIAR */}
-            <div className="rounded-3xl border border-slate-700/80 bg-gradient-to-br from-slate-900 via-slate-900/90 to-slate-950 p-5 sm:p-6 shadow-xl text-white">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800 pb-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">💡</span>
-                    <h4 className="text-base font-black text-white tracking-tight">
-                      Biblioteca de Prompts y Textos Predeterminados para el Agente MCP
-                    </h4>
-                    <span className="rounded-md bg-emerald-500/20 px-2 py-0.5 text-[10px] font-black text-emerald-400 border border-emerald-500/30">
-                      1-Clic Copiar & Usar
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-400 mt-1">
-                    Prompts contextualizados con la liga activa ({selectedMcpLeague?.name || templateTargetLeague}):
-                  </p>
-                </div>
-
-                {/* Category Filter for Prompts */}
-                <div className="flex flex-wrap items-center gap-1.5 bg-slate-800/80 p-1 rounded-xl border border-slate-700">
-                  {[
-                    { id: "all", label: "Todos" },
-                    
-                    { id: "prematch", label: "📋 Pre-Match" },
-                    { id: "bomba", label: "💣 Bombas" },
-                    { id: "parlay", label: "🎲 Parlays" },
-                    { id: "tactical", label: "🏆 Clásicos" },
-                  ].map((cat) => (
-                    <button
-                      key={cat.id}
-                      onClick={() => setActiveTemplateCategory(cat.id as any)}
-                      className={`rounded-lg px-2.5 py-1 text-[11px] font-extrabold transition cursor-pointer ${
-                        activeTemplateCategory === cat.id
-                          ? "bg-emerald-500 text-slate-950 font-black shadow-xs"
-                          : "text-slate-400 hover:text-white"
+                      className={`rounded-xl px-3.5 py-2 text-xs font-black transition cursor-pointer border ${
+                        selectedMcpLeague === null
+                          ? "bg-emerald-500 text-slate-950 border-emerald-400 shadow-sm font-black"
+                          : "bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700 hover:text-white"
                       }`}
                     >
-                      {cat.label}
+                      🌐 Todas las Ligas ({MCP_AVAILABLE_LEAGUES.length})
                     </button>
-                  ))}
+                  </div>
+
+                  {/* League Pills Grid */}
+                  <div className="mt-3 max-h-44 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-700">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {MCP_AVAILABLE_LEAGUES.filter((league) => {
+                        const matchesCategory = mcpLeagueCategoryFilter === "all" || league.category === mcpLeagueCategoryFilter;
+                        const matchesSearch =
+                          !mcpLeagueSearchQuery ||
+                          league.name.toLowerCase().includes(mcpLeagueSearchQuery.toLowerCase()) ||
+                          league.country.toLowerCase().includes(mcpLeagueSearchQuery.toLowerCase());
+                        return matchesCategory && matchesSearch;
+                      }).map((league) => {
+                        const isSelected = selectedMcpLeague?.id === league.id;
+                        return (
+                          <button
+                            key={league.id}
+                            onClick={() => handleSelectLeagueFilter(league)}
+                            className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer border ${
+                              isSelected
+                                ? "bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 border-emerald-300 shadow-md font-black scale-[1.02]"
+                                : "bg-slate-800/90 text-slate-200 border-slate-700/80 hover:bg-slate-750 hover:border-emerald-500/50 hover:text-white"
+                            }`}
+                          >
+                            <span>{league.flag}</span>
+                            <span>{league.name}</span>
+                            <span
+                              className={`text-[10px] px-1.5 py-0.2 rounded-md font-semibold ${
+                                isSelected ? "bg-slate-950/20 text-slate-900" : "bg-slate-900/80 text-slate-400"
+                              }`}
+                            >
+                              {league.country}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              {/* Grid of Prompt Cards */}
-              <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-3.5">
-                {promptTemplatesList
-                  .filter((pt) => activeTemplateCategory === "all" || pt.category === activeTemplateCategory)
-                  .map((pt) => {
-                    const currentTargetLeague = selectedMcpLeague?.name || templateTargetLeague;
-                    const currentTargetCountry = selectedMcpLeague?.country.toLowerCase() || templateTargetCountry;
-                    const fullPromptText = pt.templateText(currentTargetLeague);
-                    const isCopied = copiedTemplateId === pt.id;
-                    return (
-                      <div
-                        key={pt.id}
-                        className="flex flex-col justify-between rounded-2xl border border-slate-800 bg-slate-950/70 p-4 transition hover:border-slate-700 hover:bg-slate-950/90 shadow-sm"
-                      >
-                        <div>
-                          <div className="flex items-center justify-between gap-2 mb-2">
-                            <span className={`rounded-md border px-2 py-0.5 text-[10px] font-black uppercase tracking-wider ${pt.badgeColor}`}>
-                              {pt.categoryName}
-                            </span>
-                            <span className="text-[11px] font-extrabold text-slate-400 truncate">
-                              {pt.title}
-                            </span>
-                          </div>
-                          <p className="text-xs font-mono font-medium text-emerald-300/90 bg-slate-900 p-3 rounded-xl border border-slate-800/80 leading-relaxed select-all">
-                            "{fullPromptText}"
-                          </p>
-                        </div>
+                {/* PASO 2: MERCADO */}
+                <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4 sm:p-5">
+                  <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-slate-950 text-xs font-black">2</span>
+                    <h4 className="text-sm font-black text-white">Selecciona el Mercado Objetivo</h4>
+                  </div>
 
-                        <div className="mt-3 flex items-center justify-end gap-2 border-t border-slate-800/60 pt-2.5">
-                          <button
-                            onClick={() => handleCopyPromptText(fullPromptText, pt.id)}
-                            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/90 px-3 py-1.5 text-xs font-bold text-slate-200 hover:bg-slate-700 hover:text-white transition cursor-pointer"
-                          >
-                            <span>{isCopied ? "✓" : "📋"}</span>
-                            <span>{isCopied ? "¡Copiado!" : "Copiar Prompt"}</span>
-                          </button>
+                  <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+                    {[
+                      { id: "all", label: "🌐 Todos los Mercados", desc: "Cualquier mercado autorizado" },
+                      { id: "local", label: "⚽ Ganador Local", desc: "Victoria del equipo local (1)" },
+                      { id: "visitante", label: "🚀 Ganador Visitante", desc: "Victoria del visitante (2)" },
+                      { id: "over", label: "🔥 Over 2.5 Goles", desc: "Expectativa de 3+ goles" },
+                      { id: "ambos", label: "⚡ Ambos Anotan", desc: "Ambos equipos marcan (BTTS)" },
+                      { id: "corners", label: "🚩 Córners", desc: "Líneas Over 6.5 a 10.5 dinámicas" },
+                    ].map((mkt) => {
+                      const isSelected = mcpMarket === mkt.id;
+                      return (
+                        <button
+                          key={mkt.id}
+                          onClick={() => setMcpMarket(mkt.id)}
+                          className={`flex flex-col items-start justify-between rounded-xl p-3 text-left transition cursor-pointer border ${
+                            isSelected
+                              ? "bg-emerald-500 text-slate-950 border-emerald-300 shadow-md font-black"
+                              : "bg-slate-800/80 text-slate-300 border-slate-700/80 hover:bg-slate-750 hover:text-white hover:border-slate-600"
+                          }`}
+                        >
+                          <span className="text-xs font-black">{mkt.label}</span>
+                          <span className={`text-[10px] mt-1 ${isSelected ? "text-slate-900 font-bold" : "text-slate-400"}`}>
+                            {mkt.desc}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
 
-                          <button
-                            onClick={() => handleUsePromptInAgent(
-                              fullPromptText,
-                              currentTargetCountry,
-                              selectedMcpLeague?.name,
-                              selectedMcpLeague?.id
-                            )}
-                            className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 px-3.5 py-1.5 text-xs font-black text-slate-950 shadow-md shadow-emerald-500/20 hover:from-emerald-400 hover:to-teal-300 transition cursor-pointer"
-                          >
-                            <span>⚡</span>
-                            <span>Usar en el Agente</span>
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
+                {/* PASO 3: CONFIANZA */}
+                <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4 sm:p-5">
+                  <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-slate-950 text-xs font-black">3</span>
+                    <h4 className="text-sm font-black text-white">Nivel de Confianza y Filtro de Valor (+EV)</h4>
+                  </div>
+
+                  <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+                    {[
+                      { id: "all", label: "🌟 Todas (+EV > 0%)", desc: "Todas las opciones con valor positivo" },
+                      { id: "muy_alta", label: "⭐⭐⭐ Muy Alta (≥ 70%)", desc: "Máxima certeza probabilística" },
+                      { id: "alta", label: "⭐⭐ Alta (58% - 69%)", desc: "Equilibrio ideal probabilidad/cuota" },
+                      { id: "media", label: "💎 Valor (Cuota ≥ @1.80)", desc: "Cuotas rentables de alto valor" },
+                      { id: "bomba", label: "💣 Bombas (Cuota ≥ @2.05)", desc: "Cuotas sorpresa +EV" },
+                    ].map((conf) => {
+                      const isSelected = mcpConfidence === conf.id;
+                      return (
+                        <button
+                          key={conf.id}
+                          onClick={() => setMcpConfidence(conf.id)}
+                          className={`flex flex-col items-start justify-between rounded-xl p-3 text-left transition cursor-pointer border ${
+                            isSelected
+                              ? "bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 border-emerald-300 shadow-md font-black"
+                              : "bg-slate-800/80 text-slate-300 border-slate-700/80 hover:bg-slate-750 hover:text-white hover:border-slate-600"
+                          }`}
+                        >
+                          <span className="text-xs font-black">{conf.label}</span>
+                          <span className={`text-[10px] mt-1 ${isSelected ? "text-slate-900 font-bold" : "text-slate-400"}`}>
+                            {conf.desc}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* AI Reasoning & Briefing Card */}
-            {mcpAiAnalysis && (
-              <div className="rounded-3xl border border-emerald-500/40 bg-gradient-to-br from-white via-slate-50 to-emerald-50/30 p-5 sm:p-6 shadow-md dark:border-emerald-800/50 dark:from-slate-900 dark:via-slate-900/95 dark:to-slate-950">
-                <div className="flex items-center gap-2.5 border-b border-slate-200 dark:border-slate-800 pb-3.5">
-                  <span className="text-2xl">🧠</span>
-                  <div>
-                    <h4 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
-                      Informe Ejecutivo del Agente de Inteligencia
-                    </h4>
-                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                      Objetivo: {mcpAiAnalysis.intent}
-                    </span>
+            {/* PASO 4: PRONÓSTICOS ENCONTRADOS */}
+            <div className="space-y-4">
+              {/* Metrics Bar */}
+              {mcpMetrics && (
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
+                    <span className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 block">Partidos Coincidentes</span>
+                    <span className="mt-0.5 text-2xl font-black text-slate-900 dark:text-white">{mcpMetrics.totalMatches}</span>
+                  </div>
+                  <div className="rounded-2xl border border-emerald-300 bg-emerald-50/60 p-4 shadow-sm dark:border-emerald-700/60 dark:bg-emerald-950/30">
+                    <span className="text-[10px] font-bold uppercase text-emerald-800 dark:text-emerald-300 block">Probabilidad Promedio</span>
+                    <span className="mt-0.5 text-2xl font-black text-emerald-800 dark:text-emerald-400">{mcpMetrics.averageProbability}</span>
+                  </div>
+                  <div className="rounded-2xl border border-cyan-300 bg-cyan-50/60 p-4 shadow-sm dark:border-cyan-700/60 dark:bg-cyan-950/30">
+                    <span className="text-[10px] font-bold uppercase text-cyan-800 dark:text-cyan-300 block">Cuota Promedio Real</span>
+                    <span className="mt-0.5 text-2xl font-black text-cyan-800 dark:text-cyan-400">{mcpMetrics.averageOdds}</span>
+                  </div>
+                  <div className="rounded-2xl border border-amber-300 bg-amber-50/60 p-4 shadow-sm dark:border-amber-700/60 dark:bg-amber-950/30">
+                    <span className="text-[10px] font-bold uppercase text-amber-800 dark:text-amber-300 block">Alta / Muy Alta Confianza</span>
+                    <span className="mt-0.5 text-2xl font-black text-amber-800 dark:text-amber-400">{mcpMetrics.highConfidenceCount}</span>
                   </div>
                 </div>
+              )}
 
-                <div className="mt-4 space-y-3.5 text-xs text-slate-800 dark:text-slate-200">
-                  <p className="font-semibold leading-relaxed text-sm text-slate-900 dark:text-emerald-100 bg-emerald-50/80 dark:bg-emerald-950/60 p-3.5 rounded-2xl border border-emerald-200 dark:border-emerald-800/80 shadow-xs">
-                    {mcpAiAnalysis.summary}
-                  </p>
-
-                  {mcpAiAnalysis.insights && mcpAiAnalysis.insights.length > 0 && (
-                    <div className="space-y-2 pt-1.5">
-                      <span className="text-xs font-black uppercase text-slate-800 dark:text-emerald-400 block tracking-wider flex items-center gap-1.5">
-                        <span>📊</span> Factores Clave & Hallazgos Estadísticos:
-                      </span>
-                      <ul className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                        {mcpAiAnalysis.insights.map((insight, i) => (
-                          <li
-                            key={i}
-                            className="flex items-start gap-2.5 bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-300 dark:border-slate-800 shadow-xs transition hover:border-emerald-500/40"
-                          >
-                            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400 font-black text-xs mt-0.5">
-                              ✦
-                            </span>
-                            <span className="text-xs font-semibold leading-relaxed text-slate-900 dark:text-slate-100">
-                              {insight}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {/* Parlay Recommendation Card */}
-                  {mcpAiAnalysis.parlayRecommendation && (
-                    <div className="mt-3.5 rounded-2xl border-2 border-emerald-500/40 bg-gradient-to-br from-emerald-500/10 via-white to-transparent dark:from-emerald-950/40 dark:via-slate-900/90 dark:to-slate-950 p-4 shadow-sm">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg">🎲</span>
-                          <span className="font-black text-slate-900 dark:text-white text-sm">
-                            Combinada Sugerida ({mcpAiAnalysis.parlayRecommendation.selectionsCount} Selecciones)
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-slate-600 dark:text-slate-400 font-bold">Cuota Acumulada:</span>
-                          <span className="text-base font-black text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950 px-2.5 py-0.5 rounded-lg border border-emerald-300 dark:border-emerald-800">
-                            @{mcpAiAnalysis.parlayRecommendation.totalOdds}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="mt-2.5 divide-y divide-slate-200 dark:divide-slate-800 text-xs">
-                        {mcpAiAnalysis.parlayRecommendation.legs.map((leg, li) => (
-                          <div key={li} className="py-2 flex items-center justify-between">
-                            <span className="font-bold text-slate-900 dark:text-slate-100">{leg.match}</span>
-                            <span className="text-slate-700 dark:text-slate-300 font-medium">
-                              {leg.market} ({leg.selection}) <strong className="text-emerald-700 dark:text-emerald-400 font-black">@{leg.odds.toFixed(2)}</strong>
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="pt-2 flex flex-col sm:flex-row sm:items-center gap-2 text-xs font-bold text-slate-800 dark:text-slate-200 bg-slate-100/90 dark:bg-slate-900/90 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
-                    <span className="flex items-center gap-1.5 shrink-0 text-slate-900 dark:text-white">
-                      <span>💡</span> Recomendación Operativa:
-                    </span>
-                    <span className="text-emerald-700 dark:text-emerald-400 font-black">{mcpAiAnalysis.recommendation}</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Quick Metrics Header */}
-            {mcpMetrics && (
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
-                  <span className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 block">Partidos Coincidentes</span>
-                  <span className="mt-0.5 text-2xl font-black text-slate-900 dark:text-white">{mcpMetrics.totalMatches}</span>
-                </div>
-                <div className="rounded-2xl border border-emerald-300 bg-emerald-50/60 p-4 shadow-sm dark:border-emerald-700/60 dark:bg-emerald-950/30">
-                  <span className="text-[10px] font-bold uppercase text-emerald-800 dark:text-emerald-300 block">Probabilidad Promedio</span>
-                  <span className="mt-0.5 text-2xl font-black text-emerald-800 dark:text-emerald-400">{mcpMetrics.averageProbability}</span>
-                </div>
-                <div className="rounded-2xl border border-cyan-300 bg-cyan-50/60 p-4 shadow-sm dark:border-cyan-700/60 dark:bg-cyan-950/30">
-                  <span className="text-[10px] font-bold uppercase text-cyan-800 dark:text-cyan-300 block">Cuota Promedio Real</span>
-                  <span className="mt-0.5 text-2xl font-black text-cyan-800 dark:text-cyan-400">{mcpMetrics.averageOdds}</span>
-                </div>
-                <div className="rounded-2xl border border-amber-300 bg-amber-50/60 p-4 shadow-sm dark:border-amber-700/60 dark:bg-amber-950/30">
-                  <span className="text-[10px] font-bold uppercase text-amber-800 dark:text-amber-300 block">Alta / Muy Alta Confianza</span>
-                  <span className="mt-0.5 text-2xl font-black text-amber-800 dark:text-amber-400">{mcpMetrics.highConfidenceCount}</span>
-                </div>
-              </div>
-            )}
-
-            {/* Results Grid */}
-            <div>
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+              {/* Header with Title & Action Controls */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-3 dark:border-slate-800">
                 <div className="flex items-center gap-2">
                   <h4 className="text-base font-black text-slate-900 dark:text-white">
-                    Pronósticos Analizados por el Algoritmo ({mcpResults.length})
+                    4. Pronósticos Encontrados ({mcpResults.length})
                   </h4>
                   {mcpLoading && (
                     <div className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
@@ -1654,69 +1285,127 @@ function AdminControlContent() {
                 </div>
 
                 {mcpResults.length > 0 && (
-                  <button
-                    onClick={() => handlePublishMcpPicks(mcpResults)}
-                    disabled={publishingMcp || mcpLoading}
-                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-2 text-xs font-black text-slate-950 shadow-md shadow-emerald-500/20 hover:brightness-110 transition cursor-pointer disabled:opacity-50"
-                  >
-                    <span>{publishingMcp ? "⏳" : "📥"}</span>
-                    <span>
-                      {publishingMcp
-                        ? "Publicando..."
-                        : `Publicar Todas estas Alertas (${mcpResults.length}) en el Dashboard`}
-                    </span>
-                  </button>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {/* Toggle Select All */}
+                    <button
+                      onClick={() => {
+                        if (selectedPickKeys.size === mcpResults.length) {
+                          setSelectedPickKeys(new Set());
+                        } else {
+                          setSelectedPickKeys(new Set(mcpResults.map((p) => p.id || `${p.fixtureId || 0}-${p.homeTeam}-${p.awayTeam}-${p.market}`)));
+                        }
+                      }}
+                      className="rounded-xl bg-slate-100 dark:bg-slate-800 px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer"
+                    >
+                      {selectedPickKeys.size === mcpResults.length ? "◻️ Desmarcar Todos" : "☑️ Seleccionar Todos"}
+                    </button>
+
+                    {/* PASO 5: PUBLICAR */}
+                    <button
+                      onClick={() => {
+                        const picksToPublish = mcpResults.filter((p) =>
+                          selectedPickKeys.has(p.id || `${p.fixtureId || 0}-${p.homeTeam}-${p.awayTeam}-${p.market}`)
+                        );
+                        handlePublishMcpPicks(picksToPublish.length > 0 ? picksToPublish : mcpResults);
+                      }}
+                      disabled={publishingMcp || mcpLoading || (mcpResults.length > 0 && selectedPickKeys.size === 0)}
+                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-2 text-xs font-black text-slate-950 shadow-md shadow-emerald-500/20 hover:brightness-110 transition cursor-pointer disabled:opacity-50"
+                    >
+                      <span>{publishingMcp ? "⏳" : "📥"}</span>
+                      <span>
+                        {publishingMcp
+                          ? "Publicando..."
+                          : `5. Publicar Seleccionados (${selectedPickKeys.size > 0 ? selectedPickKeys.size : mcpResults.length}) en el Dashboard`}
+                      </span>
+                    </button>
+                  </div>
                 )}
               </div>
 
+              {/* Publish Feedback Toast */}
               {publishFeedback && (
                 <div
-                  className={`mb-4 p-3.5 rounded-2xl text-xs font-bold flex items-center justify-between shadow-sm ${
+                  className={`flex items-center justify-between rounded-2xl p-4 text-xs font-bold shadow-md animate-fade-in ${
                     publishFeedback.type === "success"
-                      ? "bg-emerald-50 border border-emerald-300 text-emerald-800 dark:bg-emerald-950/80 dark:border-emerald-700 dark:text-emerald-300"
-                      : "bg-red-50 border border-red-300 text-red-800 dark:bg-red-950/80 dark:border-red-700 dark:text-red-300"
+                      ? "border border-emerald-400 bg-emerald-500 text-slate-950 font-black"
+                      : "border border-rose-400 bg-rose-500 text-white font-black"
                   }`}
                 >
-                  <span>{publishFeedback.text}</span>
+                  <div className="flex items-center gap-2">
+                    <span>{publishFeedback.type === "success" ? "✓" : "⚠️"}</span>
+                    <span>{publishFeedback.text}</span>
+                  </div>
                   <button
                     onClick={() => setPublishFeedback(null)}
-                    className="text-slate-400 hover:text-slate-600 font-bold ml-2 cursor-pointer"
+                    className="ml-4 font-black hover:opacity-75 cursor-pointer text-slate-950"
                   >
                     ✕
                   </button>
                 </div>
               )}
 
+              {/* Results Content */}
               {mcpLoading ? (
                 <div className="py-16 text-center text-slate-500 rounded-3xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
                   <div className="inline-block h-8 w-8 animate-spin rounded-full border-3 border-emerald-500 border-t-transparent" />
                   <p className="mt-3 text-sm font-bold text-slate-800 dark:text-slate-200">
                     Ejecutando algoritmos cuantitativos y analizando líneas de apuestas...
                   </p>
-                  <p className="text-xs text-slate-500 mt-1">Calculando xG, probabilidades Poisson y valor esperado</p>
+                  <p className="text-xs text-slate-500 mt-1">Calculando xG, probabilidades Poisson/Binomial Negativa y valor esperado</p>
                 </div>
               ) : mcpResults.length === 0 ? (
                 <div className="py-16 text-center text-slate-500 rounded-3xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
                   <span className="text-3xl block mb-2">🔍</span>
                   <p className="text-sm font-bold text-slate-800 dark:text-slate-200">
-                    No se encontraron partidos que cumplan exactamente los criterios de tu búsqueda.
+                    No se encontraron partidos pendientes que cumplan exactamente los filtros seleccionados.
                   </p>
-                  <p className="text-xs text-slate-500 mt-1">Prueba con un país diferente o una condición de cuota más amplia.</p>
+                  <p className="text-xs text-slate-500 mt-1">Prueba seleccionando "Todas las Ligas" o ampliando el nivel de confianza.</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {mcpResults.map((opp) => (
-                    <PredictionCard
-                      key={`${opp.fixtureId || 0}-${opp.homeTeam}-${opp.awayTeam}-${opp.market}`}
-                      prediction={opp}
-                      onOpenDetail={(pick) => setActiveModalPick(pick)}
-                      onPublishAlert={(pick) => handlePublishMcpPicks([pick])}
-                      isPublished={
-                        publishedFixtureKeys.has(String(opp.fixtureId)) ||
-                        publishedFixtureKeys.has(`${opp.homeTeam}-${opp.awayTeam}`)
-                      }
-                    />
-                  ))}
+                  {mcpResults.map((opp) => {
+                    const key = opp.id || `${opp.fixtureId || 0}-${opp.homeTeam}-${opp.awayTeam}-${opp.market}`;
+                    const isSelected = selectedPickKeys.has(key);
+                    return (
+                      <div key={key} className="relative group">
+                        {/* Pick Selection Checkbox Overlay */}
+                        <div
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const next = new Set(selectedPickKeys);
+                            if (next.has(key)) next.delete(key);
+                            else next.add(key);
+                            setSelectedPickKeys(next);
+                          }}
+                          className={`absolute top-3 right-3 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-xl border shadow-md transition cursor-pointer ${
+                            isSelected
+                              ? "bg-emerald-500 text-slate-950 border-emerald-300 font-black shadow-emerald-500/20"
+                              : "bg-slate-900/90 text-slate-400 border-slate-700 hover:text-white"
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => {}}
+                            className="h-3.5 w-3.5 rounded accent-slate-950 cursor-pointer pointer-events-none"
+                          />
+                          <span className="text-[10px] font-extrabold select-none">
+                            {isSelected ? "Seleccionado" : "Elegir"}
+                          </span>
+                        </div>
+
+                        <PredictionCard
+                          prediction={opp}
+                          onOpenDetail={(pick) => setActiveModalPick(pick)}
+                          onPublishAlert={(pick) => handlePublishMcpPicks([pick])}
+                          isPublished={
+                            publishedFixtureKeys.has(String(opp.fixtureId)) ||
+                            publishedFixtureKeys.has(`${opp.homeTeam}-${opp.awayTeam}`)
+                          }
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>

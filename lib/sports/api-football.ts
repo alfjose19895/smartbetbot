@@ -559,6 +559,16 @@ export function extractMarketOddsFromBookmaker(oddsItem?: ApiFootballOddsItem | 
   over35?: number;
   bttsYes?: number;
   bttsNo?: number;
+  cornersOver65?: number;
+  cornersUnder65?: number;
+  cornersOver75?: number;
+  cornersUnder75?: number;
+  cornersOver85?: number;
+  cornersUnder85?: number;
+  cornersOver95?: number;
+  cornersUnder95?: number;
+  cornersOver105?: number;
+  cornersUnder105?: number;
 } {
   if (!oddsItem || !oddsItem.bookmakers || oddsItem.bookmakers.length === 0) {
     return {};
@@ -606,6 +616,16 @@ export function extractMarketOddsFromBookmaker(oddsItem?: ApiFootballOddsItem | 
     over35?: number;
     bttsYes?: number;
     bttsNo?: number;
+    cornersOver65?: number;
+    cornersUnder65?: number;
+    cornersOver75?: number;
+    cornersUnder75?: number;
+    cornersOver85?: number;
+    cornersUnder85?: number;
+    cornersOver95?: number;
+    cornersUnder95?: number;
+    cornersOver105?: number;
+    cornersUnder105?: number;
   } = {};
 
   let primaryBookmakerName = sortedBookmakers[0]?.name || "Bet365";
@@ -764,6 +784,45 @@ export function extractMarketOddsFromBookmaker(oddsItem?: ApiFootballOddsItem | 
   }
 
   result.bookmakerName = primaryBookmakerName;
+
+  // 4. Extract Total Corners Over/Under lines across cascade
+  for (const bm of sortedBookmakers) {
+    if (!bm.bets || !Array.isArray(bm.bets)) continue;
+
+    for (const bet of bm.bets) {
+      const betId = Number(bet.id);
+      const betName = (bet.name || "").toLowerCase().trim();
+
+      if (
+        betId === 45 ||
+        betName.includes("corners over/under") ||
+        betName.includes("total corners") ||
+        betName.includes("corners total") ||
+        betName.includes("asian corners")
+      ) {
+        for (const val of bet.values || []) {
+          const v = String(val.value).toLowerCase().trim();
+          const odd = parseOdd(val.odd);
+          if (!odd) continue;
+
+          const isOver = v.includes("over") || v.includes(">") || v.includes("+") || v.includes("más") || v.includes("mas");
+          const isUnder = v.includes("under") || v.includes("<") || v.includes("-") || v.includes("menos");
+
+          if (isOver && v.includes("6.5") && !result.cornersOver65) result.cornersOver65 = odd;
+          else if (isUnder && v.includes("6.5") && !result.cornersUnder65) result.cornersUnder65 = odd;
+          else if (isOver && v.includes("7.5") && !result.cornersOver75) result.cornersOver75 = odd;
+          else if (isUnder && v.includes("7.5") && !result.cornersUnder75) result.cornersUnder75 = odd;
+          else if (isOver && v.includes("8.5") && !result.cornersOver85) result.cornersOver85 = odd;
+          else if (isUnder && v.includes("8.5") && !result.cornersUnder85) result.cornersUnder85 = odd;
+          else if (isOver && v.includes("9.5") && !result.cornersOver95) result.cornersOver95 = odd;
+          else if (isUnder && v.includes("9.5") && !result.cornersUnder95) result.cornersUnder95 = odd;
+          else if (isOver && v.includes("10.5") && !result.cornersOver105) result.cornersOver105 = odd;
+          else if (isUnder && v.includes("10.5") && !result.cornersUnder105) result.cornersUnder105 = odd;
+        }
+      }
+    }
+  }
+
   return result;
 }
 

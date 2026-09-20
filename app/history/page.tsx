@@ -109,6 +109,7 @@ export default function HistoryPage() {
     "Ganador Visitante",
     "Over 2.5 Goles",
     "Ambos Equipos Anotan",
+    "Córners",
   ];
 
   const availableMarkets = Array.from(
@@ -190,8 +191,10 @@ export default function HistoryPage() {
     if (selectedMarkets.length > 0) {
       const match = selectedMarkets.some((m) => {
         const normSelected = m.toLowerCase().replace(/[^a-z0-9]/g, "");
-        const normActual = item.market.toLowerCase().replace(/[^a-z0-9]/g, "");
-        return normActual.includes(normSelected) || normSelected.includes(normActual);
+        const normActual = (item.market || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+        const isCornerMatch = (normSelected.includes("corner") || normSelected.includes("crner")) &&
+                              (normActual.includes("corner") || normActual.includes("crner"));
+        return isCornerMatch || normActual.includes(normSelected) || normSelected.includes(normActual);
       });
       if (!match) return false;
     }

@@ -95,6 +95,15 @@ export function getDisplayMarketSelection(market: string, selection?: string): s
   if (normM.includes("ambos equipos") || normM.includes("btts")) {
     return `${market} (Sí)`;
   }
+  if (normM.includes("córner") || normM.includes("corner")) {
+    if (selection) {
+      if (selection.toLowerCase().includes("corner") || selection.toLowerCase().includes("córner")) {
+        return selection;
+      }
+      return `${selection} Córners`;
+    }
+    return market;
+  }
   if (selection && selection !== market && !market.includes(selection)) {
     return `${market} (${selection})`;
   }

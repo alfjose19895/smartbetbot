@@ -40,7 +40,7 @@ import {
   searchLiveMarketDynamic,
   getStoredPredictions,
   generatePredictionsForUpcoming,
-  addPredictionsToDailySnapshot,
+  addPredictionsToDailySnapshot, addPredictionsToDailySnapshotAsync,
   getEcuadorDateString,
 } from "@/lib/sports/db";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
@@ -193,7 +193,7 @@ export async function POST(req: Request) {
           source: "mcp" as const,
         }));
 
-      const result = addPredictionsToDailySnapshot(taggedPicks);
+      const result = await addPredictionsToDailySnapshotAsync(taggedPicks);
       return NextResponse.json({
         success: true,
         addedCount: result.addedCount,
@@ -542,7 +542,7 @@ export async function POST(req: Request) {
     const shouldAutoPublish = autoPublish === true || publish === true;
     let publishedCount = 0;
     if (shouldAutoPublish && filtered.length > 0) {
-      const pubResult = addPredictionsToDailySnapshot(filtered);
+      const pubResult = await addPredictionsToDailySnapshotAsync(filtered);
       publishedCount = pubResult.addedCount;
     }
 

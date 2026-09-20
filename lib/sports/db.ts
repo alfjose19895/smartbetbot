@@ -67,14 +67,22 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const SNAPSHOTS_DIR = path.join(process.cwd(), "data", "daily_snapshots");
 const memorySnapshots: Record<string, MarketOpportunity[]> = {};
 
-export function getOpportunityKey(p: { fixtureId?: number | string; match?: string; market?: string }): string {
+export function getOpportunityKey(p: { fixtureId?: number | string; match?: string; fixtureName?: string; homeTeam?: string; awayTeam?: string; market?: string }): string {
   const fixId = p.fixtureId || '0';
   const mkt = (p.market || '').toLowerCase().trim();
-  if (fixId && fixId !== '0') {
+  if (fixId && fixId !== '0' && fixId !== 0) {
     return `fix-${fixId}-${mkt}`;
   }
-  const match = (p.match || '').toLowerCase().trim();
-  return `match-${match}-${mkt}`;
+  const h = getCanonicalTeamKey(p.homeTeam || '');
+  const a = getCanonicalTeamKey(p.awayTeam || '');
+  if (h && a) {
+    return `teams-${h}-${a}-${mkt}`;
+  }
+  const match = (p.fixtureName || p.match || '').toLowerCase().trim();
+  if (match) {
+    return `match-${match}-${mkt}`;
+  }
+  return `id-${(p as any).id || Math.random()}-${mkt}`;
 }
 
 export const HISTORY_START_DATE = "2026-09-07"; // Historial oficial reiniciado desde hoy (7 de Septiembre de 2026)
@@ -112,10 +120,10 @@ export function loadDailySnapshot(dateStr: string): MarketOpportunity[] | null {
 }
 
 export async function loadDailySnapshotAsync(dateStr: string): Promise<MarketOpportunity[] | null> {
-  const syncSnap = loadDailySnapshot(dateStr);
-  if (syncSnap && syncSnap.length > 0) return syncSnap;
+  const diskPicks = loadDailySnapshot(dateStr) || [];
 
   // Supabase cloud database fetch (guarantees persistence on Vercel Serverless)
+  let supabasePicks: MarketOpportunity[] = [];
   const supabase = getAdminClient();
   if (supabase) {
     try {
@@ -125,15 +133,71 @@ export async function loadDailySnapshotAsync(dateStr: string): Promise<MarketOpp
         .eq("date", dateStr)
         .maybeSingle();
       if (!error && data && Array.isArray(data.picks) && data.picks.length > 0) {
-        const filtered = data.picks.filter((p: any) => !isExcludedMatch(p.homeTeam, p.awayTeam, p.match));
-        memorySnapshots[dateStr] = filtered;
-        return filtered;
+        supabasePicks = data.picks.filter((p: any) => !isExcludedMatch(p.homeTeam, p.awayTeam, p.match));
       }
     } catch (err) {
       console.warn(`[Supabase] Error loading daily snapshot for ${dateStr}:`, err);
     }
   }
-  return null;
+
+  if (diskPicks.length === 0 && supabasePicks.length === 0) {
+    return null;
+  }
+
+  // Merge disk + Supabase with zero data loss (Self-Healing bidirectional sync)
+  const mergedMap = new Map<string, MarketOpportunity>();
+  for (const p of supabasePicks) {
+    mergedMap.set(getOpportunityKey(p), p);
+  }
+  for (const p of diskPicks) {
+    const key = getOpportunityKey(p);
+    if (!mergedMap.has(key)) {
+      mergedMap.set(key, p);
+    } else {
+      const existing = mergedMap.get(key)!;
+      const isSettled = existing.status === "won" || existing.status === "lost";
+      mergedMap.set(key, {
+        ...existing,
+        ...p,
+        status: isSettled ? existing.status : p.status || existing.status,
+        actualScore: existing.actualScore || p.actualScore,
+        probability: existing.probability,
+        odds: existing.odds,
+        market: existing.market,
+        selection: existing.selection,
+      });
+    }
+  }
+
+  const finalCombined = Array.from(mergedMap.values()).sort(
+    (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
+  );
+
+  memorySnapshots[dateStr] = finalCombined;
+
+  // Auto-heal disk and Supabase if either side had fewer picks
+  if (finalCombined.length > diskPicks.length) {
+    try {
+      ensureSnapshotsDir();
+      const filePath = path.join(SNAPSHOTS_DIR, `${dateStr}.json`);
+      fs.writeFileSync(filePath, JSON.stringify(finalCombined, null, 2), "utf-8");
+    } catch {}
+  }
+  if (supabase && finalCombined.length > supabasePicks.length) {
+    supabase
+      .from("daily_snapshots")
+      .upsert(
+        {
+          date: dateStr,
+          picks: finalCombined,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "date" }
+      )
+      .then(() => {});
+  }
+
+  return finalCombined;
 }
 
 function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
@@ -160,13 +224,13 @@ function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
 
     const mergedMap = new Map<string, MarketOpportunity>();
 
-    // Put all existing picks first indexed strictly by fixtureId + mercado
+    // Put all existing picks first indexed strictly by opportunity key
     for (const p of existingPicks) {
       const key = getOpportunityKey(p);
       mergedMap.set(key, p);
     }
 
-    // Merge incoming picks strictly by fixtureId + mercado (updating existing or appending new)
+    // Merge incoming picks strictly by key (updating existing or appending new)
     for (const p of picks) {
       const key = getOpportunityKey(p);
 
@@ -180,7 +244,6 @@ function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
           Boolean(existing.actualScore);
 
         if (isSettled) {
-          // PILLAR 2: IMMUTABLE LEDGER LOCK - Settle state, score, and profit are 100% locked!
           const updated = {
             ...existing,
             homeLogo: existing.homeLogo || p.homeLogo,
@@ -189,18 +252,15 @@ function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
           };
           mergedMap.set(key, updated);
         } else {
-          // Update active pending pick without deleting its tags
           const updated = {
             ...existing,
-            ...p,
             status: p.status || existing.status || "pending",
             actualScore: p.actualScore || existing.actualScore,
             result: (p as any).result || (existing as any).result,
             profit: typeof (p as any).profit === "number" ? (p as any).profit : (existing as any).profit,
-            pickBadge: existing.pickBadge || p.pickBadge,
-            isMcpPick: existing.isMcpPick || p.isMcpPick,
-            source: existing.source || p.source,
-            explanation: existing.explanation || p.explanation,
+            homeLogo: existing.homeLogo || p.homeLogo,
+            awayLogo: existing.awayLogo || p.awayLogo,
+            leagueLogo: existing.leagueLogo || p.leagueLogo,
           };
           mergedMap.set(key, updated);
         }
@@ -209,10 +269,9 @@ function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
       }
     }
 
-    const uniqueMap = mergedMap;
-
-    const mergedPicks = Array.from(uniqueMap.values());
-    mergedPicks.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
+    const mergedPicks = Array.from(mergedMap.values()).sort(
+      (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
+    );
 
     memorySnapshots[dateStr] = mergedPicks;
 
@@ -220,17 +279,56 @@ function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
       fs.writeFileSync(filePath, JSON.stringify(mergedPicks, null, 2), "utf-8");
     } catch {}
 
-    // Synchronize to Supabase Cloud Database (guarantees persistence across Vercel serverless functions)
+    // Synchronize to Supabase Cloud Database with non-destructive merge
     const supabase = getAdminClient();
     if (supabase) {
       (async () => {
         try {
+          // Fetch cloud picks first to ensure cloud NEVER loses picks
+          let cloudPicks: MarketOpportunity[] = [];
+          const { data: cloudData } = await supabase
+            .from("daily_snapshots")
+            .select("picks")
+            .eq("date", dateStr)
+            .maybeSingle();
+
+          if (cloudData && Array.isArray(cloudData.picks)) {
+            cloudPicks = cloudData.picks;
+          }
+
+          const cloudMergedMap = new Map<string, MarketOpportunity>();
+          for (const cp of cloudPicks) {
+            cloudMergedMap.set(getOpportunityKey(cp), cp);
+          }
+          for (const lp of mergedPicks) {
+            const key = getOpportunityKey(lp);
+            if (cloudMergedMap.has(key)) {
+              const existing = cloudMergedMap.get(key)!;
+              const isSettled = existing.status === "won" || existing.status === "lost";
+              if (!isSettled) {
+                cloudMergedMap.set(key, {
+                  ...existing,
+                  status: lp.status || existing.status,
+                  actualScore: lp.actualScore || existing.actualScore,
+                  result: (lp as any).result || (existing as any).result,
+                  profit: typeof (lp as any).profit === "number" ? (lp as any).profit : (existing as any).profit,
+                });
+              }
+            } else {
+              cloudMergedMap.set(key, lp);
+            }
+          }
+
+          const finalCloudPicks = Array.from(cloudMergedMap.values()).sort(
+            (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
+          );
+
           const { error } = await supabase
             .from("daily_snapshots")
             .upsert(
               {
                 date: dateStr,
-                picks: mergedPicks,
+                picks: finalCloudPicks,
                 updated_at: new Date().toISOString(),
               },
               { onConflict: "date" }
@@ -247,7 +345,6 @@ function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
     console.warn(`Could not save daily snapshot for ${dateStr}:`, err);
   }
 }
-
 
 /**
  * Auto-liquidación en tiempo real:
@@ -298,7 +395,7 @@ export async function settleAllSnapshotsWithRealScores(): Promise<{ settledDates
 export async function settleActiveSnapshotWithRealScores(dateStr?: string): Promise<MarketOpportunity[]> {
   const nowMs = Date.now();
   const targetDate = dateStr || getEcuadorDateString(nowMs);
-  let snapshot = loadDailySnapshot(targetDate);
+  let snapshot = (await loadDailySnapshotAsync(targetDate)) || loadDailySnapshot(targetDate);
   if (!snapshot || !Array.isArray(snapshot) || snapshot.length === 0) {
     return [];
   }
@@ -458,10 +555,7 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string): Prom
     });
 
     if (hasUpdates) {
-      const filePath = path.join(SNAPSHOTS_DIR, `${targetDate}.json`);
-      if (fs.existsSync(filePath) && !process.env.VITEST && process.env.NODE_ENV !== "test") {
-        fs.writeFileSync(filePath, JSON.stringify(settledSnapshot, null, 2), "utf-8");
-      }
+      saveDailySnapshot(targetDate, settledSnapshot);
       cachedLivePredictions = settledSnapshot;
       cacheTimestamp = nowMs;
       cachedSettledHistory = [];
@@ -695,6 +789,32 @@ export function evaluateMarketResult(
   const hNorm = (options?.homeTeam || "").toLowerCase().trim();
   const aNorm = (options?.awayTeam || "").toLowerCase().trim();
 
+  // 0. Córners Totales (Over 6.5, 7.5, 8.5, 9.5, 10.5)
+  if (mLower.includes("córner") || mLower.includes("corner") || sLower.includes("córner") || sLower.includes("corner")) {
+    let line = 8.5;
+    if (mLower.includes("6.5") || sLower.includes("6.5")) line = 6.5;
+    else if (mLower.includes("7.5") || sLower.includes("7.5")) line = 7.5;
+    else if (mLower.includes("8.5") || sLower.includes("8.5")) line = 8.5;
+    else if (mLower.includes("9.5") || sLower.includes("9.5")) line = 9.5;
+    else if (mLower.includes("10.5") || sLower.includes("10.5")) line = 10.5;
+
+    const requiredCorners = Math.floor(line) + 1; // 6.5 -> 7, 7.5 -> 8, 8.5 -> 9, 9.5 -> 10, 10.5 -> 11
+    const totalCorners =
+      (typeof options?.homeCorners === "number" && typeof options?.awayCorners === "number")
+        ? options.homeCorners + options.awayCorners
+        : (options as any)?.totalCorners;
+
+    if (typeof totalCorners === "number") {
+      const isWon = totalCorners >= requiredCorners;
+      const hC = typeof options?.homeCorners === "number" ? options.homeCorners : Math.round(totalCorners * 0.55);
+      const aC = typeof options?.awayCorners === "number" ? options.awayCorners : totalCorners - hC;
+      return {
+        isWon,
+        actualScoreText: `${hC} - ${aC} (${totalCorners} Córners)`,
+      };
+    }
+  }
+
   // 1. Ambos Marcan (BTTS)
   if (mLower.includes("ambos") || mLower.includes("btts")) {
     const isNoMarket = mLower.includes(" no") || mLower.includes("ambos no") || mLower.includes("btts no") || mLower.endsWith(" no") || mLower.includes("no anotan") || sLower === "no";
@@ -872,9 +992,7 @@ async function enrichCandidateFixturesWithOdds(
  * - Sábados y Domingos (Weekends, Sat-Sun): 20 pronósticos
  */
 export function getDailyAlertLimit(targetDate: Date = new Date()): number {
-  const day = targetDate.getDay(); // 0 = Domingo, 1 = Lunes, ..., 5 = Viernes, 6 = Sábado
-  const isWeekend = day === 0 || day === 6;
-  return isWeekend ? 20 : 15;
+  return 22;
 }
 
 export function getStoredPredictions(): MarketOpportunity[] {
@@ -904,7 +1022,7 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
   const activeDateStr = todayDateStr >= HISTORY_START_DATE ? todayDateStr : HISTORY_START_DATE;
 
   // 1. If a snapshot exists and forceRefresh is false, update finished match scores & statuses and return it
-  const existingSnapshot = loadDailySnapshot(activeDateStr) || [];
+  const existingSnapshot = (await loadDailySnapshotAsync(activeDateStr)) || loadDailySnapshot(activeDateStr) || [];
   if (!forceRefresh && existingSnapshot.length > 0) {
     try {
       const allTodayFixtures = await apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil");
@@ -1265,14 +1383,16 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
 
     if (matchedKey) {
       const existing = mergedMap.get(matchedKey)!;
+      // PILLAR: STRICT IMMUTABILITY - Existing snapshot picks preserve their original prediction & odds 100%
       const updated = {
         ...existing,
-        ...p,
         status: existing.status !== "pending" ? existing.status : p.status,
         actualScore: existing.actualScore || p.actualScore,
-        pickBadge: existing.pickBadge || p.pickBadge,
-        isMcpPick: existing.isMcpPick || p.isMcpPick,
-        source: existing.source || p.source,
+        result: (p as any).result || (existing as any).result,
+        profit: typeof (p as any).profit === "number" ? (p as any).profit : (existing as any).profit,
+        homeLogo: existing.homeLogo || p.homeLogo,
+        awayLogo: existing.awayLogo || p.awayLogo,
+        leagueLogo: existing.leagueLogo || p.leagueLogo,
       };
       mergedMap.set(key, updated);
       mergedMap.set(genericKey, updated);
@@ -1328,6 +1448,103 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
  * Adds new predictions discovered by the MCP Agent or search directly into the daily snapshot.
  * Eliminates artificial caps, allowing seamless expansion beyond the initial 15 alerts.
  */
+export async function addPredictionsToDailySnapshotAsync(newPicks: MarketOpportunity[]): Promise<{
+  addedCount: number;
+  totalAlerts: number;
+  predictions: MarketOpportunity[];
+}> {
+  const nowMs = Date.now();
+  const todayDateStr = getEcuadorDateString(nowMs);
+  const activeDateStr = todayDateStr >= HISTORY_START_DATE ? todayDateStr : HISTORY_START_DATE;
+
+  let existingSnapshot = (await loadDailySnapshotAsync(activeDateStr)) || loadDailySnapshot(activeDateStr) || [];
+  if (!existingSnapshot || existingSnapshot.length === 0) {
+    existingSnapshot = getStoredPredictions();
+  }
+  existingSnapshot = Array.isArray(existingSnapshot) ? [...existingSnapshot] : [];
+
+  const existingMap = new Map<string, MarketOpportunity>();
+  for (const p of existingSnapshot) {
+    const key = getOpportunityKey(p);
+    existingMap.set(key, p);
+  }
+
+  const picksByDate = new Map<string, MarketOpportunity[]>();
+  let addedCount = 0;
+
+  for (const pick of newPicks) {
+    const pickDate = pick.kickoff ? getEcuadorDateString(pick.kickoff) : activeDateStr;
+    const prob = typeof pick.probability === "number" ? pick.probability : 50;
+    const conf: "Muy Alta" | "Alta" | "Media" | "Moderada" =
+      prob >= 70 ? "Muy Alta" : prob >= 58 ? "Alta" : prob >= 50 ? "Media" : "Moderada";
+
+    const taggedPick: MarketOpportunity = {
+      ...pick,
+      confidence: conf,
+      pickBadge: (pick.pickBadge || "mcp") as "bomba" | "valor" | "estandar" | "mcp",
+      isMcpPick: true,
+      isMcp: true,
+      source: "mcp",
+      status: pick.status || "pending",
+    };
+
+    if (pickDate === activeDateStr) {
+      const key = getOpportunityKey(pick);
+      if (existingMap.has(key)) {
+        const existing = existingMap.get(key)!;
+        existingMap.set(key, {
+          ...existing,
+          ...taggedPick,
+          status: existing.status !== "pending" ? existing.status : taggedPick.status,
+        });
+      } else {
+        existingMap.set(key, taggedPick);
+        addedCount++;
+      }
+    }
+
+    if (!picksByDate.has(pickDate)) {
+      picksByDate.set(pickDate, []);
+    }
+    picksByDate.get(pickDate)!.push(taggedPick);
+  }
+
+  const finalPicks = Array.from(existingMap.values());
+  finalPicks.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
+
+  if (addedCount > 0 || finalPicks.length > 0) {
+    saveDailySnapshot(activeDateStr, finalPicks);
+
+    for (const [dateStr, datePicks] of picksByDate.entries()) {
+      if (dateStr !== activeDateStr && dateStr >= HISTORY_START_DATE) {
+        const dateExisting = (await loadDailySnapshotAsync(dateStr)) || loadDailySnapshot(dateStr) || [];
+        const dateMap = new Map<string, MarketOpportunity>();
+        for (const p of dateExisting) {
+          dateMap.set(getOpportunityKey(p), p);
+        }
+        for (const p of datePicks) {
+          dateMap.set(getOpportunityKey(p), p);
+        }
+        const mergedDate = Array.from(dateMap.values()).sort(
+          (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
+        );
+        saveDailySnapshot(dateStr, mergedDate);
+      }
+    }
+
+    cachedLivePredictions = finalPicks;
+    cacheTimestamp = nowMs;
+    cachedSettledHistory = [];
+    historyCacheTimestamp = 0;
+  }
+
+  return {
+    addedCount,
+    totalAlerts: finalPicks.length,
+    predictions: finalPicks,
+  };
+}
+
 export function addPredictionsToDailySnapshot(newPicks: MarketOpportunity[]): {
   addedCount: number;
   totalAlerts: number;
@@ -1337,7 +1554,7 @@ export function addPredictionsToDailySnapshot(newPicks: MarketOpportunity[]): {
   const todayDateStr = getEcuadorDateString(nowMs);
   const activeDateStr = todayDateStr >= HISTORY_START_DATE ? todayDateStr : HISTORY_START_DATE;
 
-  let existingSnapshot = loadDailySnapshot(activeDateStr);
+  let existingSnapshot = loadDailySnapshot(activeDateStr) || memorySnapshots[activeDateStr];
   if (!existingSnapshot || existingSnapshot.length === 0) {
     existingSnapshot = getStoredPredictions();
   }
@@ -1452,7 +1669,7 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
 
   // 1. Auto-liquidar marcadores reales de partidos finalizados antes de buscar
   await settleActiveSnapshotWithRealScores(todayDateStr);
-  let existingSnapshot = loadDailySnapshot(todayDateStr) || [];
+  let existingSnapshot = (await loadDailySnapshotAsync(todayDateStr)) || loadDailySnapshot(todayDateStr) || [];
 
   const existingMatchKeys = new Set(
     existingSnapshot.map((p) => {

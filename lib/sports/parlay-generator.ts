@@ -259,14 +259,23 @@ export function getImmutableDailyParlays(
           const supabase = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
           (async () => {
             try {
+              const { data: existingRow } = await supabase
+                .from("daily_snapshots")
+                .select("picks")
+                .eq("date", targetDate)
+                .maybeSingle();
+
               await supabase
                 .from("daily_snapshots")
                 .upsert({
                   date: targetDate,
+                  picks: existingRow?.picks || [],
                   parlays: generated,
                   updated_at: new Date().toISOString(),
                 }, { onConflict: "date" });
-            } catch {}
+            } catch (pErr) {
+              console.warn("[Parlay Cloud Sync] Error syncing parlays to Supabase:", pErr);
+            }
           })();
         }
       } catch {}
