@@ -410,55 +410,78 @@ export function PredictionCard({
               </div>
 
               
+          
           {/* Corner History Preview Strip */}
           <div className="mt-3 rounded-2xl bg-slate-50/90 p-3 border border-slate-100 dark:bg-slate-950/70 dark:border-slate-800/80">
             <div className="flex items-center justify-between text-[11px] font-black mb-2">
               <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400">
                 <span>🚩</span>
-                <span>Historial Córners (Últimos 5 partidos):</span>
+                <span>Historial Córners (API Oficial):</span>
               </span>
-              <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-black text-emerald-700 dark:text-emerald-300">
-                ~{prediction.cornerAnalysis?.expectedTotalCorners ? prediction.cornerAnalysis.expectedTotalCorners.toFixed(1) : "10.2"} Esp.
-              </span>
+              {prediction.cornerAnalysis?.expectedTotalCorners && (
+                <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-black text-emerald-700 dark:text-emerald-300">
+                  ~{prediction.cornerAnalysis.expectedTotalCorners.toFixed(1)} Esp.
+                </span>
+              )}
             </div>
-            <div className="grid grid-cols-2 gap-2 text-[10px] font-extrabold text-slate-700 dark:text-slate-300">
-              <div className="flex items-center justify-between rounded-xl bg-white p-2 border border-slate-200/80 dark:bg-slate-900/80 dark:border-slate-700">
-                <span className="truncate max-w-[85px]">🏠 {prediction.homeTeam.split(" ")[0]}</span>
-                <div className="flex gap-1">
-                  {((prediction.homeLast5 || []).map((m) => m.totalCorners).filter((c) => typeof c === "number").length > 0
-                    ? (prediction.homeLast5 || []).map((m) => m.totalCorners).filter((c) => typeof c === "number")
-                    : [9, 11, 8, 7, 10]
-                  ).map((val, i) => (
-                    <span
-                      key={i}
-                      className={`flex h-4 w-4 items-center justify-center rounded text-[9px] font-black text-white ${
-                        val >= 10 ? "bg-emerald-600" : val >= 8 ? "bg-teal-600" : "bg-slate-500"
-                      }`}
-                    >
-                      {val}
-                    </span>
-                  ))}
+            {(() => {
+              const homeCorners = (prediction.homeLast5 || []).map((m) => m.totalCorners).filter((c): c is number => typeof c === "number");
+              const awayCorners = (prediction.awayLast5 || []).map((m) => m.totalCorners).filter((c): c is number => typeof c === "number");
+
+              if (homeCorners.length === 0 && awayCorners.length === 0) {
+                return (
+                  <div className="flex items-center justify-between text-[10px] font-bold text-slate-500 dark:text-slate-400 py-1">
+                    <span>Ver desglose detallado de córners y H2H</span>
+                    <span className="text-emerald-600 dark:text-emerald-400 font-extrabold">Abrir Detalle →</span>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="grid grid-cols-2 gap-2 text-[10px] font-extrabold text-slate-700 dark:text-slate-300">
+                  <div className="flex items-center justify-between rounded-xl bg-white p-2 border border-slate-200/80 dark:bg-slate-900/80 dark:border-slate-700">
+                    <span className="truncate max-w-[85px]">🏠 {prediction.homeTeam.split(" ")[0]}</span>
+                    <div className="flex gap-1">
+                      {homeCorners.length > 0 ? (
+                        homeCorners.map((val, i) => (
+                          <span
+                            key={i}
+                            className={`flex h-4 w-4 items-center justify-center rounded text-[9px] font-black text-white ${
+                              val >= 10 ? "bg-emerald-600" : val >= 8 ? "bg-teal-600" : "bg-slate-500"
+                            }`}
+                            title={`${val} córners reales`}
+                          >
+                            {val}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-[9px] text-slate-400 font-normal italic">Sin reg.</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between rounded-xl bg-white p-2 border border-slate-200/80 dark:bg-slate-900/80 dark:border-slate-700">
+                    <span className="truncate max-w-[85px]">✈️ {prediction.awayTeam.split(" ")[0]}</span>
+                    <div className="flex gap-1">
+                      {awayCorners.length > 0 ? (
+                        awayCorners.map((val, i) => (
+                          <span
+                            key={i}
+                            className={`flex h-4 w-4 items-center justify-center rounded text-[9px] font-black text-white ${
+                              val >= 10 ? "bg-emerald-600" : val >= 8 ? "bg-teal-600" : "bg-slate-500"
+                            }`}
+                            title={`${val} córners reales`}
+                          >
+                            {val}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-[9px] text-slate-400 font-normal italic">Sin reg.</span>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center justify-between rounded-xl bg-white p-2 border border-slate-200/80 dark:bg-slate-900/80 dark:border-slate-700">
-                <span className="truncate max-w-[85px]">✈️ {prediction.awayTeam.split(" ")[0]}</span>
-                <div className="flex gap-1">
-                  {((prediction.awayLast5 || []).map((m) => m.totalCorners).filter((c) => typeof c === "number").length > 0
-                    ? (prediction.awayLast5 || []).map((m) => m.totalCorners).filter((c) => typeof c === "number")
-                    : [11, 13, 12, 13, 14]
-                  ).map((val, i) => (
-                    <span
-                      key={i}
-                      className={`flex h-4 w-4 items-center justify-center rounded text-[9px] font-black text-white ${
-                        val >= 10 ? "bg-emerald-600" : val >= 8 ? "bg-teal-600" : "bg-slate-500"
-                      }`}
-                    >
-                      {val}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
+              );
+            })()}
           </div>
 
           {/* Pick Market Details */}

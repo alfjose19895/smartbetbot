@@ -101,17 +101,6 @@ async function getCachedFixtureCorners(fixtureId: number): Promise<{ homeCorners
   return null;
 }
 
-function getDeterministicCorners(fixtureId: number, elo: number, isHomeTeam: boolean): { teamCorners: number; opponentCorners: number; totalCorners: number } {
-  const isStrong = elo >= 1700;
-  const isMedium = elo >= 1550;
-  const hash = Math.abs(fixtureId || 1000);
-  const cornerBase = isStrong ? 6 : isMedium ? 5 : 4;
-  const teamCorners = Math.max(2, Math.min(11, cornerBase + (isHomeTeam ? 1 : 0) + (hash % 4) - 1));
-  const opponentCorners = Math.max(1, Math.min(9, (isStrong ? 3 : 4) + (!isHomeTeam ? 1 : 0) + ((hash * 7) % 3) - 1));
-  const totalCorners = teamCorners + opponentCorners;
-  return { teamCorners, opponentCorners, totalCorners };
-}
-
 function calculateCornerSummary(matches: TeamFormMatch[]): TeamCornerSummary | null {
   if (!matches || matches.length === 0) return null;
 
@@ -210,16 +199,9 @@ export async function GET(request: NextRequest) {
 
               const cornerStats = item.fixture?.id ? await getCachedFixtureCorners(item.fixture.id) : null;
               const hasCorners = Boolean(cornerStats && cornerStats.hasRealCorners);
-              let homeCorners = hasCorners ? cornerStats!.homeCorners : undefined;
-              let awayCorners = hasCorners ? cornerStats!.awayCorners : undefined;
-              let totalCorners = hasCorners ? cornerStats!.totalCorners : undefined;
-
-              if (totalCorners === undefined) {
-                const det = getDeterministicCorners(item.fixture?.id || 100, homeElo, true);
-                homeCorners = det.teamCorners;
-                awayCorners = det.opponentCorners;
-                totalCorners = det.totalCorners;
-              }
+              const homeCorners = hasCorners ? cornerStats!.homeCorners : undefined;
+              const awayCorners = hasCorners ? cornerStats!.awayCorners : undefined;
+              const totalCorners = hasCorners ? cornerStats!.totalCorners : undefined;
 
               return {
                 date: item.fixture?.date ? item.fixture.date.split("T")[0] : "2026-08",
@@ -231,7 +213,7 @@ export async function GET(request: NextRequest) {
                 homeCorners,
                 awayCorners,
                 totalCorners,
-                corners: `${homeCorners} - ${awayCorners} (${totalCorners} Córners)`,
+                corners: hasCorners ? `${homeCorners} - ${awayCorners} (${totalCorners} Córners)` : undefined,
               };
             })
           );
@@ -240,7 +222,7 @@ export async function GET(request: NextRequest) {
         console.warn("[H2H API] Error fetching raw H2H:", err);
       }
 
-      // Fetch last 5 matches for Home Team
+      // Fetch last 5 matches for Home Team strictly from official API
       try {
         const rawHomeLast5 = await apiFootball.getTeamRecentFixtures(homeTeamId, 5);
         if (Array.isArray(rawHomeLast5) && rawHomeLast5.length > 0) {
@@ -256,16 +238,9 @@ export async function GET(request: NextRequest) {
 
               const cornerStats = item.fixture?.id ? await getCachedFixtureCorners(item.fixture.id) : null;
               const hasCorners = Boolean(cornerStats && cornerStats.hasRealCorners);
-              let teamCorners = hasCorners ? (isHome ? cornerStats!.homeCorners : cornerStats!.awayCorners) : undefined;
-              let opponentCorners = hasCorners ? (isHome ? cornerStats!.awayCorners : cornerStats!.homeCorners) : undefined;
-              let totalCorners = hasCorners ? cornerStats!.totalCorners : undefined;
-
-              if (totalCorners === undefined) {
-                const det = getDeterministicCorners(item.fixture?.id || 200, homeElo, isHome);
-                teamCorners = det.teamCorners;
-                opponentCorners = det.opponentCorners;
-                totalCorners = det.totalCorners;
-              }
+              const teamCorners = hasCorners ? (isHome ? cornerStats!.homeCorners : cornerStats!.awayCorners) : undefined;
+              const opponentCorners = hasCorners ? (isHome ? cornerStats!.awayCorners : cornerStats!.homeCorners) : undefined;
+              const totalCorners = hasCorners ? cornerStats!.totalCorners : undefined;
 
               return {
                 date: item.fixture?.date ? item.fixture.date.split("T")[0] : "2026-08",
@@ -277,10 +252,10 @@ export async function GET(request: NextRequest) {
                 teamCorners,
                 opponentCorners,
                 totalCorners,
-                corners: `${teamCorners} - ${opponentCorners}`,
-                over85Corners: totalCorners > 8.5,
-                over95Corners: totalCorners > 9.5,
-                over105Corners: totalCorners > 10.5,
+                corners: hasCorners ? `${teamCorners} - ${opponentCorners}` : undefined,
+                over85Corners: hasCorners ? totalCorners! > 8.5 : undefined,
+                over95Corners: hasCorners ? totalCorners! > 9.5 : undefined,
+                over105Corners: hasCorners ? totalCorners! > 10.5 : undefined,
               };
             })
           );
@@ -289,7 +264,7 @@ export async function GET(request: NextRequest) {
         console.warn("[H2H API] Error fetching home last 5:", err);
       }
 
-      // Fetch last 5 matches for Away Team
+      // Fetch last 5 matches for Away Team strictly from official API
       try {
         const rawAwayLast5 = await apiFootball.getTeamRecentFixtures(awayTeamId, 5);
         if (Array.isArray(rawAwayLast5) && rawAwayLast5.length > 0) {
@@ -305,16 +280,9 @@ export async function GET(request: NextRequest) {
 
               const cornerStats = item.fixture?.id ? await getCachedFixtureCorners(item.fixture.id) : null;
               const hasCorners = Boolean(cornerStats && cornerStats.hasRealCorners);
-              let teamCorners = hasCorners ? (isHome ? cornerStats!.homeCorners : cornerStats!.awayCorners) : undefined;
-              let opponentCorners = hasCorners ? (isHome ? cornerStats!.awayCorners : cornerStats!.homeCorners) : undefined;
-              let totalCorners = hasCorners ? cornerStats!.totalCorners : undefined;
-
-              if (totalCorners === undefined) {
-                const det = getDeterministicCorners(item.fixture?.id || 300, awayElo, isHome);
-                teamCorners = det.teamCorners;
-                opponentCorners = det.opponentCorners;
-                totalCorners = det.totalCorners;
-              }
+              const teamCorners = hasCorners ? (isHome ? cornerStats!.homeCorners : cornerStats!.awayCorners) : undefined;
+              const opponentCorners = hasCorners ? (isHome ? cornerStats!.awayCorners : cornerStats!.homeCorners) : undefined;
+              const totalCorners = hasCorners ? cornerStats!.totalCorners : undefined;
 
               return {
                 date: item.fixture?.date ? item.fixture.date.split("T")[0] : "2026-08",
@@ -326,10 +294,10 @@ export async function GET(request: NextRequest) {
                 teamCorners,
                 opponentCorners,
                 totalCorners,
-                corners: `${teamCorners} - ${opponentCorners}`,
-                over85Corners: totalCorners > 8.5,
-                over95Corners: totalCorners > 9.5,
-                over105Corners: totalCorners > 10.5,
+                corners: hasCorners ? `${teamCorners} - ${opponentCorners}` : undefined,
+                over85Corners: hasCorners ? totalCorners! > 8.5 : undefined,
+                over95Corners: hasCorners ? totalCorners! > 9.5 : undefined,
+                over105Corners: hasCorners ? totalCorners! > 10.5 : undefined,
               };
             })
           );
@@ -339,17 +307,11 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Only use synthetic fallback if neither team was found in API-Football
+    // If teams are not official API teams, return empty lists rather than fake data
     if (!isOfficial) {
-      if (h2hMatches.length === 0) {
-        h2hMatches = generateH2HClashes(homeTeam, awayTeam, league, homeElo, awayElo, kickoff);
-      }
-      if (homeLast5.length === 0) {
-        homeLast5 = generateTeamRecentForm(homeTeam, league, homeElo, kickoff);
-      }
-      if (awayLast5.length === 0) {
-        awayLast5 = generateTeamRecentForm(awayTeam, league, awayElo, kickoff);
-      }
+      if (h2hMatches.length === 0) h2hMatches = [];
+      if (homeLast5.length === 0) homeLast5 = [];
+      if (awayLast5.length === 0) awayLast5 = [];
     }
 
     const homeCornerStats = calculateCornerSummary(homeLast5);
@@ -368,9 +330,11 @@ export async function GET(request: NextRequest) {
       awayCornerStats,
     };
 
-    // Save to Memory & Disk Cache permanently
-    memoryH2HCache[cacheKey] = { timestamp: Date.now(), data: response };
-    saveH2HToDisk(cacheKey, response);
+    // Save to Memory & Disk Cache if valid data exists
+    if (homeLast5.length > 0 || awayLast5.length > 0 || h2hMatches.length > 0) {
+      memoryH2HCache[cacheKey] = { timestamp: Date.now(), data: response };
+      saveH2HToDisk(cacheKey, response);
+    }
 
     return NextResponse.json(response);
   } catch (error: unknown) {
