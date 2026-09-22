@@ -120,6 +120,10 @@ export interface H2HMatch {
   score: string;
   winner: string;
   competition: string;
+  homeCorners?: number;
+  awayCorners?: number;
+  totalCorners?: number;
+  corners?: string;
 }
 
 export interface TeamFormMatch {
@@ -129,6 +133,13 @@ export interface TeamFormMatch {
   score: string;
   result: "W" | "D" | "L";
   competition: string;
+  teamCorners?: number;
+  opponentCorners?: number;
+  totalCorners?: number;
+  corners?: string;
+  over85Corners?: boolean;
+  over95Corners?: boolean;
+  over105Corners?: boolean;
 }
 
 export interface MarketOpportunity {
@@ -1100,6 +1111,11 @@ export function generateTeamRecentForm(team: string, league: string, elo: number
       else { res = "L"; score = isHome ? "0-3" : "1-3"; }
     }
 
+    const cornerBase = isStrong ? 6 : isMedium ? 5 : 4;
+    const teamCorners = Math.max(2, Math.min(11, cornerBase + (isHome ? 1 : 0) + ((hash + i * 3) % 4) - 1));
+    const oppCorners = Math.max(1, Math.min(9, (isStrong ? 3 : 4) + (!isHome ? 1 : 0) + ((hash + i * 5) % 3) - 1));
+    const totalCorners = teamCorners + oppCorners;
+
     results.push({
       date: getPastDateStr(4 + i * 5),
       opponent: opponents[i],
@@ -1107,6 +1123,13 @@ export function generateTeamRecentForm(team: string, league: string, elo: number
       score,
       result: res,
       competition: league,
+      teamCorners,
+      opponentCorners: oppCorners,
+      totalCorners,
+      corners: `${teamCorners} - ${oppCorners}`,
+      over85Corners: totalCorners > 8.5,
+      over95Corners: totalCorners > 9.5,
+      over105Corners: totalCorners > 10.5,
     });
   }
 
@@ -1126,6 +1149,21 @@ export function generateH2HClashes(home: string, away: string, league: string, h
   const safeAway = String(away || "Away");
   const hash = (safeHome + safeAway).split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
 
+  const createClashCorners = (hStronger: boolean, clashIdx: number) => {
+    const hC = Math.max(2, Math.min(10, (hStronger ? 6 : 4) + ((hash + clashIdx * 2) % 3)));
+    const aC = Math.max(1, Math.min(9, (hStronger ? 3 : 5) + ((hash + clashIdx * 4) % 3)));
+    return {
+      homeCorners: hC,
+      awayCorners: aC,
+      totalCorners: hC + aC,
+      corners: `${hC} - ${aC} (${hC + aC} Córners)`,
+    };
+  };
+
+  const c1 = createClashCorners(isHomeBetter, 1);
+  const c2 = createClashCorners(!isHomeBetter, 2);
+  const c3 = createClashCorners(isHomeBetter, 3);
+
   return [
     {
       date: getPastDateStr(60),
@@ -1134,6 +1172,7 @@ export function generateH2HClashes(home: string, away: string, league: string, h
       score: isHomeBetter ? "2-1" : "1-2",
       winner: isHomeBetter ? "home" : "away",
       competition: league,
+      ...c1,
     },
     {
       date: getPastDateStr(180),
@@ -1142,6 +1181,7 @@ export function generateH2HClashes(home: string, away: string, league: string, h
       score: isHomeBetter ? "0-2" : "2-0",
       winner: isHomeBetter ? "away" : "home",
       competition: league,
+      ...c2,
     },
     {
       date: getPastDateStr(360),
@@ -1150,6 +1190,7 @@ export function generateH2HClashes(home: string, away: string, league: string, h
       score: hash % 2 === 0 ? "1-1" : isHomeBetter ? "3-0" : "1-3",
       winner: hash % 2 === 0 ? "draw" : isHomeBetter ? "home" : "away",
       competition: league,
+      ...c3,
     },
   ];
 }
