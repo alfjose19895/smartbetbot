@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { apiFootball, extractMatchDetails } from "@/lib/sports/api-football";
+import { apiFootball, extractMatchDetails, isWomenContext } from "@/lib/sports/api-football";
 import {
   getTeamRating,
   getCanonicalTeamKey,
@@ -146,7 +146,8 @@ export async function GET(request: NextRequest) {
 
     const hNorm = getCanonicalTeamKey(homeTeam);
     const aNorm = getCanonicalTeamKey(awayTeam);
-    const cacheKey = `${hNorm}-${aNorm}`;
+    const isWomenMatch = isWomenContext(league) || isWomenContext(homeTeam) || isWomenContext(awayTeam);
+    const cacheKey = `${hNorm}-${aNorm}${isWomenMatch ? "-women" : ""}`;
 
     // 1. Return from Memory Cache (0ms latency, 0 API calls)
     if (memoryH2HCache[cacheKey]) {
@@ -163,14 +164,14 @@ export async function GET(request: NextRequest) {
     let homeTeamId = searchParams.get("homeTeamId") ? parseInt(searchParams.get("homeTeamId")!) : undefined;
     let awayTeamId = searchParams.get("awayTeamId") ? parseInt(searchParams.get("awayTeamId")!) : undefined;
 
-    // Search official team IDs using sanitized fuzzy search if not provided
+    // Search official team IDs using sanitized search if not provided
     if (!homeTeamId || homeTeamId === 0) {
-      const homeSearch = await apiFootball.searchTeam(homeTeam);
+      const homeSearch = await apiFootball.searchTeam(homeTeam, league);
       if (homeSearch) homeTeamId = homeSearch.id;
     }
 
     if (!awayTeamId || awayTeamId === 0) {
-      const awaySearch = await apiFootball.searchTeam(awayTeam);
+      const awaySearch = await apiFootball.searchTeam(awayTeam, league);
       if (awaySearch) awayTeamId = awaySearch.id;
     }
 
@@ -180,9 +181,11 @@ export async function GET(request: NextRequest) {
     let h2hMatches: H2HMatch[] = [];
     let homeLast5: TeamFormMatch[] = [];
     let awayLast5: TeamFormMatch[] = [];
+    let isOfficial = false;
 
     // Fetch official H2H clashes from API-Football
     if (homeTeamId && awayTeamId) {
+      isOfficial = true;
       try {
         const rawH2H = await apiFootball.getHeadToHead(homeTeamId, awayTeamId, 5);
         if (Array.isArray(rawH2H) && rawH2H.length > 0) {
@@ -304,15 +307,17 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // High quality fallback if database/API had no entries
-    if (h2hMatches.length === 0) {
-      h2hMatches = generateH2HClashes(homeTeam, awayTeam, league, homeElo, awayElo, kickoff);
-    }
-    if (homeLast5.length === 0) {
-      homeLast5 = generateTeamRecentForm(homeTeam, league, homeElo, kickoff);
-    }
-    if (awayLast5.length === 0) {
-      awayLast5 = generateTeamRecentForm(awayTeam, league, awayElo, kickoff);
+    // Only use synthetic fallback if neither team was found in API-Football
+    if (!isOfficial) {
+      if (h2hMatches.length === 0) {
+        h2hMatches = generateH2HClashes(homeTeam, awayTeam, league, homeElo, awayElo, kickoff);
+      }
+      if (homeLast5.length === 0) {
+        homeLast5 = generateTeamRecentForm(homeTeam, league, homeElo, kickoff);
+      }
+      if (awayLast5.length === 0) {
+        awayLast5 = generateTeamRecentForm(awayTeam, league, awayElo, kickoff);
+      }
     }
 
     const homeCornerStats = calculateCornerSummary(homeLast5);
@@ -326,7 +331,7 @@ export async function GET(request: NextRequest) {
       awayLast5,
       homeElo,
       awayElo,
-      isOfficial: h2hMatches.length > 0,
+      isOfficial,
       homeCornerStats,
       awayCornerStats,
     };

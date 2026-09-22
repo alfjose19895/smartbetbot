@@ -1,3 +1,44 @@
+
+export function isWomenContext(text?: string): boolean {
+  if (!text) return false;
+  const l = text.toLowerCase();
+  return (
+    l.includes("women") ||
+    l.includes("femen") ||
+    l.includes("fem") ||
+    l.includes("damallsvenskan") ||
+    l.includes("liga f") ||
+    l.includes("frauen") ||
+    l.includes("wsl") ||
+    l.includes("fémin") ||
+    l.includes("d1 arkema") ||
+    /\bw\b/.test(l)
+  );
+}
+
+export function isEuropeanContext(text?: string): boolean {
+  if (!text) return false;
+  const l = text.toLowerCase();
+  return (
+    l.includes("uefa") ||
+    l.includes("champions league") ||
+    l.includes("europa") ||
+    l.includes("conference") ||
+    l.includes("premier league") ||
+    l.includes("serie a") ||
+    l.includes("la liga") ||
+    l.includes("bundesliga") ||
+    l.includes("ligue 1") ||
+    l.includes("allsvenskan") ||
+    l.includes("damallsvenskan") ||
+    l.includes("eredivisie")
+  );
+}
+
+const EUROPEAN_COUNTRIES = new Set([
+  "italy", "spain", "england", "germany", "france", "portugal", "netherlands", "sweden", "norway", "denmark", "switzerland", "austria", "belgium", "scotland", "poland", "croatia", "czech-republic", "turkey", "greece", "serbia", "ukraine", "romania", "hungary"
+]);
+
 /**
  * API-Football Client for SmartBetBot
  * Comprehensive integration with RapidAPI / API-Sports v3
@@ -422,42 +463,90 @@ class ApiFootballClient {
 
   private teamSearchCache: Map<string, ApiFootballTeam | null> = new Map();
 
-  async searchTeam(name: string): Promise<ApiFootballTeam | null> {
+  async searchTeam(name: string, leagueOrCountry?: string): Promise<ApiFootballTeam | null> {
     if (!name || name.trim().length < 3) return null;
     const cleanKey = name.toLowerCase().trim();
-    if (this.teamSearchCache.has(cleanKey)) {
-      return this.teamSearchCache.get(cleanKey)!;
+    const isWomen = isWomenContext(name) || isWomenContext(leagueOrCountry);
+    const isEurope = isEuropeanContext(leagueOrCountry);
+    const cacheKey = `${cleanKey}::${leagueOrCountry ? String(leagueOrCountry).toLowerCase().trim() : ""}`;
+
+    if (this.teamSearchCache.has(cacheKey)) {
+      return this.teamSearchCache.get(cacheKey)!;
     }
 
-    // 1. Sanitize alphanumeric query without punctuation that triggers API errors
-    const sanitized = name.replace(/[^a-zA-Z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+    // 1. Normalize diacritics first (e.g. Häcken -> Hacken, São -> Sao, Atlético -> Atletico)
+    const normalized = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const sanitized = normalized.replace(/[^a-zA-Z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+    const searchWords = sanitized.toLowerCase().split(" ").filter((w) => w.length > 0);
+
+    const scoreTeam = (t: ApiFootballTeam): number => {
+      const tName = t.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const tCountry = (t.country || "").toLowerCase().trim();
+      const tTokens = tName.split(/[\s\-_\.]+/).filter((w) => w.length > 0);
+      let score = 0;
+
+      const tIsWomen =
+        tName.includes("women") ||
+        tName.includes("fem") ||
+        tName.includes("wom") ||
+        tName.includes("femen") ||
+        tName.endsWith(" w") ||
+        tName.includes(" w ") ||
+        tName.includes("dff");
+
+      if (isWomen) {
+        if (tIsWomen) score += 60;
+        else score -= 40;
+      } else {
+        if (tIsWomen) score -= 50;
+        if (tName.includes("u20") || tName.includes("u19") || tName.includes("u17") || tName.includes("u23") || tName.endsWith(" ii") || tName.endsWith(" 2")) {
+          score -= 30;
+        }
+      }
+
+      for (const sw of searchWords) {
+        if (tTokens.includes(sw)) {
+          score += 35;
+        } else if (tTokens.some((tok) => tok.startsWith(sw))) {
+          score += 15;
+        }
+      }
+
+      if (tName === cleanKey || tName === sanitized.toLowerCase()) {
+        score += 50;
+      }
+
+      if (isEurope && EUROPEAN_COUNTRIES.has(tCountry)) {
+        score += 25;
+      }
+
+      return score;
+    };
+
     if (sanitized.length >= 3) {
       const results = await this.request<{ team: ApiFootballTeam; venue: any }>("teams", { search: sanitized });
       if (results && results.length > 0) {
-        const matchedItem = results.find((t) => t.team && t.team.name.toLowerCase() === cleanKey) || results[0];
-        const teamObj = matchedItem.team || matchedItem;
-        this.teamSearchCache.set(cleanKey, teamObj);
-        return teamObj;
+        const teams = results.map((r) => r.team || r).filter(Boolean);
+        teams.sort((a, b) => scoreTeam(b) - scoreTeam(a));
+        const best = teams[0] || null;
+        this.teamSearchCache.set(cacheKey, best);
+        return best;
       }
     }
 
-    // 2. Try individual significant words (e.g. "Rivadavia", "Barracas", "Estudiantes")
     const words = sanitized.split(" ").filter((w) => w.length >= 4);
     for (const word of words) {
       const wordResults = await this.request<{ team: ApiFootballTeam; venue: any }>("teams", { search: word });
       if (wordResults && wordResults.length > 0) {
-        const matchedItem = wordResults.find((t) => {
-          if (!t.team) return false;
-          const tName = t.team.name.toLowerCase();
-          return tName.includes(cleanKey) || cleanKey.includes(tName) || words.every((w) => tName.includes(w.toLowerCase()));
-        }) || wordResults[0];
-        const teamObj = matchedItem.team || matchedItem;
-        this.teamSearchCache.set(cleanKey, teamObj);
-        return teamObj;
+        const teams = wordResults.map((r) => r.team || r).filter(Boolean);
+        teams.sort((a, b) => scoreTeam(b) - scoreTeam(a));
+        const best = teams[0] || null;
+        this.teamSearchCache.set(cacheKey, best);
+        return best;
       }
     }
 
-    this.teamSearchCache.set(cleanKey, null);
+    this.teamSearchCache.set(cacheKey, null);
     return null;
   }
 
