@@ -1,5 +1,29 @@
 [
   {
+    "edge": 7.5,
+    "odds": 1.65,
+    "isMcp": true,
+    "match": "Mock Test Home vs Mock Test Away",
+    "league": "Bundesliga",
+    "market": "Over 2.5 Goles",
+    "source": "mcp",
+    "status": "pending",
+    "country": "Alemania",
+    "kickoff": "2026-09-22T11:46:20.217Z",
+    "awayTeam": "Mock Test Away",
+    "homeTeam": "Mock Test Home",
+    "leagueId": 78,
+    "fixtureId": 999199,
+    "isMcpPick": true,
+    "pickBadge": "mcp",
+    "selection": "Over 2.5",
+    "awayTeamId": 165,
+    "confidence": "Muy Alta",
+    "homeTeamId": 157,
+    "smartScore": 85,
+    "probability": 72
+  },
+  {
     "h2h": [
       {
         "date": "2026-07-24",
