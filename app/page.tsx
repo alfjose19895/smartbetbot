@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { PredictionCard } from "@/components/PredictionCard";
+import { HomePicksGrid } from "@/components/HomePicksGrid";
 import { LaunchOfferSection } from "@/components/LaunchOfferSection";
 import { getStoredPredictions } from "@/lib/sports/db";
 import { MarketOpportunity, getFeaturedDailyPicks } from "@/lib/sports/prediction-engine";
@@ -371,11 +371,7 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {featuredPicks.map((pick: MarketOpportunity) => (
-              <PredictionCard key={pick.id || pick.fixtureId} prediction={pick} />
-            ))}
-          </div>
+          <HomePicksGrid picks={featuredPicks} />
         </div>
       </section>
 
