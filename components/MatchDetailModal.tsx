@@ -32,14 +32,14 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
   const initialHomeElo = prediction.homeElo || 1650;
   const initialAwayElo = prediction.awayElo || 1620;
 
-  const [h2hList, setH2hList] = useState<H2HMatch[]>([]);
-  const [homeLast5List, setHomeLast5List] = useState<TeamFormMatch[]>([]);
-  const [awayLast5List, setAwayLast5List] = useState<TeamFormMatch[]>([]);
+  const [h2hList, setH2hList] = useState<H2HMatch[]>(prediction.h2h || []);
+  const [homeLast5List, setHomeLast5List] = useState<TeamFormMatch[]>(prediction.homeLast5 || []);
+  const [awayLast5List, setAwayLast5List] = useState<TeamFormMatch[]>(prediction.awayLast5 || []);
   const [homeElo, setHomeElo] = useState<number>(initialHomeElo);
   const [awayElo, setAwayElo] = useState<number>(initialAwayElo);
   const [homeCornerStats, setHomeCornerStats] = useState<TeamCornerSummary | null>(null);
   const [awayCornerStats, setAwayCornerStats] = useState<TeamCornerSummary | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(!(prediction.homeLast5 && prediction.homeLast5.length > 0));
   const [isOfficialLoaded, setIsOfficialLoaded] = useState<boolean>(false);
 
   useEffect(() => {
@@ -61,9 +61,9 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
         const data = await res.json();
 
         if (isMounted && data.success) {
-          if (data.h2h && data.h2h.length > 0) setH2hList(data.h2h);
-          if (data.homeLast5 && data.homeLast5.length > 0) setHomeLast5List(data.homeLast5);
-          if (data.awayLast5 && data.awayLast5.length > 0) setAwayLast5List(data.awayLast5);
+          if (Array.isArray(data.h2h)) setH2hList(data.h2h);
+          if (Array.isArray(data.homeLast5) && data.homeLast5.length > 0) setHomeLast5List(data.homeLast5);
+          if (Array.isArray(data.awayLast5) && data.awayLast5.length > 0) setAwayLast5List(data.awayLast5);
           if (data.homeElo) setHomeElo(data.homeElo);
           if (data.awayElo) setAwayElo(data.awayElo);
           if (data.homeCornerStats !== undefined) setHomeCornerStats(data.homeCornerStats);
