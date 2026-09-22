@@ -36,3 +36,7 @@ Thumbs.db
 
 # Supabase local state
 supabase/.temp/
+
+# Data Caches
+data/h2h_cache/
+data/fixture_stats_cache/

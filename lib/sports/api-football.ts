@@ -420,11 +420,44 @@ class ApiFootballClient {
     return this.getTeamRecentFixtures(teamId, last, timezone);
   }
 
+  private teamSearchCache: Map<string, ApiFootballTeam | null> = new Map();
+
   async searchTeam(name: string): Promise<ApiFootballTeam | null> {
-    const results = await this.request<{ team: ApiFootballTeam }>("teams", { search: name });
-    if (results && results.length > 0) {
-      return results[0].team;
+    if (!name || name.trim().length < 3) return null;
+    const cleanKey = name.toLowerCase().trim();
+    if (this.teamSearchCache.has(cleanKey)) {
+      return this.teamSearchCache.get(cleanKey)!;
     }
+
+    // 1. Sanitize alphanumeric query without punctuation that triggers API errors
+    const sanitized = name.replace(/[^a-zA-Z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+    if (sanitized.length >= 3) {
+      const results = await this.request<{ team: ApiFootballTeam; venue: any }>("teams", { search: sanitized });
+      if (results && results.length > 0) {
+        const matchedItem = results.find((t) => t.team && t.team.name.toLowerCase() === cleanKey) || results[0];
+        const teamObj = matchedItem.team || matchedItem;
+        this.teamSearchCache.set(cleanKey, teamObj);
+        return teamObj;
+      }
+    }
+
+    // 2. Try individual significant words (e.g. "Rivadavia", "Barracas", "Estudiantes")
+    const words = sanitized.split(" ").filter((w) => w.length >= 4);
+    for (const word of words) {
+      const wordResults = await this.request<{ team: ApiFootballTeam; venue: any }>("teams", { search: word });
+      if (wordResults && wordResults.length > 0) {
+        const matchedItem = wordResults.find((t) => {
+          if (!t.team) return false;
+          const tName = t.team.name.toLowerCase();
+          return tName.includes(cleanKey) || cleanKey.includes(tName) || words.every((w) => tName.includes(w.toLowerCase()));
+        }) || wordResults[0];
+        const teamObj = matchedItem.team || matchedItem;
+        this.teamSearchCache.set(cleanKey, teamObj);
+        return teamObj;
+      }
+    }
+
+    this.teamSearchCache.set(cleanKey, null);
     return null;
   }
 
