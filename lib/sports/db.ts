@@ -1862,7 +1862,16 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     const matchKey = `${hNorm}-${aNorm}`;
     const fixId = Number(item.fixture.id);
 
-    if (existingMatchKeys.has(matchKey) || (fixId && existingFixIds.has(fixId)) || usedTeams.has(hNorm) || usedTeams.has(aNorm)) continue;
+    // Allow re-evaluation of pending unstarted fixtures to prioritize higher-ranked markets (Corners > BTTS > Over 2.5)
+    const existingPick = existingSnapshot.find((p) => {
+      const ph = getCanonicalTeamKey(p.homeTeam);
+      const pa = getCanonicalTeamKey(p.awayTeam);
+      return (`${ph}-${pa}` === matchKey || Number(p.fixtureId) === fixId);
+    });
+    const isPendingUnstarted = existingPick && existingPick.status === "pending" && new Date(existingPick.kickoff).getTime() > nowMs;
+
+    if ((existingMatchKeys.has(matchKey) || (fixId && existingFixIds.has(fixId))) && !isPendingUnstarted) continue;
+    if (usedTeams.has(hNorm) || usedTeams.has(aNorm)) continue;
 
     const legName = (item.league?.name || "").toLowerCase();
     const hName = (item.teams.home.name || "").toLowerCase();
@@ -1968,30 +1977,68 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
   const chosenMatchKeys = new Set<string>();
   const chosenTeams = new Set<string>();
 
-  const pickUniqueFromPool = (pool: MarketOpportunity[], targetCount: number): MarketOpportunity[] => {
+  // STRICT USER HIERARCHY ALLOCATION ENGINE:
+  // 1: Córners (Top Priority - Max Quota ~40-45%)
+  // 2: Ambos Anotan (High Priority - Quota ~30-35%)
+  // 3: Over 2.5 Goles (Quota ~15-20%)
+  // 4: Ganador Local (Quota ~5-10%)
+  // 5: Ganador Visitante (Quota ~5%)
+  const pickPrioritizedAlerts = (pool: MarketOpportunity[], totalTarget: number): MarketOpportunity[] => {
     const selected: MarketOpportunity[] = [];
-    for (const p of pool) {
-      if (selected.length >= targetCount) break;
-      const hNorm = getCanonicalTeamKey(p.homeTeam);
-      const aNorm = getCanonicalTeamKey(p.awayTeam);
-      const matchKey = `${hNorm}-${aNorm}`;
-      const fixId = Number(p.fixtureId) || 0;
+    const corners = pool.filter((p) => getMarketPriorityRank(p.market) === 1);
+    const btts = pool.filter((p) => getMarketPriorityRank(p.market) === 2);
+    const over25 = pool.filter((p) => getMarketPriorityRank(p.market) === 3);
+    const local = pool.filter((p) => getMarketPriorityRank(p.market) === 4);
+    const away = pool.filter((p) => getMarketPriorityRank(p.market) === 5);
 
-      if (
-        chosenMatchKeys.has(matchKey) ||
-        (fixId && existingFixIds.has(fixId)) ||
-        chosenTeams.has(hNorm) ||
-        chosenTeams.has(aNorm) ||
-        existingMatchKeys.has(matchKey)
-      ) {
-        continue;
+    const targetCorners = Math.max(1, Math.round(totalTarget * 0.40));
+    const targetBtts = Math.max(1, Math.round(totalTarget * 0.35));
+    const targetOver25 = Math.max(1, Math.round(totalTarget * 0.15));
+    const targetLocal = Math.max(0, Math.round(totalTarget * 0.05));
+    const targetAway = Math.max(0, Math.round(totalTarget * 0.05));
+
+    const takeFromList = (list: MarketOpportunity[], maxCount: number) => {
+      let taken = 0;
+      for (const p of list) {
+        if (taken >= maxCount || selected.length >= totalTarget) break;
+        const hNorm = getCanonicalTeamKey(p.homeTeam);
+        const aNorm = getCanonicalTeamKey(p.awayTeam);
+        const matchKey = `${hNorm}-${aNorm}`;
+        const fixId = Number(p.fixtureId) || 0;
+
+        if (
+          chosenMatchKeys.has(matchKey) ||
+          (fixId && existingFixIds.has(fixId)) ||
+          chosenTeams.has(hNorm) ||
+          chosenTeams.has(aNorm) ||
+          existingMatchKeys.has(matchKey)
+        ) {
+          continue;
+        }
+
+        chosenMatchKeys.add(matchKey);
+        chosenTeams.add(hNorm);
+        chosenTeams.add(aNorm);
+        selected.push(p);
+        taken++;
       }
+    };
 
-      chosenMatchKeys.add(matchKey);
-      chosenTeams.add(hNorm);
-      chosenTeams.add(aNorm);
-      selected.push(p);
+    takeFromList(corners, targetCorners);
+    takeFromList(btts, targetBtts);
+    takeFromList(over25, targetOver25);
+    takeFromList(local, targetLocal);
+    takeFromList(away, targetAway);
+
+    // Fallback: If still under totalTarget, fill remaining slots from pool in strict priority order
+    if (selected.length < totalTarget) {
+      takeFromList(corners, totalTarget - selected.length);
+      takeFromList(btts, totalTarget - selected.length);
+      takeFromList(over25, totalTarget - selected.length);
+      takeFromList(local, totalTarget - selected.length);
+      takeFromList(away, totalTarget - selected.length);
     }
+
     return selected;
   };
 
@@ -1999,8 +2046,8 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
   let merged: MarketOpportunity[] = [];
 
   if (existingSnapshot.length === 0) {
-    const selSeguras = pickUniqueFromPool(poolSeguras, 16);
-    const selValor = pickUniqueFromPool(poolValor, 8);
+    const selSeguras = pickPrioritizedAlerts(poolSeguras, 16);
+    const selValor = pickPrioritizedAlerts(poolValor, 8);
 
     newlyAdded = [...selSeguras, ...selValor].map((p) => ({
       ...p,
@@ -2010,9 +2057,9 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     }));
     merged = newlyAdded.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
   } else {
-    // Incremental search: take up to 5 seguras, 4 valor
-    const selSeguras = pickUniqueFromPool(poolSeguras, 5);
-    const selValor = pickUniqueFromPool(poolValor, 4);
+    // Priority search: take prioritized candidates
+    const selSeguras = pickPrioritizedAlerts(poolSeguras, 10);
+    const selValor = pickPrioritizedAlerts(poolValor, 6);
 
     newlyAdded = [...selSeguras, ...selValor].map((p) => ({
       ...p,
@@ -2020,7 +2067,16 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
       isNewlyDiscovered: true,
       addedAt: new Date().toISOString(),
     }));
-    merged = [...existingSnapshot, ...newlyAdded].sort(
+
+    // Keep existing finished/settled/live picks and any non-replaced pending picks
+    const newlyAddedKeys = new Set(newlyAdded.map((p) => `${getCanonicalTeamKey(p.homeTeam)}-${getCanonicalTeamKey(p.awayTeam)}`));
+    const retainedExisting = existingSnapshot.filter((p) => {
+      const k = `${getCanonicalTeamKey(p.homeTeam)}-${getCanonicalTeamKey(p.awayTeam)}`;
+      if (p.status !== "pending") return true;
+      return !newlyAddedKeys.has(k);
+    });
+
+    merged = [...retainedExisting, ...newlyAdded].sort(
       (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
     );
   }

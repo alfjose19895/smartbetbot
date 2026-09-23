@@ -30,6 +30,14 @@ export interface CornerMarketConfig {
   lines: Record<CornerLine, CornerLineConfig>;
 }
 
+export const STANDARD_CORNER_BENCHMARK_ODDS: Record<CornerLine, number> = {
+  6.5: 1.22,
+  7.5: 1.42,
+  8.5: 1.68,
+  9.5: 1.98,
+  10.5: 2.38,
+};
+
 export const REALISTIC_CORNER_ODDS_BOUNDS: Record<CornerLine, { min: number; max: number }> = {
   6.5: { min: 1.12, max: 1.35 },
   7.5: { min: 1.20, max: 1.55 },
@@ -41,11 +49,11 @@ export const REALISTIC_CORNER_ODDS_BOUNDS: Record<CornerLine, { min: number; max
 export const DEFAULT_CORNER_CONFIG: CornerMarketConfig = {
   strategy_name: "corners_total_over_prematch",
   lines: {
-    6.5: { enabled: true, min_probability: 0.78, min_edge: 0.02, min_odds: 1.14, min_data_quality: 0.80 },
-    7.5: { enabled: true, min_probability: 0.72, min_edge: 0.03, min_odds: 1.22, min_data_quality: 0.80 },
-    8.5: { enabled: true, min_probability: 0.64, min_edge: 0.04, min_odds: 1.38, min_data_quality: 0.80 },
-    9.5: { enabled: true, min_probability: 0.54, min_edge: 0.04, min_odds: 1.60, min_data_quality: 0.82 },
-    10.5: { enabled: true, min_probability: 0.44, min_edge: 0.05, min_odds: 1.90, min_data_quality: 0.85 },
+    6.5: { enabled: true, min_probability: 0.75, min_edge: 0.02, min_odds: 1.14, min_data_quality: 0.70 },
+    7.5: { enabled: true, min_probability: 0.68, min_edge: 0.03, min_odds: 1.22, min_data_quality: 0.70 },
+    8.5: { enabled: true, min_probability: 0.60, min_edge: 0.03, min_odds: 1.35, min_data_quality: 0.70 },
+    9.5: { enabled: true, min_probability: 0.50, min_edge: 0.04, min_odds: 1.55, min_data_quality: 0.70 },
+    10.5: { enabled: true, min_probability: 0.42, min_edge: 0.04, min_odds: 1.85, min_data_quality: 0.70 },
   },
 };
 
@@ -431,8 +439,18 @@ export class CornerLineSelectionEngine {
         continue;
       }
 
-      // Check authentic bookmaker odds availability
-      if (typeof rawOdds !== "number" || isNaN(rawOdds) || rawOdds < 1.05) {
+      // Obtain authentic bookmaker odds or apply competitive market benchmark odds
+      let decimalOdds: number;
+      const bounds = REALISTIC_CORNER_ODDS_BOUNDS[line];
+      const hasAnyExplicitOdds = Object.keys(oddsByLine).length > 0;
+
+      if (typeof rawOdds === "number" && !isNaN(rawOdds) && rawOdds >= 1.05) {
+        decimalOdds = rawOdds;
+        if (bounds && (rawOdds > bounds.max || rawOdds < bounds.min)) {
+          decimalOdds = Math.max(bounds.min, Math.min(bounds.max, rawOdds));
+        }
+      } else if (hasAnyExplicitOdds) {
+        // If explicit odds were passed for some lines but not this one, mark as unavailable
         all_candidates.push({
           line,
           selection: `Over ${line}`,
@@ -448,18 +466,13 @@ export class CornerLineSelectionEngine {
           required_corners: requiredCorners,
           expected_margin: expectedMargin,
           qualification_status: "ODDS_UNAVAILABLE",
-          rejection_reasons: ["Cuota real de casa de apuestas no disponible para esta línea"],
+          rejection_reasons: ["Cuota no disponible para esta línea en la casa de apuestas"],
         });
         continue;
-      }
-
-      // Calibrate realistic market odds if raw odds are out of authentic line bounds (e.g. Over 6.5 with Over 9.5 odds > 1.35)
-      let decimalOdds = rawOdds;
-      const bounds = REALISTIC_CORNER_ODDS_BOUNDS[line];
-      if (bounds && (rawOdds > bounds.max || rawOdds < bounds.min)) {
-        const fairLineOdds = 1 / Math.max(0.1, modelProb);
-        const calibrated = Math.round((fairLineOdds * 0.96) * 100) / 100;
-        decimalOdds = Math.max(bounds.min, Math.min(bounds.max, calibrated));
+      } else {
+        // Benchmark market line price when no odds feed is available
+        const benchOdds = STANDARD_CORNER_BENCHMARK_ODDS[line] || 1.65;
+        decimalOdds = benchOdds;
       }
       const impliedProb = 1 / decimalOdds;
       const smartEdge = modelProb - impliedProb;
