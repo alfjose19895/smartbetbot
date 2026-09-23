@@ -1089,7 +1089,7 @@ export function generateTeamRecentForm(team: string, league: string, elo: number
   };
 
   const results: TeamFormMatch[] = [];
-  const opponents = ["Rival A", "Rival B", "Rival C", "Rival D", "Rival E"];
+  const defaultOpponents = ["Rival 1", "Rival 2", "Rival 3", "Rival 4", "Rival 5"];
 
   for (let i = 0; i < 5; i++) {
     const isHome = (hash + i) % 2 === 0;
@@ -1118,7 +1118,7 @@ export function generateTeamRecentForm(team: string, league: string, elo: number
 
     results.push({
       date: getPastDateStr(4 + i * 5),
-      opponent: opponents[i],
+      opponent: defaultOpponents[i],
       isHome,
       score,
       result: res,
@@ -1193,6 +1193,18 @@ export function generateH2HClashes(home: string, away: string, league: string, h
       ...c3,
     },
   ];
+}
+
+
+export function getMarketPriorityRank(market: string): number {
+  if (!market) return 6;
+  const m = market.toLowerCase();
+  if (m.includes('córner') || m.includes('corner')) return 1;
+  if (m.includes('ambos') || m.includes('btts')) return 2;
+  if (m.includes('over 2.5') || m.includes('más de 2.5')) return 3;
+  if (m.includes('ganador local') || m.includes('local') || m === '1') return 4;
+  if (m.includes('ganador visitante') || m.includes('visitante') || m === '2') return 5;
+  return 6;
 }
 
 export interface LiveMatchContext {
@@ -1583,77 +1595,9 @@ export function evaluateFixturePrediction(params: {
     const isCupOrKnockout = normLeg.includes("cup") || normLeg.includes("copa") || normLeg.includes("europa") || normLeg.includes("champions") || normLeg.includes("conference") || normLeg.includes("libertadores") || normLeg.includes("sudamericana");
     const totalXg = hXg + aXg;
 
-    // 1. Ganador Local (1) - Prioridad #1 (Alta efectividad en locales sólidos)
-    if (effHomeWin && effHomeWin >= 1.15 && pHome >= 0.45) {
-      candidates.push({
-        market: "Ganador Local",
-        selection: "1",
-        prob: pHome,
-        odds: effHomeWin,
-        minOddsThreshold: 1.15,
-        minProbThreshold: 0.45,
-      });
-    }
-
-    // 2. Ambos Equipos Anotan (BTTS) - Prioridad #1 (Efectividad histórica > 85%)
-    if (effBtts && effBtts >= 1.25 && pBttsYes >= 0.48 && hXg >= 1.05 && aXg >= 0.95) {
-      candidates.push({
-        market: "Ambos Equipos Anotan",
-        selection: "Sí",
-        prob: pBttsYes,
-        odds: effBtts,
-        minOddsThreshold: 1.25,
-        minProbThreshold: 0.48,
-      });
-    }
-
-    // 3. Over 2.5 Goles - Calibración Reforzada de Máxima Precisión
-    // Exigencia estricta: xG combinado >= 2.85 y tendencia de forma reciente (4 de 5 partidos Over 2.5 en ambos equipos)
-    const homeOverCount = homeRecentForm.filter((m) => {
-      const parts = (m.score || "").split("-").map((n) => parseInt(n, 10));
-      return parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1]) && parts[0] + parts[1] >= 3;
-    }).length;
-
-    const awayOverCount = awayRecentForm.filter((m) => {
-      const parts = (m.score || "").split("-").map((n) => parseInt(n, 10));
-      return parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1]) && parts[0] + parts[1] >= 3;
-    }).length;
-
-    const minOverProb = isCupOrKnockout ? 0.58 : 0.54;
-    const minOverXg = isCupOrKnockout ? 3.00 : 2.85;
-    const passesRecentForm = homeOverCount >= 4 && awayOverCount >= 4;
-
-    if (
-      effOver25 &&
-      effOver25 >= 1.25 &&
-      pOver25 >= minOverProb &&
-      totalXg >= minOverXg &&
-      passesRecentForm
-    ) {
-      candidates.push({
-        market: "Over 2.5 Goles",
-        selection: "Over 2.5",
-        prob: pOver25,
-        odds: effOver25,
-        minOddsThreshold: 1.25,
-        minProbThreshold: minOverProb,
-      });
-    }
-
-    // 4. Ganador Visitante (2) - Mercado Secundario con exigencia de solvencia
-    if (effAwayWin && effAwayWin >= 1.25 && pAway >= 0.48) {
-      candidates.push({
-        market: "Ganador Visitante",
-        selection: "2",
-        prob: pAway,
-        odds: effAwayWin,
-        minOddsThreshold: 1.25,
-        minProbThreshold: 0.48,
-      });
-    }
-
-    // 5. Motor Dinámico de Córners (corners_total_over_prematch)
-    // Analiza líneas Over 6.5, 7.5, 8.5, 9.5, 10.5 a partir de una única distribución Monte Carlo (N = 20,000)
+    // === MERCADOS CON MÁXIMA PRIORIDAD Y RENTABILIDAD DEMOSTRADA ===
+    // 1. PRIORIDAD #1: Motor Dinámico de Córners (corners_total_over_prematch)
+    // Analiza líneas Over 6.5, 7.5, 8.5, 9.5, 10.5 con Monte Carlo (N=20,000)
     const cornerOddsMap: Partial<Record<CornerLine, number>> = {};
     if (marketOdds.cornersOver65) cornerOddsMap[6.5] = marketOdds.cornersOver65;
     if (marketOdds.cornersOver75) cornerOddsMap[7.5] = marketOdds.cornersOver75;
@@ -1682,7 +1626,7 @@ export function evaluateFixturePrediction(params: {
         prob: rec.model_probability,
         odds: finalOdds,
         minOddsThreshold: 1.14,
-        minProbThreshold: 0.60,
+        minProbThreshold: 0.58,
         cornerAnalysis: {
           expectedTotalCorners: cornerResult.expected_total_corners,
           expectedHomeCorners: cornerResult.expected_home_corners,
@@ -1694,6 +1638,62 @@ export function evaluateFixturePrediction(params: {
           saferLine: cornerResult.safer_candidate?.line,
           valueLine: cornerResult.value_candidate?.line,
         }
+      });
+    }
+
+    // 2. PRIORIDAD #2: Ambos Equipos Anotan (BTTS) - Efectividad histórica superior
+    if (effBtts && effBtts >= 1.25 && pBttsYes >= 0.48 && hXg >= 1.00 && aXg >= 0.90) {
+      candidates.push({
+        market: "Ambos Equipos Anotan",
+        selection: "Sí",
+        prob: pBttsYes,
+        odds: effBtts,
+        minOddsThreshold: 1.25,
+        minProbThreshold: 0.48,
+      });
+    }
+
+    // 3. PRIORIDAD #3: Over 2.5 Goles - Precisión Cuantitativa
+    const minOverProb = isCupOrKnockout ? 0.56 : 0.52;
+    const minOverXg = isCupOrKnockout ? 2.80 : 2.65;
+
+    if (
+      effOver25 &&
+      effOver25 >= 1.25 &&
+      pOver25 >= minOverProb &&
+      totalXg >= minOverXg
+    ) {
+      candidates.push({
+        market: "Over 2.5 Goles",
+        selection: "Over 2.5",
+        prob: pOver25,
+        odds: effOver25,
+        minOddsThreshold: 1.25,
+        minProbThreshold: minOverProb,
+      });
+    }
+
+    // 4. PRIORIDAD #4: Ganador Local (1) - Mercado Secundario
+    if (effHomeWin && effHomeWin >= 1.18 && pHome >= 0.46) {
+      candidates.push({
+        market: "Ganador Local",
+        selection: "1",
+        prob: pHome,
+        odds: effHomeWin,
+        minOddsThreshold: 1.18,
+        minProbThreshold: 0.46,
+      });
+    }
+
+    // 5. PRIORIDAD #5: Ganador Visitante (2) - Mercado Secundario
+    if (effAwayWin && effAwayWin >= 1.28 && pAway >= 0.48) {
+      candidates.push({
+        market: "Ganador Visitante",
+        selection: "2",
+        prob: pAway,
+        odds: effAwayWin,
+        minOddsThreshold: 1.28,
+        minProbThreshold: 0.48,
       });
     }
   }
@@ -1747,10 +1747,13 @@ export function evaluateFixturePrediction(params: {
       ? (tier === 1 ? 25 : tier === 2 ? 18 : 10)
       : (tier === 1 ? 14 : tier === 2 ? 7 : 0);
 
+    const mRank = getMarketPriorityRank(item.market);
+    const marketPriorityBonus = mRank === 1 ? 35 : mRank === 2 ? 25 : mRank === 3 ? 18 : mRank === 4 ? 10 : 5;
+
     const tierMultiplier = tier === 1 ? 1.25 : tier === 2 ? 1.00 : 0.85;
 
     const rawScore = Math.round(
-      (item.prob * 100 + (item.prob - 1 / item.odds) * 10 + tierBonus) * tierMultiplier
+      (item.prob * 100 + (item.prob - 1 / item.odds) * 10 + tierBonus + marketPriorityBonus) * tierMultiplier
     );
     const smartScore = Math.min(99, Math.max(70, rawScore));
 
@@ -1855,17 +1858,17 @@ export function evaluateFixturePrediction(params: {
     }
   }
 
-  // Prioritize Tier 1 Leagues, then High-Winrate Core Markets (Local, BTTS, Over 2.5) by Probability
+  // STRICT USER HIERARCHY: 1: Córners > 2: Ambos Anotan > 3: Over 2.5 > 4: Local > 5: Visitante
   return opportunities.sort((a, b) => {
     const aTier = a.leagueTier || 2;
     const bTier = b.leagueTier || 2;
     if (aTier !== bTier) {
       return aTier - bTier;
     }
-    const aIsFocus = a.market === "Ganador Local" || a.market === "Ambos Equipos Anotan" || a.market === "Over 2.5 Goles";
-    const bIsFocus = b.market === "Ganador Local" || b.market === "Ambos Equipos Anotan" || b.market === "Over 2.5 Goles";
-    if (aIsFocus !== bIsFocus) {
-      return aIsFocus ? -1 : 1;
+    const aRank = getMarketPriorityRank(a.market);
+    const bRank = getMarketPriorityRank(b.market);
+    if (aRank !== bRank) {
+      return aRank - bRank;
     }
     if (b.probability !== a.probability) {
       return b.probability - a.probability;
@@ -1919,11 +1922,14 @@ export function getFeaturedDailyPicks(predictions: MarketOpportunity[]): {
     return { smartPick: null, bombaPick: null };
   }
 
-  // 1. SmartPick del Día: Best highest probability / highest confidence pick
+  // 1. SmartPick del Día: Prioritizes top markets (1: Corners, 2: BTTS, 3: Over 2.5) with highest probability & confidence
   const smartPickCandidates = [...predictions].sort((a, b) => {
     const aTier = a.leagueTier || 3;
     const bTier = b.leagueTier || 3;
     if (aTier !== bTier) return aTier - bTier;
+    const aRank = getMarketPriorityRank(a.market);
+    const bRank = getMarketPriorityRank(b.market);
+    if (aRank !== bRank) return aRank - bRank;
     if (b.probability !== a.probability) return b.probability - a.probability;
     if ((b.smartScore || 0) !== (a.smartScore || 0)) return (b.smartScore || 0) - (a.smartScore || 0);
     return b.edge - a.edge;

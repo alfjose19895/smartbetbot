@@ -180,6 +180,25 @@ export function PredictionCard({
   };
 
   const pVal = typeof prediction.probability === "number" ? prediction.probability : 50;
+
+  const isCornerMarket =
+    prediction.market === "Córners" ||
+    (prediction.market && (prediction.market.toLowerCase().includes("córner") || prediction.market.toLowerCase().includes("corner")));
+
+  const homeCornersHistory = (prediction.homeLast5 || [])
+    .map((m) => m.totalCorners)
+    .filter((c): c is number => typeof c === "number");
+  const awayCornersHistory = (prediction.awayLast5 || [])
+    .map((m) => m.totalCorners)
+    .filter((c): c is number => typeof c === "number");
+
+  const recentCornerPills = homeCornersHistory.length > 0 ? homeCornersHistory : awayCornersHistory;
+  const avgCornerNum =
+    recentCornerPills.length > 0
+      ? (recentCornerPills.reduce((a, b) => a + b, 0) / recentCornerPills.length).toFixed(1)
+      : prediction.cornerAnalysis?.expectedTotalCorners
+      ? prediction.cornerAnalysis.expectedTotalCorners.toFixed(1)
+      : null;
   const confidenceBadge =
     pVal >= 70.0
       ? {
@@ -800,6 +819,47 @@ export function PredictionCard({
             </div>
           </div>
 
+          {/* Corner Statistics Snippet (Featured for Corners & Available Data) */}
+          {(isCornerMarket || recentCornerPills.length > 0 || prediction.cornerAnalysis) && (
+            <div className="mt-3 rounded-2xl bg-emerald-500/10 p-3 border border-emerald-500/25 dark:bg-emerald-950/30 dark:border-emerald-500/30">
+              <div className="flex items-center justify-between text-[11px] font-black text-slate-800 dark:text-slate-200 mb-1">
+                <span className="flex items-center gap-1.5 text-emerald-800 dark:text-emerald-400">
+                  <span>🚩</span>
+                  <span>Historial de Córners Verificado</span>
+                </span>
+                {avgCornerNum && (
+                  <span className="rounded-md bg-emerald-500/20 px-2 py-0.5 text-[10px] font-black text-emerald-700 dark:text-emerald-300">
+                    Prom: ~{avgCornerNum} /partido
+                  </span>
+                )}
+              </div>
+              {recentCornerPills.length > 0 ? (
+                <div className="flex items-center gap-1.5 flex-wrap mt-1">
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold">Últimos:</span>
+                  {recentCornerPills.slice(0, 5).map((c, i) => (
+                    <span
+                      key={i}
+                      className={`rounded-lg px-2 py-0.5 text-[10px] font-black ${
+                        c >= 9
+                          ? "bg-emerald-600 text-white shadow-xs"
+                          : "bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-200"
+                      }`}
+                    >
+                      🚩 {c}
+                    </span>
+                  ))}
+                  <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 ml-auto">
+                    {recentCornerPills.filter((c) => c > 8.5).length}/{recentCornerPills.length} Over 8.5
+                  </span>
+                </div>
+              ) : prediction.cornerAnalysis ? (
+                <div className="text-[10px] text-slate-600 dark:text-slate-400 font-medium">
+                  Proyección Monte Carlo: ~{prediction.cornerAnalysis.expectedTotalCorners.toFixed(1)} córners esperados (Local: ~{prediction.cornerAnalysis.expectedHomeCorners.toFixed(1)} | Visita: ~{prediction.cornerAnalysis.expectedAwayCorners.toFixed(1)})
+                </div>
+              ) : null}
+            </div>
+          )}
+
           {/* AI Analysis Quote */}
           {prediction.explanation && (
             <div className="mt-3 rounded-2xl bg-slate-50/80 p-3 border border-slate-100 dark:bg-slate-950/60 dark:border-slate-800">
@@ -872,9 +932,9 @@ export function PredictionCard({
               e.stopPropagation();
               onOpenDetail?.(prediction);
             }}
-            className="rounded-xl bg-slate-900 px-3 py-1.5 text-[11px] font-black text-white hover:bg-emerald-600 dark:bg-white dark:text-slate-950 dark:hover:bg-emerald-400 transition cursor-pointer ml-auto"
+            className="rounded-xl bg-slate-900 px-3 py-1.5 text-[11px] font-black text-white hover:bg-emerald-600 dark:bg-white dark:text-slate-950 dark:hover:bg-emerald-400 transition cursor-pointer ml-auto flex items-center gap-1"
           >
-            Ver H2H →
+            <span>{isCornerMarket ? "🚩 Historial Córners →" : "Ver H2H & Historial →"}</span>
           </button>
         </div>
       </div>

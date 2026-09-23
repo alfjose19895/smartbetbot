@@ -25,7 +25,10 @@ interface MatchDetailModalProps {
 
 export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps) {
   const { language } = useLanguage();
-  const [activeTab, setActiveTab] = useState<"h2h" | "homeForm" | "awayForm" | "corners" | "stats">("h2h");
+  const isInitialCorner =
+    prediction.market === "Córners" ||
+    (prediction.market && (prediction.market.toLowerCase().includes("córner") || prediction.market.toLowerCase().includes("corner")));
+  const [activeTab, setActiveTab] = useState<"h2h" | "homeForm" | "awayForm" | "corners" | "stats">(isInitialCorner ? "corners" : "h2h");
   const [cornerViewTeam, setCornerViewTeam] = useState<"both" | "home" | "away">("both");
   const [formMode, setFormMode] = useState<"all" | "score" | "corners">("all");
 

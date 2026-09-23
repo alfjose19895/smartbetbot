@@ -21,6 +21,7 @@ import {
   normalizeLeagueInfo,
   getTimeSlot,
   isQualifiedOpportunity,
+  getMarketPriorityRank,
 } from "./prediction-engine";
 
 export function getEcuadorDateString(d: Date | number | string = Date.now()): string {
@@ -1939,8 +1940,11 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     }
   }
 
-  // Sort each pool by League Tier Priority + Quantitative Conviction
+  // STRICT USER HIERARCHY: 1: Córners > 2: Ambos Anotan > 3: Over 2.5 > 4: Local > 5: Visitante
   poolSeguras.sort((a, b) => {
+    const aRank = getMarketPriorityRank(a.market);
+    const bRank = getMarketPriorityRank(b.market);
+    if (aRank !== bRank) return aRank - bRank;
     const aTier = a.leagueTier || 3;
     const bTier = b.leagueTier || 3;
     if (aTier !== bTier) return aTier - bTier;
@@ -1949,6 +1953,9 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
   });
 
   poolValor.sort((a, b) => {
+    const aRank = getMarketPriorityRank(a.market);
+    const bRank = getMarketPriorityRank(b.market);
+    if (aRank !== bRank) return aRank - bRank;
     const aTier = a.leagueTier || 3;
     const bTier = b.leagueTier || 3;
     if (aTier !== bTier) return aTier - bTier;
