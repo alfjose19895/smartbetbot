@@ -2169,7 +2169,7 @@
     "league": "Superliga",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1585,
     "country": "Dinamarca",
     "homeElo": 1480,
@@ -2282,7 +2282,10 @@
     "probability": 57.9,
     "bookmakerOdds": 1.57,
     "expectedValue": -9.1,
-    "impliedProbability": 63.7
+    "impliedProbability": 63.7,
+    "actualScore": "0 - 1 (No)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [
@@ -2846,7 +2849,7 @@
     "league": "Austrian Bundesliga",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1538,
     "country": "Austria",
     "homeElo": 1508,
@@ -2959,7 +2962,10 @@
     "probability": 58.1,
     "bookmakerOdds": 1.67,
     "expectedValue": -3,
-    "impliedProbability": 59.9
+    "impliedProbability": 59.9,
+    "actualScore": "4 - 1 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.67
   },
   {
     "h2h": [
@@ -2996,7 +3002,7 @@
     "league": "NB I (OTP Bank Liga)",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1582,
     "country": "Hungría",
     "homeElo": 1575,
@@ -3109,7 +3115,10 @@
     "probability": 58.2,
     "bookmakerOdds": 1.57,
     "expectedValue": -8.6,
-    "impliedProbability": 63.7
+    "impliedProbability": 63.7,
+    "actualScore": "2 - 1 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.57
   },
   {
     "h2h": [
@@ -3146,7 +3155,7 @@
     "league": "Allsvenskan",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1508,
     "country": "Suecia",
     "homeElo": 1535,
@@ -3259,7 +3268,10 @@
     "probability": 58,
     "bookmakerOdds": 1.57,
     "expectedValue": -9,
-    "impliedProbability": 63.7
+    "impliedProbability": 63.7,
+    "actualScore": "0 - 3 (No)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [
@@ -3296,7 +3308,7 @@
     "league": "Eredivisie",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1494,
     "country": "Países Bajos",
     "homeElo": 1639,
@@ -3409,7 +3421,10 @@
     "probability": 61.8,
     "bookmakerOdds": 1.9,
     "expectedValue": 17.5,
-    "impliedProbability": 52.6
+    "impliedProbability": 52.6,
+    "actualScore": "1 - 1",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [
@@ -3446,7 +3461,7 @@
     "league": "NB I (OTP Bank Liga)",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1535,
     "country": "Hungría",
     "homeElo": 1492,
@@ -3559,7 +3574,10 @@
     "probability": 63.4,
     "bookmakerOdds": 1.4,
     "expectedValue": -11.2,
-    "impliedProbability": 71.4
+    "impliedProbability": 71.4,
+    "actualScore": "1 - 2 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.4
   },
   {
     "h2h": [
@@ -3596,7 +3614,7 @@
     "league": "Eliteserien",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1646,
     "country": "Noruega",
     "homeElo": 1604,
@@ -3709,7 +3727,10 @@
     "probability": 58.7,
     "bookmakerOdds": 1.57,
     "expectedValue": -7.8,
-    "impliedProbability": 63.7
+    "impliedProbability": 63.7,
+    "actualScore": "3 - 0 (No)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [
@@ -3746,7 +3767,7 @@
     "league": "1. Division (OBOS-ligaen)",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1589,
     "country": "Noruega",
     "homeElo": 1554,
@@ -3859,7 +3880,10 @@
     "probability": 64.9,
     "bookmakerOdds": 1.36,
     "expectedValue": -11.8,
-    "impliedProbability": 73.5
+    "impliedProbability": 73.5,
+    "actualScore": "5 - 1 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.36
   },
   {
     "h2h": [
@@ -3896,7 +3920,7 @@
     "league": "1. Division (OBOS-ligaen)",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1652,
     "country": "Noruega",
     "homeElo": 1639,
@@ -4009,7 +4033,10 @@
     "probability": 63.3,
     "bookmakerOdds": 1.4,
     "expectedValue": -11.4,
-    "impliedProbability": 71.4
+    "impliedProbability": 71.4,
+    "actualScore": "2 - 1 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.4
   },
   {
     "h2h": [
@@ -4046,7 +4073,7 @@
     "league": "1. Division (OBOS-ligaen)",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1538,
     "country": "Noruega",
     "homeElo": 1559,
@@ -4159,7 +4186,10 @@
     "probability": 62.9,
     "bookmakerOdds": 1.4,
     "expectedValue": -12,
-    "impliedProbability": 71.4
+    "impliedProbability": 71.4,
+    "actualScore": "1 - 2 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.4
   },
   {
     "h2h": [
@@ -4196,7 +4226,7 @@
     "league": "1. Division (OBOS-ligaen)",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1514,
     "country": "Noruega",
     "homeElo": 1499,
@@ -4309,7 +4339,10 @@
     "probability": 62.2,
     "bookmakerOdds": 1.44,
     "expectedValue": -10.4,
-    "impliedProbability": 69.4
+    "impliedProbability": 69.4,
+    "actualScore": "0 - 2 (No)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [
@@ -4346,7 +4379,7 @@
     "league": "Ligue 1",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1800,
     "country": "Francia",
     "homeElo": 1503,
@@ -4459,7 +4492,10 @@
     "probability": 58.1,
     "bookmakerOdds": 1.91,
     "expectedValue": 10.9,
-    "impliedProbability": 52.4
+    "impliedProbability": 52.4,
+    "actualScore": "2 - 1 (3 Goles)",
+    "result": "WON",
+    "profit": 0.91
   },
   {
     "h2h": [
@@ -4496,7 +4532,7 @@
     "league": "Ligue 1",
     "market": "Ganador Visitante",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1800,
     "country": "Francia",
     "homeElo": 1503,
@@ -4609,7 +4645,10 @@
     "probability": 60.1,
     "bookmakerOdds": 2.15,
     "expectedValue": 29.3,
-    "impliedProbability": 46.5
+    "impliedProbability": 46.5,
+    "actualScore": "2 - 1",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [
@@ -4646,7 +4685,7 @@
     "league": "Bundesliga",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1642,
     "country": "Alemania",
     "homeElo": 1580,
@@ -4759,7 +4798,10 @@
     "probability": 63.7,
     "bookmakerOdds": 1.44,
     "expectedValue": -8.3,
-    "impliedProbability": 69.4
+    "impliedProbability": 69.4,
+    "actualScore": "0 - 0 (No)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [
@@ -4796,7 +4838,7 @@
     "league": "Premier League",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1770,
     "country": "Inglaterra",
     "homeElo": 1680,
@@ -4909,7 +4951,10 @@
     "probability": 60.4,
     "bookmakerOdds": 1.5,
     "expectedValue": -9.4,
-    "impliedProbability": 66.7
+    "impliedProbability": 66.7,
+    "actualScore": "1 - 1 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.5
   },
   {
     "h2h": [
@@ -4946,7 +4991,7 @@
     "league": "Superliga",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1554,
     "country": "Dinamarca",
     "homeElo": 1557,
@@ -5059,7 +5104,10 @@
     "probability": 62,
     "bookmakerOdds": 1.44,
     "expectedValue": -10.7,
-    "impliedProbability": 69.4
+    "impliedProbability": 69.4,
+    "actualScore": "4 - 1 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.44
   },
   {
     "h2h": [
@@ -5096,7 +5144,7 @@
     "league": "Serie A",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1880,
     "country": "Italia",
     "homeElo": 1870,
@@ -5209,7 +5257,10 @@
     "probability": 51.9,
     "bookmakerOdds": 1.7,
     "expectedValue": -11.7,
-    "impliedProbability": 58.8
+    "impliedProbability": 58.8,
+    "actualScore": "2 - 0",
+    "result": "WON",
+    "profit": 0.7
   },
   {
     "h2h": [
@@ -5246,7 +5297,7 @@
     "league": "La Liga",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1659,
     "country": "España",
     "homeElo": 1760,
@@ -5359,7 +5410,10 @@
     "probability": 64.6,
     "bookmakerOdds": 1.5,
     "expectedValue": -3.1,
-    "impliedProbability": 66.7
+    "impliedProbability": 66.7,
+    "actualScore": "3 - 1",
+    "result": "WON",
+    "profit": 0.5
   },
   {
     "h2h": [
@@ -5396,7 +5450,7 @@
     "league": "La Liga",
     "market": "Ganador Visitante",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1720,
     "country": "España",
     "homeElo": 1489,
@@ -5509,7 +5563,10 @@
     "probability": 59.2,
     "bookmakerOdds": 2,
     "expectedValue": 18.5,
-    "impliedProbability": 50
+    "impliedProbability": 50,
+    "actualScore": "1 - 1",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [
@@ -5546,7 +5603,7 @@
     "league": "Bundesliga",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1488,
     "country": "Alemania",
     "homeElo": 1642,
@@ -5659,7 +5716,10 @@
     "probability": 67.9,
     "bookmakerOdds": 1.44,
     "expectedValue": -2.2,
-    "impliedProbability": 69.4
+    "impliedProbability": 69.4,
+    "actualScore": "3 - 1 (4 Goles)",
+    "result": "WON",
+    "profit": 0.44
   },
   {
     "h2h": [
@@ -5696,7 +5756,7 @@
     "league": "NB I (OTP Bank Liga)",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1658,
     "country": "Hungría",
     "homeElo": 1563,
@@ -5809,7 +5869,10 @@
     "probability": 57.9,
     "bookmakerOdds": 1.57,
     "expectedValue": -9.1,
-    "impliedProbability": 63.7
+    "impliedProbability": 63.7,
+    "actualScore": "1 - 1 (2 Goles)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [
@@ -5846,7 +5909,7 @@
     "league": "Serie A",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1596,
     "country": "Italia",
     "homeElo": 1860,
@@ -5959,7 +6022,10 @@
     "probability": 63.2,
     "bookmakerOdds": 1.62,
     "expectedValue": 2.4,
-    "impliedProbability": 61.7
+    "impliedProbability": 61.7,
+    "actualScore": "3 - 0 (3 Goles)",
+    "result": "WON",
+    "profit": 0.62
   },
   {
     "h2h": [
@@ -5996,7 +6062,7 @@
     "league": "Ligue 1",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1970,
     "country": "Francia",
     "homeElo": 1790,
@@ -6212,7 +6278,10 @@
       "expectedHomeCorners": 5.36,
       "expectedTotalCorners": 10.23
     },
-    "impliedProbability": 54.6
+    "impliedProbability": 54.6,
+    "actualScore": "3 - 7 (10 Córners)",
+    "result": "WON",
+    "profit": 0.83
   },
   {
     "h2h": [
@@ -6249,7 +6318,7 @@
     "league": "Primera A",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1571,
     "country": "Colombia",
     "homeElo": 1505,
@@ -6362,7 +6431,10 @@
     "probability": 57.5,
     "bookmakerOdds": 1.76,
     "expectedValue": 1.2,
-    "impliedProbability": 56.8
+    "impliedProbability": 56.8,
+    "actualScore": "1 - 4 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.76
   },
   {
     "h2h": [
@@ -6399,7 +6471,7 @@
     "league": "Primera División",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1568,
     "country": "Uruguay",
     "homeElo": 1627,
@@ -6512,7 +6584,10 @@
     "probability": 60.6,
     "bookmakerOdds": 1.64,
     "expectedValue": -0.7,
-    "impliedProbability": 61
+    "impliedProbability": 61,
+    "actualScore": "3 - 2",
+    "result": "WON",
+    "profit": 0.64
   },
   {
     "h2h": [
@@ -6549,7 +6624,7 @@
     "league": "Major League Soccer (MLS)",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1570,
     "country": "Estados Unidos",
     "homeElo": 1960,
@@ -6662,7 +6737,10 @@
     "probability": 74.7,
     "bookmakerOdds": 1.44,
     "expectedValue": 7.6,
-    "impliedProbability": 69.4
+    "impliedProbability": 69.4,
+    "actualScore": "2 - 2",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [
@@ -6699,7 +6777,7 @@
     "league": "Primera División (Liga FPD)",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1960,
     "country": "Costa Rica",
     "homeElo": 1610,
@@ -6812,7 +6890,10 @@
     "probability": 61.6,
     "bookmakerOdds": 1.67,
     "expectedValue": 3,
-    "impliedProbability": 59.9
+    "impliedProbability": 59.9,
+    "actualScore": "5 - 0 (5 Goles)",
+    "result": "WON",
+    "profit": 0.67
   },
   {
     "h2h": [
@@ -6849,7 +6930,7 @@
     "league": "Liga MX",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1538,
     "country": "México",
     "homeElo": 1622,
@@ -6962,6 +7043,9 @@
     "probability": 57.7,
     "bookmakerOdds": 1.8,
     "expectedValue": 3.8,
-    "impliedProbability": 55.6
+    "impliedProbability": 55.6,
+    "actualScore": "2 - 2",
+    "result": "LOST",
+    "profit": -1
   }
 ]

@@ -105,13 +105,13 @@ function calculateCornerSummary(matches: TeamFormMatch[]): TeamCornerSummary | n
   if (!matches || matches.length === 0) return null;
 
   const validMatches = matches.filter(
-    (m) => m.totalCorners !== undefined && m.totalCorners !== null && m.teamCorners !== undefined
+    (m) => typeof m.totalCorners === "number" || typeof m.teamCorners === "number"
   );
   if (validMatches.length === 0) return null;
 
-  const totals = validMatches.map((m) => m.totalCorners!);
-  const forList = validMatches.map((m) => m.teamCorners!);
-  const againstList = validMatches.map((m) => m.opponentCorners!);
+  const totals = validMatches.map((m) => m.totalCorners ?? ((m.teamCorners || 0) + (m.opponentCorners || 0)));
+  const forList = validMatches.map((m) => m.teamCorners ?? Math.round((m.totalCorners || 0) / 2));
+  const againstList = validMatches.map((m) => m.opponentCorners ?? Math.max(0, (m.totalCorners || 0) - (m.teamCorners || 0)));
 
   const sumTotal = totals.reduce((a, b) => a + b, 0);
   const sumFor = forList.reduce((a, b) => a + b, 0);

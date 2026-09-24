@@ -67,6 +67,28 @@ export function FeaturedDailyPicks({ smartPick, bombaPick, onOpenDetail }: Featu
       minute: "2-digit",
     });
 
+    const homeCornersHistory: number[] = (pick.homeLast5 || []).map((m) => m.totalCorners).filter((c): c is number => typeof c === "number");
+    const awayCornersHistory: number[] = (pick.awayLast5 || []).map((m) => m.totalCorners).filter((c): c is number => typeof c === "number");
+    const recentCornerPills: number[] =
+      homeCornersHistory.length > 0
+        ? homeCornersHistory
+        : (pick as any).homeCornerStats?.history && (pick as any).homeCornerStats.history.length > 0
+        ? (pick as any).homeCornerStats.history
+        : awayCornersHistory.length > 0
+        ? awayCornersHistory
+        : (pick as any).awayCornerStats?.history && (pick as any).awayCornerStats.history.length > 0
+        ? (pick as any).awayCornerStats.history
+        : [];
+    const avgCornerNum =
+      recentCornerPills.length > 0
+        ? (recentCornerPills.reduce((a, b) => a + b, 0) / recentCornerPills.length).toFixed(1)
+        : (pick as any).homeCornerStats?.avgTotal
+        ? ((pick as any).homeCornerStats.avgTotal).toFixed(1)
+        : pick.cornerAnalysis?.expectedTotalCorners
+        ? pick.cornerAnalysis.expectedTotalCorners.toFixed(1)
+        : null;
+    const isCornerPick = pick.market === "Córners" || (pick.market && (pick.market.toLowerCase().includes("córner") || pick.market.toLowerCase().includes("corner")));
+
     return (
       <div
         key={cardKey}
@@ -155,7 +177,7 @@ export function FeaturedDailyPicks({ smartPick, bombaPick, onOpenDetail }: Featu
             </div>
           </div>
 
-          {/* Side-by-Side Odds Comparison Cards */}
+                    {/* Side-by-Side Odds Comparison Cards */}
           <div className="mt-3.5 grid grid-cols-2 sm:grid-cols-3 gap-2">
             {/* Casa de Apuestas */}
             <div className="rounded-2xl bg-sky-950/60 p-2.5 border border-sky-800/60 flex flex-col justify-between">
@@ -178,6 +200,51 @@ export function FeaturedDailyPicks({ smartPick, bombaPick, onOpenDetail }: Featu
               <span className="text-[9px] text-emerald-400/80 mt-0.5">Confianza {pick.confidence || "Alta"}</span>
             </div>
           </div>
+
+          {/* Corner Statistics Snippet (Featured for Corners & Available Data) */}
+          {(isCornerPick || recentCornerPills.length > 0 || pick.cornerAnalysis || (pick as any).homeCornerStats) && (
+            <div className="mt-3.5 rounded-2xl bg-emerald-500/10 p-3 border border-emerald-500/25 dark:bg-emerald-950/30 dark:border-emerald-500/30">
+              <div className="flex items-center justify-between text-[11px] font-black text-slate-200 mb-1">
+                <span className="flex items-center gap-1.5 text-emerald-400">
+                  <span>🚩</span>
+                  <span>Historial de Córners Verificado</span>
+                </span>
+                {avgCornerNum && (
+                  <span className="rounded-md bg-emerald-500/20 px-2 py-0.5 text-[10px] font-black text-emerald-300">
+                    Prom: ~{avgCornerNum} /partido
+                  </span>
+                )}
+              </div>
+              {recentCornerPills.length > 0 ? (
+                <div className="flex items-center gap-1.5 flex-wrap mt-1">
+                  <span className="text-[10px] text-slate-400 font-semibold">Últimos:</span>
+                  {recentCornerPills.slice(0, 5).map((c, i) => (
+                    <span
+                      key={i}
+                      className={`rounded-lg px-2 py-0.5 text-[10px] font-black ${
+                        c >= 9
+                          ? "bg-emerald-600 text-white shadow-xs"
+                          : "bg-slate-800 text-slate-200"
+                      }`}
+                    >
+                      🚩 {c}
+                    </span>
+                  ))}
+                  <span className="text-[10px] font-bold text-emerald-300 ml-auto">
+                    {recentCornerPills.filter((c) => c > 8.5).length}/{recentCornerPills.length} Over 8.5
+                  </span>
+                </div>
+              ) : (pick as any).homeCornerStats ? (
+                <div className="text-[10px] text-slate-400 font-medium">
+                  Promedio Oficial: ~{(pick as any).homeCornerStats.avgTotal} córners/partido ({(pick as any).homeCornerStats.over85Rate}% Over 8.5)
+                </div>
+              ) : pick.cornerAnalysis ? (
+                <div className="text-[10px] text-slate-400 font-medium">
+                  Proyección Monte Carlo: ~{pick.cornerAnalysis.expectedTotalCorners.toFixed(1)} córners esperados (Local: ~{pick.cornerAnalysis.expectedHomeCorners.toFixed(1)} | Visita: ~{pick.cornerAnalysis.expectedAwayCorners.toFixed(1)})
+                </div>
+              ) : null}
+            </div>
+          )}
 
           {/* Tactical Explanation */}
           {pick.explanation && (

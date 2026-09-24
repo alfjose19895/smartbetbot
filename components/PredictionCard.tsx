@@ -192,10 +192,24 @@ export function PredictionCard({
     .map((m) => m.totalCorners)
     .filter((c): c is number => typeof c === "number");
 
-  const recentCornerPills = homeCornersHistory.length > 0 ? homeCornersHistory : awayCornersHistory;
+  const recentCornerPills: number[] =
+    homeCornersHistory.length > 0
+      ? homeCornersHistory
+      : (prediction as any).homeCornerStats?.history && (prediction as any).homeCornerStats.history.length > 0
+      ? (prediction as any).homeCornerStats.history
+      : awayCornersHistory.length > 0
+      ? awayCornersHistory
+      : (prediction as any).awayCornerStats?.history && (prediction as any).awayCornerStats.history.length > 0
+      ? (prediction as any).awayCornerStats.history
+      : [];
+
   const avgCornerNum =
     recentCornerPills.length > 0
       ? (recentCornerPills.reduce((a, b) => a + b, 0) / recentCornerPills.length).toFixed(1)
+      : (prediction as any).homeCornerStats?.avgTotal
+      ? ((prediction as any).homeCornerStats.avgTotal).toFixed(1)
+      : (prediction as any).awayCornerStats?.avgTotal
+      ? ((prediction as any).awayCornerStats.avgTotal).toFixed(1)
       : prediction.cornerAnalysis?.expectedTotalCorners
       ? prediction.cornerAnalysis.expectedTotalCorners.toFixed(1)
       : null;
@@ -444,8 +458,19 @@ export function PredictionCard({
               )}
             </div>
             {(() => {
-              const homeCorners = (prediction.homeLast5 || []).map((m) => m.totalCorners).filter((c): c is number => typeof c === "number");
-              const awayCorners = (prediction.awayLast5 || []).map((m) => m.totalCorners).filter((c): c is number => typeof c === "number");
+              const homeCorners: number[] =
+                (prediction.homeLast5 || []).map((m) => m.totalCorners).filter((c): c is number => typeof c === "number").length > 0
+                  ? (prediction.homeLast5 || []).map((m) => m.totalCorners).filter((c): c is number => typeof c === "number")
+                  : (prediction as any).homeCornerStats?.history && (prediction as any).homeCornerStats.history.length > 0
+                  ? (prediction as any).homeCornerStats.history
+                  : [];
+
+              const awayCorners: number[] =
+                (prediction.awayLast5 || []).map((m) => m.totalCorners).filter((c): c is number => typeof c === "number").length > 0
+                  ? (prediction.awayLast5 || []).map((m) => m.totalCorners).filter((c): c is number => typeof c === "number")
+                  : (prediction as any).awayCornerStats?.history && (prediction as any).awayCornerStats.history.length > 0
+                  ? (prediction as any).awayCornerStats.history
+                  : [];
 
               if (homeCorners.length === 0 && awayCorners.length === 0) {
                 return (

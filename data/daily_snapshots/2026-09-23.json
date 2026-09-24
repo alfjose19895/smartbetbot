@@ -67,7 +67,7 @@
     "league": "Emperor Cup",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "addedAt": "2026-09-23T05:07:43.321Z",
     "awayElo": 1529,
     "country": "Japón",
@@ -225,7 +225,10 @@
         3
       ]
     },
-    "awayCornerStats": null
+    "awayCornerStats": null,
+    "actualScore": "1 - 0 (1 Goles)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [
@@ -247,7 +250,7 @@
     "league": "Emperor Cup",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-09-23T05:07:43.321Z",
     "awayElo": 1552,
     "country": "Japón",
@@ -397,7 +400,10 @@
         8
       ]
     },
-    "awayCornerStats": null
+    "awayCornerStats": null,
+    "actualScore": "2 - 1 (3 Goles)",
+    "result": "WON",
+    "profit": 0.5
   },
   {
     "h2h": [
@@ -459,7 +465,7 @@
     "league": "Emperor Cup",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-09-23T05:07:43.321Z",
     "awayElo": 1488,
     "country": "Japón",
@@ -617,7 +623,10 @@
         7
       ]
     },
-    "awayCornerStats": null
+    "awayCornerStats": null,
+    "actualScore": "5 - 0",
+    "result": "WON",
+    "profit": 0.62
   },
   {
     "h2h": [
@@ -639,7 +648,7 @@
     "league": "Emperor Cup",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-09-23T05:07:43.321Z",
     "awayElo": 1611,
     "country": "Japón",
@@ -797,7 +806,10 @@
         11
       ]
     },
-    "awayCornerStats": null
+    "awayCornerStats": null,
+    "actualScore": "1 - 0",
+    "result": "WON",
+    "profit": 0.62
   },
   {
     "h2h": [
@@ -851,7 +863,7 @@
     "league": "Emperor Cup",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-09-23T05:09:20.595Z",
     "awayElo": 1614,
     "country": "Japón",
@@ -1107,7 +1119,10 @@
         13
       ]
     },
-    "awayCornerStats": null
+    "awayCornerStats": null,
+    "actualScore": "6 - 5 (11 Córners)",
+    "result": "WON",
+    "profit": 0.35
   },
   {
     "h2h": [
@@ -1129,7 +1144,7 @@
     "league": "Emperor Cup",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-09-23T05:09:20.595Z",
     "awayElo": 1633,
     "country": "Japón",
@@ -1391,7 +1406,10 @@
         7
       ]
     },
-    "awayCornerStats": null
+    "awayCornerStats": null,
+    "actualScore": "6 - 4 (10 Córners)",
+    "result": "WON",
+    "profit": 0.35
   },
   {
     "h2h": [
@@ -1417,7 +1435,7 @@
     "league": "UEFA Champions League Women",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-09-23T05:07:43.321Z",
     "awayElo": 1760,
     "country": "Europa",
@@ -1592,7 +1610,10 @@
         16,
         10
       ]
-    }
+    },
+    "actualScore": "0 - 8 (8 Goles)",
+    "result": "WON",
+    "profit": 0.44
   },
   {
     "h2h": [
@@ -1630,7 +1651,7 @@
     "league": "UEFA Champions League Women",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "addedAt": "2026-09-23T05:07:43.321Z",
     "awayElo": 1780,
     "country": "Europa",
@@ -1789,7 +1810,10 @@
       "history": [
         7
       ]
-    }
+    },
+    "actualScore": "0 - 0 (0 Goles)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [
@@ -1815,7 +1839,7 @@
     "league": "UEFA Champions League Women",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-09-23T05:11:29.699Z",
     "awayElo": 1760,
     "country": "Europa",
@@ -2092,7 +2116,10 @@
         16,
         10
       ]
-    }
+    },
+    "actualScore": "1 - 9 (10 Córners)",
+    "result": "WON",
+    "profit": 0.68
   },
   {
     "h2h": [
@@ -2130,7 +2157,7 @@
     "league": "UEFA Champions League Women",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-09-23T05:07:43.321Z",
     "awayElo": 1559,
     "country": "Europa",
@@ -2410,7 +2437,10 @@
         16,
         12
       ]
-    }
+    },
+    "actualScore": "8 - 7 (15 Córners)",
+    "result": "WON",
+    "profit": 0.83
   },
   {
     "h2h": [
@@ -2436,7 +2466,7 @@
     "league": "UEFA Champions League Women",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-09-23T05:09:20.595Z",
     "awayElo": 1503,
     "country": "Europa",
@@ -2730,7 +2760,10 @@
         13,
         0
       ]
-    }
+    },
+    "actualScore": "4 - 9 (13 Córners)",
+    "result": "WON",
+    "profit": 0.85
   },
   {
     "h2h": [
@@ -2804,7 +2837,7 @@
     "league": "Major League Soccer (MLS)",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "addedAt": "2026-09-23T05:07:43.321Z",
     "awayElo": 1637,
     "country": "Estados Unidos",
@@ -3019,7 +3052,10 @@
         5,
         13
       ]
-    }
+    },
+    "actualScore": "2 - 0 (No)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [
@@ -3093,7 +3129,7 @@
     "league": "Major League Soccer (MLS)",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-09-23T05:11:29.699Z",
     "awayElo": 1637,
     "country": "Estados Unidos",
@@ -3412,6 +3448,9 @@
         5,
         13
       ]
-    }
+    },
+    "actualScore": "7 - 6 (13 Córners)",
+    "result": "WON",
+    "profit": 0.35
   }
 ]

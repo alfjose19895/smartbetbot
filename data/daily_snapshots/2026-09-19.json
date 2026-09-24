@@ -9183,7 +9183,7 @@
     "league": "Major League Soccer (MLS)",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1634,
     "country": "Estados Unidos",
     "homeElo": 1616,
@@ -9296,7 +9296,10 @@
     "probability": 63.2,
     "bookmakerOdds": 1.4,
     "expectedValue": -11.5,
-    "impliedProbability": 71.4
+    "impliedProbability": 71.4,
+    "actualScore": "3 - 4 (7 Goles)",
+    "result": "WON",
+    "profit": 0.4
   },
   {
     "id": "pred-2026-09-19-1490487-ambos-equipos-anotan",
@@ -9334,7 +9337,7 @@
     "league": "Major League Soccer (MLS)",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1593,
     "country": "Estados Unidos",
     "homeElo": 1620,
@@ -9447,7 +9450,10 @@
     "probability": 61.2,
     "bookmakerOdds": 1.5,
     "expectedValue": -8.2,
-    "impliedProbability": 66.7
+    "impliedProbability": 66.7,
+    "actualScore": "2 - 2 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.5
   },
   {
     "id": "pred-2026-09-19-1490489-ambos-equipos-anotan",
@@ -9485,7 +9491,7 @@
     "league": "Major League Soccer (MLS)",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1568,
     "country": "Estados Unidos",
     "homeElo": 1522,
@@ -9598,7 +9604,10 @@
     "probability": 59.1,
     "bookmakerOdds": 1.57,
     "expectedValue": -7.2,
-    "impliedProbability": 63.7
+    "impliedProbability": 63.7,
+    "actualScore": "0 - 0 (No)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [
@@ -9636,7 +9645,7 @@
     "league": "Liga de Expansión MX",
     "market": "Ganador Visitante",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "addedAt": "2026-09-19T22:42:24.686Z",
     "awayElo": 1627,
     "country": "México",
@@ -9751,7 +9760,10 @@
     "bookmakerOdds": 1.58,
     "expectedValue": -1,
     "isNewlyDiscovered": true,
-    "impliedProbability": 63.3
+    "impliedProbability": 63.3,
+    "actualScore": "3 - 0",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [
@@ -9789,7 +9801,7 @@
     "league": "Liga 1",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "addedAt": "2026-09-19T22:42:24.686Z",
     "awayElo": 1561,
     "country": "Perú",
@@ -9904,7 +9916,10 @@
     "bookmakerOdds": 1.53,
     "expectedValue": -9.7,
     "isNewlyDiscovered": true,
-    "impliedProbability": 65.4
+    "impliedProbability": 65.4,
+    "actualScore": "1 - 1",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "id": "pred-2026-09-19-1490492-over-2.5-goles",
@@ -9942,7 +9957,7 @@
     "league": "Major League Soccer (MLS)",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1601,
     "country": "Estados Unidos",
     "homeElo": 1637,
@@ -10055,7 +10070,10 @@
     "probability": 61.5,
     "bookmakerOdds": 1.5,
     "expectedValue": -7.7,
-    "impliedProbability": 66.7
+    "impliedProbability": 66.7,
+    "actualScore": "0 - 3 (3 Goles)",
+    "result": "WON",
+    "profit": 0.5
   },
   {
     "id": "pred-2026-09-19-1490493-over-2.5-goles",
@@ -10093,7 +10111,7 @@
     "league": "Major League Soccer (MLS)",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1508,
     "country": "Estados Unidos",
     "homeElo": 1516,
@@ -10206,7 +10224,10 @@
     "probability": 61.3,
     "bookmakerOdds": 1.48,
     "expectedValue": -9.2,
-    "impliedProbability": 67.6
+    "impliedProbability": 67.6,
+    "actualScore": "3 - 0 (3 Goles)",
+    "result": "WON",
+    "profit": 0.48
   },
   {
     "id": "pred-2026-09-19-1490491-over-2.5-goles",
@@ -10244,7 +10265,7 @@
     "league": "Major League Soccer (MLS)",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1645,
     "country": "Estados Unidos",
     "homeElo": 1502,
@@ -10357,7 +10378,10 @@
     "probability": 59.5,
     "bookmakerOdds": 1.6,
     "expectedValue": -4.8,
-    "impliedProbability": 62.5
+    "impliedProbability": 62.5,
+    "actualScore": "3 - 3 (6 Goles)",
+    "result": "WON",
+    "profit": 0.6
   },
   {
     "h2h": [
@@ -10395,7 +10419,7 @@
     "league": "Major League Soccer (MLS)",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "addedAt": "2026-09-19T22:42:24.686Z",
     "awayElo": 1567,
     "country": "Estados Unidos",
@@ -10510,6 +10534,9 @@
     "bookmakerOdds": 1.95,
     "expectedValue": 5,
     "isNewlyDiscovered": true,
-    "impliedProbability": 51.3
+    "impliedProbability": 51.3,
+    "actualScore": "0 - 1",
+    "result": "LOST",
+    "profit": -1
   }
 ]

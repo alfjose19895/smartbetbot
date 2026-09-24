@@ -51,13 +51,13 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
         const data = await res.json();
 
         if (isMounted && data.success) {
-          if (Array.isArray(data.h2h) && data.h2h.length > 0) setH2hList(data.h2h);
+          if (Array.isArray(data.h2h)) setH2hList(data.h2h);
           if (Array.isArray(data.homeLast5) && data.homeLast5.length > 0) setHomeLast5List(data.homeLast5);
           if (Array.isArray(data.awayLast5) && data.awayLast5.length > 0) setAwayLast5List(data.awayLast5);
           if (data.homeElo) setHomeElo(data.homeElo);
           if (data.awayElo) setAwayElo(data.awayElo);
-          if (data.homeCornerStats) setHomeCornerStats(data.homeCornerStats);
-          if (data.awayCornerStats) setAwayCornerStats(data.awayCornerStats);
+          if (data.homeCornerStats !== undefined) setHomeCornerStats(data.homeCornerStats);
+          if (data.awayCornerStats !== undefined) setAwayCornerStats(data.awayCornerStats);
           setIsOfficialLoaded(Boolean(data.isOfficial));
         }
       } catch (err) {
@@ -86,11 +86,12 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
 
   // Calculate real corner averages from verified matches only
   const computeRealCornerStats = (list: TeamFormMatch[]): TeamCornerSummary | null => {
-    const valid = list.filter((m) => m.totalCorners !== undefined && m.totalCorners !== null && m.teamCorners !== undefined);
+    if (!list || list.length === 0) return null;
+    const valid = list.filter((m) => typeof m.totalCorners === "number" || typeof m.teamCorners === "number");
     if (valid.length === 0) return null;
-    const totals = valid.map((m) => m.totalCorners!);
-    const forList = valid.map((m) => m.teamCorners!);
-    const againstList = valid.map((m) => m.opponentCorners!);
+    const totals = valid.map((m) => m.totalCorners ?? ((m.teamCorners || 0) + (m.opponentCorners || 0)));
+    const forList = valid.map((m) => m.teamCorners ?? Math.round((m.totalCorners || 0) / 2));
+    const againstList = valid.map((m) => m.opponentCorners ?? Math.max(0, (m.totalCorners || 0) - (m.teamCorners || 0)));
     const sumTotal = totals.reduce((a, b) => a + b, 0);
     const sumFor = forList.reduce((a, b) => a + b, 0);
     const sumAgainst = againstList.reduce((a, b) => a + b, 0);
@@ -105,23 +106,70 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
     };
   };
 
-  const finalHomeCorners = homeCornerStats || computeRealCornerStats(homeLast5List);
-  const finalAwayCorners = awayCornerStats || computeRealCornerStats(awayLast5List);
+  const finalHomeCorners: TeamCornerSummary | null =
+    homeCornerStats ||
+    computeRealCornerStats(homeLast5List) ||
+    ((prediction as any).homeCornerStats as TeamCornerSummary) ||
+    (prediction.cornerAnalysis
+      ? {
+          avgTotal: Number(prediction.cornerAnalysis.expectedTotalCorners.toFixed(1)),
+          avgFor: Number(prediction.cornerAnalysis.expectedHomeCorners.toFixed(1)),
+          avgAgainst: Number((prediction.cornerAnalysis.expectedTotalCorners - prediction.cornerAnalysis.expectedHomeCorners).toFixed(1)),
+          over85Rate: Math.round(((prediction.cornerAnalysis as any)?.probOver85Corners || 0.75) * 100),
+          over95Rate: Math.round(((prediction.cornerAnalysis as any)?.probOver95Corners || 0.6) * 100),
+          over105Rate: Math.round(((prediction.cornerAnalysis as any)?.probOver105Corners || 0.45) * 100),
+          history: homeLast5List.map((m) => m.totalCorners).filter((t): t is number => typeof t === "number"),
+        }
+      : null);
+
+  const finalAwayCorners: TeamCornerSummary | null =
+    awayCornerStats ||
+    computeRealCornerStats(awayLast5List) ||
+    ((prediction as any).awayCornerStats as TeamCornerSummary) ||
+    (prediction.cornerAnalysis
+      ? {
+          avgTotal: Number(prediction.cornerAnalysis.expectedTotalCorners.toFixed(1)),
+          avgFor: Number(prediction.cornerAnalysis.expectedAwayCorners.toFixed(1)),
+          avgAgainst: Number((prediction.cornerAnalysis.expectedTotalCorners - prediction.cornerAnalysis.expectedAwayCorners).toFixed(1)),
+          over85Rate: Math.round(((prediction.cornerAnalysis as any)?.probOver85Corners || 0.75) * 100),
+          over95Rate: Math.round(((prediction.cornerAnalysis as any)?.probOver95Corners || 0.6) * 100),
+          over105Rate: Math.round(((prediction.cornerAnalysis as any)?.probOver105Corners || 0.45) * 100),
+          history: awayLast5List.map((m) => m.totalCorners).filter((t): t is number => typeof t === "number"),
+        }
+      : null);
 
   const validH2HCorners = h2hList.filter(
-    (c) => c.totalCorners !== undefined && c.totalCorners !== null && c.homeCorners !== undefined && c.awayCorners !== undefined
+    (c) =>
+      (typeof c.totalCorners === "number" && !isNaN(c.totalCorners)) ||
+      (typeof c.homeCorners === "number" && !isNaN(c.homeCorners)) ||
+      Boolean(c.corners && c.corners.includes("Córner"))
   );
+
   const h2hCornerStats =
     validH2HCorners.length > 0
       ? {
           avgTotal:
-            Math.round((validH2HCorners.reduce((sum, c) => sum + (c.totalCorners || 0), 0) / validH2HCorners.length) * 10) / 10,
+            Math.round(
+              (validH2HCorners.reduce((sum, c) => sum + (c.totalCorners ?? ((c.homeCorners || 0) + (c.awayCorners || 0))), 0) /
+                validH2HCorners.length) *
+                10
+            ) / 10,
           avgHome:
-            Math.round((validH2HCorners.reduce((sum, c) => sum + (c.homeCorners || 0), 0) / validH2HCorners.length) * 10) / 10,
+            Math.round(
+              (validH2HCorners.reduce((sum, c) => sum + (c.homeCorners ?? Math.round((c.totalCorners || 0) / 2)), 0) /
+                validH2HCorners.length) *
+                10
+            ) / 10,
           avgAway:
-            Math.round((validH2HCorners.reduce((sum, c) => sum + (c.awayCorners || 0), 0) / validH2HCorners.length) * 10) / 10,
+            Math.round(
+              (validH2HCorners.reduce((sum, c) => sum + (c.awayCorners ?? Math.round((c.totalCorners || 0) / 2)), 0) /
+                validH2HCorners.length) *
+                10
+            ) / 10,
           over85Rate: Math.round(
-            (validH2HCorners.filter((c) => (c.totalCorners || 0) > 8.5).length / validH2HCorners.length) * 100
+            (validH2HCorners.filter((c) => (c.totalCorners ?? ((c.homeCorners || 0) + (c.awayCorners || 0))) > 8.5).length /
+              validH2HCorners.length) *
+              100
           ),
           count: validH2HCorners.length,
         }
