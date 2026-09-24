@@ -51,13 +51,13 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
         const data = await res.json();
 
         if (isMounted && data.success) {
-          if (Array.isArray(data.h2h)) setH2hList(data.h2h);
+          if (Array.isArray(data.h2h) && data.h2h.length > 0) setH2hList(data.h2h);
           if (Array.isArray(data.homeLast5) && data.homeLast5.length > 0) setHomeLast5List(data.homeLast5);
           if (Array.isArray(data.awayLast5) && data.awayLast5.length > 0) setAwayLast5List(data.awayLast5);
           if (data.homeElo) setHomeElo(data.homeElo);
           if (data.awayElo) setAwayElo(data.awayElo);
-          if (data.homeCornerStats !== undefined) setHomeCornerStats(data.homeCornerStats);
-          if (data.awayCornerStats !== undefined) setAwayCornerStats(data.awayCornerStats);
+          if (data.homeCornerStats) setHomeCornerStats(data.homeCornerStats);
+          if (data.awayCornerStats) setAwayCornerStats(data.awayCornerStats);
           setIsOfficialLoaded(Boolean(data.isOfficial));
         }
       } catch (err) {

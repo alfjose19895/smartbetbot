@@ -7,6 +7,24 @@ import {
   CornerSelectionResult
 } from "./corners-engine";
 export function isExcludedMatch(homeTeam?: string, awayTeam?: string, matchName?: string, kickoffDate?: string): boolean {
+  const normHome = (homeTeam || "").toLowerCase();
+  const normAway = (awayTeam || "").toLowerCase();
+  const normMatch = (matchName || "").toLowerCase();
+
+  // Permanently filter out any mock/test data
+  if (
+    normHome.includes("mock") ||
+    normAway.includes("mock") ||
+    normMatch.includes("mock") ||
+    normHome.includes("test home") ||
+    normAway.includes("test away") ||
+    normMatch.includes("mock test") ||
+    normHome.includes("sample team") ||
+    normAway.includes("sample team")
+  ) {
+    return true;
+  }
+
   // If a kickoff date is provided and it is NOT today's problematic date (2026-09-13), do NOT exclude (permit future matches)
   if (kickoffDate) {
     const d = kickoffDate.length >= 10 ? kickoffDate.substring(0, 10) : kickoffDate;
@@ -14,10 +32,6 @@ export function isExcludedMatch(homeTeam?: string, awayTeam?: string, matchName?
       return false;
     }
   }
-
-  const normHome = (homeTeam || "").toLowerCase();
-  const normAway = (awayTeam || "").toLowerCase();
-  const normMatch = (matchName || "").toLowerCase();
   const fullText = `${normHome} vs ${normAway} ${normMatch}`.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
   // Exclude today's specific problematic cards for 2026-09-13

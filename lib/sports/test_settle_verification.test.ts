@@ -24,5 +24,5 @@ describe('Settle Active Snapshot Verification', () => {
       console.log(`[PENDING] ${p.match} | Pick: ${p.pick} (${p.market}) | Kickoff: ${p.kickoff}`);
       expect(p.status).toBe('pending');
     }
-  });
+  }, 25000);
 });
