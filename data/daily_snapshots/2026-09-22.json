@@ -26,6 +26,18 @@
   {
     "h2h": [
       {
+        "date": "2026-09-22",
+        "homeTeam": "Inter Milano W",
+        "awayTeam": "Häcken W",
+        "score": "1 - 0",
+        "winner": "Inter Milano W",
+        "competition": "UEFA Champions League Women",
+        "homeCorners": 4,
+        "awayCorners": 1,
+        "totalCorners": 5,
+        "corners": "4 - 1 (5 Córners)"
+      },
+      {
         "date": "2025-11-19",
         "homeTeam": "Inter Milano W",
         "awayTeam": "Häcken W",
@@ -65,6 +77,21 @@
     "leagueId": 525,
     "timeSlot": "morning",
     "awayLast5": [
+      {
+        "date": "2026-09-22",
+        "opponent": "Inter Milano W",
+        "isHome": false,
+        "score": "0 - 1",
+        "result": "L",
+        "competition": "UEFA Champions League Women",
+        "teamCorners": 1,
+        "opponentCorners": 4,
+        "totalCorners": 5,
+        "corners": "1 - 4",
+        "over85Corners": false,
+        "over95Corners": false,
+        "over105Corners": false
+      },
       {
         "date": "2026-09-19",
         "opponent": "Eskilstuna United W",
@@ -117,26 +144,26 @@
         "over85Corners": true,
         "over95Corners": true,
         "over105Corners": true
-      },
-      {
-        "date": "2026-08-29",
-        "opponent": "Rosengård W",
-        "isHome": false,
-        "score": "1 - 0",
-        "result": "W",
-        "competition": "Damallsvenskan",
-        "teamCorners": 11,
-        "opponentCorners": 3,
-        "totalCorners": 14,
-        "corners": "11 - 3",
-        "over85Corners": true,
-        "over95Corners": true,
-        "over105Corners": true
       }
     ],
     "bookmaker": "Bet365",
     "fixtureId": 1638309,
     "homeLast5": [
+      {
+        "date": "2026-09-22",
+        "opponent": "Häcken W",
+        "isHome": true,
+        "score": "1 - 0",
+        "result": "W",
+        "competition": "UEFA Champions League Women",
+        "teamCorners": 4,
+        "opponentCorners": 1,
+        "totalCorners": 5,
+        "corners": "4 - 1",
+        "over85Corners": false,
+        "over95Corners": false,
+        "over105Corners": false
+      },
       {
         "date": "2026-09-12",
         "opponent": "Juventus W",
@@ -167,15 +194,14 @@
         "isHome": false,
         "score": "0 - 2",
         "result": "L",
-        "competition": "UEFA Champions League Women"
-      },
-      {
-        "date": "2026-08-21",
-        "opponent": "Parma W",
-        "isHome": false,
-        "score": "1 - 0",
-        "result": "W",
-        "competition": "Serie A Cup Women"
+        "competition": "UEFA Champions League Women",
+        "teamCorners": 0,
+        "opponentCorners": 0,
+        "totalCorners": 0,
+        "corners": "0 - 0",
+        "over85Corners": false,
+        "over95Corners": false,
+        "over105Corners": false
       }
     ],
     "isMcpPick": true,
@@ -194,10 +220,49 @@
     "probability": 71.5,
     "bookmakerOdds": 1.39,
     "expectedValue": -0.7,
-    "impliedProbability": 71.9
+    "impliedProbability": 71.9,
+    "homeCornerStats": {
+      "avgTotal": 2.5,
+      "avgFor": 2,
+      "avgAgainst": 0.5,
+      "over85Rate": 0,
+      "over95Rate": 0,
+      "over105Rate": 0,
+      "history": [
+        5,
+        0
+      ]
+    },
+    "awayCornerStats": {
+      "avgTotal": 10.5,
+      "avgFor": 7,
+      "avgAgainst": 3.5,
+      "over85Rate": 75,
+      "over95Rate": 75,
+      "over105Rate": 75,
+      "history": [
+        5,
+        11,
+        13,
+        13
+      ]
+    }
   },
   {
-    "h2h": [],
+    "h2h": [
+      {
+        "date": "2026-09-22",
+        "homeTeam": "Bayern Munich W",
+        "awayTeam": "Manchester City W",
+        "score": "2 - 2",
+        "winner": "Empate",
+        "competition": "UEFA Champions League Women",
+        "homeCorners": 1,
+        "awayCorners": 5,
+        "totalCorners": 6,
+        "corners": "1 - 5 (6 Córners)"
+      }
+    ],
     "edge": 1,
     "odds": 1.73,
     "pick": "Ambos Equipos Anotan",
@@ -221,6 +286,21 @@
     "leagueId": 525,
     "timeSlot": "morning",
     "awayLast5": [
+      {
+        "date": "2026-09-22",
+        "opponent": "Bayern Munich W",
+        "isHome": false,
+        "score": "2 - 2",
+        "result": "D",
+        "competition": "UEFA Champions League Women",
+        "teamCorners": 5,
+        "opponentCorners": 1,
+        "totalCorners": 6,
+        "corners": "5 - 1",
+        "over85Corners": false,
+        "over95Corners": false,
+        "over105Corners": false
+      },
       {
         "date": "2026-09-18",
         "opponent": "Liverpool W",
@@ -273,19 +353,26 @@
         "score": "4 - 0",
         "result": "W",
         "competition": "FA Women's Cup"
-      },
-      {
-        "date": "2026-05-16",
-        "opponent": "West Ham W",
-        "isHome": false,
-        "score": "4 - 1",
-        "result": "W",
-        "competition": "FA WSL"
       }
     ],
     "bookmaker": "Bet365",
     "fixtureId": 1638300,
     "homeLast5": [
+      {
+        "date": "2026-09-22",
+        "opponent": "Manchester City W",
+        "isHome": true,
+        "score": "2 - 2",
+        "result": "D",
+        "competition": "UEFA Champions League Women",
+        "teamCorners": 1,
+        "opponentCorners": 5,
+        "totalCorners": 6,
+        "corners": "1 - 5",
+        "over85Corners": false,
+        "over95Corners": false,
+        "over105Corners": false
+      },
       {
         "date": "2026-09-19",
         "opponent": "FC Koln W",
@@ -337,22 +424,14 @@
         "isHome": true,
         "score": "2 - 0",
         "result": "W",
-        "competition": "Frauen Bundesliga"
-      },
-      {
-        "date": "2026-08-21",
-        "opponent": "Union Berlin W",
-        "isHome": false,
-        "score": "4 - 1",
-        "result": "W",
         "competition": "Frauen Bundesliga",
-        "teamCorners": 7,
-        "opponentCorners": 5,
-        "totalCorners": 12,
-        "corners": "7 - 5",
+        "teamCorners": 8,
+        "opponentCorners": 1,
+        "totalCorners": 9,
+        "corners": "8 - 1",
         "over85Corners": true,
-        "over95Corners": true,
-        "over105Corners": true
+        "over95Corners": false,
+        "over105Corners": false
       }
     ],
     "isMcpPick": true,
@@ -371,10 +450,51 @@
     "probability": 58.3,
     "bookmakerOdds": 1.73,
     "expectedValue": 0.9,
-    "impliedProbability": 57.8
+    "impliedProbability": 57.8,
+    "homeCornerStats": {
+      "avgTotal": 6,
+      "avgFor": 4,
+      "avgAgainst": 2,
+      "over85Rate": 20,
+      "over95Rate": 0,
+      "over105Rate": 0,
+      "history": [
+        6,
+        4,
+        6,
+        5,
+        9
+      ]
+    },
+    "awayCornerStats": {
+      "avgTotal": 9.5,
+      "avgFor": 7.5,
+      "avgAgainst": 2,
+      "over85Rate": 75,
+      "over95Rate": 50,
+      "over105Rate": 50,
+      "history": [
+        6,
+        11,
+        9,
+        12
+      ]
+    }
   },
   {
     "h2h": [
+      {
+        "date": "2026-09-22",
+        "homeTeam": "Arsenal W",
+        "awayTeam": "Køge W",
+        "score": "1 - 0",
+        "winner": "Arsenal W",
+        "competition": "UEFA Champions League Women",
+        "homeCorners": 10,
+        "awayCorners": 1,
+        "totalCorners": 11,
+        "corners": "10 - 1 (11 Córners)"
+      },
       {
         "date": "2021-11-17",
         "homeTeam": "Arsenal W",
@@ -416,6 +536,21 @@
     "timeSlot": "afternoon",
     "awayLast5": [
       {
+        "date": "2026-09-22",
+        "opponent": "Arsenal W",
+        "isHome": false,
+        "score": "0 - 1",
+        "result": "L",
+        "competition": "UEFA Champions League Women",
+        "teamCorners": 1,
+        "opponentCorners": 10,
+        "totalCorners": 11,
+        "corners": "1 - 10",
+        "over85Corners": true,
+        "over95Corners": true,
+        "over105Corners": true
+      },
+      {
         "date": "2026-09-19",
         "opponent": "Midtjylland W",
         "isHome": true,
@@ -453,19 +588,26 @@
         "over85Corners": false,
         "over95Corners": false,
         "over105Corners": false
-      },
-      {
-        "date": "2026-08-29",
-        "opponent": "AGF W",
-        "isHome": false,
-        "score": "2 - 0",
-        "result": "W",
-        "competition": "Kvindeliga"
       }
     ],
     "bookmaker": "Bet365",
     "fixtureId": 1638288,
     "homeLast5": [
+      {
+        "date": "2026-09-22",
+        "opponent": "Køge W",
+        "isHome": true,
+        "score": "1 - 0",
+        "result": "W",
+        "competition": "UEFA Champions League Women",
+        "teamCorners": 10,
+        "opponentCorners": 1,
+        "totalCorners": 11,
+        "corners": "10 - 1",
+        "over85Corners": true,
+        "over95Corners": true,
+        "over105Corners": true
+      },
       {
         "date": "2026-09-19",
         "opponent": "Manchester United W",
@@ -518,21 +660,6 @@
         "score": "3 - 1",
         "result": "W",
         "competition": "FA WSL"
-      },
-      {
-        "date": "2026-05-13",
-        "opponent": "Everton W",
-        "isHome": true,
-        "score": "1 - 0",
-        "result": "W",
-        "competition": "FA WSL",
-        "teamCorners": 8,
-        "opponentCorners": 3,
-        "totalCorners": 11,
-        "corners": "8 - 3",
-        "over85Corners": true,
-        "over95Corners": true,
-        "over105Corners": true
       }
     ],
     "isMcpPick": true,
@@ -551,10 +678,48 @@
     "probability": 71.5,
     "bookmakerOdds": 1.41,
     "expectedValue": 0.8,
-    "impliedProbability": 70.9
+    "impliedProbability": 70.9,
+    "homeCornerStats": {
+      "avgTotal": 11.8,
+      "avgFor": 10.5,
+      "avgAgainst": 1.3,
+      "over85Rate": 100,
+      "over95Rate": 100,
+      "over105Rate": 75,
+      "history": [
+        11,
+        12,
+        14,
+        10
+      ]
+    },
+    "awayCornerStats": {
+      "avgTotal": 8.5,
+      "avgFor": 2,
+      "avgAgainst": 6.5,
+      "over85Rate": 50,
+      "over95Rate": 50,
+      "over105Rate": 50,
+      "history": [
+        11,
+        6
+      ]
+    }
   },
   {
     "h2h": [
+      {
+        "date": "2026-09-22",
+        "homeTeam": "Real Madrid W",
+        "awayTeam": "Paris Saint Germain W",
+        "score": "1 - 1",
+        "winner": "Empate",
+        "competition": "UEFA Champions League Women",
+        "homeCorners": 6,
+        "awayCorners": 4,
+        "totalCorners": 10,
+        "corners": "6 - 4 (10 Córners)"
+      },
       {
         "date": "2025-10-16",
         "homeTeam": "Paris Saint Germain W",
@@ -590,14 +755,6 @@
         "score": "0 - 2",
         "winner": "Paris Saint Germain W",
         "competition": "UEFA Champions League Women"
-      },
-      {
-        "date": "2021-11-09",
-        "homeTeam": "Paris Saint Germain W",
-        "awayTeam": "Real Madrid W",
-        "score": "4 - 0",
-        "winner": "Paris Saint Germain W",
-        "competition": "UEFA Champions League Women"
       }
     ],
     "edge": 1,
@@ -623,6 +780,21 @@
     "leagueId": 525,
     "timeSlot": "afternoon",
     "awayLast5": [
+      {
+        "date": "2026-09-22",
+        "opponent": "Real Madrid W",
+        "isHome": false,
+        "score": "1 - 1",
+        "result": "D",
+        "competition": "UEFA Champions League Women",
+        "teamCorners": 4,
+        "opponentCorners": 6,
+        "totalCorners": 10,
+        "corners": "4 - 6",
+        "over85Corners": true,
+        "over95Corners": true,
+        "over105Corners": false
+      },
       {
         "date": "2026-09-18",
         "opponent": "Nantes W",
@@ -682,19 +854,26 @@
         "over85Corners": false,
         "over95Corners": false,
         "over105Corners": false
-      },
-      {
-        "date": "2026-05-16",
-        "opponent": "Paris FC W",
-        "isHome": false,
-        "score": "0 - 1",
-        "result": "L",
-        "competition": "Feminine Division 1"
       }
     ],
     "bookmaker": "Bet365",
     "fixtureId": 1638331,
     "homeLast5": [
+      {
+        "date": "2026-09-22",
+        "opponent": "Paris Saint Germain W",
+        "isHome": true,
+        "score": "1 - 1",
+        "result": "D",
+        "competition": "UEFA Champions League Women",
+        "teamCorners": 6,
+        "opponentCorners": 4,
+        "totalCorners": 10,
+        "corners": "6 - 4",
+        "over85Corners": true,
+        "over95Corners": true,
+        "over105Corners": false
+      },
       {
         "date": "2026-09-19",
         "opponent": "Valencia W",
@@ -733,14 +912,6 @@
         "over85Corners": true,
         "over95Corners": true,
         "over105Corners": false
-      },
-      {
-        "date": "2026-08-30",
-        "opponent": "Atletico Madrid W",
-        "isHome": true,
-        "score": "3 - 2",
-        "result": "W",
-        "competition": "Primera División Femenina"
       }
     ],
     "isMcpPick": true,
@@ -759,10 +930,49 @@
     "probability": 64.7,
     "bookmakerOdds": 1.57,
     "expectedValue": 1.6,
-    "impliedProbability": 63.7
+    "impliedProbability": 63.7,
+    "homeCornerStats": {
+      "avgTotal": 10,
+      "avgFor": 7.5,
+      "avgAgainst": 2.5,
+      "over85Rate": 100,
+      "over95Rate": 100,
+      "over105Rate": 0,
+      "history": [
+        10,
+        10
+      ]
+    },
+    "awayCornerStats": {
+      "avgTotal": 7.2,
+      "avgFor": 4.6,
+      "avgAgainst": 2.6,
+      "over85Rate": 40,
+      "over95Rate": 40,
+      "over105Rate": 20,
+      "history": [
+        10,
+        11,
+        8,
+        7,
+        0
+      ]
+    }
   },
   {
     "h2h": [
+      {
+        "date": "2026-09-22",
+        "homeTeam": "Juventus W",
+        "awayTeam": "SL Benfica W",
+        "score": "1 - 2",
+        "winner": "SL Benfica W",
+        "competition": "UEFA Champions League Women",
+        "homeCorners": 6,
+        "awayCorners": 3,
+        "totalCorners": 9,
+        "corners": "6 - 3 (9 Córners)"
+      },
       {
         "date": "2025-10-07",
         "homeTeam": "Juventus W",
@@ -800,6 +1010,21 @@
     "timeSlot": "afternoon",
     "awayLast5": [
       {
+        "date": "2026-09-22",
+        "opponent": "Juventus W",
+        "isHome": false,
+        "score": "2 - 1",
+        "result": "W",
+        "competition": "UEFA Champions League Women",
+        "teamCorners": 3,
+        "opponentCorners": 6,
+        "totalCorners": 9,
+        "corners": "3 - 6",
+        "over85Corners": true,
+        "over95Corners": false,
+        "over105Corners": false
+      },
+      {
         "date": "2026-09-18",
         "opponent": "Rio Ave W",
         "isHome": false,
@@ -830,19 +1055,26 @@
         "score": "3 - 1",
         "result": "W",
         "competition": "1a Divisão - Women"
-      },
-      {
-        "date": "2026-04-25",
-        "opponent": "Sporting Braga W",
-        "isHome": false,
-        "score": "3 - 1",
-        "result": "W",
-        "competition": "1a Divisão - Women"
       }
     ],
     "bookmaker": "Bet365",
     "fixtureId": 1638310,
     "homeLast5": [
+      {
+        "date": "2026-09-22",
+        "opponent": "SL Benfica W",
+        "isHome": true,
+        "score": "1 - 2",
+        "result": "L",
+        "competition": "UEFA Champions League Women",
+        "teamCorners": 6,
+        "opponentCorners": 3,
+        "totalCorners": 9,
+        "corners": "6 - 3",
+        "over85Corners": true,
+        "over95Corners": false,
+        "over105Corners": false
+      },
       {
         "date": "2026-09-12",
         "opponent": "Inter Milano W",
@@ -881,21 +1113,6 @@
         "score": "1 - 0",
         "result": "W",
         "competition": "Serie A Cup Women"
-      },
-      {
-        "date": "2026-08-26",
-        "opponent": "St. Pölten W",
-        "isHome": false,
-        "score": "3 - 0",
-        "result": "W",
-        "competition": "UEFA Champions League Women",
-        "teamCorners": 0,
-        "opponentCorners": 0,
-        "totalCorners": 0,
-        "corners": "0 - 0",
-        "over85Corners": false,
-        "over95Corners": false,
-        "over105Corners": false
       }
     ],
     "isMcpPick": true,
@@ -914,17 +1131,56 @@
     "probability": 56.4,
     "bookmakerOdds": 1.77,
     "expectedValue": -0.2,
-    "impliedProbability": 56.5
+    "impliedProbability": 56.5,
+    "homeCornerStats": {
+      "avgTotal": 4.5,
+      "avgFor": 3,
+      "avgAgainst": 1.5,
+      "over85Rate": 50,
+      "over95Rate": 0,
+      "over105Rate": 0,
+      "history": [
+        9,
+        0
+      ]
+    },
+    "awayCornerStats": {
+      "avgTotal": 9,
+      "avgFor": 3,
+      "avgAgainst": 6,
+      "over85Rate": 100,
+      "over95Rate": 0,
+      "over105Rate": 0,
+      "history": [
+        9
+      ]
+    }
   },
   {
     "h2h": [
+      {
+        "date": "2026-09-22",
+        "homeTeam": "Independiente Medellin",
+        "awayTeam": "Jaguares",
+        "score": "2 - 1",
+        "winner": "Independiente Medellin",
+        "competition": "Primera A",
+        "homeCorners": 7,
+        "awayCorners": 3,
+        "totalCorners": 10,
+        "corners": "7 - 3 (10 Córners)"
+      },
       {
         "date": "2026-03-15",
         "homeTeam": "Jaguares",
         "awayTeam": "Independiente Medellin",
         "score": "1 - 2",
         "winner": "Independiente Medellin",
-        "competition": "Primera A"
+        "competition": "Primera A",
+        "homeCorners": 5,
+        "awayCorners": 8,
+        "totalCorners": 13,
+        "corners": "5 - 8 (13 Córners)"
       },
       {
         "date": "2025-08-07",
@@ -943,24 +1199,12 @@
         "competition": "Copa Colombia"
       },
       {
-        "date": "2024-10-28",
+        "date": "2024-10-29",
         "homeTeam": "Independiente Medellin",
         "awayTeam": "Jaguares",
         "score": "4 - 1",
         "winner": "Independiente Medellin",
         "competition": "Primera A"
-      },
-      {
-        "date": "2024-04-07",
-        "homeTeam": "Jaguares",
-        "awayTeam": "Independiente Medellin",
-        "score": "2 - 2",
-        "winner": "Empate",
-        "competition": "Primera A",
-        "homeCorners": 2,
-        "awayCorners": 8,
-        "totalCorners": 10,
-        "corners": "2 - 8 (10 Córners)"
       }
     ],
     "edge": 8.1,
@@ -987,20 +1231,49 @@
     "timeSlot": "night",
     "awayLast5": [
       {
+        "date": "2026-09-22",
+        "opponent": "Independiente Medellin",
+        "isHome": false,
+        "score": "1 - 2",
+        "result": "L",
+        "competition": "Primera A",
+        "teamCorners": 3,
+        "opponentCorners": 7,
+        "totalCorners": 10,
+        "corners": "3 - 7",
+        "over85Corners": true,
+        "over95Corners": true,
+        "over105Corners": false
+      },
+      {
         "date": "2026-09-11",
         "opponent": "Fortaleza FC",
         "isHome": true,
         "score": "2 - 2",
         "result": "D",
-        "competition": "Primera A"
+        "competition": "Primera A",
+        "teamCorners": 5,
+        "opponentCorners": 7,
+        "totalCorners": 12,
+        "corners": "5 - 7",
+        "over85Corners": true,
+        "over95Corners": true,
+        "over105Corners": true
       },
       {
-        "date": "2026-09-05",
+        "date": "2026-09-06",
         "opponent": "Junior",
         "isHome": false,
         "score": "3 - 3",
         "result": "D",
-        "competition": "Primera A"
+        "competition": "Primera A",
+        "teamCorners": 5,
+        "opponentCorners": 7,
+        "totalCorners": 12,
+        "corners": "5 - 7",
+        "over85Corners": true,
+        "over95Corners": true,
+        "over105Corners": true
       },
       {
         "date": "2026-08-29",
@@ -1031,28 +1304,28 @@
         "over85Corners": true,
         "over95Corners": true,
         "over105Corners": true
-      },
-      {
-        "date": "2026-08-09",
-        "opponent": "Once Caldas",
-        "isHome": true,
-        "score": "1 - 1",
-        "result": "D",
-        "competition": "Primera A",
-        "teamCorners": 2,
-        "opponentCorners": 5,
-        "totalCorners": 7,
-        "corners": "2 - 5",
-        "over85Corners": false,
-        "over95Corners": false,
-        "over105Corners": false
       }
     ],
     "bookmaker": "Bet365",
     "fixtureId": 1549790,
     "homeLast5": [
       {
-        "date": "2026-09-17",
+        "date": "2026-09-22",
+        "opponent": "Jaguares",
+        "isHome": true,
+        "score": "2 - 1",
+        "result": "W",
+        "competition": "Primera A",
+        "teamCorners": 7,
+        "opponentCorners": 3,
+        "totalCorners": 10,
+        "corners": "7 - 3",
+        "over85Corners": true,
+        "over95Corners": true,
+        "over105Corners": false
+      },
+      {
+        "date": "2026-09-18",
         "opponent": "Bucaramanga",
         "isHome": false,
         "score": "2 - 2",
@@ -1082,7 +1355,7 @@
         "over105Corners": false
       },
       {
-        "date": "2026-09-09",
+        "date": "2026-09-10",
         "opponent": "Deportivo Pasto",
         "isHome": false,
         "score": "4 - 1",
@@ -1090,7 +1363,7 @@
         "competition": "Copa Colombia"
       },
       {
-        "date": "2026-09-03",
+        "date": "2026-09-04",
         "opponent": "Deportivo Pereira",
         "isHome": false,
         "score": "3 - 0",
@@ -1100,21 +1373,6 @@
         "opponentCorners": 2,
         "totalCorners": 6,
         "corners": "4 - 2",
-        "over85Corners": false,
-        "over95Corners": false,
-        "over105Corners": false
-      },
-      {
-        "date": "2026-08-30",
-        "opponent": "Llaneros",
-        "isHome": true,
-        "score": "2 - 1",
-        "result": "W",
-        "competition": "Primera A",
-        "teamCorners": 2,
-        "opponentCorners": 5,
-        "totalCorners": 7,
-        "corners": "2 - 5",
         "over85Corners": false,
         "over95Corners": false,
         "over105Corners": false
@@ -1239,6 +1497,35 @@
       "expectedHomeCorners": 5.63,
       "expectedTotalCorners": 10.35
     },
-    "impliedProbability": 47.6
+    "impliedProbability": 47.6,
+    "homeCornerStats": {
+      "avgTotal": 7.8,
+      "avgFor": 5,
+      "avgAgainst": 2.8,
+      "over85Rate": 50,
+      "over95Rate": 25,
+      "over105Rate": 0,
+      "history": [
+        10,
+        9,
+        6,
+        6
+      ]
+    },
+    "awayCornerStats": {
+      "avgTotal": 13.2,
+      "avgFor": 4,
+      "avgAgainst": 9.2,
+      "over85Rate": 100,
+      "over95Rate": 100,
+      "over105Rate": 80,
+      "history": [
+        10,
+        12,
+        12,
+        17,
+        15
+      ]
+    }
   }
 ]

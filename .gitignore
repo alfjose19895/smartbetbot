@@ -40,3 +40,6 @@ supabase/.temp/
 # Data Caches
 data/h2h_cache/
 data/fixture_stats_cache/
+data/h2h_raw_cache/
+data/team_fixtures_cache/
+data/team_search_cache/

@@ -1,22 +1,7 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
-import {
-  MarketOpportunity,
-  H2HMatch,
-  TeamFormMatch,
-} from "@/lib/sports/prediction-engine";
+import { useState, useEffect } from "react";
+import { MarketOpportunity, H2HMatch, TeamFormMatch } from "@/lib/sports/prediction-engine";
 import { useLanguage } from "@/context/LanguageContext";
-
-interface TeamCornerSummary {
-  avgTotal: number;
-  avgFor: number;
-  avgAgainst: number;
-  over85Rate: number;
-  over95Rate: number;
-  over105Rate: number;
-  history: number[];
-}
+import { TeamCornerSummary } from "@/app/api/fixtures/h2h/route";
 
 interface MatchDetailModalProps {
   prediction: MarketOpportunity;
@@ -40,16 +25,18 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
   const [awayLast5List, setAwayLast5List] = useState<TeamFormMatch[]>(prediction.awayLast5 || []);
   const [homeElo, setHomeElo] = useState<number>(initialHomeElo);
   const [awayElo, setAwayElo] = useState<number>(initialAwayElo);
-  const [homeCornerStats, setHomeCornerStats] = useState<TeamCornerSummary | null>(null);
-  const [awayCornerStats, setAwayCornerStats] = useState<TeamCornerSummary | null>(null);
+  const [homeCornerStats, setHomeCornerStats] = useState<TeamCornerSummary | null>((prediction as any).homeCornerStats || null);
+  const [awayCornerStats, setAwayCornerStats] = useState<TeamCornerSummary | null>((prediction as any).awayCornerStats || null);
   const [loading, setLoading] = useState<boolean>(!(prediction.homeLast5 && prediction.homeLast5.length > 0));
-  const [isOfficialLoaded, setIsOfficialLoaded] = useState<boolean>(false);
+  const [isOfficialLoaded, setIsOfficialLoaded] = useState<boolean>(Boolean(prediction.homeLast5 && prediction.homeLast5.length > 0));
 
   useEffect(() => {
     let isMounted = true;
     const fetchOfficialH2H = async () => {
       try {
-        setLoading(true);
+        if (!prediction.homeLast5 || prediction.homeLast5.length === 0) {
+          setLoading(true);
+        }
         const params = new URLSearchParams({
           homeTeamId: String(prediction.homeTeamId || 0),
           awayTeamId: String(prediction.awayTeamId || 0),
@@ -120,6 +107,25 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
 
   const finalHomeCorners = homeCornerStats || computeRealCornerStats(homeLast5List);
   const finalAwayCorners = awayCornerStats || computeRealCornerStats(awayLast5List);
+
+  const validH2HCorners = h2hList.filter(
+    (c) => c.totalCorners !== undefined && c.totalCorners !== null && c.homeCorners !== undefined && c.awayCorners !== undefined
+  );
+  const h2hCornerStats =
+    validH2HCorners.length > 0
+      ? {
+          avgTotal:
+            Math.round((validH2HCorners.reduce((sum, c) => sum + (c.totalCorners || 0), 0) / validH2HCorners.length) * 10) / 10,
+          avgHome:
+            Math.round((validH2HCorners.reduce((sum, c) => sum + (c.homeCorners || 0), 0) / validH2HCorners.length) * 10) / 10,
+          avgAway:
+            Math.round((validH2HCorners.reduce((sum, c) => sum + (c.awayCorners || 0), 0) / validH2HCorners.length) * 10) / 10,
+          over85Rate: Math.round(
+            (validH2HCorners.filter((c) => (c.totalCorners || 0) > 8.5).length / validH2HCorners.length) * 100
+          ),
+          count: validH2HCorners.length,
+        }
+      : null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-3 sm:p-4 backdrop-blur-sm animate-fade-in">
@@ -243,7 +249,7 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-                      Enfrentamientos Directos Recientes
+                      Enfrentamientos Directos Recientes (H2H)
                     </h4>
                     {isOfficialLoaded && (
                       <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-black text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
@@ -252,9 +258,38 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
                     )}
                   </div>
 
+                  {/* H2H Corner Statistics Summary Banner */}
+                  {h2hCornerStats && (
+                    <div className="mb-3.5 rounded-2xl bg-gradient-to-r from-emerald-500/15 via-emerald-500/5 to-transparent p-3.5 border border-emerald-500/25 dark:border-emerald-500/30">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <div className="flex items-center gap-1.5 text-xs font-black text-emerald-800 dark:text-emerald-400 uppercase">
+                          <span>🚩</span>
+                          <span>Estadísticas de Córners en Cara a Cara (H2H)</span>
+                        </div>
+                        <span className="rounded-md bg-emerald-600 px-2 py-0.5 text-[10px] font-black text-white">
+                          {h2hCornerStats.over85Rate}% Over 8.5 Córners
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 mt-2 text-center">
+                        <div className="rounded-xl bg-white/80 dark:bg-slate-900/80 p-2 border border-emerald-200 dark:border-emerald-900/50">
+                          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold">Promedio Total H2H</div>
+                          <div className="text-sm font-black text-emerald-700 dark:text-emerald-400">🚩 {h2hCornerStats.avgTotal}</div>
+                        </div>
+                        <div className="rounded-xl bg-white/80 dark:bg-slate-900/80 p-2 border border-emerald-200 dark:border-emerald-900/50">
+                          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold">Prom. {prediction.homeTeam}</div>
+                          <div className="text-sm font-black text-slate-900 dark:text-white">{h2hCornerStats.avgHome}</div>
+                        </div>
+                        <div className="rounded-xl bg-white/80 dark:bg-slate-900/80 p-2 border border-emerald-200 dark:border-emerald-900/50">
+                          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold">Prom. {prediction.awayTeam}</div>
+                          <div className="text-sm font-black text-slate-900 dark:text-white">{h2hCornerStats.avgAway}</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {h2hList.length === 0 ? (
                     <div className="rounded-2xl border border-dashed border-slate-200 p-6 text-center text-xs text-slate-500 dark:border-slate-800">
-                      Sin enfrentamientos directos previos registrados en las bases de datos para estos dos equipos.
+                      Sin enfrentamientos directos previos registrados en las bases de datos oficiales para estos dos equipos.
                     </div>
                   ) : (
                     <div className="space-y-2.5">
@@ -331,6 +366,35 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
                       </button>
                     </div>
                   </div>
+
+                  {/* Home Team Corner Summary Banner */}
+                  {finalHomeCorners && (
+                    <div className="mb-3.5 rounded-2xl bg-gradient-to-r from-sky-500/10 via-emerald-500/5 to-transparent p-3.5 border border-sky-500/20 dark:border-sky-500/30">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <div className="flex items-center gap-1.5 text-xs font-black text-sky-900 dark:text-sky-300">
+                          <span>🚩</span>
+                          <span>Estadísticas de Córners - {prediction.homeTeam}</span>
+                        </div>
+                        <span className="rounded-md bg-emerald-600 px-2 py-0.5 text-[10px] font-black text-white">
+                          {finalHomeCorners.over85Rate}% Over 8.5
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 mt-2 text-center">
+                        <div className="rounded-xl bg-white/80 dark:bg-slate-900/80 p-2 border border-slate-200 dark:border-slate-800">
+                          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold">Promedio Total</div>
+                          <div className="text-sm font-black text-emerald-700 dark:text-emerald-400">🚩 {finalHomeCorners.avgTotal}</div>
+                        </div>
+                        <div className="rounded-xl bg-white/80 dark:bg-slate-900/80 p-2 border border-slate-200 dark:border-slate-800">
+                          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold">A Favor</div>
+                          <div className="text-sm font-black text-sky-700 dark:text-sky-400">{finalHomeCorners.avgFor}</div>
+                        </div>
+                        <div className="rounded-xl bg-white/80 dark:bg-slate-900/80 p-2 border border-slate-200 dark:border-slate-800">
+                          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold">En Contra</div>
+                          <div className="text-sm font-black text-rose-700 dark:text-rose-400">{finalHomeCorners.avgAgainst}</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {homeLast5List.length === 0 ? (
                     <div className="rounded-2xl border border-dashed border-slate-200 p-6 text-center text-xs text-slate-500 dark:border-slate-800">
@@ -422,6 +486,35 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
                     </div>
                   </div>
 
+                  {/* Away Team Corner Summary Banner */}
+                  {finalAwayCorners && (
+                    <div className="mb-3.5 rounded-2xl bg-gradient-to-r from-sky-500/10 via-emerald-500/5 to-transparent p-3.5 border border-sky-500/20 dark:border-sky-500/30">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <div className="flex items-center gap-1.5 text-xs font-black text-sky-900 dark:text-sky-300">
+                          <span>🚩</span>
+                          <span>Estadísticas de Córners - {prediction.awayTeam}</span>
+                        </div>
+                        <span className="rounded-md bg-emerald-600 px-2 py-0.5 text-[10px] font-black text-white">
+                          {finalAwayCorners.over85Rate}% Over 8.5
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 mt-2 text-center">
+                        <div className="rounded-xl bg-white/80 dark:bg-slate-900/80 p-2 border border-slate-200 dark:border-slate-800">
+                          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold">Promedio Total</div>
+                          <div className="text-sm font-black text-emerald-700 dark:text-emerald-400">🚩 {finalAwayCorners.avgTotal}</div>
+                        </div>
+                        <div className="rounded-xl bg-white/80 dark:bg-slate-900/80 p-2 border border-slate-200 dark:border-slate-800">
+                          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold">A Favor</div>
+                          <div className="text-sm font-black text-sky-700 dark:text-sky-400">{finalAwayCorners.avgFor}</div>
+                        </div>
+                        <div className="rounded-xl bg-white/80 dark:bg-slate-900/80 p-2 border border-slate-200 dark:border-slate-800">
+                          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold">En Contra</div>
+                          <div className="text-sm font-black text-rose-700 dark:text-rose-400">{finalAwayCorners.avgAgainst}</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {awayLast5List.length === 0 ? (
                     <div className="rounded-2xl border border-dashed border-slate-200 p-6 text-center text-xs text-slate-500 dark:border-slate-800">
                       Sin partidos previos recientes disponibles en la base de datos.
@@ -505,24 +598,25 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
                             </div>
                             <div className="rounded-xl bg-white p-2 border border-slate-200/80 dark:bg-slate-800/80 dark:border-slate-700">
                               <span className="text-slate-500 dark:text-slate-400 block text-[10px] font-bold">En Contra</span>
-                              <span className="text-rose-500 font-black text-xs">-{finalHomeCorners.avgAgainst}</span>
+                              <span className="text-rose-600 dark:text-rose-400 font-black text-xs">-{finalHomeCorners.avgAgainst}</span>
                             </div>
                             <div className="rounded-xl bg-white p-2 border border-slate-200/80 dark:bg-slate-800/80 dark:border-slate-700">
-                              <span className="text-slate-500 dark:text-slate-400 block text-[10px] font-bold">% Over 8.5</span>
-                              <span className="text-slate-900 dark:text-white font-black text-xs">{finalHomeCorners.over85Rate}%</span>
+                              <span className="text-slate-500 dark:text-slate-400 block text-[10px] font-bold">+8.5 Córn.</span>
+                              <span className="text-sky-600 dark:text-sky-400 font-black text-xs">{finalHomeCorners.over85Rate}%</span>
                             </div>
                           </div>
-                          {/* Corner Sequence Pills */}
-                          <div className="mt-3 flex items-center justify-between border-t border-slate-200/60 pt-2.5 dark:border-slate-800">
-                            <span className="text-[10px] font-bold text-slate-500">Historial real ({finalHomeCorners.history.length} partidos):</span>
-                            <div className="flex gap-1.5">
+
+                          <div className="mt-3 flex items-center justify-between text-[11px] font-bold text-slate-600 dark:text-slate-400">
+                            <span>Últimos 5 partidos (Total):</span>
+                            <div className="flex gap-1">
                               {finalHomeCorners.history.map((val, i) => (
                                 <span
                                   key={i}
-                                  className={`flex h-5 w-5 items-center justify-center rounded-md text-[10px] font-black text-white ${
-                                    val >= 10 ? "bg-emerald-600" : val >= 8 ? "bg-teal-600" : "bg-slate-500"
+                                  className={`rounded-md px-1.5 py-0.5 text-[10px] font-black ${
+                                    val > 8.5
+                                      ? "bg-emerald-500 text-white"
+                                      : "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300"
                                   }`}
-                                  title={`${val} córners reales`}
                                 >
                                   {val}
                                 </span>
@@ -531,9 +625,7 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
                           </div>
                         </>
                       ) : (
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2 italic">
-                          No se encontraron registros de córners para partidos previos de este equipo.
-                        </p>
+                        <p className="text-xs text-slate-500 mt-2">No hay suficientes partidos registrados con datos de córners.</p>
                       )}
                     </div>
 
@@ -544,7 +636,7 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
                           ✈️ {prediction.awayTeam}
                         </span>
                         {finalAwayCorners ? (
-                          <span className="rounded-lg bg-sky-100 px-2 py-0.5 text-[11px] font-black text-sky-800 dark:bg-sky-950 dark:text-sky-300">
+                          <span className="rounded-lg bg-emerald-100 px-2 py-0.5 text-[11px] font-black text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
                             {finalAwayCorners.avgTotal} Córn./part.
                           </span>
                         ) : (
@@ -560,24 +652,25 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
                             </div>
                             <div className="rounded-xl bg-white p-2 border border-slate-200/80 dark:bg-slate-800/80 dark:border-slate-700">
                               <span className="text-slate-500 dark:text-slate-400 block text-[10px] font-bold">En Contra</span>
-                              <span className="text-rose-500 font-black text-xs">-{finalAwayCorners.avgAgainst}</span>
+                              <span className="text-rose-600 dark:text-rose-400 font-black text-xs">-{finalAwayCorners.avgAgainst}</span>
                             </div>
                             <div className="rounded-xl bg-white p-2 border border-slate-200/80 dark:bg-slate-800/80 dark:border-slate-700">
-                              <span className="text-slate-500 dark:text-slate-400 block text-[10px] font-bold">% Over 8.5</span>
-                              <span className="text-slate-900 dark:text-white font-black text-xs">{finalAwayCorners.over85Rate}%</span>
+                              <span className="text-slate-500 dark:text-slate-400 block text-[10px] font-bold">+8.5 Córn.</span>
+                              <span className="text-sky-600 dark:text-sky-400 font-black text-xs">{finalAwayCorners.over85Rate}%</span>
                             </div>
                           </div>
-                          {/* Corner Sequence Pills */}
-                          <div className="mt-3 flex items-center justify-between border-t border-slate-200/60 pt-2.5 dark:border-slate-800">
-                            <span className="text-[10px] font-bold text-slate-500">Historial real ({finalAwayCorners.history.length} partidos):</span>
-                            <div className="flex gap-1.5">
+
+                          <div className="mt-3 flex items-center justify-between text-[11px] font-bold text-slate-600 dark:text-slate-400">
+                            <span>Últimos 5 partidos (Total):</span>
+                            <div className="flex gap-1">
                               {finalAwayCorners.history.map((val, i) => (
                                 <span
                                   key={i}
-                                  className={`flex h-5 w-5 items-center justify-center rounded-md text-[10px] font-black text-white ${
-                                    val >= 10 ? "bg-emerald-600" : val >= 8 ? "bg-teal-600" : "bg-slate-500"
+                                  className={`rounded-md px-1.5 py-0.5 text-[10px] font-black ${
+                                    val > 8.5
+                                      ? "bg-emerald-500 text-white"
+                                      : "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300"
                                   }`}
-                                  title={`${val} córners reales`}
                                 >
                                   {val}
                                 </span>
@@ -586,127 +679,132 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
                           </div>
                         </>
                       ) : (
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2 italic">
-                          No se encontraron registros de córners para partidos previos de este equipo.
-                        </p>
+                        <p className="text-xs text-slate-500 mt-2">No hay suficientes partidos registrados con datos de córners.</p>
                       )}
                     </div>
                   </div>
 
-                  {/* Corner View Team Filter Buttons */}
+                  {/* Team Corner Filter Selector */}
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                      Historial Real Partido a Partido
+                    <span className="text-xs font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                      Detalle de Partidos y Córners Reales
                     </span>
                     <div className="flex items-center gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-800/60">
                       <button
                         onClick={() => setCornerViewTeam("both")}
-                        className={`rounded-lg px-2.5 py-1 text-[10px] font-extrabold cursor-pointer transition ${
-                          cornerViewTeam === "both" ? "bg-white text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white" : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                        className={`rounded-lg px-2.5 py-1 text-[11px] font-extrabold cursor-pointer transition ${
+                          cornerViewTeam === "both"
+                            ? "bg-white text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white"
+                            : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
                         }`}
                       >
-                        Ambos
+                        Ambos Equipos
                       </button>
                       <button
                         onClick={() => setCornerViewTeam("home")}
-                        className={`rounded-lg px-2.5 py-1 text-[10px] font-extrabold cursor-pointer transition ${
-                          cornerViewTeam === "home" ? "bg-white text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white" : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                        className={`rounded-lg px-2.5 py-1 text-[11px] font-extrabold cursor-pointer transition ${
+                          cornerViewTeam === "home"
+                            ? "bg-white text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white"
+                            : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
                         }`}
                       >
-                        🏠 {prediction.homeTeam.split(" ")[0]}
+                        {prediction.homeTeam}
                       </button>
                       <button
                         onClick={() => setCornerViewTeam("away")}
-                        className={`rounded-lg px-2.5 py-1 text-[10px] font-extrabold cursor-pointer transition ${
-                          cornerViewTeam === "away" ? "bg-white text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white" : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                        className={`rounded-lg px-2.5 py-1 text-[11px] font-extrabold cursor-pointer transition ${
+                          cornerViewTeam === "away"
+                            ? "bg-white text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white"
+                            : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
                         }`}
                       >
-                        ✈️ {prediction.awayTeam.split(" ")[0]}
+                        {prediction.awayTeam}
                       </button>
                     </div>
                   </div>
 
-                  {/* Home Match Breakdown in Corners Tab */}
-                  {(cornerViewTeam === "both" || cornerViewTeam === "home") && (
-                    <div className="space-y-2">
-                      <span className="text-[11px] font-extrabold text-slate-600 dark:text-slate-400 block">
-                        🏠 {prediction.homeTeam} • Córners en sus partidos recientes:
-                      </span>
-                      {homeLast5List.map((m, idx) => (
-                        <div
-                          key={`home-c-${idx}`}
-                          className="flex items-center justify-between rounded-xl bg-slate-50 p-2.5 border border-slate-200 text-xs dark:bg-slate-900/80 dark:border-slate-800"
-                        >
-                          <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-bold text-slate-400 w-16">{m.date}</span>
-                            <span className="font-bold text-slate-800 dark:text-slate-200">
-                              {m.isHome ? `vs ${m.opponent}` : `@ ${m.opponent}`}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {m.totalCorners !== undefined && m.totalCorners !== null ? (
-                              <>
-                                <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-black text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
-                                  Favor: {m.teamCorners ?? 0} • Contra: {m.opponentCorners ?? 0}
-                                </span>
-                                <span className="rounded-lg bg-slate-200 px-2 py-0.5 font-black text-xs text-slate-900 dark:bg-slate-800 dark:text-white">
-                                  🚩 {m.totalCorners} Córners
-                                </span>
-                                {m.totalCorners > 8.5 && (
-                                  <span className="rounded-md bg-emerald-600 px-1.5 py-0.5 text-[9px] font-black text-white">
-                                    +8.5 ✓
+                  {/* Combined or Selected Match Corner Breakdown */}
+                  <div className="space-y-2">
+                    {(cornerViewTeam === "both" || cornerViewTeam === "home") && homeLast5List.length > 0 && (
+                      <div className="space-y-1.5">
+                        <span className="text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
+                          🏠 {prediction.homeTeam} - Secuencia de Córners Oficiales:
+                        </span>
+                        {homeLast5List.map((m, idx) => (
+                          <div
+                            key={`h-c-${idx}`}
+                            className="flex items-center justify-between rounded-xl bg-slate-50 p-2.5 border border-slate-200 text-xs dark:bg-slate-900/80 dark:border-slate-800"
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] font-bold text-slate-400 w-16">{m.date}</span>
+                              <span className="font-bold text-slate-800 dark:text-slate-200">
+                                {m.isHome ? `vs ${m.opponent}` : `@ ${m.opponent}`} ({m.score})
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {m.totalCorners !== undefined && m.totalCorners !== null ? (
+                                <>
+                                  <span className="rounded-md bg-sky-50 px-2 py-0.5 text-[11px] font-black text-sky-800 dark:bg-sky-950 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
+                                    Favor: {m.teamCorners ?? 0} • Contra: {m.opponentCorners ?? 0}
                                   </span>
-                                )}
-                              </>
-                            ) : (
-                              <span className="text-[10px] font-bold text-slate-400">Sin registro oficial</span>
-                            )}
+                                  <span className="rounded-lg bg-slate-200 px-2 py-0.5 font-black text-xs text-slate-900 dark:bg-slate-800 dark:text-white">
+                                    🚩 {m.totalCorners} Córners
+                                  </span>
+                                  {m.totalCorners > 8.5 && (
+                                    <span className="rounded-md bg-emerald-600 px-1.5 py-0.5 text-[9px] font-black text-white">
+                                      +8.5 ✓
+                                    </span>
+                                  )}
+                                </>
+                              ) : (
+                                <span className="text-[10px] font-bold text-slate-400">Sin registro oficial</span>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                        ))}
+                      </div>
+                    )}
 
-                  {/* Away Match Breakdown in Corners Tab */}
-                  {(cornerViewTeam === "both" || cornerViewTeam === "away") && (
-                    <div className="space-y-2">
-                      <span className="text-[11px] font-extrabold text-slate-600 dark:text-slate-400 block">
-                        ✈️ {prediction.awayTeam} • Córners en sus partidos recientes:
-                      </span>
-                      {awayLast5List.map((m, idx) => (
-                        <div
-                          key={`away-c-${idx}`}
-                          className="flex items-center justify-between rounded-xl bg-slate-50 p-2.5 border border-slate-200 text-xs dark:bg-slate-900/80 dark:border-slate-800"
-                        >
-                          <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-bold text-slate-400 w-16">{m.date}</span>
-                            <span className="font-bold text-slate-800 dark:text-slate-200">
-                              {m.isHome ? `vs ${m.opponent}` : `@ ${m.opponent}`}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {m.totalCorners !== undefined && m.totalCorners !== null ? (
-                              <>
-                                <span className="rounded-md bg-sky-50 px-2 py-0.5 text-[11px] font-black text-sky-800 dark:bg-sky-950 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
-                                  Favor: {m.teamCorners ?? 0} • Contra: {m.opponentCorners ?? 0}
-                                </span>
-                                <span className="rounded-lg bg-slate-200 px-2 py-0.5 font-black text-xs text-slate-900 dark:bg-slate-800 dark:text-white">
-                                  🚩 {m.totalCorners} Córners
-                                </span>
-                                {m.totalCorners > 8.5 && (
-                                  <span className="rounded-md bg-emerald-600 px-1.5 py-0.5 text-[9px] font-black text-white">
-                                    +8.5 ✓
+                    {(cornerViewTeam === "both" || cornerViewTeam === "away") && awayLast5List.length > 0 && (
+                      <div className="space-y-1.5 pt-2">
+                        <span className="text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
+                          ✈️ {prediction.awayTeam} - Secuencia de Córners Oficiales:
+                        </span>
+                        {awayLast5List.map((m, idx) => (
+                          <div
+                            key={`a-c-${idx}`}
+                            className="flex items-center justify-between rounded-xl bg-slate-50 p-2.5 border border-slate-200 text-xs dark:bg-slate-900/80 dark:border-slate-800"
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] font-bold text-slate-400 w-16">{m.date}</span>
+                              <span className="font-bold text-slate-800 dark:text-slate-200">
+                                {m.isHome ? `vs ${m.opponent}` : `@ ${m.opponent}`} ({m.score})
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {m.totalCorners !== undefined && m.totalCorners !== null ? (
+                                <>
+                                  <span className="rounded-md bg-sky-50 px-2 py-0.5 text-[11px] font-black text-sky-800 dark:bg-sky-950 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
+                                    Favor: {m.teamCorners ?? 0} • Contra: {m.opponentCorners ?? 0}
                                   </span>
-                                )}
-                              </>
-                            ) : (
-                              <span className="text-[10px] font-bold text-slate-400">Sin registro oficial</span>
-                            )}
+                                  <span className="rounded-lg bg-slate-200 px-2 py-0.5 font-black text-xs text-slate-900 dark:bg-slate-800 dark:text-white">
+                                    🚩 {m.totalCorners} Córners
+                                  </span>
+                                  {m.totalCorners > 8.5 && (
+                                    <span className="rounded-md bg-emerald-600 px-1.5 py-0.5 text-[9px] font-black text-white">
+                                      +8.5 ✓
+                                    </span>
+                                  )}
+                                </>
+                              ) : (
+                                <span className="text-[10px] font-bold text-slate-400">Sin registro oficial</span>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                        ))}
+                      </div>
+                    )}
+                  </div>
 
                   {/* H2H Corners List if available */}
                   {h2hList.some((c) => c.totalCorners !== undefined) && (
