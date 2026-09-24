@@ -51,13 +51,56 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
         const data = await res.json();
 
         if (isMounted && data.success) {
-          if (Array.isArray(data.h2h)) setH2hList(data.h2h);
-          if (Array.isArray(data.homeLast5) && data.homeLast5.length > 0) setHomeLast5List(data.homeLast5);
-          if (Array.isArray(data.awayLast5) && data.awayLast5.length > 0) setAwayLast5List(data.awayLast5);
+          if (Array.isArray(data.h2h) && data.h2h.length > 0) {
+            setH2hList((prevList) => {
+              return data.h2h.map((newItem: H2HMatch, i: number) => {
+                const existing = prevList[i] || (prediction.h2h || [])[i];
+                return {
+                  ...newItem,
+                  totalCorners: newItem.totalCorners ?? existing?.totalCorners,
+                  homeCorners: newItem.homeCorners ?? existing?.homeCorners,
+                  awayCorners: newItem.awayCorners ?? existing?.awayCorners,
+                  corners: newItem.corners ?? existing?.corners,
+                };
+              });
+            });
+          }
+          if (Array.isArray(data.homeLast5) && data.homeLast5.length > 0) {
+            setHomeLast5List((prevList) => {
+              return data.homeLast5.map((newItem: TeamFormMatch, i: number) => {
+                const existing = prevList[i] || (prediction.homeLast5 || [])[i];
+                return {
+                  ...newItem,
+                  totalCorners: newItem.totalCorners ?? existing?.totalCorners,
+                  teamCorners: newItem.teamCorners ?? existing?.teamCorners,
+                  opponentCorners: newItem.opponentCorners ?? existing?.opponentCorners,
+                  corners: newItem.corners ?? existing?.corners,
+                };
+              });
+            });
+          }
+          if (Array.isArray(data.awayLast5) && data.awayLast5.length > 0) {
+            setAwayLast5List((prevList) => {
+              return data.awayLast5.map((newItem: TeamFormMatch, i: number) => {
+                const existing = prevList[i] || (prediction.awayLast5 || [])[i];
+                return {
+                  ...newItem,
+                  totalCorners: newItem.totalCorners ?? existing?.totalCorners,
+                  teamCorners: newItem.teamCorners ?? existing?.teamCorners,
+                  opponentCorners: newItem.opponentCorners ?? existing?.opponentCorners,
+                  corners: newItem.corners ?? existing?.corners,
+                };
+              });
+            });
+          }
           if (data.homeElo) setHomeElo(data.homeElo);
           if (data.awayElo) setAwayElo(data.awayElo);
-          if (data.homeCornerStats !== undefined) setHomeCornerStats(data.homeCornerStats);
-          if (data.awayCornerStats !== undefined) setAwayCornerStats(data.awayCornerStats);
+          if (data.homeCornerStats && data.homeCornerStats.avgTotal > 0) {
+            setHomeCornerStats(data.homeCornerStats);
+          }
+          if (data.awayCornerStats && data.awayCornerStats.avgTotal > 0) {
+            setAwayCornerStats(data.awayCornerStats);
+          }
           setIsOfficialLoaded(Boolean(data.isOfficial));
         }
       } catch (err) {
@@ -71,7 +114,7 @@ export function MatchDetailModal({ prediction, onClose }: MatchDetailModalProps)
     return () => {
       isMounted = false;
     };
-  }, [prediction]);
+  }, [prediction.homeTeam, prediction.awayTeam, prediction.fixtureId]);
 
   const formattedDate = new Date(prediction.kickoff).toLocaleDateString("es-ES", {
     weekday: "long",

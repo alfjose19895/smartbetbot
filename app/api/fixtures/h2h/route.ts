@@ -331,7 +331,11 @@ export async function GET(request: NextRequest) {
     };
 
     // Save to Memory & Disk Cache if valid data exists
-    if (homeLast5.length > 0 || awayLast5.length > 0 || h2hMatches.length > 0) {
+    if (
+      (homeLast5.length > 0 || awayLast5.length > 0 || h2hMatches.length > 0) &&
+      (!homeCornerStats || homeCornerStats.avgTotal > 0) &&
+      (!awayCornerStats || awayCornerStats.avgTotal > 0)
+    ) {
       memoryH2HCache[cacheKey] = { timestamp: Date.now(), data: response };
       saveH2HToDisk(cacheKey, response);
     }
