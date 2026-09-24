@@ -461,10 +461,10 @@ class ApiFootballClient {
     return this.getTeamRecentFixtures(teamId, last, timezone);
   }
 
-  private teamSearchCache: Map<string, ApiFootballTeam | null> = new Map();
+    private teamSearchCache: Map<string, ApiFootballTeam | null> = new Map();
 
   async searchTeam(name: string, leagueOrCountry?: string): Promise<ApiFootballTeam | null> {
-    if (!name || name.trim().length < 3) return null;
+    if (!name || name.trim().length < 2) return null;
     const cleanKey = name.toLowerCase().trim();
     const isWomen = isWomenContext(name) || isWomenContext(leagueOrCountry);
     const isEurope = isEuropeanContext(leagueOrCountry);
@@ -474,7 +474,81 @@ class ApiFootballClient {
       return this.teamSearchCache.get(cacheKey)!;
     }
 
-    // 1. Normalize diacritics first (e.g. Häcken -> Hacken, São -> Sao, Atlético -> Atletico)
+    // Direct mapping for known international & key club teams
+    const normKey = cleanKey.replace(/^fc\s+/, "").replace(/\s+fc$/, "").trim();
+    const KNOWN_MAP: Record<string, { id: number; name: string; country: string }> = {
+      "norway": { id: 1090, name: "Norway", country: "Norway" },
+      "denmark": { id: 21, name: "Denmark", country: "Denmark" },
+      "portugal": { id: 27, name: "Portugal", country: "Portugal" },
+      "wales": { id: 767, name: "Wales", country: "Wales" },
+      "serbia": { id: 14, name: "Serbia", country: "Serbia" },
+      "greece": { id: 1117, name: "Greece", country: "Greece" },
+      "kosovo": { id: 1111, name: "Kosovo", country: "Kosovo" },
+      "rep. of ireland": { id: 776, name: "Rep. Of Ireland", country: "Ireland" },
+      "republic of ireland": { id: 776, name: "Rep. Of Ireland", country: "Ireland" },
+      "ireland": { id: 776, name: "Rep. Of Ireland", country: "Ireland" },
+      "northern ireland": { id: 771, name: "Northern Ireland", country: "Northern-Ireland" },
+      "austria": { id: 775, name: "Austria", country: "Austria" },
+      "israel": { id: 1116, name: "Israel", country: "Israel" },
+      "spain": { id: 9, name: "Spain", country: "Spain" },
+      "france": { id: 2, name: "France", country: "France" },
+      "germany": { id: 25, name: "Germany", country: "Germany" },
+      "netherlands": { id: 1118, name: "Netherlands", country: "Netherlands" },
+      "scotland": { id: 1108, name: "Scotland", country: "Scotland" },
+      "sweden": { id: 11, name: "Sweden", country: "Sweden" },
+      "italy": { id: 768, name: "Italy", country: "Italy" },
+      "england": { id: 10, name: "England", country: "England" },
+      "croatia": { id: 3, name: "Croatia", country: "Croatia" },
+      "belgium": { id: 1, name: "Belgium", country: "Belgium" },
+      "switzerland": { id: 15, name: "Switzerland", country: "Switzerland" },
+      "turkiye": { id: 1105, name: "Türkiye", country: "Turkey" },
+      "turkey": { id: 1105, name: "Turkey", country: "Turkey" },
+      "brazil": { id: 6, name: "Brazil", country: "Brazil" },
+      "argentina": { id: 26, name: "Argentina", country: "Argentina" },
+      "colombia": { id: 8, name: "Colombia", country: "Colombia" },
+      "mexico": { id: 16, name: "Mexico", country: "Mexico" },
+      "hacken w": { id: 16483, name: "Häcken W", country: "Sweden" },
+      "häcken w": { id: 16483, name: "Häcken W", country: "Sweden" },
+      "bk hacken": { id: 367, name: "BK Hacken", country: "Sweden" },
+      "bk häcken": { id: 367, name: "BK Hacken", country: "Sweden" },
+      "inter": { id: 505, name: "Inter", country: "Italy" },
+      "barcelona w": { id: 1918, name: "Barcelona W", country: "Spain" },
+      "real madrid w": { id: 4983, name: "Real Madrid W", country: "Spain" },
+      "chelsea w": { id: 4979, name: "Chelsea W", country: "England" },
+      "arsenal w": { id: 4980, name: "Arsenal W", country: "England" },
+      "manchester city w": { id: 4982, name: "Manchester City W", country: "England" },
+    };
+
+    if (KNOWN_MAP[cleanKey] || KNOWN_MAP[normKey]) {
+      const known = KNOWN_MAP[cleanKey] || KNOWN_MAP[normKey];
+      const match: ApiFootballTeam = {
+        id: known.id,
+        name: known.name,
+        code: known.name.substring(0, 3).toUpperCase(),
+        logo: `https://media.api-sports.io/football/teams/${known.id}.png`,
+        country: known.country,
+      };
+      this.teamSearchCache.set(cacheKey, match);
+      return match;
+    }
+
+    // 1. Try Exact Name match first via /teams?name=...
+    try {
+      const nameQueries = [name];
+      if (name.includes(" W")) nameQueries.push(name.replace(" W", " Women"));
+      if (name.includes(" Women")) nameQueries.push(name.replace(" Women", " W"));
+      
+      for (const q of nameQueries) {
+        const exactResults = await this.request<{ team: ApiFootballTeam; venue: any }>("teams", { name: q });
+        if (exactResults && exactResults.length > 0) {
+          const t = exactResults[0].team || exactResults[0];
+          this.teamSearchCache.set(cacheKey, t);
+          return t;
+        }
+      }
+    } catch {}
+
+    // 2. Normalize diacritics for substring / search queries
     const normalized = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     const sanitized = normalized.replace(/[^a-zA-Z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
     const searchWords = sanitized.toLowerCase().split(" ").filter((w) => w.length > 0);
