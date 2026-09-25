@@ -244,27 +244,18 @@ export function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
           existing.result === "LOST" ||
           Boolean(existing.actualScore);
 
-        if (isSettled) {
-          const updated = {
-            ...existing,
-            homeLogo: existing.homeLogo || p.homeLogo,
-            awayLogo: existing.awayLogo || p.awayLogo,
-            leagueLogo: existing.leagueLogo || p.leagueLogo,
-          };
-          mergedMap.set(key, updated);
-        } else {
-          const updated = {
-            ...existing,
-            status: p.status || existing.status || "pending",
-            actualScore: p.actualScore || existing.actualScore,
-            result: (p as any).result || (existing as any).result,
-            profit: typeof (p as any).profit === "number" ? (p as any).profit : (existing as any).profit,
-            homeLogo: existing.homeLogo || p.homeLogo,
-            awayLogo: existing.awayLogo || p.awayLogo,
-            leagueLogo: existing.leagueLogo || p.leagueLogo,
-          };
-          mergedMap.set(key, updated);
-        }
+        const updated = {
+          ...existing,
+          ...p,
+          status: p.status || existing.status || "pending",
+          actualScore: p.actualScore !== undefined ? p.actualScore : existing.actualScore,
+          result: (p as any).result !== undefined ? (p as any).result : (existing as any).result,
+          profit: typeof (p as any).profit === "number" ? (p as any).profit : (existing as any).profit,
+          homeLogo: p.homeLogo || existing.homeLogo,
+          awayLogo: p.awayLogo || existing.awayLogo,
+          leagueLogo: p.leagueLogo || existing.leagueLogo,
+        };
+        mergedMap.set(key, updated);
       } else {
         mergedMap.set(key, p);
       }
@@ -305,16 +296,14 @@ export function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
             const key = getOpportunityKey(lp);
             if (cloudMergedMap.has(key)) {
               const existing = cloudMergedMap.get(key)!;
-              const isSettled = existing.status === "won" || existing.status === "lost";
-              if (!isSettled) {
-                cloudMergedMap.set(key, {
-                  ...existing,
-                  status: lp.status || existing.status,
-                  actualScore: lp.actualScore || existing.actualScore,
-                  result: (lp as any).result || (existing as any).result,
-                  profit: typeof (lp as any).profit === "number" ? (lp as any).profit : (existing as any).profit,
-                });
-              }
+              cloudMergedMap.set(key, {
+                ...existing,
+                ...lp,
+                status: lp.status || existing.status,
+                actualScore: lp.actualScore !== undefined ? lp.actualScore : existing.actualScore,
+                result: (lp as any).result !== undefined ? (lp as any).result : (existing as any).result,
+                profit: typeof (lp as any).profit === "number" ? (lp as any).profit : (existing as any).profit,
+              });
             } else {
               cloudMergedMap.set(key, lp);
             }
@@ -520,7 +509,14 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string): Prom
 
       // 1. MATCH IS FULLY FINISHED (FT, AET, PEN) -> Evaluate market result and permanently settle
       if (scoreData && scoreData.isFinished && typeof scoreData.home === "number" && typeof scoreData.away === "number") {
+        const isCorner = (p.market || "").toLowerCase().includes("corner") || (p.market || "").toLowerCase().includes("córner");
         const cornerStat = p.fixtureId ? cornerStatsMap[Number(p.fixtureId)] : undefined;
+        
+        // If it is a corner pick and already settled with verified actual score and no new corner stats, preserve verified settlement!
+        if (isCorner && !cornerStat && (p.status === "won" || p.status === "lost") && p.actualScore) {
+          return p;
+        }
+
         const evaluation = evaluateMarketResult(p.market, scoreData.home, scoreData.away, {
           selection: p.selection,
           pick: p.pick,
@@ -926,11 +922,10 @@ export function evaluateMarketResult(
         homeCorners = typeof expHome === "number" ? Math.round(expHome) : Math.round(totalCorners * 0.55);
         awayCorners = totalCorners - homeCorners;
       } else {
-        // D) Fallback derived from match goals and tempo
-        const goalsCount = homeGoals + awayGoals;
-        totalCorners = goalsCount >= 3 ? 10 : (goalsCount >= 1 ? 9 : 8);
-        homeCorners = Math.round(totalCorners * 0.55);
-        awayCorners = totalCorners - homeCorners;
+        // Safe default: do not artificially invent winning corners from goals
+        homeCorners = typeof homeCorners === "number" ? homeCorners : 0;
+        awayCorners = typeof awayCorners === "number" ? awayCorners : 0;
+        totalCorners = homeCorners + awayCorners;
       }
     }
 
@@ -2260,6 +2255,48 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
       }
 
       const isPreSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST";
+
+      if (isPreSettled) {
+        const isWon = p.result === "LOST" || p.status === "lost"
+          ? false
+          : p.result === "WON" || p.status === "won";
+        const scoreText = p.actualScore || (isWon ? "Ganada" : "Perdida");
+        const matchKey = `${hNorm}-${aNorm}-${trueMatchDate}-${(p.market || '').toLowerCase().trim()}`;
+        if (!processedMatchKeys.has(matchKey)) {
+          processedMatchKeys.add(matchKey);
+          settledPicks.push({
+            id: p.id || `snapshot-settled-${hNorm}-${aNorm}-${trueMatchDate}-${p.market}`,
+            date: trueMatchDate,
+            kickoff: p.kickoff,
+            match: p.match,
+            homeTeam: p.homeTeam,
+            awayTeam: p.awayTeam,
+            homeLogo: p.homeLogo,
+            awayLogo: p.awayLogo,
+            score: scoreText,
+            league: p.league,
+            leagueLogo: p.leagueLogo,
+            country: p.country,
+            market: p.market,
+            selection: p.selection || p.market,
+            odds: p.odds,
+            fairOdds: p.fairOdds || Math.max(1.10, Math.round((100 / (p.probability || 60)) * 100) / 100),
+            edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
+            probability: p.probability,
+            confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
+            pickBadge: p.pickBadge,
+            matchTiming: isLiveMatch ? "live" : "prematch",
+            isLive: isLiveMatch,
+            isMcp: isMcpPick,
+            livePeriod: p.livePeriod,
+            liveMinute: p.liveMinute ? String(p.liveMinute) : undefined,
+            result: isWon ? "WON" : "LOST",
+            profit: isWon ? Math.round((p.odds - 1) * 100) / 100 : -1,
+            explanation: p.explanation,
+          });
+        }
+        continue;
+      }
 
       if (parsedHomeGoals !== null && parsedAwayGoals !== null) {
         const evaluation = evaluateMarketResult(p.market, parsedHomeGoals, parsedAwayGoals, {

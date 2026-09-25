@@ -503,7 +503,9 @@
       "expectedHomeCorners": 6.19,
       "expectedTotalCorners": 10.6
     },
-    "impliedProbability": 64.5
+    "impliedProbability": 64.5,
+    "result": "WON",
+    "profit": 0.73
   },
   {
     "h2h": [
