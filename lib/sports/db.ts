@@ -2147,8 +2147,17 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
     (d) => d >= HISTORY_START_DATE
   );
 
-  // 1. Fetch finished match scores from API-Football for ALL snapshot dates in Ecuador timezone
-  for (const dateStr of snapshotDates) {
+  // 1. Fetch finished match scores ONLY for dates that have pending/unsettled matches past kickoff
+  const datesNeedingSettlement = snapshotDates.filter((dateStr) => {
+    const picks = snapshots[dateStr] || [];
+    return picks.some((p) => {
+      const isSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore);
+      const pKick = p.kickoff ? new Date(p.kickoff).getTime() : 0;
+      return !isSettled && pKick <= nowMs;
+    });
+  });
+
+  for (const dateStr of datesNeedingSettlement) {
     try {
       const allFixtures = await apiFootball.getFixturesByDate(dateStr, "America/Guayaquil");
       if (Array.isArray(allFixtures)) {

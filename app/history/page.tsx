@@ -39,50 +39,31 @@ export default function HistoryPage() {
   const [customDate, setCustomDate] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    const fetchHistory = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch("/api/history");
-        const data = await res.json();
-        let items: HistoricalSettledPick[] = Array.isArray(data.history) ? [...data.history] : [];
-        try {
-          const localRaw = typeof window !== "undefined" ? localStorage.getItem("smartbetbot_published_picks") : null;
-          if (localRaw) {
-            const localPicks = JSON.parse(localRaw);
-            if (Array.isArray(localPicks)) {
-              for (const lp of localPicks) {
-                const found = items.find(
-                  (i) => i.match === `${lp.homeTeam} vs ${lp.awayTeam}` || (i.homeTeam === lp.homeTeam && i.awayTeam === lp.awayTeam)
-                );
-                if (found) {
-                  found.isMcp = true;
-                  found.pickBadge = lp.pickBadge || "mcp";
-                }
-              }
-            }
-          }
-        } catch {}
-        setHistoryItems(items);
-        if (data.parlays) {
-          setParlayItems(data.parlays);
-        }
-      } catch (err) {
-        console.error("Error fetching history:", err);
-      } finally {
-        setLoading(false);
+  const fetchHistory = async (showLoader = false) => {
+    try {
+      if (showLoader) setLoading(true);
+      const res = await fetch("/api/history");
+      const data = await res.json();
+      let items: HistoricalSettledPick[] = Array.isArray(data.history) ? [...data.history] : [];
+      setHistoryItems(items);
+      if (data.parlays) {
+        setParlayItems(data.parlays);
       }
-    };
+    } catch (err) {
+      console.error("Error fetching history:", err);
+    } finally {
+      if (showLoader) setLoading(false);
+    }
+  };
 
-    fetchHistory();
+  useEffect(() => {
+    fetchHistory(true);
     const handleUpdated = () => {
-      fetchHistory();
+      fetchHistory(false);
     };
     window.addEventListener("predictions-updated", handleUpdated);
-    window.addEventListener("storage", handleUpdated);
     return () => {
       window.removeEventListener("predictions-updated", handleUpdated);
-      window.removeEventListener("storage", handleUpdated);
     };
   }, []);
 

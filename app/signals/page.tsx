@@ -151,39 +151,28 @@ export default function SignalsPage() {
       .catch(() => {});
   }, []);
 
-  const fetchSignals = async () => {
+  const fetchSignals = async (showLoader = false) => {
     try {
-      setLoading(true);
+      if (showLoader) setLoading(true);
       const res = await fetch(`/api/signals?_t=${Date.now()}`, { cache: "no-store" });
       const json = await res.json();
-      const todayDateStr = getEcuadorDateString(Date.now());
       const serverSignals: MarketOpportunity[] = Array.isArray(json.signals)
         ? json.signals
         : [];
-
-      // Server is the single authoritative source of truth. Clean browser localStorage to eliminate stale cache.
-      if (typeof window !== "undefined") {
-        try {
-          localStorage.setItem(
-            "smartbetbot_published_picks",
-            JSON.stringify(serverSignals.filter((s) => s.isMcp || s.isMcpPick))
-          );
-        } catch {}
-      }
 
       const cleanUniqueSignals = deduplicatePicksList(serverSignals);
       setSignals(cleanUniqueSignals);
     } catch (err) {
       console.error("Error fetching signals:", err);
     } finally {
-      setLoading(false);
+      if (showLoader) setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchSignals();
+    fetchSignals(true);
     const handleUpdated = () => {
-      fetchSignals();
+      fetchSignals(false);
     };
     window.addEventListener("predictions-updated", handleUpdated);
     const handleNewAlertsDiscovered = (e: any) => {
@@ -193,11 +182,9 @@ export default function SignalsPage() {
       }
     };
     window.addEventListener("new-alerts-discovered", handleNewAlertsDiscovered);
-    window.addEventListener("storage", handleUpdated);
     return () => {
       window.removeEventListener("predictions-updated", handleUpdated);
       window.removeEventListener("new-alerts-discovered", handleNewAlertsDiscovered);
-      window.removeEventListener("storage", handleUpdated);
     };
   }, []);
 
