@@ -442,7 +442,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/5.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "actualScore": "6 - 4 (10 Córners)",
+    "actualScore": "10 - 2 (12 Córners)",
     "explanation": "Patrón de repliegue y rechaces: Portugal sostiene una alta cadencia de llegadas al último tercio generando tiros de esquina constantes, mientras que Wales concede más de 5.2 córners en promedio cuando juega de visitante. [Auditoría AI: Línea ultra conservadora (Over 6.5). Portugal proyecta amplitud constante con extremos y carrileros ofensivos ante un bloque bajo galés propenso a despejes laterales.]",
     "probability": 84.5,
     "bookmakerOdds": 1.35,
@@ -582,7 +582,8 @@
       ]
     },
     "result": "WON",
-    "profit": 0.35
+    "profit": 0.35,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -759,7 +760,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/5.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "actualScore": "6 - 5 (11 Córners)",
+    "actualScore": "2 - 6 (8 Córners)",
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.5 córners totales. [Auditoría AI: Serbia utiliza un esquema con carrileros que profundizan sistemáticamente por bandas, mientras Grecia defenderá replegada en área propia generando bloqueos y saques de esquina.]",
     "probability": 77.1,
     "bookmakerOdds": 1.52,
@@ -891,7 +892,8 @@
       ]
     },
     "result": "WON",
-    "profit": 0.52
+    "profit": 0.52,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -903,7 +905,7 @@
     "league": "UEFA Nations League",
     "market": "Córners",
     "source": "mcp",
-    "status": "won",
+    "status": "lost",
     "awayElo": 1509,
     "country": "Europa",
     "homeElo": 1581,
@@ -1068,7 +1070,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/5.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "actualScore": "6 - 4 (10 Córners)",
+    "actualScore": "1 - 0 (1 Córners)",
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.5 córners totales. [Auditoría AI: El estilo directo de la República de Irlanda enfocado en centros aéreos combinado con la verticalidad de Kosovo como local garantiza suficiente volumen por las bandas.]",
     "probability": 76.7,
     "bookmakerOdds": 1.48,
@@ -1201,7 +1203,8 @@
       ]
     },
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "h2h": [
@@ -1262,7 +1265,7 @@
     "league": "UEFA Nations League",
     "market": "Córners",
     "source": "mcp",
-    "status": "won",
+    "status": "lost",
     "awayElo": 1548,
     "country": "Europa",
     "homeElo": 1489,
@@ -1441,7 +1444,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/5.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "actualScore": "6 - 4 (10 Córners)",
+    "actualScore": "4 - 2 (6 Córners)",
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.4 córners totales. [Auditoría AI: El sistema de presión alta e intensidad tras pérdida de Austria ahoga la salida rival en su propio campo, forzando constantes córners a favor.]",
     "probability": 75.5,
     "bookmakerOdds": 1.5,
@@ -1576,7 +1579,8 @@
       ]
     },
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "h2h": [
@@ -2044,7 +2048,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/239.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "actualScore": "2 - 2 (4 Córners)",
+    "actualScore": "3 - 2 (5 Córners)",
     "explanation": "Volumen constante por las bandas: El cruce táctico entre Atletico Nacional (5.8 córners de media en casa) y Millonarios (4.6 foráneos) proyecta 10.4 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
     "probability": 56.4,
     "bookmakerOdds": 2.1,
@@ -2151,7 +2155,8 @@
       "expectedHomeCorners": 5.77,
       "expectedTotalCorners": 10.41
     },
-    "impliedProbability": 47.6
+    "impliedProbability": 47.6,
+    "matchTiming": "finished"
   },
   {
     "h2h": [

@@ -2276,7 +2276,11 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
           actualScore: p.actualScore || (p as any).score,
         });
 
-        const isWon = isPreSettled ? (p.status === "won" || (p as any).result === "WON") : evaluation.isWon;
+        const isWon = p.result === "LOST" || p.status === "lost"
+          ? false
+          : p.result === "WON" || p.status === "won"
+          ? true
+          : evaluation.isWon;
         const scoreText = p.actualScore || evaluation.actualScoreText;
         const matchKey = `${hNorm}-${aNorm}-${trueMatchDate}-${(p.market || '').toLowerCase().trim()}`;
         if (!processedMatchKeys.has(matchKey)) {
@@ -2316,7 +2320,9 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
       }
 
       if (isPreSettled) {
-        const isWon = p.status === "won" || (p as any).result === "WON";
+        const isWon = p.result === "LOST" || p.status === "lost"
+          ? false
+          : p.result === "WON" || p.status === "won";
         const scoreText = p.actualScore || (isWon ? "Ganada" : "Perdida");
         const matchKey = `${hNorm}-${aNorm}-${trueMatchDate}-${(p.market || '').toLowerCase().trim()}`;
         if (!processedMatchKeys.has(matchKey)) {
