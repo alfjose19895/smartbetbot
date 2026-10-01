@@ -15,7 +15,7 @@ interface NavbarProps {
 }
 
 const SPORTS_OPTIONS: Array<{
-  id: SupportedSport | "nfl_ncaaf";
+  id: SupportedSport | "nfl_ncaaf" | "all";
   label: string;
   icon: string;
   href: string;
@@ -23,20 +23,23 @@ const SPORTS_OPTIONS: Array<{
   activeMatches: (path: string) => boolean;
 }> = [
   {
+    id: "all",
+    label: "Todos los Deportes",
+    icon: "🌐",
+    href: "/dashboard",
+    activeMatches: (p) => p === "/dashboard" || p === "/",
+  },
+  {
     id: "football",
     label: "Fútbol",
     icon: "⚽",
-    href: "/dashboard",
+    href: "/sports/football",
     activeMatches: (p) =>
-      p === "/dashboard" ||
-      p === "/" ||
+      p === "/sports/football" ||
       p.startsWith("/signals") ||
       p.startsWith("/prematch") ||
       p.startsWith("/parlay") ||
-      p.startsWith("/history") ||
-      p.startsWith("/featured") ||
-      p.startsWith("/reports") ||
-      p.startsWith("/sports/football"),
+      p.startsWith("/featured"),
   },
   {
     id: "nhl",
@@ -144,17 +147,21 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
 
   const isSyncInProgress = syncing || localSyncing;
 
-  // Active sport detection (NHL, NBA, NFL or Football by default)
+  // Active sport detection (Default to General "all" if on dashboard or root)
   const currentSport =
-    SPORTS_OPTIONS.find((s) => s.id !== "football" && s.activeMatches(pathname)) || SPORTS_OPTIONS[0];
+    SPORTS_OPTIONS.find((s) => s.id !== "all" && s.activeMatches(pathname)) || SPORTS_OPTIONS[0];
 
-  
-
-  // Clean, focused essential navigation links adapted dynamically to current sport
+  // Dynamic navigation links adapted to current sport context with global Settings option
   const getSportHref = (type: "dashboard" | "signals" | "parlay" | "history" | "settings") => {
     if (type === "settings") return "/settings";
-    if (currentSport.id === "football") {
+    if (currentSport.id === "all") {
       if (type === "dashboard") return "/dashboard";
+      if (type === "signals") return "/signals";
+      if (type === "parlay") return "/parlay";
+      if (type === "history") return "/history";
+    }
+    if (currentSport.id === "football") {
+      if (type === "dashboard") return "/sports/football";
       if (type === "signals") return "/signals";
       if (type === "parlay") return "/parlay";
       if (type === "history") return "/history";
@@ -170,21 +177,22 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
       const [path, query] = href.split("?tab=");
       return pathname === path && currentTab === query;
     }
-    if (currentSport.id !== "football") {
+    if (currentSport.id !== "all" && currentSport.id !== "football") {
       return pathname === href && (!currentTab || currentTab === "dashboard");
     }
     return pathname === href;
   };
 
   const essentialNavLinks = [
-    { href: getSportHref("dashboard"), label: t("navDashboard"), icon: "📊" },
+    { href: getSportHref("dashboard"), label: currentSport.id === "all" ? "Dashboard General" : t("navDashboard"), icon: "📊" },
     { href: getSportHref("signals"), label: language === "es" ? "Pre-Match" : "Pre-Match", icon: "📋" },
     { href: getSportHref("parlay"), label: t("navParlay"), icon: "🎲" },
     { href: getSportHref("history"), label: t("navHistory"), icon: "📜" },
+    { href: "/settings", label: t("navSettings"), icon: "⚙️" },
   ];
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-950/95 transition-colors">
+    <header className="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950/95 backdrop-blur-md transition-colors">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-3 sm:px-6 py-2.5 sm:py-3 gap-2 sm:gap-4">
         
         {/* Left: Brand Logo & Sport Selector */}
@@ -194,11 +202,11 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
               🎯
             </span>
             <div className="flex flex-col">
-              <span className="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-white leading-none">
-                Smart<span className="text-emerald-600 dark:text-emerald-400">Bet</span>Bot
+              <span className="text-base sm:text-lg font-black tracking-tight text-white leading-none">
+                Smart<span className="text-emerald-400">Bet</span>Bot
               </span>
               {currentRole && (
-                <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mt-0.5 leading-none">
+                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-0.5 leading-none">
                   {currentRole === "admin" ? `👑 ${t("navAdminRole")}` : `🎯 ${t("navBettor")}`}
                 </span>
               )}
@@ -209,7 +217,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
           <div className="relative hidden md:block" ref={dropdownRef}>
             <button
               onClick={() => setSportDropdownOpen(!sportDropdownOpen)}
-              className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-black text-slate-900 shadow-xs hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-800 dark:hover:text-emerald-400 transition cursor-pointer"
+              className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs font-black text-white shadow-xs hover:bg-slate-800 hover:text-emerald-400 transition cursor-pointer"
               title="Cambiar Deporte"
             >
               <span className="text-base">{currentSport.icon}</span>
@@ -223,8 +231,8 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
             </button>
 
             {sportDropdownOpen && (
-              <div className="absolute left-0 top-full mt-1.5 w-56 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
-                <div className="px-2 py-1 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+              <div className="absolute left-0 top-full mt-1.5 w-60 rounded-2xl border border-slate-800 bg-slate-900 p-2 shadow-2xl backdrop-blur-xl z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+                <div className="px-2 py-1 text-[10px] font-black uppercase tracking-wider text-slate-500">
                   Seleccionar Deporte
                 </div>
                 {SPORTS_OPTIONS.map((sport) => {
@@ -236,8 +244,8 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
                       onClick={() => setSportDropdownOpen(false)}
                       className={`flex items-center justify-between rounded-xl px-3 py-2 text-xs font-bold transition ${
                         isSelected
-                          ? "bg-emerald-500/15 text-emerald-800 border border-emerald-500/30 dark:bg-emerald-950/80 dark:text-emerald-300 font-black"
-                          : "text-slate-700 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
+                          ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-black"
+                          : "text-slate-300 hover:bg-slate-800 hover:text-white"
                       }`}
                     >
                       <div className="flex items-center gap-2">
@@ -249,7 +257,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
                           {sport.badge}
                         </span>
                       ) : isSelected ? (
-                        <span className="text-xs text-emerald-500">✓</span>
+                        <span className="text-xs text-emerald-400">✓</span>
                       ) : null}
                     </Link>
                   );
@@ -269,8 +277,8 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
                 href={link.href}
                 className={`px-3 py-1.5 rounded-xl text-xs font-black whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 ${
                   isActive
-                    ? "bg-emerald-50 text-emerald-800 border border-emerald-300 shadow-xs dark:bg-emerald-950/70 dark:text-emerald-300 dark:border-emerald-500/30"
-                    : "text-slate-700 hover:text-slate-950 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-900"
+                    ? "bg-emerald-950/70 text-emerald-300 border border-emerald-500/30 shadow-xs"
+                    : "text-slate-300 hover:text-white hover:bg-slate-900"
                 }`}
               >
                 <span>{link.icon}</span>
@@ -279,16 +287,14 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
             );
           })}
 
-
-
           {/* Admin Dashboard shortcut */}
           {currentRole === "admin" && (
             <Link
               href="/admin"
               className={`hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black whitespace-nowrap transition cursor-pointer ${
-                pathname === "/admin" && (typeof window === "undefined" || !window.location.search.includes("mcp"))
+                pathname === "/admin"
                   ? "bg-purple-600 text-white shadow-xs"
-                  : "text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300"
+                  : "text-purple-400 hover:text-purple-300 hover:bg-purple-950/40"
               }`}
             >
               <span>👑</span>
@@ -304,7 +310,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
             <button
               onClick={handleAdminSync}
               disabled={isSyncInProgress}
-              className="hidden sm:inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs font-black text-emerald-700 transition hover:bg-emerald-500/20 dark:text-emerald-400 cursor-pointer disabled:opacity-50 whitespace-nowrap shadow-xs"
+              className="hidden sm:inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs font-black text-emerald-400 transition hover:bg-emerald-500/20 cursor-pointer disabled:opacity-50 whitespace-nowrap shadow-xs"
               title="Sincronizar y auditar partidos de hoy"
             >
               <span className={isSyncInProgress ? "animate-spin" : ""}>⚡</span>
@@ -312,20 +318,11 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
             </button>
           )}
 
-          {/* Settings Button (Desktop quick shortcut) */}
-          <Link
-            href="/settings"
-            className="hidden md:flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-700 shadow-xs transition-all hover:border-emerald-500 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 cursor-pointer"
-            title="Ajustes, Tema, Idioma y Alertas Push"
-          >
-            ⚙️
-          </Link>
-
           {/* Logout Button (Desktop) */}
           <button
             onClick={handleLogout}
             disabled={loggingOut}
-            className="hidden md:flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 shadow-xs hover:border-red-300 hover:bg-red-50 hover:text-red-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-red-900/60 dark:hover:bg-red-950/40 dark:hover:text-red-400 transition cursor-pointer"
+            className="hidden md:flex items-center gap-1.5 rounded-xl border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs font-bold text-slate-300 shadow-xs hover:border-red-900/60 hover:bg-red-950/40 hover:text-red-400 transition cursor-pointer"
             title={t("navLogout")}
           >
             <span>⎋</span>
@@ -336,7 +333,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Abrir menú"
-            className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-800 shadow-xs lg:hidden dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 cursor-pointer"
+            className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl border border-slate-800 bg-slate-900 text-slate-200 shadow-xs lg:hidden cursor-pointer"
           >
             <span className="text-base font-bold">{mobileMenuOpen ? "✕" : "☰"}</span>
           </button>
@@ -345,14 +342,14 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
 
       {/* Mobile Menu Drawer */}
       {mobileMenuOpen && (
-        <div className="border-t border-slate-200 bg-white/98 px-4 py-4 shadow-2xl backdrop-blur-xl lg:hidden dark:border-slate-800 dark:bg-slate-950/98 animate-in fade-in slide-in-from-top-2 duration-150">
+        <div className="border-t border-slate-800 bg-slate-950/98 px-4 py-4 shadow-2xl backdrop-blur-xl lg:hidden animate-in fade-in slide-in-from-top-2 duration-150">
           {/* User Info */}
           {currentEmail && (
-            <div className="mb-3 flex items-center justify-between border-b border-slate-200 pb-2.5 text-xs text-slate-600 dark:border-slate-800 dark:text-slate-400">
+            <div className="mb-3 flex items-center justify-between border-b border-slate-800 pb-2.5 text-xs text-slate-400">
               <div className="truncate mr-2">
-                Usuario: <span className="font-bold text-slate-900 dark:text-white">{currentEmail}</span>
+                Usuario: <span className="font-bold text-white">{currentEmail}</span>
               </div>
-              <span className="rounded-md bg-emerald-100 px-2 py-0.5 text-[10px] font-extrabold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400 shrink-0">
+              <span className="rounded-md bg-emerald-950 px-2 py-0.5 text-[10px] font-extrabold text-emerald-400 shrink-0">
                 {currentRole === "admin" ? t("navAdminRole") : t("navBettor")}
               </span>
             </div>
@@ -360,7 +357,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
 
           {/* Sport Selector in Mobile */}
           <div className="mb-4">
-            <div className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">
+            <div className="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-2">
               🏆 Seleccionar Deporte
             </div>
             <div className="grid grid-cols-2 gap-2">
@@ -373,8 +370,8 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
                     onClick={() => setMobileMenuOpen(false)}
                     className={`flex items-center gap-2 rounded-xl p-2.5 text-xs font-bold transition ${
                       isSelected
-                        ? "bg-emerald-500/15 text-emerald-800 border border-emerald-400/40 dark:bg-emerald-950/80 dark:text-emerald-300 font-black"
-                        : "bg-slate-50 text-slate-800 border border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800"
+                        ? "bg-emerald-950/80 text-emerald-300 border border-emerald-400/40 font-black"
+                        : "bg-slate-900 text-slate-300 border border-slate-800"
                     }`}
                   >
                     <span className="text-base">{sport.icon}</span>
@@ -391,7 +388,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
           </div>
 
           {/* Navigation Links Grid (Mobile) */}
-          <div className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">
+          <div className="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-2">
             🧭 Navegación ({currentSport.label})
           </div>
           <nav className="grid grid-cols-2 gap-2">
@@ -404,8 +401,8 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
                   onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center gap-2 rounded-xl p-3 text-xs font-bold transition ${
                     isActive
-                      ? "bg-emerald-50 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-500/30 font-black"
-                      : "bg-slate-50 text-slate-800 hover:bg-slate-100 border border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800"
+                      ? "bg-emerald-950/50 text-emerald-400 border border-emerald-500/30 font-black"
+                      : "bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800"
                   }`}
                 >
                   <span className="text-base">{link.icon}</span>
@@ -418,7 +415,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
               <Link
                 href="/admin"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-2 rounded-xl p-3 text-xs font-bold bg-purple-50 text-purple-900 border border-purple-200 dark:bg-purple-950/50 dark:text-purple-300 dark:border-purple-800 col-span-2"
+                className="flex items-center gap-2 rounded-xl p-3 text-xs font-bold bg-purple-950/50 text-purple-300 border border-purple-800 col-span-2"
               >
                 <span className="text-base">👑</span>
                 <span>Panel de Administración</span>
@@ -427,11 +424,11 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
           </nav>
 
           {/* Full-width Mobile Logout Button */}
-          <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800">
+          <div className="mt-4 pt-3 border-t border-slate-800">
             <button
               onClick={handleLogout}
               disabled={loggingOut}
-              className="w-full flex items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 py-2.5 text-xs font-bold text-red-700 dark:border-red-900 dark:bg-red-950/60 dark:text-red-300 cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 rounded-xl border border-red-900 bg-red-950/60 py-2.5 text-xs font-bold text-red-300 cursor-pointer"
             >
               <span className="text-sm font-bold">⎋</span>
               <span>{loggingOut ? "..." : t("navLogout")}</span>

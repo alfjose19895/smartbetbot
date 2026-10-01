@@ -29,9 +29,9 @@ export const MultiSportDashboardCards: React.FC<MultiSportDashboardCardsProps> =
           smartPickText: footballSmartPick
             ? `${footballSmartPick.homeTeam} (${footballSmartPick.market})`
             : null,
-          href: '/signals',
+          href: '/sports/football',
           statusBadge: 'ACTIVO',
-          statusColor: 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border-emerald-500/30',
+          statusColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
         };
       case 'nhl':
         return {
@@ -41,31 +41,31 @@ export const MultiSportDashboardCards: React.FC<MultiSportDashboardCardsProps> =
             : null,
           href: '/sports/nhl',
           statusBadge: 'ACTIVO',
-          statusColor: 'bg-cyan-500/20 text-cyan-700 dark:text-cyan-400 border-cyan-500/30',
+          statusColor: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
         };
       case 'nba':
         return {
           signalsCount: 0,
           smartPickText: null,
           href: '/sports/nba',
-          statusBadge: 'EN VIVO',
-          statusColor: 'bg-orange-500/20 text-orange-700 dark:text-orange-400 border-orange-500/30',
+          statusBadge: 'CALIBRANDO',
+          statusColor: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
         };
       case 'nfl':
         return {
           signalsCount: 0,
           smartPickText: null,
           href: '/sports/nfl',
-          statusBadge: 'PRONTO',
-          statusColor: 'bg-indigo-500/20 text-indigo-700 dark:text-indigo-400 border-indigo-500/30',
+          statusBadge: 'CALIBRANDO',
+          statusColor: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30',
         };
       case 'ncaaf':
         return {
           signalsCount: 0,
           smartPickText: null,
           href: '/sports/ncaaf',
-          statusBadge: 'PRONTO',
-          statusColor: 'bg-purple-500/20 text-purple-700 dark:text-purple-400 border-purple-500/30',
+          statusBadge: 'CALIBRANDO',
+          statusColor: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
         };
       default:
         return {
@@ -73,7 +73,7 @@ export const MultiSportDashboardCards: React.FC<MultiSportDashboardCardsProps> =
           smartPickText: null,
           href: `/sports/${sportId}`,
           statusBadge: 'ACTIVO',
-          statusColor: 'bg-slate-500/20 text-slate-700 dark:text-slate-400 border-slate-500/30',
+          statusColor: 'bg-slate-500/20 text-slate-400 border-slate-500/30',
         };
     }
   };
@@ -82,15 +82,15 @@ export const MultiSportDashboardCards: React.FC<MultiSportDashboardCardsProps> =
     <section className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-base font-black border border-emerald-500/20">
+          <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 text-base font-black border border-emerald-500/20">
             🏆
           </span>
           <div>
-            <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
-              Deportes Disponibles & Cobertura IA
+            <h2 className="text-lg sm:text-xl font-black text-white">
+              Hub de Deportes & Cobertura IA
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Modelos cuantitativos e inteligencia artificial aplicada por disciplina deportiva
+            <p className="text-xs text-slate-400">
+              Acceso directo a las suites especializadas con modelos cuantitativos por disciplina deportiva
             </p>
           </div>
         </div>
@@ -103,7 +103,7 @@ export const MultiSportDashboardCards: React.FC<MultiSportDashboardCardsProps> =
           return (
             <div
               key={sport.id}
-              className="bg-white dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between shadow-xs hover:border-emerald-500/40 dark:hover:border-emerald-500/30 transition group"
+              className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between shadow-xs hover:border-emerald-500/40 transition group"
             >
               <div>
                 <div className="flex items-center justify-between mb-2">
@@ -113,40 +113,40 @@ export const MultiSportDashboardCards: React.FC<MultiSportDashboardCardsProps> =
                   </span>
                 </div>
 
-                <h3 className="text-sm font-black text-slate-900 dark:text-white">
+                <h3 className="text-sm font-black text-white">
                   {sport.displayName}
                 </h3>
 
                 <div className="mt-2.5 space-y-1">
-                  <div className="text-[11px] text-slate-600 dark:text-slate-400">
-                    Señales de hoy:{' '}
-                    <strong className="text-slate-900 dark:text-white font-bold">
-                      {signalsCount > 0 ? `${signalsCount} activas` : '0 disponibles'}
+                  <div className="text-[11px] text-slate-400">
+                    Señales de hoy:{" "}
+                    <strong className="text-white font-bold">
+                      {signalsCount > 0 ? `${signalsCount} activas` : "0 disponibles"}
                     </strong>
                   </div>
 
-                  <div className="text-[11px] text-slate-500 dark:text-slate-400 min-h-[1.5rem]">
+                  <div className="text-[11px] text-slate-400 min-h-[1.5rem]">
                     {smartPickText ? (
-                      <span className="text-amber-500 dark:text-amber-400 font-semibold flex items-center gap-1 truncate">
+                      <span className="text-amber-400 font-semibold flex items-center gap-1 truncate">
                         <span>⭐</span> <span className="truncate">{smartPickText}</span>
                       </span>
                     ) : (
-                      <span className="italic text-[10px] text-slate-400 dark:text-slate-500">
-                        {sport.id === 'football' || sport.id === 'nhl'
-                          ? 'Calculando señales de valor...'
-                          : 'Próxima jornada en proceso.'}
+                      <span className="italic text-[10px] text-slate-500">
+                        {sport.id === "football" || sport.id === "nhl"
+                          ? "Calculando oportunidades +EV..."
+                          : "Temporada en calibración."}
                       </span>
                     )}
                   </div>
                 </div>
               </div>
 
-              <div className="pt-3.5 mt-3 border-t border-slate-100 dark:border-slate-800/60">
+              <div className="pt-3.5 mt-3 border-t border-slate-800">
                 <Link
                   href={href}
-                  className="w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-emerald-500 hover:text-slate-950 text-slate-800 dark:bg-slate-800 dark:hover:bg-emerald-500 dark:hover:text-slate-950 dark:text-slate-200 text-xs font-black transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                  className="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-emerald-500 hover:text-slate-950 text-slate-200 text-xs font-black transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                 >
-                  <span>EXPLORAR</span>
+                  <span>ENTRAR A LA SUITE</span>
                   <span className="group-hover:translate-x-0.5 transition-transform">→</span>
                 </Link>
               </div>
