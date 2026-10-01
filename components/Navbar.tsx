@@ -133,7 +133,8 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
   };
 
   const navLinks: NavLinkItem[] = [
-    { href: "/dashboard", label: t("navDashboard"), icon: "📊", subtitle: language === "es" ? "Resumen y pronósticos cuantitativos" : "Overview & quantitative predictions" },
+    { href: "/dashboard", label: t("navDashboard"), icon: "📊", subtitle: language === "es" ? "Resumen y pronósticos de fútbol" : "Overview & football predictions" },
+    { href: "/sports/nhl", label: language === "es" ? "🏒 NHL Hockey" : "🏒 NHL Hockey", icon: "🏒", subtitle: language === "es" ? "Pronósticos cuantitativos, xG y Puck Line" : "NHL quantitative predictions & Puck Line" },
     { href: "/signals", label: language === "es" ? "Alertas Pre-Match" : "Pre-Match Alerts", icon: "📋", subtitle: language === "es" ? "Pronósticos antes del inicio" : "Upcoming pre-match predictions" },
     { href: "/featured", label: language === "es" ? "Destacados" : "Featured", icon: "⭐", subtitle: language === "es" ? "SmartPick y Bomba del Día" : "SmartPick & Bomb of the Day" },
     { href: "/parlay", label: t("navParlay"), icon: "🎲", subtitle: language === "es" ? "Combinadas inteligentes" : "Smart accumulator parlays" },
@@ -198,6 +199,21 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
             }`}
           >
             📊 {t("navDashboard")}
+          </Link>
+
+          <Link
+            href="/sports/nhl"
+            className={`px-2.5 lg:px-3 py-1.5 rounded-xl text-xs font-black whitespace-nowrap transition cursor-pointer inline-flex items-center gap-1.5 ${
+              pathname === "/sports/nhl" || pathname === "/nhl"
+                ? "bg-cyan-500/15 text-cyan-800 border border-cyan-400/50 shadow-xs dark:bg-cyan-950/80 dark:text-cyan-300 dark:border-cyan-500/50"
+                : "text-slate-700 hover:text-cyan-700 hover:bg-cyan-50/50 dark:text-slate-300 dark:hover:text-cyan-300 dark:hover:bg-cyan-950/30"
+            }`}
+          >
+            <span>🏒</span>
+            <span>NHL</span>
+            <span className="rounded-full bg-cyan-500 text-slate-950 px-1.5 py-0.2 text-[9px] font-black">
+              NUEVO
+            </span>
           </Link>
 
           <Link
