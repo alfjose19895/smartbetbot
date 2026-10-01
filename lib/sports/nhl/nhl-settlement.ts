@@ -52,7 +52,7 @@ export class NHLSettlementEngine {
     // 3. TOTAL GOALS
     if (signal.market === 'TOTAL GOALS') {
       const line = signal.line ?? 6.0;
-      const isOver = signal.selection.toUpperCase().includes('OVER');
+      const isOver = String(signal.selection || '').toUpperCase().includes('OVER');
       if (isOver) {
         if (totalScore > line) return { status: 'WON', homeScore, awayScore, detail: `${totalScore} goles > ${line}` };
         else if (totalScore === line) return { status: 'PUSH', homeScore, awayScore, detail: `${totalScore} goles == ${line}` };

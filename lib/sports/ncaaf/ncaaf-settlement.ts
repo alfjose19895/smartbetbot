@@ -45,7 +45,7 @@ export class NCAAFSettlementEngine {
 
     if (signal.market === 'TOTAL POINTS') {
       const line = signal.line ?? 0;
-      const isOver = signal.selection.toUpperCase().includes('OVER');
+      const isOver = String(signal.selection || '').toUpperCase().includes('OVER');
       if (isOver) {
         if (totalScore > line) return { status: 'WON', homeScore, awayScore, detail: `${totalScore} pts > ${line}` };
         else if (totalScore === line) return { status: 'PUSH', homeScore, awayScore, detail: `${totalScore} pts == ${line}` };

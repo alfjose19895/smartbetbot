@@ -103,7 +103,7 @@ export class NBASettlementEngine {
     // 3. TOTAL POINTS
     if (signal.market === 'TOTAL POINTS') {
       const line = signal.line ?? 0;
-      const isOver = signal.selection.toUpperCase().includes('OVER');
+      const isOver = String(signal.selection || '').toUpperCase().includes('OVER');
 
       if (isOver) {
         if (totalScore > line) {
@@ -130,7 +130,7 @@ export class NBASettlementEngine {
       const line = signal.line ?? 0;
       const isHomeTeam = signal.selection.includes(signal.game.homeTeam.name);
       const teamScore = isHomeTeam ? homeScore : awayScore;
-      const isOver = signal.selection.toUpperCase().includes('OVER');
+      const isOver = String(signal.selection || '').toUpperCase().includes('OVER');
 
       if (isOver) {
         if (teamScore > line) {

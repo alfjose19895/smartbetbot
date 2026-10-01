@@ -145,7 +145,7 @@ export default async function TrackRecordPage({ searchParams }: { searchParams: 
                   <small>{item.league} · {dateTime(item.kickoff_at)}</small>
                 </span>
                 <span>
-                  <strong>{item.selection.toUpperCase()}</strong>
+                  <strong>{String(item.selection || '').toUpperCase()}</strong>
                   <small>{item.market} · {item.strategy_name}</small>
                 </span>
                 <span>{odds(item.decimal_odds)}</span>

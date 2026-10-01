@@ -214,8 +214,8 @@ export class NHLProvider implements SportsDataProvider {
                 bookmaker: bm.name,
                 sport: 'nhl',
                 gameId,
-                market: bet.name.toUpperCase(),
-                selection: val.value,
+                market: String(bet.name || '').toUpperCase(),
+                selection: String(val.value ?? ''),
                 decimalOdds,
                 impliedProbability: Number((1 / decimalOdds).toFixed(4)),
                 capturedAt: new Date().toISOString()

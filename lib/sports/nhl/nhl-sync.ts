@@ -27,8 +27,9 @@ export class NHLSyncEngine {
       const parsedOdds: NHLMarketOdds = { gameId: game.id };
 
       for (const o of oddsList) {
-        const m = o.market.toUpperCase();
-        const sel = o.selection.toUpperCase();
+        const m = String(o.market || '').toUpperCase();
+        const rawSel = String(o.selection || '');
+        const sel = rawSel.toUpperCase();
 
         if (m.includes('WINNER') || m.includes('HOME/AWAY') || m.includes('MONEYLINE') || m === '1X2') {
           if (sel === 'HOME' || sel.includes('1') || sel.includes(game.homeTeam.name.toUpperCase())) {
@@ -47,7 +48,7 @@ export class NHLSyncEngine {
         }
 
         if (m.includes('TOTAL') || m.includes('OVER/UNDER')) {
-          const lineMatch = o.selection.match(/[\d.]+/);
+          const lineMatch = rawSel.match(/[\d.]+/);
           const line = lineMatch ? parseFloat(lineMatch[0]) : 6.0;
           if (sel.includes('OVER')) {
             parsedOdds.totalGoals = {
@@ -68,7 +69,7 @@ export class NHLSyncEngine {
 
         if (m.includes('ASIAN HANDICAP') || m.includes('PUCK LINE')) {
           const isHome = sel.includes('HOME') || sel.includes(game.homeTeam.name.toUpperCase());
-          const lineMatch = o.selection.match(/[-+]?[\d.]+/);
+          const lineMatch = rawSel.match(/[-+]?[\d.]+/);
           const line = lineMatch ? parseFloat(lineMatch[0]) : (isHome ? -1.5 : 1.5);
           const hLine = isHome ? line : -line;
           const aLine = -hLine;
