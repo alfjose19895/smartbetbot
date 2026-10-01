@@ -34,17 +34,20 @@ export class NBAProvider implements SportsDataProvider {
     return this.supportedCapabilities.has(capability);
   }
 
+  private get apiKey(): string {
+    return process.env.API_NBA_KEY || SPORTS_CONFIG.nba.apiKey || '';
+  }
+
   private get headers(): Record<string, string> {
-    const config = SPORTS_CONFIG.nba;
     return {
-      'x-apisports-key': config.apiKey || '',
+      'x-apisports-key': this.apiKey,
       'Accept': 'application/json'
     };
   }
 
   public async getSchedule(date: string): Promise<NormalizedGame[]> {
     const config = SPORTS_CONFIG.nba;
-    if (!config.apiKey) {
+    if (!this.apiKey) {
       return [];
     }
 
@@ -90,7 +93,7 @@ export class NBAProvider implements SportsDataProvider {
   public async getGame(gameId: string): Promise<NormalizedGame | null> {
     const rawId = gameId.replace('nba_', '');
     const config = SPORTS_CONFIG.nba;
-    if (!config.apiKey) return null;
+    if (!this.apiKey) return null;
 
     try {
       const url = `${config.baseUrl}/games?id=${rawId}`;
@@ -148,7 +151,7 @@ export class NBAProvider implements SportsDataProvider {
 
   public async getDiagnostics(): Promise<{ status: 'OK' | 'ERROR'; message: string; remainingQuota?: number }> {
     const config = SPORTS_CONFIG.nba;
-    if (!config.apiKey) {
+    if (!this.apiKey) {
       return { status: 'ERROR', message: 'API_NBA_KEY no configurada en el entorno del servidor.' };
     }
     return { status: 'OK', message: 'NBA Provider conectado correctamente.' };

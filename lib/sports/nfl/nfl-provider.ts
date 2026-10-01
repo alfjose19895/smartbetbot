@@ -2,6 +2,9 @@ import { SportsDataProvider, SportCapability, NormalizedGame, NormalizedOdds } f
 import { SPORTS_CONFIG } from '../config';
 
 export class NFLProvider implements SportsDataProvider {
+  private get apiKey(): string {
+    return process.env.API_NFL_KEY || SPORTS_CONFIG.nfl.apiKey || '';
+  }
   public readonly sport = 'nfl';
   public readonly name = 'API-NFL Provider';
 
@@ -43,7 +46,7 @@ export class NFLProvider implements SportsDataProvider {
 
   public async getDiagnostics(): Promise<{ status: 'OK' | 'ERROR'; message: string; remainingQuota?: number }> {
     const config = SPORTS_CONFIG.nfl;
-    if (!config.apiKey) {
+    if (!this.apiKey) {
       return { status: 'ERROR', message: 'API_NFL_KEY no configurada en el entorno del servidor.' };
     }
     return { status: 'OK', message: 'NFL Provider conectado correctamente.' };

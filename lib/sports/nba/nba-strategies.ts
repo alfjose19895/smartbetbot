@@ -307,35 +307,37 @@ export class NBAStrategyEngine {
   /**
    * Filters and limits candidates to max 2 official signals per NBA game
    */
-  public static selectOfficialSignals(candidates: MultiSportPrediction[]): MultiSportSignal[] {
-    // Only QUALIFIED, STRONG, TOP PICK qualify as official signals
-    const qualified = candidates.filter(c => ['TOP PICK', 'STRONG', 'QUALIFIED'].includes(c.classification));
-
-    // Sort by Smart Score desc, then Smart Edge desc
-    qualified.sort((a, b) => b.smartScore - a.smartScore || b.smartEdge - a.smartEdge);
-
-    // Take top 2 per game
-    const selected = qualified.slice(0, 2);
-
-    return selected.map(p => ({
-      id: p.id,
+  public static selectBestSignalForGame(candidates: MultiSportPrediction[]): MultiSportSignal | null {
+    if (!candidates || candidates.length === 0) return null;
+    const sorted = [...candidates].sort((a, b) => {
+      if (b.modelProbability !== a.modelProbability) return b.modelProbability - a.modelProbability;
+      return b.smartScore - a.smartScore;
+    });
+    const topCandidate = sorted[0];
+    return {
+      id: topCandidate.id,
       sport: 'nba',
-      gameId: p.gameId,
-      game: p.game,
-      market: p.market,
-      selection: p.selection,
-      line: p.line,
-      modelProbability: p.modelProbability,
-      decimalOdds: p.decimalOdds,
-      smartEdge: p.smartEdge,
-      expectedValue: p.expectedValue,
-      smartScore: p.smartScore,
-      classification: p.classification,
-      dataQuality: p.dataQuality,
+      gameId: topCandidate.gameId,
+      game: topCandidate.game,
+      market: topCandidate.market,
+      selection: topCandidate.selection,
+      line: topCandidate.line,
+      modelProbability: topCandidate.modelProbability,
+      decimalOdds: topCandidate.decimalOdds,
+      smartEdge: topCandidate.smartEdge,
+      expectedValue: topCandidate.expectedValue,
+      smartScore: topCandidate.smartScore,
+      classification: topCandidate.modelProbability >= 0.60 ? 'TOP PICK' : topCandidate.modelProbability >= 0.54 ? 'STRONG' : 'QUALIFIED',
+      dataQuality: topCandidate.dataQuality,
       isSmartPick: false,
-      explanation: p.explanation || '',
-      createdAt: p.createdAt
-    }));
+      explanation: topCandidate.explanation || '',
+      createdAt: topCandidate.createdAt
+    };
+  }
+
+  public static selectOfficialSignals(candidates: MultiSportPrediction[]): MultiSportSignal[] {
+    const best = this.selectBestSignalForGame(candidates);
+    return best ? [best] : [];
   }
 
   /**

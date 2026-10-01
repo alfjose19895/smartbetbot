@@ -2,6 +2,9 @@ import { SportsDataProvider, SportCapability, NormalizedGame, NormalizedOdds } f
 import { SPORTS_CONFIG } from '../config';
 
 export class NCAAFProvider implements SportsDataProvider {
+  private get apiKey(): string {
+    return process.env.API_NCAAF_KEY || SPORTS_CONFIG.ncaaf.apiKey || '';
+  }
   public readonly sport = 'ncaaf';
   public readonly name = 'API-NCAAF Provider';
 
@@ -41,7 +44,7 @@ export class NCAAFProvider implements SportsDataProvider {
 
   public async getDiagnostics(): Promise<{ status: 'OK' | 'ERROR'; message: string; remainingQuota?: number }> {
     const config = SPORTS_CONFIG.ncaaf;
-    if (!config.apiKey) {
+    if (!this.apiKey) {
       return { status: 'ERROR', message: 'API_NCAAF_KEY no configurada en el entorno del servidor.' };
     }
     return { status: 'OK', message: 'NCAAF Provider conectado correctamente.' };
