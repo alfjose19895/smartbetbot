@@ -49,15 +49,6 @@ export default function FeaturedPicksPage() {
       <Navbar onSync={fetchSignals} />
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
-        {/* Multi-Sport Quick Selector */}
-        <section className="w-full">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-              <span>🏆</span> Deportes Disponibles
-            </span>
-          </div>
-          <SportSelector selectedSport="football" asLinks={true} />
-        </section>
         {/* Page Hero Header */}
         <div className="relative overflow-hidden rounded-3xl border border-amber-500/30 bg-gradient-to-br from-slate-900 via-slate-950 to-amber-950/40 p-6 sm:p-10 shadow-2xl text-white">
           <div className="absolute -right-10 -top-10 h-64 w-64 rounded-full bg-amber-500/10 blur-3xl pointer-events-none" />

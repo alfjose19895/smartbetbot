@@ -266,16 +266,6 @@ export default function DashboardPage() {
           />
         </div>
 
-        {/* Multi-Sport Quick Navigation Bar */}
-        <section className="w-full">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-2">
-            <span className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-              <span>🏆</span> Deportes Disponibles
-            </span>
-          </div>
-          <SportSelector selectedSport="football" asLinks={true} />
-        </section>
-
         {/* 1. Executive Intelligence Header */}
         <section className="relative overflow-hidden rounded-3xl border border-emerald-500/20 bg-gradient-to-br from-slate-900 via-slate-900/95 to-slate-950 p-6 sm:p-8 text-white shadow-2xl">
           <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl" />

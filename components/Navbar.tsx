@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
 import { logoutAction } from "@/features/auth/actions";
 import { SupportedSport } from "@/lib/sports/types";
-import { isSportFeatureEnabled } from "@/lib/sports/config";
 
 interface NavbarProps {
   onSync?: () => void;
@@ -28,7 +27,16 @@ const SPORTS_OPTIONS: Array<{
     label: "Fútbol",
     icon: "⚽",
     href: "/dashboard",
-    activeMatches: (p) => p === "/dashboard" || p === "/" || p.startsWith("/signals") || p.startsWith("/prematch") || p.startsWith("/sports/football"),
+    activeMatches: (p) =>
+      p === "/dashboard" ||
+      p === "/" ||
+      p.startsWith("/signals") ||
+      p.startsWith("/prematch") ||
+      p.startsWith("/parlay") ||
+      p.startsWith("/history") ||
+      p.startsWith("/featured") ||
+      p.startsWith("/reports") ||
+      p.startsWith("/sports/football"),
   },
   {
     id: "nhl",
@@ -56,6 +64,7 @@ const SPORTS_OPTIONS: Array<{
 
 export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarProps) {
   const pathname = usePathname();
+  const [currentTab, setCurrentTab] = useState<string | null>(null);
   const { language, t } = useLanguage();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -77,6 +86,13 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      setCurrentTab(params.get("tab"));
+    }
+  }, [pathname]);
 
   // Fetch session profile
   useEffect(() => {
@@ -123,23 +139,51 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
 
   const isSyncInProgress = syncing || localSyncing;
 
-  // Active sport detection
-  const currentSport = SPORTS_OPTIONS.find((s) => s.activeMatches(pathname)) || SPORTS_OPTIONS[0];
+  // Active sport detection (NHL, NBA, NFL or Football by default)
+  const currentSport =
+    SPORTS_OPTIONS.find((s) => s.id !== "football" && s.activeMatches(pathname)) || SPORTS_OPTIONS[0];
 
-  // Clean, focused essential navigation links
+  
+
+  // Clean, focused essential navigation links adapted dynamically to current sport
+  const getSportHref = (type: "dashboard" | "signals" | "parlay" | "history" | "settings") => {
+    if (type === "settings") return "/settings";
+    if (currentSport.id === "football") {
+      if (type === "dashboard") return "/dashboard";
+      if (type === "signals") return "/signals";
+      if (type === "parlay") return "/parlay";
+      if (type === "history") return "/history";
+    }
+    const base = currentSport.href;
+    if (type === "dashboard") return base;
+    return `${base}?tab=${type}`;
+  };
+
+  const checkIsActive = (href: string) => {
+    if (href === "/settings") return pathname === "/settings";
+    if (href.includes("?tab=")) {
+      const [path, query] = href.split("?tab=");
+      return pathname === path && currentTab === query;
+    }
+    if (currentSport.id !== "football") {
+      return pathname === href && (!currentTab || currentTab === "dashboard");
+    }
+    return pathname === href;
+  };
+
   const essentialNavLinks = [
-    { href: "/dashboard", label: t("navDashboard"), icon: "📊" },
-    { href: "/signals", label: language === "es" ? "Pre-Match" : "Pre-Match", icon: "📋" },
-    { href: "/parlay", label: t("navParlay"), icon: "🎲" },
-    { href: "/history", label: t("navHistory"), icon: "📜" },
-    { href: "/settings", label: t("navSettings"), icon: "⚙️" },
+    { href: getSportHref("dashboard"), label: t("navDashboard"), icon: "📊" },
+    { href: getSportHref("signals"), label: language === "es" ? "Pre-Match" : "Pre-Match", icon: "📋" },
+    { href: getSportHref("parlay"), label: t("navParlay"), icon: "🎲" },
+    { href: getSportHref("history"), label: t("navHistory"), icon: "📜" },
+    { href: getSportHref("settings"), label: t("navSettings"), icon: "⚙️" },
   ];
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-950/95 transition-colors">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-3 sm:px-6 py-2.5 sm:py-3 gap-2 sm:gap-4">
         
-        {/* Left: Brand Logo */}
+        {/* Left: Brand Logo & Sport Selector */}
         <div className="flex items-center gap-3 shrink-0">
           <Link href="/" className="flex items-center gap-2 select-none group">
             <span className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 text-base sm:text-lg font-black text-slate-950 shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform">
@@ -162,7 +206,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
             <button
               onClick={() => setSportDropdownOpen(!sportDropdownOpen)}
               className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-black text-slate-900 shadow-xs hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-850 transition cursor-pointer"
-              title="Seleccionar Deporte"
+              title="Cambiar Deporte"
             >
               <span className="text-base">{currentSport.icon}</span>
               <span>{currentSport.label}</span>
@@ -175,9 +219,9 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
             </button>
 
             {sportDropdownOpen && (
-              <div className="absolute left-0 top-full mt-1.5 w-52 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+              <div className="absolute left-0 top-full mt-1.5 w-56 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
                 <div className="px-2 py-1 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                  Deportes Cuantitativos
+                  Seleccionar Deporte
                 </div>
                 {SPORTS_OPTIONS.map((sport) => {
                   const isSelected = currentSport.id === sport.id;
@@ -214,7 +258,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
         {/* Center: Clean Essential Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5">
           {essentialNavLinks.map((link) => {
-            const isActive = pathname === link.href;
+            const isActive = checkIsActive(link.href);
             return (
               <Link
                 key={link.href}
@@ -357,11 +401,11 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
 
           {/* Navigation Links Grid (Mobile) */}
           <div className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">
-            🧭 Navegación Principal
+            🧭 Navegación ({currentSport.label})
           </div>
           <nav className="grid grid-cols-2 gap-2">
             {essentialNavLinks.map((link) => {
-              const isActive = pathname === link.href;
+              const isActive = checkIsActive(link.href);
               return (
                 <Link
                   key={link.href}

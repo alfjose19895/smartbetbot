@@ -27,6 +27,16 @@ export function SportDashboardView({
   const isEnabled = isSportFeatureEnabled(sport);
 
   const [activeTab, setActiveTab] = useState<"dashboard" | "signals" | "featured" | "parlay" | "history" | "reports">("dashboard");
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get("tab");
+      if (tabParam && ["dashboard", "signals", "featured", "parlay", "history", "reports"].includes(tabParam)) {
+        setActiveTab(tabParam as any);
+      }
+    }
+  }, []);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedConfidence, setSelectedConfidence] = useState<"all" | "TOP PICK" | "STRONG" | "QUALIFIED">("all");
   const [mcpModalOpen, setMcpModalOpen] = useState(false);
@@ -86,16 +96,6 @@ export function SportDashboardView({
 
       <main className="mx-auto max-w-7xl px-3 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
         
-        {/* Multi-Sport Quick Navigation Bar */}
-        <section className="w-full">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-2">
-            <span className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-              <span>🏆</span> Deportes Disponibles
-            </span>
-          </div>
-          <SportSelector selectedSport={sport} asLinks={true} />
-        </section>
-
         {/* Executive Intelligence Header (Sport Tailored) */}
         <section className="relative overflow-hidden rounded-3xl border border-cyan-500/20 bg-gradient-to-br from-slate-900 via-slate-900/95 to-slate-950 p-6 sm:p-8 text-white shadow-2xl">
           <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />

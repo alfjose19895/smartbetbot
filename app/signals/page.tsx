@@ -387,15 +387,6 @@ export default function SignalsPage() {
       <Navbar onSync={handleSyncSignals} syncing={syncing} />
 
       <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 space-y-6">
-        {/* Multi-Sport Quick Selector */}
-        <section className="w-full">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-              <span>🏆</span> Deportes Disponibles
-            </span>
-          </div>
-          <SportSelector selectedSport="football" asLinks={true} />
-        </section>
         {/* Header Strip with Pre-Match Title & Date */}
         <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-5 dark:border-slate-800">
           <div>

@@ -250,15 +250,6 @@ export default function DailyParlayPage() {
       <Navbar />
 
       <main className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8 space-y-6">
-        {/* Multi-Sport Quick Selector */}
-        <section className="w-full">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-              <span>🏆</span> Deportes Disponibles
-            </span>
-          </div>
-          <SportSelector selectedSport="football" asLinks={true} />
-        </section>
         {/* Header Banner */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-slate-200 pb-6 dark:border-slate-800">
           <div>
