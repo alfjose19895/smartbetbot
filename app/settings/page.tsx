@@ -36,11 +36,10 @@ function EyeOffIcon({ className = "h-4 w-4" }: { className?: string }) {
   );
 }
 
-
-
 import React, { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { useLanguage, Language } from "@/context/LanguageContext";
+import { openPushModal, PushNotificationManager } from "@/components/PushNotificationManager";
 
 export default function SettingsPage() {
   const { language, setLanguage, t } = useLanguage();
@@ -60,13 +59,39 @@ export default function SettingsPage() {
   const [role, setRole] = useState("user");
   const [roleId, setRoleId] = useState<number>(2);
 
+  // Theme state
+  const [currentTheme, setCurrentTheme] = useState<"dark" | "light">("dark");
+
   // Preferences
   const [minProbability, setMinProbability] = useState<number>(65);
   const [minOdds, setMinOdds] = useState<string>("1.40");
 
   useEffect(() => {
     fetchProfile();
+    if (typeof window !== "undefined") {
+      const savedTheme = (localStorage.getItem("smartbetbot_theme") || "dark") as "dark" | "light";
+      setCurrentTheme(savedTheme);
+    }
   }, []);
+
+  const handleThemeChange = (newTheme: "dark" | "light") => {
+    setCurrentTheme(newTheme);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("smartbetbot_theme", newTheme);
+      const root = document.documentElement;
+      if (newTheme === "dark") {
+        root.classList.remove("light");
+        root.classList.add("dark");
+        root.setAttribute("data-theme", "dark");
+        root.style.colorScheme = "dark";
+      } else {
+        root.classList.remove("dark");
+        root.classList.add("light");
+        root.setAttribute("data-theme", "light");
+        root.style.colorScheme = "light";
+      }
+    }
+  };
 
   const fetchProfile = async () => {
     try {
@@ -122,98 +147,229 @@ export default function SettingsPage() {
       });
 
       const data = await res.json();
-      if (res.ok) {
-        setUserMsg({
-          text: language === "es" ? "✓ ¡Tu perfil y WhatsApp han sido actualizados con éxito!" : "✓ Your profile and WhatsApp have been updated successfully!",
-          type: "success",
-        });
-        setPassword("");
-        setConfirmPassword("");
-        await fetchProfile();
-      } else {
-        setUserMsg({ text: `✗ ${data.error || "Error"}`, type: "error" });
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Error al actualizar perfil");
       }
-    } catch (err) {
-      setUserMsg({ text: `✗ Fallo de conexión: ${String(err)}`, type: "error" });
+
+      setUserMsg({
+        text: language === "es" ? "✓ Perfil y configuración guardados correctamente." : "✓ Profile and settings updated successfully.",
+        type: "success",
+      });
+      setPassword("");
+      setConfirmPassword("");
+    } catch (err: any) {
+      setUserMsg({
+        text: err.message || (language === "es" ? "No se pudo actualizar el perfil." : "Could not update profile."),
+        type: "error",
+      });
     } finally {
       setSaving(false);
-      setTimeout(() => setUserMsg(null), 5000);
     }
   };
 
   const handleLanguageChange = (newLang: Language) => {
     setLanguage(newLang);
     setUserMsg({
-      text: newLang === "es" ? "✓ Idioma cambiado a Español" : "✓ Language changed to English",
+      text: newLang === "es" ? "Idioma cambiado a Español." : "Language changed to English.",
       type: "success",
     });
-    setTimeout(() => setUserMsg(null), 3000);
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100 overflow-x-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors">
       <Navbar />
+      <PushNotificationManager />
 
-      <main className="mx-auto max-w-4xl px-3 py-6 sm:px-6 sm:py-8 lg:px-8">
-        {/* Title */}
-        <div>
-          <div className="inline-flex items-center gap-2 rounded-xl bg-emerald-500/10 px-3 py-1 text-xs font-extrabold text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
-            <span>👤</span>
-            <span>{t("profileKicker")}</span>
+      <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">
+            <span>⚙️</span>
+            <span>{t("navSettings")}</span>
           </div>
-          <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
-            {t("profileTitle")}
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+            {language === "es" ? "Ajustes y Configuración" : "Settings & Preferences"}
           </h1>
-          <p className="mt-1 text-xs text-slate-600 sm:text-sm dark:text-slate-400">
-            {t("profileSubtitle")}
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+            {language === "es" 
+              ? "Gestiona tu cuenta, tema visual, notificaciones push, idioma y filtros de pronósticos."
+              : "Manage your account, visual theme, push notifications, language, and prediction filters."}
           </p>
         </div>
 
+        {/* Status Messages */}
         {userMsg && (
           <div
-            className={`mt-6 rounded-2xl p-4 text-center text-xs font-bold shadow-sm ${
+            className={`mb-6 rounded-2xl p-4 text-sm font-bold flex items-center justify-between shadow-sm animate-in fade-in duration-200 ${
               userMsg.type === "success"
-                ? "bg-emerald-50 border border-emerald-300 text-emerald-800 dark:bg-emerald-950/80 dark:border-emerald-700 dark:text-emerald-300"
-                : "bg-red-50 border border-red-300 text-red-800 dark:bg-red-950/80 dark:border-red-700 dark:text-red-300"
+                ? "bg-emerald-50 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/70 dark:text-emerald-300 dark:border-emerald-800"
+                : "bg-red-50 text-red-800 border border-red-300 dark:bg-red-950/70 dark:text-red-300 dark:border-red-800"
             }`}
           >
-            {userMsg.text}
+            <span>{userMsg.text}</span>
+            <button
+              onClick={() => setUserMsg(null)}
+              className="text-xs font-black uppercase tracking-wider underline cursor-pointer ml-4"
+            >
+              {language === "es" ? "Cerrar" : "Dismiss"}
+            </button>
           </div>
         )}
 
         {loading ? (
-          <div className="py-20 text-center text-slate-500">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent" />
-            <p className="mt-3 text-sm font-semibold">Cargando...</p>
+          <div className="flex min-h-[300px] items-center justify-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent" />
           </div>
         ) : (
-          <div className="mt-6 space-y-6">
-            {/* Account Summary Card */}
-            <div className="flex flex-col sm:flex-row items-center gap-4 rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-tr from-emerald-500 to-cyan-500 text-2xl font-black text-slate-950 shadow-md shadow-emerald-500/20 shrink-0">
-                {(fullName || email || "A")[0]?.toUpperCase()}
-              </div>
+          <div className="space-y-6">
+            {/* 1. Theme & Appearance Card */}
+            <div className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-8 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white border-b border-slate-100 pb-3 dark:border-slate-800 flex items-center gap-2">
+                <span>🎨</span>
+                <span>{language === "es" ? "Apariencia y Tema" : "Appearance & Theme"}</span>
+              </h3>
+              <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+                {language === "es" 
+                  ? "Selecciona el modo visual con el que prefieres usar SmartBetBot."
+                  : "Choose the visual mode you prefer to use SmartBetBot with."}
+              </p>
 
-              <div className="flex-1 text-center sm:text-left">
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                  {fullName || "SmartBetBot User"}
-                </h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{email}</p>
-                <div className="mt-2 flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                  <span className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-2.5 py-0.5 text-xs font-bold text-blue-700 border border-blue-200 dark:bg-blue-950/80 dark:text-blue-300 dark:border-blue-800">
-                    🎯 {roleName} (ID: {roleId})
-                  </span>
-                  <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-2.5 py-0.5 text-xs font-bold text-emerald-700 border border-emerald-200 dark:bg-emerald-950/80 dark:text-emerald-400 dark:border-emerald-800">
-                    ✓ {t("profileActiveStatus")}
-                  </span>
-                </div>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <button
+                  type="button"
+                  onClick={() => handleThemeChange("dark")}
+                  className={`flex items-center justify-between rounded-2xl p-4 border transition cursor-pointer ${
+                    currentTheme === "dark"
+                      ? "border-emerald-500 bg-slate-900 text-white font-extrabold shadow-md ring-2 ring-emerald-500/20"
+                      : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">🌙</span>
+                    <div className="text-left">
+                      <div className="text-sm font-bold">{language === "es" ? "Modo Oscuro" : "Dark Mode"}</div>
+                      <div className="text-xs text-slate-400">{language === "es" ? "Recomendado (Alto Contraste)" : "Recommended"}</div>
+                    </div>
+                  </div>
+                  {currentTheme === "dark" && (
+                    <span className="rounded-full bg-emerald-500 px-2.5 py-0.5 text-xs text-slate-950 font-black">
+                      ✓ {language === "es" ? "Activo" : "Active"}
+                    </span>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleThemeChange("light")}
+                  className={`flex items-center justify-between rounded-2xl p-4 border transition cursor-pointer ${
+                    currentTheme === "light"
+                      ? "border-emerald-500 bg-white text-slate-950 font-extrabold shadow-md ring-2 ring-emerald-500/20"
+                      : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">☀️</span>
+                    <div className="text-left">
+                      <div className="text-sm font-bold">{language === "es" ? "Modo Claro" : "Light Mode"}</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400">{language === "es" ? "Luminoso y Clásico" : "Bright and clean"}</div>
+                    </div>
+                  </div>
+                  {currentTheme === "light" && (
+                    <span className="rounded-full bg-emerald-500 px-2.5 py-0.5 text-xs text-slate-950 font-black">
+                      ✓ {language === "es" ? "Activo" : "Active"}
+                    </span>
+                  )}
+                </button>
               </div>
             </div>
 
-            {/* Profile Edit Form */}
+            {/* 2. Mobile Push Alerts Card */}
+            <div className="rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/5 via-white to-teal-500/5 p-5 sm:p-8 shadow-sm dark:border-emerald-500/30 dark:from-emerald-950/20 dark:via-slate-900/80 dark:to-teal-950/20">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-emerald-500/20 pb-4">
+                <div>
+                  <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <span>🔔</span>
+                    <span>{language === "es" ? "Alertas Push para Teléfono Móvil" : "Mobile Push Notifications"}</span>
+                  </h3>
+                  <p className="mt-1 text-xs text-slate-600 dark:text-slate-400 max-w-xl">
+                    {language === "es"
+                      ? "Vincula tu smartphone o navegador para recibir las mejores señales del día y alertas de alto valor en tiempo real."
+                      : "Link your smartphone or browser to receive high-value daily signals and alerts in real time."}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={openPushModal}
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-3 text-xs sm:text-sm font-black text-white shadow-md shadow-emerald-900/30 transition hover:from-emerald-500 hover:to-teal-500 cursor-pointer shrink-0"
+                >
+                  <span>📲</span>
+                  <span>{language === "es" ? "Configurar / Vincular Teléfono" : "Configure / Link Phone"}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* 3. Language Selection Card */}
             <div className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-8 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
-              <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white border-b border-slate-100 pb-3 dark:border-slate-800">
-                ✏️ {t("profileEditSection")}
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white border-b border-slate-100 pb-3 dark:border-slate-800 flex items-center gap-2">
+                <span>🌐</span>
+                <span>{t("prefLangTitle")}</span>
+              </h3>
+
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <button
+                  type="button"
+                  onClick={() => handleLanguageChange("es")}
+                  className={`flex items-center justify-between rounded-2xl p-4 border transition cursor-pointer ${
+                    language === "es"
+                      ? "border-emerald-500 bg-emerald-50/70 text-slate-900 font-extrabold dark:bg-emerald-950/50 dark:border-emerald-500 dark:text-white"
+                      : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">🇪🇸</span>
+                    <div className="text-left">
+                      <div className="text-sm font-bold">Español</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400">Predeterminado</div>
+                    </div>
+                  </div>
+                  {language === "es" && (
+                    <span className="rounded-full bg-emerald-500 px-2.5 py-0.5 text-xs text-slate-950 font-black">
+                      ✓ Activo
+                    </span>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleLanguageChange("en")}
+                  className={`flex items-center justify-between rounded-2xl p-4 border transition cursor-pointer ${
+                    language === "en"
+                      ? "border-emerald-500 bg-emerald-50/70 text-slate-900 font-extrabold dark:bg-emerald-950/50 dark:border-emerald-500 dark:text-white"
+                      : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">🇺🇸</span>
+                    <div className="text-left">
+                      <div className="text-sm font-bold">English</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400">International</div>
+                    </div>
+                  </div>
+                  {language === "en" && (
+                    <span className="rounded-full bg-emerald-500 px-2.5 py-0.5 text-xs text-slate-950 font-black">
+                      ✓ Active
+                    </span>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* 4. Profile Information Card */}
+            <div className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-8 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white border-b border-slate-100 pb-3 dark:border-slate-800 flex items-center gap-2">
+                <span>👤</span>
+                <span>{t("profileTitle")}</span>
               </h3>
 
               <form onSubmit={handleSaveProfile} className="mt-5 space-y-4">
@@ -224,10 +380,8 @@ export default function SettingsPage() {
                     </label>
                     <input
                       type="text"
-                      required
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      placeholder="Ej: Carlos Mendoza"
                       className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none focus:border-emerald-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
                     />
                   </div>
@@ -238,43 +392,17 @@ export default function SettingsPage() {
                     </label>
                     <input
                       type="email"
-                      required
+                      disabled
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="correo@ejemplo.com"
-                      className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none focus:border-emerald-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-100 px-3.5 py-2.5 text-sm text-slate-500 cursor-not-allowed dark:border-slate-800 dark:bg-slate-900 dark:text-slate-500"
                     />
                   </div>
                 </div>
 
-                {/* WhatsApp / Phone Field */}
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">
-                    💬 {language === "es" ? "Número de WhatsApp / Teléfono" : "WhatsApp / Phone Number"}
-                  </label>
-                  <div className="flex rounded-xl border border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-950 overflow-hidden focus-within:border-emerald-500">
-                    <span className="inline-flex items-center bg-slate-100 dark:bg-slate-800 px-3 text-sm font-bold text-emerald-600 dark:text-emerald-400 border-r border-slate-200 dark:border-slate-700">
-                      📱 WA
-                    </span>
-                    <input
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="+593 99 999 9999 / +54 9 11..."
-                      className="w-full bg-transparent px-3.5 py-2.5 text-sm text-slate-900 outline-none dark:text-white"
-                    />
-                  </div>
-                  <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
-                    {language === "es" 
-                      ? "Guarda tu número internacional para recibir alertas de alto valor y notificaciones de jugadas por WhatsApp." 
-                      : "Save your international phone number to receive high-value alerts and pick notifications via WhatsApp."}
-                  </p>
-                </div>
-
-                <div className="grid gap-4 sm:grid-cols-2 pt-2">
+                <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">
-                      {t("profileNewPass")} <span className="text-slate-400 lowercase font-normal">({t("profileNewPassHint")})</span>
+                      {t("profileNewPass")}
                     </label>
                     <div className="relative">
                       <input
@@ -317,7 +445,7 @@ export default function SettingsPage() {
                   </div>
                 </div>
 
-                <div className="pt-4 flex items-center justify-end">
+                <div className="pt-2 flex items-center justify-end">
                   <button
                     type="submit"
                     disabled={saving}
@@ -329,68 +457,14 @@ export default function SettingsPage() {
               </form>
             </div>
 
-            {/* Language Selection Card */}
+            {/* 5. Betting Preferences Card */}
             <div className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-8 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
-              <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white border-b border-slate-100 pb-3 dark:border-slate-800">
-                🌐 {t("prefLangTitle")}
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white border-b border-slate-100 pb-3 dark:border-slate-800 flex items-center gap-2">
+                <span>⚙️</span>
+                <span>{t("prefSection")}</span>
               </h3>
 
-              <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                <button
-                  type="button"
-                  onClick={() => handleLanguageChange("es")}
-                  className={`flex items-center justify-between rounded-2xl p-4 border transition cursor-pointer ${
-                    language === "es"
-                      ? "border-emerald-500 bg-emerald-50/70 text-slate-900 font-extrabold dark:bg-emerald-950/50 dark:border-emerald-500 dark:text-white"
-                      : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">🇪🇸</span>
-                    <div className="text-left">
-                      <div className="text-sm font-bold">Español</div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400">Predeterminado</div>
-                    </div>
-                  </div>
-                  {language === "es" && (
-                    <span className="rounded-full bg-emerald-500 px-2 py-0.5 text-xs text-slate-950 font-black">
-                      ✓ Activo
-                    </span>
-                  )}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleLanguageChange("en")}
-                  className={`flex items-center justify-between rounded-2xl p-4 border transition cursor-pointer ${
-                    language === "en"
-                      ? "border-emerald-500 bg-emerald-50/70 text-slate-900 font-extrabold dark:bg-emerald-950/50 dark:border-emerald-500 dark:text-white"
-                      : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">🇺🇸</span>
-                    <div className="text-left">
-                      <div className="text-sm font-bold">English</div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400">International</div>
-                    </div>
-                  </div>
-                  {language === "en" && (
-                    <span className="rounded-full bg-emerald-500 px-2 py-0.5 text-xs text-slate-950 font-black">
-                      ✓ Active
-                    </span>
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* Betting Preferences Card */}
-            <div className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-8 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
-              <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white border-b border-slate-100 pb-3 dark:border-slate-800">
-                ⚙️ {t("prefSection")}
-              </h3>
-
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                     {t("prefMinProb")}
