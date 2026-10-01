@@ -173,7 +173,7 @@ export class NHLProvider implements SportsDataProvider {
     return [];
   }
 
-  public async getTeamStats(teamId: string | number, season: string = '2025-2026'): Promise<Record<string, unknown>> {
+  public async getTeamStats(teamId: string | number, season: string = getCurrentSportSeason('nhl')): Promise<Record<string, unknown>> {
     const config = SPORTS_CONFIG.nhl;
     if (!config.apiKey) return {};
 

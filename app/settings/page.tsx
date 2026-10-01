@@ -223,64 +223,29 @@ export default function SettingsPage() {
           </div>
         ) : (
           <div className="space-y-6">
-            {/* 1. Theme & Appearance Card */}
-            <div className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-8 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
-              <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white border-b border-slate-100 pb-3 dark:border-slate-800 flex items-center gap-2">
+            {/* 1. Permanent Dark Theme Card */}
+            <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-5 sm:p-8 shadow-sm">
+              <h3 className="text-base sm:text-lg font-bold text-white border-b border-slate-800 pb-3 flex items-center gap-2">
                 <span>🎨</span>
                 <span>{language === "es" ? "Apariencia y Tema" : "Appearance & Theme"}</span>
               </h3>
-              <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+              <p className="mt-2 text-xs text-slate-400 leading-relaxed">
                 {language === "es" 
-                  ? "Selecciona el modo visual con el que prefieres usar SmartBetBot."
-                  : "Choose the visual mode you prefer to use SmartBetBot with."}
+                  ? "SmartBetBot utiliza de forma predeterminada el modo oscuro para optimizar la visualización de datos estadísticos y proteger la fatiga visual."
+                  : "SmartBetBot permanently uses dark mode to optimize the display of statistical data and reduce eye strain."}
               </p>
 
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <button
-                  type="button"
-                  onClick={() => handleThemeChange("dark")}
-                  className={`flex items-center justify-between rounded-2xl p-4 border transition cursor-pointer ${
-                    currentTheme === "dark"
-                      ? "border-emerald-500 bg-slate-900 text-white font-extrabold shadow-md ring-2 ring-emerald-500/20"
-                      : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">🌙</span>
-                    <div className="text-left">
-                      <div className="text-sm font-bold">{language === "es" ? "Modo Oscuro" : "Dark Mode"}</div>
-                      <div className="text-xs text-slate-400">{language === "es" ? "Recomendado (Alto Contraste)" : "Recommended"}</div>
-                    </div>
+              <div className="mt-4 flex items-center justify-between rounded-2xl border border-emerald-500/40 bg-slate-950 p-4 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">🌙</span>
+                  <div>
+                    <div className="text-sm font-black text-white">{language === "es" ? "Modo Oscuro Permanente" : "Permanent Dark Mode"}</div>
+                    <div className="text-xs text-emerald-400 font-bold">{language === "es" ? "✓ Activado por defecto (Alto Contraste)" : "✓ Enabled by default"}</div>
                   </div>
-                  {currentTheme === "dark" && (
-                    <span className="rounded-full bg-emerald-500 px-2.5 py-0.5 text-xs text-slate-950 font-black">
-                      ✓ {language === "es" ? "Activo" : "Active"}
-                    </span>
-                  )}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleThemeChange("light")}
-                  className={`flex items-center justify-between rounded-2xl p-4 border transition cursor-pointer ${
-                    currentTheme === "light"
-                      ? "border-emerald-500 bg-white text-slate-950 font-extrabold shadow-md ring-2 ring-emerald-500/20"
-                      : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">☀️</span>
-                    <div className="text-left">
-                      <div className="text-sm font-bold">{language === "es" ? "Modo Claro" : "Light Mode"}</div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400">{language === "es" ? "Luminoso y Clásico" : "Bright and clean"}</div>
-                    </div>
-                  </div>
-                  {currentTheme === "light" && (
-                    <span className="rounded-full bg-emerald-500 px-2.5 py-0.5 text-xs text-slate-950 font-black">
-                      ✓ {language === "es" ? "Activo" : "Active"}
-                    </span>
-                  )}
-                </button>
+                </div>
+                <span className="rounded-full bg-emerald-500 px-2.5 py-0.5 text-xs text-slate-950 font-black">
+                  ✓ {language === "es" ? "Activo" : "Active"}
+                </span>
               </div>
             </div>
 

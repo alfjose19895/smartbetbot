@@ -24,7 +24,7 @@ export default function AuthLayout({ children }: Readonly<{ children: ReactNode 
           </Link>
 
           <div className="flex items-center gap-3 shrink-0">
-            <ThemeToggle />
+            
             <Link
               href="/"
               className="text-xs sm:text-sm font-semibold text-slate-400 hover:text-white transition"

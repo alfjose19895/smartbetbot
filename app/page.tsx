@@ -71,9 +71,7 @@ export default async function HomePage() {
 
           {/* Actions: Always fully visible without clipping */}
           <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-            <div className="hidden sm:block">
-              <ThemeToggle />
-            </div>
+            
 
             {/* Iniciar Sesión Link */}
             <Link

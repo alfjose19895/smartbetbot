@@ -19,15 +19,15 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  colorScheme: "dark light",
-  themeColor: "#07110f",
+  colorScheme: "dark",
+  themeColor: "#020617",
   width: "device-width",
   initialScale: 1,
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="es" suppressHydrationWarning className="w-full">
+    <html lang="es" className="dark w-full" data-theme="dark" style={{ colorScheme: "dark" }} suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
         <script
@@ -35,25 +35,18 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
             __html: `
               (function() {
                 try {
-                  var t = localStorage.getItem('smartbetbot_theme') || 'dark';
-                  if (t === 'light') {
-                    document.documentElement.classList.remove('dark');
-                    document.documentElement.classList.add('light');
-                    document.documentElement.setAttribute('data-theme', 'light');
-                    document.documentElement.style.colorScheme = 'light';
-                  } else {
-                    document.documentElement.classList.remove('light');
-                    document.documentElement.classList.add('dark');
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                    document.documentElement.style.colorScheme = 'dark';
-                  }
+                  document.documentElement.classList.remove('light');
+                  document.documentElement.classList.add('dark');
+                  document.documentElement.setAttribute('data-theme', 'dark');
+                  document.documentElement.style.colorScheme = 'dark';
+                  localStorage.setItem('smartbetbot_theme', 'dark');
                 } catch(e) {}
               })();
             `,
           }}
         />
       </head>
-      <body className="w-full min-h-screen flex flex-col items-stretch m-0 p-0 overflow-x-hidden">
+      <body className="w-full min-h-screen flex flex-col items-stretch m-0 p-0 overflow-x-hidden bg-slate-950 text-slate-100">
         <LanguageProvider>
           <ServiceWorkerRegistration />
           <div className="w-full flex-1 flex flex-col">

@@ -1,41 +1,33 @@
 import { SportMetadata, SupportedSport } from './types';
 
 export function getCurrentSportSeason(sport: SupportedSport, date: Date = new Date()): string {
-  const year = date.getFullYear();
-  const month = date.getMonth(); // 0 = Jan, 11 = Dec
+  // Use UTC year and UTC month to guarantee identical evaluation across server SSR and client hydration
+  const year = date.getUTCFullYear();
+  const month = date.getUTCMonth(); // 0 = Jan, 7 = Aug, 8 = Sep, 9 = Oct, 11 = Dec
 
   switch (sport) {
-    case 'nhl': {
-      // NHL season runs from October (month 9) to June.
-      if (month >= 9) {
-        return `${year}-${year + 1}`;
-      }
-      return `${year - 1}-${year}`;
-    }
+    case 'nhl':
     case 'nba': {
-      // NBA season runs from October (month 9) to June.
-      if (month >= 9) {
+      // NHL & NBA seasons span autumn to spring.
+      // From August/September (month >= 7) onwards, it is the new campaign: ${year}-${year+1} (e.g. 2026-2027).
+      // From January to July (month < 7), it is ${year-1}-${year}.
+      if (month >= 7) {
         return `${year}-${year + 1}`;
       }
       return `${year - 1}-${year}`;
     }
-    case 'nfl': {
-      // NFL season runs from September (month 8) to February.
-      if (month >= 7) {
-        return `${year}`;
-      }
-      return `${year - 1}`;
-    }
+    case 'nfl':
     case 'ncaaf': {
-      // College Football season runs from August (month 7) to January.
-      if (month >= 7) {
+      // NFL & College Football: August to February.
+      // From July onwards (month >= 6), it is current year ${year} (e.g. 2026).
+      // In January/February (month <= 1), it belongs to previous year campaign ${year-1}.
+      if (month >= 6) {
         return `${year}`;
       }
       return `${year - 1}`;
     }
     case 'football':
     default: {
-      // Football European season: starts in July/August
       if (month >= 6) {
         return `${year}-${year + 1}`;
       }
