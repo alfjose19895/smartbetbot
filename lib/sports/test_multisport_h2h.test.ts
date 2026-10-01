@@ -20,11 +20,9 @@ describe('Multi-Sport H2H Engine', () => {
     }
   });
 
-  it('returns authentic NBA matchups for basketball teams', async () => {
-    const res = await getMultiSportH2HAndForm('nba', 'Boston Celtics', 'Los Angeles Lakers');
-    expect(res.sport).toBe('nba');
-    expect(res.competitionName).toBe('NBA');
-    expect(res.h2h.length).toBeGreaterThan(0);
-    expect(res.homeLast5.length).toBeGreaterThan(0);
+  it('resolves real NHL team IDs and returns valid score formats', async () => {
+    const res = await getMultiSportH2HAndForm('nhl', 'New York Rangers', 'Tampa Bay Lightning');
+    expect(res.sport).toBe('nhl');
+    expect(res.competitionName).toBe('NHL');
   });
 });

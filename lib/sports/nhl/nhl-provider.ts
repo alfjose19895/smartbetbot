@@ -2,6 +2,49 @@ import { getCurrentSportSeason } from "../registry";
 import { SportsDataProvider, SportCapability, NormalizedGame, NormalizedOdds } from '../types';
 import { SPORTS_CONFIG } from '../config';
 
+export const NHL_TEAMS_MAP: Record<string, { id: number; name: string; logo: string }> = {
+  'anaheim ducks': { id: 670, name: 'Anaheim Ducks', logo: 'https://media.api-sports.io/hockey/teams/670.png' },
+  'boston bruins': { id: 673, name: 'Boston Bruins', logo: 'https://media.api-sports.io/hockey/teams/673.png' },
+  'buffalo sabres': { id: 674, name: 'Buffalo Sabres', logo: 'https://media.api-sports.io/hockey/teams/674.png' },
+  'calgary flames': { id: 675, name: 'Calgary Flames', logo: 'https://media.api-sports.io/hockey/teams/675.png' },
+  'carolina hurricanes': { id: 676, name: 'Carolina Hurricanes', logo: 'https://media.api-sports.io/hockey/teams/676.png' },
+  'chicago blackhawks': { id: 678, name: 'Chicago Blackhawks', logo: 'https://media.api-sports.io/hockey/teams/678.png' },
+  'colorado avalanche': { id: 679, name: 'Colorado Avalanche', logo: 'https://media.api-sports.io/hockey/teams/679.png' },
+  'columbus blue jackets': { id: 680, name: 'Columbus Blue Jackets', logo: 'https://media.api-sports.io/hockey/teams/680.png' },
+  'dallas stars': { id: 681, name: 'Dallas Stars', logo: 'https://media.api-sports.io/hockey/teams/681.png' },
+  'detroit red wings': { id: 682, name: 'Detroit Red Wings', logo: 'https://media.api-sports.io/hockey/teams/682.png' },
+  'edmonton oilers': { id: 683, name: 'Edmonton Oilers', logo: 'https://media.api-sports.io/hockey/teams/683.png' },
+  'florida panthers': { id: 684, name: 'Florida Panthers', logo: 'https://media.api-sports.io/hockey/teams/684.png' },
+  'los angeles kings': { id: 685, name: 'Los Angeles Kings', logo: 'https://media.api-sports.io/hockey/teams/685.png' },
+  'minnesota wild': { id: 687, name: 'Minnesota Wild', logo: 'https://media.api-sports.io/hockey/teams/687.png' },
+  'montreal canadiens': { id: 688, name: 'Montreal Canadiens', logo: 'https://media.api-sports.io/hockey/teams/688.png' },
+  'nashville predators': { id: 689, name: 'Nashville Predators', logo: 'https://media.api-sports.io/hockey/teams/689.png' },
+  'new jersey devils': { id: 690, name: 'New Jersey Devils', logo: 'https://media.api-sports.io/hockey/teams/690.png' },
+  'new york islanders': { id: 691, name: 'New York Islanders', logo: 'https://media.api-sports.io/hockey/teams/691.png' },
+  'new york rangers': { id: 692, name: 'New York Rangers', logo: 'https://media.api-sports.io/hockey/teams/692.png' },
+  'ottawa senators': { id: 693, name: 'Ottawa Senators', logo: 'https://media.api-sports.io/hockey/teams/693.png' },
+  'philadelphia flyers': { id: 695, name: 'Philadelphia Flyers', logo: 'https://media.api-sports.io/hockey/teams/695.png' },
+  'pittsburgh penguins': { id: 696, name: 'Pittsburgh Penguins', logo: 'https://media.api-sports.io/hockey/teams/696.png' },
+  'san jose sharks': { id: 697, name: 'San Jose Sharks', logo: 'https://media.api-sports.io/hockey/teams/697.png' },
+  'seattle kraken': { id: 1436, name: 'Seattle Kraken', logo: 'https://media.api-sports.io/hockey/teams/1436.png' },
+  'st. louis blues': { id: 698, name: 'St. Louis Blues', logo: 'https://media.api-sports.io/hockey/teams/698.png' },
+  'tampa bay lightning': { id: 699, name: 'Tampa Bay Lightning', logo: 'https://media.api-sports.io/hockey/teams/699.png' },
+  'toronto maple leafs': { id: 700, name: 'Toronto Maple Leafs', logo: 'https://media.api-sports.io/hockey/teams/700.png' },
+  'utah mammoth': { id: 2483, name: 'Utah Mammoth', logo: 'https://media.api-sports.io/hockey/teams/2483.png' },
+  'vancouver canucks': { id: 701, name: 'Vancouver Canucks', logo: 'https://media.api-sports.io/hockey/teams/701.png' },
+  'vegas golden knights': { id: 702, name: 'Vegas Golden Knights', logo: 'https://media.api-sports.io/hockey/teams/702.png' },
+  'washington capitals': { id: 703, name: 'Washington Capitals', logo: 'https://media.api-sports.io/hockey/teams/703.png' },
+  'winnipeg jets': { id: 704, name: 'Winnipeg Jets', logo: 'https://media.api-sports.io/hockey/teams/704.png' },
+};
+
+export function lookupNHLTeamId(teamName: string): number | undefined {
+  const norm = (teamName || '').toLowerCase().trim();
+  for (const [k, v] of Object.entries(NHL_TEAMS_MAP)) {
+    if (norm.includes(k) || k.includes(norm)) return v.id;
+  }
+  return undefined;
+}
+
 interface ApiHockeyGame {
   id: number;
   date: string;
@@ -173,8 +216,155 @@ export class NHLProvider implements SportsDataProvider {
     }
   }
 
-  public async getHistoricalGames(_season: string, _limit: number = 100): Promise<NormalizedGame[]> {
-    return [];
+  public async getH2H(homeTeamId: number | string, awayTeamId: number | string, limit: number = 5): Promise<NormalizedGame[]> {
+    const config = SPORTS_CONFIG.nhl;
+    if (!this.apiKey) return [];
+
+    try {
+      const url = `${config.baseUrl}/games/h2h?h2h=${homeTeamId}-${awayTeamId}`;
+      const res = await fetch(url, { headers: this.headers, next: { revalidate: 3600 } });
+      if (!res.ok) return [];
+
+      const data = (await res.json()) as { response?: ApiHockeyGame[] };
+      const games = data.response || [];
+
+      // Sort by date descending to get the most recent clashes
+      const finished = games
+        .filter(g => ['FT', 'AOT', 'AP', 'POST'].includes(g.status?.short || ''))
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .slice(0, limit);
+
+      return finished.map((g) => ({
+        id: `nhl_${g.id}`,
+        sport: 'nhl',
+        provider: 'api-sports-hockey',
+        providerGameId: String(g.id),
+        league: {
+          id: g.league?.id || 57,
+          name: g.league?.name || 'NHL',
+          season: g.league?.season || getCurrentSportSeason('nhl')
+        },
+        homeTeam: {
+          id: g.teams?.home?.id ?? 0,
+          name: g.teams?.home?.name ?? 'Home Team',
+          logo: g.teams?.home?.logo
+        },
+        awayTeam: {
+          id: g.teams?.away?.id ?? 0,
+          name: g.teams?.away?.name ?? 'Away Team',
+          logo: g.teams?.away?.logo
+        },
+        startsAt: g.date,
+        status: 'FINISHED',
+        homeScore: g.scores?.home,
+        awayScore: g.scores?.away,
+        periodScores: g.periods ? {
+          home: [g.periods.first?.home ?? 0, g.periods.second?.home ?? 0, g.periods.third?.home ?? 0],
+          away: [g.periods.first?.away ?? 0, g.periods.second?.away ?? 0, g.periods.third?.away ?? 0]
+        } : undefined
+      }));
+    } catch {
+      return [];
+    }
+  }
+
+  public async getTeamRecentGames(teamId: number | string, limit: number = 5): Promise<NormalizedGame[]> {
+    const config = SPORTS_CONFIG.nhl;
+    if (!this.apiKey) return [];
+
+    try {
+      const seasonInt = parseInt(String(getCurrentSportSeason('nhl')).split('-')[0], 10) || 2026;
+      let url = `${config.baseUrl}/games?team=${teamId}&season=${seasonInt}`;
+      let res = await fetch(url, { headers: this.headers, next: { revalidate: 3600 } });
+      let data = (await res.json()) as { response?: ApiHockeyGame[] };
+      let games = (data.response || []).filter(g => ['FT', 'AOT', 'AP'].includes(g.status?.short || ''));
+
+      // If season 2026 has fewer games, query 2025
+      if (games.length < limit) {
+        const prevUrl = `${config.baseUrl}/games?team=${teamId}&season=${seasonInt - 1}`;
+        const prevRes = await fetch(prevUrl, { headers: this.headers, next: { revalidate: 3600 } });
+        if (prevRes.ok) {
+          const prevData = (await prevRes.json()) as { response?: ApiHockeyGame[] };
+          const prevGames = (prevData.response || []).filter(g => ['FT', 'AOT', 'AP'].includes(g.status?.short || ''));
+          games = [...games, ...prevGames];
+        }
+      }
+
+      // Sort descending by date
+      games.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+      return games.slice(0, limit).map((g) => ({
+        id: `nhl_${g.id}`,
+        sport: 'nhl',
+        provider: 'api-sports-hockey',
+        providerGameId: String(g.id),
+        league: {
+          id: g.league?.id || 57,
+          name: g.league?.name || 'NHL',
+          season: g.league?.season || getCurrentSportSeason('nhl')
+        },
+        homeTeam: {
+          id: g.teams?.home?.id ?? 0,
+          name: g.teams?.home?.name ?? 'Home Team',
+          logo: g.teams?.home?.logo
+        },
+        awayTeam: {
+          id: g.teams?.away?.id ?? 0,
+          name: g.teams?.away?.name ?? 'Away Team',
+          logo: g.teams?.away?.logo
+        },
+        startsAt: g.date,
+        status: 'FINISHED',
+        homeScore: g.scores?.home,
+        awayScore: g.scores?.away
+      }));
+    } catch {
+      return [];
+    }
+  }
+
+  public async getHistoricalGames(season: string = getCurrentSportSeason('nhl'), limit: number = 100): Promise<NormalizedGame[]> {
+    const config = SPORTS_CONFIG.nhl;
+    if (!this.apiKey) return [];
+
+    try {
+      const seasonInt = parseInt(String(season).split('-')[0], 10) || 2026;
+      const url = `${config.baseUrl}/games?league=57&season=${seasonInt}`;
+      const res = await fetch(url, { headers: this.headers, next: { revalidate: 3600 } });
+      if (!res.ok) return [];
+
+      const data = (await res.json()) as { response?: ApiHockeyGame[] };
+      const games = (data.response || []).filter(g => ['FT', 'AOT', 'AP', 'POST'].includes(g.status?.short || ''));
+      games.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+      return games.slice(0, limit).map((g) => ({
+        id: `nhl_${g.id}`,
+        sport: 'nhl',
+        provider: 'api-sports-hockey',
+        providerGameId: String(g.id),
+        league: {
+          id: g.league?.id || 57,
+          name: 'NHL',
+          season: g.league?.season || season
+        },
+        homeTeam: {
+          id: g.teams?.home?.id ?? 0,
+          name: g.teams?.home?.name ?? 'Home Team',
+          logo: g.teams?.home?.logo
+        },
+        awayTeam: {
+          id: g.teams?.away?.id ?? 0,
+          name: g.teams?.away?.name ?? 'Away Team',
+          logo: g.teams?.away?.logo
+        },
+        startsAt: g.date,
+        status: 'FINISHED',
+        homeScore: g.scores?.home,
+        awayScore: g.scores?.away
+      }));
+    } catch {
+      return [];
+    }
   }
 
   public async getTeamStats(teamId: string | number, season: string = getCurrentSportSeason('nhl')): Promise<Record<string, unknown>> {
