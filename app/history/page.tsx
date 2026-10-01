@@ -88,10 +88,21 @@ export default function HistoryPage() {
 
   const coreMarkets = [
     "Ganador Local",
+    "Empate",
     "Ganador Visitante",
+    "Doble Oportunidad",
+    "Over 1.5 Goles",
     "Over 2.5 Goles",
+    "Under 2.5 Goles",
+    "Over 3.5 Goles",
+    "Under 3.5 Goles",
     "Ambos Equipos Anotan",
+    "Ambos Equipos No Anotan",
     "Córners",
+    "Under Córners",
+    "Tarjetas / Faltas",
+    "Primer Tiempo 1X2",
+    "Primer Tiempo Over 0.5",
   ];
 
   const availableMarkets = Array.from(

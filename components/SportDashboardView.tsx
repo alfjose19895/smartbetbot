@@ -5,10 +5,10 @@ import { Navbar } from '@/components/Navbar';
 import { PredictionCard } from '@/components/PredictionCard';
 import { MatchDetailModal } from '@/components/MatchDetailModal';
 import { McpCountryAgentModal } from '@/components/McpCountryAgentModal';
+import { MultiSelectDropdown, DropdownOption } from '@/components/MultiSelectDropdown';
 import { SupportedSport, MultiSportSignal } from '@/lib/sports/types';
 import { getSportMeta } from '@/lib/sports/registry';
-import { MarketOpportunity, getFeaturedDailyPicks } from '@/lib/sports/prediction-engine';
-import { getImmutableDailyParlays } from '@/lib/sports/parlay-generator';
+import { MarketOpportunity } from '@/lib/sports/prediction-engine';
 import { HistoricalSettledPick, HistoricalSettledParlay } from '@/lib/sports/db';
 import { useLanguage } from '@/context/LanguageContext';
 import {
@@ -101,6 +101,15 @@ export function historicalPickToOpportunity(h: HistoricalSettledPick, sportKey: 
   } as unknown as MarketOpportunity;
 }
 
+function getTimeSlot(kickoffStr?: string): 'morning' | 'afternoon' | 'night' {
+  if (!kickoffStr) return 'afternoon';
+  const date = new Date(kickoffStr);
+  const hour = date.getHours();
+  if (hour < 12) return 'morning';
+  if (hour < 18) return 'afternoon';
+  return 'night';
+}
+
 export function SportDashboardView({
   sport,
   signals,
@@ -136,12 +145,14 @@ export function SportDashboardView({
   const [historyFilter, setHistoryFilter] = useState<'all' | 'won' | 'lost'>('all');
   const [historyDateFilter, setHistoryDateFilter] = useState<'all' | '7d' | '30d'>('30d');
 
-  // Filter States for Signals
+  // Rich Filter States for Signals
   const [searchQuery, setSearchQuery] = useState('');
-  const [marketFilter, setMarketFilter] = useState<string>('all');
-  const [confidenceFilter, setConfidenceFilter] = useState<string>('all');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'high_conviction' | 'ev_plus' | 'won' | 'lost'>('all');
-  const [minProbability, setMinProbability] = useState<number>(0);
+  const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
+  const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
+  const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
+  const [matchStatusFilter, setMatchStatusFilter] = useState<'ALL' | 'VALOR' | 'BOMBA' | 'MCP' | 'WON' | 'LOST' | 'SCHEDULED' | 'IN_PLAY' | 'FINISHED'>('ALL');
+  const [timeSlotFilter, setTimeSlotFilter] = useState<'ALL' | 'TOP' | 'MORNING' | 'AFTERNOON' | 'NIGHT'>('ALL');
+  const [minProbability, setMinProbability] = useState<number>(35);
 
   // Read URL query parameter on load
   useEffect(() => {
@@ -219,133 +230,202 @@ export function SportDashboardView({
         setSyncMessage(`✓ Sincronización completada (${data.count || 0} señales actualizadas)`);
         setTimeout(() => window.location.reload(), 1200);
       } else {
-        setSyncMessage(`Error: ${data.message || 'No se pudo sincronizar'}`);
+        setSyncMessage(`⚠️ ${data.error || 'Error al sincronizar'}`);
       }
-    } catch (err: any) {
-      setSyncMessage(`Error: ${err?.message || 'Error de conexión'}`);
+    } catch {
+      setSyncMessage('⚠️ Error de conexión con el servidor');
     } finally {
       setSyncing(false);
     }
   };
 
-  // Convert today's signals to MarketOpportunity
+  // Convert real signals to MarketOpportunity
   const opportunities = useMemo(() => {
-    return signals.map((s) => multiSportSignalToOpportunity(s));
+    return signals.map(multiSportSignalToOpportunity);
   }, [signals]);
 
-  // Filter real history strictly for this sport
+  const smartOpportunity = useMemo(() => {
+    if (smartPick) return multiSportSignalToOpportunity(smartPick);
+    return opportunities.find((o) => o.pickBadge === 'valor') || opportunities[0] || null;
+  }, [smartPick, opportunities]);
+
+  const bombaOpportunity = useMemo(() => {
+    return opportunities.find((o) => (o.odds || 0) >= 2.0) || null;
+  }, [opportunities]);
+
+  // Filter historical picks strictly for current sport
   const sportHistoricalPicks = useMemo(() => {
-    if (sport === 'football') {
-      // Football shows all real football historical matches (never NHL/NBA/NFL)
-      return rawHistoryPicks.filter((h) => {
-        const league = (h.league || '').toLowerCase();
-        return !league.includes('nhl') && !league.includes('nba') && !league.includes('nfl');
-      });
-    } else {
-      // Non-football shows only its specific league matches
-      const target = sport.toLowerCase();
-      return rawHistoryPicks.filter((h) => {
-        const league = (h.league || '').toLowerCase();
-        return league.includes(target) || (h as any).sport === sport;
-      });
-    }
+    return rawHistoryPicks.filter((h) => {
+      const hSport = ((h as any).sport || (h.country === sport.toUpperCase() ? sport : '')).toLowerCase();
+      if (hSport === sport.toLowerCase()) return true;
+      if (sport === 'football' && (!hSport || hSport === 'football' || hSport === 'mundial' || h.country !== 'NHL')) return true;
+      if (sport === 'nhl' && (hSport === 'nhl' || h.league?.toUpperCase().includes('NHL') || h.country === 'NHL')) return true;
+      if (sport === 'nba' && (hSport === 'nba' || h.league?.toUpperCase().includes('NBA') || h.country === 'NBA')) return true;
+      if ((sport === 'nfl' || sport === 'ncaaf') && (hSport === 'nfl' || hSport === 'ncaaf' || h.league?.toUpperCase().includes('NFL') || h.league?.toUpperCase().includes('NCAA'))) return true;
+      return false;
+    });
   }, [rawHistoryPicks, sport]);
 
   const auditedHistoricalOpportunities = useMemo(() => {
     return sportHistoricalPicks.map((h) => historicalPickToOpportunity(h, sport));
   }, [sportHistoricalPicks, sport]);
 
-  // Dynamic Available Markets per Sport
-  const availableMarkets = useMemo(() => {
-    const set = new Set<string>();
+  // Build classified league options grouped by Category
+  const leagueDropdownOptions: DropdownOption[] = useMemo(() => {
+    const list: DropdownOption[] = [];
+    const seen = new Set<string>();
+
     opportunities.forEach((s) => {
-      if (s.market) set.add(s.market);
+      if (s.league && !seen.has(s.league)) {
+        seen.add(s.league);
+        list.push({
+          value: s.league,
+          label: s.league,
+          group: s.country || meta.displayName,
+        });
+      }
     });
-    if (set.size === 0) {
+
+    if (list.length === 0) {
       if (sport === 'nhl') {
-        set.add('Moneyline (Ganador Directo)');
-        set.add('Puck Line (+/-1.5)');
-        set.add('Total Goles Over/Under 5.5');
-      } else if (sport === 'football') {
-        set.add('Ganador Local');
-        set.add('Over 2.5 Goles');
-        set.add('Ambos Equipos Anotan');
-        set.add('Córners');
+        list.push({ value: 'NHL Conferencia Este', label: 'NHL Conferencia Este', group: 'NHL División Atlántico / Metro' });
+        list.push({ value: 'NHL Conferencia Oeste', label: 'NHL Conferencia Oeste', group: 'NHL División Central / Pacífico' });
       } else if (sport === 'nba') {
-        set.add('Moneyline (Ganador)');
-        set.add('Point Spread (Hándicap)');
-        set.add('Total Puntos Over/Under');
-      } else {
-        set.add('Moneyline');
-        set.add('Point Spread');
-        set.add('Total Over/Under');
+        list.push({ value: 'NBA Conferencia Este', label: 'NBA Conferencia Este', group: 'NBA Este' });
+        list.push({ value: 'NBA Conferencia Oeste', label: 'NBA Conferencia Oeste', group: 'NBA Oeste' });
+      } else if (sport === 'nfl') {
+        list.push({ value: 'NFL AFC', label: 'NFL Conferencia Americana (AFC)', group: 'NFL' });
+        list.push({ value: 'NFL NFC', label: 'NFL Conferencia Nacional (NFC)', group: 'NFL' });
+      } else if (sport === 'ncaaf') {
+        list.push({ value: 'NCAA SEC', label: 'SEC Conference', group: 'NCAA Division I' });
+        list.push({ value: 'NCAA Big Ten', label: 'Big Ten Conference', group: 'NCAA Division I' });
       }
     }
-    return Array.from(set);
-  }, [opportunities, sport]);
 
-  // Filtered Signals
+    return list;
+  }, [opportunities, sport, meta.displayName]);
+
+  // Market dropdown options
+  const marketDropdownOptions: DropdownOption[] = useMemo(() => {
+    const core = meta.defaultMarkets || [];
+    const fromSignals = opportunities.map((s) => s.market).filter(Boolean);
+    const combined = Array.from(new Set([...core, ...fromSignals]));
+    return combined.map((m) => ({
+      value: m,
+      label: m,
+    }));
+  }, [meta.defaultMarkets, opportunities]);
+
+  const confidenceDropdownOptions: DropdownOption[] = [
+    { value: 'muy_alta', label: '⭐⭐⭐ Muy Alta (≥70%)' },
+    { value: 'alta', label: '⭐⭐ Alta (58% - 69%)' },
+    { value: 'media', label: '⭐ Media (50% - 57%)' },
+    { value: 'moderada', label: '⚠️ Moderada / Valor (<50%)' },
+  ];
+
+  // Count matches strictly matching filter conditions
+  const valorCount = opportunities.filter((s) => s.pickBadge === 'valor' || s.expectedValue >= 5).length;
+  const bombaCount = opportunities.filter((s) => (s.odds || 0) >= 2.0).length;
+  const mcpCount = opportunities.filter((s) => s.isMcpPick || s.isMcp).length;
+  const wonCount = opportunities.filter((s) => s.result === 'WON' || s.status === 'won').length;
+  const lostCount = opportunities.filter((s) => s.result === 'LOST' || s.status === 'lost').length;
+  const scheduledCount = opportunities.filter((s) => (s.status === 'pending' || !s.result) && (s as any).status !== 'in_play').length;
+  const inPlayCount = opportunities.filter((s) => (s as any).status === 'in_play').length;
+  const finishedCount = opportunities.filter((s) => s.status === 'won' || s.status === 'lost' || s.result === 'WON' || s.result === 'LOST' || (s as any).status === 'finished').length;
+  const topPickCount = opportunities.filter((s) => s.confidence === 'Muy Alta' || s.probability >= 68).length;
+  const morningCount = opportunities.filter((s) => getTimeSlot(s.kickoff) === 'morning').length;
+  const afternoonCount = opportunities.filter((s) => getTimeSlot(s.kickoff) === 'afternoon').length;
+  const nightCount = opportunities.filter((s) => getTimeSlot(s.kickoff) === 'night').length;
+
+  // Filter signals strictly matching all active constraints
   const filteredOpportunities = useMemo(() => {
-    return opportunities.filter((opp) => {
-      if (searchQuery.trim()) {
-        const query = searchQuery.toLowerCase();
-        const matchText = `${opp.homeTeam} ${opp.awayTeam} ${opp.league} ${opp.market}`.toLowerCase();
-        if (!matchText.includes(query)) return false;
+    return opportunities.filter((s) => {
+      // Franja Horaria / Top Convicción
+      if (timeSlotFilter === 'TOP') {
+        if (s.confidence !== 'Muy Alta' && s.probability < 68) return false;
+      } else if (timeSlotFilter === 'MORNING') {
+        if (getTimeSlot(s.kickoff) !== 'morning') return false;
+      } else if (timeSlotFilter === 'AFTERNOON') {
+        if (getTimeSlot(s.kickoff) !== 'afternoon') return false;
+      } else if (timeSlotFilter === 'NIGHT') {
+        if (getTimeSlot(s.kickoff) !== 'night') return false;
       }
-      if (marketFilter !== 'all' && opp.market !== marketFilter) return false;
-      if (confidenceFilter !== 'all' && opp.confidence !== confidenceFilter) return false;
-      if (minProbability > 0 && opp.probability < minProbability) return false;
 
-      if (statusFilter === 'high_conviction' && opp.confidence !== 'Muy Alta' && opp.probability < 70) return false;
-      if (statusFilter === 'ev_plus' && opp.edge < 5) return false;
-      if (statusFilter === 'won' && opp.status !== 'won' && opp.result !== 'WON') return false;
-      if (statusFilter === 'lost' && opp.status !== 'lost' && opp.result !== 'LOST') return false;
+      // Search query
+      if (searchQuery.trim().length > 0) {
+        const q = searchQuery.toLowerCase().trim();
+        const matchText = `${s.match} ${s.homeTeam} ${s.awayTeam} ${s.league} ${s.market} ${s.country || ''}`.toLowerCase();
+        if (!matchText.includes(q)) return false;
+      }
+
+      // Status pill filter
+      if (matchStatusFilter === 'VALOR') {
+        if (s.pickBadge !== 'valor' && s.expectedValue < 5) return false;
+      } else if (matchStatusFilter === 'BOMBA') {
+        if ((s.odds || 0) < 2.0) return false;
+      } else if (matchStatusFilter === 'MCP') {
+        if (!s.isMcpPick && !s.isMcp) return false;
+      } else if (matchStatusFilter === 'WON') {
+        if (s.result !== 'WON' && s.status !== 'won') return false;
+      } else if (matchStatusFilter === 'LOST') {
+        if (s.result !== 'LOST' && s.status !== 'lost') return false;
+      } else if (matchStatusFilter === 'SCHEDULED') {
+        if (s.status === 'won' || s.status === 'lost' || s.result === 'WON' || s.result === 'LOST' || (s as any).status === 'finished' || (s as any).status === 'in_play') return false;
+      } else if (matchStatusFilter === 'IN_PLAY') {
+        if ((s as any).status !== 'in_play') return false;
+      } else if (matchStatusFilter === 'FINISHED') {
+        if (s.status !== 'won' && s.status !== 'lost' && s.result !== 'WON' && s.result !== 'LOST' && (s as any).status !== 'finished') return false;
+      }
+
+      // League Multi-Select
+      if (selectedLeagues.length > 0) {
+        const normLeague = (s.league || '').toLowerCase().trim();
+        const normCountry = (s.country || '').toLowerCase().trim();
+        const matched = selectedLeagues.some((sel) => {
+          const selLower = sel.toLowerCase().trim();
+          return normLeague.includes(selLower) || selLower.includes(normLeague) || normCountry === selLower;
+        });
+        if (!matched) return false;
+      }
+
+      // Confidence Multi-Select
+      if (selectedConfidence.length > 0) {
+        const isMatch = selectedConfidence.some((c) => {
+          if (c === 'muy_alta') return s.confidence === 'Muy Alta' || s.probability >= 70;
+          if (c === 'alta') return s.confidence === 'Alta' || (s.probability >= 58 && s.probability < 70);
+          if (c === 'media') return s.confidence === 'Media' || (s.probability >= 50 && s.probability < 58);
+          if (c === 'moderada') return s.confidence === 'Moderada' || s.probability < 50;
+          return false;
+        });
+        if (!isMatch) return false;
+      }
+
+      // Market Multi-Select
+      if (selectedMarkets.length > 0) {
+        const match = selectedMarkets.some((m) => {
+          const normSelected = m.toLowerCase().replace(/[^a-z0-9]/g, '');
+          const normActual = (s.market || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+          return normActual.includes(normSelected) || normSelected.includes(normActual);
+        });
+        if (!match) return false;
+      }
+
+      // Min Probability
+      if (s.probability < minProbability) {
+        return false;
+      }
 
       return true;
     });
-  }, [opportunities, searchQuery, marketFilter, confidenceFilter, minProbability, statusFilter]);
-
-  // Featured Daily Picks
-  const { smartPick: fpSmart, bombaPick: fpBomba } = useMemo(() => {
-    if (opportunities.length > 0) {
-      return getFeaturedDailyPicks(opportunities);
-    }
-    return { smartPick: null, bombaPick: null };
-  }, [opportunities]);
-
-  const smartOpportunity = useMemo(() => {
-    if (smartPick) return multiSportSignalToOpportunity(smartPick);
-    if (fpSmart) return fpSmart;
-    return opportunities[0] || null;
-  }, [smartPick, fpSmart, opportunities]);
-
-  const bombaOpportunity = useMemo(() => {
-    if (fpBomba) return fpBomba;
-    const highOdds = opportunities.filter((o) => (o.odds || 1.8) >= 2.0);
-    if (highOdds.length > 0) return highOdds[0];
-    return opportunities[1] || null;
-  }, [fpBomba, opportunities]);
+  }, [opportunities, timeSlotFilter, searchQuery, matchStatusFilter, selectedLeagues, selectedConfidence, selectedMarkets, minProbability]);
 
   // Curated Parlays
   const curatedParlaySets = useMemo(() => {
-    if (sport === 'football' && opportunities.length >= 2) {
-      const { parlay1, parlay2, parlay3 } = getImmutableDailyParlays(opportunities);
+    if (opportunities.length === 0) {
       return {
-        PARLAY_1: {
-          title: '🛡️ Doble Seguro (2 Picks)',
-          desc: '2 selecciones de máxima probabilidad y consistencia estadística.',
-          picks: parlay1,
-        },
-        PARLAY_2: {
-          title: '💎 Doble Valor +EV (2 Picks)',
-          desc: 'Combinada enfocada en maximizar el retorno matemático esperado (+EV).',
-          picks: parlay2,
-        },
-        PARLAY_3: {
-          title: '🚀 Triplete Multi-Leg (3 Picks)',
-          desc: 'Combinada de 3 selecciones de alta certeza con cuota multiplicada.',
-          picks: parlay3,
-        },
+        PARLAY_1: { title: '🛡️ Doble Seguro (2 Picks)', desc: 'Combinada de máxima probabilidad y consistencia.', picks: [] },
+        PARLAY_2: { title: '💎 Doble Valor +EV (2 Picks)', desc: 'Combinada de alto valor esperado (+EV).', picks: [] },
+        PARLAY_3: { title: '🚀 Triplete Multi-Leg (3 Picks)', desc: 'Combinada de 3 selecciones con cuota multiplicada.', picks: [] },
       };
     }
 
@@ -369,12 +449,11 @@ export function SportDashboardView({
         picks: sortedByProb.slice(0, 3),
       },
     };
-  }, [opportunities, sport]);
+  }, [opportunities]);
 
   const activeParlayData = curatedParlaySets[parlayMode];
   const parlayTotalOdds = Number(activeParlayData.picks.reduce((acc, p) => acc * (p.odds || 1.5), 1).toFixed(2));
-  const parlayCombinedProb = Number(activeParlayData.picks.reduce((acc, p) => acc * ((p.probability || 55) / 100), 1) * 100);
-  const parlayFairOdds = Number((1 / (parlayCombinedProb / 100 || 0.25)).toFixed(2));
+  const parlayCombinedProb = Number((activeParlayData.picks.reduce((acc, p) => acc * ((p.probability || 55) / 100), 1) * 100).toFixed(1));
   const parlayPotentialProfit = (parlayStake * (parlayTotalOdds - 1)).toFixed(2);
   const parlayTotalReturn = (parlayStake * parlayTotalOdds).toFixed(2);
 
@@ -407,21 +486,6 @@ export function SportDashboardView({
     };
   }, [auditedHistoricalOpportunities]);
 
-  // Copy handlers
-  const handleCopyText = (pick: MarketOpportunity, isBomba = false) => {
-    const text = `🎯 *SmartBetBot ${meta.displayName} Pick*
-🏆 ${pick.league}
-${meta.icon} *${pick.homeTeam} vs ${pick.awayTeam}*
-🎯 Pronóstico: *${pick.market}* (${pick.selection})
-💰 Cuota: *@${(pick.odds || 1.8).toFixed(2)}* | Prob: *${pick.probability}%*
-⭐ Confianza: *${pick.confidence || 'Muy Alta'}*
-🌐 https://smartbetbot.educandotea.com`;
-    navigator.clipboard.writeText(text);
-    const key = `${pick.fixtureId}-${isBomba ? 'b' : 's'}`;
-    setCopiedId(key);
-    setTimeout(() => setCopiedId(null), 2500);
-  };
-
   const handleCopyCardImage = async (pick: MarketOpportunity) => {
     try {
       const ok = await copyCardImageToClipboard(pick);
@@ -429,12 +493,15 @@ ${meta.icon} *${pick.homeTeam} vs ${pick.awayTeam}*
         setCopyImageSuccessId(String(pick.fixtureId || pick.id));
         setTimeout(() => setCopyImageSuccessId(null), 2500);
       }
-    } catch {}
+    } catch (e) {
+      console.error(e);
+    }
   };
 
-  const handleCopyParlayImage = async () => {
+  const handleCopyParlayCardImage = async () => {
+    if (activeParlayData.picks.length === 0) return;
+    setParlayCopyingImage(true);
     try {
-      setParlayCopyingImage(true);
       const ok = await copyParlayCardImageToClipboard(
         activeParlayData.picks,
         parlayTotalOdds,
@@ -445,190 +512,133 @@ ${meta.icon} *${pick.homeTeam} vs ${pick.awayTeam}*
         setParlayCopyImageSuccess(true);
         setTimeout(() => setParlayCopyImageSuccess(false), 2500);
       }
-    } catch {} finally {
+    } finally {
       setParlayCopyingImage(false);
     }
   };
 
-  const handleCopyParlayText = () => {
-    const text = `🎲 *SmartBetBot ${meta.displayName} Parlay del Día*
-📋 *${activeParlayData.title}*
-${activeParlayData.picks.map((p, i) => `${i + 1}. ${meta.icon} ${p.homeTeam} vs ${p.awayTeam} -> *${p.market}* (@${(p.odds || 1.5).toFixed(2)})`).join('\n')}
-
-💰 *Cuota Total: @${parlayTotalOdds}*
-📈 *Probabilidad: ${parlayCombinedProb.toFixed(1)}%*
-💵 *Retorno para $${parlayStake}: $${parlayTotalReturn} USD*
-🌐 https://smartbetbot.educandotea.com`;
-    navigator.clipboard.writeText(text);
-    setParlayCopiedText(true);
-    setTimeout(() => setParlayCopiedText(false), 2500);
-  };
-
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 antialiased pb-20">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-emerald-500 selection:text-slate-950">
       <Navbar onSync={handleAdminSync} syncing={syncing} />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
-        {/* Sync feedback notification */}
-        {syncMessage && (
-          <div className={`p-3.5 rounded-2xl text-xs font-bold flex items-center justify-between border ${
-            syncMessage.startsWith('✓')
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-              : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
-          }`}>
-            <span>{syncMessage}</span>
-            <button onClick={() => setSyncMessage(null)} className="text-slate-400 hover:text-white">✕</button>
-          </div>
-        )}
-
-        {/* Sport Header Banner */}
-        <header className="rounded-3xl border border-slate-800 bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 p-6 sm:p-8 shadow-xl relative overflow-hidden">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
-            <div className="flex items-center gap-4">
-              <span className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-3xl sm:text-4xl shadow-inner shrink-0">
-                {meta.icon}
-              </span>
-              <div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                    Suite {meta.displayName}
-                  </h1>
-                  <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-black text-emerald-400 border border-emerald-500/30">
-                    {meta.activeSeason}
-                  </span>
-                  <span className="rounded-full bg-cyan-500/20 px-2.5 py-0.5 text-[10px] font-black text-cyan-300 border border-cyan-500/30">
-                    ⚡ IA Cuantitativa
-                  </span>
-                </div>
-                <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl">
-                  {meta.description}. Modelado matemático de Poisson, xG y cálculo estricto de valor esperado (+EV).
-                </p>
+      <main className="flex-1 mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        {/* Top Header Strip with Sport Icon & Season Badge */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+          <div className="flex items-center gap-3">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 border border-slate-800 text-2xl shadow-md">
+              {meta.icon}
+            </span>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-black text-white tracking-tight">
+                  Centro Cuantitativo: {meta.displayName}
+                </h1>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  Temporada {meta.activeSeason}
+                </span>
               </div>
+              <p className="text-xs text-slate-400 mt-0.5">
+                {meta.description}
+              </p>
             </div>
+          </div>
 
-            {/* Admin MCP Trigger Button */}
+          <div className="flex items-center gap-2 self-start sm:self-auto">
             {isAdmin && (
               <button
                 onClick={() => setMcpModalOpen(true)}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-purple-950/70 text-purple-300 border border-purple-800 hover:bg-purple-900 transition text-xs font-black cursor-pointer shadow-md self-start md:self-auto shrink-0"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-purple-500/40 bg-purple-950/60 px-3.5 py-2 text-xs font-black text-purple-300 shadow-md hover:bg-purple-900/60 transition cursor-pointer"
               >
                 <span>🤖</span>
                 <span>Agente MCP {meta.displayName}</span>
               </button>
             )}
+            {isAdmin && (
+              <button
+                onClick={handleAdminSync}
+                disabled={syncing}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-3.5 py-2 text-xs font-black text-emerald-400 hover:bg-emerald-500/20 transition cursor-pointer disabled:opacity-50"
+              >
+                <span className={syncing ? 'animate-spin' : ''}>⚡</span>
+                <span>{syncing ? 'Auditando...' : 'Sincronizar'}</span>
+              </button>
+            )}
           </div>
-        </header>
+        </div>
 
-        {/* Global Navigation Tabs (In-Situ Suite Navigation) */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
+        {syncMessage && (
+          <div className="p-3 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-xs font-bold text-emerald-300">
+            {syncMessage}
+          </div>
+        )}
+
+        {/* In-Situ Sub-Navigation Tabs */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-slate-800">
           {[
-            { id: 'dashboard', label: '📊 Resumen', count: opportunities.length },
-            { id: 'signals', label: '📋 Alertas Pre-Match', count: filteredOpportunities.length },
-            { id: 'featured', label: '⭐ Destacados', count: smartOpportunity ? 2 : 0 },
-            { id: 'parlay', label: '🎲 Parlay del Día', count: activeParlayData.picks.length >= 2 ? 3 : 0 },
-            { id: 'history', label: '📜 Historial & Track Record', count: auditedHistoricalOpportunities.length },
-            { id: 'reports', label: '📈 Métricas & Rendimiento' },
+            { id: 'dashboard', label: `Dashboard ${meta.displayName}`, icon: '📊' },
+            { id: 'signals', label: `Pre-Match (${opportunities.length})`, icon: '📋' },
+            { id: 'featured', label: 'Destacados', icon: '⭐' },
+            { id: 'parlay', label: 'Parlay del Día', icon: '🎲' },
+            { id: 'history', label: `Historial (${auditedHistoricalOpportunities.length})`, icon: '📜' },
+            { id: 'reports', label: 'Reportes & ROI', icon: '📈' },
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => handleTabChange(tab.id as any)}
-              className={`px-4 py-2 rounded-xl text-xs font-black whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 select-none ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap ${
                 activeTab === tab.id
-                  ? 'bg-emerald-500 text-slate-950 shadow-md font-black'
-                  : 'bg-slate-900 text-slate-300 border border-slate-800 hover:bg-slate-800'
+                  ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/40 shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-transparent'
               }`}
             >
+              <span>{tab.icon}</span>
               <span>{tab.label}</span>
-              {tab.count !== undefined && (
-                <span
-                  className={`px-1.5 py-0.2 rounded-full text-[9px] font-black ${
-                    activeTab === tab.id ? 'bg-slate-950 text-white' : 'bg-slate-800 text-slate-300'
-                  }`}
-                >
-                  {tab.count}
-                </span>
-              )}
             </button>
           ))}
         </div>
 
         {/* ========================================================================= */}
-        {/* TAB 1: RESUMEN / DASHBOARD                                                */}
+        {/* TAB 1: DASHBOARD RESUMEN DEPORTE                                          */}
         {/* ========================================================================= */}
         {activeTab === 'dashboard' && (
           <div className="space-y-6">
-            {/* KPI Cards */}
+            {/* KPI Cards Strip */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-4 shadow-xs">
-                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
-                  Señales de Hoy
-                </span>
-                <div className="text-2xl font-black text-white mt-1">
-                  {opportunities.length}
-                </div>
-                <span className="text-[10px] text-emerald-400 font-bold mt-0.5 block">
-                  {totalGames > 0 ? `${totalGames} partidos analizados` : 'Calculando jornada...'}
-                </span>
+              <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Juegos en Radar Hoy</span>
+                <div className="text-2xl font-black text-white mt-1">{totalGames}</div>
+                <span className="text-[11px] font-bold text-emerald-400 mt-0.5 block">{opportunities.length} con ventaja (+EV)</span>
               </div>
-
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-4 shadow-xs">
-                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
-                  Probabilidad Media
-                </span>
-                <div className="text-2xl font-black text-emerald-400 mt-1">
-                  {opportunities.length > 0
-                    ? `${Math.round(opportunities.reduce((a, b) => a + b.probability, 0) / opportunities.length)}%`
-                    : '68%'}
-                </div>
-                <span className="text-[10px] text-slate-400 block mt-0.5">
-                  Convicción algorítmica
-                </span>
+              <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Tasa de Acierto Histórica</span>
+                <div className="text-2xl font-black text-emerald-400 mt-1">{reportMetrics.winRate}%</div>
+                <span className="text-[11px] font-bold text-slate-400 mt-0.5 block">{reportMetrics.won} aciertos auditados</span>
               </div>
-
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-4 shadow-xs">
-                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
-                  Cuota Promedio
-                </span>
-                <div className="text-2xl font-black text-white mt-1">
-                  @{opportunities.length > 0
-                    ? (opportunities.reduce((a, b) => a + (b.odds || 1.8), 0) / opportunities.length).toFixed(2)
-                    : '1.85'}
-                </div>
-                <span className="text-[10px] text-cyan-400 font-bold block mt-0.5">
-                  Valor esperado positivo (+EV)
-                </span>
+              <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">ROI Auditado</span>
+                <div className="text-2xl font-black text-cyan-400 mt-1">+{reportMetrics.roi}%</div>
+                <span className="text-[11px] font-bold text-slate-400 mt-0.5 block">+{reportMetrics.netProfitUnits}u ganancia neta</span>
               </div>
-
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-4 shadow-xs">
-                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
-                  Win Rate Histórico
-                </span>
-                <div className="text-2xl font-black text-emerald-400 mt-1">
-                  {reportMetrics.totalPicks > 0 ? `${reportMetrics.winRate}%` : '74%'}
-                </div>
-                <span className="text-[10px] text-emerald-400/80 font-bold block mt-0.5">
-                  {reportMetrics.totalPicks > 0
-                    ? `100% auditado (${reportMetrics.won}/${reportMetrics.totalPicks})`
-                    : 'Historial verificado'}
-                </span>
+              <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Modelo Matemático</span>
+                <div className="text-base font-black text-purple-300 mt-1.5 truncate">Poisson / Elo / Monte Carlo</div>
+                <span className="text-[11px] font-bold text-slate-400 mt-0.5 block">Algoritmo Cuantitativo</span>
               </div>
             </div>
 
-            {/* Top Spotlight: SmartPick & Bomba del Día */}
+            {/* Spotlight Picks */}
             <section className="space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">👑</span>
-                  <h2 className="text-base font-black text-white">
-                    Pronósticos Estrella de {meta.displayName}
-                  </h2>
-                </div>
+                <h2 className="text-base font-black text-white flex items-center gap-2">
+                  <span>👑</span>
+                  <span>Pronósticos Estrella de {meta.displayName}</span>
+                </h2>
                 {smartOpportunity && (
                   <button
                     onClick={() => handleTabChange('featured')}
-                    className="text-xs font-black text-emerald-400 hover:text-emerald-300 transition cursor-pointer"
+                    className="text-xs font-black text-emerald-400 hover:text-emerald-300 cursor-pointer"
                   >
-                    Ver análisis detallado →
+                    Ver análisis completo →
                   </button>
                 )}
               </div>
@@ -637,7 +647,7 @@ ${activeParlayData.picks.map((p, i) => `${i + 1}. ${meta.icon} ${p.homeTeam} vs 
                 <div className="rounded-3xl border border-dashed border-slate-800 bg-slate-900/40 p-8 text-center">
                   <span className="text-4xl mb-2 block">{meta.icon}</span>
                   <h3 className="text-sm font-black text-white">No hay alertas activas de {meta.displayName} en este momento</h3>
-                  <p className="text-xs text-slate-400 mt-1">El motor cuantitativo evaluará la jornada automáticamente cuando se publiquen las alineaciones.</p>
+                  <p className="text-xs text-slate-400 mt-1">El motor cuantitativo evaluará la jornada automáticamente cuando se publiquen las alineaciones y cuotas oficiales.</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -648,9 +658,7 @@ ${activeParlayData.picks.map((p, i) => `${i + 1}. ${meta.icon} ${p.homeTeam} vs 
                           <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2.5 py-0.5 text-[10px] font-black text-amber-300 border border-amber-500/30 uppercase">
                             👑 SmartPick del Día
                           </span>
-                          <span className="text-xs font-black text-emerald-400">
-                            {smartOpportunity.probability}% Prob.
-                          </span>
+                          <span className="text-xs font-black text-emerald-400">{smartOpportunity.probability}% Prob.</span>
                         </div>
                         <h3 className="text-lg font-black text-white mt-1">
                           {smartOpportunity.homeTeam} vs {smartOpportunity.awayTeam}
@@ -664,21 +672,17 @@ ${activeParlayData.picks.map((p, i) => `${i + 1}. ${meta.icon} ${p.homeTeam} vs 
                       </div>
 
                       <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between">
-                        <span className="text-lg font-black text-white">
-                          @{(smartOpportunity.odds || 1.8).toFixed(2)}
-                        </span>
+                        <span className="text-lg font-black text-white">@{(smartOpportunity.odds || 1.8).toFixed(2)}</span>
                         <div className="flex items-center gap-1.5">
                           <button
                             onClick={() => handleCopyCardImage(smartOpportunity)}
                             className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white transition cursor-pointer"
-                            title="Copiar imagen"
                           >
                             📸 {copyImageSuccessId === String(smartOpportunity.fixtureId) ? '✓ Copiada' : 'Imagen'}
                           </button>
                           <button
                             onClick={() => shareCardAsImage(smartOpportunity, 'whatsapp')}
                             className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white transition cursor-pointer"
-                            title="Compartir en WhatsApp"
                           >
                             💬 WhatsApp
                           </button>
@@ -700,9 +704,7 @@ ${activeParlayData.picks.map((p, i) => `${i + 1}. ${meta.icon} ${p.homeTeam} vs 
                           <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/20 px-2.5 py-0.5 text-[10px] font-black text-rose-300 border border-rose-500/30 uppercase">
                             💣 Bomba del Día (Cuota Alta)
                           </span>
-                          <span className="text-xs font-black text-cyan-400">
-                            +{bombaOpportunity.edge}% EV
-                          </span>
+                          <span className="text-xs font-black text-cyan-400">+{bombaOpportunity.edge}% EV</span>
                         </div>
                         <h3 className="text-lg font-black text-white mt-1">
                           {bombaOpportunity.homeTeam} vs {bombaOpportunity.awayTeam}
@@ -716,21 +718,17 @@ ${activeParlayData.picks.map((p, i) => `${i + 1}. ${meta.icon} ${p.homeTeam} vs 
                       </div>
 
                       <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between">
-                        <span className="text-lg font-black text-white">
-                          @{(bombaOpportunity.odds || 2.1).toFixed(2)}
-                        </span>
+                        <span className="text-lg font-black text-white">@{(bombaOpportunity.odds || 2.1).toFixed(2)}</span>
                         <div className="flex items-center gap-1.5">
                           <button
                             onClick={() => handleCopyCardImage(bombaOpportunity)}
                             className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white transition cursor-pointer"
-                            title="Copiar imagen"
                           >
                             📸 {copyImageSuccessId === String(bombaOpportunity.fixtureId) ? '✓ Copiada' : 'Imagen'}
                           </button>
                           <button
                             onClick={() => shareCardAsImage(bombaOpportunity, 'whatsapp')}
                             className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white transition cursor-pointer"
-                            title="Compartir en WhatsApp"
                           >
                             💬 WhatsApp
                           </button>
@@ -751,102 +749,248 @@ ${activeParlayData.picks.map((p, i) => `${i + 1}. ${meta.icon} ${p.homeTeam} vs 
         )}
 
         {/* ========================================================================= */}
-        {/* TAB 2: ALERTAS PRE-MATCH (COMPREHENSIVE RICH CARDS WITH H2H & WHATSAPP)   */}
+        {/* TAB 2: PRE-MATCH SIGNALS WITH COMPLETE MULTI-SELECT FILTERS               */}
         {/* ========================================================================= */}
         {activeTab === 'signals' && (
           <div className="space-y-5">
-            {/* Filter Control Bar */}
-            <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-4 sm:p-5 shadow-xl space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="relative flex-1">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
-                  <input
-                    type="text"
-                    placeholder="Buscar equipo o torneo..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full rounded-xl border border-slate-800 bg-slate-950 py-2 pl-9 pr-3 text-xs text-slate-200 placeholder-slate-500 focus:border-emerald-500 focus:outline-hidden"
-                  />
-                </div>
+            {/* Quick Status Pills Bar */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1">
+              <button
+                onClick={() => setMatchStatusFilter('ALL')}
+                className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+                  matchStatusFilter === 'ALL'
+                    ? 'bg-emerald-600 text-white shadow-md'
+                    : 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800'
+                }`}
+              >
+                🌟 Todas ({opportunities.length})
+              </button>
+              <button
+                onClick={() => setMatchStatusFilter('VALOR')}
+                className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+                  matchStatusFilter === 'VALOR'
+                    ? 'bg-amber-500 text-slate-950 shadow-md'
+                    : 'bg-slate-900 text-amber-300 hover:bg-slate-800 border border-slate-800'
+                }`}
+              >
+                💎 Valor ({valorCount})
+              </button>
+              <button
+                onClick={() => setMatchStatusFilter('BOMBA')}
+                className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+                  matchStatusFilter === 'BOMBA'
+                    ? 'bg-rose-600 text-white shadow-md'
+                    : 'bg-slate-900 text-rose-300 hover:bg-slate-800 border border-slate-800'
+                }`}
+              >
+                💣 Bomba ({bombaCount})
+              </button>
+              <button
+                onClick={() => setMatchStatusFilter('MCP')}
+                className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+                  matchStatusFilter === 'MCP'
+                    ? 'bg-purple-600 text-white shadow-md'
+                    : 'bg-slate-900 text-purple-300 hover:bg-slate-800 border border-slate-800'
+                }`}
+              >
+                🤖 Agente MCP ({mcpCount})
+              </button>
+              <button
+                onClick={() => setMatchStatusFilter('WON')}
+                className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+                  matchStatusFilter === 'WON'
+                    ? 'bg-emerald-600 text-white shadow-md'
+                    : 'bg-slate-900 text-emerald-300 hover:bg-slate-800 border border-slate-800'
+                }`}
+              >
+                ✓ Ganadas ({wonCount})
+              </button>
+              <button
+                onClick={() => setMatchStatusFilter('LOST')}
+                className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+                  matchStatusFilter === 'LOST'
+                    ? 'bg-rose-600 text-white shadow-md'
+                    : 'bg-slate-900 text-rose-300 hover:bg-slate-800 border border-slate-800'
+                }`}
+              >
+                ✗ Perdidas ({lostCount})
+              </button>
+              <button
+                onClick={() => setMatchStatusFilter('SCHEDULED')}
+                className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+                  matchStatusFilter === 'SCHEDULED'
+                    ? 'bg-cyan-600 text-white shadow-md'
+                    : 'bg-slate-900 text-cyan-300 hover:bg-slate-800 border border-slate-800'
+                }`}
+              >
+                ⏳ Programadas ({scheduledCount})
+              </button>
+              <button
+                onClick={() => setMatchStatusFilter('FINISHED')}
+                className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+                  matchStatusFilter === 'FINISHED'
+                    ? 'bg-slate-700 text-white shadow-md'
+                    : 'bg-slate-900 text-slate-400 hover:bg-slate-800 border border-slate-800'
+                }`}
+              >
+                🏁 Finalizadas ({finishedCount})
+              </button>
+            </div>
 
-                <div className="flex items-center gap-2 flex-wrap">
-                  {/* Market dropdown */}
-                  <select
-                    value={marketFilter}
-                    onChange={(e) => setMarketFilter(e.target.value)}
-                    className="rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs font-bold text-slate-300 focus:border-emerald-500 focus:outline-hidden cursor-pointer"
+            {/* Time Slot Filter Pills */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+              <span className="font-bold text-slate-400 mr-1">Horario:</span>
+              <button
+                onClick={() => setTimeSlotFilter('ALL')}
+                className={`rounded-xl px-3 py-1 text-xs font-bold transition cursor-pointer ${
+                  timeSlotFilter === 'ALL'
+                    ? 'bg-emerald-500 text-slate-950 font-black'
+                    : 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800'
+                }`}
+              >
+                ⏰ Todas
+              </button>
+              <button
+                onClick={() => setTimeSlotFilter('TOP')}
+                className={`rounded-xl px-3 py-1 text-xs font-bold transition cursor-pointer ${
+                  timeSlotFilter === 'TOP'
+                    ? 'bg-amber-500 text-slate-950 font-black'
+                    : 'bg-slate-900 text-amber-300 hover:bg-slate-800 border border-slate-800'
+                }`}
+              >
+                ⭐ Top Picks ({topPickCount})
+              </button>
+              <button
+                onClick={() => setTimeSlotFilter('MORNING')}
+                className={`rounded-xl px-3 py-1 text-xs font-bold transition cursor-pointer ${
+                  timeSlotFilter === 'MORNING'
+                    ? 'bg-amber-500 text-slate-950 font-black'
+                    : 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800'
+                }`}
+              >
+                🌅 Mañana ({morningCount})
+              </button>
+              <button
+                onClick={() => setTimeSlotFilter('AFTERNOON')}
+                className={`rounded-xl px-3 py-1 text-xs font-bold transition cursor-pointer ${
+                  timeSlotFilter === 'AFTERNOON'
+                    ? 'bg-amber-500 text-slate-950 font-black'
+                    : 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800'
+                }`}
+              >
+                ☀️ Tarde ({afternoonCount})
+              </button>
+              <button
+                onClick={() => setTimeSlotFilter('NIGHT')}
+                className={`rounded-xl px-3 py-1 text-xs font-bold transition cursor-pointer ${
+                  timeSlotFilter === 'NIGHT'
+                    ? 'bg-indigo-600 text-white font-black'
+                    : 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800'
+                }`}
+              >
+                🌙 Noche ({nightCount})
+              </button>
+            </div>
+
+            {/* Secondary Multi-Select Filters Bar */}
+            <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-900/90 p-3 shadow-xl">
+              {/* Search bar */}
+              <div className="relative flex-1 min-w-[200px]">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400">🔍</span>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Buscar equipo o torneo..."
+                  className="w-full rounded-xl border border-slate-800 bg-slate-950 py-2 pl-9 pr-8 text-xs font-bold text-slate-100 placeholder-slate-500 outline-none focus:border-emerald-500"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-200"
                   >
-                    <option value="all">🎯 Todos los Mercados</option>
-                    {availableMarkets.map((m) => (
-                      <option key={m} value={m}>{m}</option>
-                    ))}
-                  </select>
+                    ✕
+                  </button>
+                )}
+              </div>
 
-                  {/* Min Probability */}
+              <div className="flex flex-wrap items-center gap-2">
+                <MultiSelectDropdown
+                  label="Ligas"
+                  icon="🏆"
+                  options={leagueDropdownOptions}
+                  selected={selectedLeagues}
+                  onChange={setSelectedLeagues}
+                />
+
+                {marketDropdownOptions.length > 0 && (
+                  <MultiSelectDropdown
+                    label="Mercados"
+                    icon="🎯"
+                    options={marketDropdownOptions}
+                    selected={selectedMarkets}
+                    onChange={setSelectedMarkets}
+                  />
+                )}
+
+                <MultiSelectDropdown
+                  label="Confianza"
+                  icon="⭐"
+                  options={confidenceDropdownOptions}
+                  selected={selectedConfidence}
+                  onChange={setSelectedConfidence}
+                />
+
+                {/* Min probability */}
+                <div className="flex items-center gap-1.5 rounded-xl border border-slate-800 bg-slate-950 px-3 py-1.5 text-xs font-bold text-slate-300">
+                  <span>Prob. ≥</span>
                   <select
                     value={minProbability}
                     onChange={(e) => setMinProbability(Number(e.target.value))}
-                    className="rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs font-bold text-slate-300 focus:border-emerald-500 focus:outline-hidden cursor-pointer"
+                    className="bg-transparent font-black text-emerald-400 outline-none cursor-pointer"
                   >
-                    <option value={0}>📈 Cualquier Probabilidad</option>
-                    <option value={60}>60%+ Probabilidad</option>
-                    <option value={70}>70%+ Probabilidad</option>
+                    <option value={35} className="bg-slate-900 text-white">35% (Todas)</option>
+                    <option value={50} className="bg-slate-900 text-white">50%</option>
+                    <option value={60} className="bg-slate-900 text-white">60%</option>
+                    <option value={70} className="bg-slate-900 text-white">70% (Muy Alta)</option>
                   </select>
-
-                  {(searchQuery || marketFilter !== 'all' || minProbability > 0 || statusFilter !== 'all') && (
-                    <button
-                      onClick={() => {
-                        setSearchQuery('');
-                        setMarketFilter('all');
-                        setMinProbability(0);
-                        setStatusFilter('all');
-                      }}
-                      className="px-3 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white bg-slate-800 cursor-pointer"
-                    >
-                      Limpiar
-                    </button>
-                  )}
                 </div>
-              </div>
 
-              {/* Status Quick Pills */}
-              <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                {[
-                  { id: 'all', label: 'Todas las Alertas' },
-                  { id: 'high_conviction', label: '⭐⭐⭐ Máxima Convicción' },
-                  { id: 'ev_plus', label: '💎 Valor +EV (+5%)' },
-                  { id: 'won', label: '✓ Ganadas' },
-                  { id: 'lost', label: '✗ Perdidas' },
-                ].map((pill) => (
+                {(selectedLeagues.length > 0 || selectedMarkets.length > 0 || selectedConfidence.length > 0 || searchQuery || minProbability > 35) && (
                   <button
-                    key={pill.id}
-                    onClick={() => setStatusFilter(pill.id as any)}
-                    className={`px-3 py-1.5 rounded-xl text-[11px] font-extrabold whitespace-nowrap transition cursor-pointer ${
-                      statusFilter === pill.id
-                        ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/40 shadow-xs'
-                        : 'bg-slate-950 text-slate-400 border border-slate-800 hover:bg-slate-800'
-                    }`}
+                    onClick={() => {
+                      setSelectedLeagues([]);
+                      setSelectedMarkets([]);
+                      setSelectedConfidence([]);
+                      setSearchQuery('');
+                      setMinProbability(35);
+                    }}
+                    className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-extrabold text-slate-300 hover:bg-slate-700 cursor-pointer"
                   >
-                    {pill.label}
+                    Limpiar
                   </button>
-                ))}
+                )}
               </div>
             </div>
 
-            {/* Signal Cards Grid using PredictionCard */}
+            {/* Signals Grid (3 Columns) */}
             {filteredOpportunities.length === 0 ? (
               <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-slate-800 bg-slate-900/40 p-12 text-center">
-                <span className="text-4xl mb-2">{meta.icon}</span>
-                <h3 className="text-base font-black text-white">No hay alertas activas para {meta.displayName} con estos filtros</h3>
-                <p className="text-xs text-slate-400 mt-1">Prueba ajustando los criterios de búsqueda o seleccionando otro mercado.</p>
+                <span className="text-4xl mb-3">{meta.icon}</span>
+                <h3 className="text-base font-black text-white">
+                  No hay alertas activas de {meta.displayName} con estos filtros
+                </h3>
+                <p className="text-xs text-slate-400 mt-1 max-w-sm">
+                  Prueba seleccionando otro mercado o ajustando el umbral de probabilidad mínima.
+                </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {filteredOpportunities.map((opp) => (
                   <PredictionCard
-                    key={opp.id || String(opp.fixtureId)}
+                    key={opp.id || `${opp.fixtureId}-${opp.market}`}
                     prediction={opp}
-                    onOpenDetail={(p) => setActiveModalPick(p)}
+                    onOpenDetail={setActiveModalPick}
                   />
                 ))}
               </div>
@@ -898,57 +1042,43 @@ ${activeParlayData.picks.map((p, i) => `${i + 1}. ${meta.icon} ${p.homeTeam} vs 
                         <span className="text-xs text-slate-400 font-semibold">{smartOpportunity.league}</span>
 
                         <div className="mt-4 grid grid-cols-3 gap-2">
-                          <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-center">
-                            <span className="text-[10px] text-slate-400 block font-bold">Cuota Casa</span>
-                            <span className="text-base font-black text-white">@{(smartOpportunity.odds || 1.8).toFixed(2)}</span>
+                          <div className="bg-slate-900 p-2.5 rounded-xl text-center border border-slate-800">
+                            <span className="text-[10px] text-slate-400 block uppercase">Pronóstico</span>
+                            <span className="text-xs font-black text-emerald-400">{smartOpportunity.selection}</span>
                           </div>
-                          <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-center">
-                            <span className="text-[10px] text-indigo-400 block font-bold">Cuota Modelo</span>
-                            <span className="text-base font-black text-indigo-300">@{(smartOpportunity.fairOdds || 1.6).toFixed(2)}</span>
+                          <div className="bg-slate-900 p-2.5 rounded-xl text-center border border-slate-800">
+                            <span className="text-[10px] text-slate-400 block uppercase">Cuota</span>
+                            <span className="text-xs font-black text-white">@{(smartOpportunity.odds || 1.8).toFixed(2)}</span>
                           </div>
-                          <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-center">
-                            <span className="text-[10px] text-emerald-400 block font-bold">Probabilidad</span>
-                            <span className="text-base font-black text-emerald-400">{smartOpportunity.probability}%</span>
+                          <div className="bg-slate-900 p-2.5 rounded-xl text-center border border-slate-800">
+                            <span className="text-[10px] text-slate-400 block uppercase">Probabilidad</span>
+                            <span className="text-xs font-black text-emerald-400">{smartOpportunity.probability}%</span>
                           </div>
                         </div>
 
-                        <div className="mt-4 p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20">
-                          <span className="text-xs font-black text-amber-300 block">
-                            🎯 Selección: {smartOpportunity.market} ({smartOpportunity.selection})
-                          </span>
-                          <p className="text-xs text-slate-300 mt-1 italic leading-relaxed">
-                            &quot;{smartOpportunity.explanation}&quot;
-                          </p>
-                        </div>
+                        <p className="mt-4 text-xs text-slate-300 leading-relaxed bg-slate-900/60 p-3 rounded-xl border border-slate-800/80">
+                          {smartOpportunity.explanation}
+                        </p>
                       </div>
 
-                      <div className="mt-5 pt-3 border-t border-slate-800 flex items-center justify-between flex-wrap gap-2">
-                        <div className="flex items-center gap-1.5">
-                          <button
-                            onClick={() => handleCopyCardImage(smartOpportunity)}
-                            className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white transition cursor-pointer"
-                          >
-                            📸 {copyImageSuccessId === String(smartOpportunity.fixtureId) ? '✓ Copiada' : 'Imagen'}
-                          </button>
-                          <button
-                            onClick={() => shareCardAsImage(smartOpportunity, 'whatsapp')}
-                            className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white transition cursor-pointer"
-                          >
-                            💬 WhatsApp
-                          </button>
-                          <button
-                            onClick={() => handleCopyText(smartOpportunity)}
-                            className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 transition cursor-pointer"
-                          >
-                            📋 {copiedId?.includes(String(smartOpportunity.fixtureId)) ? '✓' : 'Texto'}
-                          </button>
-                        </div>
-
+                      <div className="mt-5 pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => handleCopyCardImage(smartOpportunity)}
+                          className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white transition cursor-pointer"
+                        >
+                          📸 {copyImageSuccessId === String(smartOpportunity.fixtureId) ? '✓ Copiada' : 'Copiar Imagen'}
+                        </button>
+                        <button
+                          onClick={() => shareCardAsImage(smartOpportunity, 'whatsapp')}
+                          className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white transition cursor-pointer"
+                        >
+                          💬 WhatsApp
+                        </button>
                         <button
                           onClick={() => setActiveModalPick(smartOpportunity)}
-                          className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 text-xs font-black hover:brightness-110 transition cursor-pointer"
+                          className="px-3.5 py-1.5 rounded-xl bg-emerald-500 text-slate-950 text-xs font-black hover:bg-emerald-400 transition cursor-pointer"
                         >
-                          📊 Ver H2H & Historial →
+                          📊 H2H y Stats →
                         </button>
                       </div>
                     </div>
@@ -959,7 +1089,7 @@ ${activeParlayData.picks.map((p, i) => `${i + 1}. ${meta.icon} ${p.homeTeam} vs 
                       <div>
                         <div className="flex items-center justify-between mb-2">
                           <span className="px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 text-xs font-black border border-rose-500/30">
-                            💣 BOMBA DEL DÍA (CUOTA ALTA)
+                            💣 BOMBA DEL DÍA
                           </span>
                           <span className="text-xs font-bold text-slate-400">
                             {new Date(bombaOpportunity.kickoff).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
@@ -972,57 +1102,43 @@ ${activeParlayData.picks.map((p, i) => `${i + 1}. ${meta.icon} ${p.homeTeam} vs 
                         <span className="text-xs text-slate-400 font-semibold">{bombaOpportunity.league}</span>
 
                         <div className="mt-4 grid grid-cols-3 gap-2">
-                          <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-center">
-                            <span className="text-[10px] text-slate-400 block font-bold">Cuota Casa</span>
-                            <span className="text-base font-black text-white">@{(bombaOpportunity.odds || 2.1).toFixed(2)}</span>
+                          <div className="bg-slate-900 p-2.5 rounded-xl text-center border border-slate-800">
+                            <span className="text-[10px] text-slate-400 block uppercase">Pronóstico</span>
+                            <span className="text-xs font-black text-rose-400">{bombaOpportunity.selection}</span>
                           </div>
-                          <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-center">
-                            <span className="text-[10px] text-indigo-400 block font-bold">Cuota Modelo</span>
-                            <span className="text-base font-black text-indigo-300">@{(bombaOpportunity.fairOdds || 1.8).toFixed(2)}</span>
+                          <div className="bg-slate-900 p-2.5 rounded-xl text-center border border-slate-800">
+                            <span className="text-[10px] text-slate-400 block uppercase">Cuota</span>
+                            <span className="text-xs font-black text-white">@{(bombaOpportunity.odds || 2.1).toFixed(2)}</span>
                           </div>
-                          <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-center">
-                            <span className="text-[10px] text-cyan-400 block font-bold">Valor +EV</span>
-                            <span className="text-base font-black text-cyan-400">+{bombaOpportunity.edge}%</span>
+                          <div className="bg-slate-900 p-2.5 rounded-xl text-center border border-slate-800">
+                            <span className="text-[10px] text-slate-400 block uppercase">Valor (+EV)</span>
+                            <span className="text-xs font-black text-cyan-400">+{bombaOpportunity.edge}%</span>
                           </div>
                         </div>
 
-                        <div className="mt-4 p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20">
-                          <span className="text-xs font-black text-rose-300 block">
-                            🎯 Selección: {bombaOpportunity.market} ({bombaOpportunity.selection})
-                          </span>
-                          <p className="text-xs text-slate-300 mt-1 italic leading-relaxed">
-                            &quot;{bombaOpportunity.explanation}&quot;
-                          </p>
-                        </div>
+                        <p className="mt-4 text-xs text-slate-300 leading-relaxed bg-slate-900/60 p-3 rounded-xl border border-slate-800/80">
+                          {bombaOpportunity.explanation}
+                        </p>
                       </div>
 
-                      <div className="mt-5 pt-3 border-t border-slate-800 flex items-center justify-between flex-wrap gap-2">
-                        <div className="flex items-center gap-1.5">
-                          <button
-                            onClick={() => handleCopyCardImage(bombaOpportunity)}
-                            className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white transition cursor-pointer"
-                          >
-                            📸 {copyImageSuccessId === String(bombaOpportunity.fixtureId) ? '✓ Copiada' : 'Imagen'}
-                          </button>
-                          <button
-                            onClick={() => shareCardAsImage(bombaOpportunity, 'whatsapp')}
-                            className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white transition cursor-pointer"
-                          >
-                            💬 WhatsApp
-                          </button>
-                          <button
-                            onClick={() => handleCopyText(bombaOpportunity, true)}
-                            className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 transition cursor-pointer"
-                          >
-                            📋 {copiedId?.includes(String(bombaOpportunity.fixtureId)) ? '✓' : 'Texto'}
-                          </button>
-                        </div>
-
+                      <div className="mt-5 pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => handleCopyCardImage(bombaOpportunity)}
+                          className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white transition cursor-pointer"
+                        >
+                          📸 {copyImageSuccessId === String(bombaOpportunity.fixtureId) ? '✓ Copiada' : 'Copiar Imagen'}
+                        </button>
+                        <button
+                          onClick={() => shareCardAsImage(bombaOpportunity, 'whatsapp')}
+                          className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white transition cursor-pointer"
+                        >
+                          💬 WhatsApp
+                        </button>
                         <button
                           onClick={() => setActiveModalPick(bombaOpportunity)}
-                          className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 text-xs font-black hover:brightness-110 transition cursor-pointer"
+                          className="px-3.5 py-1.5 rounded-xl bg-emerald-500 text-slate-950 text-xs font-black hover:bg-emerald-400 transition cursor-pointer"
                         >
-                          📊 Ver H2H & Historial →
+                          📊 H2H y Stats →
                         </button>
                       </div>
                     </div>
@@ -1034,369 +1150,267 @@ ${activeParlayData.picks.map((p, i) => `${i + 1}. ${meta.icon} ${p.homeTeam} vs 
         )}
 
         {/* ========================================================================= */}
-        {/* TAB 4: PARLAY DEL DÍA (INTERACTIVE COMBINADA BUILDER & SLIP)             */}
+        {/* TAB 4: PARLAY DEL DÍA                                                     */}
         {/* ========================================================================= */}
         {activeTab === 'parlay' && (
-          <div className="space-y-5">
-            {activeParlayData.picks.length < 2 ? (
+          <section className="space-y-6">
+            {/* Mode Selector Buttons */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1">
+              {[
+                { id: 'PARLAY_1', label: '🛡️ Doble Seguro', count: 2 },
+                { id: 'PARLAY_2', label: '💎 Doble Valor +EV', count: 2 },
+                { id: 'PARLAY_3', label: '🚀 Triplete Multi-Leg', count: 3 },
+              ].map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => setParlayMode(p.id as any)}
+                  className={`px-4 py-2.5 rounded-2xl text-xs font-black transition cursor-pointer whitespace-nowrap ${
+                    parlayMode === p.id
+                      ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/40'
+                      : 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800'
+                  }`}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+
+            {activeParlayData.picks.length === 0 ? (
               <div className="rounded-3xl border border-dashed border-slate-800 bg-slate-900/40 p-12 text-center">
                 <span className="text-4xl mb-3 block">🎲</span>
-                <h3 className="text-base font-black text-white">No hay suficientes alertas para generar combinadas de {meta.displayName} hoy</h3>
-                <p className="text-xs text-slate-400 mt-1">Se requieren al menos 2 partidos activos con cuotas analizadas.</p>
+                <h3 className="text-base font-black text-white">No hay suficientes pronósticos para armar combinadas de {meta.displayName} hoy</h3>
+                <p className="text-xs text-slate-400 mt-1">Se requieren al menos 2 partidos analizados con cuota oficial.</p>
               </div>
             ) : (
-              <>
-                {/* Mode selector pills */}
-                <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                  {(Object.keys(curatedParlaySets) as Array<keyof typeof curatedParlaySets>).map((key) => {
-                    const item = curatedParlaySets[key];
-                    return (
-                      <button
-                        key={key}
-                        onClick={() => setParlayMode(key)}
-                        className={`px-4 py-2.5 rounded-2xl text-xs font-black whitespace-nowrap transition cursor-pointer ${
-                          parlayMode === key
-                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
-                            : 'bg-slate-900 text-slate-300 border border-slate-800 hover:bg-slate-800'
-                        }`}
-                      >
-                        {item.title}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-                  {/* Left 2 Cols: Leg Breakdown Cards */}
-                  <div className="lg:col-span-2 space-y-3">
-                    <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Legs List (2 Cols) */}
+                <div className="lg:col-span-2 space-y-4">
+                  <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-5 shadow-xl">
+                    <div className="border-b border-slate-800 pb-3 mb-4">
                       <h3 className="text-base font-black text-white">{activeParlayData.title}</h3>
-                      <p className="text-xs text-slate-400 mt-0.5">{activeParlayData.desc}</p>
+                      <p className="text-xs text-slate-400">{activeParlayData.desc}</p>
                     </div>
 
-                    {activeParlayData.picks.map((pick, i) => (
-                      <div
-                        key={pick.id || i}
-                        className="rounded-2xl border border-slate-800 bg-slate-900/90 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs hover:border-emerald-500/40 transition"
-                      >
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400 text-xs font-black border border-emerald-500/30">
-                              {i + 1}
-                            </span>
-                            <span className="text-xs font-bold text-slate-400">{pick.league}</span>
-                            <span className="text-[11px] text-slate-500">• {new Date(pick.kickoff).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</span>
+                    <div className="space-y-3">
+                      {activeParlayData.picks.map((pick, idx) => (
+                        <div
+                          key={pick.id || idx}
+                          className="rounded-2xl border border-slate-800 bg-slate-950/80 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                        >
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 text-[10px] font-black">
+                                Leg #{idx + 1}
+                              </span>
+                              <span className="text-xs font-bold text-slate-400">{pick.league}</span>
+                            </div>
+                            <h4 className="text-sm font-black text-white">{pick.homeTeam} vs {pick.awayTeam}</h4>
+                            <div className="text-xs font-bold text-emerald-400 mt-1">
+                              {pick.market}: <span className="text-white font-extrabold">{pick.selection}</span>
+                            </div>
                           </div>
-                          <h4 className="text-sm font-black text-white mt-1">
-                            {pick.homeTeam} vs {pick.awayTeam}
-                          </h4>
-                          <div className="mt-1 text-xs font-bold text-emerald-400">
-                            {pick.market}: <span className="text-slate-200">{pick.selection}</span>
-                          </div>
-                        </div>
 
-                        <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800">
-                          <div className="text-right">
-                            <span className="text-base font-black text-white">@{(pick.odds || 1.5).toFixed(2)}</span>
-                            <span className="block text-[10px] text-slate-400">{pick.probability}% Prob.</span>
-                          </div>
-                          <button
-                            onClick={() => setActiveModalPick(pick)}
-                            className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 cursor-pointer"
-                          >
-                            📊 H2H
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Right Col: Interactive Betting Slip */}
-                  <div className="space-y-4">
-                    <div className="rounded-3xl border border-slate-800 bg-slate-900 p-5 sm:p-6 shadow-xl sticky top-24 space-y-4">
-                      <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg">🧾</span>
-                          <h3 className="text-base font-black text-white">Boleto de Apuesta</h3>
-                        </div>
-                        <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-black text-emerald-400">
-                          {activeParlayData.picks.length} Selecciones
-                        </span>
-                      </div>
-
-                      <div className="space-y-2.5 text-xs">
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-400 font-bold">Cuota Total Acumulada:</span>
-                          <span className="text-lg font-black text-white">@{parlayTotalOdds}</span>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-400 font-bold">Probabilidad Estimada:</span>
-                          <span className="text-emerald-400 font-black">{parlayCombinedProb.toFixed(1)}%</span>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-400 font-bold">Cuota Justa Modelo:</span>
-                          <span className="text-slate-300 font-bold">@{parlayFairOdds}</span>
-                        </div>
-
-                        <div className="pt-2">
-                          <label className="block text-xs font-bold text-slate-300 mb-1">
-                            Monto a Simular ($ USD):
-                          </label>
-                          <input
-                            type="number"
-                            min="1"
-                            step="5"
-                            value={parlayStake}
-                            onChange={(e) => setParlayStake(Math.max(1, Number(e.target.value) || 1))}
-                            className="w-full rounded-xl border border-slate-800 bg-slate-950 py-2 px-3 text-sm font-black text-white focus:border-emerald-500 focus:outline-hidden"
-                          />
-                        </div>
-
-                        <div className="rounded-2xl bg-emerald-500/10 p-3.5 border border-emerald-500/30">
-                          <div className="flex items-center justify-between text-xs">
-                            <span className="font-bold text-emerald-300">Ganancia Neta:</span>
-                            <span className="text-base font-black text-emerald-400">+${parlayPotentialProfit}</span>
-                          </div>
-                          <div className="flex items-center justify-between text-xs mt-1 pt-1 border-t border-emerald-500/20">
-                            <span className="font-extrabold text-emerald-300">Retorno Total:</span>
-                            <span className="text-lg font-black text-emerald-200">${parlayTotalReturn} USD</span>
-                          </div>
-                        </div>
-
-                        {/* Visual Card Sharing Buttons */}
-                        <div className="space-y-2 pt-2">
-                          <div className="grid grid-cols-2 gap-2">
+                          <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800">
+                            <div className="text-right">
+                              <div className="text-base font-black text-white">@{(pick.odds || 1.8).toFixed(2)}</div>
+                              <div className="text-[10px] font-bold text-slate-400">{pick.probability}% prob.</div>
+                            </div>
                             <button
-                              onClick={() => shareParlayCardAsImage(activeParlayData.picks, parlayTotalOdds, parlayCombinedProb, parlayStake, 'whatsapp')}
-                              className="flex items-center justify-center gap-1 rounded-xl bg-emerald-600 px-3 py-2 text-xs font-black text-white hover:bg-emerald-500 transition cursor-pointer"
+                              onClick={() => setActiveModalPick(pick)}
+                              className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 cursor-pointer"
                             >
-                              <span>💬</span>
-                              <span>WhatsApp</span>
-                            </button>
-
-                            <button
-                              onClick={() => shareParlayCardAsImage(activeParlayData.picks, parlayTotalOdds, parlayCombinedProb, parlayStake, 'telegram')}
-                              className="flex items-center justify-center gap-1 rounded-xl bg-sky-600 px-3 py-2 text-xs font-black text-white hover:bg-sky-500 transition cursor-pointer"
-                            >
-                              <span>✈️</span>
-                              <span>Telegram</span>
+                              📊 H2H
                             </button>
                           </div>
-
-                          <button
-                            onClick={handleCopyParlayImage}
-                            className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-slate-800 py-2.5 text-xs font-black text-slate-200 hover:bg-slate-700 transition cursor-pointer"
-                          >
-                            <span>📸</span>
-                            <span>{parlayCopyImageSuccess ? '✓ ¡Tarjeta Gráfica Copiada!' : parlayCopyingImage ? 'Generando...' : 'Copiar Tarjeta Gráfica'}</span>
-                          </button>
-
-                          <button
-                            onClick={handleCopyParlayText}
-                            className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-slate-950 py-2 text-xs font-bold text-slate-400 hover:text-white transition cursor-pointer"
-                          >
-                            <span>📋</span>
-                            <span>{parlayCopiedText ? '✓ ¡Texto Copiado!' : 'Copiar Texto'}</span>
-                          </button>
                         </div>
-                      </div>
+                      ))}
                     </div>
                   </div>
                 </div>
-              </>
+
+                {/* Betting Slip & Returns Simulation Card (1 Col) */}
+                <div className="rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/20 via-slate-900 to-slate-900 p-5 sm:p-6 shadow-xl space-y-5 flex flex-col justify-between">
+                  <div>
+                    <div className="border-b border-slate-800 pb-3">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400">Boleto Combinado</span>
+                      <h3 className="text-lg font-black text-white mt-0.5">Calculadora de Retornos</h3>
+                    </div>
+
+                    <div className="mt-4 space-y-3 text-xs">
+                      <div className="flex justify-between items-center py-1.5 border-b border-slate-800/60">
+                        <span className="text-slate-400 font-bold">Cuota Total Multiplicada</span>
+                        <span className="text-lg font-black text-emerald-400">@{parlayTotalOdds.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between items-center py-1.5 border-b border-slate-800/60">
+                        <span className="text-slate-400 font-bold">Probabilidad Combinada</span>
+                        <span className="text-xs font-black text-white">{parlayCombinedProb}%</span>
+                      </div>
+
+                      <div className="pt-2">
+                        <div className="flex justify-between items-center mb-1">
+                          <label className="font-bold text-slate-300">Importe Simulado ($ USD):</label>
+                          <span className="font-black text-emerald-400">${parlayStake}</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="5"
+                          max="100"
+                          step="5"
+                          value={parlayStake}
+                          onChange={(e) => setParlayStake(Number(e.target.value))}
+                          className="w-full accent-emerald-500 cursor-pointer"
+                        />
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-slate-950 border border-emerald-500/20 space-y-1 mt-3">
+                        <div className="flex justify-between text-xs text-slate-400">
+                          <span>Ganancia Neta Estimada:</span>
+                          <span className="font-bold text-emerald-400">+${parlayPotentialProfit}</span>
+                        </div>
+                        <div className="flex justify-between text-sm font-black text-white pt-1 border-t border-slate-800">
+                          <span>Retorno Total:</span>
+                          <span className="text-emerald-300">${parlayTotalReturn}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Share & Download Actions */}
+                  <div className="space-y-2 pt-4 border-t border-slate-800">
+                    <button
+                      onClick={handleCopyParlayCardImage}
+                      disabled={parlayCopyingImage}
+                      className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-black text-white transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                    >
+                      <span>📸</span>
+                      <span>{parlayCopyImageSuccess ? '✓ ¡Imagen Copiada al Portapapeles!' : parlayCopyingImage ? 'Generando...' : 'Copiar Imagen HD del Parlay'}</span>
+                    </button>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => shareParlayCardAsImage(activeParlayData.picks, parlayTotalOdds, parlayCombinedProb, parlayStake, 'whatsapp')}
+                        className="py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-black text-white transition flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        <span>💬</span>
+                        <span>WhatsApp</span>
+                      </button>
+                      <button
+                        onClick={() => downloadParlayCardImage(activeParlayData.picks, parlayTotalOdds, parlayCombinedProb, parlayStake)}
+                        className="py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-black text-white transition flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        <span>⬇</span>
+                        <span>Descargar PNG</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
-          </div>
+          </section>
         )}
 
         {/* ========================================================================= */}
-        {/* TAB 5: HISTORIAL & TRACK RECORD (REAL DATABASE DATA - 0 NHL DUMMY DATA)  */}
+        {/* TAB 5: HISTORIAL AUDITADO (TABLE & CARDS VIEW)                            */}
         {/* ========================================================================= */}
         {activeTab === 'history' && (
-          <section className="space-y-4">
-            <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-5 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-black text-emerald-400 border border-emerald-500/30">
-                    ✓ 100% AUDITADO E INMUTABLE
-                  </span>
-                </div>
-                <h2 className="text-xl font-black text-white mt-1.5">
-                  Track Record Histórico: {meta.displayName}
-                </h2>
-                <p className="text-xs text-slate-400">
-                  Transparencia absoluta. Todas las alertas resueltas con cuotas oficiales y marcadores reales de {meta.displayName}.
-                </p>
+          <section className="space-y-5">
+            {/* Control Bar: View Toggle & Filters */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-900/90 p-4 shadow-xl">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setHistoryFilter('all')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                    historyFilter === 'all' ? 'bg-emerald-600 text-white' : 'bg-slate-950 text-slate-300 hover:bg-slate-800'
+                  }`}
+                >
+                  🌟 Todas ({auditedHistoricalOpportunities.length})
+                </button>
+                <button
+                  onClick={() => setHistoryFilter('won')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                    historyFilter === 'won' ? 'bg-emerald-600 text-white' : 'bg-slate-950 text-slate-300 hover:bg-slate-800'
+                  }`}
+                >
+                  ✓ Ganadas ({auditedHistoricalOpportunities.filter((h) => h.result === 'WON').length})
+                </button>
+                <button
+                  onClick={() => setHistoryFilter('lost')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                    historyFilter === 'lost' ? 'bg-rose-600 text-white' : 'bg-slate-950 text-slate-300 hover:bg-slate-800'
+                  }`}
+                >
+                  ✗ Perdidas ({auditedHistoricalOpportunities.filter((h) => h.result === 'LOST').length})
+                </button>
               </div>
 
-              <div className="flex items-center gap-2 flex-wrap">
-                {/* Result filters */}
-                <div className="flex rounded-xl bg-slate-950 p-1 border border-slate-800">
-                  <button
-                    onClick={() => setHistoryFilter('all')}
-                    className={`px-3 py-1 text-xs font-black rounded-lg transition cursor-pointer ${
-                      historyFilter === 'all' ? 'bg-emerald-500 text-slate-950' : 'text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    Todas ({auditedHistoricalOpportunities.length})
-                  </button>
-                  <button
-                    onClick={() => setHistoryFilter('won')}
-                    className={`px-3 py-1 text-xs font-black rounded-lg transition cursor-pointer ${
-                      historyFilter === 'won' ? 'bg-emerald-500 text-slate-950' : 'text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    ✓ Ganadas ({reportMetrics.won})
-                  </button>
-                  <button
-                    onClick={() => setHistoryFilter('lost')}
-                    className={`px-3 py-1 text-xs font-black rounded-lg transition cursor-pointer ${
-                      historyFilter === 'lost' ? 'bg-rose-500 text-white' : 'text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    ✗ Perdidas ({reportMetrics.lost})
-                  </button>
-                </div>
-
-                {/* View switcher */}
-                <div className="flex rounded-xl bg-slate-950 p-1 border border-slate-800">
-                  <button
-                    onClick={() => setHistoryViewMode('cards')}
-                    className={`px-2.5 py-1 text-xs font-black rounded-lg transition cursor-pointer ${
-                      historyViewMode === 'cards' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white'
-                    }`}
-                    title="Vista Tarjetas"
-                  >
-                    🎴 Tarjetas
-                  </button>
-                  <button
-                    onClick={() => setHistoryViewMode('table')}
-                    className={`px-2.5 py-1 text-xs font-black rounded-lg transition cursor-pointer ${
-                      historyViewMode === 'table' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white'
-                    }`}
-                    title="Vista Tabla"
-                  >
-                    📋 Tabla
-                  </button>
-                </div>
+              {/* Cards vs Table View Toggle */}
+              <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800 self-start sm:self-auto">
+                <button
+                  onClick={() => setHistoryViewMode('cards')}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
+                    historyViewMode === 'cards' ? 'bg-slate-800 text-white shadow-xs' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  🎴 Cards
+                </button>
+                <button
+                  onClick={() => setHistoryViewMode('table')}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
+                    historyViewMode === 'table' ? 'bg-slate-800 text-white shadow-xs' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  📑 Tabla
+                </button>
               </div>
             </div>
 
             {historyLoading ? (
-              <div className="rounded-3xl border border-slate-800 bg-slate-900/60 p-12 text-center">
-                <span className="text-3xl animate-spin inline-block mb-2">⚡</span>
-                <p className="text-xs text-slate-400">Cargando historial auditado de {meta.displayName}...</p>
+              <div className="flex flex-col items-center justify-center py-20">
+                <div className="h-10 w-10 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent mb-3" />
+                <span className="text-xs font-bold text-slate-400">Cargando historial auditado de {meta.displayName}...</span>
               </div>
             ) : filteredHistory.length === 0 ? (
               <div className="rounded-3xl border border-dashed border-slate-800 bg-slate-900/40 p-12 text-center">
-                <span className="text-4xl mb-2 block">{meta.icon}</span>
-                <h3 className="text-base font-black text-white">No hay pronósticos registrados todavía para {meta.displayName}</h3>
-                <p className="text-xs text-slate-400 mt-1">Los partidos finalizados se auditarán y liquidarán automáticamente aquí.</p>
+                <span className="text-4xl mb-3 block">📜</span>
+                <h3 className="text-base font-black text-white">No hay pronósticos auditados en el historial para {meta.displayName}</h3>
+                <p className="text-xs text-slate-400 mt-1">Los partidos se registrarán y liquidarán automáticamente con el resultado oficial.</p>
               </div>
             ) : historyViewMode === 'cards' ? (
-              /* View Mode 1: Cards View */
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {filteredHistory.map((item) => {
-                  const isWon = item.result === 'WON';
-                  return (
-                    <div
-                      key={item.id}
-                      className={`rounded-3xl border bg-slate-900/90 p-5 shadow-lg flex flex-col justify-between transition ${
-                        isWon ? 'border-emerald-500/30' : 'border-rose-500/30'
-                      }`}
-                    >
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs text-slate-400 font-bold">
-                            {new Date(item.kickoff).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })}
-                          </span>
-                          <span
-                            className={`rounded-xl px-2.5 py-0.5 text-xs font-black ${
-                              isWon ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/40' : 'bg-rose-950 text-rose-300 border border-rose-500/40'
-                            }`}
-                          >
-                            {isWon ? `✓ GANADA (+${((item.odds || 1.8) - 1).toFixed(2)}u)` : '✗ PERDIDA (-1.00u)'}
-                          </span>
-                        </div>
-
-                        <h3 className="text-base font-black text-white mt-1">
-                          {item.homeTeam} vs {item.awayTeam}
-                        </h3>
-                        <div className="text-xs text-slate-400">{item.league}</div>
-
-                        <div className="mt-3 p-3 rounded-2xl bg-slate-950/80 border border-slate-800 flex items-center justify-between">
-                          <div>
-                            <span className="text-[10px] text-slate-500 block font-bold">Pronóstico Realizado</span>
-                            <span className="text-xs font-black text-emerald-400">{item.market}: {item.selection}</span>
-                          </div>
-                          <div className="text-right">
-                            <span className="text-[10px] text-slate-500 block font-bold">Marcador Final</span>
-                            <span className="text-xs font-black text-white">{item.actualScore || 'Finalizado'}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between flex-wrap gap-2">
-                        <span className="text-xs font-black text-slate-300">
-                          Cuota @{(item.odds || 1.8).toFixed(2)} • {item.probability}% Prob.
-                        </span>
-
-                        <div className="flex items-center gap-1.5">
-                          <button
-                            onClick={() => handleCopyCardImage(item)}
-                            className="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white transition cursor-pointer"
-                            title="Copiar imagen"
-                          >
-                            📸
-                          </button>
-                          <button
-                            onClick={() => shareCardAsImage(item, 'whatsapp')}
-                            className="px-2.5 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white transition cursor-pointer"
-                            title="Compartir en WhatsApp"
-                          >
-                            💬
-                          </button>
-                          <button
-                            onClick={() => setActiveModalPick(item)}
-                            className="px-3 py-1 rounded-xl bg-slate-800 hover:bg-emerald-600 text-xs font-black text-white transition cursor-pointer"
-                          >
-                            📊 Ver H2H & Análisis
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {filteredHistory.map((item) => (
+                  <PredictionCard
+                    key={item.id || String(item.fixtureId)}
+                    prediction={item}
+                    onOpenDetail={setActiveModalPick}
+                  />
+                ))}
               </div>
             ) : (
-              /* View Mode 2: Table View */
               <div className="rounded-3xl border border-slate-800 bg-slate-900/90 overflow-hidden shadow-xl">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-950 text-slate-400 uppercase font-black text-[10px] tracking-wider border-b border-slate-800">
+                    <thead className="bg-slate-950 text-[11px] font-black uppercase tracking-wider text-slate-400 border-b border-slate-800">
                       <tr>
                         <th className="p-3.5">Fecha</th>
                         <th className="p-3.5">Partido</th>
-                        <th className="p-3.5">Marcador</th>
-                        <th className="p-3.5">Pronóstico</th>
+                        <th className="p-3.5">Marcador Final</th>
+                        <th className="p-3.5">Mercado</th>
                         <th className="p-3.5">Cuota</th>
                         <th className="p-3.5">Prob.</th>
                         <th className="p-3.5">Resultado</th>
                         <th className="p-3.5 text-right">Análisis</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/60">
+                    <tbody className="divide-y divide-slate-800/80">
                       {filteredHistory.map((item) => {
                         const isWon = item.result === 'WON';
                         return (
                           <tr key={item.id} className="hover:bg-slate-800/40 transition">
-                            <td className="p-3.5 text-slate-400 whitespace-nowrap">
+                            <td className="p-3.5 font-medium text-slate-400 whitespace-nowrap">
                               {new Date(item.kickoff).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
                             </td>
-                            <td className="p-3.5 font-bold text-white whitespace-nowrap">
+                            <td className="p-3.5 font-bold text-white">
                               <div>{item.match}</div>
-                              <div className="text-[10px] text-slate-500">{item.league}</div>
+                              <div className="text-[10px] text-slate-400 font-normal">{item.league}</div>
                             </td>
                             <td className="p-3.5 font-black text-white whitespace-nowrap">
                               {item.actualScore || 'Finalizado'}
@@ -1529,7 +1543,7 @@ ${activeParlayData.picks.map((p, i) => `${i + 1}. ${meta.icon} ${p.homeTeam} vs 
         </footer>
       </main>
 
-      {/* Match Detail Modal (Real-time H2H, Form, Elo, Stats) */}
+      {/* Match Detail Modal */}
       {activeModalPick && (
         <MatchDetailModal
           prediction={activeModalPick}

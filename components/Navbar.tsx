@@ -27,20 +27,20 @@ const SPORTS_OPTIONS: Array<{
     label: 'Todos los Deportes',
     icon: '🌐',
     href: '/dashboard',
-    activeMatches: (p) =>
-      p === '/dashboard' ||
-      p === '/' ||
-      p === '/signals' ||
-      p === '/parlay' ||
-      p === '/history' ||
-      p === '/reports',
+    activeMatches: (p) => p === '/dashboard' || p === '/',
   },
   {
     id: 'football',
     label: 'Fútbol',
     icon: '⚽',
-    href: '/sports/football',
-    activeMatches: (p) => p === '/sports/football',
+    href: '/signals',
+    activeMatches: (p) =>
+      p === '/signals' ||
+      p === '/sports/football' ||
+      p === '/parlay' ||
+      p === '/history' ||
+      p === '/reports' ||
+      p === '/featured',
   },
   {
     id: 'nhl',
@@ -155,7 +155,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
   // Dynamic navigation links adapted to current sport context with global Settings option
   const getSportHref = (type: 'dashboard' | 'signals' | 'parlay' | 'history' | 'settings') => {
     if (type === 'settings') return '/settings';
-    if (currentSport.id === 'all') {
+    if (currentSport.id === 'all' || currentSport.id === 'football') {
       if (type === 'dashboard') return '/dashboard';
       if (type === 'signals') return '/signals';
       if (type === 'parlay') return '/parlay';
