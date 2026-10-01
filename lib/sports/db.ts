@@ -1944,10 +1944,10 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     }
   }
 
-  // STRICT USER HIERARCHY: 1: Córners > 2: Ambos Anotan > 3: Over 2.5 > 4: Local > 5: Visitante
+  // STRICT USER HIERARCHY: 1: Over Corners > 2: BTTS > 3: Over Goals > 4: Under Corners > 5: Under Goals > 6: Local > 7: Visitante
   poolSeguras.sort((a, b) => {
-    const aRank = getMarketPriorityRank(a.market);
-    const bRank = getMarketPriorityRank(b.market);
+    const aRank = getMarketPriorityRank(a.market, a.selection);
+    const bRank = getMarketPriorityRank(b.market, b.selection);
     if (aRank !== bRank) return aRank - bRank;
     const aTier = a.leagueTier || 3;
     const bTier = b.leagueTier || 3;
@@ -1957,8 +1957,8 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
   });
 
   poolValor.sort((a, b) => {
-    const aRank = getMarketPriorityRank(a.market);
-    const bRank = getMarketPriorityRank(b.market);
+    const aRank = getMarketPriorityRank(a.market, a.selection);
+    const bRank = getMarketPriorityRank(b.market, b.selection);
     if (aRank !== bRank) return aRank - bRank;
     const aTier = a.leagueTier || 3;
     const bTier = b.leagueTier || 3;
@@ -1972,25 +1972,31 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
   const chosenMatchKeys = new Set<string>();
   const chosenTeams = new Set<string>();
 
-  // STRICT USER HIERARCHY ALLOCATION ENGINE:
-  // 1: Córners (Top Priority - Max Quota ~40-45%)
-  // 2: Ambos Anotan (High Priority - Quota ~30-35%)
-  // 3: Over 2.5 Goles (Quota ~15-20%)
-  // 4: Ganador Local (Quota ~5-10%)
-  // 5: Ganador Visitante (Quota ~5%)
+  // STRICT USER HIERARCHY ALLOCATION ENGINE (7 MARKETS):
+  // 1: Over Córners (Quota: 30%)
+  // 2: Ambos Equipos Anotan (Quota: 25%)
+  // 3: Over Goles (Quota: 18%)
+  // 4: Under Córners (Quota: 12%)
+  // 5: Under Goles (Quota: 8%)
+  // 6: Ganador Local (Quota: 4%)
+  // 7: Ganador Visitante (Quota: 3%)
   const pickPrioritizedAlerts = (pool: MarketOpportunity[], totalTarget: number): MarketOpportunity[] => {
     const selected: MarketOpportunity[] = [];
-    const corners = pool.filter((p) => getMarketPriorityRank(p.market) === 1);
-    const btts = pool.filter((p) => getMarketPriorityRank(p.market) === 2);
-    const over25 = pool.filter((p) => getMarketPriorityRank(p.market) === 3);
-    const local = pool.filter((p) => getMarketPriorityRank(p.market) === 4);
-    const away = pool.filter((p) => getMarketPriorityRank(p.market) === 5);
+    const overCorners = pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 1);
+    const btts = pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 2);
+    const overGoals = pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 3);
+    const underCorners = pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 4);
+    const underGoals = pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 5);
+    const local = pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 6);
+    const away = pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 7);
 
-    const targetCorners = Math.max(1, Math.round(totalTarget * 0.40));
-    const targetBtts = Math.max(1, Math.round(totalTarget * 0.35));
-    const targetOver25 = Math.max(1, Math.round(totalTarget * 0.15));
-    const targetLocal = Math.max(0, Math.round(totalTarget * 0.05));
-    const targetAway = Math.max(0, Math.round(totalTarget * 0.05));
+    const targetOverCorners = Math.max(1, Math.round(totalTarget * 0.30));
+    const targetBtts = Math.max(1, Math.round(totalTarget * 0.25));
+    const targetOverGoals = Math.max(1, Math.round(totalTarget * 0.18));
+    const targetUnderCorners = Math.max(0, Math.round(totalTarget * 0.12));
+    const targetUnderGoals = Math.max(0, Math.round(totalTarget * 0.08));
+    const targetLocal = Math.max(0, Math.round(totalTarget * 0.04));
+    const targetAway = Math.max(0, Math.round(totalTarget * 0.03));
 
     const takeFromList = (list: MarketOpportunity[], maxCount: number) => {
       let taken = 0;
@@ -2019,17 +2025,21 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
       }
     };
 
-    takeFromList(corners, targetCorners);
+    takeFromList(overCorners, targetOverCorners);
     takeFromList(btts, targetBtts);
-    takeFromList(over25, targetOver25);
+    takeFromList(overGoals, targetOverGoals);
+    takeFromList(underCorners, targetUnderCorners);
+    takeFromList(underGoals, targetUnderGoals);
     takeFromList(local, targetLocal);
     takeFromList(away, targetAway);
 
-    // Fallback: If still under totalTarget, fill remaining slots from pool in strict priority order
+    // Fallback: If still under totalTarget, fill remaining slots from pool in strict 7-tier priority order
     if (selected.length < totalTarget) {
-      takeFromList(corners, totalTarget - selected.length);
+      takeFromList(overCorners, totalTarget - selected.length);
       takeFromList(btts, totalTarget - selected.length);
-      takeFromList(over25, totalTarget - selected.length);
+      takeFromList(overGoals, totalTarget - selected.length);
+      takeFromList(underCorners, totalTarget - selected.length);
+      takeFromList(underGoals, totalTarget - selected.length);
       takeFromList(local, totalTarget - selected.length);
       takeFromList(away, totalTarget - selected.length);
     }

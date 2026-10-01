@@ -571,4 +571,199 @@ export class CornerLineSelectionEngine {
       value_candidate: value.line !== recommended.line ? value : undefined,
     };
   }
+
+  public evaluateUnderFixture(params: {
+    homeTeam: string;
+    awayTeam: string;
+    league: string;
+    homeElo?: number;
+    awayElo?: number;
+    distribution?: CornerDistributionResult;
+    oddsByLine?: Partial<Record<CornerLine, number>>;
+    historicalData?: {
+      homeCornersFor?: number;
+      awayCornersFor?: number;
+      homeCornersAgainst?: number;
+      awayCornersAgainst?: number;
+      sampleSize?: number;
+    };
+  }): CornerSelectionResult {
+    const {
+      homeTeam,
+      awayTeam,
+      league,
+      homeElo,
+      awayElo,
+      distribution: providedDist,
+      oddsByLine = {},
+      historicalData,
+    } = params;
+
+    // 1. Obtain or generate single match distribution
+    const dist =
+      providedDist ||
+      (() => {
+        const exp = calculateExpectedCorners({
+          homeTeam,
+          awayTeam,
+          league,
+          homeElo,
+          awayElo,
+          historicalHomeCornersFor: historicalData?.homeCornersFor,
+          historicalAwayCornersFor: historicalData?.awayCornersFor,
+          historicalHomeCornersAgainst: historicalData?.homeCornersAgainst,
+          historicalAwayCornersAgainst: historicalData?.awayCornersAgainst,
+          sampleSize: historicalData?.sampleSize,
+        });
+        return simulateCornerDistribution(exp.expectedHome, exp.expectedAway, exp.dataQuality, 20000, exp.dispersionK);
+      })();
+
+    // 2. Build candidate entities for Under lines (6.5, 7.5, 8.5, 9.5, 10.5)
+    const all_candidates: CornerLineCandidate[] = [];
+
+    const defaultUnderMinProb: Record<CornerLine, number> = {
+      6.5: 0.35,
+      7.5: 0.40,
+      8.5: 0.45,
+      9.5: 0.50,
+      10.5: 0.55,
+    };
+
+    for (const line of SUPPORTED_CORNER_LINES) {
+      const overProb = dist.probabilities[line];
+      const modelProb = Math.max(0.01, Math.min(0.99, Math.round((1 - overProb) * 1000) / 1000));
+      const rawOdds = oddsByLine[line];
+      const requiredCorners = Math.floor(line);
+      const expectedMargin = Math.round((requiredCorners - dist.expected_total_corners) * 100) / 100;
+
+      const rejectionReasons: string[] = [];
+
+      // STRICT ZERO FAKE/GHOST ODDS POLICY: Require genuine authentic bookmaker odds
+      if (typeof rawOdds !== "number" || isNaN(rawOdds) || rawOdds < 1.05) {
+        all_candidates.push({
+          line,
+          selection: `Under ${line}`,
+          model_probability: modelProb,
+          decimal_odds: "ODDS_UNAVAILABLE",
+          implied_probability: null,
+          devig_probability: null,
+          smart_edge: null,
+          expected_value: null,
+          data_quality: dist.data_quality,
+          smart_score: 0,
+          expected_corners: dist.expected_total_corners,
+          required_corners: requiredCorners,
+          expected_margin: expectedMargin,
+          qualification_status: "ODDS_UNAVAILABLE",
+          rejection_reasons: ["Cuota no disponible para esta línea en la casa de apuestas"],
+        });
+        continue;
+      }
+
+      const decimalOdds = rawOdds;
+      const impliedProb = 1 / decimalOdds;
+      const smartEdge = modelProb - impliedProb;
+      const ev = modelProb * decimalOdds - 1;
+      const minProb = defaultUnderMinProb[line] || 0.55;
+      const minOdds = 1.25;
+      const minEdge = 0.02;
+
+      // Rule validations
+      if (dist.data_quality < 0.70) {
+        rejectionReasons.push(`Calidad de datos insuficiente: ${(dist.data_quality * 100).toFixed(0)}% < 70%`);
+      }
+      if (modelProb < minProb) {
+        rejectionReasons.push(`Probabilidad del modelo inferior al umbral: ${(modelProb * 100).toFixed(1)}% < ${(minProb * 100).toFixed(1)}%`);
+      }
+      if (decimalOdds < minOdds) {
+        rejectionReasons.push(`Cuota disponible inferior al mínimo requerido: @${decimalOdds.toFixed(2)} < @${minOdds.toFixed(2)}`);
+      }
+      if (smartEdge < minEdge) {
+        rejectionReasons.push(`Smart Edge insuficiente: +${(smartEdge * 100).toFixed(1)}% < +${(minEdge * 100).toFixed(1)}%`);
+      }
+      if (dist.expected_total_corners > line + 0.2) {
+        rejectionReasons.push(`Expectativa total de córners (${dist.expected_total_corners}) superior al límite de seguridad para la línea ${line}`);
+      }
+
+      const isQualified = rejectionReasons.length === 0;
+      let qualStatus: CornerLineCandidate["qualification_status"] = "QUALIFIED";
+      if (!isQualified) {
+        if (modelProb < minProb) qualStatus = "REJECTED_PROB";
+        else if (decimalOdds < minOdds) qualStatus = "REJECTED_ODDS";
+        else if (smartEdge < minEdge) qualStatus = "REJECTED_EDGE";
+        else qualStatus = "REJECTED_DQ";
+      }
+
+      let smartScore = 0;
+      if (isQualified) {
+        const probComponent = modelProb * 45;
+        const evComponent = Math.min(25, Math.max(0, ev * 100));
+        const edgeComponent = Math.min(15, Math.max(0, smartEdge * 100 * 0.8));
+        const marginComponent = Math.min(10, Math.max(0, (expectedMargin + 0.5) * 3.0));
+        const dqComponent = dist.data_quality * 5;
+
+        smartScore = Math.round(probComponent + evComponent + edgeComponent + marginComponent + dqComponent);
+        smartScore = Math.min(99, Math.max(65, smartScore));
+      }
+
+      all_candidates.push({
+        line,
+        selection: `Under ${line}`,
+        model_probability: modelProb,
+        decimal_odds: decimalOdds,
+        implied_probability: Math.round(impliedProb * 1000) / 1000,
+        devig_probability: Math.round(impliedProb * 0.95 * 1000) / 1000,
+        smart_edge: Math.round(smartEdge * 1000) / 1000,
+        expected_value: Math.round(ev * 1000) / 1000,
+        data_quality: dist.data_quality,
+        smart_score: smartScore,
+        expected_corners: dist.expected_total_corners,
+        required_corners: requiredCorners,
+        expected_margin: expectedMargin,
+        qualification_status: qualStatus,
+        rejection_reasons: rejectionReasons,
+      });
+    }
+
+    const qualified = all_candidates.filter((c) => c.qualification_status === "QUALIFIED");
+
+    if (qualified.length === 0) {
+      const hasAnyOdds = all_candidates.some((c) => typeof c.decimal_odds === "number");
+      const isWatch = hasAnyOdds && dist.data_quality >= 0.70;
+
+      return {
+        strategy: "corners_total_under_prematch",
+        status: isWatch ? "WATCH" : "NO_SIGNAL",
+        expected_total_corners: dist.expected_total_corners,
+        expected_home_corners: dist.expected_home_corners,
+        expected_away_corners: dist.expected_away_corners,
+        data_quality: dist.data_quality,
+        distribution_model: dist.distribution_model,
+        all_candidates,
+        watch_summary: isWatch
+          ? "El partido presenta tendencia a pocos córners, pero actualmente ninguna línea Under ofrece suficiente cuota o valor."
+          : "Sin cuotas Under disponibles para córners.",
+      };
+    }
+
+    qualified.sort((a, b) => b.smart_score - a.smart_score || (b.expected_value || 0) - (a.expected_value || 0));
+
+    const recommended = qualified[0];
+    const safer = [...qualified].sort((a, b) => b.model_probability - a.model_probability)[0];
+    const value = [...qualified].sort((a, b) => (b.expected_value || 0) - (a.expected_value || 0))[0];
+
+    return {
+      strategy: "corners_total_under_prematch",
+      status: "SIGNAL",
+      expected_total_corners: dist.expected_total_corners,
+      expected_home_corners: dist.expected_home_corners,
+      expected_away_corners: dist.expected_away_corners,
+      data_quality: dist.data_quality,
+      distribution_model: dist.distribution_model,
+      all_candidates,
+      recommended_candidate: recommended,
+      safer_candidate: safer.line !== recommended.line ? safer : undefined,
+      value_candidate: value.line !== recommended.line ? value : undefined,
+    };
+  }
 }

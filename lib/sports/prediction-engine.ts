@@ -964,11 +964,20 @@ function generateExplanation(
   const homeUnbeaten = homeForm ? homeForm.filter((m) => m.result !== "L").length : 4;
   const awayUnbeaten = awayForm ? awayForm.filter((m) => m.result !== "L").length : 3;
 
-  // 1. CÓRNERS (Líneas dinámicas Over 6.5 a 10.5)
+  // 1. CÓRNERS (Líneas dinámicas Over / Under 6.5 a 10.5)
   if (mLower.includes("córner") || mLower.includes("corner")) {
     const expTotal = cornerAnalysis?.expectedTotalCorners ? cornerAnalysis.expectedTotalCorners.toFixed(1) : (prob > 70 ? "9.8" : "10.4");
     const expHome = cornerAnalysis?.expectedHomeCorners ? cornerAnalysis.expectedHomeCorners.toFixed(1) : "5.6";
     const expAway = cornerAnalysis?.expectedAwayCorners ? cornerAnalysis.expectedAwayCorners.toFixed(1) : "4.8";
+
+    if (mLower.includes("under") || mLower.includes("menos")) {
+      const underVariants = [
+        `Juego interiorizado y bajo volumen por las bandas: El cruce táctico entre ${home} (${expHome} córners de media) y ${away} (${expAway} foráneos) proyecta ${expTotal} saques de esquina combinados, manteniéndose por debajo de la línea establecida.`,
+        `Ritmo pausado y defensas replegadas: Ambos conjuntos canalizan el juego por zonas interiores con escasa frecuencia de centros a línea de fondo. La proyección cuantitativa respalda la línea de ${market} con ${expTotal} córners esperados.`,
+        `Control posicional y pocas concesiones de esquina: Las zagas de ${home} y ${away} priorizan despejes dirigidos y anticipaciones en salida, limitando las situaciones de tiro de esquina.`,
+      ];
+      return underVariants[hash % underVariants.length];
+    }
 
     const variants = [
       `Volumen constante por las bandas: El cruce táctico entre ${home} (${expHome} córners de media en casa) y ${away} (${expAway} foráneos) proyecta ${expTotal} saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.`,
@@ -1100,15 +1109,37 @@ export function generateH2HClashes(home: string, away: string, league: string, h
 }
 
 
-export function getMarketPriorityRank(market: string): number {
-  if (!market) return 6;
-  const m = market.toLowerCase();
-  if (m.includes('córner') || m.includes('corner')) return 1;
-  if (m.includes('ambos') || m.includes('btts')) return 2;
-  if (m.includes('over 2.5') || m.includes('más de 2.5')) return 3;
-  if (m.includes('ganador local') || m.includes('local') || m === '1') return 4;
-  if (m.includes('ganador visitante') || m.includes('visitante') || m === '2') return 5;
-  return 6;
+export function getMarketPriorityRank(market: string, selection?: string): number {
+  if (!market && !selection) return 8;
+  const m = (market || "").toLowerCase();
+  const s = (selection || "").toLowerCase();
+
+  const isCorner = m.includes("córner") || m.includes("corner") || s.includes("córner") || s.includes("corner");
+  const isUnder = m.includes("under") || m.includes("menos") || s.includes("under") || s.includes("menos");
+  const isGoal = m.includes("gol") || m.includes("goal") || m.includes("2.5") || m.includes("1.5") || m.includes("3.5") || s.includes("gol") || s.includes("goal");
+
+  // 1. OVER CORNERS
+  if (isCorner && !isUnder) return 1;
+
+  // 2. AMBOS EQUIPOS ANOTAN
+  if (m.includes("ambos") || m.includes("btts")) return 2;
+
+  // 3. OVER GOLES
+  if (isGoal && !isUnder && (m.includes("over") || m.includes("más") || m.includes("mas") || s.includes("over") || s.includes("más") || s.includes("mas") || m.includes("2.5") || m.includes("1.5") || m.includes("3.5"))) return 3;
+
+  // 4. UNDER CORNERS
+  if (isCorner && isUnder) return 4;
+
+  // 5. UNDER GOLES
+  if (isGoal && isUnder) return 5;
+
+  // 6. GANADOR LOCAL
+  if (m.includes("ganador local") || m.includes("local") || s === "1" || s === "local") return 6;
+
+  // 7. GANADOR VISITANTE
+  if (m.includes("ganador visitante") || m.includes("visitante") || s === "2" || s === "visitante") return 7;
+
+  return 8;
 }
 
 export interface LiveMatchContext {
@@ -1580,7 +1611,84 @@ export function evaluateFixturePrediction(params: {
       });
     }
 
-    // 4. PRIORIDAD #4: Ganador Local (1) - Mercado Secundario
+    // 4. PRIORIDAD #4: Motor Dinámico de Under Córners (corners_total_under_prematch)
+    const cornerUnderOddsMap: Partial<Record<CornerLine, number>> = {};
+    if (marketOdds.cornersUnder65) cornerUnderOddsMap[6.5] = marketOdds.cornersUnder65;
+    if (marketOdds.cornersUnder75) cornerUnderOddsMap[7.5] = marketOdds.cornersUnder75;
+    if (marketOdds.cornersUnder85) cornerUnderOddsMap[8.5] = marketOdds.cornersUnder85;
+    if (marketOdds.cornersUnder95) cornerUnderOddsMap[9.5] = marketOdds.cornersUnder95;
+    if (marketOdds.cornersUnder105) cornerUnderOddsMap[10.5] = marketOdds.cornersUnder105;
+
+    const cornerUnderResult = cornerEngine.evaluateUnderFixture({
+      homeTeam,
+      awayTeam,
+      league: canonicalLeague,
+      homeElo: rHomeBase,
+      awayElo: rAway,
+      oddsByLine: cornerUnderOddsMap,
+    });
+
+    if (
+      cornerUnderResult.status === "SIGNAL" &&
+      cornerUnderResult.recommended_candidate &&
+      typeof cornerUnderResult.recommended_candidate.decimal_odds === "number" &&
+      cornerUnderResult.recommended_candidate.decimal_odds >= 1.05
+    ) {
+      const rec = cornerUnderResult.recommended_candidate;
+      const finalOdds = rec.decimal_odds as number;
+      candidates.push({
+        market: "Under Córners",
+        selection: rec.selection,
+        prob: rec.model_probability,
+        odds: finalOdds,
+        minOddsThreshold: 1.25,
+        minProbThreshold: 0.55,
+        cornerAnalysis: {
+          expectedTotalCorners: cornerUnderResult.expected_total_corners,
+          expectedHomeCorners: cornerUnderResult.expected_home_corners,
+          expectedAwayCorners: cornerUnderResult.expected_away_corners,
+          distributionModel: cornerUnderResult.distribution_model,
+          dataQuality: cornerUnderResult.data_quality,
+          allCandidates: cornerUnderResult.all_candidates,
+          recommendedLine: rec.line,
+          saferLine: cornerUnderResult.safer_candidate?.line,
+          valueLine: cornerUnderResult.value_candidate?.line,
+        }
+      });
+    }
+
+    // 5. PRIORIDAD #5: Under Goles (Under 2.5 / Under 3.5 Goles)
+    if (
+      marketOdds.under25 &&
+      marketOdds.under25 >= 1.25 &&
+      pUnder25 >= 0.52 &&
+      totalXg <= 2.35
+    ) {
+      candidates.push({
+        market: "Under 2.5 Goles",
+        selection: "Under 2.5",
+        prob: pUnder25,
+        odds: marketOdds.under25,
+        minOddsThreshold: 1.25,
+        minProbThreshold: 0.52,
+      });
+    } else if (
+      marketOdds.under35 &&
+      marketOdds.under35 >= 1.25 &&
+      pUnder35 >= 0.65 &&
+      totalXg <= 2.85
+    ) {
+      candidates.push({
+        market: "Under 3.5 Goles",
+        selection: "Under 3.5",
+        prob: pUnder35,
+        odds: marketOdds.under35,
+        minOddsThreshold: 1.25,
+        minProbThreshold: 0.65,
+      });
+    }
+
+    // 6. PRIORIDAD #6: Ganador Local (1) - Mercado Secundario
     if (effHomeWin && effHomeWin >= 1.18 && pHome >= 0.46) {
       candidates.push({
         market: "Ganador Local",
@@ -1592,7 +1700,7 @@ export function evaluateFixturePrediction(params: {
       });
     }
 
-    // 5. PRIORIDAD #5: Ganador Visitante (2) - Mercado Secundario
+    // 7. PRIORIDAD #7: Ganador Visitante (2) - Mercado Secundario
     if (effAwayWin && effAwayWin >= 1.28 && pAway >= 0.48) {
       candidates.push({
         market: "Ganador Visitante",
@@ -1605,13 +1713,19 @@ export function evaluateFixturePrediction(params: {
     }
   }
 
-  // STRICT RULE: Only the 4 authorized markets are permitted across the entire system
+  // STRICT RULE: Only the 7 authorized hierarchy markets are permitted across the entire system
   const ALLOWED_MARKET_NAMES = new Set([
+    "Over Córners",
+    "Córners",
+    "Ambos Equipos Anotan",
     "Over 2.5 Goles",
+    "Over 1.5 Goles",
+    "Over 3.5 Goles",
+    "Under Córners",
+    "Under 2.5 Goles",
+    "Under 3.5 Goles",
     "Ganador Local",
     "Ganador Visitante",
-    "Ambos Equipos Anotan",
-    "Córners",
   ]);
   candidates = candidates.filter((c) => ALLOWED_MARKET_NAMES.has(c.market));
 
@@ -1654,8 +1768,15 @@ export function evaluateFixturePrediction(params: {
       ? (tier === 1 ? 25 : tier === 2 ? 18 : 10)
       : (tier === 1 ? 14 : tier === 2 ? 7 : 0);
 
-    const mRank = getMarketPriorityRank(item.market);
-    const marketPriorityBonus = mRank === 1 ? 35 : mRank === 2 ? 25 : mRank === 3 ? 18 : mRank === 4 ? 10 : 5;
+    const mRank = getMarketPriorityRank(item.market, item.selection);
+    const marketPriorityBonus =
+      mRank === 1 ? 35 :
+      mRank === 2 ? 28 :
+      mRank === 3 ? 22 :
+      mRank === 4 ? 16 :
+      mRank === 5 ? 12 :
+      mRank === 6 ? 6 :
+      mRank === 7 ? 4 : 0;
 
     const tierMultiplier = tier === 1 ? 1.25 : tier === 2 ? 1.00 : 0.85;
 
@@ -1765,15 +1886,15 @@ export function evaluateFixturePrediction(params: {
     }
   }
 
-  // STRICT USER HIERARCHY: 1: Córners > 2: Ambos Anotan > 3: Over 2.5 > 4: Local > 5: Visitante
+  // STRICT USER HIERARCHY: 1: Over Corners > 2: BTTS > 3: Over Goals > 4: Under Corners > 5: Under Goals > 6: Local > 7: Visitante
   return opportunities.sort((a, b) => {
     const aTier = a.leagueTier || 2;
     const bTier = b.leagueTier || 2;
     if (aTier !== bTier) {
       return aTier - bTier;
     }
-    const aRank = getMarketPriorityRank(a.market);
-    const bRank = getMarketPriorityRank(b.market);
+    const aRank = getMarketPriorityRank(a.market, a.selection);
+    const bRank = getMarketPriorityRank(b.market, b.selection);
     if (aRank !== bRank) {
       return aRank - bRank;
     }
@@ -1834,8 +1955,8 @@ export function getFeaturedDailyPicks(predictions: MarketOpportunity[]): {
     const aTier = a.leagueTier || 3;
     const bTier = b.leagueTier || 3;
     if (aTier !== bTier) return aTier - bTier;
-    const aRank = getMarketPriorityRank(a.market);
-    const bRank = getMarketPriorityRank(b.market);
+    const aRank = getMarketPriorityRank(a.market, a.selection);
+    const bRank = getMarketPriorityRank(b.market, b.selection);
     if (aRank !== bRank) return aRank - bRank;
     if (b.probability !== a.probability) return b.probability - a.probability;
     if ((b.smartScore || 0) !== (a.smartScore || 0)) return (b.smartScore || 0) - (a.smartScore || 0);

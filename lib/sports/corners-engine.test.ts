@@ -330,4 +330,44 @@ describe("Dynamic Corners Line Engine (corners_total_over_prematch)", () => {
     expect(c65.qualification_status).toBe("QUALIFIED");
     expect(c65.decimal_odds).toBe(originalOdds65); // EXACT MATCH to authentic bookmaker odds
   });
+
+  // 11. Under Corners Evaluation
+  describe("Under Corners Engine (evaluateUnderFixture)", () => {
+    it("qualifies Under 9.5 and Under 10.5 corners when authentic odds and low expected corners are present", () => {
+      const engine = new CornerLineSelectionEngine();
+      const mockDist = {
+        expected_home_corners: 3.5,
+        expected_away_corners: 3.0,
+        expected_total_corners: 6.5,
+        distribution_model: "Negative Binomial" as const,
+        data_quality: 0.85,
+        simulations_count: 20000,
+        probabilities: { 6.5: 0.50, 7.5: 0.35, 8.5: 0.22, 9.5: 0.12, 10.5: 0.05 },
+        simulated_histogram: {},
+      };
+
+      const result = engine.evaluateUnderFixture({
+        homeTeam: "Getafe",
+        awayTeam: "Mallorca",
+        league: "La Liga",
+        distribution: mockDist,
+        oddsByLine: {
+          8.5: 1.65,
+          9.5: 1.40,
+          10.5: 1.26,
+        },
+      });
+
+      expect(result.status).toBe("SIGNAL");
+      expect(result.recommended_candidate).toBeDefined();
+      expect(result.recommended_candidate?.selection).toContain("Under");
+      expect(result.all_candidates.find((c) => c.line === 9.5)?.qualification_status).toBe("QUALIFIED");
+    });
+
+    it("settles Under corners correctly (Under 9.5 won if total <= 9, lost if total >= 10)", () => {
+      expect(evaluateMarketResult("Under Córners", 0, 0, { selection: "Under 9.5", homeCorners: 5, awayCorners: 4 }).isWon).toBe(true);
+      expect(evaluateMarketResult("Under Córners", 0, 0, { selection: "Under 9.5", homeCorners: 6, awayCorners: 4 }).isWon).toBe(false);
+    });
+  });
+
 });

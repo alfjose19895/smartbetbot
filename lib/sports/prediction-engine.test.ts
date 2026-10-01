@@ -89,4 +89,64 @@ describe("Prediction Engine (TypeScript MVP)", () => {
     expect(cornerPick).toBeDefined();
     expect(cornerPick?.odds).toBe(authenticCornerOdd);
   });
+
+  it("strictly ranks markets according to the 7-tier priority hierarchy: 1: Over Corners, 2: BTTS, 3: Over Goals, 4: Under Corners, 5: Under Goals, 6: Local, 7: Visitante", async () => {
+    const { getMarketPriorityRank } = await import("./prediction-engine");
+
+    // 1. OVER CORNERS
+    expect(getMarketPriorityRank("Córners", "Over 8.5")).toBe(1);
+    expect(getMarketPriorityRank("Over Córners", "Over 7.5")).toBe(1);
+    expect(getMarketPriorityRank("Over 8.5 Córners")).toBe(1);
+
+    // 2. AMBOS EQUIPOS ANOTAN
+    expect(getMarketPriorityRank("Ambos Equipos Anotan", "Sí")).toBe(2);
+    expect(getMarketPriorityRank("BTTS", "Yes")).toBe(2);
+
+    // 3. OVER GOLES
+    expect(getMarketPriorityRank("Over 2.5 Goles", "Over 2.5")).toBe(3);
+    expect(getMarketPriorityRank("Over 1.5 Goles", "Over 1.5")).toBe(3);
+    expect(getMarketPriorityRank("Over 3.5 Goles", "Over 3.5")).toBe(3);
+
+    // 4. UNDER CORNERS
+    expect(getMarketPriorityRank("Under Córners", "Under 9.5")).toBe(4);
+    expect(getMarketPriorityRank("Córners", "Under 9.5")).toBe(4);
+    expect(getMarketPriorityRank("Under 10.5 Córners")).toBe(4);
+
+    // 5. UNDER GOLES
+    expect(getMarketPriorityRank("Under 2.5 Goles", "Under 2.5")).toBe(5);
+    expect(getMarketPriorityRank("Under 3.5 Goles", "Under 3.5")).toBe(5);
+
+    // 6. GANADOR LOCAL
+    expect(getMarketPriorityRank("Ganador Local", "1")).toBe(6);
+    expect(getMarketPriorityRank("Gana Local")).toBe(6);
+
+    // 7. GANADOR VISITANTE
+    expect(getMarketPriorityRank("Ganador Visitante", "2")).toBe(7);
+    expect(getMarketPriorityRank("Gana Visitante")).toBe(7);
+  });
+
+  it("evaluates Under Goles and Under Córners when genuine bookmaker odds and metrics warrant it", () => {
+    const picks = evaluateFixturePrediction({
+      fixtureId: 999993,
+      homeTeam: "Getafe",
+      awayTeam: "Mallorca",
+      league: "La Liga",
+      kickoff: "2026-10-06T19:00:00Z",
+      marketOdds: {
+        homeWin: 2.30,
+        draw: 2.90,
+        awayWin: 3.40,
+        under25: 1.85,
+        under35: 1.38,
+        cornersUnder95: 2.10,
+        cornersUnder105: 1.48,
+      },
+    });
+
+    expect(picks.length).toBeGreaterThan(0);
+    const underPick = picks.find((p) => p.market.includes("Under"));
+    expect(underPick).toBeDefined();
+    expect(underPick?.odds).toBeGreaterThanOrEqual(1.25);
+  });
+
 });
