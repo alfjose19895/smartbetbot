@@ -1703,9 +1703,13 @@
     "homeTeamId": 1137,
     "leagueLogo": "https://media.api-sports.io/football/leagues/239.png",
     "leagueTier": 1,
+    "liveMinute": "87",
+    "livePeriod": "2H",
     "smartScore": 99,
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.3 córners totales. [Auditoría AI: Clásico colombiano de ida y vuelta constante con extremos muy punzantes por fuera. Línea de 6.5 córners muy sobrepasable.]",
+    "matchTiming": "live",
     "probability": 84,
+    "currentScore": "3 - 1",
     "bookmakerOdds": 1.35,
     "expectedValue": 13.4,
     "cornerAnalysis": {
