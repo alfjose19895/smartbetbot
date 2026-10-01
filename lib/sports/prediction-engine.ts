@@ -1090,123 +1090,13 @@ function generateExplanation(
 
 
 export function generateTeamRecentForm(team: string, league: string, elo: number, kickoff: string): TeamFormMatch[] {
-  const isStrong = elo >= 1700;
-  const isMedium = elo >= 1550;
-  const safeTeam = String(team || "Team");
-  const hash = safeTeam.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
-
-  const baseDate = kickoff ? new Date(kickoff) : new Date();
-  const getPastDateStr = (daysAgo: number) => {
-    const d = new Date(baseDate);
-    d.setDate(d.getDate() - daysAgo);
-    return d.toISOString().split("T")[0];
-  };
-
-  const results: TeamFormMatch[] = [];
-  const defaultOpponents = ["Rival 1", "Rival 2", "Rival 3", "Rival 4", "Rival 5"];
-
-  for (let i = 0; i < 5; i++) {
-    const isHome = (hash + i) % 2 === 0;
-    let res: "W" | "D" | "L" = "W";
-    let score = "2-1";
-
-    const mod = (hash + i * 7) % 10;
-    if (isStrong) {
-      if (mod < 6) { res = "W"; score = isHome ? "3-1" : "2-1"; }
-      else if (mod < 8) { res = "D"; score = "2-2"; }
-      else { res = "L"; score = isHome ? "1-2" : "2-3"; }
-    } else if (isMedium) {
-      if (mod < 4) { res = "W"; score = isHome ? "2-1" : "3-1"; }
-      else if (mod < 7) { res = "D"; score = "1-2"; }
-      else { res = "L"; score = isHome ? "1-2" : "0-3"; }
-    } else {
-      if (mod < 3) { res = "W"; score = isHome ? "2-1" : "1-2"; }
-      else if (mod < 6) { res = "D"; score = "1-2"; }
-      else { res = "L"; score = isHome ? "0-3" : "1-3"; }
-    }
-
-    const cornerBase = isStrong ? 6 : isMedium ? 5 : 4;
-    const teamCorners = Math.max(2, Math.min(11, cornerBase + (isHome ? 1 : 0) + ((hash + i * 3) % 4) - 1));
-    const oppCorners = Math.max(1, Math.min(9, (isStrong ? 3 : 4) + (!isHome ? 1 : 0) + ((hash + i * 5) % 3) - 1));
-    const totalCorners = teamCorners + oppCorners;
-
-    results.push({
-      date: getPastDateStr(4 + i * 5),
-      opponent: defaultOpponents[i],
-      isHome,
-      score,
-      result: res,
-      competition: league,
-      teamCorners,
-      opponentCorners: oppCorners,
-      totalCorners,
-      corners: `${teamCorners} - ${oppCorners}`,
-      over85Corners: totalCorners > 8.5,
-      over95Corners: totalCorners > 9.5,
-      over105Corners: totalCorners > 10.5,
-    });
-  }
-
-  return results;
+  // STRICT ZERO INVENTED CORNERS: Return empty list when real API data is not pre-loaded
+  return [];
 }
 
 export function generateH2HClashes(home: string, away: string, league: string, homeElo: number, awayElo: number, kickoff: string): H2HMatch[] {
-  const baseDate = kickoff ? new Date(kickoff) : new Date();
-  const getPastDateStr = (daysAgo: number) => {
-    const d = new Date(baseDate);
-    d.setDate(d.getDate() - daysAgo);
-    return d.toISOString().split("T")[0];
-  };
-
-  const isHomeBetter = homeElo >= awayElo;
-  const safeHome = String(home || "Home");
-  const safeAway = String(away || "Away");
-  const hash = (safeHome + safeAway).split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
-
-  const createClashCorners = (hStronger: boolean, clashIdx: number) => {
-    const hC = Math.max(2, Math.min(10, (hStronger ? 6 : 4) + ((hash + clashIdx * 2) % 3)));
-    const aC = Math.max(1, Math.min(9, (hStronger ? 3 : 5) + ((hash + clashIdx * 4) % 3)));
-    return {
-      homeCorners: hC,
-      awayCorners: aC,
-      totalCorners: hC + aC,
-      corners: `${hC} - ${aC} (${hC + aC} Córners)`,
-    };
-  };
-
-  const c1 = createClashCorners(isHomeBetter, 1);
-  const c2 = createClashCorners(!isHomeBetter, 2);
-  const c3 = createClashCorners(isHomeBetter, 3);
-
-  return [
-    {
-      date: getPastDateStr(60),
-      homeTeam: home,
-      awayTeam: away,
-      score: isHomeBetter ? "2-1" : "1-2",
-      winner: isHomeBetter ? "home" : "away",
-      competition: league,
-      ...c1,
-    },
-    {
-      date: getPastDateStr(180),
-      homeTeam: away,
-      awayTeam: home,
-      score: isHomeBetter ? "0-2" : "2-0",
-      winner: isHomeBetter ? "away" : "home",
-      competition: league,
-      ...c2,
-    },
-    {
-      date: getPastDateStr(360),
-      homeTeam: home,
-      awayTeam: away,
-      score: hash % 2 === 0 ? "1-1" : isHomeBetter ? "3-0" : "1-3",
-      winner: hash % 2 === 0 ? "draw" : isHomeBetter ? "home" : "away",
-      competition: league,
-      ...c3,
-    },
-  ];
+  // STRICT ZERO INVENTED CORNERS: Return empty list when real API data is not pre-loaded
+  return [];
 }
 
 
@@ -1629,11 +1519,14 @@ export function evaluateFixturePrediction(params: {
       oddsByLine: cornerOddsMap,
     });
 
-    if (cornerResult.status === "SIGNAL" && cornerResult.recommended_candidate) {
+    if (
+      cornerResult.status === "SIGNAL" &&
+      cornerResult.recommended_candidate &&
+      typeof cornerResult.recommended_candidate.decimal_odds === "number" &&
+      cornerResult.recommended_candidate.decimal_odds >= 1.05
+    ) {
       const rec = cornerResult.recommended_candidate;
-      const lineDefaults: Record<number, number> = { 6.5: 1.20, 7.5: 1.35, 8.5: 1.55, 9.5: 1.85, 10.5: 2.25 };
-      const fallbackOdds = lineDefaults[rec.line] || 1.35;
-      const finalOdds = typeof rec.decimal_odds === "number" ? rec.decimal_odds : fallbackOdds;
+      const finalOdds = rec.decimal_odds as number;
       candidates.push({
         market: "Córners",
         selection: rec.selection,

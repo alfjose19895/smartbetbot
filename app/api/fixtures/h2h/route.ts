@@ -79,12 +79,15 @@ async function getCachedFixtureCorners(fixtureId: number): Promise<{ homeCorners
     const filePath = path.join(STATS_CACHE_DIR, `${fixtureId}.json`);
     if (fs.existsSync(filePath)) {
       const content = fs.readFileSync(filePath, "utf-8");
-      return JSON.parse(content);
+      const parsed = JSON.parse(content);
+      if (parsed && typeof parsed.homeCorners === "number" && typeof parsed.awayCorners === "number" && parsed.hasRealCorners === true) {
+        return parsed;
+      }
     }
     const stats = await apiFootball.getFixtureStatistics(fixtureId);
     if (stats && Array.isArray(stats) && stats.length >= 2) {
       const details = extractMatchDetails(stats);
-      if (details.hasStats) {
+      if (details.hasCornerStats) {
         const cornerData = {
           homeCorners: details.homeCorners,
           awayCorners: details.awayCorners,

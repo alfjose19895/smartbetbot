@@ -439,18 +439,8 @@ export class CornerLineSelectionEngine {
         continue;
       }
 
-      // Obtain authentic bookmaker odds or apply competitive market benchmark odds
-      let decimalOdds: number;
-      const bounds = REALISTIC_CORNER_ODDS_BOUNDS[line];
-      const hasAnyExplicitOdds = Object.keys(oddsByLine).length > 0;
-
-      if (typeof rawOdds === "number" && !isNaN(rawOdds) && rawOdds >= 1.05) {
-        decimalOdds = rawOdds;
-        if (bounds && (rawOdds > bounds.max || rawOdds < bounds.min)) {
-          decimalOdds = Math.max(bounds.min, Math.min(bounds.max, rawOdds));
-        }
-      } else if (hasAnyExplicitOdds) {
-        // If explicit odds were passed for some lines but not this one, mark as unavailable
+      // STRICT ZERO FAKE/GHOST ODDS POLICY: Require genuine authentic bookmaker odds
+      if (typeof rawOdds !== "number" || isNaN(rawOdds) || rawOdds < 1.05) {
         all_candidates.push({
           line,
           selection: `Over ${line}`,
@@ -469,11 +459,10 @@ export class CornerLineSelectionEngine {
           rejection_reasons: ["Cuota no disponible para esta línea en la casa de apuestas"],
         });
         continue;
-      } else {
-        // Benchmark market line price when no odds feed is available
-        const benchOdds = STANDARD_CORNER_BENCHMARK_ODDS[line] || 1.65;
-        decimalOdds = benchOdds;
       }
+
+      // Use authentic original bookmaker decimal odds directly without artificial clamping
+      const decimalOdds = rawOdds;
       const impliedProb = 1 / decimalOdds;
       const smartEdge = modelProb - impliedProb;
       const ev = modelProb * decimalOdds - 1;

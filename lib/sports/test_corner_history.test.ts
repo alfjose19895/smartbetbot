@@ -1,33 +1,45 @@
 import { describe, it, expect } from "vitest";
-import { generateTeamRecentForm, generateH2HClashes } from "./prediction-engine";
+import { extractMatchDetails } from "./api-football";
 
-describe("Corner History in Last 5 Matches & H2H", () => {
-  it("generates complete corner statistics for team recent form", () => {
-    const homeForm = generateTeamRecentForm("Barracas Central", "Liga Profesional Argentina", 1620, "2026-09-21T17:00:00Z");
-    expect(homeForm).toHaveLength(5);
+describe("Corner History and H2H Real Data Integrity", () => {
+  it("strictly detects when authentic corner statistics are present vs missing", () => {
+    const mockStatsWithCorners = [
+      {
+        team: { id: 1, name: "Home", logo: "" },
+        statistics: [
+          { type: "Corner Kicks", value: 6 },
+          { type: "Shots on Goal", value: 4 },
+        ],
+      },
+      {
+        team: { id: 2, name: "Away", logo: "" },
+        statistics: [
+          { type: "Corner Kicks", value: 3 },
+          { type: "Shots on Goal", value: 2 },
+        ],
+      },
+    ];
 
-    homeForm.forEach((m) => {
-      expect(m.teamCorners).toBeDefined();
-      expect(m.opponentCorners).toBeDefined();
-      expect(m.totalCorners).toBeDefined();
-      expect(m.totalCorners).toBe((m.teamCorners ?? 0) + (m.opponentCorners ?? 0));
-      expect(m.corners).toBeDefined();
-      expect(m.corners).toContain("-");
-      expect(typeof m.over85Corners).toBe("boolean");
-      expect(m.over85Corners).toBe((m.totalCorners ?? 0) > 8.5);
-    });
-  });
+    const details = extractMatchDetails(mockStatsWithCorners);
+    expect(details.hasCornerStats).toBe(true);
+    expect(details.homeCorners).toBe(6);
+    expect(details.awayCorners).toBe(3);
+    expect(details.totalCorners).toBe(9);
 
-  it("generates complete corner statistics for H2H clashes", () => {
-    const h2h = generateH2HClashes("Barracas Central", "Independ. Rivadavia", "Liga Profesional Argentina", 1620, 1600, "2026-09-21T17:00:00Z");
-    expect(h2h.length).toBeGreaterThanOrEqual(3);
+    // Mock stats without corner kicks (e.g. only cards/fouls recorded)
+    const mockStatsWithoutCorners = [
+      {
+        team: { id: 1, name: "Home", logo: "" },
+        statistics: [{ type: "Yellow Cards", value: 2 }],
+      },
+      {
+        team: { id: 2, name: "Away", logo: "" },
+        statistics: [{ type: "Yellow Cards", value: 1 }],
+      },
+    ];
 
-    h2h.forEach((clash) => {
-      expect(clash.homeCorners).toBeDefined();
-      expect(clash.awayCorners).toBeDefined();
-      expect(clash.totalCorners).toBeDefined();
-      expect(clash.totalCorners).toBe((clash.homeCorners ?? 0) + (clash.awayCorners ?? 0));
-      expect(clash.corners).toBeDefined();
-    });
+    const detailsWithoutCorners = extractMatchDetails(mockStatsWithoutCorners);
+    expect(detailsWithoutCorners.hasCornerStats).toBe(false);
+    expect(detailsWithoutCorners.hasStats).toBe(true);
   });
 });

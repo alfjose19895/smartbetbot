@@ -284,4 +284,50 @@ describe("Dynamic Corners Line Engine (corners_total_over_prematch)", () => {
     expect(typeof result.recommended_candidate?.line).toBe("number");
     expect(["Over 6.5", "Over 7.5", "Over 8.5", "Over 9.5", "Over 10.5"]).toContain(result.recommended_candidate?.selection);
   });
+
+  // 9. Zero Ghost Odds Policy (No phantom odds or synthetic predictions)
+  it("strictly yields NO_SIGNAL and NO recommended candidate when no odds are provided", () => {
+    const engine = new CornerLineSelectionEngine();
+    const result = engine.evaluateFixture({
+      homeTeam: "Arsenal",
+      awayTeam: "Chelsea",
+      league: "Premier League",
+      oddsByLine: {}, // No odds available from bookmakers
+    });
+
+    expect(result.status).toBe("NO_SIGNAL");
+    expect(result.recommended_candidate).toBeUndefined();
+    expect(result.all_candidates.every((c) => c.decimal_odds === "ODDS_UNAVAILABLE")).toBe(true);
+    expect(result.all_candidates.every((c) => c.qualification_status === "ODDS_UNAVAILABLE")).toBe(true);
+  });
+
+  // 10. Original Odds Integrity (No Clamping)
+  it("preserves authentic bookmaker odds exactly without artificial clamping", () => {
+    const engine = new CornerLineSelectionEngine();
+    const mockDist = {
+      expected_home_corners: 6.5,
+      expected_away_corners: 5.0,
+      expected_total_corners: 11.5,
+      distribution_model: "Negative Binomial" as const,
+      data_quality: 0.90,
+      simulations_count: 20000,
+      probabilities: { 6.5: 0.92, 7.5: 0.86, 8.5: 0.78, 9.5: 0.68, 10.5: 0.55 },
+      simulated_histogram: {},
+    };
+
+    const originalOdds65 = 1.48; // High authentic odd that would previously be clamped to 1.35
+    const result = engine.evaluateFixture({
+      homeTeam: "Real Madrid",
+      awayTeam: "Barcelona",
+      league: "La Liga",
+      distribution: mockDist,
+      oddsByLine: {
+        6.5: originalOdds65,
+      },
+    });
+
+    const c65 = result.all_candidates.find((c) => c.line === 6.5)!;
+    expect(c65.qualification_status).toBe("QUALIFIED");
+    expect(c65.decimal_odds).toBe(originalOdds65); // EXACT MATCH to authentic bookmaker odds
+  });
 });

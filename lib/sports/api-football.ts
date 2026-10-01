@@ -694,6 +694,7 @@ export function extractMatchDetails(stats?: ApiFootballFixtureStatistics[] | nul
   awayRedCards: number;
   totalCards: number;
   hasStats: boolean;
+  hasCornerStats: boolean;
 } {
   if (!stats || !Array.isArray(stats) || stats.length < 2) {
     return {
@@ -706,25 +707,30 @@ export function extractMatchDetails(stats?: ApiFootballFixtureStatistics[] | nul
       awayRedCards: 0,
       totalCards: 0,
       hasStats: false,
+      hasCornerStats: false,
     };
   }
 
-  const getStat = (list: ApiFootballStatisticItem[], typeName: string): number => {
+  const getStat = (list: ApiFootballStatisticItem[], typeName: string): number | null => {
     const item = list.find((s) => s.type.toLowerCase().trim() === typeName.toLowerCase().trim());
-    if (!item || item.value === null || item.value === undefined) return 0;
+    if (!item || item.value === null || item.value === undefined) return null;
     const num = parseInt(String(item.value), 10);
-    return isNaN(num) ? 0 : num;
+    return isNaN(num) ? null : num;
   };
 
   const homeStats = stats[0]?.statistics || [];
   const awayStats = stats[1]?.statistics || [];
 
-  const homeCorners = getStat(homeStats, "Corner Kicks");
-  const awayCorners = getStat(awayStats, "Corner Kicks");
-  const homeYellowCards = getStat(homeStats, "Yellow Cards");
-  const awayYellowCards = getStat(awayStats, "Yellow Cards");
-  const homeRedCards = getStat(homeStats, "Red Cards");
-  const awayRedCards = getStat(awayStats, "Red Cards");
+  const rawHomeCorners = getStat(homeStats, "Corner Kicks");
+  const rawAwayCorners = getStat(awayStats, "Corner Kicks");
+  const hasCornerStats = rawHomeCorners !== null && rawAwayCorners !== null;
+
+  const homeCorners = rawHomeCorners ?? 0;
+  const awayCorners = rawAwayCorners ?? 0;
+  const homeYellowCards = getStat(homeStats, "Yellow Cards") ?? 0;
+  const awayYellowCards = getStat(awayStats, "Yellow Cards") ?? 0;
+  const homeRedCards = getStat(homeStats, "Red Cards") ?? 0;
+  const awayRedCards = getStat(awayStats, "Red Cards") ?? 0;
 
   return {
     homeCorners,
@@ -736,6 +742,7 @@ export function extractMatchDetails(stats?: ApiFootballFixtureStatistics[] | nul
     awayRedCards,
     totalCards: homeYellowCards + awayYellowCards + homeRedCards + awayRedCards,
     hasStats: homeStats.length > 0 || awayStats.length > 0,
+    hasCornerStats,
   };
 }
 
@@ -981,7 +988,7 @@ export function extractMarketOddsFromBookmaker(oddsItem?: ApiFootballOddsItem | 
 
   result.bookmakerName = primaryBookmakerName;
 
-  // 4. Extract Total Corners Over/Under lines across cascade
+  // 4. Extract Total Corners Over/Under lines across cascade (Strict Full-Match Corners Only)
   for (const bm of sortedBookmakers) {
     if (!bm.bets || !Array.isArray(bm.bets)) continue;
 
@@ -989,31 +996,68 @@ export function extractMarketOddsFromBookmaker(oddsItem?: ApiFootballOddsItem | 
       const betId = Number(bet.id);
       const betName = (bet.name || "").toLowerCase().trim();
 
+      // STRICT EXCLUSIONS: Exclude 1st half, 2nd half, and individual team corners
+      if (
+        betId === 46 ||
+        betId === 47 ||
+        betName.includes("1st") ||
+        betName.includes("2nd") ||
+        betName.includes("half") ||
+        betName.includes("primer") ||
+        betName.includes("segund") ||
+        betName.includes("mitad") ||
+        betName.includes("tiempo") ||
+        betName.includes("home team") ||
+        betName.includes("away team") ||
+        betName.includes("corners home") ||
+        betName.includes("corners away") ||
+        betName.includes("equipo local") ||
+        betName.includes("equipo visitante") ||
+        betName.includes("individual")
+      ) {
+        continue;
+      }
+
       if (
         betId === 45 ||
+        betId === 28 ||
         betName.includes("corners over/under") ||
         betName.includes("total corners") ||
         betName.includes("corners total") ||
-        betName.includes("asian corners")
+        betName.includes("corner over under") ||
+        betName.includes("corners over under") ||
+        betName.includes("asian corners") ||
+        betName.includes("asian total corners") ||
+        betName.includes("saques de esquina") ||
+        betName.includes("córners total") ||
+        betName.includes("total córners") ||
+        betName.includes("córners más/menos")
       ) {
         for (const val of bet.values || []) {
-          const v = String(val.value).toLowerCase().trim();
+          const vObj = val as Record<string, any>;
+          const rawVal = vObj.value !== undefined ? String(vObj.value) : "";
+          const rawHandicap = vObj.handicap !== undefined ? String(vObj.handicap) : "";
+          const rawTotal = vObj.total !== undefined ? String(vObj.total) : "";
+          const rawLine = vObj.line !== undefined ? String(vObj.line) : "";
+          const rawHeader = vObj.header !== undefined ? String(vObj.header) : "";
+          const fullStr = [rawVal, rawHandicap, rawTotal, rawLine, rawHeader].join(" ").toLowerCase().trim();
+
           const odd = parseOdd(val.odd);
           if (!odd) continue;
 
-          const isOver = v.includes("over") || v.includes(">") || v.includes("+") || v.includes("más") || v.includes("mas");
-          const isUnder = v.includes("under") || v.includes("<") || v.includes("-") || v.includes("menos");
+          const isOver = fullStr.includes("over") || fullStr.includes(">") || fullStr.includes("+") || fullStr.includes("más") || fullStr.includes("mas");
+          const isUnder = fullStr.includes("under") || fullStr.includes("<") || fullStr.includes("-") || fullStr.includes("menos");
 
-          if (isOver && v.includes("6.5") && !result.cornersOver65) result.cornersOver65 = odd;
-          else if (isUnder && v.includes("6.5") && !result.cornersUnder65) result.cornersUnder65 = odd;
-          else if (isOver && v.includes("7.5") && !result.cornersOver75) result.cornersOver75 = odd;
-          else if (isUnder && v.includes("7.5") && !result.cornersUnder75) result.cornersUnder75 = odd;
-          else if (isOver && v.includes("8.5") && !result.cornersOver85) result.cornersOver85 = odd;
-          else if (isUnder && v.includes("8.5") && !result.cornersUnder85) result.cornersUnder85 = odd;
-          else if (isOver && v.includes("9.5") && !result.cornersOver95) result.cornersOver95 = odd;
-          else if (isUnder && v.includes("9.5") && !result.cornersUnder95) result.cornersUnder95 = odd;
-          else if (isOver && v.includes("10.5") && !result.cornersOver105) result.cornersOver105 = odd;
-          else if (isUnder && v.includes("10.5") && !result.cornersUnder105) result.cornersUnder105 = odd;
+          if (isOver && fullStr.includes("6.5") && !result.cornersOver65) result.cornersOver65 = odd;
+          else if (isUnder && fullStr.includes("6.5") && !result.cornersUnder65) result.cornersUnder65 = odd;
+          else if (isOver && fullStr.includes("7.5") && !result.cornersOver75) result.cornersOver75 = odd;
+          else if (isUnder && fullStr.includes("7.5") && !result.cornersUnder75) result.cornersUnder75 = odd;
+          else if (isOver && fullStr.includes("8.5") && !result.cornersOver85) result.cornersOver85 = odd;
+          else if (isUnder && fullStr.includes("8.5") && !result.cornersUnder85) result.cornersUnder85 = odd;
+          else if (isOver && fullStr.includes("9.5") && !result.cornersOver95) result.cornersOver95 = odd;
+          else if (isUnder && fullStr.includes("9.5") && !result.cornersUnder95) result.cornersUnder95 = odd;
+          else if (isOver && fullStr.includes("10.5") && !result.cornersOver105) result.cornersOver105 = odd;
+          else if (isUnder && fullStr.includes("10.5") && !result.cornersUnder105) result.cornersUnder105 = odd;
         }
       }
     }

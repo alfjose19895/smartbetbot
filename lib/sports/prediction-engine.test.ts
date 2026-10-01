@@ -44,4 +44,49 @@ describe("Prediction Engine (TypeScript MVP)", () => {
     }
     expect(predictions.length).toBeGreaterThanOrEqual(0);
   }, 25000);
+
+  it("does NOT generate corner predictions with ghost odds when no corner odds are provided", () => {
+    const picks = evaluateFixturePrediction({
+      fixtureId: 999991,
+      homeTeam: "Manchester City",
+      awayTeam: "Liverpool",
+      league: "Premier League",
+      kickoff: "2026-10-05T15:00:00Z",
+      marketOdds: {
+        homeWin: 1.85,
+        draw: 3.75,
+        awayWin: 4.10,
+        over25: 1.65,
+        bttsYes: 1.55,
+        // No corner odds provided
+      },
+    });
+
+    // None of the returned picks should be Corners with fake odds
+    const cornerPicks = picks.filter((p) => p.market === "Córners");
+    expect(cornerPicks.length).toBe(0);
+  });
+
+  it("accurately predicts corners using the exact authentic odds when bookmaker provides them", () => {
+    const authenticCornerOdd = 1.34;
+    const picks = evaluateFixturePrediction({
+      fixtureId: 999992,
+      homeTeam: "Manchester City",
+      awayTeam: "Liverpool",
+      league: "Premier League",
+      kickoff: "2026-10-05T15:00:00Z",
+      marketOdds: {
+        homeWin: 1.85,
+        draw: 3.75,
+        awayWin: 4.10,
+        over25: 1.65,
+        bttsYes: 1.55,
+        cornersOver65: authenticCornerOdd,
+      },
+    });
+
+    const cornerPick = picks.find((p) => p.market === "Córners" && p.selection === "Over 6.5");
+    expect(cornerPick).toBeDefined();
+    expect(cornerPick?.odds).toBe(authenticCornerOdd);
+  });
 });
