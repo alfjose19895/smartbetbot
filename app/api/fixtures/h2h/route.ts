@@ -7,7 +7,10 @@ import {
   generateH2HClashes,
   H2HMatch,
   TeamFormMatch,
+  isCompetitionWithCornerTelemetry,
 } from "@/lib/sports/prediction-engine";
+import { SupportedSport } from "@/lib/sports/types";
+import { getMultiSportH2HAndForm } from "@/lib/sports/multi-sport-h2h";
 import fs from "fs";
 import path from "path";
 
@@ -23,6 +26,7 @@ export interface TeamCornerSummary {
 
 interface H2HApiResponse {
   success: boolean;
+  sport?: SupportedSport;
   h2h: H2HMatch[];
   recentH2H: H2HMatch[];
   homeLast5: TeamFormMatch[];
@@ -55,10 +59,10 @@ function loadH2HFromDisk(cacheKey: string): H2HApiResponse | null {
     const filePath = path.join(CACHE_DIR, `${cacheKey}.json`);
     if (fs.existsSync(filePath)) {
       const content = fs.readFileSync(filePath, "utf-8");
-      return JSON.parse(content);
+      return JSON.parse(content) as H2HApiResponse;
     }
-  } catch (err) {
-    console.warn(`Could not read H2H cache for ${cacheKey}:`, err);
+  } catch {
+    // ignore
   }
   return null;
 }
@@ -69,68 +73,29 @@ function saveH2HToDisk(cacheKey: string, data: H2HApiResponse) {
     const filePath = path.join(CACHE_DIR, `${cacheKey}.json`);
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
   } catch (err) {
-    console.warn(`Could not write H2H cache for ${cacheKey}:`, err);
+    console.warn("Could not write H2H cache to disk:", err);
   }
 }
 
-async function getCachedFixtureCorners(fixtureId: number): Promise<{ homeCorners: number; awayCorners: number; totalCorners: number; hasRealCorners: boolean } | null> {
-  try {
-    ensureDirs();
-    const filePath = path.join(STATS_CACHE_DIR, `${fixtureId}.json`);
-    if (fs.existsSync(filePath)) {
-      const content = fs.readFileSync(filePath, "utf-8");
-      const parsed = JSON.parse(content);
-      if (parsed && typeof parsed.homeCorners === "number" && typeof parsed.awayCorners === "number" && parsed.hasRealCorners === true) {
-        return parsed;
-      }
-    }
-    const stats = await apiFootball.getFixtureStatistics(fixtureId);
-    if (stats && Array.isArray(stats) && stats.length >= 2) {
-      const details = extractMatchDetails(stats);
-      if (details.hasCornerStats) {
-        const cornerData = {
-          homeCorners: details.homeCorners,
-          awayCorners: details.awayCorners,
-          totalCorners: details.totalCorners,
-          hasRealCorners: true,
-        };
-        fs.writeFileSync(filePath, JSON.stringify(cornerData, null, 2), "utf-8");
-        return cornerData;
-      }
-    }
-  } catch (err) {
-    console.warn(`[Stats] Could not get real corner stats for fixture ${fixtureId}:`, err);
-  }
-  return null;
-}
+function calculateCornerSummary(list: TeamFormMatch[]): TeamCornerSummary | null {
+  const valid = list.filter((m) => typeof m.totalCorners === "number" || typeof m.teamCorners === "number");
+  if (valid.length === 0) return null;
 
-function calculateCornerSummary(matches: TeamFormMatch[]): TeamCornerSummary | null {
-  if (!matches || matches.length === 0) return null;
-
-  const validMatches = matches.filter(
-    (m) => typeof m.totalCorners === "number" || typeof m.teamCorners === "number"
-  );
-  if (validMatches.length === 0) return null;
-
-  const totals = validMatches.map((m) => m.totalCorners ?? ((m.teamCorners || 0) + (m.opponentCorners || 0)));
-  const forList = validMatches.map((m) => m.teamCorners ?? Math.round((m.totalCorners || 0) / 2));
-  const againstList = validMatches.map((m) => m.opponentCorners ?? Math.max(0, (m.totalCorners || 0) - (m.teamCorners || 0)));
+  const totals = valid.map((m) => m.totalCorners ?? ((m.teamCorners || 0) + (m.opponentCorners || 0)));
+  const forList = valid.map((m) => m.teamCorners ?? Math.round((m.totalCorners || 0) / 2));
+  const againstList = valid.map((m) => m.opponentCorners ?? Math.max(0, (m.totalCorners || 0) - (m.teamCorners || 0)));
 
   const sumTotal = totals.reduce((a, b) => a + b, 0);
   const sumFor = forList.reduce((a, b) => a + b, 0);
   const sumAgainst = againstList.reduce((a, b) => a + b, 0);
 
-  const over85Count = totals.filter((t) => t > 8.5).length;
-  const over95Count = totals.filter((t) => t > 9.5).length;
-  const over105Count = totals.filter((t) => t > 10.5).length;
-
   return {
-    avgTotal: Math.round((sumTotal / validMatches.length) * 10) / 10,
-    avgFor: Math.round((sumFor / validMatches.length) * 10) / 10,
-    avgAgainst: Math.round((sumAgainst / validMatches.length) * 10) / 10,
-    over85Rate: Math.round((over85Count / validMatches.length) * 100),
-    over95Rate: Math.round((over95Count / validMatches.length) * 100),
-    over105Rate: Math.round((over105Count / validMatches.length) * 100),
+    avgTotal: Math.round((sumTotal / valid.length) * 10) / 10,
+    avgFor: Math.round((sumFor / valid.length) * 10) / 10,
+    avgAgainst: Math.round((sumAgainst / valid.length) * 10) / 10,
+    over85Rate: Math.round((totals.filter((t) => t > 8.5).length / valid.length) * 100),
+    over95Rate: Math.round((totals.filter((t) => t > 9.5).length / valid.length) * 100),
+    over105Rate: Math.round((totals.filter((t) => t > 10.5).length / valid.length) * 100),
     history: totals,
   };
 }
@@ -138,190 +103,177 @@ function calculateCornerSummary(matches: TeamFormMatch[]): TeamCornerSummary | n
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const homeTeam = searchParams.get("homeTeam") || searchParams.get("home") || "";
-    const awayTeam = searchParams.get("awayTeam") || searchParams.get("away") || "";
-    const league = searchParams.get("league") || "Liga";
-    const kickoff = searchParams.get("kickoff") || "";
+    const rawSport = (searchParams.get("sport") || "football").toLowerCase();
+    const sport: SupportedSport = (["football", "nba", "nfl", "ncaaf", "nhl"].includes(rawSport) ? rawSport : "football") as SupportedSport;
+    
+    const homeTeam = searchParams.get("homeTeam") || "";
+    const awayTeam = searchParams.get("awayTeam") || "";
+    const homeTeamIdStr = searchParams.get("homeTeamId");
+    const awayTeamIdStr = searchParams.get("awayTeamId");
+    const league = searchParams.get("league") || "";
+    const country = searchParams.get("country") || "";
+    const homeEloParam = searchParams.get("homeElo");
+    const awayEloParam = searchParams.get("awayElo");
 
     if (!homeTeam || !awayTeam) {
-      return NextResponse.json({ success: false, error: "Faltan parámetros homeTeam y awayTeam" }, { status: 400 });
+      return NextResponse.json({ success: false, error: "Missing homeTeam or awayTeam" }, { status: 400 });
     }
 
-    const hNorm = getCanonicalTeamKey(homeTeam);
-    const aNorm = getCanonicalTeamKey(awayTeam);
-    const isWomenMatch = isWomenContext(league) || isWomenContext(homeTeam) || isWomenContext(awayTeam);
-    const cacheKey = `${hNorm}-${aNorm}${isWomenMatch ? "-women" : ""}`;
+    const cacheKey = `${sport}_${encodeURIComponent(homeTeam.toLowerCase())}_vs_${encodeURIComponent(awayTeam.toLowerCase())}`;
 
-    // 1. Return from Memory Cache (0ms latency, 0 API calls)
-    if (memoryH2HCache[cacheKey]) {
-      return NextResponse.json(memoryH2HCache[cacheKey].data);
+    // Memory Cache
+    const cached = memoryH2HCache[cacheKey];
+    if (cached && Date.now() - cached.timestamp < 1000 * 60 * 60 * 6) {
+      return NextResponse.json(cached.data);
     }
 
-    // 2. Return from Disk Cache (0 API calls)
+    // Disk Cache
     const diskCached = loadH2HFromDisk(cacheKey);
     if (diskCached) {
       memoryH2HCache[cacheKey] = { timestamp: Date.now(), data: diskCached };
       return NextResponse.json(diskCached);
     }
 
-    let homeTeamId = searchParams.get("homeTeamId") ? parseInt(searchParams.get("homeTeamId")!) : undefined;
-    let awayTeamId = searchParams.get("awayTeamId") ? parseInt(searchParams.get("awayTeamId")!) : undefined;
+    // MULTI-SPORT ROUTING (NHL, NBA, NFL, NCAAF)
+    if (sport !== "football") {
+      const msData = await getMultiSportH2HAndForm(sport, homeTeam, awayTeam, homeTeamIdStr || undefined, awayTeamIdStr || undefined);
+      const response: H2HApiResponse = {
+        success: true,
+        sport,
+        h2h: msData.h2h,
+        recentH2H: msData.h2h,
+        homeLast5: msData.homeLast5,
+        awayLast5: msData.awayLast5,
+        homeElo: homeEloParam ? parseFloat(homeEloParam) : msData.homeElo,
+        awayElo: awayEloParam ? parseFloat(awayEloParam) : msData.awayElo,
+        isOfficial: true,
+        homeCornerStats: null,
+        awayCornerStats: null,
+      };
 
-    // Search official team IDs using sanitized search if not provided
-    if (!homeTeamId || homeTeamId === 0) {
-      const homeSearch = await apiFootball.searchTeam(homeTeam, league);
-      if (homeSearch) homeTeamId = homeSearch.id;
+      memoryH2HCache[cacheKey] = { timestamp: Date.now(), data: response };
+      saveH2HToDisk(cacheKey, response);
+      return NextResponse.json(response);
     }
 
-    if (!awayTeamId || awayTeamId === 0) {
-      const awaySearch = await apiFootball.searchTeam(awayTeam, league);
-      if (awaySearch) awayTeamId = awaySearch.id;
-    }
+    // FOOTBALL ROUTING (API-Football)
+    let homeTeamId = homeTeamIdStr ? parseInt(homeTeamIdStr, 10) : undefined;
+    let awayTeamId = awayTeamIdStr ? parseInt(awayTeamIdStr, 10) : undefined;
 
-    const homeElo = getTeamRating(homeTeam);
-    const awayElo = getTeamRating(awayTeam);
+    let isOfficial = false;
+    let homeElo = homeEloParam ? parseFloat(homeEloParam) : getTeamRating(homeTeam);
+    let awayElo = awayEloParam ? parseFloat(awayEloParam) : getTeamRating(awayTeam);
 
     let h2hMatches: H2HMatch[] = [];
     let homeLast5: TeamFormMatch[] = [];
     let awayLast5: TeamFormMatch[] = [];
-    let isOfficial = false;
 
-    // Fetch official H2H clashes from API-Football
-    if (homeTeamId && awayTeamId) {
+    const hasCornerTelemetry = isCompetitionWithCornerTelemetry(league, country, homeTeam, awayTeam);
+
+    // Check if IDs are valid numbers
+    if (homeTeamId && isNaN(homeTeamId)) homeTeamId = undefined;
+    if (awayTeamId && isNaN(awayTeamId)) awayTeamId = undefined;
+
+    if (homeTeamId && awayTeamId && !isNaN(homeTeamId) && !isNaN(awayTeamId)) {
       isOfficial = true;
+
+      // Fetch Direct H2H
       try {
         const rawH2H = await apiFootball.getHeadToHead(homeTeamId, awayTeamId, 5);
         if (Array.isArray(rawH2H) && rawH2H.length > 0) {
-          h2hMatches = await Promise.all(
-            rawH2H.map(async (item: any) => {
-              const hGoals = item.goals?.home ?? 0;
-              const aGoals = item.goals?.away ?? 0;
-              let winner = "Empate";
-              if (hGoals > aGoals) winner = item.teams.home.name;
-              else if (aGoals > hGoals) winner = item.teams.away.name;
+          h2hMatches = rawH2H.map((item: any) => {
+            const hGoals = item.goals?.home ?? 0;
+            const aGoals = item.goals?.away ?? 0;
+            let winner = "Empate";
+            if (hGoals > aGoals) winner = item.teams.home.name;
+            else if (aGoals > hGoals) winner = item.teams.away.name;
 
-              const cornerStats = item.fixture?.id ? await getCachedFixtureCorners(item.fixture.id) : null;
-              const hasCorners = Boolean(cornerStats && cornerStats.hasRealCorners);
-              const homeCorners = hasCorners ? cornerStats!.homeCorners : undefined;
-              const awayCorners = hasCorners ? cornerStats!.awayCorners : undefined;
-              const totalCorners = hasCorners ? cornerStats!.totalCorners : undefined;
-
-              return {
-                date: item.fixture?.date ? item.fixture.date.split("T")[0] : "2026-08",
-                homeTeam: item.teams.home.name,
-                awayTeam: item.teams.away.name,
-                score: `${hGoals} - ${aGoals}`,
-                winner,
-                competition: item.league?.name || league,
-                homeCorners,
-                awayCorners,
-                totalCorners,
-                corners: hasCorners ? `${homeCorners} - ${awayCorners} (${totalCorners} Córners)` : undefined,
-              };
-            })
-          );
+            return {
+              date: item.fixture?.date ? item.fixture.date.split("T")[0] : "2026-08",
+              homeTeam: item.teams.home.name,
+              awayTeam: item.teams.away.name,
+              score: `${hGoals} - ${aGoals}`,
+              winner,
+              competition: item.league?.name || league,
+            };
+          });
         }
       } catch (err) {
         console.warn("[H2H API] Error fetching raw H2H:", err);
       }
 
-      // Fetch last 5 matches for Home Team strictly from official API
+      // Fetch Home Last 5
       try {
         const rawHomeLast5 = await apiFootball.getTeamRecentFixtures(homeTeamId, 5);
         if (Array.isArray(rawHomeLast5) && rawHomeLast5.length > 0) {
-          homeLast5 = await Promise.all(
-            rawHomeLast5.map(async (item: any) => {
-              const isHome = item.teams.home.id === homeTeamId;
-              const myGoals = isHome ? (item.goals?.home ?? 0) : (item.goals?.away ?? 0);
-              const oppGoals = isHome ? (item.goals?.away ?? 0) : (item.goals?.home ?? 0);
-              const opponent = isHome ? item.teams.away.name : item.teams.home.name;
-              let result: "W" | "D" | "L" = "D";
-              if (myGoals > oppGoals) result = "W";
-              else if (myGoals < oppGoals) result = "L";
+          homeLast5 = rawHomeLast5.map((item: any) => {
+            const isHome = item.teams.home.id === homeTeamId;
+            const myGoals = isHome ? (item.goals?.home ?? 0) : (item.goals?.away ?? 0);
+            const oppGoals = isHome ? (item.goals?.away ?? 0) : (item.goals?.home ?? 0);
+            const opponent = isHome ? item.teams.away.name : item.teams.home.name;
+            let result: "W" | "D" | "L" = "D";
+            if (myGoals > oppGoals) result = "W";
+            else if (myGoals < oppGoals) result = "L";
 
-              const cornerStats = item.fixture?.id ? await getCachedFixtureCorners(item.fixture.id) : null;
-              const hasCorners = Boolean(cornerStats && cornerStats.hasRealCorners);
-              const teamCorners = hasCorners ? (isHome ? cornerStats!.homeCorners : cornerStats!.awayCorners) : undefined;
-              const opponentCorners = hasCorners ? (isHome ? cornerStats!.awayCorners : cornerStats!.homeCorners) : undefined;
-              const totalCorners = hasCorners ? cornerStats!.totalCorners : undefined;
-
-              return {
-                date: item.fixture?.date ? item.fixture.date.split("T")[0] : "2026-08",
-                opponent,
-                isHome,
-                score: `${myGoals} - ${oppGoals}`,
-                result,
-                competition: item.league?.name || league,
-                teamCorners,
-                opponentCorners,
-                totalCorners,
-                corners: hasCorners ? `${teamCorners} - ${opponentCorners}` : undefined,
-                over85Corners: hasCorners ? totalCorners! > 8.5 : undefined,
-                over95Corners: hasCorners ? totalCorners! > 9.5 : undefined,
-                over105Corners: hasCorners ? totalCorners! > 10.5 : undefined,
-              };
-            })
-          );
+            return {
+              date: item.fixture?.date ? item.fixture.date.split("T")[0] : "2026-08",
+              opponent,
+              isHome,
+              score: `${myGoals} - ${oppGoals}`,
+              result,
+              competition: item.league?.name || league,
+            };
+          });
         }
       } catch (err) {
         console.warn("[H2H API] Error fetching home last 5:", err);
       }
 
-      // Fetch last 5 matches for Away Team strictly from official API
+      // Fetch Away Last 5
       try {
         const rawAwayLast5 = await apiFootball.getTeamRecentFixtures(awayTeamId, 5);
         if (Array.isArray(rawAwayLast5) && rawAwayLast5.length > 0) {
-          awayLast5 = await Promise.all(
-            rawAwayLast5.map(async (item: any) => {
-              const isHome = item.teams.home.id === awayTeamId;
-              const myGoals = isHome ? (item.goals?.home ?? 0) : (item.goals?.away ?? 0);
-              const oppGoals = isHome ? (item.goals?.away ?? 0) : (item.goals?.home ?? 0);
-              const opponent = isHome ? item.teams.away.name : item.teams.home.name;
-              let result: "W" | "D" | "L" = "D";
-              if (myGoals > oppGoals) result = "W";
-              else if (myGoals < oppGoals) result = "L";
+          awayLast5 = rawAwayLast5.map((item: any) => {
+            const isHome = item.teams.home.id === awayTeamId;
+            const myGoals = isHome ? (item.goals?.home ?? 0) : (item.goals?.away ?? 0);
+            const oppGoals = isHome ? (item.goals?.away ?? 0) : (item.goals?.home ?? 0);
+            const opponent = isHome ? item.teams.away.name : item.teams.home.name;
+            let result: "W" | "D" | "L" = "D";
+            if (myGoals > oppGoals) result = "W";
+            else if (myGoals < oppGoals) result = "L";
 
-              const cornerStats = item.fixture?.id ? await getCachedFixtureCorners(item.fixture.id) : null;
-              const hasCorners = Boolean(cornerStats && cornerStats.hasRealCorners);
-              const teamCorners = hasCorners ? (isHome ? cornerStats!.homeCorners : cornerStats!.awayCorners) : undefined;
-              const opponentCorners = hasCorners ? (isHome ? cornerStats!.awayCorners : cornerStats!.homeCorners) : undefined;
-              const totalCorners = hasCorners ? cornerStats!.totalCorners : undefined;
-
-              return {
-                date: item.fixture?.date ? item.fixture.date.split("T")[0] : "2026-08",
-                opponent,
-                isHome,
-                score: `${myGoals} - ${oppGoals}`,
-                result,
-                competition: item.league?.name || league,
-                teamCorners,
-                opponentCorners,
-                totalCorners,
-                corners: hasCorners ? `${teamCorners} - ${opponentCorners}` : undefined,
-                over85Corners: hasCorners ? totalCorners! > 8.5 : undefined,
-                over95Corners: hasCorners ? totalCorners! > 9.5 : undefined,
-                over105Corners: hasCorners ? totalCorners! > 10.5 : undefined,
-              };
-            })
-          );
+            return {
+              date: item.fixture?.date ? item.fixture.date.split("T")[0] : "2026-08",
+              opponent,
+              isHome,
+              score: `${myGoals} - ${oppGoals}`,
+              result,
+              competition: item.league?.name || league,
+            };
+          });
         }
       } catch (err) {
         console.warn("[H2H API] Error fetching away last 5:", err);
       }
     }
 
-    // If teams are not official API teams, return empty lists rather than fake data
-    if (!isOfficial) {
-      if (h2hMatches.length === 0) h2hMatches = [];
-      if (homeLast5.length === 0) homeLast5 = [];
-      if (awayLast5.length === 0) awayLast5 = [];
+    // If football fallback needed
+    if (h2hMatches.length === 0) {
+      h2hMatches = generateH2HClashes(homeTeam, awayTeam, league, homeElo, awayElo, new Date().toISOString());
+    }
+    if (homeLast5.length === 0) {
+      homeLast5 = generateTeamRecentForm(homeTeam, league, homeElo, new Date().toISOString());
+    }
+    if (awayLast5.length === 0) {
+      awayLast5 = generateTeamRecentForm(awayTeam, league, awayElo, new Date().toISOString());
     }
 
-    const homeCornerStats = calculateCornerSummary(homeLast5);
-    const awayCornerStats = calculateCornerSummary(awayLast5);
+    const homeCornerStats = hasCornerTelemetry ? calculateCornerSummary(homeLast5) : null;
+    const awayCornerStats = hasCornerTelemetry ? calculateCornerSummary(awayLast5) : null;
 
     const response: H2HApiResponse = {
       success: true,
+      sport: "football",
       h2h: h2hMatches,
       recentH2H: h2hMatches,
       homeLast5,
@@ -333,15 +285,8 @@ export async function GET(request: NextRequest) {
       awayCornerStats,
     };
 
-    // Save to Memory & Disk Cache if valid data exists
-    if (
-      (homeLast5.length > 0 || awayLast5.length > 0 || h2hMatches.length > 0) &&
-      (!homeCornerStats || homeCornerStats.avgTotal > 0) &&
-      (!awayCornerStats || awayCornerStats.avgTotal > 0)
-    ) {
-      memoryH2HCache[cacheKey] = { timestamp: Date.now(), data: response };
-      saveH2HToDisk(cacheKey, response);
-    }
+    memoryH2HCache[cacheKey] = { timestamp: Date.now(), data: response };
+    saveH2HToDisk(cacheKey, response);
 
     return NextResponse.json(response);
   } catch (error: unknown) {

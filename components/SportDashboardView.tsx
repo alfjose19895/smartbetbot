@@ -1576,6 +1576,7 @@ export function SportDashboardView({
         <MatchDetailModal
           prediction={activeModalPick}
           onClose={() => setActiveModalPick(null)}
+          sport={sport}
         />
       )}
 
