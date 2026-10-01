@@ -1,6 +1,7 @@
 -- ============================================================
 -- SMARTBETBOT MULTI-SPORT CORE SCHEMA MIGRATION
 -- Supports: Football, NBA, NFL, NCAAF, NHL
+-- Includes Row Level Security (RLS) & Policies
 -- ============================================================
 
 DO $$ 
@@ -42,6 +43,7 @@ BEGIN
   END IF;
 END $$;
 
+-- 1. sport_strategies table
 CREATE TABLE IF NOT EXISTS sport_strategies (
   id VARCHAR(64) PRIMARY KEY,
   sport VARCHAR(32) NOT NULL,
@@ -60,6 +62,18 @@ CREATE TABLE IF NOT EXISTS sport_strategies (
 
 CREATE INDEX IF NOT EXISTS idx_sport_strategies_sport ON sport_strategies(sport);
 
+-- Enable RLS on sport_strategies
+ALTER TABLE sport_strategies ENABLE ROW LEVEL SECURITY;
+
+-- Allow read access to authenticated and anon users
+DROP POLICY IF EXISTS "sport_strategies_select_all" ON sport_strategies;
+CREATE POLICY "sport_strategies_select_all" ON sport_strategies FOR SELECT USING (true);
+
+-- Allow full access to service_role
+DROP POLICY IF EXISTS "sport_strategies_service_role_all" ON sport_strategies;
+CREATE POLICY "sport_strategies_service_role_all" ON sport_strategies FOR ALL USING (auth.role() = 'service_role');
+
+-- Insert Initial Strategies (NHL + Ready for NBA, NFL, NCAAF)
 INSERT INTO sport_strategies (id, sport, market, name, description, enabled, min_probability, min_edge, min_odds, max_odds, min_data_quality, config_json)
 VALUES
   -- NBA
@@ -87,6 +101,7 @@ VALUES
   ('nhl_team_total', 'nhl', 'TEAM TOTAL', 'NHL Team Goals Total', 'Pre-match Team Total Goals proyectado por tiro y efectividad', true, 0.55, 0.03, 1.70, 2.20, 70.0, '{"max_per_game": 1}'::jsonb)
 ON CONFLICT (id) DO NOTHING;
 
+-- 2. sport_api_logs table
 CREATE TABLE IF NOT EXISTS sport_api_logs (
   id BIGSERIAL PRIMARY KEY,
   sport VARCHAR(32) NOT NULL,
@@ -100,3 +115,10 @@ CREATE TABLE IF NOT EXISTS sport_api_logs (
 );
 
 CREATE INDEX IF NOT EXISTS idx_sport_api_logs_sport_created ON sport_api_logs(sport, created_at DESC);
+
+-- Enable RLS on sport_api_logs
+ALTER TABLE sport_api_logs ENABLE ROW LEVEL SECURITY;
+
+-- Allow full access to service_role only (logs are private to backend system)
+DROP POLICY IF EXISTS "sport_api_logs_service_role_all" ON sport_api_logs;
+CREATE POLICY "sport_api_logs_service_role_all" ON sport_api_logs FOR ALL USING (auth.role() = 'service_role');
