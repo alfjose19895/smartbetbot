@@ -181,7 +181,6 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
     { href: getSportHref("signals"), label: language === "es" ? "Pre-Match" : "Pre-Match", icon: "📋" },
     { href: getSportHref("parlay"), label: t("navParlay"), icon: "🎲" },
     { href: getSportHref("history"), label: t("navHistory"), icon: "📜" },
-    { href: getSportHref("settings"), label: t("navSettings"), icon: "⚙️" },
   ];
 
   return (
@@ -280,20 +279,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
             );
           })}
 
-          {/* Admin Agent MCP shortcut */}
-          {currentRole === "admin" && (
-            <Link
-              href="/admin?tab=mcp"
-              className={`hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black whitespace-nowrap transition cursor-pointer ${
-                pathname === "/admin" && typeof window !== "undefined" && window.location.search.includes("mcp")
-                  ? "bg-purple-600 text-white shadow-xs"
-                  : "text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300"
-              }`}
-            >
-              <span>🤖</span>
-              <span>Agente MCP</span>
-            </Link>
-          )}
+
 
           {/* Admin Dashboard shortcut */}
           {currentRole === "admin" && (

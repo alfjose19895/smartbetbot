@@ -1,3 +1,4 @@
+import { getCurrentSportSeason } from "../registry";
 import { SportsDataProvider, SportCapability, NormalizedGame, NormalizedOdds } from '../types';
 import { SPORTS_CONFIG } from '../config';
 
@@ -93,7 +94,7 @@ export class NHLProvider implements SportsDataProvider {
           league: {
             id: g.league?.id || 57,
             name: g.league?.name || 'NHL',
-            season: g.league?.season || '2025-2026'
+            season: g.league?.season || getCurrentSportSeason('nhl')
           },
           homeTeam: {
             id: g.teams?.home?.id ?? 0,
@@ -146,7 +147,7 @@ export class NHLProvider implements SportsDataProvider {
         league: {
           id: g.league?.id || 57,
           name: 'NHL',
-          season: g.league?.season || '2025-2026'
+          season: g.league?.season || getCurrentSportSeason('nhl')
         },
         homeTeam: {
           id: g.teams?.home?.id ?? 0,

@@ -380,13 +380,15 @@ export default function DashboardPage() {
 
             {/* Quick Actions in Header */}
             <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-              <button
-                onClick={() => setMcpModalOpen(true)}
-                className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 px-4 py-2.5 text-xs font-black text-white shadow-lg shadow-emerald-950/50 transition cursor-pointer"
-              >
-                <span>🤖</span>
-                <span>Agente MCP Multi-Deporte</span>
-              </button>
+              {isAdmin && (
+                <button
+                  onClick={() => setMcpModalOpen(true)}
+                  className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 px-4 py-2.5 text-xs font-black text-white shadow-lg shadow-emerald-950/50 transition cursor-pointer"
+                >
+                  <span>🤖</span>
+                  <span>Agente MCP Fútbol / Multi-Deporte</span>
+                </button>
+              )}
               <button
                 onClick={openPushModal}
                 className="flex items-center gap-2 rounded-2xl border border-slate-700 bg-slate-800/90 hover:bg-slate-800 px-4 py-2.5 text-xs font-bold text-slate-200 hover:text-white transition cursor-pointer"

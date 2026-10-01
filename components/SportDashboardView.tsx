@@ -42,6 +42,18 @@ export function SportDashboardView({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedConfidence, setSelectedConfidence] = useState<"all" | "TOP PICK" | "STRONG" | "QUALIFIED">("all");
   const [mcpModalOpen, setMcpModalOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  React.useEffect(() => {
+    fetch("/api/auth/profile")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.user?.role === "admin") {
+          setIsAdmin(true);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const handleSync = async () => {
     try {
@@ -159,21 +171,15 @@ export function SportDashboardView({
 
             {/* Quick Actions in Header */}
             <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-              <button
-                onClick={() => setMcpModalOpen(true)}
-                className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 px-4 py-2.5 text-xs font-black text-white shadow-lg shadow-cyan-950/50 transition cursor-pointer"
-              >
-                <span>🤖</span>
-                <span>Agente MCP {meta.displayName}</span>
-              </button>
-
-              <Link
-                href="/settings"
-                className="flex items-center gap-2 rounded-2xl border border-slate-700 bg-slate-800/90 hover:bg-slate-800 px-4 py-2.5 text-xs font-bold text-slate-200 hover:text-white transition cursor-pointer"
-              >
-                <span>⚙️</span>
-                <span>Ajustes</span>
-              </Link>
+              {isAdmin && (
+                <button
+                  onClick={() => setMcpModalOpen(true)}
+                  className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 px-4 py-2.5 text-xs font-black text-white shadow-lg shadow-cyan-950/50 transition cursor-pointer"
+                >
+                  <span>🤖</span>
+                  <span>Agente MCP {meta.displayName}</span>
+                </button>
+              )}
             </div>
           </div>
         </section>

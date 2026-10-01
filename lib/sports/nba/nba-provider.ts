@@ -1,3 +1,4 @@
+import { getCurrentSportSeason } from "../registry";
 import { SportsDataProvider, SportCapability, NormalizedGame, NormalizedOdds } from '../types';
 import { SPORTS_CONFIG } from '../config';
 
@@ -48,7 +49,8 @@ export class NBAProvider implements SportsDataProvider {
     }
 
     try {
-      const url = `${config.baseUrl}/games?date=${date}&league=12&season=2025-2026`;
+      const currentSeason = getCurrentSportSeason("nba");
+      const url = `${config.baseUrl}/games?date=${date}&league=12&season=${currentSeason}`;
       const res = await fetch(url, { headers: this.headers });
       if (!res.ok) return [];
 
@@ -63,7 +65,7 @@ export class NBAProvider implements SportsDataProvider {
         league: {
           id: g.league?.id || '12',
           name: g.league?.name || 'NBA',
-          season: g.league?.season || '2025-2026'
+          season: g.league?.season || getCurrentSportSeason('nba')
         },
         homeTeam: {
           id: g.teams?.home?.id ?? 0,
@@ -106,7 +108,7 @@ export class NBAProvider implements SportsDataProvider {
         league: {
           id: g.league?.id || '12',
           name: 'NBA',
-          season: g.league?.season || '2025-2026'
+          season: g.league?.season || getCurrentSportSeason('nba')
         },
         homeTeam: {
           id: g.teams?.home?.id ?? 0,

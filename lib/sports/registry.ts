@@ -1,5 +1,49 @@
 import { SportMetadata, SupportedSport } from './types';
 
+export function getCurrentSportSeason(sport: SupportedSport, date: Date = new Date()): string {
+  const year = date.getFullYear();
+  const month = date.getMonth(); // 0 = Jan, 11 = Dec
+
+  switch (sport) {
+    case 'nhl': {
+      // NHL season runs from October (month 9) to June.
+      if (month >= 9) {
+        return `${year}-${year + 1}`;
+      }
+      return `${year - 1}-${year}`;
+    }
+    case 'nba': {
+      // NBA season runs from October (month 9) to June.
+      if (month >= 9) {
+        return `${year}-${year + 1}`;
+      }
+      return `${year - 1}-${year}`;
+    }
+    case 'nfl': {
+      // NFL season runs from September (month 8) to February.
+      if (month >= 7) {
+        return `${year}`;
+      }
+      return `${year - 1}`;
+    }
+    case 'ncaaf': {
+      // College Football season runs from August (month 7) to January.
+      if (month >= 7) {
+        return `${year}`;
+      }
+      return `${year - 1}`;
+    }
+    case 'football':
+    default: {
+      // Football European season: starts in July/August
+      if (month >= 6) {
+        return `${year}-${year + 1}`;
+      }
+      return `${year}`;
+    }
+  }
+}
+
 export const SPORTS_REGISTRY: Record<SupportedSport, SportMetadata> = {
   football: {
     id: 'football',
@@ -11,7 +55,7 @@ export const SPORTS_REGISTRY: Record<SupportedSport, SportMetadata> = {
     borderColor: 'border-emerald-500/30',
     description: 'Modelo Poisson Dixon-Coles con xG, Córners y análisis de mercado avanzado.',
     defaultMarkets: ['GANADOR LOCAL', 'GANADOR VISITANTE', 'OVER GOLES', 'UNDER GOLES', 'OVER CORNERS', 'UNDER CORNERS', 'AMBOS EQUIPOS ANOTAN'],
-    activeSeason: '2026',
+    activeSeason: getCurrentSportSeason('football'),
     isLiveSupported: true
   },
   nba: {
@@ -24,7 +68,7 @@ export const SPORTS_REGISTRY: Record<SupportedSport, SportMetadata> = {
     borderColor: 'border-orange-500/30',
     description: 'Modelo cuantitativo NBA con ritmo (Pace), Offensive/Defensive Ratings y Monte Carlo 20k.',
     defaultMarkets: ['MONEYLINE', 'SPREAD', 'TOTAL POINTS', 'TEAM TOTAL'],
-    activeSeason: '2025-2026',
+    activeSeason: getCurrentSportSeason('nba'),
     isLiveSupported: false
   },
   nfl: {
@@ -37,7 +81,7 @@ export const SPORTS_REGISTRY: Record<SupportedSport, SportMetadata> = {
     borderColor: 'border-blue-500/30',
     description: 'Modelo NFL basado en Elo ajustado, yardas por jugada, diferencial de entregas y Monte Carlo.',
     defaultMarkets: ['MONEYLINE', 'SPREAD', 'TOTAL POINTS', 'TEAM TOTAL'],
-    activeSeason: '2026',
+    activeSeason: getCurrentSportSeason('nfl'),
     isLiveSupported: false
   },
   ncaaf: {
@@ -50,7 +94,7 @@ export const SPORTS_REGISTRY: Record<SupportedSport, SportMetadata> = {
     borderColor: 'border-yellow-500/30',
     description: 'Modelo College Football con ajuste estricto por fuerza de oponente, conferencias y shrinkage.',
     defaultMarkets: ['MONEYLINE', 'SPREAD', 'TOTAL POINTS', 'TEAM TOTAL'],
-    activeSeason: '2026',
+    activeSeason: getCurrentSportSeason('ncaaf'),
     isLiveSupported: false
   },
   nhl: {
@@ -63,17 +107,21 @@ export const SPORTS_REGISTRY: Record<SupportedSport, SportMetadata> = {
     borderColor: 'border-cyan-500/30',
     description: 'Modelo de Goles Esperados (xG), Poisson Bivariado, ajuste por Portero Titular y resolución OT/SO.',
     defaultMarkets: ['MONEYLINE', 'PUCK LINE', 'TOTAL GOALS', 'TEAM TOTAL'],
-    activeSeason: '2025-2026',
+    activeSeason: getCurrentSportSeason('nhl'),
     isLiveSupported: false
   }
 };
 
 export function getSportMeta(sport: SupportedSport): SportMetadata {
-  return SPORTS_REGISTRY[sport] || SPORTS_REGISTRY.football;
+  const base = SPORTS_REGISTRY[sport] || SPORTS_REGISTRY.football;
+  return {
+    ...base,
+    activeSeason: getCurrentSportSeason(sport)
+  };
 }
 
 export function getAllSports(): SportMetadata[] {
-  return Object.values(SPORTS_REGISTRY);
+  return Object.keys(SPORTS_REGISTRY).map((k) => getSportMeta(k as SupportedSport));
 }
 
 export function isValidSport(sport: string): sport is SupportedSport {
