@@ -5,7 +5,9 @@ import { getVerifiedIdentity } from '@/features/auth/lib/session';
 import { isValidSport, getSportMeta } from '@/lib/sports/registry';
 import { isSportFeatureEnabled } from '@/lib/sports/config';
 import { SportSelector } from '@/components/SportSelector';
-import { SupportedSport } from '@/lib/sports/types';
+import { MultiSportSignalCard } from '@/components/MultiSportSignalCard';
+import { NHLSyncEngine } from '@/lib/sports/nhl/nhl-sync';
+import { MultiSportSignal, SupportedSport } from '@/lib/sports/types';
 
 interface SportPageProps {
   params: Promise<{ sport: string }>;
@@ -25,6 +27,17 @@ export default async function DynamicSportPage({ params }: SportPageProps) {
 
   const meta = getSportMeta(sport as SupportedSport);
   const isEnabled = isSportFeatureEnabled(sport as SupportedSport);
+
+  let signals: MultiSportSignal[] = [];
+  let smartPick: MultiSportSignal | null = null;
+  let totalGames = 0;
+
+  if (sport === 'nhl' && isEnabled) {
+    const nhlData = await NHLSyncEngine.getTodayNHLSignals();
+    signals = nhlData.signals;
+    smartPick = nhlData.smartPick;
+    totalGames = nhlData.gamesCount;
+  }
 
   return (
     <AppShell identity={identity} currentPath={`/sports/${sport}`}>
@@ -79,21 +92,46 @@ export default async function DynamicSportPage({ params }: SportPageProps) {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-                  <span>{meta.icon}</span> Señales y Oportunidades
+                  <span>{meta.icon}</span> Señales y Oportunidades de Hoy
                 </h2>
                 <p className="text-xs text-zinc-400">
+                  {totalGames > 0 ? `${totalGames} partidos programados hoy. ` : ''}
                   Calculadas mediante modelo cuantitativo Monte Carlo / Poisson con Smart Edge auditado.
                 </p>
               </div>
             </div>
 
-            <div className="bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-8 text-center">
-              <div className="text-3xl mb-2">🎯</div>
-              <h3 className="text-sm font-semibold text-zinc-200">Sin señales oficiales por ahora</h3>
-              <p className="text-xs text-zinc-400 mt-1 max-w-sm mx-auto">
-                No hay apuestas con suficiente valor matemático ({meta.displayName}) en la pizarra de hoy. Priorizamos calidad sobre cantidad.
-              </p>
-            </div>
+            {/* Smart Pick Highlight */}
+            {smartPick && (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-amber-400 text-lg">⭐</span>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-amber-400">
+                    Smart Pick {meta.displayName} del Día
+                  </h3>
+                </div>
+                <div className="max-w-xl">
+                  <MultiSportSignalCard signal={smartPick} />
+                </div>
+              </div>
+            )}
+
+            {/* Signals Grid */}
+            {signals.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {signals.map(sig => (
+                  <MultiSportSignalCard key={sig.id} signal={sig} />
+                ))}
+              </div>
+            ) : (
+              <div className="bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-8 text-center">
+                <div className="text-3xl mb-2">🎯</div>
+                <h3 className="text-sm font-semibold text-zinc-200">Sin señales oficiales por ahora</h3>
+                <p className="text-xs text-zinc-400 mt-1 max-w-sm mx-auto">
+                  No hay apuestas con suficiente valor matemático ({meta.displayName}) en la pizarra de hoy. Priorizamos calidad sobre cantidad.
+                </p>
+              </div>
+            )}
           </section>
         )}
 
