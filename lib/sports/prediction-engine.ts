@@ -1150,6 +1150,45 @@ export interface LiveMatchContext {
   awayGoals?: number;
 }
 
+
+export function isWomenContext(str?: string): boolean {
+  if (!str) return false;
+  const s = str.toLowerCase();
+  return (
+    s.includes("women") ||
+    s.includes("fem") ||
+    s.includes("wom") ||
+    s.includes("femen") ||
+    s.endsWith(" w") ||
+    s.includes(" w ") ||
+    s.includes("dff")
+  );
+}
+
+export function isCompetitionWithCornerTelemetry(league: string, country?: string, homeTeam?: string, awayTeam?: string): boolean {
+  if (isWomenContext(league) || (homeTeam && isWomenContext(homeTeam)) || (awayTeam && isWomenContext(awayTeam))) {
+    return false;
+  }
+  const l = (league || "").toLowerCase();
+  if (
+    l.includes("u19") ||
+    l.includes("u20") ||
+    l.includes("u21") ||
+    l.includes("u23") ||
+    l.includes("primavera") ||
+    l.includes("youth") ||
+    l.includes("amateur") ||
+    l.includes("regional") ||
+    l.includes("reserve") ||
+    l.includes("women") ||
+    l.includes("femen") ||
+    l.includes("dff")
+  ) {
+    return false;
+  }
+  return true;
+}
+
 export function evaluateFixturePrediction(params: {
   fixtureId: number | string;
   homeTeam: string;
@@ -1531,53 +1570,63 @@ export function evaluateFixturePrediction(params: {
     const totalXg = hXg + aXg;
 
     // === MERCADOS CON MÁXIMA PRIORIDAD Y RENTABILIDAD DEMOSTRADA ===
+    // REGLA ESTRICTA: Solo pronosticar córners en ligas con telemetría oficial y cuotas de mercado auténticas
+    const hasCornerTelemetry = isCompetitionWithCornerTelemetry(canonicalLeague, country, homeTeam, awayTeam);
+    const hasRealCornerOdds = Boolean(
+      marketOdds && (
+        marketOdds.cornersOver65 || marketOdds.cornersOver75 || marketOdds.cornersOver85 ||
+        marketOdds.cornersOver95 || marketOdds.cornersOver105
+      )
+    );
+
     // 1. PRIORIDAD #1: Motor Dinámico de Córners (corners_total_over_prematch)
-    // Analiza líneas Over 6.5, 7.5, 8.5, 9.5, 10.5 con Monte Carlo (N=20,000)
-    const cornerOddsMap: Partial<Record<CornerLine, number>> = {};
-    if (marketOdds.cornersOver65) cornerOddsMap[6.5] = marketOdds.cornersOver65;
-    if (marketOdds.cornersOver75) cornerOddsMap[7.5] = marketOdds.cornersOver75;
-    if (marketOdds.cornersOver85) cornerOddsMap[8.5] = marketOdds.cornersOver85;
-    if (marketOdds.cornersOver95) cornerOddsMap[9.5] = marketOdds.cornersOver95;
-    if (marketOdds.cornersOver105) cornerOddsMap[10.5] = marketOdds.cornersOver105;
+    if (hasCornerTelemetry && hasRealCornerOdds) {
+      const cornerOddsMap: Partial<Record<CornerLine, number>> = {};
+      if (marketOdds.cornersOver65) cornerOddsMap[6.5] = marketOdds.cornersOver65;
+      if (marketOdds.cornersOver75) cornerOddsMap[7.5] = marketOdds.cornersOver75;
+      if (marketOdds.cornersOver85) cornerOddsMap[8.5] = marketOdds.cornersOver85;
+      if (marketOdds.cornersOver95) cornerOddsMap[9.5] = marketOdds.cornersOver95;
+      if (marketOdds.cornersOver105) cornerOddsMap[10.5] = marketOdds.cornersOver105;
 
-    const cornerEngine = new CornerLineSelectionEngine();
-    const cornerResult = cornerEngine.evaluateFixture({
-      homeTeam,
-      awayTeam,
-      league: canonicalLeague,
-      homeElo: rHomeBase,
-      awayElo: rAway,
-      oddsByLine: cornerOddsMap,
-    });
-
-    if (
-      cornerResult.status === "SIGNAL" &&
-      cornerResult.recommended_candidate &&
-      typeof cornerResult.recommended_candidate.decimal_odds === "number" &&
-      cornerResult.recommended_candidate.decimal_odds >= 1.05
-    ) {
-      const rec = cornerResult.recommended_candidate;
-      const finalOdds = rec.decimal_odds as number;
-      candidates.push({
-        market: "Córners",
-        selection: rec.selection,
-        prob: rec.model_probability,
-        odds: finalOdds,
-        minOddsThreshold: 1.14,
-        minProbThreshold: 0.58,
-        cornerAnalysis: {
-          expectedTotalCorners: cornerResult.expected_total_corners,
-          expectedHomeCorners: cornerResult.expected_home_corners,
-          expectedAwayCorners: cornerResult.expected_away_corners,
-          distributionModel: cornerResult.distribution_model,
-          dataQuality: cornerResult.data_quality,
-          allCandidates: cornerResult.all_candidates,
-          recommendedLine: rec.line,
-          saferLine: cornerResult.safer_candidate?.line,
-          valueLine: cornerResult.value_candidate?.line,
-        }
+      const cornerEngine = new CornerLineSelectionEngine();
+      const cornerResult = cornerEngine.evaluateFixture({
+        homeTeam,
+        awayTeam,
+        league: canonicalLeague,
+        homeElo: rHomeBase,
+        awayElo: rAway,
+        oddsByLine: cornerOddsMap,
       });
-    }
+
+      if (
+        cornerResult.status === "SIGNAL" &&
+        cornerResult.recommended_candidate &&
+        typeof cornerResult.recommended_candidate.decimal_odds === "number" &&
+        cornerResult.recommended_candidate.decimal_odds >= 1.05
+      ) {
+        const rec = cornerResult.recommended_candidate;
+        const finalOdds = rec.decimal_odds as number;
+        candidates.push({
+          market: "Córners",
+          selection: rec.selection,
+          prob: rec.model_probability,
+          odds: finalOdds,
+          minOddsThreshold: 1.14,
+          minProbThreshold: 0.58,
+          cornerAnalysis: {
+            expectedTotalCorners: cornerResult.expected_total_corners,
+            expectedHomeCorners: cornerResult.expected_home_corners,
+            expectedAwayCorners: cornerResult.expected_away_corners,
+            distributionModel: cornerResult.distribution_model,
+            dataQuality: cornerResult.data_quality,
+            allCandidates: cornerResult.all_candidates,
+            recommendedLine: rec.line,
+            saferLine: cornerResult.safer_candidate?.line,
+            valueLine: cornerResult.value_candidate?.line,
+          }
+        });
+      }
+    } // End if hasCornerTelemetry && hasRealCornerOdds
 
     // 2. PRIORIDAD #2: Ambos Equipos Anotan (BTTS) - Efectividad histórica superior
     if (effBtts && effBtts >= 1.25 && pBttsYes >= 0.48 && hXg >= 1.00 && aXg >= 0.90) {
@@ -1611,22 +1660,31 @@ export function evaluateFixturePrediction(params: {
       });
     }
 
-    // 4. PRIORIDAD #4: Motor Dinámico de Under Córners (corners_total_under_prematch)
-    const cornerUnderOddsMap: Partial<Record<CornerLine, number>> = {};
-    if (marketOdds.cornersUnder65) cornerUnderOddsMap[6.5] = marketOdds.cornersUnder65;
-    if (marketOdds.cornersUnder75) cornerUnderOddsMap[7.5] = marketOdds.cornersUnder75;
-    if (marketOdds.cornersUnder85) cornerUnderOddsMap[8.5] = marketOdds.cornersUnder85;
-    if (marketOdds.cornersUnder95) cornerUnderOddsMap[9.5] = marketOdds.cornersUnder95;
-    if (marketOdds.cornersUnder105) cornerUnderOddsMap[10.5] = marketOdds.cornersUnder105;
+    const hasRealUnderCornerOdds = Boolean(
+      marketOdds && (
+        marketOdds.cornersUnder65 || marketOdds.cornersUnder75 || marketOdds.cornersUnder85 ||
+        marketOdds.cornersUnder95 || marketOdds.cornersUnder105
+      )
+    );
 
-    const cornerUnderResult = cornerEngine.evaluateUnderFixture({
-      homeTeam,
-      awayTeam,
-      league: canonicalLeague,
-      homeElo: rHomeBase,
-      awayElo: rAway,
-      oddsByLine: cornerUnderOddsMap,
-    });
+    // 4. PRIORIDAD #4: Motor Dinámico de Under Córners (corners_total_under_prematch)
+    if (hasCornerTelemetry && hasRealUnderCornerOdds) {
+      const cornerUnderOddsMap: Partial<Record<CornerLine, number>> = {};
+      if (marketOdds.cornersUnder65) cornerUnderOddsMap[6.5] = marketOdds.cornersUnder65;
+      if (marketOdds.cornersUnder75) cornerUnderOddsMap[7.5] = marketOdds.cornersUnder75;
+      if (marketOdds.cornersUnder85) cornerUnderOddsMap[8.5] = marketOdds.cornersUnder85;
+      if (marketOdds.cornersUnder95) cornerUnderOddsMap[9.5] = marketOdds.cornersUnder95;
+      if (marketOdds.cornersUnder105) cornerUnderOddsMap[10.5] = marketOdds.cornersUnder105;
+
+      const cornerEngine = new CornerLineSelectionEngine();
+      const cornerUnderResult = cornerEngine.evaluateUnderFixture({
+        homeTeam,
+        awayTeam,
+        league: canonicalLeague,
+        homeElo: rHomeBase,
+        awayElo: rAway,
+        oddsByLine: cornerUnderOddsMap,
+      });
 
     if (
       cornerUnderResult.status === "SIGNAL" &&
@@ -1656,6 +1714,8 @@ export function evaluateFixturePrediction(params: {
         }
       });
     }
+
+    } // End if hasCornerTelemetry && hasRealUnderCornerOdds
 
     // 5. PRIORIDAD #5: Under Goles (Under 2.5 / Under 3.5 Goles)
     if (

@@ -38,12 +38,20 @@ export const STANDARD_CORNER_BENCHMARK_ODDS: Record<CornerLine, number> = {
   10.5: 2.38,
 };
 
+export const REALISTIC_UNDER_CORNER_ODDS_BOUNDS: Record<CornerLine, { min: number; max: number }> = {
+  6.5: { min: 2.10, max: 6.50 },
+  7.5: { min: 1.70, max: 4.20 },
+  8.5: { min: 1.45, max: 2.80 },
+  9.5: { min: 1.30, max: 2.20 },
+  10.5: { min: 1.15, max: 1.75 },
+};
+
 export const REALISTIC_CORNER_ODDS_BOUNDS: Record<CornerLine, { min: number; max: number }> = {
-  6.5: { min: 1.12, max: 1.35 },
-  7.5: { min: 1.20, max: 1.55 },
-  8.5: { min: 1.35, max: 1.85 },
-  9.5: { min: 1.55, max: 2.35 },
-  10.5: { min: 1.85, max: 3.20 },
+  6.5: { min: 1.10, max: 1.50 },
+  7.5: { min: 1.18, max: 1.65 },
+  8.5: { min: 1.30, max: 1.95 },
+  9.5: { min: 1.50, max: 2.45 },
+  10.5: { min: 1.80, max: 3.40 },
 };
 
 export const DEFAULT_CORNER_CONFIG: CornerMarketConfig = {
@@ -480,14 +488,19 @@ export class CornerLineSelectionEngine {
       if (smartEdge < lineCfg.min_edge) {
         rejectionReasons.push(`Smart Edge insuficiente: +${(smartEdge * 100).toFixed(1)}% < +${(lineCfg.min_edge * 100).toFixed(1)}%`);
       }
+      const bounds = REALISTIC_CORNER_ODDS_BOUNDS[line];
+      if (bounds && (decimalOdds < bounds.min || decimalOdds > bounds.max)) {
+        rejectionReasons.push(`Cuota @${decimalOdds.toFixed(2)} fuera de rango real de mercado para Over ${line} (Rango real: @${bounds.min.toFixed(2)} - @${bounds.max.toFixed(2)})`);
+      }
 
       const isQualified = rejectionReasons.length === 0;
       let qualStatus: CornerLineCandidate["qualification_status"] = "QUALIFIED";
       if (!isQualified) {
-        if (modelProb < lineCfg.min_probability) qualStatus = "REJECTED_PROB";
-        else if (decimalOdds < lineCfg.min_odds) qualStatus = "REJECTED_ODDS";
+        if (dist.data_quality < lineCfg.min_data_quality) qualStatus = "REJECTED_DQ";
+        else if (modelProb < lineCfg.min_probability) qualStatus = "REJECTED_PROB";
+        else if (decimalOdds < lineCfg.min_odds || (bounds && (decimalOdds < bounds.min || decimalOdds > bounds.max))) qualStatus = "REJECTED_ODDS";
         else if (smartEdge < lineCfg.min_edge) qualStatus = "REJECTED_EDGE";
-        else qualStatus = "REJECTED_DQ";
+        else qualStatus = "REJECTED_ODDS";
       }
 
       // Compute Multi-Factor Smart Score
@@ -680,6 +693,10 @@ export class CornerLineSelectionEngine {
       }
       if (smartEdge < minEdge) {
         rejectionReasons.push(`Smart Edge insuficiente: +${(smartEdge * 100).toFixed(1)}% < +${(minEdge * 100).toFixed(1)}%`);
+      }
+      const uBounds = REALISTIC_UNDER_CORNER_ODDS_BOUNDS[line];
+      if (uBounds && (decimalOdds < uBounds.min || decimalOdds > uBounds.max)) {
+        rejectionReasons.push(`Cuota @${decimalOdds.toFixed(2)} fuera de rango real de mercado para Under ${line} (Rango real: @${uBounds.min.toFixed(2)} - @${uBounds.max.toFixed(2)})`);
       }
       if (dist.expected_total_corners > line + 0.2) {
         rejectionReasons.push(`Expectativa total de córners (${dist.expected_total_corners}) superior al límite de seguridad para la línea ${line}`);
