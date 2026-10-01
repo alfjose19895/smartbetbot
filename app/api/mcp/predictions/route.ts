@@ -1,3 +1,4 @@
+import { NHLSyncEngine } from "@/lib/sports/nhl/nhl-sync";
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
@@ -159,6 +160,7 @@ export async function POST(req: Request) {
       action,
       picks,
       pick,
+      sport: rawSport = "",
       query = "",
       country = "",
       league = "",
@@ -172,6 +174,7 @@ export async function POST(req: Request) {
       autoPublish,
       publish,
     } = body;
+    const sport = (rawSport || "").toLowerCase();
 
     // Direct publish action: Add MCP-discovered alerts to active daily dashboard and signals
     if (action === "publish" || action === "addPicks") {
@@ -207,6 +210,122 @@ export async function POST(req: Request) {
     }
 
     const todayStr = getEcuadorDateString(Date.now());
+
+    // SPORT SPECIFIC ROUTING: NHL
+    if (sport === "nhl") {
+      const nhlData = await NHLSyncEngine.getTodayNHLSignals();
+      let nhlPicks: MarketOpportunity[] = nhlData.signals.map((s) => ({
+        id: `nhl-${s.id}`,
+        fixtureId: s.game.id,
+        match: `${s.game.homeTeam.name} vs ${s.game.awayTeam.name}`,
+        homeTeam: s.game.homeTeam.name,
+        awayTeam: s.game.awayTeam.name,
+        league: "NHL",
+        country: "USA / Canadá",
+        market: s.market,
+        selection: s.selection,
+        odds: s.decimalOdds,
+        fairOdds: Number((1 / (s.modelProbability || 0.55)).toFixed(2)),
+        probability: Math.round(s.modelProbability * 100),
+        smartScore: s.smartScore,
+        edge: s.expectedValue,
+        expectedValue: s.expectedValue,
+        confidence: (s.classification === "TOP PICK" ? "Muy Alta" : "Alta") as any,
+        confidenceScore: s.smartScore,
+        explanation: s.explanation || "Análisis cuantitativo xG y porteros titulares NHL.",
+        kickoff: s.game.startsAt,
+        status: "pending" as const,
+        bookmaker: "Bet365",
+        bookmakerOdds: s.decimalOdds,
+        pickBadge: (s.classification === "TOP PICK" ? "bomba" : "valor") as any,
+        isMcpPick: true,
+        source: "mcp" as const,
+      }));
+
+      const qLower = (query || "").toLowerCase().trim();
+
+      // Filter by query tokens if provided
+      if (qLower && qLower !== "todos" && !qLower.includes("jornada completa")) {
+        if (qLower.includes("puck") || qLower.includes("line") || qLower.includes("-1.5") || qLower.includes("+1.5")) {
+          const puckPicks = nhlPicks.filter(p => p.market.includes("Puck Line"));
+          if (puckPicks.length > 0) nhlPicks = puckPicks;
+        } else if (qLower.includes("over") || qLower.includes("goles") || qLower.includes("totales") || qLower.includes("5.5") || qLower.includes("6")) {
+          const overPicks = nhlPicks.filter(p => p.market.includes("Over") || p.market.includes("Total"));
+          if (overPicks.length > 0) nhlPicks = overPicks;
+        } else if (qLower.includes("moneyline") || qLower.includes("ganador") || qLower.includes("ot")) {
+          const mlPicks = nhlPicks.filter(p => p.market.includes("Moneyline"));
+          if (mlPicks.length > 0) nhlPicks = mlPicks;
+        } else if (qLower.includes("portero") || qLower.includes("gsax") || qLower.includes("salvadas")) {
+          const goaliePicks = nhlPicks.filter(p => p.explanation?.toLowerCase().includes("portero") || p.explanation?.toLowerCase().includes("gsax") || p.smartScore >= 75);
+          if (goaliePicks.length > 0) nhlPicks = goaliePicks;
+        } else {
+          const teamPicks = nhlPicks.filter(p => 
+            p.homeTeam.toLowerCase().includes(qLower) || 
+            p.awayTeam.toLowerCase().includes(qLower) ||
+            p.selection.toLowerCase().includes(qLower)
+          );
+          if (teamPicks.length > 0) nhlPicks = teamPicks;
+        }
+      }
+
+      // Parlay generation if requested
+      const isParlayRequest = qLower.includes("parlay") || qLower.includes("combinada") || qLower.includes("acumulada");
+      let parlayData = undefined;
+      if (isParlayRequest && nhlPicks.length >= 2) {
+        const topLegs = [...nhlPicks].sort((a, b) => b.probability - a.probability).slice(0, 3);
+        const totalOdds = topLegs.reduce((acc, l) => acc * l.odds, 1);
+        const combinedProb = topLegs.reduce((acc, l) => acc * (l.probability / 100), 1) * 100;
+        parlayData = {
+          totalOdds: totalOdds.toFixed(2),
+          combinedProbability: `${combinedProb.toFixed(1)}%`,
+          selectionsCount: topLegs.length,
+          legs: topLegs.map((l) => ({
+            match: `${l.homeTeam} vs ${l.awayTeam}`,
+            market: l.market,
+            selection: l.selection,
+            odds: l.odds,
+          })),
+        };
+        nhlPicks = topLegs;
+      }
+
+      const avgProb = nhlPicks.length > 0 ? Math.round(nhlPicks.reduce((acc, p) => acc + p.probability, 0) / nhlPicks.length) : 0;
+      const avgOdds = nhlPicks.length > 0 ? (nhlPicks.reduce((acc, p) => acc + p.odds, 0) / nhlPicks.length).toFixed(2) : "0.00";
+
+      const aiAnalysis: AiAgentAnalysis = {
+        intent: isParlayRequest
+          ? "Combinada / Parlay Cuantitativo NHL de Valor"
+          : "Análisis Cuantitativo NHL — Modelo de Goles Esperados (xG) y Porteros (GSAx)",
+        summary: nhlPicks.length === 0
+          ? "No se encontraron partidos pendientes de iniciar en NHL para este filtro en las próximas horas con cuotas activas."
+          : `Se detectaron ${nhlPicks.length} oportunidades con ventaja matemática (+EV) calculadas con métricas de posesión Corsi/Fenwick y eficiencia en Power Play.`,
+        insights: [
+          "El mercado Moneyline NHL incluye tiempo reglamentario, prórroga (OT) y penaltis (Shootout).",
+          "Evaluación de fatiga back-to-back y ventaja de localía en pista de hielo.",
+          "Diferencial de salvadas por encima del promedio (GSAx) del portero titular confirmado.",
+        ],
+        recommendation: isParlayRequest
+          ? "Jugar combinada conservadora con control de stake (1 - 2 unidades)."
+          : "Priorizar selecciones con SmartScore >= 75 y valor de cuota mayor a @1.60.",
+        parlayRecommendation: parlayData,
+      };
+
+      return NextResponse.json({
+        success: true,
+        count: nhlPicks.length,
+        countryDetected: "NHL (USA / Canadá)",
+        autoPublished: false,
+        publishedCount: 0,
+        aiAnalysis,
+        metrics: {
+          totalMatches: nhlPicks.length,
+          averageProbability: `${avgProb}%`,
+          averageOdds: `@${avgOdds}`,
+          highConfidenceCount: nhlPicks.filter((p) => p.confidence === "Muy Alta" || p.probability >= 60).length,
+        },
+        predictions: nhlPicks,
+      });
+    }
     const qLower = (query || "").toLowerCase().trim();
     const cLower = (country || "").toLowerCase().trim();
     const lLower = (league || "").toLowerCase().trim();

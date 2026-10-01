@@ -985,7 +985,7 @@ function AdminControlContent() {
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-slate-700 dark:divide-slate-800/60 dark:text-slate-300">
                       {filteredUsers.map((u) => (
-                        <tr key={u.id} className="hover:bg-slate-50/80 transition dark:hover:bg-slate-850/60">
+                        <tr key={u.id} className="hover:bg-slate-50/80 transition dark:hover:bg-slate-800/60">
                           <td className="px-3 py-2">
                             <div className="font-bold text-slate-900 dark:text-white leading-snug">{u.fullName}</div>
                             <div className="text-[11px] text-slate-500 dark:text-slate-400">{u.email}</div>
@@ -1491,7 +1491,7 @@ function AdminControlContent() {
                           className={`px-3.5 py-2 flex items-center justify-between cursor-pointer border-b transition-colors select-none ${
                             isSelected
                               ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300"
-                              : "bg-slate-900/90 hover:bg-slate-850 border-slate-800 text-slate-400 hover:text-slate-200"
+                              : "bg-slate-900/90 hover:bg-slate-800 border-slate-800 text-slate-400 hover:text-slate-200"
                           }`}
                         >
                           <div className="flex items-center gap-2">
@@ -1675,7 +1675,7 @@ function AdminControlContent() {
                           return true;
                         })
                         .map((log) => (
-                          <tr key={log.id} className="hover:bg-slate-50/80 transition dark:hover:bg-slate-850/60">
+                          <tr key={log.id} className="hover:bg-slate-50/80 transition dark:hover:bg-slate-800/60">
                             <td className="px-3 py-2 font-mono text-xs text-slate-800 dark:text-slate-200">
                               <div>📅 {log.formattedDate}</div>
                             </td>

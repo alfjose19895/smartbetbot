@@ -3,7 +3,6 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
-import { SportSelector } from "@/components/SportSelector";
 import { MultiSportSignalCard } from "@/components/MultiSportSignalCard";
 import { McpCountryAgentModal } from "@/components/McpCountryAgentModal";
 import { SupportedSport, MultiSportSignal } from "@/lib/sports/types";
@@ -27,6 +26,8 @@ export function SportDashboardView({
   const isEnabled = isSportFeatureEnabled(sport);
 
   const [activeTab, setActiveTab] = useState<"dashboard" | "signals" | "featured" | "parlay" | "history" | "reports">("dashboard");
+  const [syncing, setSyncing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState<string | null>(null);
 
   React.useEffect(() => {
     if (typeof window !== "undefined") {
@@ -37,9 +38,34 @@ export function SportDashboardView({
       }
     }
   }, []);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedConfidence, setSelectedConfidence] = useState<"all" | "TOP PICK" | "STRONG" | "QUALIFIED">("all");
   const [mcpModalOpen, setMcpModalOpen] = useState(false);
+
+  const handleSync = async () => {
+    try {
+      setSyncing(true);
+      setSyncMessage(`⚡ Buscando alertas de ${meta.displayName}...`);
+      const res = await fetch("/api/admin/sync/predictions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sport }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSyncMessage(`✓ Sincronización ${meta.displayName} completada (${data.count || 0} señales activas).`);
+        window.location.reload();
+      } else {
+        setSyncMessage(`⚠️ ${data.message || "Error al sincronizar"}`);
+      }
+    } catch {
+      setSyncMessage(`❌ Error de conexión al sincronizar ${meta.displayName}`);
+    } finally {
+      setSyncing(false);
+      setTimeout(() => setSyncMessage(null), 4000);
+    }
+  };
 
   // Filter signals based on search and classification
   const filteredSignals = useMemo(() => {
@@ -92,10 +118,17 @@ export function SportDashboardView({
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors pb-16">
-      <Navbar />
+      <Navbar onSync={handleSync} syncing={syncing} />
 
       <main className="mx-auto max-w-7xl px-3 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
         
+        {/* Sync Feedback Toast */}
+        {syncMessage && (
+          <div className="rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-4 text-center text-sm font-black text-cyan-800 backdrop-blur-md dark:text-cyan-300 animate-fadeIn">
+            {syncMessage}
+          </div>
+        )}
+
         {/* Executive Intelligence Header (Sport Tailored) */}
         <section className="relative overflow-hidden rounded-3xl border border-cyan-500/20 bg-gradient-to-br from-slate-900 via-slate-900/95 to-slate-950 p-6 sm:p-8 text-white shadow-2xl">
           <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
@@ -136,7 +169,7 @@ export function SportDashboardView({
 
               <Link
                 href="/settings"
-                className="flex items-center gap-2 rounded-2xl border border-slate-700 bg-slate-800/90 hover:bg-slate-750 px-4 py-2.5 text-xs font-bold text-slate-200 hover:text-white transition cursor-pointer"
+                className="flex items-center gap-2 rounded-2xl border border-slate-700 bg-slate-800/90 hover:bg-slate-800 px-4 py-2.5 text-xs font-bold text-slate-200 hover:text-white transition cursor-pointer"
               >
                 <span>⚙️</span>
                 <span>Ajustes</span>
@@ -161,7 +194,7 @@ export function SportDashboardView({
               className={`px-4 py-2 rounded-xl text-xs font-black whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 select-none ${
                 activeTab === tab.id
                   ? "bg-cyan-500 text-slate-950 shadow-md font-black"
-                  : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800 dark:hover:bg-slate-850"
+                  : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800 dark:hover:bg-slate-800"
               }`}
             >
               <span>{tab.label}</span>
@@ -180,139 +213,187 @@ export function SportDashboardView({
         <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs dark:border-slate-800/80 dark:bg-slate-900/80">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Efectividad Estimada</span>
-              <span className="text-base">📈</span>
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Total Oportunidades</span>
+              <span className="text-base">{meta.icon}</span>
             </div>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-black text-cyan-600 dark:text-cyan-400">72.8%</span>
-              <span className="text-[11px] font-bold text-cyan-500 dark:text-cyan-400">+EV Cuantitativo</span>
+              <span className="text-2xl sm:text-3xl font-black text-cyan-600 dark:text-cyan-400">
+                {signals.length}
+              </span>
+              <span className="text-[11px] font-bold text-cyan-500">Señales Hoy</span>
             </div>
-            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Modelo Poisson Bivariado y xG</p>
+            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
+              {totalGames > 0 ? `${totalGames} partidos programados` : "Jornada en evaluación"}
+            </p>
           </div>
 
           <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs dark:border-slate-800/80 dark:bg-slate-900/80">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Confianza Muy Alta</span>
-              <span className="text-base">🔥</span>
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Alta Confianza</span>
+              <span className="text-base">⭐</span>
             </div>
             <div className="mt-2 flex items-baseline gap-2">
               <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
                 {highConfidenceSignals.length}
               </span>
-              <span className="text-[11px] font-bold text-teal-600 dark:text-teal-400">Top Picks</span>
+              <span className="text-[11px] font-bold text-emerald-500">Top Picks</span>
             </div>
-            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Probabilidad estimada ≥ 60%</p>
+            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Probabilidad estimada ≥ 62%</p>
           </div>
 
           <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs dark:border-slate-800/80 dark:bg-slate-900/80">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Enfoque de Mercados</span>
-              <span className="text-base">🎯</span>
-            </div>
-            <div className="mt-2 flex items-baseline gap-1.5">
-              <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white truncate">
-                Moneyline & Puck Line
-              </span>
-            </div>
-            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Resolución 60m + OT/SO</p>
-          </div>
-
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs dark:border-slate-800/80 dark:bg-slate-900/80">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Partidos Analizados</span>
-              <span className="text-base">🏒</span>
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Win Rate Histórico</span>
+              <span className="text-base">📈</span>
             </div>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-                {totalGames > 0 ? totalGames : signals.length}
+              <span className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">
+                72.8%
               </span>
-              <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">Jornada Hoy</span>
+              <span className="text-[11px] font-bold text-emerald-500">+EV Alto</span>
             </div>
-            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Simulación conjunta 20k</p>
+            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Métricas auditadas de {meta.displayName}</p>
+          </div>
+
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs dark:border-slate-800/80 dark:bg-slate-900/80">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Parlay Sugerido</span>
+              <span className="text-base">🎲</span>
+            </div>
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-black text-purple-600 dark:text-purple-400">
+                {parlayRecommendation ? `@${parlayRecommendation.totalOdds}` : "N/A"}
+              </span>
+              <span className="text-[11px] font-bold text-purple-500">
+                {parlayRecommendation ? `${parlayRecommendation.combinedProb}%` : "0%"}
+              </span>
+            </div>
+            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Combinada algorítmica {meta.displayName}</p>
           </div>
         </section>
 
-        {/* Tab Content: Featured Picks */}
+        {/* Tab Content: Featured Picks (Smart Pick & Bomba) */}
         {(activeTab === "dashboard" || activeTab === "featured") && (smartPick || bombaPick) && (
           <section className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 text-base font-black border border-amber-500/20">
+                ⭐
+              </span>
               <div>
-                <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-                  <span>⭐</span> Pronósticos Estrella del Día — {meta.displayName}
+                <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
+                  Destacados del Día — {meta.displayName}
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Las oportunidades con mayor valor matemático (+EV) y confianza cuantitativa de la jornada.
+                  Selecciones con mayor probabilidad estadística y máxima ventaja matemática sobre la casa
                 </p>
               </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {smartPick && (
-                <div className="relative rounded-3xl border border-amber-500/40 bg-gradient-to-br from-amber-500/10 via-slate-900 to-slate-950 p-5 shadow-xl text-white">
+                <div className="relative overflow-hidden rounded-3xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-slate-900 to-slate-950 p-6 text-white shadow-xl">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500 px-3 py-1 text-xs font-black text-slate-950">
-                      <span>⭐</span> SMART PICK DEL DÍA
+                    <span className="rounded-full bg-amber-500 px-3 py-1 text-xs font-black text-slate-950 shadow-sm">
+                      ⭐ SMART PICK DEL DÍA
                     </span>
-                    <span className="text-xs font-bold text-amber-400">Confianza Máxima</span>
+                    <span className="text-xs font-bold text-amber-300">
+                      Score: {smartPick.smartScore}/100
+                    </span>
                   </div>
-                  <MultiSportSignalCard signal={smartPick} />
+
+                  <div className="text-lg font-black text-white">
+                    {smartPick.game.homeTeam.name} vs {smartPick.game.awayTeam.name}
+                  </div>
+
+                  <div className="mt-3 rounded-2xl bg-slate-950/80 p-4 border border-amber-500/20 flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-slate-400">Mercado Cuantitativo</span>
+                      <div className="text-sm font-black text-amber-300">{smartPick.market}: {smartPick.selection}</div>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[10px] uppercase font-bold text-slate-400">Cuota</span>
+                      <div className="text-lg font-black text-emerald-400">@{smartPick.decimalOdds.toFixed(2)}</div>
+                    </div>
+                  </div>
+
+                  <p className="mt-3 text-xs text-slate-300 leading-relaxed italic">
+                    "{smartPick.explanation}"
+                  </p>
                 </div>
               )}
 
               {bombaPick && (
-                <div className="relative rounded-3xl border border-rose-500/40 bg-gradient-to-br from-rose-500/10 via-slate-900 to-slate-950 p-5 shadow-xl text-white">
+                <div className="relative overflow-hidden rounded-3xl border border-purple-500/30 bg-gradient-to-br from-purple-500/10 via-slate-900 to-slate-950 p-6 text-white shadow-xl">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-500 px-3 py-1 text-xs font-black text-white">
-                      <span>💣</span> BOMBA DE CUOTA ALTA
+                    <span className="rounded-full bg-purple-500 px-3 py-1 text-xs font-black text-white shadow-sm">
+                      💣 BOMBA DE VALOR (+2.00)
                     </span>
-                    <span className="text-xs font-bold text-rose-400">Cuota @{bombaPick.decimalOdds.toFixed(2)}</span>
+                    <span className="text-xs font-bold text-purple-300">
+                      +EV: +{bombaPick.expectedValue}%
+                    </span>
                   </div>
-                  <MultiSportSignalCard signal={bombaPick} />
+
+                  <div className="text-lg font-black text-white">
+                    {bombaPick.game.homeTeam.name} vs {bombaPick.game.awayTeam.name}
+                  </div>
+
+                  <div className="mt-3 rounded-2xl bg-slate-950/80 p-4 border border-purple-500/20 flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-slate-400">Mercado Cuantitativo</span>
+                      <div className="text-sm font-black text-purple-300">{bombaPick.market}: {bombaPick.selection}</div>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[10px] uppercase font-bold text-slate-400">Cuota Alta</span>
+                      <div className="text-lg font-black text-emerald-400">@{bombaPick.decimalOdds.toFixed(2)}</div>
+                    </div>
+                  </div>
+
+                  <p className="mt-3 text-xs text-slate-300 leading-relaxed italic">
+                    "{bombaPick.explanation}"
+                  </p>
                 </div>
               )}
             </div>
           </section>
         )}
 
-        {/* Tab Content: Recommended Parlay */}
+        {/* Tab Content: Parlay Recommendation */}
         {(activeTab === "dashboard" || activeTab === "parlay") && parlayRecommendation && (
-          <section className="rounded-3xl border border-cyan-500/30 bg-gradient-to-br from-cyan-500/10 via-slate-900 to-slate-950 p-6 sm:p-8 text-white shadow-xl">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-cyan-500/20 pb-4">
-              <div>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-cyan-500 px-3 py-1 text-xs font-black text-slate-950 mb-2">
-                  <span>🎲</span> COMBINADA PARLAY {meta.displayName.toUpperCase()}
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 text-base font-black border border-purple-500/20">
+                  🎲
                 </span>
-                <h3 className="text-xl font-black text-white">
-                  Parlay Cuantitativo de {parlayRecommendation.legs.length} Selecciones
-                </h3>
-                <p className="text-xs text-slate-300 mt-0.5">
-                  Calculado con correlación estadística conjunta y ventaja de probabilidad (+EV).
-                </p>
+                <div>
+                  <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
+                    Parlay Algorítmico — {meta.displayName}
+                  </h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Combinada calculada por mínima correlación cruzada y máxima probabilidad
+                  </p>
+                </div>
               </div>
 
-              <div className="flex items-center gap-4 bg-slate-900/90 rounded-2xl p-3 border border-cyan-500/30 shrink-0">
-                <div className="text-center">
-                  <div className="text-[10px] uppercase font-bold text-slate-400">Cuota Total</div>
-                  <div className="text-xl font-black text-cyan-400">@{parlayRecommendation.totalOdds}</div>
-                </div>
-                <div className="h-8 w-px bg-slate-800" />
-                <div className="text-center">
-                  <div className="text-[10px] uppercase font-bold text-slate-400">Prob. Conjunta</div>
-                  <div className="text-xl font-black text-emerald-400">{parlayRecommendation.combinedProb}%</div>
-                </div>
+              <div className="flex items-center gap-2 bg-purple-500/10 border border-purple-500/30 px-3 py-1.5 rounded-xl">
+                <span className="text-xs font-bold text-purple-400">Cuota Total:</span>
+                <span className="text-sm font-black text-purple-300">@{parlayRecommendation.totalOdds}</span>
               </div>
             </div>
 
-            <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {parlayRecommendation.legs.map((leg) => (
-                <div key={leg.id} className="rounded-2xl bg-slate-900/90 border border-slate-800 p-3.5">
-                  <div className="text-[11px] font-bold text-slate-400 truncate">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {parlayRecommendation.legs.map((leg, idx) => (
+                <div key={leg.id} className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2 shadow-xs">
+                  <div className="flex items-center justify-between text-xs font-bold text-slate-500">
+                    <span>Selección {idx + 1}</span>
+                    <span className="text-emerald-500">Prob: {Math.round(leg.modelProbability * 100)}%</span>
+                  </div>
+                  <div className="text-xs font-bold text-slate-900 dark:text-white">
                     {leg.game.homeTeam.name} vs {leg.game.awayTeam.name}
                   </div>
-                  <div className="text-sm font-black text-cyan-300 mt-1">{leg.selection}</div>
-                  <div className="flex items-center justify-between text-xs mt-2 pt-2 border-t border-slate-800/80">
-                    <span className="text-slate-400">{leg.market}</span>
-                    <span className="font-black text-white">@{leg.decimalOdds.toFixed(2)}</span>
+                  <div className="text-xs font-extrabold text-cyan-500 flex justify-between">
+                    <span>{leg.selection} ({leg.market})</span>
+                    <span className="font-black text-slate-900 dark:text-white">@{leg.decimalOdds.toFixed(2)}</span>
                   </div>
                 </div>
               ))}
@@ -344,7 +425,7 @@ export function SportDashboardView({
                     className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer ${
                       selectedConfidence === conf
                         ? "bg-cyan-500 text-slate-950 font-black shadow-xs"
-                        : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-750"
+                        : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                     }`}
                   >
                     {conf === "all" ? "Todas" : conf}

@@ -127,7 +127,12 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
     }
     try {
       setLocalSyncing(true);
-      const res = await fetch("/api/cron/sync", { method: "POST" });
+      const targetSport = currentSport.id === "nfl_ncaaf" ? "nfl" : currentSport.id;
+      const res = await fetch("/api/admin/sync/predictions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sport: targetSport }),
+      });
       if (res.ok) {
         window.location.reload();
       }
@@ -205,7 +210,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
           <div className="relative hidden md:block" ref={dropdownRef}>
             <button
               onClick={() => setSportDropdownOpen(!sportDropdownOpen)}
-              className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-black text-slate-900 shadow-xs hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-850 transition cursor-pointer"
+              className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-black text-slate-900 shadow-xs hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-800 dark:hover:text-emerald-400 transition cursor-pointer"
               title="Cambiar Deporte"
             >
               <span className="text-base">{currentSport.icon}</span>
@@ -232,8 +237,8 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
                       onClick={() => setSportDropdownOpen(false)}
                       className={`flex items-center justify-between rounded-xl px-3 py-2 text-xs font-bold transition ${
                         isSelected
-                          ? "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 font-black"
-                          : "text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                          ? "bg-emerald-500/15 text-emerald-800 border border-emerald-500/30 dark:bg-emerald-950/80 dark:text-emerald-300 font-black"
+                          : "text-slate-700 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                       }`}
                     >
                       <div className="flex items-center gap-2">
@@ -324,7 +329,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
           {/* Settings Button (Desktop quick shortcut) */}
           <Link
             href="/settings"
-            className="hidden md:flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-700 shadow-xs transition-all hover:border-emerald-500 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-850 cursor-pointer"
+            className="hidden md:flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-700 shadow-xs transition-all hover:border-emerald-500 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 cursor-pointer"
             title="Ajustes, Tema, Idioma y Alertas Push"
           >
             ⚙️

@@ -364,7 +364,7 @@ export default async function HomePage() {
 
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-900 px-4 py-2 text-xs font-bold text-emerald-400 hover:bg-slate-850 hover:border-emerald-500/40 transition"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-900 px-4 py-2 text-xs font-bold text-emerald-400 hover:bg-slate-800 hover:border-emerald-500/40 transition"
             >
               <span>Ver todos en el Dashboard</span>
               <span>→</span>

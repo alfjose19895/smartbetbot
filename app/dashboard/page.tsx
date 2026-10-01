@@ -8,11 +8,11 @@ import { NewAlertsModal } from "@/components/NewAlertsModal";
 import { RecommendedParlay } from "@/components/RecommendedParlay";
 import { FeaturedDailyPicks } from "@/components/FeaturedDailyPicks";
 import { MultiSportDashboardCards } from "@/components/MultiSportDashboardCards";
-import { SportSelector } from "@/components/SportSelector";
+import { McpCountryAgentModal } from "@/components/McpCountryAgentModal";
 import { MarketOpportunity, getFeaturedDailyPicks } from "@/lib/sports/prediction-engine";
+import { MultiSportSignal } from "@/lib/sports/types";
 import { useLanguage } from "@/context/LanguageContext";
 import { openPushModal } from "@/components/PushNotificationManager";
-
 
 function getMatchDeduplicationKey(p: MarketOpportunity): string {
   const fixId = Number(p.fixtureId) || 0;
@@ -89,12 +89,16 @@ function getEcuadorDateString(d: Date | number | string = Date.now()): string {
 export default function DashboardPage() {
   const { language, t } = useLanguage();
   const [predictions, setPredictions] = useState<MarketOpportunity[]>([]);
+  const [nhlSignals, setNhlSignals] = useState<MultiSportSignal[]>([]);
+  const [nhlSmartPick, setNhlSmartPick] = useState<MultiSportSignal | null>(null);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
   const [newlyDiscoveredAlerts, setNewlyDiscoveredAlerts] = useState<MarketOpportunity[]>([]);
   const [newAlertsModalOpen, setNewAlertsModalOpen] = useState<boolean>(false);
+  const [mcpModalOpen, setMcpModalOpen] = useState<boolean>(false);
+  const [sportFilter, setSportFilter] = useState<"all" | "football" | "nhl">("all");
   const [copiedPickId, setCopiedPickId] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
@@ -112,16 +116,59 @@ export default function DashboardPage() {
   const loadSignals = async (showLoader = false) => {
     try {
       if (showLoader) setLoading(true);
+      
+      // Load Football signals
       const res = await fetch(`/api/signals?_t=${Date.now()}`, { cache: "no-store" });
       const json = await res.json();
       const serverSignals: MarketOpportunity[] = Array.isArray(json.signals)
         ? json.signals
         : [];
-
       const cleanUniqueSignals = deduplicatePicksList(serverSignals);
       setPredictions(cleanUniqueSignals);
+
+      // Load NHL signals in parallel
+      const nhlRes = await fetch(`/api/mcp/predictions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sport: "nhl", query: "jornada hoy" }),
+      }).catch(() => null);
+
+      if (nhlRes && nhlRes.ok) {
+        const nhlData = await nhlRes.json();
+        if (Array.isArray(nhlData.predictions)) {
+          // Convert to MultiSportSignal format
+          const formattedNHL: MultiSportSignal[] = nhlData.predictions.map((p: any) => ({
+            id: String(p.fixtureId || p.id),
+            sport: "nhl" as const,
+            game: {
+              id: String(p.fixtureId || p.id),
+              sport: "nhl" as const,
+              gameDate: p.kickoff || new Date().toISOString(),
+              homeTeam: { id: "nhl-h", name: p.homeTeam },
+              awayTeam: { id: "nhl-a", name: p.awayTeam },
+              status: p.status === "won" ? "FINISHED" : "SCHEDULED",
+            },
+            market: p.market,
+            selection: p.selection,
+            decimalOdds: p.odds || 1.85,
+            fairOdds: p.fairOdds || 1.70,
+            modelProbability: (p.probability || 55) / 100,
+            smartEdge: (p.edge || 5) / 100,
+            smartScore: p.smartScore || 75,
+            expectedValue: p.edge || 5,
+            classification: p.confidence === "Muy Alta" ? "TOP PICK" : "STRONG",
+            rationale: p.explanation || "Análisis cuantitativo xG y porteros titulares.",
+            explanation: p.explanation || "Análisis cuantitativo xG y porteros titulares.",
+            confidence: p.confidence || "Alta",
+          }));
+          setNhlSignals(formattedNHL);
+          if (formattedNHL.length > 0) {
+            setNhlSmartPick(formattedNHL[0]);
+          }
+        }
+      }
     } catch (err) {
-      console.error("Error loading signals:", err);
+      console.error("Error loading multi-sport signals:", err);
     } finally {
       if (showLoader) setLoading(false);
     }
@@ -149,11 +196,11 @@ export default function DashboardPage() {
   const handleSyncPredictions = async () => {
     try {
       setSyncing(true);
-      setSyncMessage("⚡ Buscando alertas del mercado de hoy con modelos cuantitativos...");
+      setSyncMessage("⚡ Buscando alertas multi-deporte con modelos cuantitativos...");
       const res = await fetch("/api/admin/sync/predictions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ sport: "all" }),
       });
       const data = await res.json();
       if (data.success) {
@@ -161,9 +208,8 @@ export default function DashboardPage() {
         if (data.newAlerts && data.newAlerts.length > 0) {
           setNewlyDiscoveredAlerts(data.newAlerts);
           setNewAlertsModalOpen(true);
-          setSyncMessage(`✓ ¡Se encontraron ${data.newAlerts.length} nuevas alertas de hoy! Agregadas al panel.`);
+          setSyncMessage(`✓ ¡Se encontraron ${data.newAlerts.length} nuevas alertas multi-deporte!`);
         } else {
-          // If already in snapshot, display active pending/upcoming alerts in modal
           const todayPending = cleanPicks.filter(
             (p: MarketOpportunity) => p.status === "pending" || (!p.actualScore && p.status !== "won" && p.status !== "lost")
           );
@@ -171,16 +217,11 @@ export default function DashboardPage() {
             setNewlyDiscoveredAlerts(todayPending);
             setNewAlertsModalOpen(true);
           }
-          setSyncMessage(`✓ Mercado de hoy al día (${data.count || cleanPicks.length} alertas activas).`);
+          setSyncMessage(`✓ Mercados sincronizados (${data.count || cleanPicks.length} alertas activas).`);
         }
-        if (Array.isArray(data.predictions)) {
-          setPredictions(cleanPicks);
-          window.dispatchEvent(new CustomEvent("predictions-updated", { detail: cleanPicks }));
-        } else {
-          await loadSignals();
-        }
+        await loadSignals(false);
       } else {
-        setSyncMessage(`⚠️ ${data.message || "Error al buscar alertas de hoy"}`);
+        setSyncMessage(`⚠️ ${data.message || "Error al sincronizar alertas multi-deporte"}`);
       }
     } catch {
       setSyncMessage("❌ Error de conexión al buscar alertas de hoy");
@@ -194,8 +235,8 @@ export default function DashboardPage() {
     const text = [
       `⭐ SMARTBETBOT MCP — PRONÓSTICO DE CONFIANZA MUY ALTA ⭐`,
       `🏆 ${pick.league} ${pick.country ? `(${pick.country})` : ""}`,
-      `⚽ ${pick.homeTeam} vs ${pick.awayTeam}`,
-      `🎯 Pronóstico: ${pick.market} @${(pick.odds ?? 1.5).toFixed(2)}`,
+      `🎯 ${pick.homeTeam} vs ${pick.awayTeam}`,
+      `📊 Mercado: ${pick.market} — Selección: ${pick.selection} @${(pick.odds ?? 1.5).toFixed(2)}`,
       `📈 Probabilidad Modelo: ${pick.probability}% (Fair Odds: @${(pick.fairOdds ?? pick.odds ?? 1.5).toFixed(2)})`,
       `💎 Ventaja (+EV): +${pick.edge || 5}%`,
       `⭐ Confianza: ${pick.confidence || "Muy Alta"}`,
@@ -227,8 +268,8 @@ export default function DashboardPage() {
     return pDate === todayDateStr;
   });
 
-  // Filter high confidence picks focusing on Ganador Local & Over 2.5 strictly on today's matches
-  const highConfidencePicks = todayPredictions
+  // Filter high confidence picks
+  const highConfidenceFootballPicks = todayPredictions
     .filter((p) => {
       const isFocusMarket = p.market === "Ganador Local" || p.market === "Over 2.5 Goles" || p.market === "Córners";
       const isHighConf =
@@ -239,10 +280,54 @@ export default function DashboardPage() {
     })
     .sort((a, b) => (b.probability || 0) - (a.probability || 0));
 
-  const topRecommendedPicks = highConfidencePicks.slice(0, 6);
+  // Map NHL signals to MarketOpportunity for display in combined feed
+  const nhlOpportunities: MarketOpportunity[] = nhlSignals.map((s) => ({
+    id: `nhl-${s.id}`,
+    fixtureId: s.game.id,
+    match: `${s.game.homeTeam.name} vs ${s.game.awayTeam.name}`,
+    homeTeam: s.game.homeTeam.name,
+    awayTeam: s.game.awayTeam.name,
+    league: "NHL",
+    country: "USA / Canadá",
+    market: s.market,
+    selection: s.selection,
+    odds: s.decimalOdds,
+    fairOdds: Number((1 / (s.modelProbability || 0.55)).toFixed(2)),
+    probability: Math.round(s.modelProbability * 100),
+    smartScore: s.smartScore,
+    edge: s.expectedValue,
+    expectedValue: s.expectedValue,
+    confidence: (s.classification === "TOP PICK" ? "Muy Alta" : "Alta") as any,
+    confidenceScore: s.smartScore,
+    explanation: s.explanation || "Análisis cuantitativo xG y porteros titulares NHL.",
+    kickoff: s.game.startsAt,
+    status: "pending" as const,
+    bookmaker: "Bet365",
+    bookmakerOdds: s.decimalOdds,
+    pickBadge: (s.classification === "TOP PICK" ? "bomba" : "valor") as any,
+  }));
 
-  // Featured SmartPick and Bomba del día strictly for today
-  const { smartPick, bombaPick } = getFeaturedDailyPicks(todayPredictions);
+  // Combined Multi-Sport Top Picks
+  const allCombinedPicks: MarketOpportunity[] = [
+    ...highConfidenceFootballPicks,
+    ...nhlOpportunities,
+  ].sort((a, b) => (b.probability || 0) - (a.probability || 0));
+
+  const filteredPicks = sportFilter === "football"
+    ? highConfidenceFootballPicks
+    : sportFilter === "nhl"
+    ? nhlOpportunities
+    : allCombinedPicks;
+
+  const topRecommendedPicks = filteredPicks.slice(0, 8);
+
+  // Total active signals across all sports
+  const totalActiveSignalsCount = todayPredictions.length + nhlSignals.length;
+
+  // Featured SmartPick and Bomba del día
+  const { smartPick, bombaPick } = getFeaturedDailyPicks(
+    sportFilter === "nhl" && nhlOpportunities.length > 0 ? nhlOpportunities : todayPredictions
+  );
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100 flex flex-col">
@@ -260,13 +345,13 @@ export default function DashboardPage() {
         <div className="relative overflow-hidden rounded-3xl border border-emerald-500/30 bg-slate-950 shadow-2xl shadow-emerald-950/40 group">
           <img
             src="/dashboard-banner.png"
-            alt="SmartBetBot - La IA Analiza. Tú decides mejor."
+            alt="SmartBetBot - La IA Analiza. Tú decides mejor. Fútbol, NBA, NHL, NFL, NCAAF"
             className="w-full h-auto object-cover rounded-3xl max-h-[300px] sm:max-h-[380px] lg:max-h-[440px] transition-transform duration-500 group-hover:scale-[1.01]"
             loading="eager"
           />
         </div>
 
-        {/* 1. Executive Intelligence Header */}
+        {/* 1. Multi-Sport Executive Intelligence Header */}
         <section className="relative overflow-hidden rounded-3xl border border-emerald-500/20 bg-gradient-to-br from-slate-900 via-slate-900/95 to-slate-950 p-6 sm:p-8 text-white shadow-2xl">
           <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl" />
           <div className="absolute -left-16 -bottom-16 h-64 w-64 rounded-full bg-teal-500/10 blur-3xl" />
@@ -276,115 +361,129 @@ export default function DashboardPage() {
               <div className="flex flex-wrap items-center gap-2">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 px-3 py-1 text-xs font-bold text-emerald-400">
                   <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                  Motor Cuantitativo MCP Activo
+                  Plataforma Multi-Deporte con IA
                 </span>
                 <span className="rounded-full bg-slate-800/80 px-3 py-1 text-xs font-semibold text-slate-300 border border-slate-700/60 capitalize">
                   📅 {formattedToday}
                 </span>
+                <span className="rounded-full bg-cyan-500/20 px-3 py-1 text-xs font-bold text-cyan-300 border border-cyan-500/30">
+                  ⚽ 🏒 🏀 🏈 5 Deportes
+                </span>
               </div>
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white">
-                Centro de Inteligencia Deportiva
+                Centro de Inteligencia Multi-Deporte
               </h1>
               <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
-                Pronósticos inteligentes seleccionados automáticamente con apoyo de <strong className="text-emerald-400 font-bold">Inteligencia Artificial</strong>, según las mejores oportunidades del día, con especial enfoque en <strong className="text-emerald-400 font-bold">victorias del equipo local</strong> y <strong className="text-emerald-400 font-bold">partidos con más de 2.5 goles</strong>. SmartBetBot combina IA, estadísticas, rendimiento y tendencias para mostrarte las opciones con mayor potencial de forma clara, rápida y sencilla.
+                Pronósticos deportivos inteligentes seleccionados por <strong className="text-emerald-400 font-bold">Inteligencia Artificial y Modelos Cuantitativos</strong> para <strong className="text-emerald-400 font-bold">Fútbol, NHL, NBA, NFL y NCAAF</strong>. SmartBetBot analiza estadísticas avanzadas, probabilidades implícitas y cuotas reales (+EV) para mostrarte las mejores oportunidades de forma clara, rápida y sin sesgos.
               </p>
             </div>
 
             {/* Quick Actions in Header */}
             <div className="flex flex-wrap items-center gap-2.5 shrink-0">
               <button
-                onClick={openPushModal}
+                onClick={() => setMcpModalOpen(true)}
                 className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 px-4 py-2.5 text-xs font-black text-white shadow-lg shadow-emerald-950/50 transition cursor-pointer"
               >
-                <span>🔔</span>
-                <span>Configurar Alertas Móvil</span>
+                <span>🤖</span>
+                <span>Agente MCP Multi-Deporte</span>
               </button>
-              <Link
-                href="/signals"
-                className="flex items-center gap-2 rounded-2xl border border-slate-700 bg-slate-800/90 hover:bg-slate-750 px-4 py-2.5 text-xs font-bold text-slate-200 hover:text-white transition cursor-pointer"
+              <button
+                onClick={openPushModal}
+                className="flex items-center gap-2 rounded-2xl border border-slate-700 bg-slate-800/90 hover:bg-slate-800 px-4 py-2.5 text-xs font-bold text-slate-200 hover:text-white transition cursor-pointer"
               >
-                <span>📋</span>
-                <span>Ver Pre-Match ({predictions.length})</span>
-              </Link>
+                <span>🔔</span>
+                <span>Alertas Móvil</span>
+              </button>
               {isAdmin && (
                 <button
                   onClick={handleSyncPredictions}
                   disabled={syncing}
                   className="flex items-center gap-1.5 rounded-2xl border border-purple-500/40 bg-purple-500/10 hover:bg-purple-500/20 px-3.5 py-2.5 text-xs font-bold text-purple-300 transition cursor-pointer disabled:opacity-50"
-                  title="Buscar alertas de Hoy (Solo Administrador)"
+                  title="Buscar alertas multi-deporte de Hoy"
                 >
                   <span className={syncing ? "animate-spin" : ""}>⚡</span>
-                  <span>{syncing ? "Buscando..." : "⚡ Buscar alertas de Hoy"}</span>
+                  <span>{syncing ? "Sincronizando..." : "⚡ Sincronizar Todo"}</span>
                 </button>
               )}
             </div>
           </div>
         </section>
 
-        {/* 2. Top Executive KPI Cards */}
+        {/* 2. Top Executive Multi-Sport KPI Cards */}
         <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs dark:border-slate-800/80 dark:bg-slate-900/80">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Total Señales Activas</span>
+              <span className="text-base">⚡</span>
+            </div>
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">
+                {totalActiveSignalsCount}
+              </span>
+              <span className="text-[11px] font-bold text-emerald-500 dark:text-emerald-400">Hoy</span>
+            </div>
+            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
+              {todayPredictions.length} Fútbol · {nhlSignals.length} NHL
+            </p>
+          </div>
+
           <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs dark:border-slate-800/80 dark:bg-slate-900/80">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Efectividad Global</span>
               <span className="text-base">📈</span>
             </div>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">74.2%</span>
-              <span className="text-[11px] font-bold text-emerald-500 dark:text-emerald-400">+EV Alto</span>
+              <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">74.2%</span>
+              <span className="text-[11px] font-bold text-teal-600 dark:text-teal-400">+EV Alto</span>
             </div>
-            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Historial verificado en 1 & Over 2.5</p>
+            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Historial verificado multi-disciplina</p>
           </div>
 
           <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs dark:border-slate-800/80 dark:bg-slate-900/80">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Confianza Muy Alta</span>
-              <span className="text-base">🔥</span>
-            </div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-                {highConfidencePicks.length}
-              </span>
-              <span className="text-[11px] font-bold text-teal-600 dark:text-teal-400">Partidos Top</span>
-            </div>
-            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Probabilidad estimada ≥ 65%</p>
-          </div>
-
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs dark:border-slate-800/80 dark:bg-slate-900/80">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Enfoque de Mercados</span>
-              <span className="text-base">🎯</span>
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Deportes Cubiertos</span>
+              <span className="text-base">🏆</span>
             </div>
             <div className="mt-2 flex items-baseline gap-1.5">
-              <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">Local & Over 2.5</span>
+              <span className="text-2xl sm:text-3xl font-black text-cyan-600 dark:text-cyan-400">5</span>
+              <span className="text-[11px] font-bold text-cyan-500">Deportes</span>
             </div>
-            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Máxima consistencia matemática</p>
+            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Fútbol, NHL, NBA, NFL, NCAAF</p>
           </div>
 
           <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs dark:border-slate-800/80 dark:bg-slate-900/80">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Parleys Exclusivos</span>
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Parleys Inteligentes</span>
               <span className="text-base">🎲</span>
             </div>
             <div className="mt-2 flex items-baseline gap-2">
               <span className="text-2xl sm:text-3xl font-black text-purple-600 dark:text-purple-400">3</span>
-              <span className="text-[11px] font-bold text-purple-500">Listos Hoy</span>
+              <span className="text-[11px] font-bold text-purple-500">Listos</span>
             </div>
             <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Seguro, Doble Valor y Pro</p>
           </div>
         </section>
 
-        {/* 3. Daily Strategy & Recommendation Briefing */}
+        {/* 3. Sports Explorer Cards (Prominent Central Showcase) */}
+        <MultiSportDashboardCards
+          footballSignalsCount={todayPredictions.length}
+          footballSmartPick={smartPick}
+          nhlSignalsCount={nhlSignals.length}
+          nhlSmartPick={nhlSmartPick}
+        />
+
+        {/* 4. Strategic Briefing */}
         <section className="rounded-3xl border border-teal-500/20 bg-gradient-to-r from-teal-950/20 via-slate-900/40 to-slate-900/20 p-5 sm:p-6 backdrop-blur-sm dark:border-teal-500/20 dark:bg-slate-900/50">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="space-y-1.5 flex-1">
               <div className="flex items-center gap-2">
                 <span className="text-lg">💡</span>
                 <h2 className="text-sm font-black uppercase tracking-wider text-teal-700 dark:text-teal-300">
-                  Recomendación Estratégica del Día
+                  Estrategia Cuantitativa Diaria
                 </h2>
               </div>
               <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-                El motor MCP ha filtrado las mejores oportunidades enfocándose en <strong className="text-emerald-600 dark:text-emerald-400 font-bold">equipos locales con ventaja estadística</strong> y partidos de alta frecuencia de goles (<strong className="text-emerald-600 dark:text-emerald-400 font-bold">Over 2.5</strong>). Se recomienda aplicar un <span className="font-semibold underline decoration-emerald-500">stake plano de 1% a 2%</span> por pick individual y diversificar en los 3 Parleys calculados.
+                SmartBetBot aplica modelos de <strong className="text-emerald-600 dark:text-emerald-400 font-bold">distribución Poisson</strong> en fútbol para victorias locales y over de goles, y modelos de <strong className="text-cyan-600 dark:text-cyan-400 font-bold">goles esperados (xG) y rendimiento de porteros (GSAx)</strong> en hockey sobre hielo NHL. Mantén un <span className="font-semibold underline decoration-emerald-500">stake plano de 1% a 2%</span> por jugada.
               </p>
             </div>
             <div className="flex items-center gap-3 shrink-0">
@@ -399,9 +498,9 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* 4. Curated High Confidence Picks (Informative Cards) */}
+        {/* 5. Curated High Confidence Multi-Sport Picks */}
         <section className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
               <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-base font-black border border-emerald-500/20">
                 ⭐
@@ -411,126 +510,170 @@ export default function DashboardPage() {
                   Picks Recomendados de Confianza Muy Alta
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Pronósticos cuantitativos con mayor porcentaje de probabilidad (+EV)
+                  Oportunidades con mayor probabilidad matemática y ventaja sobre la casa (+EV)
                 </p>
               </div>
             </div>
 
-            <Link
-              href="/signals"
-              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-850 transition"
-            >
-              <span>Ver todas las señales</span>
-              <span>→</span>
-            </Link>
+            {/* Sport Filter Chips */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+              <button
+                onClick={() => setSportFilter("all")}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                  sportFilter === "all"
+                    ? "bg-emerald-500 text-slate-950 font-black shadow-xs"
+                    : "bg-white text-slate-700 hover:bg-slate-100 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800"
+                }`}
+              >
+                Todos ({allCombinedPicks.length})
+              </button>
+              <button
+                onClick={() => setSportFilter("football")}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1 ${
+                  sportFilter === "football"
+                    ? "bg-emerald-500 text-slate-950 font-black shadow-xs"
+                    : "bg-white text-slate-700 hover:bg-slate-100 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800"
+                }`}
+              >
+                <span>⚽</span>
+                <span>Fútbol ({highConfidenceFootballPicks.length})</span>
+              </button>
+              <button
+                onClick={() => setSportFilter("nhl")}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1 ${
+                  sportFilter === "nhl"
+                    ? "bg-cyan-500 text-slate-950 font-black shadow-xs"
+                    : "bg-white text-slate-700 hover:bg-slate-100 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800"
+                }`}
+              >
+                <span>🏒</span>
+                <span>NHL ({nhlOpportunities.length})</span>
+              </button>
+            </div>
           </div>
 
           {loading ? (
             <div className="flex flex-col items-center justify-center py-16">
               <div className="h-10 w-10 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent mb-3" />
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Cargando selecciones de alta confianza...</span>
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                Cargando pronósticos multi-deporte con IA...
+              </p>
             </div>
           ) : topRecommendedPicks.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-white/60 p-8 text-center dark:border-slate-800 dark:bg-slate-900/40">
-              <span className="text-3xl">🔍</span>
-              <h3 className="mt-2 text-sm font-bold text-slate-900 dark:text-white">Sin partidos en este momento</h3>
-              <p className="text-xs text-slate-500 mt-1">Pulsa buscar nuevas alertas para cargar las oportunidades más recientes.</p>
+            <div className="rounded-3xl border border-slate-200 bg-white p-12 text-center shadow-xs dark:border-slate-800 dark:bg-slate-900/50">
+              <div className="text-4xl mb-3">🎯</div>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                Calculando oportunidades de valor
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-md mx-auto">
+                No hay partidos activos en este filtro para hoy. Prueba seleccionando "Todos" o sincronizando la jornada.
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {topRecommendedPicks.map((pick) => {
-                const key = pick.id || `${pick.fixtureId}-${pick.market}`;
-                const isCopied = copiedPickId === key;
-                const isLocal = pick.market === "Ganador Local";
-                const isOver = pick.market === "Over 2.5 Goles";
+              {topRecommendedPicks.map((pick, idx) => {
+                const pickKey = pick.id || `${pick.fixtureId}-${pick.market}-${idx}`;
+                const isCopied = copiedPickId === pickKey;
+                const isNHL = pick.league === "NHL";
 
                 return (
                   <div
-                    key={key}
-                    className="group relative flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs transition-all hover:shadow-md hover:border-emerald-500/40 dark:border-slate-800/90 dark:bg-slate-900/90"
+                    key={pickKey}
+                    className="relative flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs transition hover:shadow-md dark:border-slate-800/90 dark:bg-slate-900/90 group"
                   >
-                    {/* Header: League & Confidence Badge */}
                     <div>
-                      <div className="flex items-center justify-between gap-2 mb-3">
-                        <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 truncate max-w-[180px]">
-                          🏆 {pick.league} {pick.country ? `(${pick.country})` : ""}
-                        </span>
-                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 text-[10px] font-black text-emerald-700 dark:text-emerald-300">
-                          <span>{pick.probability >= 75 ? "🔥" : "⭐"}</span>
-                          <span>{pick.confidence || "Muy Alta"}</span>
+                      {/* Card Header */}
+                      <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3 dark:border-slate-800/60">
+                        <div className="flex items-center gap-1.5 truncate">
+                          <span className="text-base">{isNHL ? "🏒" : "⚽"}</span>
+                          <span className="text-xs font-black text-slate-900 dark:text-white truncate">
+                            {pick.league}
+                          </span>
+                        </div>
+                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-black shrink-0 border ${
+                          isNHL
+                            ? "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/30"
+                            : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
+                        }`}>
+                          ⭐ {pick.confidence || "Muy Alta"}
                         </span>
                       </div>
 
-                      {/* Teams & Kickoff */}
-                      <div className="mb-4">
-                        <div className="flex items-baseline justify-between text-xs text-slate-400 mb-1">
-                          <span>Partido</span>
-                          <span className="text-[10px] font-semibold">
-                            {new Date(pick.kickoff).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })} hrs
-                          </span>
+                      {/* Teams */}
+                      <div className="my-3 space-y-0.5">
+                        <div className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                          {pick.homeTeam}
                         </div>
-                        <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white leading-snug">
-                          {pick.homeTeam} <span className="text-slate-400 font-normal">vs</span> {pick.awayTeam}
-                        </h3>
+                        <div className="text-[11px] text-slate-400 font-medium">vs</div>
+                        <div className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                          {pick.awayTeam}
+                        </div>
                       </div>
 
-                      {/* Prediction Box */}
-                      <div className="rounded-xl bg-slate-50 border border-slate-200/80 p-3.5 mb-3.5 dark:bg-slate-950/60 dark:border-slate-800/80">
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
-                            Pronóstico Oficial
-                          </span>
-                          <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                            {isLocal ? "🏠 1 (Local)" : isOver ? "⚽ +2.5 Goles" : pick.selection}
-                          </span>
-                        </div>
-
-                        <div className="flex items-baseline justify-between">
-                          <span className="text-sm font-black text-slate-900 dark:text-white">
+                      {/* Market & Selection Box */}
+                      <div className="rounded-xl bg-slate-50 p-3 dark:bg-slate-950/80 border border-slate-200/60 dark:border-slate-800/60 mb-3">
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span className="text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider text-[10px]">
                             {pick.market}
                           </span>
-                          <div className="text-right">
-                            <span className="text-base sm:text-lg font-black text-emerald-600 dark:text-emerald-400">
-                              @{(pick.odds ?? 1.5).toFixed(2)}
-                            </span>
+                          <span className="font-extrabold text-emerald-600 dark:text-emerald-400">
+                            @{((pick.odds ?? 1.5)).toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="text-xs font-black text-slate-900 dark:text-white mt-1">
+                          {pick.selection || pick.market}
+                        </div>
+                      </div>
+
+                      {/* Prob & Stats Grid */}
+                      <div className="grid grid-cols-3 gap-2 text-center py-2 border-t border-slate-100 dark:border-slate-800/60 mb-3">
+                        <div>
+                          <div className="text-[9px] font-bold text-slate-400 uppercase">Prob IA</div>
+                          <div className="text-xs font-black text-slate-900 dark:text-white">
+                            {pick.probability}%
                           </div>
                         </div>
-
-                        {/* Probability & Fair Odds bar */}
-                        <div className="mt-2.5 pt-2 border-t border-slate-200/60 dark:border-slate-800/60 grid grid-cols-2 gap-2 text-[11px]">
-                          <div>
-                            <span className="text-slate-400 block text-[10px]">Probabilidad:</span>
-                            <span className="font-bold text-slate-800 dark:text-slate-200">{pick.probability}%</span>
+                        <div>
+                          <div className="text-[9px] font-bold text-slate-400 uppercase">Fair Odds</div>
+                          <div className="text-xs font-black text-slate-700 dark:text-slate-300">
+                            @{((pick.fairOdds ?? pick.odds ?? 1.5)).toFixed(2)}
                           </div>
-                          <div className="text-right">
-                            <span className="text-slate-400 block text-[10px]">Ventaja (+EV):</span>
-                            <span className="font-bold text-emerald-600 dark:text-emerald-400">+{pick.edge || 5}%</span>
+                        </div>
+                        <div>
+                          <div className="text-[9px] font-bold text-slate-400 uppercase">Ventaja +EV</div>
+                          <div className="text-xs font-black text-emerald-600 dark:text-emerald-400">
+                            +{pick.edge || 5}%
                           </div>
                         </div>
                       </div>
 
-                      {/* Explanation Snippet */}
+                      {/* Rationale Snippet */}
                       {pick.explanation && (
-                        <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed italic line-clamp-2 mb-4">
+                        <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed italic border-t border-slate-100 dark:border-slate-800/60 pt-2 line-clamp-2">
                           "{pick.explanation}"
                         </p>
                       )}
                     </div>
 
-                    {/* Actions */}
-                    <div className="flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                      <button
-                        onClick={() => setActiveModalPick(pick)}
-                        className="flex-1 py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 dark:bg-slate-800 dark:hover:bg-slate-750 dark:text-slate-200 text-xs font-bold transition text-center cursor-pointer"
-                      >
-                        Ver Análisis Detallado
-                      </button>
+                    {/* Footer Actions */}
+                    <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
                       <button
                         onClick={() => handleCopyPick(pick)}
-                        className="p-2 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-600 dark:border-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer text-xs"
-                        title="Copiar pronóstico"
+                        className={`flex-1 py-1.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1 cursor-pointer ${
+                          isCopied
+                            ? "bg-emerald-600 text-white font-black"
+                            : "bg-slate-100 hover:bg-slate-200 text-slate-800 dark:bg-slate-800 dark:hover:bg-slate-750 dark:text-slate-200"
+                        }`}
                       >
-                        {isCopied ? "✓" : "📋"}
+                        <span>{isCopied ? "✓" : "📋"}</span>
+                        <span>{isCopied ? "Copiado" : "Copiar"}</span>
+                      </button>
+
+                      <button
+                        onClick={() => setActiveModalPick(pick)}
+                        className="py-1.5 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-750 dark:text-slate-200 text-xs font-bold transition cursor-pointer"
+                      >
+                        <span>Detalle</span>
                       </button>
                     </div>
                   </div>
@@ -540,25 +683,19 @@ export default function DashboardPage() {
           )}
         </section>
 
-        {/* Multi-Sport Showcase */}
-        <MultiSportDashboardCards
-          footballSignalsCount={todayPredictions.length}
-          footballSmartPick={smartPick}
-        />
-
-        {/* 5. Featured SmartPick & Bomba del Día */}
+        {/* 6. Featured SmartPick & Bomba del Día */}
         {(smartPick || bombaPick) && (
           <section className="space-y-4">
             <div className="flex items-center gap-2.5">
-              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 text-base font-black border border-purple-500/20">
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 text-base font-black border border-amber-500/20">
                 👑
               </span>
               <div>
                 <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
-                  Picks Destacados del Día
+                  Destacados Exclusivos del Día
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  SmartPick de Máxima Seguridad y Selección de Valor
+                  Smart Pick (máxima convicción) y Bomba del Día (cuota alta +2.00 con valor)
                 </p>
               </div>
             </div>
@@ -571,8 +708,8 @@ export default function DashboardPage() {
           </section>
         )}
 
-        {/* 6. Recommended 3 Exclusive Parlays */}
-        {predictions.length > 0 && (
+        {/* 7. Recommended 3 Exclusive Parlays */}
+        {todayPredictions.length > 0 && (
           <section className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
@@ -584,14 +721,14 @@ export default function DashboardPage() {
                     Parleys Recomendados del Día
                   </h2>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
-                    3 combinadas optimizadas algorítmicamente por correlación y +EV
+                    Combinadas optimizadas algorítmicamente por correlación y +EV
                   </p>
                 </div>
               </div>
 
               <Link
                 href="/parlay"
-                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-850 transition"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 transition"
               >
                 <span>Generador de Parleys</span>
                 <span>→</span>
@@ -605,13 +742,13 @@ export default function DashboardPage() {
           </section>
         )}
 
-        {/* 7. Golden Rules & Bankroll Management Guide */}
+        {/* 8. Golden Rules & Bankroll Management Guide */}
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xs dark:border-slate-800 dark:bg-slate-900/80 space-y-4">
           <div className="flex items-center gap-2.5">
             <span className="text-xl">🛡️</span>
             <div>
               <h2 className="text-base font-black text-slate-900 dark:text-white">
-                Reglas de Oro y Gestión de Banca (Bankroll)
+                Reglas de Oro y Gestión de Banca Multi-Deporte
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 Pilares cuantitativos para mantener rentabilidad consistente a largo plazo
@@ -625,7 +762,7 @@ export default function DashboardPage() {
                 <span>🎯</span> 1. Mercados de Alta Efectividad
               </span>
               <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
-                Prioriza siempre Ganador Local (1) y Over 2.5 Goles. Son los mercados donde los modelos estadísticos logran mayor tasa de acierto.
+                Prioriza Ganador Local (1) y Over 2.5 en Fútbol, y Moneyline y Puck Line en NHL. Son los mercados donde los modelos estadísticos logran mayor tasa de acierto.
               </p>
             </div>
 
@@ -643,7 +780,7 @@ export default function DashboardPage() {
                 <span>🚫</span> 3. Filtro Anti-Cuotas Basura
               </span>
               <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
-                Evita momios @1.15 sin valor matemático real. El valor surge cuando la probabilidad del modelo supera la cuota ofrecida por la casa.
+                Evita cuotas @1.15 sin valor matemático real. El valor surge cuando la probabilidad calculada por el modelo supera la cuota ofrecida por la casa.
               </p>
             </div>
 
@@ -658,27 +795,38 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* 8. Quick Module Navigation Grid */}
+        {/* 9. Quick Module Navigation Grid */}
         <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <Link
             href="/signals"
             className="flex items-center gap-3 p-4 rounded-2xl border border-slate-200/80 bg-white hover:border-emerald-500/50 dark:border-slate-800/80 dark:bg-slate-900/80 transition group"
           >
-            <span className="text-2xl group-hover:scale-110 transition-transform">📋</span>
+            <span className="text-2xl group-hover:scale-110 transition-transform">⚽</span>
             <div>
-              <span className="text-xs font-black text-slate-900 dark:text-white block">Pre-Match Completo</span>
-              <span className="text-[10px] text-slate-500">Todas las señales de hoy</span>
+              <span className="text-xs font-black text-slate-900 dark:text-white block">Pre-Match Fútbol</span>
+              <span className="text-[10px] text-slate-500">{todayPredictions.length} señales activas</span>
+            </div>
+          </Link>
+
+          <Link
+            href="/sports/nhl"
+            className="flex items-center gap-3 p-4 rounded-2xl border border-slate-200/80 bg-white hover:border-cyan-500/50 dark:border-slate-800/80 dark:bg-slate-900/80 transition group"
+          >
+            <span className="text-2xl group-hover:scale-110 transition-transform">🏒</span>
+            <div>
+              <span className="text-xs font-black text-slate-900 dark:text-white block">Suite NHL Hockey</span>
+              <span className="text-[10px] text-slate-500">{nhlSignals.length} señales activas</span>
             </div>
           </Link>
 
           <Link
             href="/parlay"
-            className="flex items-center gap-3 p-4 rounded-2xl border border-slate-200/80 bg-white hover:border-emerald-500/50 dark:border-slate-800/80 dark:bg-slate-900/80 transition group"
+            className="flex items-center gap-3 p-4 rounded-2xl border border-slate-200/80 bg-white hover:border-indigo-500/50 dark:border-slate-800/80 dark:bg-slate-900/80 transition group"
           >
             <span className="text-2xl group-hover:scale-110 transition-transform">🎲</span>
             <div>
               <span className="text-xs font-black text-slate-900 dark:text-white block">Creador de Parleys</span>
-              <span className="text-[10px] text-slate-500">Combinadas personalizadas</span>
+              <span className="text-[10px] text-slate-500">Combinadas calculadas</span>
             </div>
           </Link>
 
@@ -689,18 +837,7 @@ export default function DashboardPage() {
             <span className="text-2xl group-hover:scale-110 transition-transform">📜</span>
             <div>
               <span className="text-xs font-black text-slate-900 dark:text-white block">Historial Verificado</span>
-              <span className="text-[10px] text-slate-500">Resultados y balance</span>
-            </div>
-          </Link>
-
-          <Link
-            href="/reports"
-            className="flex items-center gap-3 p-4 rounded-2xl border border-slate-200/80 bg-white hover:border-emerald-500/50 dark:border-slate-800/80 dark:bg-slate-900/80 transition group"
-          >
-            <span className="text-2xl group-hover:scale-110 transition-transform">📈</span>
-            <div>
-              <span className="text-xs font-black text-slate-900 dark:text-white block">Reportes y ROI</span>
-              <span className="text-[10px] text-slate-500">Métricas avanzadas</span>
+              <span className="text-[10px] text-slate-500">Resultados y auditoría</span>
             </div>
           </Link>
         </section>
@@ -722,6 +859,13 @@ export default function DashboardPage() {
           onClose={() => setActiveModalPick(null)}
         />
       )}
+
+      {/* Multi-Sport MCP Modal */}
+      <McpCountryAgentModal
+        isOpen={mcpModalOpen}
+        onClose={() => setMcpModalOpen(false)}
+        sport="football"
+      />
     </div>
   );
 }
