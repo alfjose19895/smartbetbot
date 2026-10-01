@@ -32,10 +32,14 @@ export async function generatePredictionCardBlob(prediction: MarketOpportunity):
   ctx.fillStyle = "rgba(16, 185, 129, 0.12)";
   ctx.fillRect(20, 20, width - 40, 70);
 
-  // SmartBetBot Logo / Title
+  // SmartBetBot Logo / Title with Sport Icon
+  const sportKey = (prediction as any).sport || "football";
+  const sportIcon = sportKey === "nhl" ? "🏒" : sportKey === "nba" ? "🏀" : (sportKey === "nfl" || sportKey === "ncaaf") ? "🏈" : "⚽";
+  const sportLabel = sportKey === "nhl" ? "NHL AI" : sportKey === "nba" ? "NBA AI" : (sportKey === "nfl" || sportKey === "ncaaf") ? "NFL AI" : "AI";
+  
   ctx.fillStyle = "#10b981";
   ctx.font = "900 24px system-ui, -apple-system, sans-serif";
-  ctx.fillText("⚽ SMARTBETBOT AI", 40, 62);
+  ctx.fillText(`${sportIcon} SMARTBETBOT ${sportLabel}`, 40, 62);
 
   // Date / Time Kickoff
   const kickoffFormatted = new Date(prediction.kickoff).toLocaleString("es-ES", {
@@ -271,7 +275,7 @@ export async function shareCardAsImage(
   // Fallback for Desktop Browsers: Copy image to clipboard & download, then launch WhatsApp / Telegram
   await copyCardImageToClipboard(prediction);
   const shareText = encodeURIComponent(
-    `🎯 *SmartBetBot AI Pronóstico Oficial*\n🏆 ${prediction.league} ${prediction.country ? `(${prediction.country})` : ""}\n⚽ *${prediction.homeTeam} vs ${prediction.awayTeam}*\n🎯 Pronóstico: *${prediction.market}* (${(prediction.market.includes("Local") || prediction.market.includes("gana local")) ? "1" : (prediction.market.includes("Visitante") || prediction.market.includes("gana visitante")) ? "2" : prediction.selection})\n💰 Cuota: *@${prediction.odds.toFixed(2)}* | Prob: *${prediction.probability}%*\n⭐ Confianza: *${prediction.confidence || "Muy Alta"}*\n\n_(¡Tarjeta gráfica copiada al portapapeles! Pégala con Ctrl+V)_\n🌐 https://smartbetbot.educandotea.com`
+    `🎯 *SmartBetBot AI Pronóstico Oficial*\n🏆 ${prediction.league} ${prediction.country ? `(${prediction.country})` : ""}\n${((prediction as any).sport === "nhl" ? "🏒" : (prediction as any).sport === "nba" ? "🏀" : ((prediction as any).sport === "nfl" || (prediction as any).sport === "ncaaf") ? "🏈" : "⚽")} *${prediction.homeTeam} vs ${prediction.awayTeam}*\n🎯 Pronóstico: *${prediction.market}* (${(prediction.market.includes("Local") || prediction.market.includes("gana local")) ? "1" : (prediction.market.includes("Visitante") || prediction.market.includes("gana visitante")) ? "2" : prediction.selection})\n💰 Cuota: *@${prediction.odds.toFixed(2)}* | Prob: *${prediction.probability}%*\n⭐ Confianza: *${prediction.confidence || "Muy Alta"}*\n\n_(¡Tarjeta gráfica copiada al portapapeles! Pégala con Ctrl+V)_\n🌐 https://smartbetbot.educandotea.com`
   );
 
   if (platform === "whatsapp") {
