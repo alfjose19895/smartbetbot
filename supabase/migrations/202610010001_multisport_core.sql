@@ -6,14 +6,16 @@
 
 DO $$ 
 BEGIN
+  -- 1. Fixtures
   IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'fixtures') THEN
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'fixtures' AND column_name = 'sport') THEN
       ALTER TABLE fixtures ADD COLUMN sport VARCHAR(32) NOT NULL DEFAULT 'football';
       CREATE INDEX IF NOT EXISTS idx_fixtures_sport ON fixtures(sport);
-      CREATE INDEX IF NOT EXISTS idx_fixtures_sport_kickoff ON fixtures(sport, kickoff_time);
+      CREATE INDEX IF NOT EXISTS idx_fixtures_sport_kickoff ON fixtures(sport, kickoff_at);
     END IF;
   END IF;
 
+  -- 2. Predictions
   IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'predictions') THEN
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'predictions' AND column_name = 'sport') THEN
       ALTER TABLE predictions ADD COLUMN sport VARCHAR(32) NOT NULL DEFAULT 'football';
@@ -21,6 +23,7 @@ BEGIN
     END IF;
   END IF;
 
+  -- 3. Signals
   IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'signals') THEN
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'signals' AND column_name = 'sport') THEN
       ALTER TABLE signals ADD COLUMN sport VARCHAR(32) NOT NULL DEFAULT 'football';
@@ -28,13 +31,15 @@ BEGIN
     END IF;
   END IF;
 
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'odds') THEN
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'odds' AND column_name = 'sport') THEN
-      ALTER TABLE odds ADD COLUMN sport VARCHAR(32) NOT NULL DEFAULT 'football';
-      CREATE INDEX IF NOT EXISTS idx_odds_sport ON odds(sport);
+  -- 4. Odds Snapshots
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'odds_snapshots') THEN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'odds_snapshots' AND column_name = 'sport') THEN
+      ALTER TABLE odds_snapshots ADD COLUMN sport VARCHAR(32) NOT NULL DEFAULT 'football';
+      CREATE INDEX IF NOT EXISTS idx_odds_snapshots_sport ON odds_snapshots(sport);
     END IF;
   END IF;
 
+  -- 5. Strategies
   IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'strategies') THEN
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'strategies' AND column_name = 'sport') THEN
       ALTER TABLE strategies ADD COLUMN sport VARCHAR(32) NOT NULL DEFAULT 'football';
@@ -43,7 +48,7 @@ BEGIN
   END IF;
 END $$;
 
--- 1. sport_strategies table
+-- 6. sport_strategies table
 CREATE TABLE IF NOT EXISTS sport_strategies (
   id VARCHAR(64) PRIMARY KEY,
   sport VARCHAR(32) NOT NULL,
@@ -101,7 +106,7 @@ VALUES
   ('nhl_team_total', 'nhl', 'TEAM TOTAL', 'NHL Team Goals Total', 'Pre-match Team Total Goals proyectado por tiro y efectividad', true, 0.55, 0.03, 1.70, 2.20, 70.0, '{"max_per_game": 1}'::jsonb)
 ON CONFLICT (id) DO NOTHING;
 
--- 2. sport_api_logs table
+-- 7. sport_api_logs table
 CREATE TABLE IF NOT EXISTS sport_api_logs (
   id BIGSERIAL PRIMARY KEY,
   sport VARCHAR(32) NOT NULL,
