@@ -7,6 +7,7 @@ import { MatchDetailModal } from "@/components/MatchDetailModal";
 import { NewAlertsModal } from "@/components/NewAlertsModal";
 import { RecommendedParlay } from "@/components/RecommendedParlay";
 import { FeaturedDailyPicks } from "@/components/FeaturedDailyPicks";
+import { MultiSportDashboardCards } from "@/components/MultiSportDashboardCards";
 import { MarketOpportunity, getFeaturedDailyPicks } from "@/lib/sports/prediction-engine";
 import { useLanguage } from "@/context/LanguageContext";
 import { openPushModal } from "@/components/PushNotificationManager";
@@ -537,6 +538,12 @@ export default function DashboardPage() {
             </div>
           )}
         </section>
+
+        {/* Multi-Sport Showcase */}
+        <MultiSportDashboardCards
+          footballSignalsCount={todayPredictions.length}
+          footballSmartPick={smartPick}
+        />
 
         {/* 5. Featured SmartPick & Bomba del Día */}
         {(smartPick || bombaPick) && (
