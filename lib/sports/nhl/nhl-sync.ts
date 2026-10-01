@@ -27,30 +27,58 @@ export class NHLSyncEngine {
       const parsedOdds: NHLMarketOdds = { gameId: game.id };
 
       for (const o of oddsList) {
-        if (o.market.includes('WINNER') || o.market.includes('HOME/AWAY') || o.market.includes('MONEYLINE')) {
-          if (o.selection.toLowerCase().includes('home') || o.selection.includes(game.homeTeam.name)) {
+        const m = o.market.toUpperCase();
+        const sel = o.selection.toUpperCase();
+
+        if (m.includes('WINNER') || m.includes('HOME/AWAY') || m.includes('MONEYLINE') || m === '1X2') {
+          if (sel === 'HOME' || sel.includes('1') || sel.includes(game.homeTeam.name.toUpperCase())) {
             parsedOdds.moneyline = {
               homeOdds: o.decimalOdds,
-              awayOdds: parsedOdds.moneyline?.awayOdds || 2.10,
+              awayOdds: parsedOdds.moneyline?.awayOdds || 1.95,
               bookmaker: o.bookmaker
             };
-          } else if (o.selection.toLowerCase().includes('away') || o.selection.includes(game.awayTeam.name)) {
+          } else if (sel === 'AWAY' || sel.includes('2') || sel.includes(game.awayTeam.name.toUpperCase())) {
             parsedOdds.moneyline = {
-              homeOdds: parsedOdds.moneyline?.homeOdds || 1.80,
+              homeOdds: parsedOdds.moneyline?.homeOdds || 1.90,
               awayOdds: o.decimalOdds,
               bookmaker: o.bookmaker
             };
           }
         }
-        if (o.market.includes('TOTAL') || o.market.includes('OVER/UNDER')) {
-          if (o.selection.toUpperCase().includes('OVER')) {
+
+        if (m.includes('TOTAL') || m.includes('OVER/UNDER')) {
+          const lineMatch = o.selection.match(/[\d.]+/);
+          const line = lineMatch ? parseFloat(lineMatch[0]) : 6.0;
+          if (sel.includes('OVER')) {
             parsedOdds.totalGoals = {
-              line: 6.0,
+              line: line,
               overOdds: o.decimalOdds,
               underOdds: parsedOdds.totalGoals?.underOdds || 1.91,
               bookmaker: o.bookmaker
             };
+          } else if (sel.includes('UNDER')) {
+            parsedOdds.totalGoals = {
+              line: line,
+              overOdds: parsedOdds.totalGoals?.overOdds || 1.91,
+              underOdds: o.decimalOdds,
+              bookmaker: o.bookmaker
+            };
           }
+        }
+
+        if (m.includes('ASIAN HANDICAP') || m.includes('PUCK LINE')) {
+          const isHome = sel.includes('HOME') || sel.includes(game.homeTeam.name.toUpperCase());
+          const lineMatch = o.selection.match(/[-+]?[\d.]+/);
+          const line = lineMatch ? parseFloat(lineMatch[0]) : (isHome ? -1.5 : 1.5);
+          const hLine = isHome ? line : -line;
+          const aLine = -hLine;
+          parsedOdds.puckLine = {
+            homeLine: hLine,
+            homeOdds: isHome ? o.decimalOdds : (parsedOdds.puckLine?.homeOdds || 2.80),
+            awayLine: aLine,
+            awayOdds: !isHome ? o.decimalOdds : (parsedOdds.puckLine?.awayOdds || 1.45),
+            bookmaker: o.bookmaker
+          };
         }
       }
 

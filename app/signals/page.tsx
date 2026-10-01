@@ -251,28 +251,15 @@ export default function SignalsPage() {
     }
   });
 
-  const coreMarkets = [
-    "Ganador Local",
-    "Empate",
-    "Ganador Visitante",
-    "Doble Oportunidad",
-    "Over 1.5 Goles",
-    "Over 2.5 Goles",
-    "Under 2.5 Goles",
-    "Over 3.5 Goles",
-    "Under 3.5 Goles",
+  const availableMarkets = [
+    "Over Córners",
     "Ambos Equipos Anotan",
-    "Ambos Equipos No Anotan",
-    "Córners",
+    "Over 2.5 Goles",
     "Under Córners",
-    "Tarjetas / Faltas",
-    "Primer Tiempo 1X2",
-    "Primer Tiempo Over 0.5",
+    "Under 2.5 Goles",
+    "Ganador Local",
+    "Ganador Visitante",
   ];
-
-  const availableMarkets = Array.from(
-    new Set([...coreMarkets, ...signals.map((s) => s.market).filter(Boolean)])
-  );
 
   const marketDropdownOptions: DropdownOption[] = availableMarkets.map((m) => ({
     value: m,
@@ -369,18 +356,43 @@ export default function SignalsPage() {
       if (!isMatch) return false;
     }
 
-    // 5. Market Multi-Select Filter
+    // 5. Market Multi-Select Filter (7 Core Markets in Strict Order)
     if (selectedMarkets.length > 0) {
       const match = selectedMarkets.some((m) => {
         const normSelected = m.toLowerCase().replace(/[^a-z0-9]/g, "");
-        const normActual = s.market.toLowerCase().replace(/[^a-z0-9]/g, "");
-        const isCornerMatch = (normSelected.includes("corner") || normSelected.includes("crner")) &&
-                              (normActual.includes("corner") || normActual.includes("crner"));
-        return (
-          isCornerMatch ||
-          normActual.includes(normSelected) ||
-          normSelected.includes(normActual)
-        );
+        const normActual = (s.market || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+        const normSel = (s.selection || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+
+        // 1. Over Córners
+        if (normSelected.includes("overcorner") || (normSelected.includes("corner") && !normSelected.includes("under"))) {
+          return (normActual.includes("corner") || normActual.includes("crner")) && !normActual.includes("under") && !normSel.includes("under");
+        }
+        // 2. Ambos Equipos Anotan (BTTS)
+        if (normSelected.includes("ambos") || normSelected.includes("btts")) {
+          return normActual.includes("ambos") || normActual.includes("btts");
+        }
+        // 3. Over Goles (Over 2.5)
+        if (normSelected.includes("overgol") || normSelected.includes("over25") || (normSelected.includes("over") && !normSelected.includes("corner"))) {
+          return (normActual.includes("gol") || normActual.includes("25") || normActual.includes("over")) && !normActual.includes("under") && !normActual.includes("corner") && !normActual.includes("crner");
+        }
+        // 4. Under Córners
+        if (normSelected.includes("undercorner")) {
+          return (normActual.includes("corner") || normActual.includes("crner")) && (normActual.includes("under") || normSel.includes("under"));
+        }
+        // 5. Under Goles (Under 2.5)
+        if (normSelected.includes("undergol") || normSelected.includes("under25") || (normSelected.includes("under") && !normSelected.includes("corner"))) {
+          return (normActual.includes("gol") || normActual.includes("25") || normActual.includes("under")) && !normActual.includes("corner") && !normActual.includes("crner");
+        }
+        // 6. Ganador Local
+        if (normSelected.includes("local") || normSelected === "1") {
+          return normActual.includes("local") || normSel === "1" || normSel === "local";
+        }
+        // 7. Ganador Visitante
+        if (normSelected.includes("visitante") || normSelected === "2") {
+          return normActual.includes("visitante") || normSel === "2" || normSel === "visitante";
+        }
+
+        return normActual.includes(normSelected) || normSelected.includes(normActual);
       });
       if (!match) return false;
     }

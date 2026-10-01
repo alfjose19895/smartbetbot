@@ -75,7 +75,8 @@ export class NHLProvider implements SportsDataProvider {
     }
 
     try {
-      const url = `${config.baseUrl}/games?date=${date}&league=57`;
+      const seasonInt = parseInt(String(getCurrentSportSeason('nhl')).split('-')[0], 10) || 2026;
+      const url = `${config.baseUrl}/games?date=${date}&league=57&season=${seasonInt}`;
       const res = await fetch(url, { headers: this.headers, next: { revalidate: 300 } });
       if (!res.ok) return [];
 

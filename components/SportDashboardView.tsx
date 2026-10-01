@@ -400,11 +400,42 @@ export function SportDashboardView({
         if (!isMatch) return false;
       }
 
-      // Market Multi-Select
+      // Market Multi-Select (Handles 7 Football Markets + American Sport Markets)
       if (selectedMarkets.length > 0) {
         const match = selectedMarkets.some((m) => {
           const normSelected = m.toLowerCase().replace(/[^a-z0-9]/g, '');
           const normActual = (s.market || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+          const normSel = (s.selection || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
+          // Over Corners
+          if (normSelected.includes('overcorner') || (normSelected.includes('corner') && !normSelected.includes('under'))) {
+            return (normActual.includes('corner') || normActual.includes('crner')) && !normActual.includes('under') && !normSel.includes('under');
+          }
+          // BTTS
+          if (normSelected.includes('ambos') || normSelected.includes('btts')) {
+            return normActual.includes('ambos') || normActual.includes('btts');
+          }
+          // Over Goals
+          if (normSelected.includes('overgol') || normSelected.includes('over25') || (normSelected.includes('over') && !normSelected.includes('corner') && !normSelected.includes('point') && !normSelected.includes('total'))) {
+            return (normActual.includes('gol') || normActual.includes('25') || normActual.includes('over')) && !normActual.includes('under') && !normActual.includes('corner');
+          }
+          // Under Corners
+          if (normSelected.includes('undercorner')) {
+            return (normActual.includes('corner') || normActual.includes('crner')) && (normActual.includes('under') || normSel.includes('under'));
+          }
+          // Under Goals
+          if (normSelected.includes('undergol') || normSelected.includes('under25') || (normSelected.includes('under') && !normSelected.includes('corner') && !normSelected.includes('point') && !normSelected.includes('total'))) {
+            return (normActual.includes('gol') || normActual.includes('25') || normActual.includes('under')) && !normActual.includes('corner');
+          }
+          // Ganador Local / Moneyline Home
+          if (normSelected.includes('local') || normSelected === '1' || normSelected.includes('home')) {
+            return normActual.includes('local') || normActual.includes('home') || normSel === '1' || normSel.includes('home');
+          }
+          // Ganador Visitante / Moneyline Away
+          if (normSelected.includes('visitante') || normSelected === '2' || normSelected.includes('away')) {
+            return normActual.includes('visitante') || normActual.includes('away') || normSel === '2' || normSel.includes('away');
+          }
+
           return normActual.includes(normSelected) || normSelected.includes(normActual);
         });
         if (!match) return false;
