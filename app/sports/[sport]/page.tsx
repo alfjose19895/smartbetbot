@@ -49,11 +49,17 @@ export default async function DynamicSportPage({ params }: SportPageProps) {
   }
 
   return (
-    <SportDashboardView
-      sport={sport as SupportedSport}
-      signals={signals}
-      smartPick={smartPick}
-      totalGames={totalGames}
-    />
+    <React.Suspense fallback={
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent" />
+      </div>
+    }>
+      <SportDashboardView
+        sport={sport as SupportedSport}
+        signals={signals}
+        smartPick={smartPick}
+        totalGames={totalGames}
+      />
+    </React.Suspense>
   );
 }

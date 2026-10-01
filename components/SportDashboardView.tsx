@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
 import { PredictionCard } from '@/components/PredictionCard';
 import { MatchDetailModal } from '@/components/MatchDetailModal';
@@ -119,7 +120,16 @@ export function SportDashboardView({
   const meta = getSportMeta(sport);
   const { t } = useLanguage();
 
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'signals' | 'featured' | 'parlay' | 'history' | 'reports'>('dashboard');
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const tabQuery = searchParams.get('tab');
+  const activeTab: 'dashboard' | 'signals' | 'featured' | 'parlay' | 'history' | 'reports' =
+    tabQuery && ['dashboard', 'signals', 'featured', 'parlay', 'history', 'reports'].includes(tabQuery)
+      ? (tabQuery as any)
+      : 'dashboard';
+
   const [syncing, setSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -153,17 +163,6 @@ export function SportDashboardView({
   const [matchStatusFilter, setMatchStatusFilter] = useState<'ALL' | 'VALOR' | 'BOMBA' | 'MCP' | 'WON' | 'LOST' | 'SCHEDULED' | 'IN_PLAY' | 'FINISHED'>('ALL');
   const [timeSlotFilter, setTimeSlotFilter] = useState<'ALL' | 'TOP' | 'MORNING' | 'AFTERNOON' | 'NIGHT'>('ALL');
   const [minProbability, setMinProbability] = useState<number>(35);
-
-  // Read URL query parameter on load
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const tabParam = params.get('tab');
-      if (tabParam && ['dashboard', 'signals', 'featured', 'parlay', 'history', 'reports'].includes(tabParam)) {
-        setActiveTab(tabParam as any);
-      }
-    }
-  }, []);
 
   // Fetch real history from API
   useEffect(() => {
@@ -203,16 +202,14 @@ export function SportDashboardView({
   }, []);
 
   const handleTabChange = (tabId: 'dashboard' | 'signals' | 'featured' | 'parlay' | 'history' | 'reports') => {
-    setActiveTab(tabId);
-    if (typeof window !== 'undefined') {
-      const url = new URL(window.location.href);
-      if (tabId === 'dashboard') {
-        url.searchParams.delete('tab');
-      } else {
-        url.searchParams.set('tab', tabId);
-      }
-      window.history.replaceState({}, '', url.toString());
+    const params = new URLSearchParams(searchParams.toString());
+    if (tabId === 'dashboard') {
+      params.delete('tab');
+    } else {
+      params.set('tab', tabId);
     }
+    const query = params.toString() ? `?${params.toString()}` : '';
+    router.push(`${pathname}${query}`, { scroll: false });
   };
 
   const handleAdminSync = async () => {
