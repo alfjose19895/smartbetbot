@@ -88,40 +88,97 @@ export function getOpportunityKey(p: { fixtureId?: number | string; match?: stri
 
 export const HISTORY_START_DATE = "2026-09-07"; // Historial oficial reiniciado desde hoy (7 de Septiembre de 2026)
 
-function ensureSnapshotsDir() {
+function ensureSnapshotsDir(sport?: string) {
   try {
     if (!fs.existsSync(SNAPSHOTS_DIR)) {
       fs.mkdirSync(SNAPSHOTS_DIR, { recursive: true });
+    }
+    const sports = ["football", "nhl", "nba", "nfl", "ncaaf"];
+    for (const s of sports) {
+      const p = path.join(SNAPSHOTS_DIR, s);
+      if (!fs.existsSync(p)) {
+        fs.mkdirSync(p, { recursive: true });
+      }
+    }
+    if (sport) {
+      const p = path.join(SNAPSHOTS_DIR, sport.toLowerCase());
+      if (!fs.existsSync(p)) {
+        fs.mkdirSync(p, { recursive: true });
+      }
     }
   } catch (err) {
     console.warn("Could not create snapshots dir:", err);
   }
 }
 
-export function loadDailySnapshot(dateStr: string): MarketOpportunity[] | null {
-  if (memorySnapshots[dateStr] && Array.isArray(memorySnapshots[dateStr]) && memorySnapshots[dateStr].length > 0) {
-    return memorySnapshots[dateStr].filter((p) => !isExcludedMatch(p.homeTeam, p.awayTeam, p.match));
+export function isSportMatch(p: any, targetSport: string = "football"): boolean {
+  const tSport = (targetSport || "football").toLowerCase();
+  const c = (p.country || "").toUpperCase();
+  const l = (p.league || "").toUpperCase();
+  const s = ((p.sport || "") as string).toLowerCase();
+
+  if (tSport === "football") {
+    const isNhl = s === "nhl" || c === "NHL" || l.includes("NHL");
+    const isNba = s === "nba" || c === "NBA" || l.includes("NBA");
+    const isNfl = s === "nfl" || s === "ncaaf" || c === "NFL" || c === "NCAAF" || l.includes("NFL") || l.includes("NCAA");
+    return !isNhl && !isNba && !isNfl;
   }
+  if (tSport === "nhl") {
+    return s === "nhl" || c === "NHL" || l.includes("NHL");
+  }
+  if (tSport === "nba") {
+    return s === "nba" || c === "NBA" || l.includes("NBA");
+  }
+  if (tSport === "nfl" || tSport === "ncaaf") {
+    return s === "nfl" || s === "ncaaf" || c === "NFL" || c === "NCAAF" || l.includes("NFL") || l.includes("NCAA");
+  }
+  return true;
+}
+
+export function loadDailySnapshot(dateStr: string, sport: string = "football"): MarketOpportunity[] | null {
+  const sportKey = (sport || "football").toLowerCase();
+  const memKey = `${sportKey}_${dateStr}`;
+
+  if (memorySnapshots[memKey] && Array.isArray(memorySnapshots[memKey]) && memorySnapshots[memKey].length > 0) {
+    return memorySnapshots[memKey].filter((p) => !isExcludedMatch(p.homeTeam, p.awayTeam, p.match) && isSportMatch(p, sportKey));
+  }
+  if (sportKey === "football" && memorySnapshots[dateStr] && Array.isArray(memorySnapshots[dateStr]) && memorySnapshots[dateStr].length > 0) {
+    return memorySnapshots[dateStr].filter((p) => !isExcludedMatch(p.homeTeam, p.awayTeam, p.match) && isSportMatch(p, "football"));
+  }
+
   try {
-    ensureSnapshotsDir();
-    const filePath = path.join(SNAPSHOTS_DIR, `${dateStr}.json`);
-    if (fs.existsSync(filePath)) {
-      const data = fs.readFileSync(filePath, "utf-8");
+    ensureSnapshotsDir(sportKey);
+    const sportFilePath = path.join(SNAPSHOTS_DIR, sportKey, `${dateStr}.json`);
+    if (fs.existsSync(sportFilePath)) {
+      const data = fs.readFileSync(sportFilePath, "utf-8");
       const picks = JSON.parse(data);
       if (Array.isArray(picks)) {
-        const filtered = picks.filter((p) => !isExcludedMatch(p.homeTeam, p.awayTeam, p.match));
-        memorySnapshots[dateStr] = filtered;
+        const filtered = picks.filter((p) => !isExcludedMatch(p.homeTeam, p.awayTeam, p.match) && isSportMatch(p, sportKey));
+        memorySnapshots[memKey] = filtered;
+        return filtered;
+      }
+    }
+
+    // Fallback for un-migrated root legacy files
+    const legacyPath = path.join(SNAPSHOTS_DIR, `${dateStr}.json`);
+    if (fs.existsSync(legacyPath)) {
+      const data = fs.readFileSync(legacyPath, "utf-8");
+      const picks = JSON.parse(data);
+      if (Array.isArray(picks)) {
+        const filtered = picks.filter((p) => !isExcludedMatch(p.homeTeam, p.awayTeam, p.match) && isSportMatch(p, sportKey));
+        memorySnapshots[memKey] = filtered;
         return filtered;
       }
     }
   } catch (err) {
-    console.warn(`Could not load daily snapshot for ${dateStr}:`, err);
+    console.warn(`Could not load daily snapshot for ${dateStr} (${sportKey}):`, err);
   }
   return null;
 }
 
-export async function loadDailySnapshotAsync(dateStr: string): Promise<MarketOpportunity[] | null> {
-  const diskPicks = loadDailySnapshot(dateStr) || [];
+export async function loadDailySnapshotAsync(dateStr: string, sport: string = "football"): Promise<MarketOpportunity[] | null> {
+  const sportKey = (sport || "football").toLowerCase();
+  const diskPicks = loadDailySnapshot(dateStr, sportKey) || [];
 
   // Supabase cloud database fetch (guarantees persistence on Vercel Serverless)
   let supabasePicks: MarketOpportunity[] = [];
@@ -134,10 +191,10 @@ export async function loadDailySnapshotAsync(dateStr: string): Promise<MarketOpp
         .eq("date", dateStr)
         .maybeSingle();
       if (!error && data && Array.isArray(data.picks) && data.picks.length > 0) {
-        supabasePicks = data.picks.filter((p: any) => !isExcludedMatch(p.homeTeam, p.awayTeam, p.match));
+        supabasePicks = data.picks.filter((p: any) => !isExcludedMatch(p.homeTeam, p.awayTeam, p.match) && isSportMatch(p, sportKey));
       }
     } catch (err) {
-      console.warn(`[Supabase] Error loading daily snapshot for ${dateStr}:`, err);
+      console.warn(`[Supabase] Error loading daily snapshot for ${dateStr} (${sportKey}):`, err);
     }
   }
 
@@ -148,18 +205,19 @@ export async function loadDailySnapshotAsync(dateStr: string): Promise<MarketOpp
   // Merge disk + Supabase with zero data loss (Self-Healing bidirectional sync)
   const mergedMap = new Map<string, MarketOpportunity>();
   for (const p of supabasePicks) {
-    mergedMap.set(getOpportunityKey(p), p);
+    mergedMap.set(getOpportunityKey(p), { ...p, sport: sportKey as any });
   }
   for (const p of diskPicks) {
     const key = getOpportunityKey(p);
     if (!mergedMap.has(key)) {
-      mergedMap.set(key, p);
+      mergedMap.set(key, { ...p, sport: sportKey as any });
     } else {
       const existing = mergedMap.get(key)!;
       const isSettled = existing.status === "won" || existing.status === "lost";
       mergedMap.set(key, {
         ...existing,
         ...p,
+        sport: sportKey as any,
         status: isSettled ? existing.status : p.status || existing.status,
         actualScore: existing.actualScore || p.actualScore,
         probability: existing.probability,
@@ -174,51 +232,49 @@ export async function loadDailySnapshotAsync(dateStr: string): Promise<MarketOpp
     (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
   );
 
-  memorySnapshots[dateStr] = finalCombined;
+  memorySnapshots[`${sportKey}_${dateStr}`] = finalCombined;
 
-  // Auto-heal disk and Supabase if either side had fewer picks
+  // Auto-heal disk
   if (finalCombined.length > diskPicks.length) {
     try {
-      ensureSnapshotsDir();
-      const filePath = path.join(SNAPSHOTS_DIR, `${dateStr}.json`);
+      ensureSnapshotsDir(sportKey);
+      const filePath = path.join(SNAPSHOTS_DIR, sportKey, `${dateStr}.json`);
       fs.writeFileSync(filePath, JSON.stringify(finalCombined, null, 2), "utf-8");
     } catch {}
-  }
-  if (supabase && finalCombined.length > supabasePicks.length) {
-    supabase
-      .from("daily_snapshots")
-      .upsert(
-        {
-          date: dateStr,
-          picks: finalCombined,
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: "date" }
-      )
-      .then(() => {});
   }
 
   return finalCombined;
 }
 
-export function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
-  // Never write disk snapshots during test execution to prevent test mocks from polluting production data
+export function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[], sport: string = "football") {
+  const sportKey = (sport || "football").toLowerCase();
+  const memKey = `${sportKey}_${dateStr}`;
+
+  // Tag incoming picks strictly with their sport identity
+  const normalizedPicks = picks.map((p) => ({
+    ...p,
+    sport: sportKey as any,
+    country: sportKey === "football" ? (p.country || "Europa") : (p.country || sportKey.toUpperCase()),
+  }));
+
   if (process.env.VITEST || process.env.NODE_ENV === "test") {
-    memorySnapshots[dateStr] = picks;
+    memorySnapshots[memKey] = normalizedPicks;
+    if (sportKey === "football") memorySnapshots[dateStr] = normalizedPicks;
     return;
   }
-  try {
-    ensureSnapshotsDir();
-    const filePath = path.join(SNAPSHOTS_DIR, `${dateStr}.json`);
 
-    // Load existing picks if file or memory already exists so we NEVER delete previously given alerts
-    let existingPicks: MarketOpportunity[] = memorySnapshots[dateStr] || [];
+  try {
+    ensureSnapshotsDir(sportKey);
+    const filePath = path.join(SNAPSHOTS_DIR, sportKey, `${dateStr}.json`);
+
+    // Load existing picks strictly for this sport
+    let existingPicks: MarketOpportunity[] = memorySnapshots[memKey] || [];
     if (existingPicks.length === 0 && fs.existsSync(filePath)) {
       try {
         const raw = fs.readFileSync(filePath, "utf-8");
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed)) {
-          existingPicks = parsed;
+          existingPicks = parsed.filter((p) => isSportMatch(p, sportKey));
         }
       } catch {}
     }
@@ -265,7 +321,10 @@ export function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
       (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
     );
 
-    memorySnapshots[dateStr] = mergedPicks;
+    memorySnapshots[memKey] = mergedPicks;
+    if (sportKey === "football") {
+      memorySnapshots[dateStr] = mergedPicks;
+    }
 
     try {
       fs.writeFileSync(filePath, JSON.stringify(mergedPicks, null, 2), "utf-8");
@@ -617,33 +676,51 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string): Prom
   }
 }
 
-export async function getAllDailySnapshotsAsync(): Promise<Record<string, MarketOpportunity[]>> {
+export async function getAllDailySnapshotsAsync(sportFilter?: string): Promise<Record<string, MarketOpportunity[]>> {
   const result: Record<string, MarketOpportunity[]> = {};
+  const sports = sportFilter ? [sportFilter.toLowerCase()] : ["football", "nhl", "nba", "nfl", "ncaaf"];
 
   // 1. Memory snapshots
-  for (const [d, p] of Object.entries(memorySnapshots)) {
-    if (d >= HISTORY_START_DATE && Array.isArray(p) && p.length > 0) {
-      result[d] = p;
+  for (const [key, p] of Object.entries(memorySnapshots)) {
+    for (const s of sports) {
+      if (key.startsWith(`${s}_`)) {
+        const dateStr = key.replace(`${s}_`, "");
+        if (dateStr >= HISTORY_START_DATE && Array.isArray(p) && p.length > 0) {
+          result[dateStr] = (result[dateStr] || []).concat(p.filter((item) => isSportMatch(item, s)));
+        }
+      }
+    }
+    if (!key.includes("_") && key >= HISTORY_START_DATE && Array.isArray(p) && p.length > 0) {
+      const filtered = p.filter((item) => isSportMatch(item, "football"));
+      if (filtered.length > 0 && (!sportFilter || sportFilter.toLowerCase() === "football")) {
+        result[key] = (result[key] || []).concat(filtered);
+      }
     }
   }
 
-  // 2. Disk snapshots
+  // 2. Disk snapshots by sport subfolder
   try {
     ensureSnapshotsDir();
-    const files = fs.readdirSync(SNAPSHOTS_DIR);
-    for (const f of files) {
-      if (f.endsWith(".json")) {
-        const dateStr = f.replace(".json", "");
-        if (dateStr < HISTORY_START_DATE) continue;
-        const filePath = path.join(SNAPSHOTS_DIR, f);
-        try {
-          const content = fs.readFileSync(filePath, "utf-8");
-          const parsed = JSON.parse(content);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            result[dateStr] = parsed;
-            memorySnapshots[dateStr] = parsed;
+    for (const s of sports) {
+      const sportDir = path.join(SNAPSHOTS_DIR, s);
+      if (fs.existsSync(sportDir)) {
+        const files = fs.readdirSync(sportDir);
+        for (const f of files) {
+          if (f.endsWith(".json")) {
+            const dateStr = f.replace(".json", "");
+            if (dateStr < HISTORY_START_DATE) continue;
+            const filePath = path.join(sportDir, f);
+            try {
+              const content = fs.readFileSync(filePath, "utf-8");
+              const parsed = JSON.parse(content);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                const sportPicks = parsed.filter((item) => isSportMatch(item, s));
+                result[dateStr] = (result[dateStr] || []).concat(sportPicks);
+                memorySnapshots[`${s}_${dateStr}`] = sportPicks;
+              }
+            } catch {}
           }
-        } catch {}
+        }
       }
     }
   } catch {}
@@ -672,28 +749,48 @@ export async function getAllDailySnapshotsAsync(): Promise<Record<string, Market
   return result;
 }
 
-function getAllDailySnapshots(): Record<string, MarketOpportunity[]> {
+function getAllDailySnapshots(sportFilter?: string): Record<string, MarketOpportunity[]> {
   const result: Record<string, MarketOpportunity[]> = {};
-  for (const [d, p] of Object.entries(memorySnapshots)) {
-    if (d >= HISTORY_START_DATE && Array.isArray(p) && p.length > 0) {
-      result[d] = p;
+  const sports = sportFilter ? [sportFilter.toLowerCase()] : ["football", "nhl", "nba", "nfl", "ncaaf"];
+
+  for (const [key, p] of Object.entries(memorySnapshots)) {
+    for (const s of sports) {
+      if (key.startsWith(`${s}_`)) {
+        const dateStr = key.replace(`${s}_`, "");
+        if (dateStr >= HISTORY_START_DATE && Array.isArray(p) && p.length > 0) {
+          result[dateStr] = (result[dateStr] || []).concat(p.filter((item) => isSportMatch(item, s)));
+        }
+      }
+    }
+    if (!key.includes("_") && key >= HISTORY_START_DATE && Array.isArray(p) && p.length > 0) {
+      const filtered = p.filter((item) => isSportMatch(item, "football"));
+      if (filtered.length > 0 && (!sportFilter || sportFilter.toLowerCase() === "football")) {
+        result[key] = (result[key] || []).concat(filtered);
+      }
     }
   }
+
   try {
     ensureSnapshotsDir();
-    const files = fs.readdirSync(SNAPSHOTS_DIR);
-    for (const f of files) {
-      if (f.endsWith(".json")) {
-        const dateStr = f.replace(".json", "");
-        if (dateStr < HISTORY_START_DATE) continue;
-        const filePath = path.join(SNAPSHOTS_DIR, f);
-        try {
-          const content = fs.readFileSync(filePath, "utf-8");
-          const parsed = JSON.parse(content);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            result[dateStr] = parsed;
+    for (const s of sports) {
+      const sportDir = path.join(SNAPSHOTS_DIR, s);
+      if (fs.existsSync(sportDir)) {
+        const files = fs.readdirSync(sportDir);
+        for (const f of files) {
+          if (f.endsWith(".json")) {
+            const dateStr = f.replace(".json", "");
+            if (dateStr < HISTORY_START_DATE) continue;
+            const filePath = path.join(sportDir, f);
+            try {
+              const content = fs.readFileSync(filePath, "utf-8");
+              const parsed = JSON.parse(content);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                const sportPicks = parsed.filter((item) => isSportMatch(item, s));
+                result[dateStr] = (result[dateStr] || []).concat(sportPicks);
+              }
+            } catch {}
           }
-        } catch {}
+        }
       }
     }
   } catch {}
@@ -1134,15 +1231,17 @@ export function getDailyAlertLimit(targetDate: Date = new Date()): number {
   return 22;
 }
 
-export function getStoredPredictions(): MarketOpportunity[] {
+export function getStoredPredictions(sport: string = "football"): MarketOpportunity[] {
   const nowMs = Date.now();
   const todayDateStr = getEcuadorDateString(nowMs);
+  const sportKey = (sport || "football").toLowerCase();
 
-  // 1. Load today's active snapshot (strictly matching today's date in Ecuador timezone)
-  const todaySnapshot = loadDailySnapshot(todayDateStr);
+  // 1. Load today's active snapshot strictly for requested sport
+  const todaySnapshot = loadDailySnapshot(todayDateStr, sportKey);
   if (todaySnapshot && Array.isArray(todaySnapshot) && todaySnapshot.length > 0) {
     return todaySnapshot.filter((p) => {
       if (isExcludedMatch(p.homeTeam, p.awayTeam, p.match)) return false;
+      if (!isSportMatch(p, sportKey)) return false;
       const pDate = p.kickoff ? getEcuadorDateString(p.kickoff) : todayDateStr;
       return pDate === todayDateStr;
     });

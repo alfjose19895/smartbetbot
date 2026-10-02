@@ -19,7 +19,7 @@
         "homeCorners": 8,
         "awayCorners": 1,
         "totalCorners": 9,
-        "corners": "8 - 1 (9 Córners)"
+        "corners": "8 - 1 (9 C\u00f3rners)"
       },
       {
         "date": "2024-04-03",
@@ -31,7 +31,7 @@
         "homeCorners": 5,
         "awayCorners": 12,
         "totalCorners": 17,
-        "corners": "5 - 12 (17 Córners)"
+        "corners": "5 - 12 (17 C\u00f3rners)"
       },
       {
         "date": "2023-07-16",
@@ -43,7 +43,7 @@
         "homeCorners": 6,
         "awayCorners": 6,
         "totalCorners": 12,
-        "corners": "6 - 6 (12 Córners)"
+        "corners": "6 - 6 (12 C\u00f3rners)"
       },
       {
         "date": "2023-03-18",
@@ -55,7 +55,7 @@
         "homeCorners": 3,
         "awayCorners": 6,
         "totalCorners": 9,
-        "corners": "3 - 6 (9 Córners)"
+        "corners": "3 - 6 (9 C\u00f3rners)"
       }
     ],
     "edge": 2.8,
@@ -70,7 +70,7 @@
     "status": "lost",
     "addedAt": "2026-09-23T05:07:43.321Z",
     "awayElo": 1529,
-    "country": "Japón",
+    "country": "Jap\u00f3n",
     "homeElo": 1690,
     "kickoff": "2026-09-23T03:00:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/295.png",
@@ -205,7 +205,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/102.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "explanation": "Vissel Kobe ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Sagan Tosu acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 3.6 tantos totales con alta actividad en ambas áreas.",
+    "explanation": "Vissel Kobe ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras Sagan Tosu acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 3.6 tantos totales con alta actividad en ambas \u00e1reas.",
     "probability": 58.4,
     "bookmakerOdds": 1.8,
     "expectedValue": 5.1,
@@ -228,7 +228,8 @@
     "awayCornerStats": null,
     "actualScore": "1 - 0 (1 Goles)",
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -253,7 +254,7 @@
     "status": "won",
     "addedAt": "2026-09-23T05:07:43.321Z",
     "awayElo": 1552,
-    "country": "Japón",
+    "country": "Jap\u00f3n",
     "homeElo": 1650,
     "kickoff": "2026-09-23T03:00:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/7145.png",
@@ -381,7 +382,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/102.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "explanation": "Machida Zelvia ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Tochigi City acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 3.1 tantos totales con alta actividad en ambas áreas.",
+    "explanation": "Machida Zelvia ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras Tochigi City acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 3.1 tantos totales con alta actividad en ambas \u00e1reas.",
     "probability": 61.6,
     "bookmakerOdds": 1.5,
     "expectedValue": -7.5,
@@ -403,7 +404,8 @@
     "awayCornerStats": null,
     "actualScore": "2 - 1 (3 Goles)",
     "result": "WON",
-    "profit": 0.5
+    "profit": 0.5,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -425,7 +427,7 @@
         "homeCorners": 8,
         "awayCorners": 5,
         "totalCorners": 13,
-        "corners": "8 - 5 (13 Córners)"
+        "corners": "8 - 5 (13 C\u00f3rners)"
       },
       {
         "date": "2021-05-27",
@@ -437,7 +439,7 @@
         "homeCorners": 2,
         "awayCorners": 3,
         "totalCorners": 5,
-        "corners": "2 - 3 (5 Córners)"
+        "corners": "2 - 3 (5 C\u00f3rners)"
       },
       {
         "date": "2020-12-27",
@@ -468,7 +470,7 @@
     "status": "won",
     "addedAt": "2026-09-23T05:07:43.321Z",
     "awayElo": 1488,
-    "country": "Japón",
+    "country": "Jap\u00f3n",
     "homeElo": 1620,
     "kickoff": "2026-09-23T03:00:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/299.png",
@@ -548,7 +550,7 @@
       },
       {
         "date": "2026-09-15",
-        "opponent": "Công An Nhân Dân",
+        "opponent": "C\u00f4ng An Nh\u00e2n D\u00e2n",
         "isHome": true,
         "score": "4 - 1",
         "result": "W",
@@ -603,7 +605,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/102.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "explanation": "Rendimiento muy fiable de Gamba Osaka en su feudo (3 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Tokushima Vortis inclina con claridad la balanza estadística hacia el triunfo local.",
+    "explanation": "Rendimiento muy fiable de Gamba Osaka en su feudo (3 partidos sin caer en sus \u00faltimas 5 presentaciones). La brecha de generaci\u00f3n de ocasiones claras ante Tokushima Vortis inclina con claridad la balanza estad\u00edstica hacia el triunfo local.",
     "probability": 63.9,
     "bookmakerOdds": 1.62,
     "expectedValue": 3.5,
@@ -626,7 +628,8 @@
     "awayCornerStats": null,
     "actualScore": "5 - 0",
     "result": "WON",
-    "profit": 0.62
+    "profit": 0.62,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -651,7 +654,7 @@
     "status": "won",
     "addedAt": "2026-09-23T05:07:43.321Z",
     "awayElo": 1611,
-    "country": "Japón",
+    "country": "Jap\u00f3n",
     "homeElo": 1636,
     "kickoff": "2026-09-23T03:00:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/4317.png",
@@ -786,7 +789,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/102.png",
     "leagueTier": 1,
     "smartScore": 96,
-    "explanation": "Solidez posicional y eficacia en área propia: Kyoto Sanga concede menos de 0.9 xG de local, mientras que Fujieda MYFC muestra dificultades para generar peligro constante a domicilio (1.1 xG foráneo).",
+    "explanation": "Solidez posicional y eficacia en \u00e1rea propia: Kyoto Sanga concede menos de 0.9 xG de local, mientras que Fujieda MYFC muestra dificultades para generar peligro constante a domicilio (1.1 xG for\u00e1neo).",
     "probability": 54,
     "bookmakerOdds": 1.62,
     "expectedValue": -12.6,
@@ -809,7 +812,8 @@
     "awayCornerStats": null,
     "actualScore": "1 - 0",
     "result": "WON",
-    "profit": 0.62
+    "profit": 0.62,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -856,17 +860,17 @@
     ],
     "edge": 10.5,
     "odds": 1.35,
-    "pick": "Over 6.5 Córners",
+    "pick": "Over 6.5 C\u00f3rners",
     "isMcp": true,
     "isNew": true,
     "match": "Kashima vs Ventforet Kofu",
     "league": "Emperor Cup",
-    "market": "Córners",
+    "market": "C\u00f3rners",
     "source": "mcp",
     "status": "won",
     "addedAt": "2026-09-23T05:09:20.595Z",
     "awayElo": 1614,
-    "country": "Japón",
+    "country": "Jap\u00f3n",
     "homeElo": 1650,
     "kickoff": "2026-09-23T03:00:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/308.png",
@@ -1001,7 +1005,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/102.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.5 córners totales.",
+    "explanation": "Presi\u00f3n ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulaci\u00f3n cuantitativa respalda la l\u00ednea de C\u00f3rners con una media esperada de 10.5 c\u00f3rners totales.",
     "probability": 84.6,
     "bookmakerOdds": 1.35,
     "expectedValue": 14.2,
@@ -1120,9 +1124,10 @@
       ]
     },
     "awayCornerStats": null,
-    "actualScore": "6 - 5 (11 Córners)",
+    "actualScore": "6 - 5 (11 C\u00f3rners)",
     "result": "WON",
-    "profit": 0.35
+    "profit": 0.35,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -1137,17 +1142,17 @@
     ],
     "edge": 10.1,
     "odds": 1.35,
-    "pick": "Over 6.5 Córners",
+    "pick": "Over 6.5 C\u00f3rners",
     "isMcp": true,
     "isNew": true,
     "match": "Kashiwa Reysol vs Imabari",
     "league": "Emperor Cup",
-    "market": "Córners",
+    "market": "C\u00f3rners",
     "source": "mcp",
     "status": "won",
     "addedAt": "2026-09-23T05:09:20.595Z",
     "awayElo": 1633,
-    "country": "Japón",
+    "country": "Jap\u00f3n",
     "homeElo": 1602,
     "kickoff": "2026-09-23T03:00:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/10075.png",
@@ -1282,7 +1287,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/102.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "explanation": "Patrón de repliegue y rechaces: Kashiwa Reysol sostiene una alta cadencia de llegadas al último tercio generando tiros de esquina constantes, mientras que Imabari concede más de 5.2 córners en promedio cuando juega de visitante.",
+    "explanation": "Patr\u00f3n de repliegue y rechaces: Kashiwa Reysol sostiene una alta cadencia de llegadas al \u00faltimo tercio generando tiros de esquina constantes, mientras que Imabari concede m\u00e1s de 5.2 c\u00f3rners en promedio cuando juega de visitante.",
     "probability": 84.2,
     "bookmakerOdds": 1.35,
     "expectedValue": 13.7,
@@ -1326,7 +1331,7 @@
           "expected_margin": 2.41,
           "qualification_status": "REJECTED_ODDS",
           "rejection_reasons": [
-            "Cuota disponible inferior al mínimo requerido: @1.20 < @1.22",
+            "Cuota disponible inferior al m\u00ednimo requerido: @1.20 < @1.22",
             "Smart Edge insuficiente: +-7.1% < +3.0%"
           ]
         },
@@ -1407,15 +1412,16 @@
       ]
     },
     "awayCornerStats": null,
-    "actualScore": "6 - 4 (10 Córners)",
+    "actualScore": "6 - 4 (10 C\u00f3rners)",
     "result": "WON",
-    "profit": 0.35
+    "profit": 0.35,
+    "sport": "football"
   },
   {
     "h2h": [
       {
         "date": "2026-09-23",
-        "homeTeam": "Servette Chênois W",
+        "homeTeam": "Servette Ch\u00eanois W",
         "awayTeam": "Lyon W",
         "score": "0 - 8",
         "winner": "Lyon W",
@@ -1423,7 +1429,7 @@
         "homeCorners": 1,
         "awayCorners": 9,
         "totalCorners": 10,
-        "corners": "1 - 9 (10 Córners)"
+        "corners": "1 - 9 (10 C\u00f3rners)"
       }
     ],
     "edge": 1,
@@ -1431,7 +1437,7 @@
     "pick": "Over 2.5 Goles",
     "isMcp": true,
     "isNew": true,
-    "match": "Servette Chênois W vs Lyon W",
+    "match": "Servette Ch\u00eanois W vs Lyon W",
     "league": "UEFA Champions League Women",
     "market": "Over 2.5 Goles",
     "source": "mcp",
@@ -1445,13 +1451,13 @@
     "awayTeam": "Lyon W",
     "fairOdds": 1.43,
     "homeLogo": "https://media.api-sports.io/football/teams/15548.png",
-    "homeTeam": "Servette Chênois W",
+    "homeTeam": "Servette Ch\u00eanois W",
     "leagueId": 525,
     "timeSlot": "morning",
     "awayLast5": [
       {
         "date": "2026-09-23",
-        "opponent": "Servette Chênois W",
+        "opponent": "Servette Ch\u00eanois W",
         "isHome": false,
         "score": "8 - 0",
         "result": "W",
@@ -1538,11 +1544,11 @@
       },
       {
         "date": "2026-09-18",
-        "opponent": "Zürich W",
+        "opponent": "Z\u00fcrich W",
         "isHome": true,
         "score": "0 - 0",
         "result": "D",
-        "competition": "AXA Women’s Super League"
+        "competition": "AXA Women\u2019s Super League"
       },
       {
         "date": "2026-09-12",
@@ -1550,7 +1556,7 @@
         "isHome": false,
         "score": "2 - 1",
         "result": "W",
-        "competition": "AXA Women’s Super League"
+        "competition": "AXA Women\u2019s Super League"
       },
       {
         "date": "2026-09-09",
@@ -1558,7 +1564,7 @@
         "isHome": true,
         "score": "3 - 2",
         "result": "W",
-        "competition": "AXA Women’s Super League"
+        "competition": "AXA Women\u2019s Super League"
       },
       {
         "date": "2026-09-06",
@@ -1566,7 +1572,7 @@
         "isHome": false,
         "score": "3 - 1",
         "result": "W",
-        "competition": "AXA Women’s Super League"
+        "competition": "AXA Women\u2019s Super League"
       }
     ],
     "isMcpPick": true,
@@ -1580,7 +1586,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/525.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 3.7 tantos respaldan un desarrollo con múltiples celebraciones.",
+    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 3.7 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
     "probability": 69.9,
     "bookmakerOdds": 1.44,
     "expectedValue": 0.6,
@@ -1613,7 +1619,8 @@
     },
     "actualScore": "0 - 8 (8 Goles)",
     "result": "WON",
-    "profit": 0.44
+    "profit": 0.44,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -1627,7 +1634,7 @@
         "homeCorners": 3,
         "awayCorners": 4,
         "totalCorners": 7,
-        "corners": "3 - 4 (7 Córners)"
+        "corners": "3 - 4 (7 C\u00f3rners)"
       },
       {
         "date": "2025-11-20",
@@ -1639,7 +1646,7 @@
         "homeCorners": 6,
         "awayCorners": 8,
         "totalCorners": 14,
-        "corners": "6 - 8 (14 Córners)"
+        "corners": "6 - 8 (14 C\u00f3rners)"
       }
     ],
     "edge": 2.5,
@@ -1782,7 +1789,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/525.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 4.0 tantos respaldan un desarrollo con múltiples celebraciones.",
+    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 4.0 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
     "probability": 63.1,
     "bookmakerOdds": 1.65,
     "expectedValue": 4.1,
@@ -1813,13 +1820,14 @@
     },
     "actualScore": "0 - 0 (0 Goles)",
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   },
   {
     "h2h": [
       {
         "date": "2026-09-23",
-        "homeTeam": "Servette Chênois W",
+        "homeTeam": "Servette Ch\u00eanois W",
         "awayTeam": "Lyon W",
         "score": "0 - 8",
         "winner": "Lyon W",
@@ -1827,17 +1835,17 @@
         "homeCorners": 1,
         "awayCorners": 9,
         "totalCorners": 10,
-        "corners": "1 - 9 (10 Córners)"
+        "corners": "1 - 9 (10 C\u00f3rners)"
       }
     ],
     "edge": 5.1,
     "odds": 1.68,
-    "pick": "Over 8.5 Córners",
+    "pick": "Over 8.5 C\u00f3rners",
     "isMcp": true,
     "isNew": true,
-    "match": "Servette Chênois W vs Lyon W",
+    "match": "Servette Ch\u00eanois W vs Lyon W",
     "league": "UEFA Champions League Women",
-    "market": "Córners",
+    "market": "C\u00f3rners",
     "source": "mcp",
     "status": "won",
     "addedAt": "2026-09-23T05:11:29.699Z",
@@ -1849,13 +1857,13 @@
     "awayTeam": "Lyon W",
     "fairOdds": 1.55,
     "homeLogo": "https://media.api-sports.io/football/teams/15548.png",
-    "homeTeam": "Servette Chênois W",
+    "homeTeam": "Servette Ch\u00eanois W",
     "leagueId": 525,
     "timeSlot": "morning",
     "awayLast5": [
       {
         "date": "2026-09-23",
-        "opponent": "Servette Chênois W",
+        "opponent": "Servette Ch\u00eanois W",
         "isHome": false,
         "score": "8 - 0",
         "result": "W",
@@ -1942,11 +1950,11 @@
       },
       {
         "date": "2026-09-18",
-        "opponent": "Zürich W",
+        "opponent": "Z\u00fcrich W",
         "isHome": true,
         "score": "0 - 0",
         "result": "D",
-        "competition": "AXA Women’s Super League"
+        "competition": "AXA Women\u2019s Super League"
       },
       {
         "date": "2026-09-12",
@@ -1954,7 +1962,7 @@
         "isHome": false,
         "score": "2 - 1",
         "result": "W",
-        "competition": "AXA Women’s Super League"
+        "competition": "AXA Women\u2019s Super League"
       },
       {
         "date": "2026-09-09",
@@ -1962,7 +1970,7 @@
         "isHome": true,
         "score": "3 - 2",
         "result": "W",
-        "competition": "AXA Women’s Super League"
+        "competition": "AXA Women\u2019s Super League"
       },
       {
         "date": "2026-09-06",
@@ -1970,7 +1978,7 @@
         "isHome": false,
         "score": "3 - 1",
         "result": "W",
-        "competition": "AXA Women’s Super League"
+        "competition": "AXA Women\u2019s Super League"
       }
     ],
     "isMcpPick": true,
@@ -1984,7 +1992,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/525.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.2 córners totales.",
+    "explanation": "Presi\u00f3n ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulaci\u00f3n cuantitativa respalda la l\u00ednea de C\u00f3rners con una media esperada de 10.2 c\u00f3rners totales.",
     "probability": 64.6,
     "bookmakerOdds": 1.68,
     "expectedValue": 8.5,
@@ -2117,9 +2125,10 @@
         10
       ]
     },
-    "actualScore": "1 - 9 (10 Córners)",
+    "actualScore": "1 - 9 (10 C\u00f3rners)",
     "result": "WON",
-    "profit": 0.68
+    "profit": 0.68,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -2133,7 +2142,7 @@
         "homeCorners": 8,
         "awayCorners": 7,
         "totalCorners": 15,
-        "corners": "8 - 7 (15 Córners)"
+        "corners": "8 - 7 (15 C\u00f3rners)"
       },
       {
         "date": "2025-12-17",
@@ -2145,17 +2154,17 @@
         "homeCorners": 2,
         "awayCorners": 10,
         "totalCorners": 12,
-        "corners": "2 - 10 (12 Córners)"
+        "corners": "2 - 10 (12 C\u00f3rners)"
       }
     ],
     "edge": 5.7,
     "odds": 1.83,
-    "pick": "Over 9.5 Córners",
+    "pick": "Over 9.5 C\u00f3rners",
     "isMcp": true,
     "isNew": true,
     "match": "Barcelona W vs Paris FC W",
     "league": "UEFA Champions League Women",
-    "market": "Córners",
+    "market": "C\u00f3rners",
     "source": "mcp",
     "status": "won",
     "addedAt": "2026-09-23T05:07:43.321Z",
@@ -2260,11 +2269,11 @@
       },
       {
         "date": "2026-09-18",
-        "opponent": "Deportivo Alavés W",
+        "opponent": "Deportivo Alav\u00e9s W",
         "isHome": false,
         "score": "6 - 0",
         "result": "W",
-        "competition": "Primera División Femenina"
+        "competition": "Primera Divisi\u00f3n Femenina"
       },
       {
         "date": "2026-09-12",
@@ -2272,7 +2281,7 @@
         "isHome": true,
         "score": "4 - 2",
         "result": "W",
-        "competition": "Primera División Femenina"
+        "competition": "Primera Divisi\u00f3n Femenina"
       },
       {
         "date": "2026-09-05",
@@ -2280,7 +2289,7 @@
         "isHome": false,
         "score": "4 - 0",
         "result": "W",
-        "competition": "Primera División Femenina"
+        "competition": "Primera Divisi\u00f3n Femenina"
       },
       {
         "date": "2026-08-30",
@@ -2288,7 +2297,7 @@
         "isHome": true,
         "score": "5 - 0",
         "result": "W",
-        "competition": "Primera División Femenina"
+        "competition": "Primera Divisi\u00f3n Femenina"
       }
     ],
     "isMcpPick": true,
@@ -2302,7 +2311,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/525.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "explanation": "Volumen constante por las bandas: El cruce táctico entre Barcelona W (6.8 córners de media en casa) y Paris FC W (4.0 foráneos) proyecta 10.9 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
+    "explanation": "Volumen constante por las bandas: El cruce t\u00e1ctico entre Barcelona W (6.8 c\u00f3rners de media en casa) y Paris FC W (4.0 for\u00e1neos) proyecta 10.9 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
     "probability": 60.5,
     "bookmakerOdds": 1.83,
     "expectedValue": 10.3,
@@ -2329,7 +2338,7 @@
           "expected_margin": 3.88,
           "qualification_status": "REJECTED_ODDS",
           "rejection_reasons": [
-            "Cuota disponible inferior al mínimo requerido: @1.12 < @1.14",
+            "Cuota disponible inferior al m\u00ednimo requerido: @1.12 < @1.14",
             "Smart Edge insuficiente: +-2.7% < +2.0%"
           ]
         },
@@ -2349,7 +2358,7 @@
           "expected_margin": 2.88,
           "qualification_status": "REJECTED_ODDS",
           "rejection_reasons": [
-            "Cuota disponible inferior al mínimo requerido: @1.20 < @1.22",
+            "Cuota disponible inferior al m\u00ednimo requerido: @1.20 < @1.22",
             "Smart Edge insuficiente: +-4.1% < +3.0%"
           ]
         },
@@ -2438,9 +2447,10 @@
         12
       ]
     },
-    "actualScore": "8 - 7 (15 Córners)",
+    "actualScore": "8 - 7 (15 C\u00f3rners)",
     "result": "WON",
-    "profit": 0.83
+    "profit": 0.83,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -2454,17 +2464,17 @@
         "homeCorners": 4,
         "awayCorners": 9,
         "totalCorners": 13,
-        "corners": "4 - 9 (13 Córners)"
+        "corners": "4 - 9 (13 C\u00f3rners)"
       }
     ],
     "edge": 15.1,
     "odds": 1.85,
-    "pick": "Over 8.5 Córners",
+    "pick": "Over 8.5 C\u00f3rners",
     "isMcp": true,
     "isNew": true,
     "match": "Chelsea W vs Austria Wien W",
     "league": "UEFA Champions League Women",
-    "market": "Córners",
+    "market": "C\u00f3rners",
     "source": "mcp",
     "status": "won",
     "addedAt": "2026-09-23T05:09:20.595Z",
@@ -2497,7 +2507,7 @@
       },
       {
         "date": "2026-09-19",
-        "opponent": "Kleinmünchen / BW Linz W",
+        "opponent": "Kleinm\u00fcnchen / BW Linz W",
         "isHome": true,
         "score": "2 - 0",
         "result": "W",
@@ -2505,7 +2515,7 @@
       },
       {
         "date": "2026-09-13",
-        "opponent": "Südburgenland W",
+        "opponent": "S\u00fcdburgenland W",
         "isHome": false,
         "score": "5 - 0",
         "result": "W",
@@ -2625,7 +2635,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/525.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.7 córners totales.",
+    "explanation": "Presi\u00f3n ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulaci\u00f3n cuantitativa respalda la l\u00ednea de C\u00f3rners con una media esperada de 10.7 c\u00f3rners totales.",
     "probability": 69.2,
     "bookmakerOdds": 1.85,
     "expectedValue": 28,
@@ -2669,7 +2679,7 @@
           "expected_margin": 2.71,
           "qualification_status": "REJECTED_ODDS",
           "rejection_reasons": [
-            "Cuota disponible inferior al mínimo requerido: @1.20 < @1.22",
+            "Cuota disponible inferior al m\u00ednimo requerido: @1.20 < @1.22",
             "Smart Edge insuficiente: +-5.0% < +3.0%"
           ]
         },
@@ -2761,9 +2771,10 @@
         0
       ]
     },
-    "actualScore": "4 - 9 (13 Córners)",
+    "actualScore": "4 - 9 (13 C\u00f3rners)",
     "result": "WON",
-    "profit": 0.85
+    "profit": 0.85,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -2777,7 +2788,7 @@
         "homeCorners": 7,
         "awayCorners": 6,
         "totalCorners": 13,
-        "corners": "7 - 6 (13 Córners)"
+        "corners": "7 - 6 (13 C\u00f3rners)"
       },
       {
         "date": "2026-03-01",
@@ -2789,7 +2800,7 @@
         "homeCorners": 5,
         "awayCorners": 10,
         "totalCorners": 15,
-        "corners": "5 - 10 (15 Córners)"
+        "corners": "5 - 10 (15 C\u00f3rners)"
       },
       {
         "date": "2025-10-12",
@@ -2801,7 +2812,7 @@
         "homeCorners": 4,
         "awayCorners": 4,
         "totalCorners": 8,
-        "corners": "4 - 4 (8 Córners)"
+        "corners": "4 - 4 (8 C\u00f3rners)"
       },
       {
         "date": "2025-03-01",
@@ -2813,7 +2824,7 @@
         "homeCorners": 3,
         "awayCorners": 4,
         "totalCorners": 7,
-        "corners": "3 - 4 (7 Córners)"
+        "corners": "3 - 4 (7 C\u00f3rners)"
       },
       {
         "date": "2024-05-30",
@@ -2825,7 +2836,7 @@
         "homeCorners": 11,
         "awayCorners": 4,
         "totalCorners": 15,
-        "corners": "11 - 4 (15 Córners)"
+        "corners": "11 - 4 (15 C\u00f3rners)"
       }
     ],
     "edge": 1,
@@ -3010,14 +3021,14 @@
     "isTopPick": false,
     "modelOdds": 1.66,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 1606,
     "confidence": "Alta",
     "homeTeamId": 1595,
     "leagueLogo": "https://media.api-sports.io/football/leagues/253.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "explanation": "Eficacia bilateral en ataque: Seattle Sounders anota con regularidad en su estadio (1.8 xG) pero concede ocasiones (2 goles en contra), mientras que Real Salt Lake cuenta con pegada foránea (1.2 xG). El patrón estadístico favorece la anotación mutua.",
+    "explanation": "Eficacia bilateral en ataque: Seattle Sounders anota con regularidad en su estadio (1.8 xG) pero concede ocasiones (2 goles en contra), mientras que Real Salt Lake cuenta con pegada for\u00e1nea (1.2 xG). El patr\u00f3n estad\u00edstico favorece la anotaci\u00f3n mutua.",
     "probability": 60.4,
     "bookmakerOdds": 1.53,
     "expectedValue": -7.6,
@@ -3055,7 +3066,8 @@
     },
     "actualScore": "2 - 0 (No)",
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -3069,7 +3081,7 @@
         "homeCorners": 7,
         "awayCorners": 6,
         "totalCorners": 13,
-        "corners": "7 - 6 (13 Córners)"
+        "corners": "7 - 6 (13 C\u00f3rners)"
       },
       {
         "date": "2026-03-01",
@@ -3081,7 +3093,7 @@
         "homeCorners": 5,
         "awayCorners": 10,
         "totalCorners": 15,
-        "corners": "5 - 10 (15 Córners)"
+        "corners": "5 - 10 (15 C\u00f3rners)"
       },
       {
         "date": "2025-10-12",
@@ -3093,7 +3105,7 @@
         "homeCorners": 4,
         "awayCorners": 4,
         "totalCorners": 8,
-        "corners": "4 - 4 (8 Córners)"
+        "corners": "4 - 4 (8 C\u00f3rners)"
       },
       {
         "date": "2025-03-01",
@@ -3105,7 +3117,7 @@
         "homeCorners": 3,
         "awayCorners": 4,
         "totalCorners": 7,
-        "corners": "3 - 4 (7 Córners)"
+        "corners": "3 - 4 (7 C\u00f3rners)"
       },
       {
         "date": "2024-05-30",
@@ -3117,17 +3129,17 @@
         "homeCorners": 11,
         "awayCorners": 4,
         "totalCorners": 15,
-        "corners": "11 - 4 (15 Córners)"
+        "corners": "11 - 4 (15 C\u00f3rners)"
       }
     ],
     "edge": 10.8,
     "odds": 1.35,
-    "pick": "Over 6.5 Córners",
+    "pick": "Over 6.5 C\u00f3rners",
     "isMcp": true,
     "isNew": true,
     "match": "Seattle Sounders vs Real Salt Lake",
     "league": "Major League Soccer (MLS)",
-    "market": "Córners",
+    "market": "C\u00f3rners",
     "source": "mcp",
     "status": "won",
     "addedAt": "2026-09-23T05:11:29.699Z",
@@ -3309,7 +3321,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/253.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "explanation": "Volumen constante por las bandas: El cruce táctico entre Seattle Sounders (5.9 córners de media en casa) y Real Salt Lake (4.5 foráneos) proyecta 10.4 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
+    "explanation": "Volumen constante por las bandas: El cruce t\u00e1ctico entre Seattle Sounders (5.9 c\u00f3rners de media en casa) y Real Salt Lake (4.5 for\u00e1neos) proyecta 10.4 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
     "probability": 84.9,
     "bookmakerOdds": 1.35,
     "expectedValue": 14.6,
@@ -3353,7 +3365,7 @@
           "expected_margin": 2.41,
           "qualification_status": "REJECTED_ODDS",
           "rejection_reasons": [
-            "Cuota disponible inferior al mínimo requerido: @1.20 < @1.22",
+            "Cuota disponible inferior al m\u00ednimo requerido: @1.20 < @1.22",
             "Smart Edge insuficiente: +-6.9% < +3.0%"
           ]
         },
@@ -3449,8 +3461,9 @@
         13
       ]
     },
-    "actualScore": "7 - 6 (13 Córners)",
+    "actualScore": "7 - 6 (13 C\u00f3rners)",
     "result": "WON",
-    "profit": 0.35
+    "profit": 0.35,
+    "sport": "football"
   }
 ]

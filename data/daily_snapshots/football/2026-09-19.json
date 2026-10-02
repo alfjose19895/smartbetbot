@@ -147,11 +147,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "5 - 4 (9 Goles)",
-    "explanation": "Eficacia en áreas rivales: La proyección matemática combina la alta producción de llegadas claras de Hallescher FC U19 con la pegada en contragolpe de Chemnitzer FC U19 (3.93 xG acumulado). El análisis probabilístico respalda el Over 2.5 con 74% de confianza a cuota @1.36.",
+    "explanation": "Eficacia en \u00e1reas rivales: La proyecci\u00f3n matem\u00e1tica combina la alta producci\u00f3n de llegadas claras de Hallescher FC U19 con la pegada en contragolpe de Chemnitzer FC U19 (3.93 xG acumulado). El an\u00e1lisis probabil\u00edstico respalda el Over 2.5 con 74% de confianza a cuota @1.36.",
     "probability": 74,
     "bookmakerOdds": 1.36,
     "expectedValue": 0.7,
-    "impliedProbability": 73.5
+    "impliedProbability": 73.5,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1595660-ambos-equipos-anotan",
@@ -160,7 +161,7 @@
         "date": "2026-07-21",
         "score": "1-2",
         "winner": "away",
-        "awayTeam": "Rot-Weiß Erfurt U19",
+        "awayTeam": "Rot-Wei\u00df Erfurt U19",
         "homeTeam": "Erzgebirge Aue U19",
         "competition": "Bundesliga"
       },
@@ -169,14 +170,14 @@
         "score": "2-0",
         "winner": "home",
         "awayTeam": "Erzgebirge Aue U19",
-        "homeTeam": "Rot-Weiß Erfurt U19",
+        "homeTeam": "Rot-Wei\u00df Erfurt U19",
         "competition": "Bundesliga"
       },
       {
         "date": "2025-09-24",
         "score": "1-3",
         "winner": "away",
-        "awayTeam": "Rot-Weiß Erfurt U19",
+        "awayTeam": "Rot-Wei\u00df Erfurt U19",
         "homeTeam": "Erzgebirge Aue U19",
         "competition": "Bundesliga"
       }
@@ -185,7 +186,7 @@
     "odds": 1.6,
     "pick": "Ambos Equipos Anotan",
     "isMcp": true,
-    "match": "Erzgebirge Aue U19 vs Rot-Weiß Erfurt U19",
+    "match": "Erzgebirge Aue U19 vs Rot-Wei\u00df Erfurt U19",
     "league": "Bundesliga",
     "market": "Ambos Equipos Anotan",
     "profit": 0.6,
@@ -197,7 +198,7 @@
     "homeElo": 1560,
     "kickoff": "2026-09-19T05:00:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/24543.png",
-    "awayTeam": "Rot-Weiß Erfurt U19",
+    "awayTeam": "Rot-Wei\u00df Erfurt U19",
     "fairOdds": 1.62,
     "homeLogo": "https://media.api-sports.io/football/teams/24539.png",
     "homeTeam": "Erzgebirge Aue U19",
@@ -293,19 +294,20 @@
     "isTopPick": false,
     "modelOdds": 1.62,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 24543,
     "confidence": "Alta",
     "homeTeamId": 24539,
     "leagueLogo": "https://media.api-sports.io/football/leagues/488.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "actualScore": "2 - 1 (Ambos Sí)",
-    "explanation": "Análisis cuantitativo avanzado: 61.9% de probabilidad estadística con valor positivo (+1%) frente a la cuota del mercado @1.60.",
+    "actualScore": "2 - 1 (Ambos S\u00ed)",
+    "explanation": "An\u00e1lisis cuantitativo avanzado: 61.9% de probabilidad estad\u00edstica con valor positivo (+1%) frente a la cuota del mercado @1.60.",
     "probability": 61.9,
     "bookmakerOdds": 1.6,
     "expectedValue": -1,
-    "impliedProbability": 62.5
+    "impliedProbability": 62.5,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1595656-ambos-equipos-anotan",
@@ -447,19 +449,20 @@
     "isTopPick": false,
     "modelOdds": 1.64,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 19444,
     "confidence": "Alta",
     "homeTeamId": 10246,
     "leagueLogo": "https://media.api-sports.io/football/leagues/488.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "actualScore": "2 - 1 (Ambos Sí)",
-    "explanation": "Análisis cuantitativo avanzado: 61.1% de probabilidad estadística con valor positivo (+1%) frente a la cuota del mercado @1.62.",
+    "actualScore": "2 - 1 (Ambos S\u00ed)",
+    "explanation": "An\u00e1lisis cuantitativo avanzado: 61.1% de probabilidad estad\u00edstica con valor positivo (+1%) frente a la cuota del mercado @1.62.",
     "probability": 61.1,
     "bookmakerOdds": 1.62,
     "expectedValue": -1,
-    "impliedProbability": 61.7
+    "impliedProbability": 61.7,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1557416-ambos-equipos-anotan",
@@ -601,19 +604,20 @@
     "isTopPick": false,
     "modelOdds": 1.74,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 66,
     "confidence": "Media",
     "homeTeamId": 47,
     "leagueLogo": "https://media.api-sports.io/football/leagues/39.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "actualScore": "2 - 3 (Ambos Sí)",
-    "explanation": "Tanto Tottenham como Aston Villa han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
+    "actualScore": "2 - 3 (Ambos S\u00ed)",
+    "explanation": "Tanto Tottenham como Aston Villa han visto puerta en 4 de sus \u00faltimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
     "probability": 57.6,
     "bookmakerOdds": 1.62,
     "expectedValue": -6.6,
-    "impliedProbability": 61.7
+    "impliedProbability": 61.7,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1570399-ganador-local",
@@ -655,7 +659,7 @@
     "source": "mcp",
     "status": "lost",
     "awayElo": 1610,
-    "country": "España",
+    "country": "Espa\u00f1a",
     "homeElo": 1640,
     "kickoff": "2026-09-19T07:00:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/728.png",
@@ -763,11 +767,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "1 - 1",
-    "explanation": "Solidez posicional y eficacia en área propia: Osasuna concede menos de 0.9 xG de local, mientras que Rayo Vallecano muestra dificultades para generar peligro constante a domicilio (1.2 xG foráneo).",
+    "explanation": "Solidez posicional y eficacia en \u00e1rea propia: Osasuna concede menos de 0.9 xG de local, mientras que Rayo Vallecano muestra dificultades para generar peligro constante a domicilio (1.2 xG for\u00e1neo).",
     "probability": 54.1,
     "bookmakerOdds": 1.85,
     "expectedValue": 0.2,
-    "impliedProbability": 54.1
+    "impliedProbability": 54.1,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1593135-over-2.5-goles",
@@ -917,11 +922,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "5 - 2 (7 Goles)",
-    "explanation": "Alta expectativa anotadora: Bayern Munich W genera 1.6 xG en casa y FC Koln W promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
+    "explanation": "Alta expectativa anotadora: Bayern Munich W genera 1.6 xG en casa y FC Koln W promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o m\u00e1s tantos.",
     "probability": 71.5,
     "bookmakerOdds": 1.43,
     "expectedValue": 2.2,
-    "impliedProbability": 69.9
+    "impliedProbability": 69.9,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1550129-ganador-local",
@@ -1071,11 +1077,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "1 - 1",
-    "explanation": "Diferencial cualitativo a favor de Bologna (+100 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Torino.",
+    "explanation": "Diferencial cualitativo a favor de Bologna (+100 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presi\u00f3n alta neutralizan el planteamiento defensivo de Torino.",
     "probability": 55.9,
     "bookmakerOdds": 1.91,
     "expectedValue": 6.7,
-    "impliedProbability": 52.4
+    "impliedProbability": 52.4,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1550135-ganador-local",
@@ -1225,11 +1232,12 @@
     "leagueTier": 1,
     "smartScore": 95,
     "actualScore": "0 - 1",
-    "explanation": "Diferencial cualitativo a favor de Udinese (+101 puntos Elo). Su balance de 2.1 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Cagliari.",
+    "explanation": "Diferencial cualitativo a favor de Udinese (+101 puntos Elo). Su balance de 2.1 tantos esperados por jornada y su efectividad en presi\u00f3n alta neutralizan el planteamiento defensivo de Cagliari.",
     "probability": 50.4,
     "bookmakerOdds": 2.25,
     "expectedValue": 13.3,
-    "impliedProbability": 44.4
+    "impliedProbability": 44.4,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1494281-over-2.5-goles",
@@ -1379,11 +1387,12 @@
     "leagueTier": 1,
     "smartScore": 89,
     "actualScore": "0 - 1 (1 Goles)",
-    "explanation": "Propuesta vertical y transiciones dinámicas: Tanto IF Brommapojkarna como IFK Goteborg promedian más de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la línea de 2.5 goles.",
+    "explanation": "Propuesta vertical y transiciones din\u00e1micas: Tanto IF Brommapojkarna como IFK Goteborg promedian m\u00e1s de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la l\u00ednea de 2.5 goles.",
     "probability": 57.3,
     "bookmakerOdds": 1.67,
     "expectedValue": -4.3,
-    "impliedProbability": 59.9
+    "impliedProbability": 59.9,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1494288-ambos-equipos-anotan",
@@ -1525,7 +1534,7 @@
     "isTopPick": false,
     "modelOdds": 1.74,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 375,
     "confidence": "Media",
     "homeTeamId": 2241,
@@ -1533,11 +1542,12 @@
     "leagueTier": 1,
     "smartScore": 89,
     "actualScore": "2 - 0 (No)",
-    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
+    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porter\u00edas por la postura ofensiva de sus t\u00e9cnicos y las desatenciones en repliegue.",
     "probability": 57.5,
     "bookmakerOdds": 1.62,
     "expectedValue": -6.9,
-    "impliedProbability": 61.7
+    "impliedProbability": 61.7,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1575171-ambos-equipos-anotan",
@@ -1546,7 +1556,7 @@
         "date": "2026-07-21",
         "score": "1-2",
         "winner": "away",
-        "awayTeam": "1. FC Köln",
+        "awayTeam": "1. FC K\u00f6ln",
         "homeTeam": "Hamburger SV",
         "competition": "Bundesliga"
       },
@@ -1555,14 +1565,14 @@
         "score": "2-0",
         "winner": "home",
         "awayTeam": "Hamburger SV",
-        "homeTeam": "1. FC Köln",
+        "homeTeam": "1. FC K\u00f6ln",
         "competition": "Bundesliga"
       },
       {
         "date": "2025-09-24",
         "score": "1-3",
         "winner": "away",
-        "awayTeam": "1. FC Köln",
+        "awayTeam": "1. FC K\u00f6ln",
         "homeTeam": "Hamburger SV",
         "competition": "Bundesliga"
       }
@@ -1571,7 +1581,7 @@
     "odds": 1.6,
     "pick": "Ambos Equipos Anotan",
     "isMcp": true,
-    "match": "Hamburger SV vs 1. FC Köln",
+    "match": "Hamburger SV vs 1. FC K\u00f6ln",
     "league": "Bundesliga",
     "market": "Ambos Equipos Anotan",
     "profit": 0.6,
@@ -1583,7 +1593,7 @@
     "homeElo": 1526,
     "kickoff": "2026-09-19T08:30:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/192.png",
-    "awayTeam": "1. FC Köln",
+    "awayTeam": "1. FC K\u00f6ln",
     "fairOdds": 1.6,
     "homeLogo": "https://media.api-sports.io/football/teams/175.png",
     "homeTeam": "Hamburger SV",
@@ -1679,19 +1689,20 @@
     "isTopPick": false,
     "modelOdds": 1.6,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 192,
     "confidence": "Alta",
     "homeTeamId": 175,
     "leagueLogo": "https://media.api-sports.io/football/leagues/78.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "actualScore": "2 - 1 (Ambos Sí)",
-    "explanation": "Eficacia bilateral en ataque: Hamburger SV anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que 1. FC Köln cuenta con pegada foránea (1.2 xG). El patrón estadístico favorece la anotación mutua.",
+    "actualScore": "2 - 1 (Ambos S\u00ed)",
+    "explanation": "Eficacia bilateral en ataque: Hamburger SV anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que 1. FC K\u00f6ln cuenta con pegada for\u00e1nea (1.2 xG). El patr\u00f3n estad\u00edstico favorece la anotaci\u00f3n mutua.",
     "probability": 62.3,
     "bookmakerOdds": 1.6,
     "expectedValue": -0.3,
-    "impliedProbability": 62.5
+    "impliedProbability": 62.5,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1575172-ganador-local",
@@ -1841,11 +1852,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "3 - 2",
-    "explanation": "Rendimiento muy fiable de Werder Bremen en su feudo (4 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante FC Augsburg inclina con claridad la balanza estadística hacia el triunfo local.",
+    "explanation": "Rendimiento muy fiable de Werder Bremen en su feudo (4 partidos sin caer en sus \u00faltimas 5 presentaciones). La brecha de generaci\u00f3n de ocasiones claras ante FC Augsburg inclina con claridad la balanza estad\u00edstica hacia el triunfo local.",
     "probability": 66.6,
     "bookmakerOdds": 1.52,
     "expectedValue": 1.2,
-    "impliedProbability": 65.8
+    "impliedProbability": 65.8,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1575174-ambos-equipos-anotan",
@@ -1855,14 +1867,14 @@
         "score": "1-2",
         "winner": "away",
         "awayTeam": "FSV Mainz 05",
-        "homeTeam": "Borussia Mönchengladbach",
+        "homeTeam": "Borussia M\u00f6nchengladbach",
         "competition": "Bundesliga"
       },
       {
         "date": "2026-03-23",
         "score": "2-0",
         "winner": "home",
-        "awayTeam": "Borussia Mönchengladbach",
+        "awayTeam": "Borussia M\u00f6nchengladbach",
         "homeTeam": "FSV Mainz 05",
         "competition": "Bundesliga"
       },
@@ -1871,7 +1883,7 @@
         "score": "1-1",
         "winner": "draw",
         "awayTeam": "FSV Mainz 05",
-        "homeTeam": "Borussia Mönchengladbach",
+        "homeTeam": "Borussia M\u00f6nchengladbach",
         "competition": "Bundesliga"
       }
     ],
@@ -1879,7 +1891,7 @@
     "odds": 1.63,
     "pick": "Ambos Equipos Anotan",
     "isMcp": true,
-    "match": "Borussia Mönchengladbach vs FSV Mainz 05",
+    "match": "Borussia M\u00f6nchengladbach vs FSV Mainz 05",
     "league": "Bundesliga",
     "market": "Ambos Equipos Anotan",
     "profit": 0.63,
@@ -1894,7 +1906,7 @@
     "awayTeam": "FSV Mainz 05",
     "fairOdds": 1.62,
     "homeLogo": "https://media.api-sports.io/football/teams/163.png",
-    "homeTeam": "Borussia Mönchengladbach",
+    "homeTeam": "Borussia M\u00f6nchengladbach",
     "leagueId": 78,
     "timeSlot": "morning",
     "awayLast5": [
@@ -1987,19 +1999,20 @@
     "isTopPick": false,
     "modelOdds": 1.62,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 164,
     "confidence": "Alta",
     "homeTeamId": 163,
     "leagueLogo": "https://media.api-sports.io/football/leagues/78.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "actualScore": "3 - 4 (Ambos Sí)",
-    "explanation": "Tanto Borussia Mönchengladbach como FSV Mainz 05 han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
+    "actualScore": "3 - 4 (Ambos S\u00ed)",
+    "explanation": "Tanto Borussia M\u00f6nchengladbach como FSV Mainz 05 han visto puerta en 4 de sus \u00faltimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
     "probability": 61.8,
     "bookmakerOdds": 1.63,
     "expectedValue": 0.8,
-    "impliedProbability": 61.3
+    "impliedProbability": 61.3,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1557414-ganador-local",
@@ -2149,11 +2162,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "2 - 1",
-    "explanation": "Solidez posicional y eficacia en área propia: Newcastle concede menos de 0.9 xG de local, mientras que Hull City muestra dificultades para generar peligro constante a domicilio (0.6 xG foráneo).",
+    "explanation": "Solidez posicional y eficacia en \u00e1rea propia: Newcastle concede menos de 0.9 xG de local, mientras que Hull City muestra dificultades para generar peligro constante a domicilio (0.6 xG for\u00e1neo).",
     "probability": 68.5,
     "bookmakerOdds": 1.6,
     "expectedValue": 9.5,
-    "impliedProbability": 62.5
+    "impliedProbability": 62.5,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1557409-over-2.5-goles",
@@ -2303,11 +2317,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "3 - 0 (3 Goles)",
-    "explanation": "Brighton ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Arsenal acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas áreas.",
+    "explanation": "Brighton ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras Arsenal acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas \u00e1reas.",
     "probability": 58.7,
     "bookmakerOdds": 1.8,
     "expectedValue": 5.6,
-    "impliedProbability": 55.6
+    "impliedProbability": 55.6,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1557410-ganador-local",
@@ -2457,11 +2472,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "1 - 0",
-    "explanation": "Rendimiento muy fiable de Everton en su feudo (4 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Ipswich inclina con claridad la balanza estadística hacia el triunfo local.",
+    "explanation": "Rendimiento muy fiable de Everton en su feudo (4 partidos sin caer en sus \u00faltimas 5 presentaciones). La brecha de generaci\u00f3n de ocasiones claras ante Ipswich inclina con claridad la balanza estad\u00edstica hacia el triunfo local.",
     "probability": 58.3,
     "bookmakerOdds": 1.75,
     "expectedValue": 2,
-    "impliedProbability": 57.1
+    "impliedProbability": 57.1,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1494765-ambos-equipos-anotan",
@@ -2603,19 +2619,20 @@
     "isTopPick": false,
     "modelOdds": 1.71,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 331,
     "confidence": "Alta",
     "homeTeamId": 320,
     "leagueLogo": "https://media.api-sports.io/football/leagues/103.png",
     "leagueTier": 1,
     "smartScore": 90,
-    "actualScore": "1 - 3 (Ambos Sí)",
-    "explanation": "Tanto Kristiansund BK como Rosenborg han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
+    "actualScore": "1 - 3 (Ambos S\u00ed)",
+    "explanation": "Tanto Kristiansund BK como Rosenborg han visto puerta en 4 de sus \u00faltimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
     "probability": 58.5,
     "bookmakerOdds": 1.57,
     "expectedValue": -8.2,
-    "impliedProbability": 63.7
+    "impliedProbability": 63.7,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1570393-over-2.5-goles",
@@ -2657,7 +2674,7 @@
     "source": "mcp",
     "status": "lost",
     "awayElo": 1570,
-    "country": "España",
+    "country": "Espa\u00f1a",
     "homeElo": 1780,
     "kickoff": "2026-09-19T09:15:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/542.png",
@@ -2765,11 +2782,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "0 - 0 (0 Goles)",
-    "explanation": "Propuesta vertical y transiciones dinámicas: Tanto Athletic Club como Alaves promedian más de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la línea de 2.5 goles.",
+    "explanation": "Propuesta vertical y transiciones din\u00e1micas: Tanto Athletic Club como Alaves promedian m\u00e1s de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la l\u00ednea de 2.5 goles.",
     "probability": 67.8,
     "bookmakerOdds": 1.49,
     "expectedValue": 1.1,
-    "impliedProbability": 67.1
+    "impliedProbability": 67.1,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1552172-over-2.5-goles",
@@ -2811,7 +2829,7 @@
     "source": "mcp",
     "status": "lost",
     "awayElo": 1659,
-    "country": "Países Bajos",
+    "country": "Pa\u00edses Bajos",
     "homeElo": 1504,
     "kickoff": "2026-09-19T09:30:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/420.png",
@@ -2919,11 +2937,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "1 - 1 (2 Goles)",
-    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
+    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
     "probability": 64,
     "bookmakerOdds": 1.48,
     "expectedValue": -5.3,
-    "impliedProbability": 67.6
+    "impliedProbability": 67.6,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1575504-ambos-equipos-anotan",
@@ -3065,19 +3084,20 @@
     "isTopPick": false,
     "modelOdds": 1.84,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 214,
     "confidence": "Media",
     "homeTeamId": 762,
     "leagueLogo": "https://media.api-sports.io/football/leagues/94.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "actualScore": "1 - 1 (Ambos Sí)",
-    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
+    "actualScore": "1 - 1 (Ambos S\u00ed)",
+    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porter\u00edas por la postura ofensiva de sus t\u00e9cnicos y las desatenciones en repliegue.",
     "probability": 54.4,
     "bookmakerOdds": 1.86,
     "expectedValue": 1.2,
-    "impliedProbability": 53.8
+    "impliedProbability": 53.8,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1575505-ganador-visitante",
@@ -3227,11 +3247,12 @@
     "leagueTier": 1,
     "smartScore": 93,
     "actualScore": "0 - 4",
-    "explanation": "Famalicao exhibe mayor jerarquía y pegada foránea (1.2 xG de visita) con 2 victorias en sus salidas recientes. Su efectividad en transición rápida ante la fragilidad defensiva de Nacional (0 caídas) respalda el triunfo visitante.",
+    "explanation": "Famalicao exhibe mayor jerarqu\u00eda y pegada for\u00e1nea (1.2 xG de visita) con 2 victorias en sus salidas recientes. Su efectividad en transici\u00f3n r\u00e1pida ante la fragilidad defensiva de Nacional (0 ca\u00eddas) respalda el triunfo visitante.",
     "probability": 49.5,
     "bookmakerOdds": 2.03,
     "expectedValue": 0.5,
-    "impliedProbability": 49.3
+    "impliedProbability": 49.3,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1560244-ambos-equipos-anotan",
@@ -3273,7 +3294,7 @@
     "source": "mcp",
     "status": "lost",
     "awayElo": 1519,
-    "country": "Hungría",
+    "country": "Hungr\u00eda",
     "homeElo": 1570,
     "kickoff": "2026-09-19T10:00:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/2390.png",
@@ -3373,7 +3394,7 @@
     "isTopPick": false,
     "modelOdds": 1.56,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 2390,
     "confidence": "Alta",
     "homeTeamId": 2394,
@@ -3381,11 +3402,12 @@
     "leagueTier": 1,
     "smartScore": 96,
     "actualScore": "0 - 1 (No)",
-    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
+    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porter\u00edas por la postura ofensiva de sus t\u00e9cnicos y las desatenciones en repliegue.",
     "probability": 64.1,
     "bookmakerOdds": 1.36,
     "expectedValue": -12.9,
-    "impliedProbability": 73.5
+    "impliedProbability": 73.5,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1494287-ganador-visitante",
@@ -3539,7 +3561,8 @@
     "probability": 57.5,
     "bookmakerOdds": 1.45,
     "expectedValue": -16.6,
-    "impliedProbability": 69
+    "impliedProbability": 69,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -3549,7 +3572,7 @@
         "winner": "home",
         "awayTeam": "Edf Logrono W",
         "homeTeam": "Atletico Madrid W",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       },
       {
         "date": "2026-03-23",
@@ -3557,7 +3580,7 @@
         "winner": "away",
         "awayTeam": "Atletico Madrid W",
         "homeTeam": "Edf Logrono W",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       },
       {
         "date": "2025-09-24",
@@ -3565,7 +3588,7 @@
         "winner": "home",
         "awayTeam": "Edf Logrono W",
         "homeTeam": "Atletico Madrid W",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       }
     ],
     "edge": 1,
@@ -3573,12 +3596,12 @@
     "pick": "Over 2.5 Goles",
     "isMcp": true,
     "match": "Atletico Madrid W vs Edf Logrono W",
-    "league": "Primera División Femenina (Liga F)",
+    "league": "Primera Divisi\u00f3n Femenina (Liga F)",
     "market": "Over 2.5 Goles",
     "source": "mcp",
     "status": "lost",
     "awayElo": 1558,
-    "country": "España",
+    "country": "Espa\u00f1a",
     "homeElo": 1880,
     "kickoff": "2026-09-19T11:00:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/1923.png",
@@ -3595,7 +3618,7 @@
         "isHome": true,
         "result": "L",
         "opponent": "Rival A",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       },
       {
         "date": "2026-09-10",
@@ -3603,7 +3626,7 @@
         "isHome": false,
         "result": "D",
         "opponent": "Rival B",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       },
       {
         "date": "2026-09-05",
@@ -3611,7 +3634,7 @@
         "isHome": true,
         "result": "W",
         "opponent": "Rival C",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       },
       {
         "date": "2026-08-31",
@@ -3619,7 +3642,7 @@
         "isHome": false,
         "result": "L",
         "opponent": "Rival D",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       },
       {
         "date": "2026-08-26",
@@ -3627,7 +3650,7 @@
         "isHome": true,
         "result": "D",
         "opponent": "Rival E",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       }
     ],
     "bookmaker": "Bet365",
@@ -3639,7 +3662,7 @@
         "isHome": false,
         "result": "W",
         "opponent": "Rival A",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       },
       {
         "date": "2026-09-10",
@@ -3647,7 +3670,7 @@
         "isHome": true,
         "result": "W",
         "opponent": "Rival B",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       },
       {
         "date": "2026-09-05",
@@ -3655,7 +3678,7 @@
         "isHome": false,
         "result": "L",
         "opponent": "Rival C",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       },
       {
         "date": "2026-08-31",
@@ -3663,7 +3686,7 @@
         "isHome": true,
         "result": "D",
         "opponent": "Rival D",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       },
       {
         "date": "2026-08-26",
@@ -3671,7 +3694,7 @@
         "isHome": false,
         "result": "W",
         "opponent": "Rival E",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       }
     ],
     "isMcpPick": true,
@@ -3686,13 +3709,14 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "1 - 0 (1 Goles)",
-    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
+    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
     "probability": 71.5,
     "bookmakerOdds": 1.4,
     "expectedValue": 0,
     "impliedProbability": 71.4,
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1494766-ganador-local",
@@ -3842,11 +3866,12 @@
     "leagueTier": 1,
     "smartScore": 97,
     "actualScore": "1 - 2",
-    "explanation": "Diferencial cualitativo a favor de Molde (+44 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Aalesund.",
+    "explanation": "Diferencial cualitativo a favor de Molde (+44 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presi\u00f3n alta neutralizan el planteamiento defensivo de Aalesund.",
     "probability": 64.8,
     "bookmakerOdds": 1.36,
     "expectedValue": -11.9,
-    "impliedProbability": 73.5
+    "impliedProbability": 73.5,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -3993,13 +4018,14 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "1 - 1 (2 Goles)",
-    "explanation": "Propuesta vertical y transiciones dinámicas: Tanto FC Sion como FC Zurich promedian más de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la línea de 2.5 goles.",
+    "explanation": "Propuesta vertical y transiciones din\u00e1micas: Tanto FC Sion como FC Zurich promedian m\u00e1s de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la l\u00ednea de 2.5 goles.",
     "probability": 63.5,
     "bookmakerOdds": 1.36,
     "expectedValue": -13.7,
     "impliedProbability": 73.5,
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1555396-over-2.5-goles",
@@ -4149,11 +4175,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "3 - 2 (5 Goles)",
-    "explanation": "Propuesta vertical y transiciones dinámicas: Tanto BSC Young Boys como Servette FC promedian más de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la línea de 2.5 goles.",
+    "explanation": "Propuesta vertical y transiciones din\u00e1micas: Tanto BSC Young Boys como Servette FC promedian m\u00e1s de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la l\u00ednea de 2.5 goles.",
     "probability": 63.4,
     "bookmakerOdds": 1.4,
     "expectedValue": -11.3,
-    "impliedProbability": 71.4
+    "impliedProbability": 71.4,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -4162,32 +4189,32 @@
         "score": "2-1",
         "winner": "home",
         "awayTeam": "AS Trencin",
-        "homeTeam": "Žilina",
-        "competition": "Super Liga (Niké liga)"
+        "homeTeam": "\u017dilina",
+        "competition": "Super Liga (Nik\u00e9 liga)"
       },
       {
         "date": "2026-03-23",
         "score": "0-2",
         "winner": "away",
-        "awayTeam": "Žilina",
+        "awayTeam": "\u017dilina",
         "homeTeam": "AS Trencin",
-        "competition": "Super Liga (Niké liga)"
+        "competition": "Super Liga (Nik\u00e9 liga)"
       },
       {
         "date": "2025-09-24",
         "score": "3-0",
         "winner": "home",
         "awayTeam": "AS Trencin",
-        "homeTeam": "Žilina",
-        "competition": "Super Liga (Niké liga)"
+        "homeTeam": "\u017dilina",
+        "competition": "Super Liga (Nik\u00e9 liga)"
       }
     ],
     "edge": 1,
     "odds": 1.36,
     "pick": "Over 2.5 Goles",
     "isMcp": true,
-    "match": "Žilina vs AS Trencin",
-    "league": "Super Liga (Niké liga)",
+    "match": "\u017dilina vs AS Trencin",
+    "league": "Super Liga (Nik\u00e9 liga)",
     "market": "Over 2.5 Goles",
     "source": "mcp",
     "status": "won",
@@ -4199,7 +4226,7 @@
     "awayTeam": "AS Trencin",
     "fairOdds": 1.58,
     "homeLogo": "https://media.api-sports.io/football/teams/3554.png",
-    "homeTeam": "Žilina",
+    "homeTeam": "\u017dilina",
     "leagueId": 332,
     "timeSlot": "morning",
     "awayLast5": [
@@ -4209,7 +4236,7 @@
         "isHome": false,
         "result": "D",
         "opponent": "Rival A",
-        "competition": "Super Liga (Niké liga)"
+        "competition": "Super Liga (Nik\u00e9 liga)"
       },
       {
         "date": "2026-09-10",
@@ -4217,7 +4244,7 @@
         "isHome": true,
         "result": "W",
         "opponent": "Rival B",
-        "competition": "Super Liga (Niké liga)"
+        "competition": "Super Liga (Nik\u00e9 liga)"
       },
       {
         "date": "2026-09-05",
@@ -4225,7 +4252,7 @@
         "isHome": false,
         "result": "L",
         "opponent": "Rival C",
-        "competition": "Super Liga (Niké liga)"
+        "competition": "Super Liga (Nik\u00e9 liga)"
       },
       {
         "date": "2026-08-31",
@@ -4233,7 +4260,7 @@
         "isHome": true,
         "result": "D",
         "opponent": "Rival D",
-        "competition": "Super Liga (Niké liga)"
+        "competition": "Super Liga (Nik\u00e9 liga)"
       },
       {
         "date": "2026-08-26",
@@ -4241,7 +4268,7 @@
         "isHome": false,
         "result": "W",
         "opponent": "Rival E",
-        "competition": "Super Liga (Niké liga)"
+        "competition": "Super Liga (Nik\u00e9 liga)"
       }
     ],
     "bookmaker": "Bet365",
@@ -4253,7 +4280,7 @@
         "isHome": true,
         "result": "L",
         "opponent": "Rival A",
-        "competition": "Super Liga (Niké liga)"
+        "competition": "Super Liga (Nik\u00e9 liga)"
       },
       {
         "date": "2026-09-10",
@@ -4261,7 +4288,7 @@
         "isHome": false,
         "result": "D",
         "opponent": "Rival B",
-        "competition": "Super Liga (Niké liga)"
+        "competition": "Super Liga (Nik\u00e9 liga)"
       },
       {
         "date": "2026-09-05",
@@ -4269,7 +4296,7 @@
         "isHome": true,
         "result": "W",
         "opponent": "Rival C",
-        "competition": "Super Liga (Niké liga)"
+        "competition": "Super Liga (Nik\u00e9 liga)"
       },
       {
         "date": "2026-08-31",
@@ -4277,7 +4304,7 @@
         "isHome": false,
         "result": "L",
         "opponent": "Rival D",
-        "competition": "Super Liga (Niké liga)"
+        "competition": "Super Liga (Nik\u00e9 liga)"
       },
       {
         "date": "2026-08-26",
@@ -4285,7 +4312,7 @@
         "isHome": true,
         "result": "D",
         "opponent": "Rival E",
-        "competition": "Super Liga (Niké liga)"
+        "competition": "Super Liga (Nik\u00e9 liga)"
       }
     ],
     "isMcpPick": true,
@@ -4300,13 +4327,14 @@
     "leagueTier": 1,
     "smartScore": 95,
     "actualScore": "2 - 1 (3 Goles)",
-    "explanation": "Alta expectativa anotadora: Žilina genera 1.6 xG en casa y AS Trencin promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
+    "explanation": "Alta expectativa anotadora: \u017dilina genera 1.6 xG en casa y AS Trencin promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o m\u00e1s tantos.",
     "probability": 63.2,
     "bookmakerOdds": 1.36,
     "expectedValue": -14.1,
     "impliedProbability": 73.5,
     "result": "WON",
-    "profit": 0.36
+    "profit": 0.36,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1550128-over-2.5-goles",
@@ -4456,11 +4484,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "2 - 2 (4 Goles)",
-    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
+    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
     "probability": 57.6,
     "bookmakerOdds": 1.62,
     "expectedValue": -6.7,
-    "impliedProbability": 61.7
+    "impliedProbability": 61.7,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1555395-ganador-local",
@@ -4610,11 +4639,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "5 - 1",
-    "explanation": "FC Luzern impone una marcada solvencia como anfitrión (3 triunfos en sus últimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Grasshoppers que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+    "explanation": "FC Luzern impone una marcada solvencia como anfitri\u00f3n (3 triunfos en sus \u00faltimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Grasshoppers que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
     "probability": 58.3,
     "bookmakerOdds": 1.67,
     "expectedValue": -2.6,
-    "impliedProbability": 59.9
+    "impliedProbability": 59.9,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1555397-ambos-equipos-anotan",
@@ -4756,19 +4786,20 @@
     "isTopPick": false,
     "modelOdds": 1.65,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 783,
     "confidence": "Alta",
     "homeTeamId": 630,
     "leagueLogo": "https://media.api-sports.io/football/leagues/207.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "actualScore": "1 - 1 (Ambos Sí)",
-    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
+    "actualScore": "1 - 1 (Ambos S\u00ed)",
+    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porter\u00edas por la postura ofensiva de sus t\u00e9cnicos y las desatenciones en repliegue.",
     "probability": 60.7,
     "bookmakerOdds": 1.5,
     "expectedValue": -8.9,
-    "impliedProbability": 66.7
+    "impliedProbability": 66.7,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1549025-ambos-equipos-anotan",
@@ -4910,19 +4941,20 @@
     "isTopPick": false,
     "modelOdds": 1.68,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 397,
     "confidence": "Alta",
     "homeTeamId": 405,
     "leagueLogo": "https://media.api-sports.io/football/leagues/119.png",
     "leagueTier": 1,
     "smartScore": 91,
-    "actualScore": "1 - 1 (Ambos Sí)",
-    "explanation": "Tanto Odense como FC Midtjylland han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
+    "actualScore": "1 - 1 (Ambos S\u00ed)",
+    "explanation": "Tanto Odense como FC Midtjylland han visto puerta en 4 de sus \u00faltimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
     "probability": 59.5,
     "bookmakerOdds": 1.53,
     "expectedValue": -8.9,
-    "impliedProbability": 65.4
+    "impliedProbability": 65.4,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -5069,13 +5101,14 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "0 - 1 (1 Goles)",
-    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
+    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
     "probability": 66.2,
     "bookmakerOdds": 1.36,
     "expectedValue": -10,
     "impliedProbability": 73.5,
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1557415-ambos-equipos-anotan",
@@ -5217,7 +5250,7 @@
     "isTopPick": false,
     "modelOdds": 1.84,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 1346,
     "confidence": "Media",
     "homeTeamId": 65,
@@ -5225,11 +5258,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "0 - 1 (No)",
-    "explanation": "Tanto Nottingham Forest como Coventry han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
+    "explanation": "Tanto Nottingham Forest como Coventry han visto puerta en 4 de sus \u00faltimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
     "probability": 54.4,
     "bookmakerOdds": 1.75,
     "expectedValue": -4.8,
-    "impliedProbability": 57.1
+    "impliedProbability": 57.1,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1575168-ambos-equipos-anotan",
@@ -5371,7 +5405,7 @@
     "isTopPick": false,
     "modelOdds": 1.66,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 165,
     "confidence": "Alta",
     "homeTeamId": 172,
@@ -5379,11 +5413,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "0 - 1 (No)",
-    "explanation": "Eficacia bilateral en ataque: VfB Stuttgart anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Borussia Dortmund cuenta con pegada foránea (1.2 xG). El patrón estadístico favorece la anotación mutua.",
+    "explanation": "Eficacia bilateral en ataque: VfB Stuttgart anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Borussia Dortmund cuenta con pegada for\u00e1nea (1.2 xG). El patr\u00f3n estad\u00edstico favorece la anotaci\u00f3n mutua.",
     "probability": 60.1,
     "bookmakerOdds": 1.7,
     "expectedValue": 2.2,
-    "impliedProbability": 58.8
+    "impliedProbability": 58.8,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1570395-ganador-local",
@@ -5425,7 +5460,7 @@
     "source": "mcp",
     "status": "won",
     "awayElo": 1596,
-    "country": "España",
+    "country": "Espa\u00f1a",
     "homeElo": 1620,
     "kickoff": "2026-09-19T11:30:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/4665.png",
@@ -5533,11 +5568,12 @@
     "leagueTier": 1,
     "smartScore": 96,
     "actualScore": "5 - 0",
-    "explanation": "Celta Vigo impone una marcada solvencia como anfitrión (3 triunfos en sus últimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Racing Santander que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+    "explanation": "Celta Vigo impone una marcada solvencia como anfitri\u00f3n (3 triunfos en sus \u00faltimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Racing Santander que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
     "probability": 51.9,
     "bookmakerOdds": 1.93,
     "expectedValue": 0.2,
-    "impliedProbability": 51.8
+    "impliedProbability": 51.8,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1552171-ganador-local",
@@ -5579,7 +5615,7 @@
     "source": "mcp",
     "status": "lost",
     "awayElo": 1609,
-    "country": "Países Bajos",
+    "country": "Pa\u00edses Bajos",
     "homeElo": 1637,
     "kickoff": "2026-09-19T11:45:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/210.png",
@@ -5687,11 +5723,12 @@
     "leagueTier": 1,
     "smartScore": 88,
     "actualScore": "0 - 4",
-    "explanation": "Rendimiento muy fiable de Sparta Rotterdam en su feudo (4 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Heerenveen inclina con claridad la balanza estadística hacia el triunfo local.",
+    "explanation": "Rendimiento muy fiable de Sparta Rotterdam en su feudo (4 partidos sin caer en sus \u00faltimas 5 presentaciones). La brecha de generaci\u00f3n de ocasiones claras ante Heerenveen inclina con claridad la balanza estad\u00edstica hacia el triunfo local.",
     "probability": 45.3,
     "bookmakerOdds": 2.4,
     "expectedValue": 8.7,
-    "impliedProbability": 41.7
+    "impliedProbability": 41.7,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1575500-ganador-local",
@@ -5841,11 +5878,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "1 - 0",
-    "explanation": "Alverca impone una marcada solvencia como anfitrión (3 triunfos en sus últimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Rio Ave que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+    "explanation": "Alverca impone una marcada solvencia como anfitri\u00f3n (3 triunfos en sus \u00faltimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Rio Ave que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
     "probability": 65.9,
     "bookmakerOdds": 1.55,
     "expectedValue": 2.1,
-    "impliedProbability": 64.5
+    "impliedProbability": 64.5,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -5992,13 +6030,14 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "1 - 0",
-    "explanation": "Hapoel Beer Sheva impone una marcada solvencia como anfitrión (3 triunfos en sus últimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Ironi Kiryat Shmona que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+    "explanation": "Hapoel Beer Sheva impone una marcada solvencia como anfitri\u00f3n (3 triunfos en sus \u00faltimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Ironi Kiryat Shmona que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
     "probability": 65.7,
     "bookmakerOdds": 1.4,
     "expectedValue": -8,
     "impliedProbability": 71.4,
     "result": "WON",
-    "profit": 0.4
+    "profit": 0.4,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1560243-ambos-equipos-anotan",
@@ -6040,7 +6079,7 @@
     "source": "mcp",
     "status": "won",
     "awayElo": 1630,
-    "country": "Hungría",
+    "country": "Hungr\u00eda",
     "homeElo": 1565,
     "kickoff": "2026-09-19T12:30:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/675.png",
@@ -6140,19 +6179,20 @@
     "isTopPick": false,
     "modelOdds": 1.66,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 675,
     "confidence": "Alta",
     "homeTeamId": 2392,
     "leagueLogo": "https://media.api-sports.io/football/leagues/271.png",
     "leagueTier": 1,
     "smartScore": 92,
-    "actualScore": "2 - 4 (Ambos Sí)",
-    "explanation": "Eficacia bilateral en ataque: Debreceni VSC anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Vasas cuenta con pegada foránea (1.2 xG). El patrón estadístico favorece la anotación mutua.",
+    "actualScore": "2 - 4 (Ambos S\u00ed)",
+    "explanation": "Eficacia bilateral en ataque: Debreceni VSC anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Vasas cuenta con pegada for\u00e1nea (1.2 xG). El patr\u00f3n estad\u00edstico favorece la anotaci\u00f3n mutua.",
     "probability": 60.3,
     "bookmakerOdds": 1.5,
     "expectedValue": -9.5,
-    "impliedProbability": 66.7
+    "impliedProbability": 66.7,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -6299,13 +6339,14 @@
     "leagueTier": 1,
     "smartScore": 96,
     "actualScore": "2 - 2",
-    "explanation": "Rendimiento muy fiable de Maribor en su feudo (4 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Aluminij inclina con claridad la balanza estadística hacia el triunfo local.",
+    "explanation": "Rendimiento muy fiable de Maribor en su feudo (4 partidos sin caer en sus \u00faltimas 5 presentaciones). La brecha de generaci\u00f3n de ocasiones claras ante Aluminij inclina con claridad la balanza estad\u00edstica hacia el triunfo local.",
     "probability": 63.3,
     "bookmakerOdds": 1.4,
     "expectedValue": -11.4,
     "impliedProbability": 71.4,
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1550136-over-2.5-goles",
@@ -6455,11 +6496,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "0 - 2 (2 Goles)",
-    "explanation": "Venezia ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Lazio acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas áreas.",
+    "explanation": "Venezia ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras Lazio acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas \u00e1reas.",
     "probability": 61.1,
     "bookmakerOdds": 1.73,
     "expectedValue": 5.7,
-    "impliedProbability": 57.8
+    "impliedProbability": 57.8,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -6469,7 +6511,7 @@
         "winner": "home",
         "awayTeam": "Chapecoense-sc",
         "homeTeam": "Atletico-MG",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-03-23",
@@ -6477,7 +6519,7 @@
         "winner": "away",
         "awayTeam": "Atletico-MG",
         "homeTeam": "Chapecoense-sc",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2025-09-24",
@@ -6485,7 +6527,7 @@
         "winner": "home",
         "awayTeam": "Chapecoense-sc",
         "homeTeam": "Atletico-MG",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       }
     ],
     "edge": 3.4,
@@ -6493,7 +6535,7 @@
     "pick": "Atletico-MG",
     "isMcp": true,
     "match": "Atletico-MG vs Chapecoense-sc",
-    "league": "Brasileirão Série A",
+    "league": "Brasileir\u00e3o S\u00e9rie A",
     "market": "Ganador Local",
     "source": "mcp",
     "status": "lost",
@@ -6515,7 +6557,7 @@
         "isHome": false,
         "result": "L",
         "opponent": "Rival A",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-09-10",
@@ -6523,7 +6565,7 @@
         "isHome": true,
         "result": "D",
         "opponent": "Rival B",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-09-05",
@@ -6531,7 +6573,7 @@
         "isHome": false,
         "result": "W",
         "opponent": "Rival C",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-31",
@@ -6539,7 +6581,7 @@
         "isHome": true,
         "result": "L",
         "opponent": "Rival D",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-26",
@@ -6547,7 +6589,7 @@
         "isHome": false,
         "result": "D",
         "opponent": "Rival E",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       }
     ],
     "bookmaker": "Bet365",
@@ -6559,7 +6601,7 @@
         "isHome": true,
         "result": "W",
         "opponent": "Rival A",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-09-10",
@@ -6567,7 +6609,7 @@
         "isHome": false,
         "result": "W",
         "opponent": "Rival B",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-09-05",
@@ -6575,7 +6617,7 @@
         "isHome": true,
         "result": "L",
         "opponent": "Rival C",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-31",
@@ -6583,7 +6625,7 @@
         "isHome": false,
         "result": "W",
         "opponent": "Rival D",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-26",
@@ -6591,7 +6633,7 @@
         "isHome": true,
         "result": "W",
         "opponent": "Rival E",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       }
     ],
     "isMcpPick": true,
@@ -6606,13 +6648,14 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "1 - 1",
-    "explanation": "Diferencial cualitativo a favor de Atletico-MG (+283 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Chapecoense-sc.",
+    "explanation": "Diferencial cualitativo a favor de Atletico-MG (+283 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presi\u00f3n alta neutralizan el planteamiento defensivo de Chapecoense-sc.",
     "probability": 77,
     "bookmakerOdds": 1.36,
     "expectedValue": 4.7,
     "impliedProbability": 73.5,
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1552175-ambos-equipos-anotan",
@@ -6654,7 +6697,7 @@
     "source": "mcp",
     "status": "lost",
     "awayElo": 1538,
-    "country": "Países Bajos",
+    "country": "Pa\u00edses Bajos",
     "homeElo": 1556,
     "kickoff": "2026-09-19T14:00:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/205.png",
@@ -6754,7 +6797,7 @@
     "isTopPick": false,
     "modelOdds": 1.61,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 205,
     "confidence": "Alta",
     "homeTeamId": 195,
@@ -6762,11 +6805,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "0 - 1 (No)",
-    "explanation": "Eficacia bilateral en ataque: Willem II anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Fortuna Sittard cuenta con pegada foránea (1.2 xG). El patrón estadístico favorece la anotación mutua.",
+    "explanation": "Eficacia bilateral en ataque: Willem II anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Fortuna Sittard cuenta con pegada for\u00e1nea (1.2 xG). El patr\u00f3n estad\u00edstico favorece la anotaci\u00f3n mutua.",
     "probability": 62.1,
     "bookmakerOdds": 1.5,
     "expectedValue": -6.8,
-    "impliedProbability": 66.7
+    "impliedProbability": 66.7,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1570400-over-2.5-goles",
@@ -6808,7 +6852,7 @@
     "source": "mcp",
     "status": "won",
     "awayElo": 2010,
-    "country": "España",
+    "country": "Espa\u00f1a",
     "homeElo": 1690,
     "kickoff": "2026-09-19T14:00:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/529.png",
@@ -6916,11 +6960,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "1 - 3 (4 Goles)",
-    "explanation": "Propuesta vertical y transiciones dinámicas: Tanto Sevilla como Barcelona promedian más de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la línea de 2.5 goles.",
+    "explanation": "Propuesta vertical y transiciones din\u00e1micas: Tanto Sevilla como Barcelona promedian m\u00e1s de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la l\u00ednea de 2.5 goles.",
     "probability": 71.5,
     "bookmakerOdds": 1.41,
     "expectedValue": 0.8,
-    "impliedProbability": 70.9
+    "impliedProbability": 70.9,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1575507-over-2.5-goles",
@@ -7070,11 +7115,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "2 - 2 (4 Goles)",
-    "explanation": "Propuesta vertical y transiciones dinámicas: Tanto Sporting CP como Arouca promedian más de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la línea de 2.5 goles.",
+    "explanation": "Propuesta vertical y transiciones din\u00e1micas: Tanto Sporting CP como Arouca promedian m\u00e1s de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la l\u00ednea de 2.5 goles.",
     "probability": 68.7,
     "bookmakerOdds": 1.41,
     "expectedValue": 0.8,
-    "impliedProbability": 70.9
+    "impliedProbability": 70.9,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1598814-ganador-local",
@@ -7083,33 +7129,33 @@
         "date": "2026-07-21",
         "score": "2-1",
         "winner": "home",
-        "awayTeam": "Escorpiones Belén",
+        "awayTeam": "Escorpiones Bel\u00e9n",
         "homeTeam": "Puntarenas FC",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-03-23",
         "score": "0-2",
         "winner": "away",
         "awayTeam": "Puntarenas FC",
-        "homeTeam": "Escorpiones Belén",
-        "competition": "Primera División (Liga FPD)"
+        "homeTeam": "Escorpiones Bel\u00e9n",
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2025-09-24",
         "score": "1-1",
         "winner": "draw",
-        "awayTeam": "Escorpiones Belén",
+        "awayTeam": "Escorpiones Bel\u00e9n",
         "homeTeam": "Puntarenas FC",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       }
     ],
     "edge": 1,
     "odds": 1.36,
     "pick": "Puntarenas FC",
     "isMcp": true,
-    "match": "Puntarenas FC vs Escorpiones Belén",
-    "league": "Primera División (Liga FPD)",
+    "match": "Puntarenas FC vs Escorpiones Bel\u00e9n",
+    "league": "Primera Divisi\u00f3n (Liga FPD)",
     "market": "Ganador Local",
     "profit": 0.36,
     "result": "WON",
@@ -7120,7 +7166,7 @@
     "homeElo": 1626,
     "kickoff": "2026-09-19T18:00:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/17377.png",
-    "awayTeam": "Escorpiones Belén",
+    "awayTeam": "Escorpiones Bel\u00e9n",
     "fairOdds": 1.37,
     "homeLogo": "https://media.api-sports.io/football/teams/2045.png",
     "homeTeam": "Puntarenas FC",
@@ -7133,7 +7179,7 @@
         "isHome": true,
         "result": "W",
         "opponent": "Rival A",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-09-10",
@@ -7141,7 +7187,7 @@
         "isHome": false,
         "result": "L",
         "opponent": "Rival B",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-09-05",
@@ -7149,7 +7195,7 @@
         "isHome": true,
         "result": "L",
         "opponent": "Rival C",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-08-31",
@@ -7157,7 +7203,7 @@
         "isHome": false,
         "result": "D",
         "opponent": "Rival D",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-08-26",
@@ -7165,7 +7211,7 @@
         "isHome": true,
         "result": "W",
         "opponent": "Rival E",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       }
     ],
     "bookmaker": "Bet365",
@@ -7177,7 +7223,7 @@
         "isHome": true,
         "result": "D",
         "opponent": "Rival A",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-09-10",
@@ -7185,7 +7231,7 @@
         "isHome": false,
         "result": "W",
         "opponent": "Rival B",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-09-05",
@@ -7193,7 +7239,7 @@
         "isHome": true,
         "result": "W",
         "opponent": "Rival C",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-08-31",
@@ -7201,7 +7247,7 @@
         "isHome": false,
         "result": "L",
         "opponent": "Rival D",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-08-26",
@@ -7209,7 +7255,7 @@
         "isHome": true,
         "result": "D",
         "opponent": "Rival E",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       }
     ],
     "isMcpPick": true,
@@ -7224,11 +7270,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "1 - 0",
-    "explanation": "Diferencial cualitativo a favor de Puntarenas FC (+134 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Escorpiones Belén.",
+    "explanation": "Diferencial cualitativo a favor de Puntarenas FC (+134 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presi\u00f3n alta neutralizan el planteamiento defensivo de Escorpiones Bel\u00e9n.",
     "probability": 73,
     "bookmakerOdds": 1.36,
     "expectedValue": -0.7,
-    "impliedProbability": 73.5
+    "impliedProbability": 73.5,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -7259,19 +7306,19 @@
     ],
     "edge": 6.3,
     "odds": 1.43,
-    "pick": "Over 7.5 Córners",
+    "pick": "Over 7.5 C\u00f3rners",
     "isMcp": true,
     "isNew": true,
     "match": "Deportivo Garcilaso vs Universitario",
     "league": "Liga 1",
-    "market": "Córners",
+    "market": "C\u00f3rners",
     "profit": 0.43,
     "result": "WON",
     "source": "mcp",
     "status": "won",
     "addedAt": "2026-09-19T22:42:24.686Z",
     "awayElo": 1616,
-    "country": "Perú",
+    "country": "Per\u00fa",
     "homeElo": 1585,
     "kickoff": "2026-09-19T18:00:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/2540.png",
@@ -7378,8 +7425,8 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/281.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "actualScore": "6 - 4 (10 Córners)",
-    "explanation": "Volumen constante por las bandas: El cruce táctico entre Deportivo Garcilaso (5.9 córners de media en casa) y Universitario (4.6 foráneos) proyecta 10.5 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
+    "actualScore": "6 - 4 (10 C\u00f3rners)",
+    "explanation": "Volumen constante por las bandas: El cruce t\u00e1ctico entre Deportivo Garcilaso (5.9 c\u00f3rners de media en casa) y Universitario (4.6 for\u00e1neos) proyecta 10.5 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
     "probability": 76.2,
     "bookmakerOdds": 1.43,
     "expectedValue": 9,
@@ -7406,7 +7453,7 @@
           "expected_margin": 3.47,
           "qualification_status": "REJECTED_ODDS",
           "rejection_reasons": [
-            "Cuota disponible inferior al mínimo requerido: @1.20 < @1.25",
+            "Cuota disponible inferior al m\u00ednimo requerido: @1.20 < @1.25",
             "Smart Edge insuficiente: +1.1% < +4.0%"
           ]
         },
@@ -7489,7 +7536,8 @@
       "recommendedLine": 7.5
     },
     "isNewlyDiscovered": true,
-    "impliedProbability": 69.9
+    "impliedProbability": 69.9,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -7532,7 +7580,7 @@
     "status": "won",
     "addedAt": "2026-09-19T22:42:24.686Z",
     "awayElo": 1532,
-    "country": "México",
+    "country": "M\u00e9xico",
     "homeElo": 1880,
     "kickoff": "2026-09-19T18:00:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/2288.png",
@@ -7640,12 +7688,13 @@
     "leagueTier": 1,
     "smartScore": 94,
     "actualScore": "3 - 1 (4 Goles)",
-    "explanation": "Alta expectativa anotadora: Atletico San Luis genera 1.6 xG en casa y Necaxa promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
+    "explanation": "Alta expectativa anotadora: Atletico San Luis genera 1.6 xG en casa y Necaxa promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o m\u00e1s tantos.",
     "probability": 60.9,
     "bookmakerOdds": 1.7,
     "expectedValue": 3.6,
     "isNewlyDiscovered": true,
-    "impliedProbability": 58.8
+    "impliedProbability": 58.8,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -7688,7 +7737,7 @@
     "status": "lost",
     "addedAt": "2026-09-19T22:42:24.686Z",
     "awayElo": 1516,
-    "country": "México",
+    "country": "M\u00e9xico",
     "homeElo": 1621,
     "kickoff": "2026-09-19T18:00:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/2286.png",
@@ -7796,12 +7845,13 @@
     "leagueTier": 1,
     "smartScore": 83,
     "actualScore": "1 - 1",
-    "explanation": "Rendimiento muy fiable de Atlas en su feudo (4 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante U.N.A.M. - Pumas inclina con claridad la balanza estadística hacia el triunfo local.",
+    "explanation": "Rendimiento muy fiable de Atlas en su feudo (4 partidos sin caer en sus \u00faltimas 5 presentaciones). La brecha de generaci\u00f3n de ocasiones claras ante U.N.A.M. - Pumas inclina con claridad la balanza estad\u00edstica hacia el triunfo local.",
     "probability": 51.4,
     "bookmakerOdds": 2.38,
     "expectedValue": 22.3,
     "isNewlyDiscovered": true,
-    "impliedProbability": 42
+    "impliedProbability": 42,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1490484-over-2.5-goles",
@@ -7949,13 +7999,14 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "4 - 2 (6 Goles)",
-    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
+    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
     "probability": 66,
     "bookmakerOdds": 1.36,
     "expectedValue": -10.3,
     "impliedProbability": 73.5,
     "result": "WON",
-    "profit": 0.36
+    "profit": 0.36,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -7965,7 +8016,7 @@
         "winner": "home",
         "awayTeam": "Coritiba",
         "homeTeam": "Vasco DA Gama",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-03-23",
@@ -7973,7 +8024,7 @@
         "winner": "away",
         "awayTeam": "Vasco DA Gama",
         "homeTeam": "Coritiba",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2025-09-24",
@@ -7981,7 +8032,7 @@
         "winner": "draw",
         "awayTeam": "Coritiba",
         "homeTeam": "Vasco DA Gama",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       }
     ],
     "edge": 1,
@@ -7989,7 +8040,7 @@
     "pick": "Vasco DA Gama",
     "isMcp": true,
     "match": "Vasco DA Gama vs Coritiba",
-    "league": "Brasileirão Série A",
+    "league": "Brasileir\u00e3o S\u00e9rie A",
     "market": "Ganador Local",
     "source": "mcp",
     "status": "won",
@@ -8011,7 +8062,7 @@
         "isHome": false,
         "result": "W",
         "opponent": "Rival A",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-09-10",
@@ -8019,7 +8070,7 @@
         "isHome": true,
         "result": "W",
         "opponent": "Rival B",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-09-05",
@@ -8027,7 +8078,7 @@
         "isHome": false,
         "result": "L",
         "opponent": "Rival C",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-31",
@@ -8035,7 +8086,7 @@
         "isHome": true,
         "result": "D",
         "opponent": "Rival D",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-26",
@@ -8043,7 +8094,7 @@
         "isHome": false,
         "result": "W",
         "opponent": "Rival E",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       }
     ],
     "bookmaker": "Bet365",
@@ -8055,7 +8106,7 @@
         "isHome": false,
         "result": "L",
         "opponent": "Rival A",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-09-10",
@@ -8063,7 +8114,7 @@
         "isHome": true,
         "result": "D",
         "opponent": "Rival B",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-09-05",
@@ -8071,7 +8122,7 @@
         "isHome": false,
         "result": "W",
         "opponent": "Rival C",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-31",
@@ -8079,7 +8130,7 @@
         "isHome": true,
         "result": "W",
         "opponent": "Rival D",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-26",
@@ -8087,7 +8138,7 @@
         "isHome": false,
         "result": "L",
         "opponent": "Rival E",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       }
     ],
     "isMcpPick": true,
@@ -8102,13 +8153,14 @@
     "leagueTier": 1,
     "smartScore": 97,
     "actualScore": "5 - 0",
-    "explanation": "Rendimiento muy fiable de Vasco DA Gama en su feudo (4 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Coritiba inclina con claridad la balanza estadística hacia el triunfo local.",
+    "explanation": "Rendimiento muy fiable de Vasco DA Gama en su feudo (4 partidos sin caer en sus \u00faltimas 5 presentaciones). La brecha de generaci\u00f3n de ocasiones claras ante Coritiba inclina con claridad la balanza estad\u00edstica hacia el triunfo local.",
     "probability": 63.7,
     "bookmakerOdds": 1.45,
     "expectedValue": -7.6,
     "impliedProbability": 69,
     "result": "WON",
-    "profit": 0.45
+    "profit": 0.45,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1490482-ambos-equipos-anotan",
@@ -8250,19 +8302,20 @@
     "isTopPick": false,
     "modelOdds": 1.59,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 1616,
     "confidence": "Alta",
     "homeTeamId": 1596,
     "leagueLogo": "https://media.api-sports.io/football/leagues/253.png",
     "leagueTier": 1,
     "smartScore": 95,
-    "actualScore": "2 - 2 (Ambos Sí)",
-    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
+    "actualScore": "2 - 2 (Ambos S\u00ed)",
+    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porter\u00edas por la postura ofensiva de sus t\u00e9cnicos y las desatenciones en repliegue.",
     "probability": 62.9,
     "bookmakerOdds": 1.44,
     "expectedValue": -9.4,
-    "impliedProbability": 69.4
+    "impliedProbability": 69.4,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1490485-ambos-equipos-anotan",
@@ -8404,19 +8457,20 @@
     "isTopPick": false,
     "modelOdds": 1.64,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 18310,
     "confidence": "Alta",
     "homeTeamId": 1615,
     "leagueLogo": "https://media.api-sports.io/football/leagues/253.png",
     "leagueTier": 1,
     "smartScore": 93,
-    "actualScore": "1 - 2 (Ambos Sí)",
-    "explanation": "Tanto DC United como Charlotte han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
+    "actualScore": "1 - 2 (Ambos S\u00ed)",
+    "explanation": "Tanto DC United como Charlotte han visto puerta en 4 de sus \u00faltimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
     "probability": 61.1,
     "bookmakerOdds": 1.5,
     "expectedValue": -8.3,
-    "impliedProbability": 66.7
+    "impliedProbability": 66.7,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -8426,7 +8480,7 @@
         "awayTeam": "Coritiba",
         "score": "2-1",
         "winner": "home",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-03-23",
@@ -8434,7 +8488,7 @@
         "awayTeam": "Vasco DA Gama",
         "score": "0-2",
         "winner": "away",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2025-09-24",
@@ -8442,17 +8496,17 @@
         "awayTeam": "Coritiba",
         "score": "1-1",
         "winner": "draw",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       }
     ],
     "edge": 2.9,
     "odds": 1.22,
-    "pick": "Over 6.5 Córners",
+    "pick": "Over 6.5 C\u00f3rners",
     "isMcp": true,
     "isNew": true,
     "match": "Vasco DA Gama vs Coritiba",
-    "league": "Brasileirão Série A",
-    "market": "Córners",
+    "league": "Brasileir\u00e3o S\u00e9rie A",
+    "market": "C\u00f3rners",
     "profit": 0.22,
     "result": "WON",
     "source": "mcp",
@@ -8476,7 +8530,7 @@
         "isHome": false,
         "score": "3-1",
         "result": "W",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-09-10",
@@ -8484,7 +8538,7 @@
         "isHome": true,
         "score": "2-1",
         "result": "W",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-09-05",
@@ -8492,7 +8546,7 @@
         "isHome": false,
         "score": "0-3",
         "result": "L",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-31",
@@ -8500,7 +8554,7 @@
         "isHome": true,
         "score": "1-2",
         "result": "D",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-26",
@@ -8508,7 +8562,7 @@
         "isHome": false,
         "score": "3-1",
         "result": "W",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       }
     ],
     "bookmaker": "Bet365",
@@ -8520,7 +8574,7 @@
         "isHome": false,
         "score": "0-3",
         "result": "L",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-09-10",
@@ -8528,7 +8582,7 @@
         "isHome": true,
         "score": "1-2",
         "result": "D",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-09-05",
@@ -8536,7 +8590,7 @@
         "isHome": false,
         "score": "3-1",
         "result": "W",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-31",
@@ -8544,7 +8598,7 @@
         "isHome": true,
         "score": "2-1",
         "result": "W",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-26",
@@ -8552,7 +8606,7 @@
         "isHome": false,
         "score": "0-3",
         "result": "L",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       }
     ],
     "isMcpPick": true,
@@ -8566,8 +8620,8 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/71.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "actualScore": "6 - 4 (10 Córners)",
-    "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.5 córners totales.",
+    "actualScore": "6 - 4 (10 C\u00f3rners)",
+    "explanation": "Presi\u00f3n ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulaci\u00f3n cuantitativa respalda la l\u00ednea de C\u00f3rners con una media esperada de 10.5 c\u00f3rners totales.",
     "probability": 84.9,
     "bookmakerOdds": 1.22,
     "expectedValue": 3.6,
@@ -8611,7 +8665,7 @@
           "expected_margin": 2.48,
           "qualification_status": "REJECTED_ODDS",
           "rejection_reasons": [
-            "Cuota disponible inferior al mínimo requerido: @1.18 < @1.30",
+            "Cuota disponible inferior al m\u00ednimo requerido: @1.18 < @1.30",
             "Smart Edge insuficiente: +-7.4% < +5.0%"
           ]
         },
@@ -8632,7 +8686,7 @@
           "qualification_status": "REJECTED_PROB",
           "rejection_reasons": [
             "Probabilidad del modelo inferior al umbral: 67.6% < 72.0%",
-            "Cuota disponible inferior al mínimo requerido: @1.36 < @1.40",
+            "Cuota disponible inferior al m\u00ednimo requerido: @1.36 < @1.40",
             "Smart Edge insuficiente: +-5.9% < +6.0%"
           ]
         },
@@ -8681,7 +8735,8 @@
       "recommendedLine": 6.5
     },
     "isNewlyDiscovered": true,
-    "impliedProbability": 82
+    "impliedProbability": 82,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -8832,12 +8887,13 @@
     "leagueTier": 1,
     "smartScore": 79,
     "actualScore": "0 - 2",
-    "explanation": "Rendimiento muy fiable de CF Montreal en su feudo (4 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Columbus Crew inclina con claridad la balanza estadística hacia el triunfo local.",
+    "explanation": "Rendimiento muy fiable de CF Montreal en su feudo (4 partidos sin caer en sus \u00faltimas 5 presentaciones). La brecha de generaci\u00f3n de ocasiones claras ante Columbus Crew inclina con claridad la balanza estad\u00edstica hacia el triunfo local.",
     "probability": 48.4,
     "bookmakerOdds": 2.7,
     "expectedValue": 30.6,
     "isNewlyDiscovered": true,
-    "impliedProbability": 37
+    "impliedProbability": 37,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1490486-over-2.5-goles",
@@ -8987,11 +9043,12 @@
     "leagueTier": 1,
     "smartScore": 97,
     "actualScore": "2 - 3 (5 Goles)",
-    "explanation": "Minnesota United FC ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Los Angeles Galaxy acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas áreas.",
+    "explanation": "Minnesota United FC ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras Los Angeles Galaxy acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas \u00e1reas.",
     "probability": 65.7,
     "bookmakerOdds": 1.44,
     "expectedValue": -7.3,
-    "impliedProbability": 69.4
+    "impliedProbability": 69.4,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1490490-ganador-local",
@@ -9141,11 +9198,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "3 - 1",
-    "explanation": "St. Louis City impone una marcada solvencia como anfitrión (3 triunfos en sus últimos 5 compromisos) y promedia 3.0 xG en casa. Su dominio territorial y solidez defensiva ante un Toronto FC que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+    "explanation": "St. Louis City impone una marcada solvencia como anfitri\u00f3n (3 triunfos en sus \u00faltimos 5 compromisos) y promedia 3.0 xG en casa. Su dominio territorial y solidez defensiva ante un Toronto FC que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
     "probability": 65.1,
     "bookmakerOdds": 1.65,
     "expectedValue": 9.1,
-    "impliedProbability": 60.6
+    "impliedProbability": 60.6,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1490488-over-2.5-goles",
@@ -9292,14 +9350,15 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/253.png",
     "leagueTier": 1,
     "smartScore": 96,
-    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
+    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
     "probability": 63.2,
     "bookmakerOdds": 1.4,
     "expectedValue": -11.5,
     "impliedProbability": 71.4,
     "actualScore": "3 - 4 (7 Goles)",
     "result": "WON",
-    "profit": 0.4
+    "profit": 0.4,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1490487-ambos-equipos-anotan",
@@ -9439,21 +9498,22 @@
     "isTopPick": false,
     "modelOdds": 1.63,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 2242,
     "confidence": "Alta",
     "homeTeamId": 1600,
     "leagueLogo": "https://media.api-sports.io/football/leagues/253.png",
     "leagueTier": 1,
     "smartScore": 93,
-    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
+    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porter\u00edas por la postura ofensiva de sus t\u00e9cnicos y las desatenciones en repliegue.",
     "probability": 61.2,
     "bookmakerOdds": 1.5,
     "expectedValue": -8.2,
     "impliedProbability": 66.7,
-    "actualScore": "2 - 2 (Ambos Sí)",
+    "actualScore": "2 - 2 (Ambos S\u00ed)",
     "result": "WON",
-    "profit": 0.5
+    "profit": 0.5,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1490489-ambos-equipos-anotan",
@@ -9593,47 +9653,48 @@
     "isTopPick": false,
     "modelOdds": 1.69,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 16489,
     "confidence": "Alta",
     "homeTeamId": 1597,
     "leagueLogo": "https://media.api-sports.io/football/leagues/253.png",
     "leagueTier": 1,
     "smartScore": 91,
-    "explanation": "Tanto FC Dallas como Austin han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
+    "explanation": "Tanto FC Dallas como Austin han visto puerta en 4 de sus \u00faltimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
     "probability": 59.1,
     "bookmakerOdds": 1.57,
     "expectedValue": -7.2,
     "impliedProbability": 63.7,
     "actualScore": "0 - 0 (No)",
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   },
   {
     "h2h": [
       {
         "date": "2026-07-22",
-        "homeTeam": "Cancún",
+        "homeTeam": "Canc\u00fan",
         "awayTeam": "Alebrijes de Oaxaca",
         "score": "1-2",
         "winner": "away",
-        "competition": "Liga de Expansión MX"
+        "competition": "Liga de Expansi\u00f3n MX"
       },
       {
         "date": "2026-03-24",
         "homeTeam": "Alebrijes de Oaxaca",
-        "awayTeam": "Cancún",
+        "awayTeam": "Canc\u00fan",
         "score": "2-0",
         "winner": "home",
-        "competition": "Liga de Expansión MX"
+        "competition": "Liga de Expansi\u00f3n MX"
       },
       {
         "date": "2025-09-25",
-        "homeTeam": "Cancún",
+        "homeTeam": "Canc\u00fan",
         "awayTeam": "Alebrijes de Oaxaca",
         "score": "1-1",
         "winner": "draw",
-        "competition": "Liga de Expansión MX"
+        "competition": "Liga de Expansi\u00f3n MX"
       }
     ],
     "edge": 1,
@@ -9641,21 +9702,21 @@
     "pick": "Alebrijes de Oaxaca",
     "isMcp": true,
     "isNew": true,
-    "match": "Cancún vs Alebrijes de Oaxaca",
-    "league": "Liga de Expansión MX",
+    "match": "Canc\u00fan vs Alebrijes de Oaxaca",
+    "league": "Liga de Expansi\u00f3n MX",
     "market": "Ganador Visitante",
     "source": "mcp",
     "status": "lost",
     "addedAt": "2026-09-19T22:42:24.686Z",
     "awayElo": 1627,
-    "country": "México",
+    "country": "M\u00e9xico",
     "homeElo": 1493,
     "kickoff": "2026-09-19T20:00:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/2300.png",
     "awayTeam": "Alebrijes de Oaxaca",
     "fairOdds": 1.6,
     "homeLogo": "https://media.api-sports.io/football/teams/14276.png",
-    "homeTeam": "Cancún",
+    "homeTeam": "Canc\u00fan",
     "leagueId": 263,
     "timeSlot": "night",
     "awayLast5": [
@@ -9665,7 +9726,7 @@
         "isHome": false,
         "score": "0-3",
         "result": "L",
-        "competition": "Liga de Expansión MX"
+        "competition": "Liga de Expansi\u00f3n MX"
       },
       {
         "date": "2026-09-11",
@@ -9673,7 +9734,7 @@
         "isHome": true,
         "score": "1-2",
         "result": "D",
-        "competition": "Liga de Expansión MX"
+        "competition": "Liga de Expansi\u00f3n MX"
       },
       {
         "date": "2026-09-06",
@@ -9681,7 +9742,7 @@
         "isHome": false,
         "score": "3-1",
         "result": "W",
-        "competition": "Liga de Expansión MX"
+        "competition": "Liga de Expansi\u00f3n MX"
       },
       {
         "date": "2026-09-01",
@@ -9689,7 +9750,7 @@
         "isHome": true,
         "score": "1-2",
         "result": "L",
-        "competition": "Liga de Expansión MX"
+        "competition": "Liga de Expansi\u00f3n MX"
       },
       {
         "date": "2026-08-27",
@@ -9697,7 +9758,7 @@
         "isHome": false,
         "score": "1-2",
         "result": "D",
-        "competition": "Liga de Expansión MX"
+        "competition": "Liga de Expansi\u00f3n MX"
       }
     ],
     "bookmaker": "Bet365",
@@ -9709,7 +9770,7 @@
         "isHome": false,
         "score": "1-2",
         "result": "D",
-        "competition": "Liga de Expansión MX"
+        "competition": "Liga de Expansi\u00f3n MX"
       },
       {
         "date": "2026-09-11",
@@ -9717,7 +9778,7 @@
         "isHome": true,
         "score": "2-1",
         "result": "W",
-        "competition": "Liga de Expansión MX"
+        "competition": "Liga de Expansi\u00f3n MX"
       },
       {
         "date": "2026-09-06",
@@ -9725,7 +9786,7 @@
         "isHome": false,
         "score": "1-3",
         "result": "L",
-        "competition": "Liga de Expansión MX"
+        "competition": "Liga de Expansi\u00f3n MX"
       },
       {
         "date": "2026-09-01",
@@ -9733,7 +9794,7 @@
         "isHome": true,
         "score": "1-2",
         "result": "D",
-        "competition": "Liga de Expansión MX"
+        "competition": "Liga de Expansi\u00f3n MX"
       },
       {
         "date": "2026-08-27",
@@ -9741,7 +9802,7 @@
         "isHome": false,
         "score": "1-2",
         "result": "W",
-        "competition": "Liga de Expansión MX"
+        "competition": "Liga de Expansi\u00f3n MX"
       }
     ],
     "isMcpPick": true,
@@ -9755,7 +9816,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/263.png",
     "leagueTier": 2,
     "smartScore": 70,
-    "explanation": "Diferencial de calidad y estructura a favor de Alebrijes de Oaxaca (+134 Elo). El conjunto visitante impone condiciones en duelos individuales y supera en volumen de remates al conjunto anfitrión.",
+    "explanation": "Diferencial de calidad y estructura a favor de Alebrijes de Oaxaca (+134 Elo). El conjunto visitante impone condiciones en duelos individuales y supera en volumen de remates al conjunto anfitri\u00f3n.",
     "probability": 62.7,
     "bookmakerOdds": 1.58,
     "expectedValue": -1,
@@ -9763,7 +9824,8 @@
     "impliedProbability": 63.3,
     "actualScore": "3 - 0",
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -9804,7 +9866,7 @@
     "status": "lost",
     "addedAt": "2026-09-19T22:42:24.686Z",
     "awayElo": 1561,
-    "country": "Perú",
+    "country": "Per\u00fa",
     "homeElo": 1595,
     "kickoff": "2026-09-19T20:15:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/2544.png",
@@ -9911,7 +9973,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/281.png",
     "leagueTier": 1,
     "smartScore": 90,
-    "explanation": "Rendimiento muy fiable de FBC Melgar en su feudo (4 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Sport Boys inclina con claridad la balanza estadística hacia el triunfo local.",
+    "explanation": "Rendimiento muy fiable de FBC Melgar en su feudo (4 partidos sin caer en sus \u00faltimas 5 presentaciones). La brecha de generaci\u00f3n de ocasiones claras ante Sport Boys inclina con claridad la balanza estad\u00edstica hacia el triunfo local.",
     "probability": 59,
     "bookmakerOdds": 1.53,
     "expectedValue": -9.7,
@@ -9919,7 +9981,8 @@
     "impliedProbability": 65.4,
     "actualScore": "1 - 1",
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1490492-over-2.5-goles",
@@ -10066,14 +10129,15 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/253.png",
     "leagueTier": 1,
     "smartScore": 94,
-    "explanation": "Propuesta vertical y transiciones dinámicas: Tanto Real Salt Lake como Vancouver Whitecaps promedian más de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la línea de 2.5 goles.",
+    "explanation": "Propuesta vertical y transiciones din\u00e1micas: Tanto Real Salt Lake como Vancouver Whitecaps promedian m\u00e1s de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la l\u00ednea de 2.5 goles.",
     "probability": 61.5,
     "bookmakerOdds": 1.5,
     "expectedValue": -7.7,
     "impliedProbability": 66.7,
     "actualScore": "0 - 3 (3 Goles)",
     "result": "WON",
-    "profit": 0.5
+    "profit": 0.5,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1490493-over-2.5-goles",
@@ -10220,14 +10284,15 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/253.png",
     "leagueTier": 1,
     "smartScore": 93,
-    "explanation": "Nashville SC ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Chicago Fire acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas áreas.",
+    "explanation": "Nashville SC ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras Chicago Fire acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas \u00e1reas.",
     "probability": 61.3,
     "bookmakerOdds": 1.48,
     "expectedValue": -9.2,
     "impliedProbability": 67.6,
     "actualScore": "3 - 0 (3 Goles)",
     "result": "WON",
-    "profit": 0.48
+    "profit": 0.48,
+    "sport": "football"
   },
   {
     "id": "pred-2026-09-19-1490491-over-2.5-goles",
@@ -10374,14 +10439,15 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/253.png",
     "leagueTier": 1,
     "smartScore": 91,
-    "explanation": "Propuesta vertical y transiciones dinámicas: Tanto Colorado Rapids como Seattle Sounders promedian más de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la línea de 2.5 goles.",
+    "explanation": "Propuesta vertical y transiciones din\u00e1micas: Tanto Colorado Rapids como Seattle Sounders promedian m\u00e1s de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la l\u00ednea de 2.5 goles.",
     "probability": 59.5,
     "bookmakerOdds": 1.6,
     "expectedValue": -4.8,
     "impliedProbability": 62.5,
     "actualScore": "3 - 3 (6 Goles)",
     "result": "WON",
-    "profit": 0.6
+    "profit": 0.6,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -10529,7 +10595,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/253.png",
     "leagueTier": 1,
     "smartScore": 85,
-    "explanation": "Diferencial cualitativo a favor de Portland Timbers (+67 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Atlanta United FC.",
+    "explanation": "Diferencial cualitativo a favor de Portland Timbers (+67 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presi\u00f3n alta neutralizan el planteamiento defensivo de Atlanta United FC.",
     "probability": 53.8,
     "bookmakerOdds": 1.95,
     "expectedValue": 5,
@@ -10537,6 +10603,7 @@
     "impliedProbability": 51.3,
     "actualScore": "0 - 1",
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   }
 ]

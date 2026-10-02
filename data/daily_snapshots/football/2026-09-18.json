@@ -146,11 +146,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "1 - 0 (1 Goles)",
-    "explanation": "Polessya ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Kryvbas KR acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas áreas.",
+    "explanation": "Polessya ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras Kryvbas KR acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas \u00e1reas.",
     "probability": 61.5,
     "bookmakerOdds": 1.5,
     "expectedValue": -7.8,
-    "impliedProbability": 66.7
+    "impliedProbability": 66.7,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -299,11 +300,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "3 - 0 (3 Goles)",
-    "explanation": "Hapoel Tel Aviv ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Hapoel Petah Tikva acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas áreas.",
+    "explanation": "Hapoel Tel Aviv ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras Hapoel Petah Tikva acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas \u00e1reas.",
     "probability": 56.1,
     "bookmakerOdds": 1.67,
     "expectedValue": -6.3,
-    "impliedProbability": 59.9
+    "impliedProbability": 59.9,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -452,11 +454,12 @@
     "leagueTier": 1,
     "smartScore": 93,
     "actualScore": "1 - 1 (2 Goles)",
-    "explanation": "Alta expectativa anotadora: Lahti genera 1.6 xG en casa y FF Jaro promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
+    "explanation": "Alta expectativa anotadora: Lahti genera 1.6 xG en casa y FF Jaro promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o m\u00e1s tantos.",
     "probability": 60.1,
     "bookmakerOdds": 1.68,
     "expectedValue": 1,
-    "impliedProbability": 59.5
+    "impliedProbability": 59.5,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -605,11 +608,12 @@
     "leagueTier": 1,
     "smartScore": 91,
     "actualScore": "2 - 1",
-    "explanation": "Solidez posicional y eficacia en área propia: SJK concede menos de 0.9 xG de local, mientras que Mariehamn muestra dificultades para generar peligro constante a domicilio (1.2 xG foráneo).",
+    "explanation": "Solidez posicional y eficacia en \u00e1rea propia: SJK concede menos de 0.9 xG de local, mientras que Mariehamn muestra dificultades para generar peligro constante a domicilio (1.2 xG for\u00e1neo).",
     "probability": 59.2,
     "bookmakerOdds": 1.67,
     "expectedValue": -1.2,
-    "impliedProbability": 59.9
+    "impliedProbability": 59.9,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -758,11 +762,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "0 - 1 (1 Goles)",
-    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
+    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
     "probability": 71.5,
     "bookmakerOdds": 1.43,
     "expectedValue": 2.2,
-    "impliedProbability": 69.9
+    "impliedProbability": 69.9,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -911,11 +916,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "5 - 1 (6 Goles)",
-    "explanation": "Propuesta vertical y transiciones dinámicas: Tanto ML Vitebsk como Arsenal promedian más de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la línea de 2.5 goles.",
+    "explanation": "Propuesta vertical y transiciones din\u00e1micas: Tanto ML Vitebsk como Arsenal promedian m\u00e1s de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la l\u00ednea de 2.5 goles.",
     "probability": 67.2,
     "bookmakerOdds": 1.43,
     "expectedValue": -3.9,
-    "impliedProbability": 69.9
+    "impliedProbability": 69.9,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -923,24 +929,24 @@
         "date": "2026-07-20",
         "score": "1-2",
         "winner": "away",
-        "awayTeam": "Wieczysta Kraków",
-        "homeTeam": "Widzew Łódź",
+        "awayTeam": "Wieczysta Krak\u00f3w",
+        "homeTeam": "Widzew \u0141\u00f3d\u017a",
         "competition": "Ekstraklasa"
       },
       {
         "date": "2026-03-22",
         "score": "2-0",
         "winner": "home",
-        "awayTeam": "Widzew Łódź",
-        "homeTeam": "Wieczysta Kraków",
+        "awayTeam": "Widzew \u0141\u00f3d\u017a",
+        "homeTeam": "Wieczysta Krak\u00f3w",
         "competition": "Ekstraklasa"
       },
       {
         "date": "2025-09-23",
         "score": "1-1",
         "winner": "draw",
-        "awayTeam": "Wieczysta Kraków",
-        "homeTeam": "Widzew Łódź",
+        "awayTeam": "Wieczysta Krak\u00f3w",
+        "homeTeam": "Widzew \u0141\u00f3d\u017a",
         "competition": "Ekstraklasa"
       }
     ],
@@ -948,7 +954,7 @@
     "odds": 1.53,
     "pick": "Ambos Equipos Anotan",
     "isMcp": true,
-    "match": "Widzew Łódź vs Wieczysta Kraków",
+    "match": "Widzew \u0141\u00f3d\u017a vs Wieczysta Krak\u00f3w",
     "league": "Ekstraklasa",
     "market": "Ambos Equipos Anotan",
     "profit": 0.53,
@@ -960,10 +966,10 @@
     "homeElo": 1568,
     "kickoff": "2026-09-18T11:30:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/17115.png",
-    "awayTeam": "Wieczysta Kraków",
+    "awayTeam": "Wieczysta Krak\u00f3w",
     "fairOdds": 1.72,
     "homeLogo": "https://media.api-sports.io/football/teams/6962.png",
-    "homeTeam": "Widzew Łódź",
+    "homeTeam": "Widzew \u0141\u00f3d\u017a",
     "leagueId": 106,
     "timeSlot": "morning",
     "awayLast5": [
@@ -1056,19 +1062,20 @@
     "isTopPick": false,
     "modelOdds": 1.72,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 17115,
     "confidence": "Alta",
     "homeTeamId": 6962,
     "leagueLogo": "https://media.api-sports.io/football/leagues/106.png",
     "leagueTier": 1,
     "smartScore": 89,
-    "actualScore": "2 - 2 (Ambos Sí)",
-    "explanation": "Eficacia bilateral en ataque: Widzew Łódź anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Wieczysta Kraków cuenta con pegada foránea (1.2 xG). El patrón estadístico favorece la anotación mutua.",
+    "actualScore": "2 - 2 (Ambos S\u00ed)",
+    "explanation": "Eficacia bilateral en ataque: Widzew \u0141\u00f3d\u017a anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Wieczysta Krak\u00f3w cuenta con pegada for\u00e1nea (1.2 xG). El patr\u00f3n estad\u00edstico favorece la anotaci\u00f3n mutua.",
     "probability": 58.1,
     "bookmakerOdds": 1.53,
     "expectedValue": -11.2,
-    "impliedProbability": 65.4
+    "impliedProbability": 65.4,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -1217,11 +1224,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "1 - 3",
-    "explanation": "Sarpsborg 08 FF impone una marcada solvencia como anfitrión (3 triunfos en sus últimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un KFUM Oslo que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+    "explanation": "Sarpsborg 08 FF impone una marcada solvencia como anfitri\u00f3n (3 triunfos en sus \u00faltimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un KFUM Oslo que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
     "probability": 67.5,
     "bookmakerOdds": 1.53,
     "expectedValue": 3.3,
-    "impliedProbability": 65.4
+    "impliedProbability": 65.4,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -1370,11 +1378,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "3 - 0 (3 Goles)",
-    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
+    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
     "probability": 64.2,
     "bookmakerOdds": 1.4,
     "expectedValue": -10.2,
-    "impliedProbability": 71.4
+    "impliedProbability": 71.4,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -1415,7 +1424,7 @@
     "source": "mcp",
     "status": "lost",
     "awayElo": 1645,
-    "country": "Países Bajos",
+    "country": "Pa\u00edses Bajos",
     "homeElo": 1515,
     "kickoff": "2026-09-18T13:00:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/193.png",
@@ -1515,7 +1524,7 @@
     "isTopPick": false,
     "modelOdds": 1.62,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 193,
     "confidence": "Alta",
     "homeTeamId": 202,
@@ -1523,11 +1532,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "3 - 0 (No)",
-    "explanation": "Eficacia bilateral en ataque: Groningen anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que PEC Zwolle cuenta con pegada foránea (1.2 xG). El patrón estadístico favorece la anotación mutua.",
+    "explanation": "Eficacia bilateral en ataque: Groningen anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que PEC Zwolle cuenta con pegada for\u00e1nea (1.2 xG). El patr\u00f3n estad\u00edstico favorece la anotaci\u00f3n mutua.",
     "probability": 61.6,
     "bookmakerOdds": 1.5,
     "expectedValue": -7.6,
-    "impliedProbability": 66.7
+    "impliedProbability": 66.7,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -1676,11 +1686,12 @@
     "leagueTier": 1,
     "smartScore": 92,
     "actualScore": "2 - 2 (4 Goles)",
-    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
+    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
     "probability": 59.3,
     "bookmakerOdds": 1.75,
     "expectedValue": 3.8,
-    "impliedProbability": 57.1
+    "impliedProbability": 57.1,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -1829,11 +1840,12 @@
     "leagueTier": 1,
     "smartScore": 95,
     "actualScore": "2 - 1",
-    "explanation": "Solidez posicional y eficacia en área propia: Wisla Krakow concede menos de 0.9 xG de local, mientras que Slask Wroclaw muestra dificultades para generar peligro constante a domicilio (1.2 xG foráneo).",
+    "explanation": "Solidez posicional y eficacia en \u00e1rea propia: Wisla Krakow concede menos de 0.9 xG de local, mientras que Slask Wroclaw muestra dificultades para generar peligro constante a domicilio (1.2 xG for\u00e1neo).",
     "probability": 62.5,
     "bookmakerOdds": 1.5,
     "expectedValue": -6.3,
-    "impliedProbability": 66.7
+    "impliedProbability": 66.7,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -1982,11 +1994,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "2 - 1 (3 Goles)",
-    "explanation": "Monaco ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Lens acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas áreas.",
+    "explanation": "Monaco ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras Lens acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas \u00e1reas.",
     "probability": 64.8,
     "bookmakerOdds": 1.57,
     "expectedValue": 1.7,
-    "impliedProbability": 63.7
+    "impliedProbability": 63.7,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -2127,19 +2140,20 @@
     "isTopPick": false,
     "modelOdds": 1.68,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 3854,
     "confidence": "Alta",
     "homeTeamId": 584,
     "leagueLogo": "https://media.api-sports.io/football/leagues/357.png",
     "leagueTier": 1,
     "smartScore": 91,
-    "actualScore": "2 - 3 (Ambos Sí)",
-    "explanation": "Tanto Dundalk como Shelbourne han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
+    "actualScore": "2 - 3 (Ambos S\u00ed)",
+    "explanation": "Tanto Dundalk como Shelbourne han visto puerta en 4 de sus \u00faltimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
     "probability": 59.4,
     "bookmakerOdds": 1.53,
     "expectedValue": -9.1,
-    "impliedProbability": 65.4
+    "impliedProbability": 65.4,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -2280,19 +2294,20 @@
     "isTopPick": false,
     "modelOdds": 1.76,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 488,
     "confidence": "Media",
     "homeTeamId": 1579,
     "leagueLogo": "https://media.api-sports.io/football/leagues/135.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "actualScore": "2 - 1 (Ambos Sí)",
-    "explanation": "Tanto Monza como Sassuolo han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
+    "actualScore": "2 - 1 (Ambos S\u00ed)",
+    "explanation": "Tanto Monza como Sassuolo han visto puerta en 4 de sus \u00faltimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
     "probability": 56.8,
     "bookmakerOdds": 1.57,
     "expectedValue": -10.8,
-    "impliedProbability": 63.7
+    "impliedProbability": 63.7,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -2441,11 +2456,12 @@
     "leagueTier": 1,
     "smartScore": 88,
     "actualScore": "1 - 0",
-    "explanation": "Diferencial cualitativo a favor de Derry City (+57 puntos Elo). Su balance de 1.9 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Galway United.",
+    "explanation": "Diferencial cualitativo a favor de Derry City (+57 puntos Elo). Su balance de 1.9 tantos esperados por jornada y su efectividad en presi\u00f3n alta neutralizan el planteamiento defensivo de Galway United.",
     "probability": 56.7,
     "bookmakerOdds": 1.62,
     "expectedValue": -8.2,
-    "impliedProbability": 61.7
+    "impliedProbability": 61.7,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -2594,11 +2610,12 @@
     "leagueTier": 1,
     "smartScore": 91,
     "actualScore": "2 - 1",
-    "explanation": "Diferencial cualitativo a favor de Bohemians (+11 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Drogheda United.",
+    "explanation": "Diferencial cualitativo a favor de Bohemians (+11 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presi\u00f3n alta neutralizan el planteamiento defensivo de Drogheda United.",
     "probability": 59.8,
     "bookmakerOdds": 1.38,
     "expectedValue": -17.5,
-    "impliedProbability": 72.5
+    "impliedProbability": 72.5,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -2747,11 +2764,12 @@
     "leagueTier": 1,
     "smartScore": 88,
     "actualScore": "3 - 2",
-    "explanation": "Solidez posicional y eficacia en área propia: Shamrock Rovers concede menos de 0.9 xG de local, mientras que Waterford muestra dificultades para generar peligro constante a domicilio (1.2 xG foráneo).",
+    "explanation": "Solidez posicional y eficacia en \u00e1rea propia: Shamrock Rovers concede menos de 0.9 xG de local, mientras que Waterford muestra dificultades para generar peligro constante a domicilio (1.2 xG for\u00e1neo).",
     "probability": 57.2,
     "bookmakerOdds": 1.45,
     "expectedValue": -17.1,
-    "impliedProbability": 69
+    "impliedProbability": 69,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -2792,7 +2810,7 @@
     "source": "mcp",
     "status": "won",
     "awayElo": 1583,
-    "country": "Perú",
+    "country": "Per\u00fa",
     "homeElo": 1880,
     "kickoff": "2026-09-18T15:00:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/2558.png",
@@ -2900,11 +2918,12 @@
     "leagueTier": 1,
     "smartScore": 99,
     "actualScore": "2 - 1",
-    "explanation": "Solidez posicional y eficacia en área propia: Alianza Atletico concede menos de 0.9 xG de local, mientras que Comerciantes Unidos muestra dificultades para generar peligro constante a domicilio (0.4 xG foráneo).",
+    "explanation": "Solidez posicional y eficacia en \u00e1rea propia: Alianza Atletico concede menos de 0.9 xG de local, mientras que Comerciantes Unidos muestra dificultades para generar peligro constante a domicilio (0.4 xG for\u00e1neo).",
     "probability": 66.3,
     "bookmakerOdds": 1.73,
     "expectedValue": 14.7,
-    "impliedProbability": 57.8
+    "impliedProbability": 57.8,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -2913,14 +2932,14 @@
         "score": "2-1",
         "winner": "home",
         "awayTeam": "Deportivo Pereira",
-        "homeTeam": "Águilas Doradas",
+        "homeTeam": "\u00c1guilas Doradas",
         "competition": "Primera A"
       },
       {
         "date": "2026-03-22",
         "score": "0-2",
         "winner": "away",
-        "awayTeam": "Águilas Doradas",
+        "awayTeam": "\u00c1guilas Doradas",
         "homeTeam": "Deportivo Pereira",
         "competition": "Primera A"
       },
@@ -2929,7 +2948,7 @@
         "score": "1-1",
         "winner": "draw",
         "awayTeam": "Deportivo Pereira",
-        "homeTeam": "Águilas Doradas",
+        "homeTeam": "\u00c1guilas Doradas",
         "competition": "Primera A"
       }
     ],
@@ -2937,7 +2956,7 @@
     "odds": 1.75,
     "pick": "Over 2.5 Goles",
     "isMcp": true,
-    "match": "Águilas Doradas vs Deportivo Pereira",
+    "match": "\u00c1guilas Doradas vs Deportivo Pereira",
     "league": "Primera A",
     "market": "Over 2.5 Goles",
     "profit": 0.75,
@@ -2952,7 +2971,7 @@
     "awayTeam": "Deportivo Pereira",
     "fairOdds": 1.81,
     "homeLogo": "https://media.api-sports.io/football/teams/1144.png",
-    "homeTeam": "Águilas Doradas",
+    "homeTeam": "\u00c1guilas Doradas",
     "leagueId": 239,
     "timeSlot": "afternoon",
     "awayLast5": [
@@ -3053,11 +3072,12 @@
     "leagueTier": 1,
     "smartScore": 86,
     "actualScore": "2 - 2 (4 Goles)",
-    "explanation": "Propuesta vertical y transiciones dinámicas: Tanto Águilas Doradas como Deportivo Pereira promedian más de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la línea de 2.5 goles.",
+    "explanation": "Propuesta vertical y transiciones din\u00e1micas: Tanto \u00c1guilas Doradas como Deportivo Pereira promedian m\u00e1s de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la l\u00ednea de 2.5 goles.",
     "probability": 55.4,
     "bookmakerOdds": 1.75,
     "expectedValue": -3.1,
-    "impliedProbability": 57.1
+    "impliedProbability": 57.1,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -3067,7 +3087,7 @@
         "winner": "home",
         "awayTeam": "San Antonio Bulo Bulo",
         "homeTeam": "Independiente Petrolero",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-03-22",
@@ -3075,7 +3095,7 @@
         "winner": "away",
         "awayTeam": "Independiente Petrolero",
         "homeTeam": "San Antonio Bulo Bulo",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2025-09-23",
@@ -3083,7 +3103,7 @@
         "winner": "draw",
         "awayTeam": "San Antonio Bulo Bulo",
         "homeTeam": "Independiente Petrolero",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       }
     ],
     "edge": 1,
@@ -3091,7 +3111,7 @@
     "pick": "Over 2.5 Goles",
     "isMcp": true,
     "match": "Independiente Petrolero vs San Antonio Bulo Bulo",
-    "league": "Primera División",
+    "league": "Primera Divisi\u00f3n",
     "market": "Over 2.5 Goles",
     "profit": 0.44,
     "result": "WON",
@@ -3115,7 +3135,7 @@
         "isHome": true,
         "result": "L",
         "opponent": "Rival A",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-09-09",
@@ -3123,7 +3143,7 @@
         "isHome": false,
         "result": "D",
         "opponent": "Rival B",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-09-04",
@@ -3131,7 +3151,7 @@
         "isHome": true,
         "result": "W",
         "opponent": "Rival C",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-08-30",
@@ -3139,7 +3159,7 @@
         "isHome": false,
         "result": "L",
         "opponent": "Rival D",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-08-25",
@@ -3147,7 +3167,7 @@
         "isHome": true,
         "result": "D",
         "opponent": "Rival E",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       }
     ],
     "bookmaker": "Bet365",
@@ -3159,7 +3179,7 @@
         "isHome": true,
         "result": "L",
         "opponent": "Rival A",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-09-09",
@@ -3167,7 +3187,7 @@
         "isHome": false,
         "result": "D",
         "opponent": "Rival B",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-09-04",
@@ -3175,7 +3195,7 @@
         "isHome": true,
         "result": "W",
         "opponent": "Rival C",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-08-30",
@@ -3183,7 +3203,7 @@
         "isHome": false,
         "result": "L",
         "opponent": "Rival D",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-08-25",
@@ -3191,7 +3211,7 @@
         "isHome": true,
         "result": "D",
         "opponent": "Rival E",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       }
     ],
     "isMcpPick": true,
@@ -3206,11 +3226,12 @@
     "leagueTier": 1,
     "smartScore": 94,
     "actualScore": "1 - 3 (4 Goles)",
-    "explanation": "Alta expectativa anotadora: Independiente Petrolero genera 1.6 xG en casa y San Antonio Bulo Bulo promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
+    "explanation": "Alta expectativa anotadora: Independiente Petrolero genera 1.6 xG en casa y San Antonio Bulo Bulo promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o m\u00e1s tantos.",
     "probability": 62.3,
     "bookmakerOdds": 1.44,
     "expectedValue": -10.3,
-    "impliedProbability": 69.4
+    "impliedProbability": 69.4,
+    "sport": "football"
   },
   {
     "h2h": [
@@ -3351,7 +3372,7 @@
     "isTopPick": false,
     "modelOdds": 1.62,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 1602,
     "confidence": "Alta",
     "homeTeamId": 1604,
@@ -3359,11 +3380,12 @@
     "leagueTier": 1,
     "smartScore": 94,
     "actualScore": "0 - 1 (No)",
-    "explanation": "Tanto New York City FC como New York Red Bulls han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
+    "explanation": "Tanto New York City FC como New York Red Bulls han visto puerta en 4 de sus \u00faltimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
     "probability": 61.9,
     "bookmakerOdds": 1.5,
     "expectedValue": -7.2,
-    "impliedProbability": 66.7
+    "impliedProbability": 66.7,
+    "sport": "football"
   },
   {
     "edge": 1,
@@ -3383,24 +3405,25 @@
     "fixtureId": 1550967,
     "isMcpPick": true,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 2287,
     "confidence": "Media",
     "homeTeamId": 2280,
     "smartScore": 86,
-    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
+    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porter\u00edas por la postura ofensiva de sus t\u00e9cnicos y las desatenciones en repliegue.",
     "probability": 55.2,
     "expectedValue": 5.2,
     "actualScore": "2 - 0 (No)",
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   },
   {
     "edge": 1,
     "odds": 1.42,
     "isMcp": true,
     "match": "CA La Paz vs Correcaminos Uat",
-    "league": "Liga de Expansión MX",
+    "league": "Liga de Expansi\u00f3n MX",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
     "status": "won",
@@ -3413,16 +3436,17 @@
     "fixtureId": 1581427,
     "isMcpPick": true,
     "pickBadge": "estandar",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "awayTeamId": 2297,
     "confidence": "Alta",
     "homeTeamId": 20490,
     "smartScore": 75,
-    "explanation": "Eficacia bilateral en ataque: CA La Paz anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Correcaminos Uat cuenta con pegada foránea (1.2 xG). El patrón estadístico favorece la anotación mutua.",
+    "explanation": "Eficacia bilateral en ataque: CA La Paz anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Correcaminos Uat cuenta con pegada for\u00e1nea (1.2 xG). El patr\u00f3n estad\u00edstico favorece la anotaci\u00f3n mutua.",
     "probability": 62.4,
     "expectedValue": 4.8,
-    "actualScore": "3 - 1 (Ambos Sí)",
+    "actualScore": "3 - 1 (Ambos S\u00ed)",
     "result": "WON",
-    "profit": 0.42
+    "profit": 0.42,
+    "sport": "football"
   }
 ]

@@ -29,7 +29,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 70,
-    "explanation": "Bnei Yehuda impone una marcada solvencia como anfitrión (3 triunfos en sus últimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Maccabi Herzliya que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+    "explanation": "Bnei Yehuda impone una marcada solvencia como anfitri\u00f3n (3 triunfos en sus \u00faltimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Maccabi Herzliya que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -150,7 +150,8 @@
     "isTopPick": false,
     "actualScore": "1 - 1",
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   },
   {
     "fixtureId": 1555148,
@@ -182,7 +183,7 @@
     "confidence": "Moderada",
     "pickBadge": "estandar",
     "smartScore": 70,
-    "explanation": "Diferencial cualitativo a favor de Hapoel Afula (+7 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Hapoel Kfar Shalem.",
+    "explanation": "Diferencial cualitativo a favor de Hapoel Afula (+7 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presi\u00f3n alta neutralizan el planteamiento defensivo de Hapoel Kfar Shalem.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -303,7 +304,8 @@
     "isTopPick": false,
     "actualScore": "3 - 3",
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   },
   {
     "fixtureId": 1555149,
@@ -335,7 +337,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 70,
-    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
+    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -456,7 +458,8 @@
     "isTopPick": false,
     "actualScore": "0 - 1 (1 Goles)",
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   },
   {
     "fixtureId": 1555150,
@@ -488,7 +491,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 70,
-    "explanation": "Alta expectativa anotadora: Kiryat Yam SC genera 1.6 xG en casa y Ironi Modi'in promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
+    "explanation": "Alta expectativa anotadora: Kiryat Yam SC genera 1.6 xG en casa y Ironi Modi'in promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o m\u00e1s tantos.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -609,7 +612,8 @@
     "isTopPick": false,
     "actualScore": "3 - 2 (5 Goles)",
     "result": "WON",
-    "profit": 0.6
+    "profit": 0.6,
+    "sport": "football"
   },
   {
     "fixtureId": 1555151,
@@ -627,7 +631,7 @@
     "leagueTier": 2,
     "kickoff": "2026-09-17T11:00:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "pick": "Ambos Equipos Anotan",
     "odds": 1.62,
     "bookmaker": "Bet365",
@@ -641,7 +645,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 70,
-    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
+    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porter\u00edas por la postura ofensiva de sus t\u00e9cnicos y las desatenciones en repliegue.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -762,7 +766,8 @@
     "isTopPick": false,
     "actualScore": "0 - 2 (No)",
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   },
   {
     "fixtureId": 1555152,
@@ -794,7 +799,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 70,
-    "explanation": "Propuesta vertical y transiciones dinámicas: Tanto Maccabi Ahi Nazareth como Hapoel Acre promedian más de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la línea de 2.5 goles.",
+    "explanation": "Propuesta vertical y transiciones din\u00e1micas: Tanto Maccabi Ahi Nazareth como Hapoel Acre promedian m\u00e1s de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la l\u00ednea de 2.5 goles.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -915,7 +920,8 @@
     "isTopPick": false,
     "actualScore": "1 - 0 (1 Goles)",
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   },
   {
     "fixtureId": 1555153,
@@ -1068,7 +1074,8 @@
     "isTopPick": false,
     "actualScore": "4 - 2",
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   },
   {
     "fixtureId": 1555154,
@@ -1086,7 +1093,7 @@
     "leagueTier": 2,
     "kickoff": "2026-09-17T11:00:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "pick": "Ambos Equipos Anotan",
     "odds": 1.73,
     "bookmaker": "Bet365",
@@ -1100,7 +1107,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 70,
-    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
+    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porter\u00edas por la postura ofensiva de sus t\u00e9cnicos y las desatenciones en repliegue.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -1219,9 +1226,10 @@
     "awayElo": 1565,
     "timeSlot": "morning",
     "isTopPick": false,
-    "actualScore": "3 - 2 (Ambos Sí)",
+    "actualScore": "3 - 2 (Ambos S\u00ed)",
     "result": "WON",
-    "profit": 0.73
+    "profit": 0.73,
+    "sport": "football"
   },
   {
     "fixtureId": 1636285,
@@ -1239,7 +1247,7 @@
     "leagueTier": 1,
     "kickoff": "2026-09-17T11:45:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "pick": "Ambos Equipos Anotan",
     "odds": 1.57,
     "bookmaker": "Bet365",
@@ -1253,7 +1261,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Eficacia bilateral en ataque: Levski Sofia anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Red Bull Salzburg cuenta con pegada foránea (1.2 xG). El patrón estadístico favorece la anotación mutua.",
+    "explanation": "Eficacia bilateral en ataque: Levski Sofia anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Red Bull Salzburg cuenta con pegada for\u00e1nea (1.2 xG). El patr\u00f3n estad\u00edstico favorece la anotaci\u00f3n mutua.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -1374,7 +1382,8 @@
     "isTopPick": false,
     "actualScore": "0 - 1 (No)",
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   },
   {
     "fixtureId": 1636304,
@@ -1406,7 +1415,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
+    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -1527,7 +1536,8 @@
     "isTopPick": false,
     "actualScore": "2 - 0 (2 Goles)",
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   },
   {
     "fixtureId": 1570386,
@@ -1541,7 +1551,7 @@
     "league": "La Liga",
     "leagueId": 140,
     "leagueLogo": "https://media.api-sports.io/football/leagues/140.png",
-    "country": "España",
+    "country": "Espa\u00f1a",
     "leagueTier": 1,
     "kickoff": "2026-09-17T12:00:00-05:00",
     "market": "Ganador Local",
@@ -1559,7 +1569,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Diferencial cualitativo a favor de Real Betis (+140 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Getafe.",
+    "explanation": "Diferencial cualitativo a favor de Real Betis (+140 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presi\u00f3n alta neutralizan el planteamiento defensivo de Getafe.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -1680,12 +1690,13 @@
     "isTopPick": true,
     "actualScore": "1 - 0",
     "result": "WON",
-    "profit": 0.48
+    "profit": 0.48,
+    "sport": "football"
   },
   {
     "fixtureId": 1553841,
-    "match": "Železničar Pančevo vs FK Crvena Zvezda",
-    "homeTeam": "Železničar Pančevo",
+    "match": "\u017delezni\u010dar Pan\u010devo vs FK Crvena Zvezda",
+    "homeTeam": "\u017delezni\u010dar Pan\u010devo",
     "awayTeam": "FK Crvena Zvezda",
     "homeTeamId": 12360,
     "awayTeamId": 598,
@@ -1712,7 +1723,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 88,
-    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
+    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -1720,7 +1731,7 @@
     "h2h": [
       {
         "date": "2026-07-19",
-        "homeTeam": "Železničar Pančevo",
+        "homeTeam": "\u017delezni\u010dar Pan\u010devo",
         "awayTeam": "FK Crvena Zvezda",
         "score": "2-1",
         "winner": "home",
@@ -1729,14 +1740,14 @@
       {
         "date": "2026-03-21",
         "homeTeam": "FK Crvena Zvezda",
-        "awayTeam": "Železničar Pančevo",
+        "awayTeam": "\u017delezni\u010dar Pan\u010devo",
         "score": "0-2",
         "winner": "away",
         "competition": "Super Liga"
       },
       {
         "date": "2025-09-22",
-        "homeTeam": "Železničar Pančevo",
+        "homeTeam": "\u017delezni\u010dar Pan\u010devo",
         "awayTeam": "FK Crvena Zvezda",
         "score": "1-1",
         "winner": "draw",
@@ -1833,7 +1844,8 @@
     "isTopPick": false,
     "actualScore": "1 - 2 (3 Goles)",
     "result": "WON",
-    "profit": 0.67
+    "profit": 0.67,
+    "sport": "football"
   },
   {
     "fixtureId": 1564307,
@@ -1851,7 +1863,7 @@
     "leagueTier": 3,
     "kickoff": "2026-09-17T14:00:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "pick": "Ambos Equipos Anotan",
     "odds": 1.7,
     "bookmaker": "Bet365",
@@ -1865,7 +1877,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 70,
-    "explanation": "Eficacia bilateral en ataque: AFC Wimbledon anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Milton Keynes Dons cuenta con pegada foránea (1.2 xG). El patrón estadístico favorece la anotación mutua.",
+    "explanation": "Eficacia bilateral en ataque: AFC Wimbledon anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Milton Keynes Dons cuenta con pegada for\u00e1nea (1.2 xG). El patr\u00f3n estad\u00edstico favorece la anotaci\u00f3n mutua.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -1986,12 +1998,13 @@
     "isTopPick": false,
     "actualScore": "0 - 0 (No)",
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   },
   {
     "fixtureId": 1636232,
-    "match": "Beşiktaş vs Marseille",
-    "homeTeam": "Beşiktaş",
+    "match": "Be\u015fikta\u015f vs Marseille",
+    "homeTeam": "Be\u015fikta\u015f",
     "awayTeam": "Marseille",
     "homeTeamId": 549,
     "awayTeamId": 81,
@@ -2018,7 +2031,7 @@
     "confidence": "Moderada",
     "pickBadge": "bomba",
     "smartScore": 91,
-    "explanation": "Diferencial de calidad y estructura a favor de Marseille (+276 Elo). El conjunto visitante impone condiciones en duelos individuales y supera en volumen de remates al conjunto anfitrión.",
+    "explanation": "Diferencial de calidad y estructura a favor de Marseille (+276 Elo). El conjunto visitante impone condiciones en duelos individuales y supera en volumen de remates al conjunto anfitri\u00f3n.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -2026,7 +2039,7 @@
     "h2h": [
       {
         "date": "2026-07-19",
-        "homeTeam": "Beşiktaş",
+        "homeTeam": "Be\u015fikta\u015f",
         "awayTeam": "Marseille",
         "score": "1-2",
         "winner": "away",
@@ -2035,14 +2048,14 @@
       {
         "date": "2026-03-21",
         "homeTeam": "Marseille",
-        "awayTeam": "Beşiktaş",
+        "awayTeam": "Be\u015fikta\u015f",
         "score": "2-0",
         "winner": "home",
         "competition": "UEFA Europa League"
       },
       {
         "date": "2025-09-22",
-        "homeTeam": "Beşiktaş",
+        "homeTeam": "Be\u015fikta\u015f",
         "awayTeam": "Marseille",
         "score": "1-1",
         "winner": "draw",
@@ -2139,7 +2152,8 @@
     "isTopPick": false,
     "actualScore": "4 - 1",
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   },
   {
     "fixtureId": 1636247,
@@ -2171,7 +2185,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Alta expectativa anotadora: Celtic genera 1.6 xG en casa y Ferencvarosi TC promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
+    "explanation": "Alta expectativa anotadora: Celtic genera 1.6 xG en casa y Ferencvarosi TC promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o m\u00e1s tantos.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -2292,7 +2306,8 @@
     "isTopPick": false,
     "actualScore": "1 - 3 (4 Goles)",
     "result": "WON",
-    "profit": 0.53
+    "profit": 0.53,
+    "sport": "football"
   },
   {
     "fixtureId": 1636251,
@@ -2324,7 +2339,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Crystal Palace ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Lech Poznan acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas áreas.",
+    "explanation": "Crystal Palace ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras Lech Poznan acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas \u00e1reas.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -2445,7 +2460,8 @@
     "isTopPick": false,
     "actualScore": "4 - 0 (4 Goles)",
     "result": "WON",
-    "profit": 0.5
+    "profit": 0.5,
+    "sport": "football"
   },
   {
     "fixtureId": 1636278,
@@ -2477,7 +2493,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
+    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -2598,7 +2614,8 @@
     "isTopPick": true,
     "actualScore": "5 - 0 (5 Goles)",
     "result": "WON",
-    "profit": 0.4
+    "profit": 0.4,
+    "sport": "football"
   },
   {
     "fixtureId": 1636287,
@@ -2630,7 +2647,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 99,
-    "explanation": "Lillestrom impone una marcada solvencia como anfitrión (3 triunfos en sus últimos 5 compromisos) y promedia 3.4 xG en casa. Su dominio territorial y solidez defensiva ante un Torreense que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+    "explanation": "Lillestrom impone una marcada solvencia como anfitri\u00f3n (3 triunfos en sus \u00faltimos 5 compromisos) y promedia 3.4 xG en casa. Su dominio territorial y solidez defensiva ante un Torreense que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -2751,7 +2768,8 @@
     "isTopPick": true,
     "actualScore": "1 - 2",
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   },
   {
     "fixtureId": 1636316,
@@ -2783,7 +2801,7 @@
     "confidence": "Media",
     "pickBadge": "bomba",
     "smartScore": 97,
-    "explanation": "Plzen impone una marcada solvencia como anfitrión (3 triunfos en sus últimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Union St. Gilloise que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+    "explanation": "Plzen impone una marcada solvencia como anfitri\u00f3n (3 triunfos en sus \u00faltimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Union St. Gilloise que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -2904,7 +2922,8 @@
     "isTopPick": false,
     "actualScore": "0 - 3",
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   },
   {
     "fixtureId": 1636321,
@@ -2936,7 +2955,7 @@
     "confidence": "Moderada",
     "pickBadge": "bomba",
     "smartScore": 86,
-    "explanation": "Rendimiento muy fiable de Real Sociedad en su feudo (4 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Bournemouth inclina con claridad la balanza estadística hacia el triunfo local.",
+    "explanation": "Rendimiento muy fiable de Real Sociedad en su feudo (4 partidos sin caer en sus \u00faltimas 5 presentaciones). La brecha de generaci\u00f3n de ocasiones claras ante Bournemouth inclina con claridad la balanza estad\u00edstica hacia el triunfo local.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -3057,7 +3076,8 @@
     "isTopPick": false,
     "actualScore": "1 - 2",
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   },
   {
     "fixtureId": 1570390,
@@ -3071,7 +3091,7 @@
     "league": "La Liga",
     "leagueId": 140,
     "leagueLogo": "https://media.api-sports.io/football/leagues/140.png",
-    "country": "España",
+    "country": "Espa\u00f1a",
     "leagueTier": 1,
     "kickoff": "2026-09-17T14:30:00-05:00",
     "market": "Ganador Visitante",
@@ -3089,7 +3109,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Diferencial de calidad y estructura a favor de Villarreal (+241 Elo). El conjunto visitante impone condiciones en duelos individuales y supera en volumen de remates al conjunto anfitrión.",
+    "explanation": "Diferencial de calidad y estructura a favor de Villarreal (+241 Elo). El conjunto visitante impone condiciones en duelos individuales y supera en volumen de remates al conjunto anfitri\u00f3n.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -3210,7 +3230,8 @@
     "isTopPick": false,
     "actualScore": "1 - 3",
     "result": "WON",
-    "profit": 0.95
+    "profit": 0.95,
+    "sport": "football"
   },
   {
     "fixtureId": 1619017,
@@ -3221,14 +3242,14 @@
     "awayTeamId": 3707,
     "homeLogo": "https://media.api-sports.io/football/teams/15708.png",
     "awayLogo": "https://media.api-sports.io/football/teams/3707.png",
-    "league": "Primera División",
+    "league": "Primera Divisi\u00f3n",
     "leagueId": 344,
     "leagueLogo": "https://media.api-sports.io/football/leagues/344.png",
     "country": "Bolivia",
     "leagueTier": 1,
     "kickoff": "2026-09-17T17:30:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "pick": "Ambos Equipos Anotan",
     "odds": 1.57,
     "bookmaker": "Bet365",
@@ -3242,7 +3263,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 90,
-    "explanation": "Tanto Real Tomayapo como Oriente Petrolero han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
+    "explanation": "Tanto Real Tomayapo como Oriente Petrolero han visto puerta en 4 de sus \u00faltimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -3254,7 +3275,7 @@
         "awayTeam": "Oriente Petrolero",
         "score": "1-2",
         "winner": "away",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-03-21",
@@ -3262,7 +3283,7 @@
         "awayTeam": "Real Tomayapo",
         "score": "2-0",
         "winner": "home",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2025-09-22",
@@ -3270,7 +3291,7 @@
         "awayTeam": "Oriente Petrolero",
         "score": "1-1",
         "winner": "draw",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       }
     ],
     "homeLast5": [
@@ -3280,7 +3301,7 @@
         "isHome": true,
         "score": "1-0",
         "result": "W",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-09-08",
@@ -3288,7 +3309,7 @@
         "isHome": false,
         "score": "1-3",
         "result": "L",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-09-03",
@@ -3296,7 +3317,7 @@
         "isHome": true,
         "score": "0-2",
         "result": "L",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-08-29",
@@ -3304,7 +3325,7 @@
         "isHome": false,
         "score": "0-0",
         "result": "D",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-08-24",
@@ -3312,7 +3333,7 @@
         "isHome": true,
         "score": "1-0",
         "result": "W",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       }
     ],
     "awayLast5": [
@@ -3322,7 +3343,7 @@
         "isHome": true,
         "score": "1-1",
         "result": "D",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-09-08",
@@ -3330,7 +3351,7 @@
         "isHome": false,
         "score": "1-0",
         "result": "W",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-09-03",
@@ -3338,7 +3359,7 @@
         "isHome": true,
         "score": "1-2",
         "result": "L",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-08-29",
@@ -3346,7 +3367,7 @@
         "isHome": false,
         "score": "1-1",
         "result": "D",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-08-24",
@@ -3354,7 +3375,7 @@
         "isHome": true,
         "score": "2-1",
         "result": "W",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       }
     ],
     "homeElo": 1482,
@@ -3363,6 +3384,7 @@
     "isTopPick": false,
     "actualScore": "0 - 2 (No)",
     "result": "LOST",
-    "profit": -1
+    "profit": -1,
+    "sport": "football"
   }
 ]

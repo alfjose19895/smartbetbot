@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // 2. FOOTBALL SPORT SIGNALS
+    // 2. FOOTBALL SPORT SIGNALS (STRICTLY ISOLATED)
     const todayDateStr = getEcuadorDateString(Date.now());
 
     await settleAllSnapshotsWithRealScores().catch((settleErr) => {
@@ -72,12 +72,12 @@ export async function GET(request: NextRequest) {
         predictions = await generatePredictionsForUpcoming(undefined, true);
       } catch (genErr) {
         console.warn("[API /api/signals] Generation error on force refresh:", genErr);
-        predictions = getStoredPredictions();
+        predictions = getStoredPredictions("football");
       }
     } else {
-      predictions = getStoredPredictions();
+      predictions = getStoredPredictions("football");
       if (!predictions || predictions.length === 0) {
-        predictions = (await loadDailySnapshotAsync(todayDateStr)) || [];
+        predictions = (await loadDailySnapshotAsync(todayDateStr, "football")) || [];
       }
       if (!predictions || predictions.length === 0) {
         try {
@@ -87,6 +87,14 @@ export async function GET(request: NextRequest) {
         }
       }
     }
+
+    // Strict football-only filter
+    predictions = predictions.filter((p) => {
+      const c = (p.country || "").toUpperCase();
+      const l = (p.league || "").toUpperCase();
+      const sp = ((p as any).sport || "").toLowerCase();
+      return c !== "NHL" && !l.includes("NHL") && sp !== "nhl" && c !== "NBA" && !l.includes("NBA") && sp !== "nba" && c !== "NFL" && sp !== "nfl";
+    });
 
     if (leagueFilter) {
       predictions = predictions.filter((p) =>

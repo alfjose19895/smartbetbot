@@ -14,6 +14,10 @@ describe('NHL Slate Today Validation', () => {
     console.log(`[TEST] Signals count: ${slate.signals.length} / Games count: ${slate.gamesCount}`);
     
     expect(slate.gamesCount).toBe(games.length);
-    expect(slate.signals.length).toBeGreaterThanOrEqual(1);
+    if (games.length > 0) {
+      expect(slate.signals.length).toBeGreaterThanOrEqual(1);
+    } else {
+      expect(slate.signals.length).toBe(0);
+    }
   });
 });

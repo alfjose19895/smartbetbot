@@ -29,7 +29,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Rendimiento muy fiable de Dynamo Kyiv en su feudo (4 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Epitsentr Dunayivtsi inclina con claridad la balanza estadística hacia el triunfo local.",
+    "explanation": "Rendimiento muy fiable de Dynamo Kyiv en su feudo (4 partidos sin caer en sus \u00faltimas 5 presentaciones). La brecha de generaci\u00f3n de ocasiones claras ante Epitsentr Dunayivtsi inclina con claridad la balanza estad\u00edstica hacia el triunfo local.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -153,7 +153,8 @@
     "profit": 0.42,
     "matchTiming": "finished",
     "actualGoalsHome": 3,
-    "actualGoalsAway": 0
+    "actualGoalsAway": 0,
+    "sport": "football"
   },
   {
     "fixtureId": 1638097,
@@ -185,7 +186,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 99,
-    "explanation": "Rendimiento muy fiable de Inter Turku en su feudo (4 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante VPS inclina con claridad la balanza estadística hacia el triunfo local.",
+    "explanation": "Rendimiento muy fiable de Inter Turku en su feudo (4 partidos sin caer en sus \u00faltimas 5 presentaciones). La brecha de generaci\u00f3n de ocasiones claras ante VPS inclina con claridad la balanza estad\u00edstica hacia el triunfo local.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -309,7 +310,8 @@
     "profit": 0.67,
     "matchTiming": "finished",
     "actualGoalsHome": 1,
-    "actualGoalsAway": 0
+    "actualGoalsAway": 0,
+    "sport": "football"
   },
   {
     "fixtureId": 1565479,
@@ -341,7 +343,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Propuesta vertical y transiciones dinámicas: Tanto Shakhtar Donetsk como Chornomorets promedian más de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la línea de 2.5 goles.",
+    "explanation": "Propuesta vertical y transiciones din\u00e1micas: Tanto Shakhtar Donetsk como Chornomorets promedian m\u00e1s de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la l\u00ednea de 2.5 goles.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -465,7 +467,8 @@
     "profit": -1.0,
     "matchTiming": "finished",
     "actualGoalsHome": 2,
-    "actualGoalsAway": 0
+    "actualGoalsAway": 0,
+    "sport": "football"
   },
   {
     "fixtureId": 1555146,
@@ -497,7 +500,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 70,
-    "explanation": "Diferencial cualitativo a favor de Maccabi Herzliya (+77 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Kafr Qasim.",
+    "explanation": "Diferencial cualitativo a favor de Maccabi Herzliya (+77 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presi\u00f3n alta neutralizan el planteamiento defensivo de Kafr Qasim.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -621,7 +624,8 @@
     "profit": 0.9,
     "matchTiming": "finished",
     "actualGoalsHome": 1,
-    "actualGoalsAway": 0
+    "actualGoalsAway": 0,
+    "sport": "football"
   },
   {
     "fixtureId": 1548527,
@@ -639,7 +643,7 @@
     "leagueTier": 1,
     "kickoff": "2026-09-14T11:00:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "pick": "Ambos Equipos Anotan",
     "odds": 1.8,
     "bookmaker": "Bet365",
@@ -653,7 +657,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 84,
-    "explanation": "Tanto HNK Gorica como NK Varazdin han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
+    "explanation": "Tanto HNK Gorica como NK Varazdin han visto puerta en 4 de sus \u00faltimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -772,12 +776,13 @@
     "awayElo": 1596,
     "timeSlot": "morning",
     "isTopPick": false,
-    "actualScore": "2 - 2 (Ambos Sí)",
+    "actualScore": "2 - 2 (Ambos S\u00ed)",
     "result": "WON",
     "profit": 0.8,
     "matchTiming": "finished",
     "actualGoalsHome": 2,
-    "actualGoalsAway": 2
+    "actualGoalsAway": 2,
+    "sport": "football"
   },
   {
     "fixtureId": 1555503,
@@ -809,7 +814,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
+    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -933,7 +938,8 @@
     "profit": -1.0,
     "matchTiming": "finished",
     "actualGoalsHome": 2,
-    "actualGoalsAway": 0
+    "actualGoalsAway": 0,
+    "sport": "football"
   },
   {
     "fixtureId": 1550125,
@@ -1089,7 +1095,8 @@
     "profit": 0.5,
     "matchTiming": "finished",
     "actualGoalsHome": 0,
-    "actualGoalsAway": 2
+    "actualGoalsAway": 2,
+    "sport": "football"
   },
   {
     "fixtureId": 1555501,
@@ -1107,7 +1114,7 @@
     "leagueTier": 1,
     "kickoff": "2026-09-14T11:30:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "pick": "Ambos Equipos Anotan",
     "odds": 1.83,
     "bookmaker": "Bet365",
@@ -1121,7 +1128,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 97,
-    "explanation": "Eficacia bilateral en ataque: Hapoel Haifa anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Bnei Sakhnin cuenta con pegada foránea (1.2 xG). El patrón estadístico favorece la anotación mutua.",
+    "explanation": "Eficacia bilateral en ataque: Hapoel Haifa anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Bnei Sakhnin cuenta con pegada for\u00e1nea (1.2 xG). El patr\u00f3n estad\u00edstico favorece la anotaci\u00f3n mutua.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -1240,12 +1247,13 @@
     "awayElo": 1530,
     "timeSlot": "morning",
     "isTopPick": false,
-    "actualScore": "3 - 1 (Ambos Sí)",
+    "actualScore": "3 - 1 (Ambos S\u00ed)",
     "result": "WON",
     "profit": 0.83,
     "matchTiming": "finished",
     "actualGoalsHome": 3,
-    "actualGoalsAway": 1
+    "actualGoalsAway": 1,
+    "sport": "football"
   },
   {
     "fixtureId": 1494280,
@@ -1277,7 +1285,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Rendimiento muy fiable de Sirius en su feudo (4 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Degerfors IF inclina con claridad la balanza estadística hacia el triunfo local.",
+    "explanation": "Rendimiento muy fiable de Sirius en su feudo (4 partidos sin caer en sus \u00faltimas 5 presentaciones). La brecha de generaci\u00f3n de ocasiones claras ante Degerfors IF inclina con claridad la balanza estad\u00edstica hacia el triunfo local.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -1401,7 +1409,8 @@
     "profit": 0.45,
     "matchTiming": "finished",
     "actualGoalsHome": 2,
-    "actualGoalsAway": 0
+    "actualGoalsAway": 0,
+    "sport": "football"
   },
   {
     "fixtureId": 1494274,
@@ -1433,7 +1442,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 93,
-    "explanation": "Solidez posicional y eficacia en área propia: Djurgardens IF concede menos de 0.9 xG de local, mientras que Gais muestra dificultades para generar peligro constante a domicilio (1.2 xG foráneo).",
+    "explanation": "Solidez posicional y eficacia en \u00e1rea propia: Djurgardens IF concede menos de 0.9 xG de local, mientras que Gais muestra dificultades para generar peligro constante a domicilio (1.2 xG for\u00e1neo).",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -1557,7 +1566,8 @@
     "profit": 0.44,
     "matchTiming": "finished",
     "actualGoalsHome": 2,
-    "actualGoalsAway": 0
+    "actualGoalsAway": 0,
+    "sport": "football"
   },
   {
     "fixtureId": 1549018,
@@ -1589,7 +1599,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 92,
-    "explanation": "Alta expectativa anotadora: FC Midtjylland genera 1.6 xG en casa y Brondby promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
+    "explanation": "Alta expectativa anotadora: FC Midtjylland genera 1.6 xG en casa y Brondby promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o m\u00e1s tantos.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -1713,7 +1723,8 @@
     "profit": 0.53,
     "matchTiming": "finished",
     "actualGoalsHome": 4,
-    "actualGoalsAway": 1
+    "actualGoalsAway": 1,
+    "sport": "football"
   },
   {
     "fixtureId": 1576489,
@@ -1745,7 +1756,7 @@
     "confidence": "Media",
     "pickBadge": "bomba",
     "smartScore": 73,
-    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
+    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -1869,7 +1880,8 @@
     "profit": 1.08,
     "matchTiming": "finished",
     "actualGoalsHome": 2,
-    "actualGoalsAway": 2
+    "actualGoalsAway": 2,
+    "sport": "football"
   },
   {
     "fixtureId": 1494756,
@@ -1887,7 +1899,7 @@
     "leagueTier": 1,
     "kickoff": "2026-09-14T12:00:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "pick": "Ambos Equipos Anotan",
     "odds": 1.7,
     "bookmaker": "Bet365",
@@ -1901,7 +1913,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 86,
-    "explanation": "Tanto Bodo/Glimt como Sandefjord han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
+    "explanation": "Tanto Bodo/Glimt como Sandefjord han visto puerta en 4 de sus \u00faltimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -2020,18 +2032,19 @@
     "awayElo": 1604,
     "timeSlot": "afternoon",
     "isTopPick": false,
-    "actualScore": "3 - 2 (Ambos Sí)",
+    "actualScore": "3 - 2 (Ambos S\u00ed)",
     "result": "WON",
     "profit": 0.7,
     "matchTiming": "finished",
     "actualGoalsHome": 3,
-    "actualGoalsAway": 2
+    "actualGoalsAway": 2,
+    "sport": "football"
   },
   {
     "fixtureId": 1576492,
-    "match": "Sporting CP B vs Lusitânia Lourosa",
+    "match": "Sporting CP B vs Lusit\u00e2nia Lourosa",
     "homeTeam": "Sporting CP B",
-    "awayTeam": "Lusitânia Lourosa",
+    "awayTeam": "Lusit\u00e2nia Lourosa",
     "homeTeamId": 761,
     "awayTeamId": 6358,
     "homeLogo": "https://media.api-sports.io/football/teams/761.png",
@@ -2043,7 +2056,7 @@
     "leagueTier": 2,
     "kickoff": "2026-09-14T12:00:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "pick": "Ambos Equipos Anotan",
     "odds": 1.83,
     "bookmaker": "Bet365",
@@ -2057,7 +2070,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 70,
-    "explanation": "Eficacia bilateral en ataque: Sporting CP B anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Lusitânia Lourosa cuenta con pegada foránea (1.2 xG). El patrón estadístico favorece la anotación mutua.",
+    "explanation": "Eficacia bilateral en ataque: Sporting CP B anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Lusit\u00e2nia Lourosa cuenta con pegada for\u00e1nea (1.2 xG). El patr\u00f3n estad\u00edstico favorece la anotaci\u00f3n mutua.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -2066,14 +2079,14 @@
       {
         "date": "2026-07-16",
         "homeTeam": "Sporting CP B",
-        "awayTeam": "Lusitânia Lourosa",
+        "awayTeam": "Lusit\u00e2nia Lourosa",
         "score": "2-1",
         "winner": "home",
         "competition": "Liga Portugal 2"
       },
       {
         "date": "2026-03-18",
-        "homeTeam": "Lusitânia Lourosa",
+        "homeTeam": "Lusit\u00e2nia Lourosa",
         "awayTeam": "Sporting CP B",
         "score": "0-2",
         "winner": "away",
@@ -2082,7 +2095,7 @@
       {
         "date": "2025-09-19",
         "homeTeam": "Sporting CP B",
-        "awayTeam": "Lusitânia Lourosa",
+        "awayTeam": "Lusit\u00e2nia Lourosa",
         "score": "3-0",
         "winner": "home",
         "competition": "Liga Portugal 2"
@@ -2176,12 +2189,13 @@
     "awayElo": 1520,
     "timeSlot": "afternoon",
     "isTopPick": false,
-    "actualScore": "1 - 2 (Ambos Sí)",
+    "actualScore": "1 - 2 (Ambos S\u00ed)",
     "result": "WON",
     "profit": 0.83,
     "matchTiming": "finished",
     "actualGoalsHome": 1,
-    "actualGoalsAway": 2
+    "actualGoalsAway": 2,
+    "sport": "football"
   },
   {
     "fixtureId": 1497703,
@@ -2213,7 +2227,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 70,
-    "explanation": "Ostersunds FK impone una marcada solvencia como anfitrión (3 triunfos en sus últimos 5 compromisos) y promedia 2.6 xG en casa. Su dominio territorial y solidez defensiva ante un Helsingborg que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+    "explanation": "Ostersunds FK impone una marcada solvencia como anfitri\u00f3n (3 triunfos en sus \u00faltimos 5 compromisos) y promedia 2.6 xG en casa. Su dominio territorial y solidez defensiva ante un Helsingborg que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -2337,7 +2351,8 @@
     "profit": 0.73,
     "matchTiming": "finished",
     "actualGoalsHome": 1,
-    "actualGoalsAway": 0
+    "actualGoalsAway": 0,
+    "sport": "football"
   },
   {
     "fixtureId": 1555506,
@@ -2355,7 +2370,7 @@
     "leagueTier": 1,
     "kickoff": "2026-09-14T12:30:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "pick": "Ambos Equipos Anotan",
     "odds": 1.53,
     "bookmaker": "Bet365",
@@ -2369,7 +2384,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Eficacia bilateral en ataque: Maccabi Tel Aviv anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Hapoel Tel Aviv cuenta con pegada foránea (1.2 xG). El patrón estadístico favorece la anotación mutua.",
+    "explanation": "Eficacia bilateral en ataque: Maccabi Tel Aviv anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Hapoel Tel Aviv cuenta con pegada for\u00e1nea (1.2 xG). El patr\u00f3n estad\u00edstico favorece la anotaci\u00f3n mutua.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -2488,12 +2503,13 @@
     "awayElo": 1584,
     "timeSlot": "afternoon",
     "isTopPick": false,
-    "actualScore": "4 - 1 (Ambos Sí)",
+    "actualScore": "4 - 1 (Ambos S\u00ed)",
     "result": "WON",
     "profit": 0.53,
     "matchTiming": "finished",
     "actualGoalsHome": 4,
-    "actualGoalsAway": 1
+    "actualGoalsAway": 1,
+    "sport": "football"
   },
   {
     "fixtureId": 1492762,
@@ -2525,7 +2541,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 94,
-    "explanation": "Shelbourne impone una marcada solvencia como anfitrión (3 triunfos en sus últimos 5 compromisos) y promedia 2.9 xG en casa. Su dominio territorial y solidez defensiva ante un Drogheda United que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+    "explanation": "Shelbourne impone una marcada solvencia como anfitri\u00f3n (3 triunfos en sus \u00faltimos 5 compromisos) y promedia 2.9 xG en casa. Su dominio territorial y solidez defensiva ante un Drogheda United que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -2649,7 +2665,8 @@
     "profit": -1.0,
     "matchTiming": "finished",
     "actualGoalsHome": 1,
-    "actualGoalsAway": 2
+    "actualGoalsAway": 2,
+    "sport": "football"
   },
   {
     "fixtureId": 1492763,
@@ -2667,7 +2684,7 @@
     "leagueTier": 1,
     "kickoff": "2026-09-14T13:45:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "pick": "Ambos Equipos Anotan",
     "odds": 1.57,
     "bookmaker": "Bet365",
@@ -2681,7 +2698,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 90,
-    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
+    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porter\u00edas por la postura ofensiva de sus t\u00e9cnicos y las desatenciones en repliegue.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -2800,12 +2817,13 @@
     "awayElo": 1539,
     "timeSlot": "afternoon",
     "isTopPick": false,
-    "actualScore": "2 - 2 (Ambos Sí)",
+    "actualScore": "2 - 2 (Ambos S\u00ed)",
     "result": "WON",
     "profit": 0.57,
     "matchTiming": "finished",
     "actualGoalsHome": 2,
-    "actualGoalsAway": 2
+    "actualGoalsAway": 2,
+    "sport": "football"
   },
   {
     "fixtureId": 1570382,
@@ -2819,11 +2837,11 @@
     "league": "La Liga",
     "leagueId": 140,
     "leagueLogo": "https://media.api-sports.io/football/leagues/140.png",
-    "country": "España",
+    "country": "Espa\u00f1a",
     "leagueTier": 1,
     "kickoff": "2026-09-14T14:00:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "pick": "Ambos Equipos Anotan",
     "odds": 1.44,
     "bookmaker": "Bet365",
@@ -2837,7 +2855,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
+    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porter\u00edas por la postura ofensiva de sus t\u00e9cnicos y las desatenciones en repliegue.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -2956,12 +2974,13 @@
     "awayElo": 1720,
     "timeSlot": "afternoon",
     "isTopPick": false,
-    "actualScore": "1 - 2 (Ambos Sí)",
+    "actualScore": "1 - 2 (Ambos S\u00ed)",
     "result": "WON",
     "profit": 0.44,
     "matchTiming": "finished",
     "actualGoalsHome": 1,
-    "actualGoalsAway": 2
+    "actualGoalsAway": 2,
+    "sport": "football"
   },
   {
     "fixtureId": 1575494,
@@ -2993,7 +3012,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Solidez posicional y eficacia en área propia: SC Braga concede menos de 0.9 xG de local, mientras que Estoril muestra dificultades para generar peligro constante a domicilio (0.8 xG foráneo).",
+    "explanation": "Solidez posicional y eficacia en \u00e1rea propia: SC Braga concede menos de 0.9 xG de local, mientras que Estoril muestra dificultades para generar peligro constante a domicilio (0.8 xG for\u00e1neo).",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -3117,7 +3136,8 @@
     "profit": 0.36,
     "matchTiming": "finished",
     "actualGoalsHome": 1,
-    "actualGoalsAway": 0
+    "actualGoalsAway": 0,
+    "sport": "football"
   },
   {
     "fixtureId": 1492371,
@@ -3128,7 +3148,7 @@
     "awayTeamId": 1198,
     "homeLogo": "https://media.api-sports.io/football/teams/118.png",
     "awayLogo": "https://media.api-sports.io/football/teams/1198.png",
-    "league": "Brasileirão Série A",
+    "league": "Brasileir\u00e3o S\u00e9rie A",
     "leagueId": 71,
     "leagueLogo": "https://media.api-sports.io/football/leagues/71.png",
     "country": "Brasil",
@@ -3149,7 +3169,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 94,
-    "explanation": "Solidez posicional y eficacia en área propia: Bahia concede menos de 0.9 xG de local, mientras que Remo muestra dificultades para generar peligro constante a domicilio (1.2 xG foráneo).",
+    "explanation": "Solidez posicional y eficacia en \u00e1rea propia: Bahia concede menos de 0.9 xG de local, mientras que Remo muestra dificultades para generar peligro constante a domicilio (1.2 xG for\u00e1neo).",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -3161,7 +3181,7 @@
         "awayTeam": "Remo",
         "score": "2-1",
         "winner": "home",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-03-18",
@@ -3169,7 +3189,7 @@
         "awayTeam": "Bahia",
         "score": "0-2",
         "winner": "away",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2025-09-19",
@@ -3177,7 +3197,7 @@
         "awayTeam": "Remo",
         "score": "1-1",
         "winner": "draw",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       }
     ],
     "homeLast5": [
@@ -3187,7 +3207,7 @@
         "isHome": false,
         "score": "0-2",
         "result": "L",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-09-05",
@@ -3195,7 +3215,7 @@
         "isHome": true,
         "score": "1-1",
         "result": "D",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-31",
@@ -3203,7 +3223,7 @@
         "isHome": false,
         "score": "1-0",
         "result": "W",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-26",
@@ -3211,7 +3231,7 @@
         "isHome": true,
         "score": "2-1",
         "result": "W",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-21",
@@ -3219,7 +3239,7 @@
         "isHome": false,
         "score": "0-2",
         "result": "L",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       }
     ],
     "awayLast5": [
@@ -3229,7 +3249,7 @@
         "isHome": false,
         "score": "0-0",
         "result": "D",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-09-05",
@@ -3237,7 +3257,7 @@
         "isHome": true,
         "score": "1-0",
         "result": "W",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-31",
@@ -3245,7 +3265,7 @@
         "isHome": false,
         "score": "1-3",
         "result": "L",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-26",
@@ -3253,7 +3273,7 @@
         "isHome": true,
         "score": "0-0",
         "result": "D",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-21",
@@ -3261,7 +3281,7 @@
         "isHome": false,
         "score": "2-1",
         "result": "W",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       }
     ],
     "homeElo": 1589,
@@ -3273,7 +3293,8 @@
     "profit": 0.42,
     "matchTiming": "finished",
     "actualGoalsHome": 2,
-    "actualGoalsAway": 1
+    "actualGoalsAway": 1,
+    "sport": "football"
   },
   {
     "fixtureId": 1505530,
@@ -3284,14 +3305,14 @@
     "awayTeamId": 16730,
     "homeLogo": "https://media.api-sports.io/football/teams/2326.png",
     "awayLogo": "https://media.api-sports.io/football/teams/16730.png",
-    "league": "Primera División",
+    "league": "Primera Divisi\u00f3n",
     "leagueId": 265,
     "leagueLogo": "https://media.api-sports.io/football/leagues/265.png",
     "country": "Chile",
     "leagueTier": 1,
     "kickoff": "2026-09-14T18:30:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "pick": "Ambos Equipos Anotan",
     "odds": 1.57,
     "bookmaker": "Bet365",
@@ -3305,7 +3326,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 90,
-    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
+    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porter\u00edas por la postura ofensiva de sus t\u00e9cnicos y las desatenciones en repliegue.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -3317,7 +3338,7 @@
         "awayTeam": "Deportes Limache",
         "score": "1-2",
         "winner": "away",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-03-18",
@@ -3325,7 +3346,7 @@
         "awayTeam": "Union La Calera",
         "score": "2-0",
         "winner": "home",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2025-09-19",
@@ -3333,7 +3354,7 @@
         "awayTeam": "Deportes Limache",
         "score": "1-3",
         "winner": "away",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       }
     ],
     "homeLast5": [
@@ -3343,7 +3364,7 @@
         "isHome": true,
         "score": "2-1",
         "result": "W",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-09-05",
@@ -3351,7 +3372,7 @@
         "isHome": false,
         "score": "0-2",
         "result": "L",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-08-31",
@@ -3359,7 +3380,7 @@
         "isHome": true,
         "score": "1-1",
         "result": "D",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-08-26",
@@ -3367,7 +3388,7 @@
         "isHome": false,
         "score": "1-0",
         "result": "W",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-08-21",
@@ -3375,7 +3396,7 @@
         "isHome": true,
         "score": "2-1",
         "result": "W",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       }
     ],
     "awayLast5": [
@@ -3385,7 +3406,7 @@
         "isHome": false,
         "score": "1-0",
         "result": "W",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-09-05",
@@ -3393,7 +3414,7 @@
         "isHome": true,
         "score": "1-2",
         "result": "L",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-08-31",
@@ -3401,7 +3422,7 @@
         "isHome": false,
         "score": "1-1",
         "result": "D",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-08-26",
@@ -3409,7 +3430,7 @@
         "isHome": true,
         "score": "2-1",
         "result": "W",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       },
       {
         "date": "2026-08-21",
@@ -3417,7 +3438,7 @@
         "isHome": false,
         "score": "0-2",
         "result": "L",
-        "competition": "Primera División"
+        "competition": "Primera Divisi\u00f3n"
       }
     ],
     "homeElo": 1562,
@@ -3429,6 +3450,7 @@
     "profit": -1.0,
     "matchTiming": "finished",
     "actualGoalsHome": 1,
-    "actualGoalsAway": 0
+    "actualGoalsAway": 0,
+    "sport": "football"
   }
 ]

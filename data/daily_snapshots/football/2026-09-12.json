@@ -28,7 +28,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Alta expectativa anotadora: Arsenal genera 1.6 xG en casa y Baranovichi promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
+    "explanation": "Alta expectativa anotadora: Arsenal genera 1.6 xG en casa y Baranovichi promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o m\u00e1s tantos.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -155,7 +155,8 @@
     "actualGoalsHome": 0,
     "actualGoalsAway": 0,
     "result": "LOST",
-    "actualScore": "0 - 0 (0 Goles)"
+    "actualScore": "0 - 0 (0 Goles)",
+    "sport": "football"
   },
   {
     "fixtureId": 1575163,
@@ -186,7 +187,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
+    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -313,7 +314,8 @@
     "actualGoalsHome": 1,
     "actualGoalsAway": 3,
     "result": "WON",
-    "actualScore": "1 - 3 (4 Goles)"
+    "actualScore": "1 - 3 (4 Goles)",
+    "sport": "football"
   },
   {
     "fixtureId": 1575160,
@@ -344,7 +346,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Propuesta vertical y transiciones dinámicas: Tanto 1899 Hoffenheim como VfB Stuttgart promedian más de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la línea de 2.5 goles.",
+    "explanation": "Propuesta vertical y transiciones din\u00e1micas: Tanto 1899 Hoffenheim como VfB Stuttgart promedian m\u00e1s de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la l\u00ednea de 2.5 goles.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -471,7 +473,8 @@
     "actualGoalsHome": 2,
     "actualGoalsAway": 1,
     "result": "WON",
-    "actualScore": "2 - 1 (3 Goles)"
+    "actualScore": "2 - 1 (3 Goles)",
+    "sport": "football"
   },
   {
     "fixtureId": 1575158,
@@ -502,7 +505,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
+    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -629,13 +632,14 @@
     "actualGoalsHome": 3,
     "actualGoalsAway": 0,
     "result": "WON",
-    "actualScore": "3 - 0 (3 Goles)"
+    "actualScore": "3 - 0 (3 Goles)",
+    "sport": "football"
   },
   {
     "fixtureId": 1575161,
-    "match": "SC Freiburg vs Borussia Mönchengladbach",
+    "match": "SC Freiburg vs Borussia M\u00f6nchengladbach",
     "homeTeam": "SC Freiburg",
-    "awayTeam": "Borussia Mönchengladbach",
+    "awayTeam": "Borussia M\u00f6nchengladbach",
     "homeTeamId": 160,
     "awayTeamId": 163,
     "homeLogo": "https://media.api-sports.io/football/teams/160.png",
@@ -660,7 +664,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Rendimiento muy fiable de SC Freiburg en su feudo (4 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Borussia Mönchengladbach inclina con claridad la balanza estadística hacia el triunfo local.",
+    "explanation": "Rendimiento muy fiable de SC Freiburg en su feudo (4 partidos sin caer en sus \u00faltimas 5 presentaciones). La brecha de generaci\u00f3n de ocasiones claras ante Borussia M\u00f6nchengladbach inclina con claridad la balanza estad\u00edstica hacia el triunfo local.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -669,14 +673,14 @@
       {
         "date": "2026-07-14",
         "homeTeam": "SC Freiburg",
-        "awayTeam": "Borussia Mönchengladbach",
+        "awayTeam": "Borussia M\u00f6nchengladbach",
         "score": "2-1",
         "winner": "home",
         "competition": "Bundesliga"
       },
       {
         "date": "2026-03-16",
-        "homeTeam": "Borussia Mönchengladbach",
+        "homeTeam": "Borussia M\u00f6nchengladbach",
         "awayTeam": "SC Freiburg",
         "score": "0-2",
         "winner": "away",
@@ -685,7 +689,7 @@
       {
         "date": "2025-09-17",
         "homeTeam": "SC Freiburg",
-        "awayTeam": "Borussia Mönchengladbach",
+        "awayTeam": "Borussia M\u00f6nchengladbach",
         "score": "3-0",
         "winner": "home",
         "competition": "Bundesliga"
@@ -787,7 +791,8 @@
     "actualGoalsHome": 5,
     "actualGoalsAway": 0,
     "result": "WON",
-    "actualScore": "5 - 0"
+    "actualScore": "5 - 0",
+    "sport": "football"
   },
   {
     "fixtureId": 1575162,
@@ -818,7 +823,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "FC Augsburg ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Bayer Leverkusen acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas áreas.",
+    "explanation": "FC Augsburg ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras Bayer Leverkusen acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas \u00e1reas.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -945,7 +950,8 @@
     "actualGoalsHome": 2,
     "actualGoalsAway": 2,
     "result": "WON",
-    "actualScore": "2 - 2 (4 Goles)"
+    "actualScore": "2 - 2 (4 Goles)",
+    "sport": "football"
   },
   {
     "fixtureId": 1557401,
@@ -976,7 +982,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Rendimiento muy fiable de Crystal Palace en su feudo (4 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Ipswich inclina con claridad la balanza estadística hacia el triunfo local.",
+    "explanation": "Rendimiento muy fiable de Crystal Palace en su feudo (4 partidos sin caer en sus \u00faltimas 5 presentaciones). La brecha de generaci\u00f3n de ocasiones claras ante Ipswich inclina con claridad la balanza estad\u00edstica hacia el triunfo local.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -1103,7 +1109,8 @@
     "actualGoalsHome": 2,
     "actualGoalsAway": 3,
     "result": "LOST",
-    "actualScore": "2 - 3"
+    "actualScore": "2 - 3",
+    "sport": "football"
   },
   {
     "fixtureId": 1557399,
@@ -1134,7 +1141,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Chelsea ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Hull City acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas áreas.",
+    "explanation": "Chelsea ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras Hull City acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas \u00e1reas.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -1261,7 +1268,8 @@
     "actualGoalsHome": 2,
     "actualGoalsAway": 2,
     "result": "WON",
-    "actualScore": "2 - 2 (4 Goles)"
+    "actualScore": "2 - 2 (4 Goles)",
+    "sport": "football"
   },
   {
     "fixtureId": 1557403,
@@ -1292,7 +1300,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
+    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -1419,7 +1427,8 @@
     "actualGoalsHome": 0,
     "actualGoalsAway": 0,
     "result": "LOST",
-    "actualScore": "0 - 0 (0 Goles)"
+    "actualScore": "0 - 0 (0 Goles)",
+    "sport": "football"
   },
   {
     "fixtureId": 1494760,
@@ -1450,7 +1459,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 98,
-    "explanation": "Rendimiento muy fiable de Lillestrom en su feudo (4 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Valerenga inclina con claridad la balanza estadística hacia el triunfo local.",
+    "explanation": "Rendimiento muy fiable de Lillestrom en su feudo (4 partidos sin caer en sus \u00faltimas 5 presentaciones). La brecha de generaci\u00f3n de ocasiones claras ante Valerenga inclina con claridad la balanza estad\u00edstica hacia el triunfo local.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -1577,7 +1586,8 @@
     "actualGoalsHome": 2,
     "actualGoalsAway": 0,
     "result": "WON",
-    "actualScore": "2 - 0"
+    "actualScore": "2 - 0",
+    "sport": "football"
   },
   {
     "fixtureId": 1558627,
@@ -1591,7 +1601,7 @@
     "league": "Jupiler Pro League",
     "leagueId": 144,
     "leagueLogo": "https://media.api-sports.io/football/leagues/144.png",
-    "country": "Bélgica",
+    "country": "B\u00e9lgica",
     "leagueTier": 1,
     "kickoff": "2026-09-12T09:00:00-05:00",
     "market": "Ganador Visitante",
@@ -1608,7 +1618,7 @@
     "confidence": "Media",
     "pickBadge": "valor",
     "smartScore": 99,
-    "explanation": "Diferencial de calidad y estructura a favor de St. Truiden (+107 Elo). El conjunto visitante impone condiciones en duelos individuales y supera en volumen de remates al conjunto anfitrión.",
+    "explanation": "Diferencial de calidad y estructura a favor de St. Truiden (+107 Elo). El conjunto visitante impone condiciones en duelos individuales y supera en volumen de remates al conjunto anfitri\u00f3n.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -1735,7 +1745,8 @@
     "actualGoalsHome": 2,
     "actualGoalsAway": 0,
     "result": "LOST",
-    "actualScore": "2 - 0"
+    "actualScore": "2 - 0",
+    "sport": "football"
   },
   {
     "fixtureId": 1551106,
@@ -1766,7 +1777,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Diferencial cualitativo a favor de CSKA 1948 (+119 puntos Elo). Su balance de 2.5 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Dunav Ruse.",
+    "explanation": "Diferencial cualitativo a favor de CSKA 1948 (+119 puntos Elo). Su balance de 2.5 tantos esperados por jornada y su efectividad en presi\u00f3n alta neutralizan el planteamiento defensivo de Dunav Ruse.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -1893,7 +1904,8 @@
     "actualGoalsHome": 2,
     "actualGoalsAway": 1,
     "result": "WON",
-    "actualScore": "2 - 1"
+    "actualScore": "2 - 1",
+    "sport": "football"
   },
   {
     "fixtureId": 1573578,
@@ -1904,10 +1916,10 @@
     "awayTeamId": 1910,
     "homeLogo": "https://media.api-sports.io/football/teams/1918.png",
     "awayLogo": "https://media.api-sports.io/football/teams/1910.png",
-    "league": "Primera División Femenina (Liga F)",
+    "league": "Primera Divisi\u00f3n Femenina (Liga F)",
     "leagueId": 142,
     "leagueLogo": "https://media.api-sports.io/football/leagues/142.png",
-    "country": "España",
+    "country": "Espa\u00f1a",
     "leagueTier": 1,
     "kickoff": "2026-09-12T12:00:00-05:00",
     "market": "Ganador Local",
@@ -1924,7 +1936,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Solidez posicional y eficacia en área propia: Barcelona W concede menos de 0.9 xG de local, mientras que Atletico Madrid W muestra dificultades para generar peligro constante a domicilio (0.8 xG foráneo).",
+    "explanation": "Solidez posicional y eficacia en \u00e1rea propia: Barcelona W concede menos de 0.9 xG de local, mientras que Atletico Madrid W muestra dificultades para generar peligro constante a domicilio (0.8 xG for\u00e1neo).",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -1936,7 +1948,7 @@
         "awayTeam": "Atletico Madrid W",
         "score": "2-1",
         "winner": "home",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       },
       {
         "date": "2026-03-16",
@@ -1944,7 +1956,7 @@
         "awayTeam": "Barcelona W",
         "score": "0-2",
         "winner": "away",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       },
       {
         "date": "2025-09-17",
@@ -1952,7 +1964,7 @@
         "awayTeam": "Atletico Madrid W",
         "score": "3-0",
         "winner": "home",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       }
     ],
     "homeLast5": [
@@ -1962,7 +1974,7 @@
         "isHome": true,
         "score": "3-1",
         "result": "W",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       },
       {
         "date": "2026-09-03",
@@ -1970,7 +1982,7 @@
         "isHome": false,
         "score": "1-2",
         "result": "L",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       },
       {
         "date": "2026-08-29",
@@ -1978,7 +1990,7 @@
         "isHome": true,
         "score": "1-1",
         "result": "D",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       },
       {
         "date": "2026-08-24",
@@ -1986,7 +1998,7 @@
         "isHome": false,
         "score": "2-0",
         "result": "W",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       },
       {
         "date": "2026-08-19",
@@ -1994,7 +2006,7 @@
         "isHome": true,
         "score": "3-1",
         "result": "W",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       }
     ],
     "awayLast5": [
@@ -2004,7 +2016,7 @@
         "isHome": false,
         "score": "2-0",
         "result": "W",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       },
       {
         "date": "2026-09-03",
@@ -2012,7 +2024,7 @@
         "isHome": true,
         "score": "3-1",
         "result": "W",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       },
       {
         "date": "2026-08-29",
@@ -2020,7 +2032,7 @@
         "isHome": false,
         "score": "1-2",
         "result": "L",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       },
       {
         "date": "2026-08-24",
@@ -2028,7 +2040,7 @@
         "isHome": true,
         "score": "1-1",
         "result": "D",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       },
       {
         "date": "2026-08-19",
@@ -2036,7 +2048,7 @@
         "isHome": false,
         "score": "2-0",
         "result": "W",
-        "competition": "Primera División Femenina (Liga F)"
+        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
       }
     ],
     "homeElo": 2010,
@@ -2051,25 +2063,26 @@
     "actualGoalsHome": 4,
     "actualGoalsAway": 2,
     "result": "WON",
-    "actualScore": "4 - 2"
+    "actualScore": "4 - 2",
+    "sport": "football"
   },
   {
     "fixtureId": 1584403,
-    "match": "Alanyaspor vs Göztepe",
+    "match": "Alanyaspor vs G\u00f6ztepe",
     "homeTeam": "Alanyaspor",
-    "awayTeam": "Göztepe",
+    "awayTeam": "G\u00f6ztepe",
     "homeTeamId": 996,
     "awayTeamId": 994,
     "homeLogo": "https://media.api-sports.io/football/teams/996.png",
     "awayLogo": "https://media.api-sports.io/football/teams/994.png",
-    "league": "Süper Lig",
+    "league": "S\u00fcper Lig",
     "leagueId": 203,
     "leagueLogo": "https://media.api-sports.io/football/leagues/203.png",
-    "country": "Turquía",
+    "country": "Turqu\u00eda",
     "leagueTier": 1,
     "kickoff": "2026-09-12T12:00:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "odds": 1.84,
     "bookmaker": "Bet365",
     "bookmakerOdds": 1.84,
@@ -2082,7 +2095,7 @@
     "confidence": "Media",
     "pickBadge": "valor",
     "smartScore": 99,
-    "explanation": "Eficacia bilateral en ataque: Alanyaspor anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Göztepe cuenta con pegada foránea (1.2 xG). El patrón estadístico favorece la anotación mutua.",
+    "explanation": "Eficacia bilateral en ataque: Alanyaspor anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que G\u00f6ztepe cuenta con pegada for\u00e1nea (1.2 xG). El patr\u00f3n estad\u00edstico favorece la anotaci\u00f3n mutua.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -2091,26 +2104,26 @@
       {
         "date": "2026-07-14",
         "homeTeam": "Alanyaspor",
-        "awayTeam": "Göztepe",
+        "awayTeam": "G\u00f6ztepe",
         "score": "2-1",
         "winner": "home",
-        "competition": "Süper Lig"
+        "competition": "S\u00fcper Lig"
       },
       {
         "date": "2026-03-16",
-        "homeTeam": "Göztepe",
+        "homeTeam": "G\u00f6ztepe",
         "awayTeam": "Alanyaspor",
         "score": "0-2",
         "winner": "away",
-        "competition": "Süper Lig"
+        "competition": "S\u00fcper Lig"
       },
       {
         "date": "2025-09-17",
         "homeTeam": "Alanyaspor",
-        "awayTeam": "Göztepe",
+        "awayTeam": "G\u00f6ztepe",
         "score": "3-0",
         "winner": "home",
-        "competition": "Süper Lig"
+        "competition": "S\u00fcper Lig"
       }
     ],
     "homeLast5": [
@@ -2120,7 +2133,7 @@
         "isHome": true,
         "score": "2-1",
         "result": "W",
-        "competition": "Süper Lig"
+        "competition": "S\u00fcper Lig"
       },
       {
         "date": "2026-09-03",
@@ -2128,7 +2141,7 @@
         "isHome": false,
         "score": "0-2",
         "result": "L",
-        "competition": "Süper Lig"
+        "competition": "S\u00fcper Lig"
       },
       {
         "date": "2026-08-29",
@@ -2136,7 +2149,7 @@
         "isHome": true,
         "score": "1-1",
         "result": "D",
-        "competition": "Süper Lig"
+        "competition": "S\u00fcper Lig"
       },
       {
         "date": "2026-08-24",
@@ -2144,7 +2157,7 @@
         "isHome": false,
         "score": "1-0",
         "result": "W",
-        "competition": "Süper Lig"
+        "competition": "S\u00fcper Lig"
       },
       {
         "date": "2026-08-19",
@@ -2152,7 +2165,7 @@
         "isHome": true,
         "score": "1-2",
         "result": "L",
-        "competition": "Süper Lig"
+        "competition": "S\u00fcper Lig"
       }
     ],
     "awayLast5": [
@@ -2162,7 +2175,7 @@
         "isHome": false,
         "score": "0-2",
         "result": "L",
-        "competition": "Süper Lig"
+        "competition": "S\u00fcper Lig"
       },
       {
         "date": "2026-09-03",
@@ -2170,7 +2183,7 @@
         "isHome": true,
         "score": "1-1",
         "result": "D",
-        "competition": "Süper Lig"
+        "competition": "S\u00fcper Lig"
       },
       {
         "date": "2026-08-29",
@@ -2178,7 +2191,7 @@
         "isHome": false,
         "score": "1-0",
         "result": "W",
-        "competition": "Süper Lig"
+        "competition": "S\u00fcper Lig"
       },
       {
         "date": "2026-08-24",
@@ -2186,7 +2199,7 @@
         "isHome": true,
         "score": "2-1",
         "result": "W",
-        "competition": "Süper Lig"
+        "competition": "S\u00fcper Lig"
       },
       {
         "date": "2026-08-19",
@@ -2194,7 +2207,7 @@
         "isHome": false,
         "score": "0-2",
         "result": "L",
-        "competition": "Süper Lig"
+        "competition": "S\u00fcper Lig"
       }
     ],
     "homeElo": 1630,
@@ -2205,11 +2218,12 @@
     "profit": 0.84,
     "matchTiming": "finished",
     "pick": "Ambos Equipos Anotan",
-    "score": "2 - 2 (Ambos Sí)",
+    "score": "2 - 2 (Ambos S\u00ed)",
     "actualGoalsHome": 2,
     "actualGoalsAway": 2,
     "result": "WON",
-    "actualScore": "2 - 2 (Ambos Sí)"
+    "actualScore": "2 - 2 (Ambos S\u00ed)",
+    "sport": "football"
   },
   {
     "fixtureId": 1550117,
@@ -2240,7 +2254,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Alta expectativa anotadora: Atalanta genera 1.6 xG en casa y Cagliari promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
+    "explanation": "Alta expectativa anotadora: Atalanta genera 1.6 xG en casa y Cagliari promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o m\u00e1s tantos.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -2367,7 +2381,8 @@
     "actualGoalsHome": 1,
     "actualGoalsAway": 2,
     "result": "WON",
-    "actualScore": "1 - 2 (3 Goles)"
+    "actualScore": "1 - 2 (3 Goles)",
+    "sport": "football"
   },
   {
     "fixtureId": 1558630,
@@ -2381,11 +2396,11 @@
     "league": "Jupiler Pro League",
     "leagueId": 144,
     "leagueLogo": "https://media.api-sports.io/football/leagues/144.png",
-    "country": "Bélgica",
+    "country": "B\u00e9lgica",
     "leagueTier": 1,
     "kickoff": "2026-09-12T13:45:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "odds": 1.78,
     "bookmaker": "Bet365",
     "bookmakerOdds": 1.78,
@@ -2398,7 +2413,7 @@
     "confidence": "Media",
     "pickBadge": "valor",
     "smartScore": 99,
-    "explanation": "Eficacia bilateral en ataque: Union St. Gilloise anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Lommel United cuenta con pegada foránea (1.2 xG). El patrón estadístico favorece la anotación mutua.",
+    "explanation": "Eficacia bilateral en ataque: Union St. Gilloise anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Lommel United cuenta con pegada for\u00e1nea (1.2 xG). El patr\u00f3n estad\u00edstico favorece la anotaci\u00f3n mutua.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -2525,7 +2540,8 @@
     "actualGoalsHome": 5,
     "actualGoalsAway": 0,
     "result": "LOST",
-    "actualScore": "5 - 0 (No)"
+    "actualScore": "5 - 0 (No)",
+    "sport": "football"
   },
   {
     "fixtureId": 1570379,
@@ -2539,7 +2555,7 @@
     "league": "La Liga",
     "leagueId": 140,
     "leagueLogo": "https://media.api-sports.io/football/leagues/140.png",
-    "country": "España",
+    "country": "Espa\u00f1a",
     "leagueTier": 1,
     "kickoff": "2026-09-12T14:00:00-05:00",
     "market": "Over 2.5 Goles",
@@ -2556,7 +2572,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Real Madrid ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Rayo Vallecano acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas áreas.",
+    "explanation": "Real Madrid ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras Rayo Vallecano acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas \u00e1reas.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -2683,7 +2699,8 @@
     "actualGoalsHome": 4,
     "actualGoalsAway": 1,
     "result": "WON",
-    "actualScore": "4 - 1 (5 Goles)"
+    "actualScore": "4 - 1 (5 Goles)",
+    "sport": "football"
   },
   {
     "fixtureId": 1492370,
@@ -2694,7 +2711,7 @@
     "awayTeamId": 124,
     "homeLogo": "https://media.api-sports.io/football/teams/1062.png",
     "awayLogo": "https://media.api-sports.io/football/teams/124.png",
-    "league": "Brasileirão Série A",
+    "league": "Brasileir\u00e3o S\u00e9rie A",
     "leagueId": 71,
     "leagueLogo": "https://media.api-sports.io/football/leagues/71.png",
     "country": "Brasil",
@@ -2714,7 +2731,7 @@
     "confidence": "Alta",
     "pickBadge": "bomba",
     "smartScore": 95,
-    "explanation": "Atletico-MG impone una marcada solvencia como anfitrión (3 triunfos en sus últimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Fluminense que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+    "explanation": "Atletico-MG impone una marcada solvencia como anfitri\u00f3n (3 triunfos en sus \u00faltimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Fluminense que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -2726,7 +2743,7 @@
         "awayTeam": "Fluminense",
         "score": "2-1",
         "winner": "home",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-03-16",
@@ -2734,7 +2751,7 @@
         "awayTeam": "Atletico-MG",
         "score": "0-2",
         "winner": "away",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2025-09-17",
@@ -2742,7 +2759,7 @@
         "awayTeam": "Fluminense",
         "score": "1-1",
         "winner": "draw",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       }
     ],
     "homeLast5": [
@@ -2752,7 +2769,7 @@
         "isHome": true,
         "score": "3-1",
         "result": "W",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-09-03",
@@ -2760,7 +2777,7 @@
         "isHome": false,
         "score": "2-0",
         "result": "W",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-29",
@@ -2768,7 +2785,7 @@
         "isHome": true,
         "score": "0-1",
         "result": "L",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-24",
@@ -2776,7 +2793,7 @@
         "isHome": false,
         "score": "2-0",
         "result": "W",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-19",
@@ -2784,7 +2801,7 @@
         "isHome": true,
         "score": "3-1",
         "result": "W",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       }
     ],
     "awayLast5": [
@@ -2794,7 +2811,7 @@
         "isHome": true,
         "score": "1-1",
         "result": "D",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-09-03",
@@ -2802,7 +2819,7 @@
         "isHome": false,
         "score": "1-0",
         "result": "W",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-29",
@@ -2810,7 +2827,7 @@
         "isHome": true,
         "score": "2-1",
         "result": "W",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-24",
@@ -2818,7 +2835,7 @@
         "isHome": false,
         "score": "0-2",
         "result": "L",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-19",
@@ -2826,7 +2843,7 @@
         "isHome": true,
         "score": "1-1",
         "result": "D",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       }
     ],
     "homeElo": 1880,
@@ -2841,7 +2858,8 @@
     "actualGoalsHome": 3,
     "actualGoalsAway": 1,
     "result": "WON",
-    "actualScore": "3 - 1"
+    "actualScore": "3 - 1",
+    "sport": "football"
   },
   {
     "fixtureId": 1492376,
@@ -2852,7 +2870,7 @@
     "awayTeamId": 133,
     "homeLogo": "https://media.api-sports.io/football/teams/130.png",
     "awayLogo": "https://media.api-sports.io/football/teams/133.png",
-    "league": "Brasileirão Série A",
+    "league": "Brasileir\u00e3o S\u00e9rie A",
     "leagueId": 71,
     "leagueLogo": "https://media.api-sports.io/football/leagues/71.png",
     "country": "Brasil",
@@ -2872,7 +2890,7 @@
     "confidence": "Media",
     "pickBadge": "bomba",
     "smartScore": 71,
-    "explanation": "Diferencial de calidad y estructura a favor de Vasco DA Gama (+108 Elo). El conjunto visitante impone condiciones en duelos individuales y supera en volumen de remates al conjunto anfitrión.",
+    "explanation": "Diferencial de calidad y estructura a favor de Vasco DA Gama (+108 Elo). El conjunto visitante impone condiciones en duelos individuales y supera en volumen de remates al conjunto anfitri\u00f3n.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -2884,7 +2902,7 @@
         "awayTeam": "Vasco DA Gama",
         "score": "1-2",
         "winner": "away",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-03-16",
@@ -2892,7 +2910,7 @@
         "awayTeam": "Gremio",
         "score": "2-0",
         "winner": "home",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2025-09-17",
@@ -2900,7 +2918,7 @@
         "awayTeam": "Vasco DA Gama",
         "score": "1-1",
         "winner": "draw",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       }
     ],
     "homeLast5": [
@@ -2910,7 +2928,7 @@
         "isHome": false,
         "score": "1-0",
         "result": "W",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-09-03",
@@ -2918,7 +2936,7 @@
         "isHome": true,
         "score": "1-2",
         "result": "L",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-29",
@@ -2926,7 +2944,7 @@
         "isHome": false,
         "score": "1-1",
         "result": "D",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-24",
@@ -2934,7 +2952,7 @@
         "isHome": true,
         "score": "2-1",
         "result": "W",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-19",
@@ -2942,7 +2960,7 @@
         "isHome": false,
         "score": "0-2",
         "result": "L",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       }
     ],
     "awayLast5": [
@@ -2952,7 +2970,7 @@
         "isHome": false,
         "score": "0-2",
         "result": "L",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-09-03",
@@ -2960,7 +2978,7 @@
         "isHome": true,
         "score": "1-1",
         "result": "D",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-29",
@@ -2968,7 +2986,7 @@
         "isHome": false,
         "score": "1-0",
         "result": "W",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-24",
@@ -2976,7 +2994,7 @@
         "isHome": true,
         "score": "2-1",
         "result": "W",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       },
       {
         "date": "2026-08-19",
@@ -2984,7 +3002,7 @@
         "isHome": false,
         "score": "0-2",
         "result": "L",
-        "competition": "Brasileirão Série A"
+        "competition": "Brasileir\u00e3o S\u00e9rie A"
       }
     ],
     "homeElo": 1551,
@@ -2999,7 +3017,8 @@
     "actualGoalsHome": 1,
     "actualGoalsAway": 2,
     "result": "WON",
-    "actualScore": "1 - 2"
+    "actualScore": "1 - 2",
+    "sport": "football"
   },
   {
     "fixtureId": 1551683,
@@ -3010,7 +3029,7 @@
     "awayTeamId": 2045,
     "homeLogo": "https://media.api-sports.io/football/teams/24391.png",
     "awayLogo": "https://media.api-sports.io/football/teams/2045.png",
-    "league": "Primera División (Liga FPD)",
+    "league": "Primera Divisi\u00f3n (Liga FPD)",
     "leagueId": 162,
     "leagueLogo": "https://media.api-sports.io/football/leagues/162.png",
     "country": "Costa Rica",
@@ -3030,7 +3049,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Propuesta vertical y transiciones dinámicas: Tanto Inter San Carlos como Puntarenas FC promedian más de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la línea de 2.5 goles.",
+    "explanation": "Propuesta vertical y transiciones din\u00e1micas: Tanto Inter San Carlos como Puntarenas FC promedian m\u00e1s de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la l\u00ednea de 2.5 goles.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -3042,7 +3061,7 @@
         "awayTeam": "Puntarenas FC",
         "score": "2-1",
         "winner": "home",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-03-16",
@@ -3050,7 +3069,7 @@
         "awayTeam": "Inter San Carlos",
         "score": "0-2",
         "winner": "away",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2025-09-17",
@@ -3058,7 +3077,7 @@
         "awayTeam": "Puntarenas FC",
         "score": "1-1",
         "winner": "draw",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       }
     ],
     "homeLast5": [
@@ -3068,7 +3087,7 @@
         "isHome": true,
         "score": "3-1",
         "result": "W",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-09-03",
@@ -3076,7 +3095,7 @@
         "isHome": false,
         "score": "1-1",
         "result": "D",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-08-29",
@@ -3084,7 +3103,7 @@
         "isHome": true,
         "score": "3-1",
         "result": "W",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-08-24",
@@ -3092,7 +3111,7 @@
         "isHome": false,
         "score": "2-0",
         "result": "W",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-08-19",
@@ -3100,7 +3119,7 @@
         "isHome": true,
         "score": "0-1",
         "result": "L",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       }
     ],
     "awayLast5": [
@@ -3110,7 +3129,7 @@
         "isHome": true,
         "score": "1-1",
         "result": "D",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-09-03",
@@ -3118,7 +3137,7 @@
         "isHome": false,
         "score": "1-0",
         "result": "W",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-08-29",
@@ -3126,7 +3145,7 @@
         "isHome": true,
         "score": "2-1",
         "result": "W",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-08-24",
@@ -3134,7 +3153,7 @@
         "isHome": false,
         "score": "0-2",
         "result": "L",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-08-19",
@@ -3142,7 +3161,7 @@
         "isHome": true,
         "score": "1-1",
         "result": "D",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       }
     ],
     "homeElo": 1960,
@@ -3160,7 +3179,8 @@
     "actualGoalsHome": 1,
     "actualGoalsAway": 1,
     "result": "LOST",
-    "actualScore": "1 - 1 (2 Goles)"
+    "actualScore": "1 - 1 (2 Goles)",
+    "sport": "football"
   },
   {
     "fixtureId": 1549776,
@@ -3191,7 +3211,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Chico impone una marcada solvencia como anfitrión (3 triunfos en sus últimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Independiente Medellin que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+    "explanation": "Chico impone una marcada solvencia como anfitri\u00f3n (3 triunfos en sus \u00faltimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Independiente Medellin que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -3318,7 +3338,8 @@
     "actualGoalsHome": 2,
     "actualGoalsAway": 1,
     "result": "WON",
-    "actualScore": "2 - 1"
+    "actualScore": "2 - 1",
+    "sport": "football"
   },
   {
     "fixtureId": 1490469,
@@ -3349,7 +3370,7 @@
     "confidence": "Media",
     "pickBadge": "valor",
     "smartScore": 88,
-    "explanation": "Diferencial cualitativo a favor de Orlando City SC (+56 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Toronto FC.",
+    "explanation": "Diferencial cualitativo a favor de Orlando City SC (+56 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presi\u00f3n alta neutralizan el planteamiento defensivo de Toronto FC.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -3476,7 +3497,8 @@
     "actualGoalsHome": 3,
     "actualGoalsAway": 0,
     "result": "WON",
-    "actualScore": "3 - 0"
+    "actualScore": "3 - 0",
+    "sport": "football"
   },
   {
     "fixtureId": 1490466,
@@ -3507,7 +3529,7 @@
     "confidence": "Alta",
     "pickBadge": "bomba",
     "smartScore": 96,
-    "explanation": "Rendimiento muy fiable de Inter Miami en su feudo (4 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Nashville SC inclina con claridad la balanza estadística hacia el triunfo local.",
+    "explanation": "Rendimiento muy fiable de Inter Miami en su feudo (4 partidos sin caer en sus \u00faltimas 5 presentaciones). La brecha de generaci\u00f3n de ocasiones claras ante Nashville SC inclina con claridad la balanza estad\u00edstica hacia el triunfo local.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -3634,7 +3656,8 @@
     "actualGoalsHome": 2,
     "actualGoalsAway": 2,
     "result": "LOST",
-    "actualScore": "2 - 2"
+    "actualScore": "2 - 2",
+    "sport": "football"
   },
   {
     "fixtureId": 1549483,
@@ -3648,11 +3671,11 @@
     "league": "Liga 1",
     "leagueId": 281,
     "leagueLogo": "https://media.api-sports.io/football/leagues/281.png",
-    "country": "Perú",
+    "country": "Per\u00fa",
     "leagueTier": 1,
     "kickoff": "2026-09-12T20:00:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "odds": 1.78,
     "bookmaker": "Bet365",
     "bookmakerOdds": 1.78,
@@ -3665,7 +3688,7 @@
     "confidence": "Media",
     "pickBadge": "valor",
     "smartScore": 89,
-    "explanation": "Tanto Alianza Lima como Universitario han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
+    "explanation": "Tanto Alianza Lima como Universitario han visto puerta en 4 de sus \u00faltimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -3787,12 +3810,13 @@
     "addedAt": "2026-09-12T11:53:00.065Z",
     "pick": "Ambos Equipos Anotan",
     "matchTiming": "finished",
-    "score": "1 - 2 (Ambos Sí)",
+    "score": "1 - 2 (Ambos S\u00ed)",
     "profit": 0.78,
     "actualGoalsHome": 1,
     "actualGoalsAway": 2,
     "result": "WON",
-    "actualScore": "1 - 2 (Ambos Sí)"
+    "actualScore": "1 - 2 (Ambos S\u00ed)",
+    "sport": "football"
   },
   {
     "fixtureId": 1490476,
@@ -3950,6 +3974,7 @@
     "actualGoalsHome": 1,
     "actualGoalsAway": 1,
     "result": "LOST",
-    "actualScore": "1 - 1"
+    "actualScore": "1 - 1",
+    "sport": "football"
   }
 ]

@@ -115,13 +115,19 @@ export default function DashboardPage() {
   const loadSignals = async (showLoader = false) => {
     try {
       if (showLoader) setLoading(true);
-      const res = await fetch(`/api/signals?_t=${Date.now()}`, { cache: "no-store" });
+      const res = await fetch(`/api/signals?sport=football&_t=${Date.now()}`, { cache: "no-store" });
       const json = await res.json();
       const serverSignals: MarketOpportunity[] = Array.isArray(json.signals)
         ? json.signals
         : [];
 
-      const cleanUniqueSignals = deduplicatePicksList(serverSignals);
+      // Strict client-side filter: only football
+      const cleanUniqueSignals = deduplicatePicksList(serverSignals).filter((s) => {
+        const c = (s.country || "").toUpperCase();
+        const l = (s.league || "").toUpperCase();
+        const sp = ((s as any).sport || "").toLowerCase();
+        return c !== "NHL" && !l.includes("NHL") && sp !== "nhl" && c !== "NBA" && !l.includes("NBA") && sp !== "nba" && c !== "NFL" && sp !== "nfl";
+      });
       setPredictions(cleanUniqueSignals);
 
       // Also fetch NHL signals for the multisport card

@@ -212,6 +212,7 @@ export interface MarketOpportunity {
   };
   actualScore?: string;
   pick?: string;
+  sport?: string;
   profit?: number;
   h2h?: H2HMatch[];
   homeLast5?: TeamFormMatch[];

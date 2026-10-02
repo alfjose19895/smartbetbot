@@ -315,7 +315,7 @@ export class NHLSyncEngine {
     // Save opportunities permanently into daily snapshot to preserve full traceability
     try {
       const opps = allSignals.map(multiSportSignalToOpportunity);
-      saveDailySnapshot(date, opps);
+      saveDailySnapshot(date, opps, 'nhl');
     } catch (e) {
       console.warn('[NHLSyncEngine] Error saving snapshot:', e);
     }

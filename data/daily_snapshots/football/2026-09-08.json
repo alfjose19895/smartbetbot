@@ -26,7 +26,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 81,
-    "explanation": "Solidez posicional y eficacia en área propia: Ilves concede menos de 0.9 xG de local, mientras que FF Jaro muestra dificultades para generar peligro constante a domicilio (1.2 xG foráneo).",
+    "explanation": "Solidez posicional y eficacia en \u00e1rea propia: Ilves concede menos de 0.9 xG de local, mientras que FF Jaro muestra dificultades para generar peligro constante a domicilio (1.2 xG for\u00e1neo).",
     "status": "won",
     "h2h": [
       {
@@ -90,7 +90,8 @@
     "actualGoalsAway": 0,
     "settledAt": "2026-09-12T04:31:15.875Z",
     "result": "WON",
-    "profit": 0.53
+    "profit": 0.53,
+    "sport": "football"
   },
   {
     "fixtureId": 1635663,
@@ -119,7 +120,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 81,
-    "explanation": "Lahti impone una marcada solvencia como anfitrión (3 triunfos en sus últimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Mariehamn que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+    "explanation": "Lahti impone una marcada solvencia como anfitri\u00f3n (3 triunfos en sus \u00faltimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Mariehamn que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
     "status": "won",
     "h2h": [
       {
@@ -180,7 +181,8 @@
     "actualGoalsAway": 1,
     "settledAt": "2026-09-12T04:31:15.876Z",
     "result": "WON",
-    "profit": 0.55
+    "profit": 0.55,
+    "sport": "football"
   },
   {
     "fixtureId": 1635655,
@@ -209,7 +211,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 73,
-    "explanation": "Club Brujas ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Aston Villa acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas áreas.",
+    "explanation": "Club Brujas ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras Aston Villa acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas \u00e1reas.",
     "status": "won",
     "h2h": [
       {
@@ -270,7 +272,8 @@
     "actualGoalsAway": 3,
     "settledAt": "2026-09-12T04:31:15.876Z",
     "result": "WON",
-    "profit": 0.75
+    "profit": 0.75,
+    "sport": "football"
   },
   {
     "fixtureId": 1635655,
@@ -363,7 +366,8 @@
     "actualGoalsAway": 3,
     "settledAt": "2026-09-12T04:31:15.876Z",
     "result": "WON",
-    "profit": 1.7
+    "profit": 1.7,
+    "sport": "football"
   },
   {
     "fixtureId": 1635661,
@@ -392,7 +396,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "valor",
     "smartScore": 86,
-    "explanation": "Diferencial cualitativo a favor de Al-Ittihad FC (+100 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Al-Fayha.",
+    "explanation": "Diferencial cualitativo a favor de Al-Ittihad FC (+100 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presi\u00f3n alta neutralizan el planteamiento defensivo de Al-Fayha.",
     "status": "won",
     "h2h": [
       {
@@ -453,7 +457,8 @@
     "actualGoalsAway": 1,
     "settledAt": "2026-09-12T04:31:15.876Z",
     "result": "WON",
-    "profit": 0.4
+    "profit": 0.4,
+    "sport": "football"
   },
   {
     "fixtureId": 1635661,
@@ -482,7 +487,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 78,
-    "explanation": "Al-Ittihad FC ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Al-Fayha acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas áreas.",
+    "explanation": "Al-Ittihad FC ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras Al-Fayha acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas \u00e1reas.",
     "status": "won",
     "h2h": [
       {
@@ -543,7 +548,8 @@
     "actualGoalsAway": 1,
     "settledAt": "2026-09-12T04:31:15.876Z",
     "result": "WON",
-    "profit": 0.48
+    "profit": 0.48,
+    "sport": "football"
   },
   {
     "fixtureId": 1635658,
@@ -572,7 +578,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 81,
-    "explanation": "Diferencial de calidad y estructura a favor de Newcastle (+100 Elo). El conjunto visitante impone condiciones en duelos individuales y supera en volumen de remates al conjunto anfitrión.",
+    "explanation": "Diferencial de calidad y estructura a favor de Newcastle (+100 Elo). El conjunto visitante impone condiciones en duelos individuales y supera en volumen de remates al conjunto anfitri\u00f3n.",
     "status": "won",
     "h2h": [
       {
@@ -636,7 +642,8 @@
     "actualGoalsAway": 1,
     "settledAt": "2026-09-12T04:31:15.876Z",
     "result": "WON",
-    "profit": 0.55
+    "profit": 0.55,
+    "sport": "football"
   },
   {
     "fixtureId": 1635658,
@@ -665,7 +672,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 75,
-    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
+    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
     "status": "lost",
     "h2h": [
       {
@@ -726,7 +733,8 @@
     "actualGoalsAway": 1,
     "settledAt": "2026-09-12T04:31:15.876Z",
     "result": "LOST",
-    "profit": -1.0
+    "profit": -1.0,
+    "sport": "football"
   },
   {
     "fixtureId": 1635659,
@@ -755,7 +763,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 76,
-    "explanation": "Diferencial de calidad y estructura a favor de West Ham (+100 Elo). El conjunto visitante impone condiciones en duelos individuales y supera en volumen de remates al conjunto anfitrión.",
+    "explanation": "Diferencial de calidad y estructura a favor de West Ham (+100 Elo). El conjunto visitante impone condiciones en duelos individuales y supera en volumen de remates al conjunto anfitri\u00f3n.",
     "status": "won",
     "h2h": [
       {
@@ -816,7 +824,8 @@
     "actualGoalsAway": 3,
     "settledAt": "2026-09-12T04:31:15.876Z",
     "result": "WON",
-    "profit": 0.57
+    "profit": 0.57,
+    "sport": "football"
   },
   {
     "fixtureId": 1635652,
@@ -845,7 +854,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 94,
-    "explanation": "Diferencial cualitativo a favor de Borussia Dortmund (+100 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Villarreal.",
+    "explanation": "Diferencial cualitativo a favor de Borussia Dortmund (+100 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presi\u00f3n alta neutralizan el planteamiento defensivo de Villarreal.",
     "status": "won",
     "h2h": [
       {
@@ -909,7 +918,8 @@
     "actualGoalsAway": 2,
     "settledAt": "2026-09-12T04:31:15.876Z",
     "result": "WON",
-    "profit": 0.75
+    "profit": 0.75,
+    "sport": "football"
   },
   {
     "fixtureId": 1635652,
@@ -938,7 +948,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 79,
-    "explanation": "Borussia Dortmund ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Villarreal acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas áreas.",
+    "explanation": "Borussia Dortmund ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras Villarreal acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas \u00e1reas.",
     "status": "won",
     "h2h": [
       {
@@ -999,7 +1009,8 @@
     "actualGoalsAway": 2,
     "settledAt": "2026-09-12T04:31:15.876Z",
     "result": "WON",
-    "profit": 0.5
+    "profit": 0.5,
+    "sport": "football"
   },
   {
     "fixtureId": 1635652,
@@ -1016,7 +1027,7 @@
     "country": "Europa",
     "kickoff": "2026-09-08T14:00:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "odds": 1.65,
     "bookmakerOdds": 1.65,
     "modelOdds": 1.67,
@@ -1028,7 +1039,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 76,
-    "explanation": "Eficacia bilateral en ataque: Borussia Dortmund anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Villarreal cuenta con pegada foránea (1.2 xG). El patrón estadístico favorece la anotación mutua.",
+    "explanation": "Eficacia bilateral en ataque: Borussia Dortmund anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Villarreal cuenta con pegada for\u00e1nea (1.2 xG). El patr\u00f3n estad\u00edstico favorece la anotaci\u00f3n mutua.",
     "status": "won",
     "h2h": [
       {
@@ -1084,12 +1095,13 @@
         "competition": "UEFA Champions League"
       }
     ],
-    "actualScore": "3 - 2 (Ambos Sí)",
+    "actualScore": "3 - 2 (Ambos S\u00ed)",
     "actualGoalsHome": 3,
     "actualGoalsAway": 2,
     "settledAt": "2026-09-12T04:31:15.876Z",
     "result": "WON",
-    "profit": 0.65
+    "profit": 0.65,
+    "sport": "football"
   },
   {
     "fixtureId": 1635653,
@@ -1118,7 +1130,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 87,
-    "explanation": "Diferencial cualitativo a favor de Real Madrid (+100 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Inter.",
+    "explanation": "Diferencial cualitativo a favor de Real Madrid (+100 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presi\u00f3n alta neutralizan el planteamiento defensivo de Inter.",
     "status": "won",
     "h2h": [
       {
@@ -1182,7 +1194,8 @@
     "actualGoalsAway": 1,
     "settledAt": "2026-09-12T04:31:15.876Z",
     "result": "WON",
-    "profit": 0.62
+    "profit": 0.62,
+    "sport": "football"
   },
   {
     "fixtureId": 1635653,
@@ -1211,7 +1224,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 78,
-    "explanation": "Alta expectativa anotadora: Real Madrid genera 1.6 xG en casa y Inter promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
+    "explanation": "Alta expectativa anotadora: Real Madrid genera 1.6 xG en casa y Inter promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o m\u00e1s tantos.",
     "status": "won",
     "h2h": [
       {
@@ -1272,7 +1285,8 @@
     "actualGoalsAway": 1,
     "settledAt": "2026-09-12T04:31:15.876Z",
     "result": "WON",
-    "profit": 0.44
+    "profit": 0.44,
+    "sport": "football"
   },
   {
     "fixtureId": 1635654,
@@ -1301,7 +1315,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 84,
-    "explanation": "Diferencial de calidad y estructura a favor de Manchester City (+100 Elo). El conjunto visitante impone condiciones en duelos individuales y supera en volumen de remates al conjunto anfitrión.",
+    "explanation": "Diferencial de calidad y estructura a favor de Manchester City (+100 Elo). El conjunto visitante impone condiciones en duelos individuales y supera en volumen de remates al conjunto anfitri\u00f3n.",
     "status": "won",
     "h2h": [
       {
@@ -1362,7 +1376,8 @@
     "actualGoalsAway": 2,
     "settledAt": "2026-09-12T04:31:15.876Z",
     "result": "WON",
-    "profit": 0.65
+    "profit": 0.65,
+    "sport": "football"
   },
   {
     "fixtureId": 1635654,
@@ -1391,7 +1406,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 74,
-    "explanation": "FC Porto ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Manchester City acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas áreas.",
+    "explanation": "FC Porto ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras Manchester City acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas \u00e1reas.",
     "status": "lost",
     "h2h": [
       {
@@ -1455,7 +1470,8 @@
     "actualGoalsAway": 2,
     "settledAt": "2026-09-12T04:31:15.876Z",
     "result": "LOST",
-    "profit": -1.0
+    "profit": -1.0,
+    "sport": "football"
   },
   {
     "fixtureId": 1635656,
@@ -1484,7 +1500,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 72,
-    "explanation": "Alta expectativa anotadora: Lille genera 1.6 xG en casa y Real Betis promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
+    "explanation": "Alta expectativa anotadora: Lille genera 1.6 xG en casa y Real Betis promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o m\u00e1s tantos.",
     "status": "won",
     "h2h": [
       {
@@ -1545,7 +1561,8 @@
     "actualGoalsAway": 3,
     "settledAt": "2026-09-12T04:31:15.876Z",
     "result": "WON",
-    "profit": 0.8
+    "profit": 0.8,
+    "sport": "football"
   },
   {
     "fixtureId": 1635656,
@@ -1574,7 +1591,7 @@
     "confidence": "Media",
     "pickBadge": "bomba",
     "smartScore": 79,
-    "explanation": "Lille impone una marcada solvencia como anfitrión (3 triunfos en sus últimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Real Betis que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+    "explanation": "Lille impone una marcada solvencia como anfitri\u00f3n (3 triunfos en sus \u00faltimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Real Betis que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
     "status": "lost",
     "h2h": [
       {
@@ -1635,7 +1652,8 @@
     "actualGoalsAway": 3,
     "settledAt": "2026-09-12T04:31:15.876Z",
     "result": "LOST",
-    "profit": -1.0
+    "profit": -1.0,
+    "sport": "football"
   },
   {
     "fixtureId": 1635660,
@@ -1664,7 +1682,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 78,
-    "explanation": "Crystal Palace impone una marcada solvencia como anfitrión (3 triunfos en sus últimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Middlesbrough que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+    "explanation": "Crystal Palace impone una marcada solvencia como anfitri\u00f3n (3 triunfos en sus \u00faltimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Middlesbrough que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
     "status": "won",
     "h2h": [
       {
@@ -1728,7 +1746,8 @@
     "actualGoalsAway": 0,
     "settledAt": "2026-09-12T04:31:15.876Z",
     "result": "WON",
-    "profit": 0.65
+    "profit": 0.65,
+    "sport": "football"
   },
   {
     "fixtureId": 1635660,
@@ -1757,7 +1776,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 75,
-    "explanation": "Crystal Palace ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Middlesbrough acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas áreas.",
+    "explanation": "Crystal Palace ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras Middlesbrough acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas \u00e1reas.",
     "status": "won",
     "h2h": [
       {
@@ -1818,7 +1837,8 @@
     "actualGoalsAway": 0,
     "settledAt": "2026-09-12T04:31:15.876Z",
     "result": "WON",
-    "profit": 0.6
+    "profit": 0.6,
+    "sport": "football"
   },
   {
     "fixtureId": 1635657,
@@ -1832,7 +1852,7 @@
     "league": "Copa Sudamericana",
     "leagueId": 11,
     "leagueLogo": "https://media.api-sports.io/football/leagues/11.png",
-    "country": "Sudamérica",
+    "country": "Sudam\u00e9rica",
     "kickoff": "2026-09-08T19:30:00-05:00",
     "market": "Ganador Local",
     "selection": "Boca Juniors",
@@ -1847,7 +1867,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 86,
-    "explanation": "Boca Juniors impone una marcada solvencia como anfitrión (3 triunfos en sus últimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Sao Paulo que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+    "explanation": "Boca Juniors impone una marcada solvencia como anfitri\u00f3n (3 triunfos en sus \u00faltimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Sao Paulo que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
     "status": "won",
     "h2h": [
       {
@@ -1908,7 +1928,8 @@
     "actualGoalsAway": 0,
     "settledAt": "2026-09-12T04:31:15.876Z",
     "result": "WON",
-    "profit": 0.75
+    "profit": 0.75,
+    "sport": "football"
   },
   {
     "fixtureId": 1635657,
@@ -1922,10 +1943,10 @@
     "league": "Copa Sudamericana",
     "leagueId": 11,
     "leagueLogo": "https://media.api-sports.io/football/leagues/11.png",
-    "country": "Sudamérica",
+    "country": "Sudam\u00e9rica",
     "kickoff": "2026-09-08T19:30:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Sí",
+    "selection": "S\u00ed",
     "odds": 2.1,
     "bookmakerOdds": 2.1,
     "modelOdds": 1.78,
@@ -1937,7 +1958,7 @@
     "confidence": "Media",
     "pickBadge": "bomba",
     "smartScore": 80,
-    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
+    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porter\u00edas por la postura ofensiva de sus t\u00e9cnicos y las desatenciones en repliegue.",
     "status": "lost",
     "h2h": [
       {
@@ -2001,6 +2022,7 @@
     "actualGoalsAway": 0,
     "settledAt": "2026-09-12T04:31:15.876Z",
     "result": "LOST",
-    "profit": -1.0
+    "profit": -1.0,
+    "sport": "football"
   }
 ]

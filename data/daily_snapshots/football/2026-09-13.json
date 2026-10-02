@@ -11,7 +11,7 @@
     "league": "La Liga",
     "leagueId": 140,
     "leagueLogo": "https://media.api-sports.io/football/leagues/140.png",
-    "country": "España",
+    "country": "Espa\u00f1a",
     "leagueTier": 1,
     "kickoff": "2026-09-13T07:00:00-05:00",
     "market": "Ganador Local",
@@ -29,7 +29,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "valor",
     "smartScore": 99,
-    "explanation": "Solidez posicional y eficacia en área propia: Celta Vigo concede menos de 0.9 xG de local, mientras que Malaga muestra dificultades para generar peligro constante a domicilio (1.2 xG foráneo).",
+    "explanation": "Solidez posicional y eficacia en \u00e1rea propia: Celta Vigo concede menos de 0.9 xG de local, mientras que Malaga muestra dificultades para generar peligro constante a domicilio (1.2 xG for\u00e1neo).",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -154,7 +154,8 @@
     "profit": -1.0,
     "matchTiming": "finished",
     "actualGoalsHome": 1,
-    "actualGoalsAway": 1
+    "actualGoalsAway": 1,
+    "sport": "football"
   },
   {
     "fixtureId": 1494763,
@@ -186,7 +187,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 97,
-    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
+    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -311,7 +312,8 @@
     "profit": 0.36,
     "matchTiming": "finished",
     "actualGoalsHome": 8,
-    "actualGoalsAway": 1
+    "actualGoalsAway": 1,
+    "sport": "football"
   },
   {
     "fixtureId": 1561928,
@@ -346,7 +348,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 98,
-    "explanation": "WSG Tirol ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras TSV Hartberg acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas áreas.",
+    "explanation": "WSG Tirol ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras TSV Hartberg acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas \u00e1reas.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -470,7 +472,8 @@
     "profit": 0.85,
     "matchTiming": "finished",
     "actualGoalsHome": 2,
-    "actualGoalsAway": 2
+    "actualGoalsAway": 2,
+    "sport": "football"
   },
   {
     "fixtureId": 1552760,
@@ -502,7 +505,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Alta expectativa anotadora: Lille genera 1.6 xG en casa y Estac Troyes promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
+    "explanation": "Alta expectativa anotadora: Lille genera 1.6 xG en casa y Estac Troyes promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o m\u00e1s tantos.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -627,7 +630,8 @@
     "profit": -1.0,
     "matchTiming": "finished",
     "actualGoalsHome": 2,
-    "actualGoalsAway": 0
+    "actualGoalsAway": 0,
+    "sport": "football"
   },
   {
     "fixtureId": 1560021,
@@ -641,7 +645,7 @@
     "league": "Czech Liga",
     "leagueId": 345,
     "leagueLogo": "https://media.api-sports.io/football/leagues/345.png",
-    "country": "República Checa",
+    "country": "Rep\u00fablica Checa",
     "leagueTier": 1,
     "kickoff": "2026-09-13T08:00:00-05:00",
     "market": "Over 2.5 Goles",
@@ -659,7 +663,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Alta expectativa anotadora: Plzen genera 1.6 xG en casa y Sigma Olomouc promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
+    "explanation": "Alta expectativa anotadora: Plzen genera 1.6 xG en casa y Sigma Olomouc promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o m\u00e1s tantos.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -784,7 +788,8 @@
     "profit": 0.65,
     "matchTiming": "finished",
     "actualGoalsHome": 2,
-    "actualGoalsAway": 3
+    "actualGoalsAway": 3,
+    "sport": "football"
   },
   {
     "fixtureId": 1575159,
@@ -816,7 +821,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Propuesta vertical y transiciones dinámicas: Tanto RB Leipzig como Hamburger SV promedian más de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la línea de 2.5 goles.",
+    "explanation": "Propuesta vertical y transiciones din\u00e1micas: Tanto RB Leipzig como Hamburger SV promedian m\u00e1s de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la l\u00ednea de 2.5 goles.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -941,7 +946,8 @@
     "profit": 0.28,
     "matchTiming": "finished",
     "actualGoalsHome": 5,
-    "actualGoalsAway": 0
+    "actualGoalsAway": 0,
+    "sport": "football"
   },
   {
     "fixtureId": 1549020,
@@ -973,7 +979,7 @@
     "confidence": "Alta",
     "pickBadge": "bomba",
     "smartScore": 99,
-    "explanation": "Solidez posicional y eficacia en área propia: Randers FC concede menos de 0.9 xG de local, mientras que Odense muestra dificultades para generar peligro constante a domicilio (1.2 xG foráneo).",
+    "explanation": "Solidez posicional y eficacia en \u00e1rea propia: Randers FC concede menos de 0.9 xG de local, mientras que Odense muestra dificultades para generar peligro constante a domicilio (1.2 xG for\u00e1neo).",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -1098,7 +1104,8 @@
     "profit": -1.0,
     "matchTiming": "finished",
     "actualGoalsHome": 1,
-    "actualGoalsAway": 2
+    "actualGoalsAway": 2,
+    "sport": "football"
   },
   {
     "fixtureId": 1570376,
@@ -1112,7 +1119,7 @@
     "league": "La Liga",
     "leagueId": 140,
     "leagueLogo": "https://media.api-sports.io/football/leagues/140.png",
-    "country": "España",
+    "country": "Espa\u00f1a",
     "leagueTier": 1,
     "kickoff": "2026-09-13T09:15:00-05:00",
     "market": "Over 2.5 Goles",
@@ -1130,7 +1137,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Alta expectativa anotadora: Levante genera 1.6 xG en casa y Barcelona promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
+    "explanation": "Alta expectativa anotadora: Levante genera 1.6 xG en casa y Barcelona promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o m\u00e1s tantos.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -1255,7 +1262,8 @@
     "profit": 0.25,
     "matchTiming": "finished",
     "actualGoalsHome": 2,
-    "actualGoalsAway": 4
+    "actualGoalsAway": 4,
+    "sport": "football"
   },
   {
     "fixtureId": 1555394,
@@ -1287,7 +1295,7 @@
     "confidence": "Alta",
     "pickBadge": "bomba",
     "smartScore": 99,
-    "explanation": "Diferencial cualitativo a favor de FC Luzern (+88 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de FC Basel 1893.",
+    "explanation": "Diferencial cualitativo a favor de FC Luzern (+88 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presi\u00f3n alta neutralizan el planteamiento defensivo de FC Basel 1893.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -1412,7 +1420,8 @@
     "profit": -1.0,
     "matchTiming": "finished",
     "actualGoalsHome": 2,
-    "actualGoalsAway": 4
+    "actualGoalsAway": 4,
+    "sport": "football"
   },
   {
     "fixtureId": 1565473,
@@ -1444,7 +1453,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "bomba",
     "smartScore": 99,
-    "explanation": "Rendimiento muy fiable de Bukovyna en su feudo (4 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Zorya Luhansk inclina con claridad la balanza estadística hacia el triunfo local.",
+    "explanation": "Rendimiento muy fiable de Bukovyna en su feudo (4 partidos sin caer en sus \u00faltimas 5 presentaciones). La brecha de generaci\u00f3n de ocasiones claras ante Zorya Luhansk inclina con claridad la balanza estad\u00edstica hacia el triunfo local.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -1569,7 +1578,8 @@
     "profit": -1.0,
     "matchTiming": "finished",
     "actualGoalsHome": 1,
-    "actualGoalsAway": 1
+    "actualGoalsAway": 1,
+    "sport": "football"
   },
   {
     "fixtureId": 1557404,
@@ -1601,7 +1611,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
+    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -1726,13 +1736,14 @@
     "profit": -1.0,
     "matchTiming": "finished",
     "actualGoalsHome": 0,
-    "actualGoalsAway": 1
+    "actualGoalsAway": 1,
+    "sport": "football"
   },
   {
     "fixtureId": 1575166,
-    "match": "SV Elversberg vs Bayern München",
+    "match": "SV Elversberg vs Bayern M\u00fcnchen",
     "homeTeam": "SV Elversberg",
-    "awayTeam": "Bayern München",
+    "awayTeam": "Bayern M\u00fcnchen",
     "homeTeamId": 1660,
     "awayTeamId": 157,
     "homeLogo": "https://media.api-sports.io/football/teams/1660.png",
@@ -1758,7 +1769,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Alta expectativa anotadora: SV Elversberg genera 1.6 xG en casa y Bayern München promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
+    "explanation": "Alta expectativa anotadora: SV Elversberg genera 1.6 xG en casa y Bayern M\u00fcnchen promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o m\u00e1s tantos.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -1767,14 +1778,14 @@
       {
         "date": "2026-07-15",
         "homeTeam": "SV Elversberg",
-        "awayTeam": "Bayern München",
+        "awayTeam": "Bayern M\u00fcnchen",
         "score": "1-2",
         "winner": "away",
         "competition": "Bundesliga"
       },
       {
         "date": "2026-03-17",
-        "homeTeam": "Bayern München",
+        "homeTeam": "Bayern M\u00fcnchen",
         "awayTeam": "SV Elversberg",
         "score": "2-0",
         "winner": "home",
@@ -1783,7 +1794,7 @@
       {
         "date": "2025-09-18",
         "homeTeam": "SV Elversberg",
-        "awayTeam": "Bayern München",
+        "awayTeam": "Bayern M\u00fcnchen",
         "score": "1-1",
         "winner": "draw",
         "competition": "Bundesliga"
@@ -1883,7 +1894,8 @@
     "profit": 0.12,
     "matchTiming": "finished",
     "actualGoalsHome": 1,
-    "actualGoalsAway": 2
+    "actualGoalsAway": 2,
+    "sport": "football"
   },
   {
     "fixtureId": 1582798,
@@ -1915,7 +1927,7 @@
     "confidence": "Alta",
     "pickBadge": "bomba",
     "smartScore": 99,
-    "explanation": "Solidez posicional y eficacia en área propia: Sloga Doboj concede menos de 0.9 xG de local, mientras que Zeljeznicar Sarajevo muestra dificultades para generar peligro constante a domicilio (1.2 xG foráneo).",
+    "explanation": "Solidez posicional y eficacia en \u00e1rea propia: Sloga Doboj concede menos de 0.9 xG de local, mientras que Zeljeznicar Sarajevo muestra dificultades para generar peligro constante a domicilio (1.2 xG for\u00e1neo).",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -2040,7 +2052,8 @@
     "profit": -1.0,
     "matchTiming": "finished",
     "actualGoalsHome": 1,
-    "actualGoalsAway": 1
+    "actualGoalsAway": 1,
+    "sport": "football"
   },
   {
     "fixtureId": 1570375,
@@ -2054,7 +2067,7 @@
     "league": "La Liga",
     "leagueId": 140,
     "leagueLogo": "https://media.api-sports.io/football/leagues/140.png",
-    "country": "España",
+    "country": "Espa\u00f1a",
     "leagueTier": 1,
     "kickoff": "2026-09-13T11:30:00-05:00",
     "market": "Ganador Local",
@@ -2072,7 +2085,7 @@
     "confidence": "Alta",
     "pickBadge": "bomba",
     "smartScore": 99,
-    "explanation": "Getafe impone una marcada solvencia como anfitrión (3 triunfos en sus últimos 5 compromisos) y promedia 2.2 xG en casa. Su dominio territorial y solidez defensiva ante un Deportivo La Coruna que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+    "explanation": "Getafe impone una marcada solvencia como anfitri\u00f3n (3 triunfos en sus \u00faltimos 5 compromisos) y promedia 2.2 xG en casa. Su dominio territorial y solidez defensiva ante un Deportivo La Coruna que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -2197,7 +2210,8 @@
     "profit": -1.0,
     "matchTiming": "finished",
     "actualGoalsHome": 1,
-    "actualGoalsAway": 1
+    "actualGoalsAway": 1,
+    "sport": "football"
   },
   {
     "fixtureId": 1575493,
@@ -2229,7 +2243,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Benfica ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras GIL Vicente acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas áreas.",
+    "explanation": "Benfica ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras GIL Vicente acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas \u00e1reas.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -2354,7 +2368,8 @@
     "profit": 0.44,
     "matchTiming": "finished",
     "actualGoalsHome": 3,
-    "actualGoalsAway": 1
+    "actualGoalsAway": 1,
+    "sport": "football"
   },
   {
     "fixtureId": 1548528,
@@ -2386,7 +2401,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Alta expectativa anotadora: HNK Hajduk Split genera 1.6 xG en casa y NK Slaven Belupo promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
+    "explanation": "Alta expectativa anotadora: HNK Hajduk Split genera 1.6 xG en casa y NK Slaven Belupo promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o m\u00e1s tantos.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -2511,7 +2526,8 @@
     "profit": -1.0,
     "matchTiming": "finished",
     "actualGoalsHome": 1,
-    "actualGoalsAway": 0
+    "actualGoalsAway": 0,
+    "sport": "football"
   },
   {
     "fixtureId": 1552757,
@@ -2543,7 +2559,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Alta expectativa anotadora: Stade Brestois 29 genera 1.6 xG en casa y Paris Saint Germain promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
+    "explanation": "Alta expectativa anotadora: Stade Brestois 29 genera 1.6 xG en casa y Paris Saint Germain promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o m\u00e1s tantos.",
     "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
@@ -2668,7 +2684,8 @@
     "profit": -1.0,
     "matchTiming": "finished",
     "actualGoalsHome": 0,
-    "actualGoalsAway": 1
+    "actualGoalsAway": 1,
+    "sport": "football"
   },
   {
     "fixtureId": 1490479,
@@ -2700,7 +2717,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 95,
-    "explanation": "Propuesta vertical y transiciones dinámicas: Tanto Chicago Fire como New England Revolution promedian más de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la línea de 2.5 goles.",
+    "explanation": "Propuesta vertical y transiciones din\u00e1micas: Tanto Chicago Fire como New England Revolution promedian m\u00e1s de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la l\u00ednea de 2.5 goles.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -2825,7 +2842,8 @@
     "profit": 0.48,
     "matchTiming": "finished",
     "actualGoalsHome": 1,
-    "actualGoalsAway": 2
+    "actualGoalsAway": 2,
+    "sport": "football"
   },
   {
     "fixtureId": 1551685,
@@ -2836,7 +2854,7 @@
     "awayTeamId": 816,
     "homeLogo": "https://media.api-sports.io/football/teams/2047.png",
     "awayLogo": "https://media.api-sports.io/football/teams/816.png",
-    "league": "Primera División (Liga FPD)",
+    "league": "Primera Divisi\u00f3n (Liga FPD)",
     "leagueId": 162,
     "leagueLogo": "https://media.api-sports.io/football/leagues/162.png",
     "country": "Costa Rica",
@@ -2857,7 +2875,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "bomba",
     "smartScore": 99,
-    "explanation": "Solidez posicional y eficacia en área propia: Sporting San Jose concede menos de 0.9 xG de local, mientras que Deportivo Saprissa muestra dificultades para generar peligro constante a domicilio (1.2 xG foráneo).",
+    "explanation": "Solidez posicional y eficacia en \u00e1rea propia: Sporting San Jose concede menos de 0.9 xG de local, mientras que Deportivo Saprissa muestra dificultades para generar peligro constante a domicilio (1.2 xG for\u00e1neo).",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -2869,7 +2887,7 @@
         "awayTeam": "Deportivo Saprissa",
         "score": "2-1",
         "winner": "home",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-03-17",
@@ -2877,7 +2895,7 @@
         "awayTeam": "Sporting San Jose",
         "score": "0-2",
         "winner": "away",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2025-09-18",
@@ -2885,7 +2903,7 @@
         "awayTeam": "Deportivo Saprissa",
         "score": "3-0",
         "winner": "home",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       }
     ],
     "homeLast5": [
@@ -2895,7 +2913,7 @@
         "isHome": false,
         "score": "0-2",
         "result": "L",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-09-04",
@@ -2903,7 +2921,7 @@
         "isHome": true,
         "score": "1-1",
         "result": "D",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-08-30",
@@ -2911,7 +2929,7 @@
         "isHome": false,
         "score": "1-0",
         "result": "W",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-08-25",
@@ -2919,7 +2937,7 @@
         "isHome": true,
         "score": "2-1",
         "result": "W",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-08-20",
@@ -2927,7 +2945,7 @@
         "isHome": false,
         "score": "0-2",
         "result": "L",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       }
     ],
     "awayLast5": [
@@ -2937,7 +2955,7 @@
         "isHome": true,
         "score": "0-2",
         "result": "L",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-09-04",
@@ -2945,7 +2963,7 @@
         "isHome": false,
         "score": "0-0",
         "result": "D",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-08-30",
@@ -2953,7 +2971,7 @@
         "isHome": true,
         "score": "1-0",
         "result": "W",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-08-25",
@@ -2961,7 +2979,7 @@
         "isHome": false,
         "score": "1-3",
         "result": "L",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       },
       {
         "date": "2026-08-20",
@@ -2969,7 +2987,7 @@
         "isHome": true,
         "score": "0-0",
         "result": "D",
-        "competition": "Primera División (Liga FPD)"
+        "competition": "Primera Divisi\u00f3n (Liga FPD)"
       }
     ],
     "homeElo": 1649,
@@ -2982,7 +3000,8 @@
     "profit": 1.38,
     "matchTiming": "finished",
     "actualGoalsHome": 4,
-    "actualGoalsAway": 2
+    "actualGoalsAway": 2,
+    "sport": "football"
   },
   {
     "fixtureId": 1490478,
@@ -3014,7 +3033,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 97,
-    "explanation": "Alta expectativa anotadora: Vancouver Whitecaps genera 1.6 xG en casa y Austin promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
+    "explanation": "Alta expectativa anotadora: Vancouver Whitecaps genera 1.6 xG en casa y Austin promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o m\u00e1s tantos.",
     "status": "won",
     "isMcpPick": true,
     "isMcp": true,
@@ -3139,6 +3158,7 @@
     "profit": 0.4,
     "matchTiming": "finished",
     "actualGoalsHome": 1,
-    "actualGoalsAway": 2
+    "actualGoalsAway": 2,
+    "sport": "football"
   }
 ]
