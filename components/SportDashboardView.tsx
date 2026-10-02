@@ -1,5 +1,8 @@
 'use client';
 
+import { openPushModal } from '@/components/PushNotificationManager';
+import Link from 'next/link';
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
@@ -134,6 +137,16 @@ export function SportDashboardView({
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [copyImageSuccessId, setCopyImageSuccessId] = useState<string | null>(null);
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
+  const [footballCount, setFootballCount] = useState<number>(0);
+
+  useEffect(() => {
+    fetch(`/api/signals?sport=football&_t=${Date.now()}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (Array.isArray(d?.signals)) setFootballCount(d.signals.length);
+      })
+      .catch(() => {});
+  }, []);
   const [isAdmin, setIsAdmin] = useState(false);
 
   // Real Database History State
@@ -562,8 +575,37 @@ export function SportDashboardView({
             </div>
           </div>
 
-          <div className="flex items-center gap-2 self-start sm:self-auto">
-
+          <div className="flex items-center gap-2 flex-wrap self-start sm:self-auto">
+            <Link
+              href="/admin?tab=mcp"
+              className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 px-3.5 py-2 text-xs font-black text-white shadow-md shadow-purple-950/40 transition cursor-pointer"
+              title="Ir al Agente MCP Pronósticos"
+            >
+              <span>🤖</span>
+              <span>Agente MCP Pronósticos</span>
+            </Link>
+            <Link
+              href="/signals"
+              className={`flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-bold transition cursor-pointer ${
+                sport === 'football'
+                  ? 'border-emerald-500 bg-emerald-600 text-white shadow-sm'
+                  : 'border-emerald-500/40 bg-emerald-950/40 hover:bg-emerald-900/50 text-emerald-300'
+              }`}
+            >
+              <span>⚽</span>
+              <span>Fútbol ({footballCount > 0 ? footballCount : ''})</span>
+            </Link>
+            <Link
+              href="/sports/nhl"
+              className={`flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-bold transition cursor-pointer ${
+                sport === 'nhl'
+                  ? 'border-cyan-500 bg-cyan-600 text-white shadow-sm'
+                  : 'border-cyan-500/40 bg-cyan-950/40 hover:bg-cyan-900/50 text-cyan-300'
+              }`}
+            >
+              <span>🏒</span>
+              <span>NHL ({sport === 'nhl' ? opportunities.length : ''})</span>
+            </Link>
             {isAdmin && (
               <button
                 onClick={handleAdminSync}
@@ -574,6 +616,13 @@ export function SportDashboardView({
                 <span>{syncing ? 'Auditando...' : 'Sincronizar'}</span>
               </button>
             )}
+            <button
+              onClick={openPushModal}
+              className="flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 px-3.5 py-2 text-xs font-black text-white shadow-md transition cursor-pointer"
+            >
+              <span>🔔</span>
+              <span>Alertas</span>
+            </button>
           </div>
         </div>
 
