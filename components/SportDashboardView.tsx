@@ -822,55 +822,153 @@ export function SportDashboardView({
         {/* TAB 2: PRE-MATCH SIGNALS WITH COMPLETE MULTI-SELECT FILTERS               */}
         {/* ========================================================================= */}
         {activeTab === 'signals' && (
-          <div className="space-y-5">
-            {/* Quick Status Pills Bar */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-1">
+          <div className="space-y-4">
+            {/* Results Banner when finished / evaluated matches exist */}
+            {(wonCount > 0 || lostCount > 0) && (
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-3.5 text-white shadow-md border border-slate-800">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 text-sm font-black">
+                    📊
+                  </span>
+                  <div>
+                    <span className="text-xs font-black">Resumen de Alertas Evaluadas:</span>
+                    <span className="text-[11px] text-slate-300 ml-2">
+                      Marcadores liquidados
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setMatchStatusFilter('WON')}
+                    className="flex items-center gap-1 rounded-xl bg-emerald-500/20 border border-emerald-500/40 px-3 py-1 text-xs font-black text-emerald-300 hover:bg-emerald-500/30 transition cursor-pointer"
+                  >
+                    <span>✓ Ganadas:</span>
+                    <span className="text-emerald-200 font-extrabold">{wonCount}</span>
+                  </button>
+
+                  <button
+                    onClick={() => setMatchStatusFilter('LOST')}
+                    className="flex items-center gap-1 rounded-xl bg-rose-500/20 border border-rose-500/40 px-3 py-1 text-xs font-black text-rose-300 hover:bg-rose-500/30 transition cursor-pointer"
+                  >
+                    <span>✗ Perdidas:</span>
+                    <span className="text-rose-200 font-extrabold">{lostCount}</span>
+                  </button>
+
+                  {wonCount + lostCount > 0 && (
+                    <span className="rounded-xl bg-slate-800 px-3 py-1 text-xs font-black text-amber-300 border border-slate-700">
+                      📈 {Math.round((wonCount / (wonCount + lostCount)) * 100)}% Acierto
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Time Slot & High Conviction Segmentation Pills (Franja) */}
+            <div className="mb-3 flex flex-wrap items-center gap-1.5 sm:gap-2 bg-slate-100/80 dark:bg-slate-900/80 p-2 rounded-2xl border border-slate-200 dark:border-slate-800/80">
+              <span className="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 px-2 flex items-center gap-1">
+                ⏱️ Franja:
+              </span>
+              <button
+                onClick={() => setTimeSlotFilter('ALL')}
+                className={`rounded-xl px-3 py-1.5 text-xs font-black transition cursor-pointer ${
+                  timeSlotFilter === 'ALL'
+                    ? 'bg-slate-900 text-white shadow-sm dark:bg-slate-100 dark:text-slate-950'
+                    : 'text-slate-600 hover:bg-slate-200/60 dark:text-slate-400 dark:hover:bg-slate-800'
+                }`}
+              >
+                🌟 Toda la Jornada ({opportunities.length})
+              </button>
+              <button
+                onClick={() => setTimeSlotFilter('TOP')}
+                className={`rounded-xl px-3 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1 ${
+                  timeSlotFilter === 'TOP'
+                    ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20 font-black'
+                    : 'bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20'
+                }`}
+              >
+                <span>🔥 Top Convicción ({topPickCount})</span>
+              </button>
+              <button
+                onClick={() => setTimeSlotFilter('MORNING')}
+                className={`rounded-xl px-3 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1 ${
+                  timeSlotFilter === 'MORNING'
+                    ? 'bg-sky-600 text-white shadow-md shadow-sky-600/20'
+                    : 'bg-sky-500/10 text-sky-700 dark:text-sky-300 hover:bg-sky-500/20'
+                }`}
+              >
+                <span>☀️ Mañana ({morningCount})</span>
+              </button>
+              <button
+                onClick={() => setTimeSlotFilter('AFTERNOON')}
+                className={`rounded-xl px-3 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1 ${
+                  timeSlotFilter === 'AFTERNOON'
+                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
+                    : 'bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-500/20'
+                }`}
+              >
+                <span>🌤️ Tarde ({afternoonCount})</span>
+              </button>
+              <button
+                onClick={() => setTimeSlotFilter('NIGHT')}
+                className={`rounded-xl px-3 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1 ${
+                  timeSlotFilter === 'NIGHT'
+                    ? 'bg-purple-600 text-white shadow-md shadow-purple-600/20'
+                    : 'bg-purple-500/10 text-purple-700 dark:text-purple-300 hover:bg-purple-500/20'
+                }`}
+              >
+                <span>🌙 Noche ({nightCount})</span>
+              </button>
+            </div>
+
+            {/* Status and Badge Filter Pills */}
+            <div className="mb-4 flex flex-wrap items-center gap-1.5 sm:gap-2">
               <button
                 onClick={() => setMatchStatusFilter('ALL')}
                 className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
                   matchStatusFilter === 'ALL'
-                    ? 'bg-emerald-600 text-white shadow-md'
-                    : 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800'
+                    ? 'bg-slate-900 text-white shadow-sm dark:bg-slate-100 dark:text-slate-950'
+                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-750'
                 }`}
               >
-                🌟 Todas ({opportunities.length})
+                🌐 Todas ({opportunities.length})
+              </button>
+              <button
+                onClick={() => setMatchStatusFilter('SCHEDULED')}
+                className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+                  matchStatusFilter === 'SCHEDULED'
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800'
+                }`}
+              >
+                ⏳ Por Comenzar ({scheduledCount})
               </button>
               <button
                 onClick={() => setMatchStatusFilter('VALOR')}
                 className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
                   matchStatusFilter === 'VALOR'
-                    ? 'bg-amber-500 text-slate-950 shadow-md'
-                    : 'bg-slate-900 text-amber-300 hover:bg-slate-800 border border-slate-800'
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'bg-emerald-50 text-emerald-900 border border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800 dark:hover:bg-emerald-900'
                 }`}
               >
                 💎 Valor ({valorCount})
               </button>
               <button
-                onClick={() => setMatchStatusFilter('BOMBA')}
-                className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
-                  matchStatusFilter === 'BOMBA'
-                    ? 'bg-rose-600 text-white shadow-md'
-                    : 'bg-slate-900 text-rose-300 hover:bg-slate-800 border border-slate-800'
-                }`}
-              >
-                💣 Bomba ({bombaCount})
-              </button>
-              <button
                 onClick={() => setMatchStatusFilter('MCP')}
-                className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+                className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
                   matchStatusFilter === 'MCP'
-                    ? 'bg-purple-600 text-white shadow-md'
-                    : 'bg-slate-900 text-purple-300 hover:bg-slate-800 border border-slate-800'
+                    ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30 border border-purple-500'
+                    : 'bg-purple-50 text-purple-800 border border-purple-200 hover:bg-purple-100 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800'
                 }`}
               >
-                🤖 Agente MCP ({mcpCount})
+                <span>🤖 Agente MCP ({mcpCount})</span>
               </button>
               <button
                 onClick={() => setMatchStatusFilter('WON')}
                 className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
                   matchStatusFilter === 'WON'
-                    ? 'bg-emerald-600 text-white shadow-md'
-                    : 'bg-slate-900 text-emerald-300 hover:bg-slate-800 border border-slate-800'
+                    ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30 border border-emerald-500'
+                    : 'bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800'
                 }`}
               >
                 ✓ Ganadas ({wonCount})
@@ -879,91 +977,26 @@ export function SportDashboardView({
                 onClick={() => setMatchStatusFilter('LOST')}
                 className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
                   matchStatusFilter === 'LOST'
-                    ? 'bg-rose-600 text-white shadow-md'
-                    : 'bg-slate-900 text-rose-300 hover:bg-slate-800 border border-slate-800'
+                    ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30 border border-rose-500'
+                    : 'bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800'
                 }`}
               >
                 ✗ Perdidas ({lostCount})
               </button>
               <button
-                onClick={() => setMatchStatusFilter('SCHEDULED')}
-                className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
-                  matchStatusFilter === 'SCHEDULED'
-                    ? 'bg-cyan-600 text-white shadow-md'
-                    : 'bg-slate-900 text-cyan-300 hover:bg-slate-800 border border-slate-800'
-                }`}
-              >
-                ⏳ Programadas ({scheduledCount})
-              </button>
-              <button
                 onClick={() => setMatchStatusFilter('FINISHED')}
                 className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
                   matchStatusFilter === 'FINISHED'
-                    ? 'bg-slate-700 text-white shadow-md'
-                    : 'bg-slate-900 text-slate-400 hover:bg-slate-800 border border-slate-800'
+                    ? 'bg-sky-600 text-white shadow-sm'
+                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300'
                 }`}
               >
                 🏁 Finalizadas ({finishedCount})
               </button>
             </div>
 
-            {/* Time Slot Filter Pills */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
-              <span className="font-bold text-slate-400 mr-1">Horario:</span>
-              <button
-                onClick={() => setTimeSlotFilter('ALL')}
-                className={`rounded-xl px-3 py-1 text-xs font-bold transition cursor-pointer ${
-                  timeSlotFilter === 'ALL'
-                    ? 'bg-emerald-500 text-slate-950 font-black'
-                    : 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800'
-                }`}
-              >
-                ⏰ Todas
-              </button>
-              <button
-                onClick={() => setTimeSlotFilter('TOP')}
-                className={`rounded-xl px-3 py-1 text-xs font-bold transition cursor-pointer ${
-                  timeSlotFilter === 'TOP'
-                    ? 'bg-amber-500 text-slate-950 font-black'
-                    : 'bg-slate-900 text-amber-300 hover:bg-slate-800 border border-slate-800'
-                }`}
-              >
-                ⭐ Top Picks ({topPickCount})
-              </button>
-              <button
-                onClick={() => setTimeSlotFilter('MORNING')}
-                className={`rounded-xl px-3 py-1 text-xs font-bold transition cursor-pointer ${
-                  timeSlotFilter === 'MORNING'
-                    ? 'bg-amber-500 text-slate-950 font-black'
-                    : 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800'
-                }`}
-              >
-                🌅 Mañana ({morningCount})
-              </button>
-              <button
-                onClick={() => setTimeSlotFilter('AFTERNOON')}
-                className={`rounded-xl px-3 py-1 text-xs font-bold transition cursor-pointer ${
-                  timeSlotFilter === 'AFTERNOON'
-                    ? 'bg-amber-500 text-slate-950 font-black'
-                    : 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800'
-                }`}
-              >
-                ☀️ Tarde ({afternoonCount})
-              </button>
-              <button
-                onClick={() => setTimeSlotFilter('NIGHT')}
-                className={`rounded-xl px-3 py-1 text-xs font-bold transition cursor-pointer ${
-                  timeSlotFilter === 'NIGHT'
-                    ? 'bg-indigo-600 text-white font-black'
-                    : 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800'
-                }`}
-              >
-                🌙 Noche ({nightCount})
-              </button>
-            </div>
-
             {/* Secondary Multi-Select Filters Bar */}
-            <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-900/90 p-3 shadow-xl">
+            <div className="mb-6 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-xs dark:border-slate-800/80 dark:bg-slate-900/80">
               {/* Search bar */}
               <div className="relative flex-1 min-w-[200px]">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400">🔍</span>
@@ -972,12 +1005,12 @@ export function SportDashboardView({
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Buscar equipo o torneo..."
-                  className="w-full rounded-xl border border-slate-800 bg-slate-950 py-2 pl-9 pr-8 text-xs font-bold text-slate-100 placeholder-slate-500 outline-none focus:border-emerald-500"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pl-9 pr-8 text-xs font-bold text-slate-800 placeholder-slate-400 outline-none focus:border-emerald-500 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-200"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
                   >
                     ✕
                   </button>
@@ -987,7 +1020,6 @@ export function SportDashboardView({
               <div className="flex flex-wrap items-center gap-2">
                 <MultiSelectDropdown
                   label="Ligas"
-                  icon="🏆"
                   options={leagueDropdownOptions}
                   selected={selectedLeagues}
                   onChange={setSelectedLeagues}
@@ -996,7 +1028,6 @@ export function SportDashboardView({
                 {marketDropdownOptions.length > 0 && (
                   <MultiSelectDropdown
                     label="Mercados"
-                    icon="🎯"
                     options={marketDropdownOptions}
                     selected={selectedMarkets}
                     onChange={setSelectedMarkets}
@@ -1005,24 +1036,24 @@ export function SportDashboardView({
 
                 <MultiSelectDropdown
                   label="Confianza"
-                  icon="⭐"
                   options={confidenceDropdownOptions}
                   selected={selectedConfidence}
                   onChange={setSelectedConfidence}
                 />
 
-                {/* Min probability */}
-                <div className="flex items-center gap-1.5 rounded-xl border border-slate-800 bg-slate-950 px-3 py-1.5 text-xs font-bold text-slate-300">
+                {/* Min probability control */}
+                <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
                   <span>Prob. ≥</span>
                   <select
                     value={minProbability}
                     onChange={(e) => setMinProbability(Number(e.target.value))}
-                    className="bg-transparent font-black text-emerald-400 outline-none cursor-pointer"
+                    aria-label="Filtrar por probabilidad mínima"
+                    className="bg-transparent font-black text-emerald-600 dark:text-emerald-400 outline-none cursor-pointer"
                   >
-                    <option value={35} className="bg-slate-900 text-white">35% (Todas)</option>
-                    <option value={50} className="bg-slate-900 text-white">50%</option>
-                    <option value={60} className="bg-slate-900 text-white">60%</option>
-                    <option value={70} className="bg-slate-900 text-white">70% (Muy Alta)</option>
+                    <option value={35} className="dark:bg-slate-900">35% (Todas)</option>
+                    <option value={50} className="dark:bg-slate-900">50%</option>
+                    <option value={60} className="dark:bg-slate-900">60%</option>
+                    <option value={70} className="dark:bg-slate-900">70% (Muy Alta)</option>
                   </select>
                 </div>
 
@@ -1035,7 +1066,7 @@ export function SportDashboardView({
                       setSearchQuery('');
                       setMinProbability(35);
                     }}
-                    className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-extrabold text-slate-300 hover:bg-slate-700 cursor-pointer"
+                    className="rounded-xl border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs font-extrabold text-slate-600 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 cursor-pointer"
                   >
                     Limpiar
                   </button>
