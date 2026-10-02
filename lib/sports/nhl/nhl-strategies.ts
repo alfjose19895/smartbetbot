@@ -1,4 +1,4 @@
-import { NormalizedGame, MultiSportPrediction, MultiSportSignal, SportStrategyConfig } from '../types';
+﻿import { NormalizedGame, MultiSportPrediction, MultiSportSignal, SportStrategyConfig } from '../types';
 import { calculateSmartEdge, calculateExpectedValue, calculateSmartScore, classifyOpportunity } from '../core-metrics';
 import { NHLTeamStats, NHLMarketOdds } from './nhl-types';
 import { NHLModelV1 } from './nhl-model';
@@ -124,6 +124,8 @@ export class NHLStrategyEngine {
     // 2. PUCK LINE (+1.5 / -1.5)
     if (odds?.puckLine) {
       const plStrat = strategies.nhl_puck_line || DEFAULT_NHL_STRATEGIES.nhl_puck_line;
+      
+      // Home Puck Line
       const homePlOdds = odds.puckLine.homeOdds || 1.55;
       const homePlEdge = calculateSmartEdge(sim.puckLineHomeProb, homePlOdds);
       const homePlEV = calculateExpectedValue(sim.puckLineHomeProb, homePlOdds);
@@ -147,7 +149,35 @@ export class NHLStrategyEngine {
         smartScore: homePlScore,
         classification: homePlClass !== 'NO BET' ? homePlClass : 'QUALIFIED',
         dataQuality,
-        explanation: `El modelo evalúa la cobertura de ${odds.puckLine.homeLine} con ${(sim.puckLineHomeProb * 100).toFixed(1)}% de probabilidad considerando portería vacía.`,
+        explanation: `El modelo evalúa la cobertura de ${odds.puckLine.homeLine > 0 ? '+' : ''}${odds.puckLine.homeLine} con ${(sim.puckLineHomeProb * 100).toFixed(1)}% de probabilidad considerando tendencia defensiva.`,
+        createdAt: nowIso
+      });
+
+      // Away Puck Line
+      const awayPlOdds = odds.puckLine.awayOdds || 2.45;
+      const awayPlEdge = calculateSmartEdge(sim.puckLineAwayProb, awayPlOdds);
+      const awayPlEV = calculateExpectedValue(sim.puckLineAwayProb, awayPlOdds);
+      const awayPlScore = calculateSmartScore({ modelProbability: sim.puckLineAwayProb, smartEdge: awayPlEdge, expectedValue: awayPlEV, dataQuality });
+      const awayPlClass = classifyOpportunity({ modelProbability: sim.puckLineAwayProb, smartEdge: awayPlEdge, smartScore: awayPlScore, dataQuality, odds: awayPlOdds, strategyConfig: plStrat });
+
+      candidates.push({
+        id: `${game.id}_nhl_pl_away`,
+        sport: 'nhl',
+        gameId: game.id,
+        game,
+        market: 'PUCK LINE',
+        selection: `${game.awayTeam.name} ${odds.puckLine.awayLine > 0 ? '+' : ''}${odds.puckLine.awayLine}`,
+        line: odds.puckLine.awayLine,
+        modelVersion: NHLModelV1.VERSION,
+        modelProbability: sim.puckLineAwayProb,
+        decimalOdds: awayPlOdds,
+        impliedProbability: Number((1 / awayPlOdds).toFixed(4)),
+        smartEdge: awayPlEdge,
+        expectedValue: awayPlEV,
+        smartScore: awayPlScore,
+        classification: awayPlClass !== 'NO BET' ? awayPlClass : 'QUALIFIED',
+        dataQuality,
+        explanation: `El modelo evalúa la cobertura de ${odds.puckLine.awayLine > 0 ? '+' : ''}${odds.puckLine.awayLine} con ${(sim.puckLineAwayProb * 100).toFixed(1)}% de probabilidad considerando tendencia ofensiva.`,
         createdAt: nowIso
       });
     }

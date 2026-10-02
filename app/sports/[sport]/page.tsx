@@ -1,3 +1,6 @@
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 import React from 'react';
 import { notFound, redirect } from 'next/navigation';
 import { getVerifiedIdentity } from '@/features/auth/lib/session';

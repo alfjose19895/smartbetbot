@@ -4,32 +4,69 @@ import {
   getStoredPredictions,
   loadDailySnapshotAsync,
   getEcuadorDateString,
-  settleActiveSnapshotWithRealScores,
   settleAllSnapshotsWithRealScores,
 } from "@/lib/sports/db";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
+import { NHLSyncEngine } from "@/lib/sports/nhl/nhl-sync";
+import { multiSportSignalToOpportunity } from "@/lib/sports/signal-adapters";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
+    const sport = (searchParams.get("sport") || "football").toLowerCase();
     const leagueFilter = searchParams.get("league");
     const marketFilter = searchParams.get("market");
     const minProb = parseFloat(searchParams.get("minProb") || "0");
     const forceRefresh = searchParams.get("refresh") === "true";
 
+    // 1. NHL SPORT SIGNALS
+    if (sport === "nhl") {
+      const nhlData = await NHLSyncEngine.getTodayNHLSignals();
+      let signals = (nhlData.signals || []).map(multiSportSignalToOpportunity);
+
+      if (leagueFilter) {
+        signals = signals.filter((p) =>
+          (p.league || "").toLowerCase().includes(leagueFilter.toLowerCase())
+        );
+      }
+      if (marketFilter) {
+        signals = signals.filter((p) =>
+          (p.market || "").toLowerCase().includes(marketFilter.toLowerCase())
+        );
+      }
+      if (minProb > 0) {
+        signals = signals.filter((p) => p.probability >= minProb);
+      }
+
+      return NextResponse.json(
+        {
+          success: true,
+          count: signals.length,
+          signals,
+          gamesCount: nhlData.gamesCount,
+          smartPick: nhlData.smartPick ? multiSportSignalToOpportunity(nhlData.smartPick) : null,
+        },
+        {
+          headers: {
+            "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+            "CDN-Cache-Control": "no-store",
+            "Vercel-CDN-Cache-Control": "no-store",
+          },
+        }
+      );
+    }
+
+    // 2. FOOTBALL SPORT SIGNALS
     const todayDateStr = getEcuadorDateString(Date.now());
 
-    // Auto-liquidación en tiempo real: consultar marcadores finales de la API (FT, AET, PEN),
-    // evaluar mercado y persistir de inmediato status = "won" | "lost" y actualScore
     await settleAllSnapshotsWithRealScores().catch((settleErr) => {
       console.warn("[API /api/signals] Auto-settlement non-fatal error:", settleErr);
     });
 
     let predictions: MarketOpportunity[] = [];
 
-    // Cache-first: Read from stored disk/memory snapshot unless explicitly told to refresh
     if (forceRefresh) {
       try {
         predictions = await generatePredictionsForUpcoming(undefined, true);
@@ -42,7 +79,6 @@ export async function GET(request: NextRequest) {
       if (!predictions || predictions.length === 0) {
         predictions = (await loadDailySnapshotAsync(todayDateStr)) || [];
       }
-      // If store and cloud database are completely empty, initialize once
       if (!predictions || predictions.length === 0) {
         try {
           predictions = await generatePredictionsForUpcoming(undefined, false);
@@ -54,13 +90,13 @@ export async function GET(request: NextRequest) {
 
     if (leagueFilter) {
       predictions = predictions.filter((p) =>
-        (p.league || '').toLowerCase().includes(leagueFilter.toLowerCase())
+        (p.league || "").toLowerCase().includes(leagueFilter.toLowerCase())
       );
     }
 
     if (marketFilter) {
       predictions = predictions.filter((p) =>
-        (p.market || '').toLowerCase().includes(marketFilter.toLowerCase())
+        (p.market || "").toLowerCase().includes(marketFilter.toLowerCase())
       );
     }
 

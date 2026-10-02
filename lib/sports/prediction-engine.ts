@@ -1563,7 +1563,7 @@ export function evaluateFixturePrediction(params: {
     const effHomeWin = marketOdds.homeWin || resolvedHomeOdds;
     const effAwayWin = marketOdds.awayWin || resolvedAwayOdds;
     const effOver25 = marketOdds.over25 || resolvedOver25Odds;
-    const effBtts = marketOdds.bttsYes || resolvedBttsOdds;
+    const effBtts = marketOdds.bttsYes;
 
     // ENFOQUE DE ALTO RENDIMIENTO CALIBRADO (Ganador Local, BTTS y Over 2.5 Calibrado)
     const isCupOrKnockout = normLeg.includes("cup") || normLeg.includes("copa") || normLeg.includes("europa") || normLeg.includes("champions") || normLeg.includes("conference") || normLeg.includes("libertadores") || normLeg.includes("sudamericana");
@@ -1717,12 +1717,12 @@ export function evaluateFixturePrediction(params: {
 
     } // End if hasCornerTelemetry && hasRealUnderCornerOdds
 
-    // 5. PRIORIDAD #5: Under Goles (Under 2.5 / Under 3.5 Goles)
+    // 5. PRIORIDAD #5: Under Goles (Strictly Under 2.5 Goles)
     if (
       marketOdds.under25 &&
       marketOdds.under25 >= 1.25 &&
-      pUnder25 >= 0.52 &&
-      totalXg <= 2.35
+      pUnder25 >= 0.48 &&
+      totalXg <= 2.65
     ) {
       candidates.push({
         market: "Under 2.5 Goles",
@@ -1730,21 +1730,7 @@ export function evaluateFixturePrediction(params: {
         prob: pUnder25,
         odds: marketOdds.under25,
         minOddsThreshold: 1.25,
-        minProbThreshold: 0.52,
-      });
-    } else if (
-      marketOdds.under35 &&
-      marketOdds.under35 >= 1.25 &&
-      pUnder35 >= 0.65 &&
-      totalXg <= 2.85
-    ) {
-      candidates.push({
-        market: "Under 3.5 Goles",
-        selection: "Under 3.5",
-        prob: pUnder35,
-        odds: marketOdds.under35,
-        minOddsThreshold: 1.25,
-        minProbThreshold: 0.65,
+        minProbThreshold: 0.48,
       });
     }
 
@@ -1779,11 +1765,8 @@ export function evaluateFixturePrediction(params: {
     "Córners",
     "Ambos Equipos Anotan",
     "Over 2.5 Goles",
-    "Over 1.5 Goles",
-    "Over 3.5 Goles",
     "Under Córners",
     "Under 2.5 Goles",
-    "Under 3.5 Goles",
     "Ganador Local",
     "Ganador Visitante",
   ]);

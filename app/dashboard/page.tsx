@@ -96,6 +96,8 @@ export default function DashboardPage() {
   const [newAlertsModalOpen, setNewAlertsModalOpen] = useState<boolean>(false);
   const [copiedPickId, setCopiedPickId] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [nhlSignalsCount, setNhlSignalsCount] = useState<number>(0);
+  const [nhlSmartPick, setNhlSmartPick] = useState<any>(null);
 
   useEffect(() => {
     fetch("/api/auth/profile")
@@ -119,6 +121,20 @@ export default function DashboardPage() {
 
       const cleanUniqueSignals = deduplicatePicksList(serverSignals);
       setPredictions(cleanUniqueSignals);
+
+      // Also fetch NHL signals for the multisport card
+      try {
+        const nhlRes = await fetch(`/api/signals?sport=nhl&_t=${Date.now()}`, { cache: "no-store" });
+        if (nhlRes.ok) {
+          const nhlJson = await nhlRes.json();
+          if (Array.isArray(nhlJson.signals)) {
+            setNhlSignalsCount(nhlJson.signals.length);
+            setNhlSmartPick(nhlJson.smartPick || nhlJson.signals[0] || null);
+          }
+        }
+      } catch (nhlErr) {
+        console.warn("Error loading NHL signals for dashboard:", nhlErr);
+      }
     } catch (err) {
       console.error("Error loading signals:", err);
     } finally {
@@ -543,6 +559,8 @@ export default function DashboardPage() {
         <MultiSportDashboardCards
           footballSignalsCount={todayPredictions.length}
           footballSmartPick={smartPick}
+          nhlSignalsCount={nhlSignalsCount}
+          nhlSmartPick={nhlSmartPick}
         />
 
         {/* 5. Featured SmartPick & Bomba del Día */}

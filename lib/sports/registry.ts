@@ -1,3 +1,18 @@
+﻿export function getSportLocalDateString(sport: SupportedSport = 'football', d: Date | number | string = Date.now()): string {
+  const timeZone = (sport === 'nhl' || sport === 'nba' || sport === 'nfl' || sport === 'ncaaf')
+    ? 'America/New_York'
+    : 'America/Guayaquil';
+  
+  const dateObj = typeof d === 'string' ? new Date(d) : typeof d === 'number' ? new Date(d) : d;
+  const validDate = isNaN(dateObj.getTime()) ? new Date() : dateObj;
+
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(validDate);
+}
 import { SportMetadata, SupportedSport } from './types';
 
 export function getCurrentSportSeason(sport: SupportedSport, date: Date = new Date()): string {

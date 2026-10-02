@@ -1,4 +1,4 @@
-import { getCurrentSportSeason } from "../registry";
+﻿import { getCurrentSportSeason, getSportLocalDateString } from "../registry";
 import { SportsDataProvider, SportCapability, NormalizedGame, NormalizedOdds } from '../types';
 import { SPORTS_CONFIG } from '../config';
 
@@ -122,8 +122,8 @@ export class NHLProvider implements SportsDataProvider {
 
     try {
       const seasonInt = parseInt(String(getCurrentSportSeason('nhl')).split('-')[0], 10) || 2026;
-      const url = `${config.baseUrl}/games?date=${date}&league=57&season=${seasonInt}`;
-      const res = await fetch(url, { headers: this.headers, next: { revalidate: 300 } });
+      const url = `${config.baseUrl}/games?date=${date}&league=57&season=${seasonInt}&timezone=America/New_York`;
+      const res = await fetch(url, { headers: this.headers, cache: 'no-store' });
       if (!res.ok) return [];
 
       const data = (await res.json()) as { response?: ApiHockeyGame[] };
@@ -222,7 +222,7 @@ export class NHLProvider implements SportsDataProvider {
 
     try {
       const url = `${config.baseUrl}/games/h2h?h2h=${homeTeamId}-${awayTeamId}`;
-      const res = await fetch(url, { headers: this.headers, next: { revalidate: 3600 } });
+      const res = await fetch(url, { headers: this.headers, cache: 'no-store' });
       if (!res.ok) return [];
 
       const data = (await res.json()) as { response?: ApiHockeyGame[] };
@@ -275,14 +275,14 @@ export class NHLProvider implements SportsDataProvider {
     try {
       const seasonInt = parseInt(String(getCurrentSportSeason('nhl')).split('-')[0], 10) || 2026;
       let url = `${config.baseUrl}/games?team=${teamId}&season=${seasonInt}`;
-      let res = await fetch(url, { headers: this.headers, next: { revalidate: 3600 } });
+      let res = await fetch(url, { headers: this.headers, cache: 'no-store' });
       let data = (await res.json()) as { response?: ApiHockeyGame[] };
       let games = (data.response || []).filter(g => ['FT', 'AOT', 'AP'].includes(g.status?.short || ''));
 
       // If season 2026 has fewer games, query 2025
       if (games.length < limit) {
         const prevUrl = `${config.baseUrl}/games?team=${teamId}&season=${seasonInt - 1}`;
-        const prevRes = await fetch(prevUrl, { headers: this.headers, next: { revalidate: 3600 } });
+        const prevRes = await fetch(prevUrl, { headers: this.headers, cache: 'no-store' });
         if (prevRes.ok) {
           const prevData = (await prevRes.json()) as { response?: ApiHockeyGame[] };
           const prevGames = (prevData.response || []).filter(g => ['FT', 'AOT', 'AP'].includes(g.status?.short || ''));
@@ -330,7 +330,7 @@ export class NHLProvider implements SportsDataProvider {
     try {
       const seasonInt = parseInt(String(season).split('-')[0], 10) || 2026;
       const url = `${config.baseUrl}/games?league=57&season=${seasonInt}`;
-      const res = await fetch(url, { headers: this.headers, next: { revalidate: 3600 } });
+      const res = await fetch(url, { headers: this.headers, cache: 'no-store' });
       if (!res.ok) return [];
 
       const data = (await res.json()) as { response?: ApiHockeyGame[] };
@@ -373,7 +373,7 @@ export class NHLProvider implements SportsDataProvider {
 
     try {
       const url = `${config.baseUrl}/teams/statistics?league=57&season=${season}&team=${teamId}`;
-      const res = await fetch(url, { headers: this.headers, next: { revalidate: 3600 } });
+      const res = await fetch(url, { headers: this.headers, cache: 'no-store' });
       if (!res.ok) return {};
 
       const data = (await res.json()) as { response?: Record<string, unknown> };
@@ -390,7 +390,7 @@ export class NHLProvider implements SportsDataProvider {
 
     try {
       const url = `${config.baseUrl}/odds?game=${rawId}`;
-      const res = await fetch(url, { headers: this.headers, next: { revalidate: 600 } });
+      const res = await fetch(url, { headers: this.headers, cache: 'no-store' });
       if (!res.ok) return [];
 
       const data = (await res.json()) as { response?: Array<{ bookmakers?: Array<{ name: string; bets: Array<{ name: string; values: Array<{ value: string; odd: string }> }> }> }> };

@@ -247,8 +247,11 @@ export function SportDashboardView({
   }, [smartPick, opportunities]);
 
   const bombaOpportunity = useMemo(() => {
-    return opportunities.find((o) => (o.odds || 0) >= 2.0) || null;
-  }, [opportunities]);
+    const highOdds = opportunities.find((o) => (o.odds || 0) >= 2.0);
+    if (highOdds) return highOdds;
+    const sorted = [...opportunities].sort((a, b) => (b.odds || 0) - (a.odds || 0));
+    return sorted.find((o) => o.id !== smartOpportunity?.id) || sorted[0] || null;
+  }, [opportunities, smartOpportunity]);
 
   // Filter historical picks strictly for current sport
   const sportHistoricalPicks = useMemo(() => {
@@ -773,6 +776,45 @@ export function SportDashboardView({
                 </div>
               )}
             </section>
+
+            {/* Complete Slate Grid: All 8 Matches & Predictions */}
+            {opportunities.length > 0 && (
+              <section className="space-y-4 pt-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-400 text-base font-black border border-cyan-500/20">
+                      📋
+                    </span>
+                    <div>
+                      <h2 className="text-lg sm:text-xl font-black text-white">
+                        Todos los Pronósticos de la Jornada ({opportunities.length})
+                      </h2>
+                      <p className="text-xs text-slate-400">
+                        Cobertura total de los {opportunities.length} partidos programados hoy en {meta.displayName}
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => handleTabChange('signals')}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs font-bold text-slate-300 hover:bg-slate-850 hover:text-white transition cursor-pointer"
+                  >
+                    <span>Filtros avanzados</span>
+                    <span>→</span>
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {opportunities.map((opp) => (
+                    <PredictionCard
+                      key={opp.id || `${opp.fixtureId}-${opp.market}`}
+                      prediction={opp}
+                      onOpenDetail={setActiveModalPick}
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
           </div>
         )}
 

@@ -1,4 +1,5 @@
-import { MultiSportSignal } from '../types';
+﻿import { getSportLocalDateString } from '../registry';
+import { MultiSportSignal, NormalizedOdds } from '../types';
 import { NHLProvider } from './nhl-provider';
 import { NHLStrategyEngine } from './nhl-strategies';
 import { NHLTeamStats, NHLMarketOdds } from './nhl-types';
@@ -6,12 +7,162 @@ import { NHLTeamStats, NHLMarketOdds } from './nhl-types';
 export class NHLSyncEngine {
   private static provider = new NHLProvider();
 
+  public static parseNHLMainOdds(
+    gameId: string,
+    oddsList: NormalizedOdds[],
+    homeTeamName: string,
+    awayTeamName: string
+  ): NHLMarketOdds {
+    const parsedOdds: NHLMarketOdds = { gameId };
+    if (!oddsList || oddsList.length === 0) return parsedOdds;
+
+    const preferredBookmakers = ['Pncl', 'Pinnacle', 'Betano', '1xBet', 'Marathon', 'BetVictor', 'Betfair', 'Sbo'];
+    const oddsByBm: Record<string, NormalizedOdds[]> = {};
+    for (const o of oddsList) {
+      const bm = o.bookmaker || 'Default';
+      if (!oddsByBm[bm]) oddsByBm[bm] = [];
+      oddsByBm[bm].push(o);
+    }
+
+    const sortedBms = Object.keys(oddsByBm).sort((a, b) => {
+      const idxA = preferredBookmakers.findIndex(p => a.toLowerCase().includes(p.toLowerCase()));
+      const idxB = preferredBookmakers.findIndex(p => b.toLowerCase().includes(p.toLowerCase()));
+      return (idxA >= 0 ? idxA : 999) - (idxB >= 0 ? idxB : 999);
+    });
+
+    const normHome = homeTeamName.toUpperCase();
+    const normAway = awayTeamName.toUpperCase();
+
+    for (const bm of sortedBms) {
+      const bmOdds = oddsByBm[bm];
+
+      // 1. Moneyline (Home/Away Full Game)
+      if (!parsedOdds.moneyline) {
+        let homeOdd: number | undefined;
+        let awayOdd: number | undefined;
+
+        for (const o of bmOdds) {
+          const m = o.market.toUpperCase();
+          if (m.includes('PERIOD') || m.includes('HALF') || m.includes('REG TIME') || m.includes('3WAY')) continue;
+          if (m === 'HOME/AWAY' || m === 'MONEY LINE' || m === 'MONEYLINE' || m === 'WINNER') {
+            const sel = o.selection.toUpperCase();
+            if (sel === 'HOME' || sel.includes('1') || sel.includes(normHome)) {
+              homeOdd = o.decimalOdds;
+            } else if (sel === 'AWAY' || sel.includes('2') || sel.includes(normAway)) {
+              awayOdd = o.decimalOdds;
+            }
+          }
+        }
+
+        if (homeOdd && awayOdd) {
+          parsedOdds.moneyline = {
+            homeOdds: homeOdd,
+            awayOdds: awayOdd,
+            bookmaker: bm
+          };
+        }
+      }
+
+      // 2. Puck Line (+/- 1.5 Standard Spread)
+      if (!parsedOdds.puckLine) {
+        let homeMinus15: number | undefined;
+        let homePlus15: number | undefined;
+        let awayMinus15: number | undefined;
+        let awayPlus15: number | undefined;
+
+        for (const o of bmOdds) {
+          const m = o.market.toUpperCase();
+          if (m.includes('PERIOD') || m.includes('REG TIME')) continue;
+          if (m === 'ASIAN HANDICAP' || m === 'PUCK LINE' || m === 'PUCKLINE') {
+            const sel = o.selection;
+            if (sel.includes('Home -1.5') || (sel.includes(normHome) && sel.includes('-1.5'))) {
+              homeMinus15 = o.decimalOdds;
+            } else if (sel.includes('Home +1.5') || (sel.includes(normHome) && sel.includes('+1.5'))) {
+              homePlus15 = o.decimalOdds;
+            } else if (sel.includes('Away -1.5') || (sel.includes(normAway) && sel.includes('-1.5'))) {
+              awayMinus15 = o.decimalOdds;
+            } else if (sel.includes('Away +1.5') || (sel.includes(normAway) && sel.includes('+1.5'))) {
+              awayPlus15 = o.decimalOdds;
+            }
+          }
+        }
+
+        const homeIsFav = (parsedOdds.moneyline?.homeOdds || 2.0) < (parsedOdds.moneyline?.awayOdds || 2.0);
+
+        if (homeIsFav && (homeMinus15 || awayPlus15)) {
+          parsedOdds.puckLine = {
+            homeLine: -1.5,
+            homeOdds: homeMinus15 || 2.50,
+            awayLine: 1.5,
+            awayOdds: awayPlus15 || 1.55,
+            bookmaker: bm
+          };
+        } else if (!homeIsFav && (homePlus15 || awayMinus15)) {
+          parsedOdds.puckLine = {
+            homeLine: 1.5,
+            homeOdds: homePlus15 || 1.47,
+            awayLine: -1.5,
+            awayOdds: awayMinus15 || 2.80,
+            bookmaker: bm
+          };
+        } else if (homePlus15 || awayPlus15 || homeMinus15 || awayMinus15) {
+          parsedOdds.puckLine = {
+            homeLine: homePlus15 ? 1.5 : -1.5,
+            homeOdds: homePlus15 || homeMinus15 || 1.50,
+            awayLine: awayMinus15 ? -1.5 : 1.5,
+            awayOdds: awayMinus15 || awayPlus15 || 2.50,
+            bookmaker: bm
+          };
+        }
+      }
+
+      // 3. Total Goals (Over/Under standard full game: 5.5, 6.0, 6.5)
+      if (!parsedOdds.totalGoals) {
+        const lineMap: Record<number, { over?: number; under?: number }> = {};
+
+        for (const o of bmOdds) {
+          const m = o.market.toUpperCase();
+          if (m.includes('PERIOD') || m.includes('TEAM') || m.includes('PASSING') || m.includes('HALF')) continue;
+          if (m === 'OVER/UNDER' || m === 'TOTAL GOALS' || m === 'TOTAL') {
+            const rawSel = o.selection;
+            const match = rawSel.match(/(\d+\.?\d*)/);
+            if (match) {
+              const lineVal = parseFloat(match[1]);
+              if ([5.0, 5.5, 6.0, 6.5, 7.0].includes(lineVal)) {
+                if (!lineMap[lineVal]) lineMap[lineVal] = {};
+                if (rawSel.toUpperCase().includes('OVER')) {
+                  lineMap[lineVal].over = o.decimalOdds;
+                } else if (rawSel.toUpperCase().includes('UNDER')) {
+                  lineMap[lineVal].under = o.decimalOdds;
+                }
+              }
+            }
+          }
+        }
+
+        for (const targetLine of [5.5, 6.0, 6.5, 5.0]) {
+          if (lineMap[targetLine]?.over) {
+            parsedOdds.totalGoals = {
+              line: targetLine,
+              overOdds: lineMap[targetLine].over!,
+              underOdds: lineMap[targetLine].under || 2.05,
+              bookmaker: bm
+            };
+            break;
+          }
+        }
+      }
+    }
+
+    return parsedOdds;
+  }
+
   public static async getTodayNHLSignals(dateIso?: string): Promise<{
     signals: MultiSportSignal[];
     smartPick: MultiSportSignal | null;
     gamesCount: number;
   }> {
-    const date = dateIso || new Date().toISOString().split('T')[0];
+    const date = dateIso || getSportLocalDateString('nhl');
     const games = await this.provider.getSchedule(date);
 
     if (!games || games.length === 0) {
@@ -21,67 +172,9 @@ export class NHLSyncEngine {
     const allSignals: MultiSportSignal[] = [];
 
     for (const game of games) {
-      if (game.status === 'FINISHED') continue;
 
       const oddsList = await this.provider.getOdds(game.id);
-      const parsedOdds: NHLMarketOdds = { gameId: game.id };
-
-      for (const o of oddsList) {
-        const m = String(o.market || '').toUpperCase();
-        const rawSel = String(o.selection || '');
-        const sel = rawSel.toUpperCase();
-
-        if (m.includes('WINNER') || m.includes('HOME/AWAY') || m.includes('MONEYLINE') || m === '1X2') {
-          if (sel === 'HOME' || sel.includes('1') || sel.includes(game.homeTeam.name.toUpperCase())) {
-            parsedOdds.moneyline = {
-              homeOdds: o.decimalOdds,
-              awayOdds: parsedOdds.moneyline?.awayOdds || 1.95,
-              bookmaker: o.bookmaker
-            };
-          } else if (sel === 'AWAY' || sel.includes('2') || sel.includes(game.awayTeam.name.toUpperCase())) {
-            parsedOdds.moneyline = {
-              homeOdds: parsedOdds.moneyline?.homeOdds || 1.90,
-              awayOdds: o.decimalOdds,
-              bookmaker: o.bookmaker
-            };
-          }
-        }
-
-        if (m.includes('TOTAL') || m.includes('OVER/UNDER')) {
-          const lineMatch = rawSel.match(/[\d.]+/);
-          const line = lineMatch ? parseFloat(lineMatch[0]) : 6.0;
-          if (sel.includes('OVER')) {
-            parsedOdds.totalGoals = {
-              line: line,
-              overOdds: o.decimalOdds,
-              underOdds: parsedOdds.totalGoals?.underOdds || 1.91,
-              bookmaker: o.bookmaker
-            };
-          } else if (sel.includes('UNDER')) {
-            parsedOdds.totalGoals = {
-              line: line,
-              overOdds: parsedOdds.totalGoals?.overOdds || 1.91,
-              underOdds: o.decimalOdds,
-              bookmaker: o.bookmaker
-            };
-          }
-        }
-
-        if (m.includes('ASIAN HANDICAP') || m.includes('PUCK LINE')) {
-          const isHome = sel.includes('HOME') || sel.includes(game.homeTeam.name.toUpperCase());
-          const lineMatch = rawSel.match(/[-+]?[\d.]+/);
-          const line = lineMatch ? parseFloat(lineMatch[0]) : (isHome ? -1.5 : 1.5);
-          const hLine = isHome ? line : -line;
-          const aLine = -hLine;
-          parsedOdds.puckLine = {
-            homeLine: hLine,
-            homeOdds: isHome ? o.decimalOdds : (parsedOdds.puckLine?.homeOdds || 2.80),
-            awayLine: aLine,
-            awayOdds: !isHome ? o.decimalOdds : (parsedOdds.puckLine?.awayOdds || 1.45),
-            bookmaker: o.bookmaker
-          };
-        }
-      }
+      const parsedOdds = this.parseNHLMainOdds(game.id, oddsList, game.homeTeam.name, game.awayTeam.name);
 
       const homeStats: NHLTeamStats = {
         teamId: game.homeTeam.id,

@@ -53,7 +53,7 @@ export class NBAProvider implements SportsDataProvider {
 
     try {
       const currentSeason = getCurrentSportSeason("nba");
-      const url = `${config.baseUrl}/games?date=${date}&league=12&season=${currentSeason}`;
+      const url = `${config.baseUrl}/games?date=${date}&league=12&season=${currentSeason}&timezone=America/New_York`;
       const res = await fetch(url, { headers: this.headers });
       if (!res.ok) return [];
 
