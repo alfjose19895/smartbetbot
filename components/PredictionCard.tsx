@@ -83,6 +83,15 @@ export function getDisplayMarketSelection(market: string, selection?: string): s
   if (normM.includes("empate") || normM.includes("draw")) {
     return `${market} (X)`;
   }
+  if (normM.includes("puck line") || normM.includes("spread") || normM.includes("handicap")) {
+    return selection ? `${market}: ${selection}` : market;
+  }
+  if (normM.includes("total goals") || normM.includes("totales")) {
+    return selection ? `${market}: ${selection}` : market;
+  }
+  if (normM.includes("moneyline")) {
+    return selection ? `${market}: ${selection}` : market;
+  }
   if (normM.includes("over 0.5") || normM.includes("más de 0.5")) {
     return `${market} (Over 0.5)`;
   }
@@ -121,6 +130,16 @@ export function PredictionCard({
   const [isMobileExpanded, setIsMobileExpanded] = useState(defaultExpanded);
   const [copyingImage, setCopyingImage] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
+
+  // Detect exact sport context
+  const rawSport = ((prediction as any).sport || (prediction.country === "NHL" ? "nhl" : prediction.country === "NBA" ? "nba" : (prediction.country === "NFL" || prediction.country === "NCAAF") ? "nfl" : "football")).toLowerCase();
+  const isNHL = rawSport === "nhl" || (Boolean(prediction.league) && prediction.league.toUpperCase().includes("NHL"));
+  const isNBA = rawSport === "nba" || (Boolean(prediction.league) && prediction.league.toUpperCase().includes("NBA"));
+  const isNFL = rawSport === "nfl" || rawSport === "ncaaf" || (Boolean(prediction.league) && (prediction.league.toUpperCase().includes("NFL") || prediction.league.toUpperCase().includes("NCAA")));
+  const isFootball = !isNHL && !isNBA && !isNFL;
+
+  const sportIcon = isNHL ? "🏒" : isNBA ? "🏀" : isNFL ? "🏈" : "⚽";
+  const sportTitle = isNHL ? "NHL" : isNBA ? "NBA" : isNFL ? "NFL" : "Fútbol";
 
   const statusBadge = getMatchLiveStatusBadge(prediction.kickoff);
   const { time: formattedTime, date: formattedDateShort } = formatMatchKickoffTime(prediction.kickoff);
@@ -181,19 +200,27 @@ export function PredictionCard({
 
   const pVal = typeof prediction.probability === "number" ? prediction.probability : 50;
 
+  // Corner statistics exclusively for Football
   const isCornerMarket =
-    prediction.market === "Córners" ||
-    (prediction.market && (prediction.market.toLowerCase().includes("córner") || prediction.market.toLowerCase().includes("corner")));
+    isFootball &&
+    (prediction.market === "Córners" ||
+      (Boolean(prediction.market) &&
+        (prediction.market.toLowerCase().includes("córner") ||
+          prediction.market.toLowerCase().includes("corner"))));
 
-  const homeCornersHistory = (prediction.homeLast5 || [])
-    .map((m) => m.totalCorners)
-    .filter((c): c is number => typeof c === "number");
-  const awayCornersHistory = (prediction.awayLast5 || [])
-    .map((m) => m.totalCorners)
-    .filter((c): c is number => typeof c === "number");
+  const homeCornersHistory = isFootball
+    ? (prediction.homeLast5 || [])
+        .map((m) => m.totalCorners)
+        .filter((c): c is number => typeof c === "number")
+    : [];
+  const awayCornersHistory = isFootball
+    ? (prediction.awayLast5 || [])
+        .map((m) => m.totalCorners)
+        .filter((c): c is number => typeof c === "number")
+    : [];
 
-  const recentCornerPills: number[] =
-    homeCornersHistory.length > 0
+  const recentCornerPills: number[] = isFootball
+    ? homeCornersHistory.length > 0
       ? homeCornersHistory
       : (prediction as any).homeCornerStats?.history && (prediction as any).homeCornerStats.history.length > 0
       ? (prediction as any).homeCornerStats.history
@@ -201,10 +228,11 @@ export function PredictionCard({
       ? awayCornersHistory
       : (prediction as any).awayCornerStats?.history && (prediction as any).awayCornerStats.history.length > 0
       ? (prediction as any).awayCornerStats.history
-      : [];
+      : []
+    : [];
 
-  const avgCornerNum =
-    recentCornerPills.length > 0
+  const avgCornerNum = isFootball
+    ? recentCornerPills.length > 0
       ? (recentCornerPills.reduce((a, b) => a + b, 0) / recentCornerPills.length).toFixed(1)
       : (prediction as any).homeCornerStats?.avgTotal
       ? ((prediction as any).homeCornerStats.avgTotal).toFixed(1)
@@ -212,7 +240,11 @@ export function PredictionCard({
       ? ((prediction as any).awayCornerStats.avgTotal).toFixed(1)
       : prediction.cornerAnalysis?.expectedTotalCorners
       ? prediction.cornerAnalysis.expectedTotalCorners.toFixed(1)
-      : null;
+      : null
+    : null;
+
+  const showCornerHistory = isFootball && (isCornerMarket || recentCornerPills.length > 0 || Boolean(prediction.cornerAnalysis));
+
   const confidenceBadge =
     pVal >= 70.0
       ? {
@@ -263,7 +295,7 @@ export function PredictionCard({
                     : "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200"
                 }`}
               >
-                {isWon ? "✓" : isLost ? "✗" : "🏆"}
+                {isWon ? "✓" : isLost ? "✗" : sportIcon}
               </span>
               <div className="min-w-0">
                 <div className="text-xs font-black text-slate-900 dark:text-white truncate flex items-center gap-1.5">
@@ -296,9 +328,8 @@ export function PredictionCard({
 
             {/* Right: Badges, Status & Expand Button */}
             <div className="flex items-center gap-1.5 shrink-0">
-              
               {isMcp && (
-                <span className="rounded-lg px-1.5 py-0.5 text-[9px] font-black bg-purple-600 text-white shadow-sm border border-purple-400 flex items-center gap-0.5">
+                <span className="rounded-full px-1.5 py-0.5 text-[8px] font-black bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
                   🤖 MCP
                 </span>
               )}
@@ -362,7 +393,6 @@ export function PredictionCard({
                 </span>
 
                 <div className="flex items-center gap-1.5">
-                  
                   {isWon ? (
                     <span className="inline-flex items-center gap-1 rounded-xl px-2.5 py-0.5 text-[10px] font-black bg-emerald-500 text-slate-950 shadow-sm border border-emerald-400">
                       ✓ Ganada
@@ -425,7 +455,7 @@ export function PredictionCard({
                         : "bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-200"
                     }`}
                   >
-                    <span>⚽ Marcador Final:</span>
+                    <span>{sportIcon} Marcador Final:</span>
                     <span className="text-sm tracking-widest">{finalScoreText}</span>
                   </div>
                 )}
@@ -442,93 +472,120 @@ export function PredictionCard({
                 </div>
               </div>
 
-              
-          
-          {/* Corner History Preview Strip */}
-          <div className="mt-3 rounded-2xl bg-slate-50/90 p-3 border border-slate-100 dark:bg-slate-950/70 dark:border-slate-800/80">
-            <div className="flex items-center justify-between text-[11px] font-black mb-2">
-              <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400">
-                <span>🚩</span>
-                <span>Historial Córners (API Oficial):</span>
-              </span>
-              {prediction.cornerAnalysis?.expectedTotalCorners && (
-                <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-black text-emerald-700 dark:text-emerald-300">
-                  ~{prediction.cornerAnalysis.expectedTotalCorners.toFixed(1)} Esp.
-                </span>
+              {/* FOOTBALL CORNER HISTORY PREVIEW STRIP (ONLY FOR FOOTBALL) */}
+              {isFootball && showCornerHistory && (
+                <div className="mt-3 rounded-2xl bg-slate-50/90 p-3 border border-slate-100 dark:bg-slate-950/70 dark:border-slate-800/80">
+                  <div className="flex items-center justify-between text-[11px] font-black mb-2">
+                    <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400">
+                      <span>🚩</span>
+                      <span>Historial Córners (API Oficial):</span>
+                    </span>
+                    {prediction.cornerAnalysis?.expectedTotalCorners && (
+                      <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-black text-emerald-700 dark:text-emerald-300">
+                        ~{prediction.cornerAnalysis.expectedTotalCorners.toFixed(1)} Esp.
+                      </span>
+                    )}
+                  </div>
+                  {(() => {
+                    const homeCorners: number[] = homeCornersHistory;
+                    const awayCorners: number[] = awayCornersHistory;
+
+                    if (homeCorners.length === 0 && awayCorners.length === 0) {
+                      return (
+                        <div className="flex items-center justify-between text-[10px] font-bold text-slate-500 dark:text-slate-400 py-1">
+                          <span>Ver desglose detallado de córners y H2H</span>
+                          <span className="text-emerald-600 dark:text-emerald-400 font-extrabold">Abrir Detalle →</span>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div className="grid grid-cols-2 gap-2 text-[10px] font-extrabold text-slate-700 dark:text-slate-300">
+                        <div className="flex items-center justify-between rounded-xl bg-white p-2 border border-slate-200/80 dark:bg-slate-900/80 dark:border-slate-700">
+                          <span className="truncate max-w-[85px]">🏠 {prediction.homeTeam.split(" ")[0]}</span>
+                          <div className="flex gap-1">
+                            {homeCorners.length > 0 ? (
+                              homeCorners.map((val, i) => (
+                                <span
+                                  key={i}
+                                  className={`flex h-4 w-4 items-center justify-center rounded text-[9px] font-black text-white ${
+                                    val >= 10 ? "bg-emerald-600" : val >= 8 ? "bg-teal-600" : "bg-slate-500"
+                                  }`}
+                                  title={`${val} córners reales`}
+                                >
+                                  {val}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="text-[9px] text-slate-400 font-normal italic">Sin reg.</span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between rounded-xl bg-white p-2 border border-slate-200/80 dark:bg-slate-900/80 dark:border-slate-700">
+                          <span className="truncate max-w-[85px]">✈️ {prediction.awayTeam.split(" ")[0]}</span>
+                          <div className="flex gap-1">
+                            {awayCorners.length > 0 ? (
+                              awayCorners.map((val, i) => (
+                                <span
+                                  key={i}
+                                  className={`flex h-4 w-4 items-center justify-center rounded text-[9px] font-black text-white ${
+                                    val >= 10 ? "bg-emerald-600" : val >= 8 ? "bg-teal-600" : "bg-slate-500"
+                                  }`}
+                                  title={`${val} córners reales`}
+                                >
+                                  {val}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="text-[9px] text-slate-400 font-normal italic">Sin reg.</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
               )}
-            </div>
-            {(() => {
-              const homeCorners: number[] =
-                (prediction.homeLast5 || []).map((m) => m.totalCorners).filter((c): c is number => typeof c === "number").length > 0
-                  ? (prediction.homeLast5 || []).map((m) => m.totalCorners).filter((c): c is number => typeof c === "number")
-                  : (prediction as any).homeCornerStats?.history && (prediction as any).homeCornerStats.history.length > 0
-                  ? (prediction as any).homeCornerStats.history
-                  : [];
 
-              const awayCorners: number[] =
-                (prediction.awayLast5 || []).map((m) => m.totalCorners).filter((c): c is number => typeof c === "number").length > 0
-                  ? (prediction.awayLast5 || []).map((m) => m.totalCorners).filter((c): c is number => typeof c === "number")
-                  : (prediction as any).awayCornerStats?.history && (prediction as any).awayCornerStats.history.length > 0
-                  ? (prediction as any).awayCornerStats.history
-                  : [];
-
-              if (homeCorners.length === 0 && awayCorners.length === 0) {
-                return (
+              {/* NHL GOALS & PUCK LINE METRICS STRIP (FOR NHL) */}
+              {isNHL && (
+                <div className="mt-3 rounded-2xl bg-cyan-50/40 p-3 border border-cyan-100 dark:bg-slate-950/70 dark:border-cyan-900/40">
+                  <div className="flex items-center justify-between text-[11px] font-black mb-1.5">
+                    <span className="flex items-center gap-1.5 text-cyan-700 dark:text-cyan-400">
+                      <span>🏒</span>
+                      <span>Métricas de Goles & H2H (NHL):</span>
+                    </span>
+                    <span className="rounded-md bg-cyan-500/10 px-2 py-0.5 text-[10px] font-black text-cyan-700 dark:text-cyan-300">
+                      Puck Line & Totales
+                    </span>
+                  </div>
                   <div className="flex items-center justify-between text-[10px] font-bold text-slate-500 dark:text-slate-400 py-1">
-                    <span>Ver desglose detallado de córners y H2H</span>
-                    <span className="text-emerald-600 dark:text-emerald-400 font-extrabold">Abrir Detalle →</span>
-                  </div>
-                );
-              }
-
-              return (
-                <div className="grid grid-cols-2 gap-2 text-[10px] font-extrabold text-slate-700 dark:text-slate-300">
-                  <div className="flex items-center justify-between rounded-xl bg-white p-2 border border-slate-200/80 dark:bg-slate-900/80 dark:border-slate-700">
-                    <span className="truncate max-w-[85px]">🏠 {prediction.homeTeam.split(" ")[0]}</span>
-                    <div className="flex gap-1">
-                      {homeCorners.length > 0 ? (
-                        homeCorners.map((val, i) => (
-                          <span
-                            key={i}
-                            className={`flex h-4 w-4 items-center justify-center rounded text-[9px] font-black text-white ${
-                              val >= 10 ? "bg-emerald-600" : val >= 8 ? "bg-teal-600" : "bg-slate-500"
-                            }`}
-                            title={`${val} córners reales`}
-                          >
-                            {val}
-                          </span>
-                        ))
-                      ) : (
-                        <span className="text-[9px] text-slate-400 font-normal italic">Sin reg.</span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between rounded-xl bg-white p-2 border border-slate-200/80 dark:bg-slate-900/80 dark:border-slate-700">
-                    <span className="truncate max-w-[85px]">✈️ {prediction.awayTeam.split(" ")[0]}</span>
-                    <div className="flex gap-1">
-                      {awayCorners.length > 0 ? (
-                        awayCorners.map((val, i) => (
-                          <span
-                            key={i}
-                            className={`flex h-4 w-4 items-center justify-center rounded text-[9px] font-black text-white ${
-                              val >= 10 ? "bg-emerald-600" : val >= 8 ? "bg-teal-600" : "bg-slate-500"
-                            }`}
-                            title={`${val} córners reales`}
-                          >
-                            {val}
-                          </span>
-                        ))
-                      ) : (
-                        <span className="text-[9px] text-slate-400 font-normal italic">Sin reg.</span>
-                      )}
-                    </div>
+                    <span>Tendencia ofensiva, efectividad Power Play y H2H</span>
+                    <span className="text-cyan-600 dark:text-cyan-400 font-extrabold">Ver Análisis →</span>
                   </div>
                 </div>
-              );
-            })()}
-          </div>
+              )}
 
-          {/* Pick Market Details */}
+              {/* NBA / NFL METRICS STRIP */}
+              {(isNBA || isNFL) && (
+                <div className="mt-3 rounded-2xl bg-amber-50/40 p-3 border border-amber-100 dark:bg-slate-950/70 dark:border-amber-900/40">
+                  <div className="flex items-center justify-between text-[11px] font-black mb-1.5">
+                    <span className="flex items-center gap-1.5 text-amber-700 dark:text-amber-400">
+                      <span>{sportIcon}</span>
+                      <span>Métricas Cuantitativas ({sportTitle}):</span>
+                    </span>
+                    <span className="rounded-md bg-amber-500/10 px-2 py-0.5 text-[10px] font-black text-amber-700 dark:text-amber-300">
+                      Puntos & Spread
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-[10px] font-bold text-slate-500 dark:text-slate-400 py-1">
+                    <span>Ritmo, posesiones y comparativa de poder</span>
+                    <span className="text-amber-600 dark:text-amber-400 font-extrabold">Ver Detalle →</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Pick Market Details */}
               <div
                 className={`mt-3 rounded-xl p-3 border space-y-2 ${
                   isWon
@@ -542,7 +599,7 @@ export function PredictionCard({
                   <span className={isWon ? "text-emerald-800 dark:text-emerald-400 font-extrabold" : isLost ? "text-rose-800 dark:text-rose-400 font-extrabold" : "text-emerald-800 dark:text-emerald-400"}>
                     {isWon ? "✓ PRONÓSTICO ACERTADO (GANADA)" : isLost ? "✗ PRONÓSTICO NO ACERTADO (PERDIDA)" : "🎯 PRONÓSTICO SMARTBETBOT"}
                   </span>
-                  <span className="text-emerald-700 dark:text-emerald-300">
+                  <span className="text-emerald-700 dark:text-emerald-300 font-bold">
                     +{prediction.edge}% EV
                   </span>
                 </div>
@@ -589,25 +646,8 @@ export function PredictionCard({
                   title="Copiar"
                   className="rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-black text-slate-800 border border-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 cursor-pointer"
                 >
-                  {copySuccess ? "✓ Copiada" : "📸 Copiar"}
+                  {copySuccess ? "✓" : "📸"}
                 </button>
-
-                {onPublishAlert && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onPublishAlert(prediction);
-                    }}
-                    disabled={isPublished}
-                    className={`rounded-lg px-2 py-1 text-[10px] font-black transition cursor-pointer ${
-                      isPublished
-                        ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
-                        : "bg-emerald-500 text-slate-950 font-black"
-                    }`}
-                  >
-                    {isPublished ? "✓ En App" : "📥 Publicar"}
-                  </button>
-                )}
               </div>
 
               <button
@@ -617,7 +657,7 @@ export function PredictionCard({
                 }}
                 className="rounded-lg bg-slate-900 px-2.5 py-1 text-[10px] font-black text-white hover:bg-emerald-600 dark:bg-white dark:text-slate-950 cursor-pointer ml-auto"
               >
-                Ver H2H →
+                {isFootball && isCornerMarket ? "🚩 Córners →" : "Ver H2H →"}
               </button>
             </div>
           </div>
@@ -676,7 +716,7 @@ export function PredictionCard({
             </div>
           </div>
 
-          {/* Sub Bar: Match Date & Intelligence Badges (Agente MCP / Bomba / Valor / Confianza) */}
+          {/* Sub Bar: Match Date & Intelligence Badges */}
           <div className="mt-3 flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
               {formattedDateShort && (
@@ -719,7 +759,7 @@ export function PredictionCard({
             {/* Prominent Score Banner for Finished or Live Matches */}
             {isWon ? (
               <div className="mb-3 flex items-center justify-center gap-2.5 rounded-xl py-2 px-3 border shadow-sm bg-emerald-500/15 border-emerald-400 text-emerald-900 dark:bg-emerald-950/80 dark:text-emerald-200">
-                <span className="text-xs font-bold">⚽ Marcador Final:</span>
+                <span className="text-xs font-bold">{sportIcon} Marcador Final:</span>
                 <span className="text-base font-black tracking-wider">{finalScoreText}</span>
                 <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase bg-emerald-500 text-slate-950 shadow-xs">
                   ✓ Ganada
@@ -727,7 +767,7 @@ export function PredictionCard({
               </div>
             ) : isLost ? (
               <div className="mb-3 flex items-center justify-center gap-2.5 rounded-xl py-2 px-3 border shadow-sm bg-rose-500/15 border-rose-400 text-rose-900 dark:bg-rose-950/80 dark:text-rose-200">
-                <span className="text-xs font-bold">⚽ Marcador Final:</span>
+                <span className="text-xs font-bold">{sportIcon} Marcador Final:</span>
                 <span className="text-base font-black tracking-wider">{finalScoreText}</span>
                 <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase bg-rose-600 text-white shadow-xs">
                   ✗ Perdida
@@ -735,7 +775,7 @@ export function PredictionCard({
               </div>
             ) : (prediction.matchTiming === "live" || Boolean(prediction.currentScore)) ? (
               <div className="mb-3 flex items-center justify-center gap-2.5 rounded-xl py-2 px-3 border shadow-sm bg-red-500/15 border-red-400 text-red-900 dark:bg-red-950/80 dark:text-red-200 animate-pulse">
-                <span className="text-xs font-bold">🔴 En Vivo:</span>
+                <span className="text-xs font-bold">🔴 {sportIcon} En Vivo:</span>
                 <span className="text-base font-black tracking-wider">{prediction.currentScore || "0 - 0"}</span>
                 <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase bg-red-600 text-white shadow-xs">
                   En Juego {prediction.liveMinute ? `(${prediction.liveMinute}')` : ""}
@@ -752,22 +792,24 @@ export function PredictionCard({
                   <div className="text-sm font-black text-slate-900 dark:text-white truncate">
                     {prediction.homeTeam}
                   </div>
-                  <div className="text-[10px] font-bold text-slate-400">Local</div>
+                  <div className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold">
+                    Local {prediction.homeElo ? `• Elo: ${prediction.homeElo}` : ""}
+                  </div>
                 </div>
               </div>
 
-              <div className="shrink-0 flex flex-col items-center">
-                <span className="rounded-lg bg-slate-200 px-2 py-0.5 text-[11px] font-black text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                  VS
-                </span>
-              </div>
+              <span className="rounded-xl bg-slate-200/80 px-2.5 py-1 text-xs font-black text-slate-700 dark:bg-slate-800 dark:text-slate-300 shrink-0">
+                VS
+              </span>
 
               <div className="flex items-center justify-end gap-2.5 flex-1 min-w-0 text-right">
                 <div className="min-w-0">
                   <div className="text-sm font-black text-slate-900 dark:text-white truncate">
                     {prediction.awayTeam}
                   </div>
-                  <div className="text-[10px] font-bold text-slate-400">Visitante</div>
+                  <div className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold">
+                    Visitante {prediction.awayElo ? `• Elo: ${prediction.awayElo}` : ""}
+                  </div>
                 </div>
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-xs font-black text-slate-900 shadow-xs border border-slate-200 dark:bg-slate-900 dark:text-white dark:border-slate-800 shrink-0">
                   {prediction.awayTeam.substring(0, 2).toUpperCase()}
@@ -776,34 +818,35 @@ export function PredictionCard({
             </div>
           </div>
 
-          {/* Main Pick Highlight Box with Side-by-Side Odds and Model Odds */}
+          {/* Primary Recommendation Banner */}
           <div
-            className={`mt-4 rounded-2xl p-3.5 space-y-3 border ${
+            className={`mt-4 rounded-2xl p-4 border transition-all ${
               isWon
-                ? "border-emerald-400 bg-emerald-50/70 dark:border-emerald-500/50 dark:bg-emerald-950/25"
+                ? "border-emerald-400 bg-emerald-50/70 dark:border-emerald-500/50 dark:bg-emerald-950/30"
                 : isLost
-                ? "border-rose-400 bg-rose-50/70 dark:border-rose-500/50 dark:bg-rose-950/25"
-                : "border-emerald-300 bg-emerald-50/60 dark:border-emerald-500/30 dark:bg-emerald-950/20"
+                ? "border-rose-400 bg-rose-50/70 dark:border-rose-500/50 dark:bg-rose-950/30"
+                : "border-emerald-500/50 bg-gradient-to-r from-emerald-50/70 to-teal-50/70 dark:border-emerald-500/40 dark:from-emerald-950/30 dark:to-slate-900"
             }`}
           >
-            <div className="flex items-center justify-between flex-wrap gap-1">
-              <div className={`text-[10px] font-black uppercase tracking-wider ${
-                isWon ? "text-emerald-800 dark:text-emerald-400" : isLost ? "text-rose-800 dark:text-rose-400" : "text-emerald-800 dark:text-emerald-400"
-              }`}>
-                {isWon ? "✓ PRONÓSTICO ACERTADO (GANADA)" : isLost ? "✗ PRONÓSTICO NO ACERTADO (PERDIDA)" : "🎯 PRONÓSTICO SMARTBETBOT"}
-              </div>
-              <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
-                Valor / Ventaja: <strong className="text-emerald-700 dark:text-emerald-300">+{prediction.edge}%</strong>
+            <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
+              <span className="text-[11px] font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-400 flex items-center gap-1.5">
+                <span>{isWon ? "✓" : isLost ? "✗" : "🎯"}</span>
+                <span>{isWon ? "PRONÓSTICO ACERTADO (GANADA)" : isLost ? "PRONÓSTICO NO ACERTADO (PERDIDA)" : "PRONÓSTICO SMARTBETBOT"}</span>
+              </span>
+
+              <div className="flex items-center gap-1.5">
+                <span className="rounded-lg bg-emerald-500/20 px-2 py-0.5 text-[10px] font-black text-emerald-800 dark:text-emerald-300 border border-emerald-500/30">
+                  +{prediction.edge}% Valor Esperado (+EV)
+                </span>
               </div>
             </div>
 
-            <div className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+            <div className="text-base font-black text-slate-950 dark:text-white">
               {getDisplayMarketSelection(prediction.market, prediction.selection)}
             </div>
 
-            {/* Side-by-Side Odds Comparison Cards with Descriptions */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
-              {/* Casa de Apuestas */}
+            <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+              {/* Cuota Casa de Apuestas */}
               <div className="rounded-xl bg-white p-2.5 border border-sky-200 shadow-sm dark:bg-slate-900 dark:border-sky-900/60">
                 <div className="text-[10px] uppercase font-bold text-sky-600 dark:text-sky-400 flex items-center gap-1">
                   <span>🏢</span> Cuota Casa
@@ -844,8 +887,8 @@ export function PredictionCard({
             </div>
           </div>
 
-          {/* Corner Statistics Snippet (Featured for Corners & Available Data) */}
-          {(isCornerMarket || recentCornerPills.length > 0 || prediction.cornerAnalysis) && (
+          {/* FOOTBALL CORNER STATISTICS SNIPPET (ONLY FOR FOOTBALL) */}
+          {isFootball && showCornerHistory && (
             <div className="mt-3 rounded-2xl bg-emerald-500/10 p-3 border border-emerald-500/25 dark:bg-emerald-950/30 dark:border-emerald-500/30">
               <div className="flex items-center justify-between text-[11px] font-black text-slate-800 dark:text-slate-200 mb-1">
                 <span className="flex items-center gap-1.5 text-emerald-800 dark:text-emerald-400">
@@ -882,6 +925,42 @@ export function PredictionCard({
                   Proyección Monte Carlo: ~{prediction.cornerAnalysis.expectedTotalCorners.toFixed(1)} córners esperados (Local: ~{prediction.cornerAnalysis.expectedHomeCorners.toFixed(1)} | Visita: ~{prediction.cornerAnalysis.expectedAwayCorners.toFixed(1)})
                 </div>
               ) : null}
+            </div>
+          )}
+
+          {/* NHL SPECIFIC STATISTICS SNIPPET (FOR NHL) */}
+          {isNHL && (
+            <div className="mt-3 rounded-2xl bg-cyan-500/10 p-3 border border-cyan-500/25 dark:bg-cyan-950/30 dark:border-cyan-500/30">
+              <div className="flex items-center justify-between text-[11px] font-black text-slate-800 dark:text-slate-200 mb-1">
+                <span className="flex items-center gap-1.5 text-cyan-800 dark:text-cyan-400">
+                  <span>🏒</span>
+                  <span>Dinámica de Goles & H2H NHL</span>
+                </span>
+                <span className="rounded-md bg-cyan-500/20 px-2 py-0.5 text-[10px] font-black text-cyan-700 dark:text-cyan-300">
+                  {prediction.market}
+                </span>
+              </div>
+              <div className="text-[10px] text-slate-600 dark:text-slate-400 font-medium">
+                Tendencia xG conjunta y cobertura de hándicap asiático (-1.5 / +1.5) evaluados mediante modelo Poisson NHL.
+              </div>
+            </div>
+          )}
+
+          {/* NBA / NFL SPECIFIC STATISTICS SNIPPET */}
+          {(isNBA || isNFL) && (
+            <div className="mt-3 rounded-2xl bg-amber-500/10 p-3 border border-amber-500/25 dark:bg-amber-950/30 dark:border-amber-500/30">
+              <div className="flex items-center justify-between text-[11px] font-black text-slate-800 dark:text-slate-200 mb-1">
+                <span className="flex items-center gap-1.5 text-amber-800 dark:text-amber-400">
+                  <span>{sportIcon}</span>
+                  <span>Dinámica de Puntos & Ritmo ({sportTitle})</span>
+                </span>
+                <span className="rounded-md bg-amber-500/20 px-2 py-0.5 text-[10px] font-black text-amber-700 dark:text-amber-300">
+                  {prediction.market}
+                </span>
+              </div>
+              <div className="text-[10px] text-slate-600 dark:text-slate-400 font-medium">
+                Proyección de posesiones, ritmo ofensivo y dispersión de puntos evaluados por modelo cuantitativo.
+              </div>
             </div>
           )}
 
@@ -959,7 +1038,7 @@ export function PredictionCard({
             }}
             className="rounded-xl bg-slate-900 px-3 py-1.5 text-[11px] font-black text-white hover:bg-emerald-600 dark:bg-white dark:text-slate-950 dark:hover:bg-emerald-400 transition cursor-pointer ml-auto flex items-center gap-1"
           >
-            <span>{isCornerMarket ? "🚩 Historial Córners →" : "Ver H2H & Historial →"}</span>
+            <span>{isFootball && isCornerMarket ? "🚩 Historial Córners →" : "Ver H2H & Historial →"}</span>
           </button>
         </div>
       </div>
