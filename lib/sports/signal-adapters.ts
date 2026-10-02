@@ -1,4 +1,4 @@
-﻿import { MultiSportSignal } from './types';
+import { MultiSportSignal } from './types';
 import { MarketOpportunity } from './prediction-engine';
 import { HistoricalSettledPick } from './db';
 
@@ -22,36 +22,33 @@ export function multiSportSignalToOpportunity(s: MultiSportSignal): MarketOpport
     const mktUpper = (s.market || '').toUpperCase();
 
     if (mktUpper.includes('TOTAL') || selUpper.includes('OVER') || selUpper.includes('UNDER')) {
-      const line = Number(s.line) || 5.5;
-      if (selUpper.includes('OVER')) {
+      const lineMatch = (selUpper + ' ' + (s.line ?? '')).match(/(\d+\.?\d*)/);
+      const line = lineMatch ? parseFloat(lineMatch[1]) : (Number(s.line) || 5.5);
+
+      if (selUpper.includes('OVER') || selUpper.includes('MÁS')) {
         isWon = totalGoals > line;
         isLost = totalGoals <= line;
-      } else if (selUpper.includes('UNDER')) {
+      } else if (selUpper.includes('UNDER') || selUpper.includes('MENOS')) {
         isWon = totalGoals < line;
         isLost = totalGoals >= line;
       }
-    } else if (mktUpper.includes('PUCK') || selUpper.includes('+1.5') || selUpper.includes('-1.5')) {
+    } else if (mktUpper.includes('PUCK') || mktUpper.includes('SPREAD') || mktUpper.includes('HANDICAP') || selUpper.includes('+') || selUpper.includes('-')) {
       const diff = (homeScore ?? 0) - (awayScore ?? 0);
-      const isHomeSel = selUpper.includes(s.game.homeTeam.name.toUpperCase()) || selUpper.includes('HOME');
+      const isHomeSel = selUpper.includes(s.game.homeTeam.name.toUpperCase()) || selUpper.includes('HOME') || selUpper.includes('LOCAL');
+
+      const plusMatch = selUpper.match(/\+\s*(\d+\.?\d*)/);
+      const minusMatch = selUpper.match(/-\s*(\d+\.?\d*)/);
+      const spreadVal = plusMatch ? parseFloat(plusMatch[1]) : minusMatch ? -parseFloat(minusMatch[1]) : 1.5;
+
       if (isHomeSel) {
-        if (selUpper.includes('+1.5')) {
-          isWon = diff + 1.5 > 0;
-          isLost = diff + 1.5 <= 0;
-        } else {
-          isWon = diff - 1.5 > 0;
-          isLost = diff - 1.5 <= 0;
-        }
+        isWon = (diff + spreadVal) > 0;
+        isLost = (diff + spreadVal) <= 0;
       } else {
-        if (selUpper.includes('+1.5')) {
-          isWon = -diff + 1.5 > 0;
-          isLost = -diff + 1.5 <= 0;
-        } else {
-          isWon = -diff - 1.5 > 0;
-          isLost = -diff - 1.5 <= 0;
-        }
+        isWon = (-diff + spreadVal) > 0;
+        isLost = (-diff + spreadVal) <= 0;
       }
-    } else if (mktUpper.includes('MONEYLINE') || mktUpper.includes('GANADOR')) {
-      const isHomeSel = selUpper.includes(s.game.homeTeam.name.toUpperCase());
+    } else if (mktUpper.includes('MONEYLINE') || mktUpper.includes('GANADOR') || mktUpper.includes('WINNER')) {
+      const isHomeSel = selUpper.includes(s.game.homeTeam.name.toUpperCase()) || selUpper.includes('1') || selUpper.includes('LOCAL');
       if (isHomeSel) {
         isWon = (homeScore ?? 0) > (awayScore ?? 0);
         isLost = (homeScore ?? 0) < (awayScore ?? 0);

@@ -958,33 +958,41 @@ export function evaluateMarketResult(
     }
   }
 
-  // 2. Over Goals (Over 0.5, 1.5, 2.5, 3.5, 4.5, Más de X goles)
+  // 2. Over Goals (Over 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.0, 6.5, etc.)
   if (
-    (mClean.includes("over") || mClean.includes("mas de") || mClean.includes("+")) &&
-    (mClean.includes("gol") || mClean.includes("goal") || sClean.includes("over") || sClean.includes("+"))
+    (mClean.includes("over") || mClean.includes("mas de") || mClean.includes("total") || sClean.includes("over") || sClean.includes("mas de")) &&
+    (mClean.includes("gol") || mClean.includes("goal") || mClean.includes("total") || sClean.includes("gol") || sClean.includes("over"))
   ) {
-    let line = 2.5;
-    if (mClean.includes("0.5") || sClean.includes("0.5")) line = 0.5;
-    else if (mClean.includes("1.5") || sClean.includes("1.5")) line = 1.5;
-    else if (mClean.includes("2.5") || sClean.includes("2.5")) line = 2.5;
-    else if (mClean.includes("3.5") || sClean.includes("3.5")) line = 3.5;
-    else if (mClean.includes("4.5") || sClean.includes("4.5")) line = 4.5;
+    const combined = `${mClean} ${sClean}`;
+    const lineMatch = combined.match(/(\d+\.?\d*)/);
+    let line = lineMatch ? parseFloat(lineMatch[1]) : 2.5;
+    if (combined.includes("0.5")) line = 0.5;
+    else if (combined.includes("1.5")) line = 1.5;
+    else if (combined.includes("2.5")) line = 2.5;
+    else if (combined.includes("3.5")) line = 3.5;
+    else if (combined.includes("4.5")) line = 4.5;
+    else if (combined.includes("5.5")) line = 5.5;
+    else if (combined.includes("6.5")) line = 6.5;
 
     const isWon = totalGoals > line;
     return { isWon, actualScoreText: `${homeGoals} - ${awayGoals} (${totalGoals} Goles)` };
   }
 
-  // 3. Under Goals (Under 0.5, 1.5, 2.5, 3.5, 4.5, Menos de X goles)
+  // 3. Under Goals (Under 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.0, 6.5, etc.)
   if (
-    (mClean.includes("under") || mClean.includes("menos de") || mClean.includes("-")) &&
-    (mClean.includes("gol") || mClean.includes("goal") || sClean.includes("under") || sClean.includes("-"))
+    (mClean.includes("under") || mClean.includes("menos de") || sClean.includes("under") || sClean.includes("menos de")) &&
+    (mClean.includes("gol") || mClean.includes("goal") || mClean.includes("total") || sClean.includes("gol") || sClean.includes("under"))
   ) {
-    let line = 2.5;
-    if (mClean.includes("0.5") || sClean.includes("0.5")) line = 0.5;
-    else if (mClean.includes("1.5") || sClean.includes("1.5")) line = 1.5;
-    else if (mClean.includes("2.5") || sClean.includes("2.5")) line = 2.5;
-    else if (mClean.includes("3.5") || sClean.includes("3.5")) line = 3.5;
-    else if (mClean.includes("4.5") || sClean.includes("4.5")) line = 4.5;
+    const combined = `${mClean} ${sClean}`;
+    const lineMatch = combined.match(/(\d+\.?\d*)/);
+    let line = lineMatch ? parseFloat(lineMatch[1]) : 2.5;
+    if (combined.includes("0.5")) line = 0.5;
+    else if (combined.includes("1.5")) line = 1.5;
+    else if (combined.includes("2.5")) line = 2.5;
+    else if (combined.includes("3.5")) line = 3.5;
+    else if (combined.includes("4.5")) line = 4.5;
+    else if (combined.includes("5.5")) line = 5.5;
+    else if (combined.includes("6.5")) line = 6.5;
 
     const isWon = totalGoals < line;
     return { isWon, actualScoreText: `${homeGoals} - ${awayGoals} (${totalGoals} Goles)` };
@@ -1057,26 +1065,20 @@ export function evaluateMarketResult(
     }
   }
 
-  // 8. Hándicap Asiático
-  if (mClean.includes("handicap")) {
-    if (mClean.includes("+1.5") && mClean.includes("visitante")) {
-      const isWon = (awayGoals + 1.5) > homeGoals;
+  // 8. Hándicap Asiático & Puck Line (NHL / Multi-Sport)
+  if (mClean.includes("handicap") || mClean.includes("puck line") || mClean.includes("puckline") || mClean.includes("spread")) {
+    const diff = homeGoals - awayGoals;
+    const isHome = sClean.includes(hNorm) || sClean.includes("local") || sClean.includes("home") || mClean.includes("local");
+
+    const plusMatch = sClean.match(/\+\s*(\d+\.?\d*)/);
+    const minusMatch = sClean.match(/-\s*(\d+\.?\d*)/);
+    const spreadVal = plusMatch ? parseFloat(plusMatch[1]) : minusMatch ? -parseFloat(minusMatch[1]) : 1.5;
+
+    if (isHome) {
+      const isWon = (diff + spreadVal) > 0;
       return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
-    }
-    if (mClean.includes("-1.5") && mClean.includes("local")) {
-      const isWon = (homeGoals - 1.5) > awayGoals;
-      return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
-    }
-    if (mClean.includes("+1.5") && mClean.includes("local")) {
-      const isWon = (homeGoals + 1.5) > awayGoals;
-      return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
-    }
-    if (mClean.includes("+0.5") || mClean.includes("1x")) {
-      const isWon = homeGoals >= awayGoals;
-      return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
-    }
-    if (mClean.includes("-0.5") || mClean.includes("gana")) {
-      const isWon = homeGoals > awayGoals;
+    } else {
+      const isWon = (-diff + spreadVal) > 0;
       return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
     }
   }
