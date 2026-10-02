@@ -12,7 +12,7 @@ export function multiSportSignalToOpportunity(s: MultiSportSignal): MarketOpport
   const isLive = s.game.status === 'IN_PLAY';
   const isFinished = s.game.status === 'FINISHED';
 
-  // Evaluate won/lost if game is finished
+  // Evaluate won/lost strictly if game is finished and has final scores
   let isWon = false;
   let isLost = false;
 
@@ -89,9 +89,9 @@ export function multiSportSignalToOpportunity(s: MultiSportSignal): MarketOpport
     explanation: s.explanation || `Analisis cuantitativo de valor esperado (+EV) para ${s.sport.toUpperCase()}.`,
     pickBadge: s.isSmartPick ? 'valor' : (s.decimalOdds >= 2.0 ? 'bomba' : 'estandar'),
     status: oppStatus,
-    result: isWon ? 'WON' : isLost ? 'LOST' : undefined,
-    actualScore: scoreStr,
-    currentScore: scoreStr,
+    result: isFinished ? (isWon ? 'WON' : isLost ? 'LOST' : undefined) : undefined,
+    actualScore: isFinished ? scoreStr : undefined,
+    currentScore: isLive ? scoreStr : undefined,
     matchTiming: isLive ? 'live' : isFinished ? 'finished' : 'prematch',
     smartScore: s.smartScore || 80,
     sport: s.sport,
@@ -115,7 +115,7 @@ export function historicalPickToOpportunity(h: HistoricalSettledPick, sportKey: 
     awayTeamId: (h as any).awayTeamId || 0,
     league: h.league || 'Liga',
     leagueId: (h as any).leagueId || 0,
-    country: sportKey.toUpperCase(),
+    country: (h.country || sportKey).toUpperCase(),
     kickoff: h.kickoff || `${h.date}T12:00:00Z`,
     market: h.market,
     selection: h.selection,
@@ -132,6 +132,6 @@ export function historicalPickToOpportunity(h: HistoricalSettledPick, sportKey: 
     result: h.result,
     actualScore: h.score,
     smartScore: prob,
-    sport: sportKey as any,
+    sport: (h as any).sport || sportKey,
   } as unknown as MarketOpportunity;
 }

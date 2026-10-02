@@ -5,7 +5,6 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
 import { PredictionCard } from '@/components/PredictionCard';
 import { MatchDetailModal } from '@/components/MatchDetailModal';
-import { McpCountryAgentModal } from '@/components/McpCountryAgentModal';
 import { MultiSelectDropdown, DropdownOption } from '@/components/MultiSelectDropdown';
 import { SupportedSport, MultiSportSignal } from '@/lib/sports/types';
 import { getSportMeta } from '@/lib/sports/registry';
@@ -135,7 +134,6 @@ export function SportDashboardView({
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [copyImageSuccessId, setCopyImageSuccessId] = useState<string | null>(null);
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
-  const [mcpModalOpen, setMcpModalOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
   // Real Database History State
@@ -160,7 +158,7 @@ export function SportDashboardView({
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
-  const [matchStatusFilter, setMatchStatusFilter] = useState<'ALL' | 'VALOR' | 'BOMBA' | 'MCP' | 'WON' | 'LOST' | 'SCHEDULED' | 'IN_PLAY' | 'FINISHED'>('ALL');
+  const [matchStatusFilter, setMatchStatusFilter] = useState<'ALL' | 'VALOR' | 'BOMBA' | 'WON' | 'LOST' | 'SCHEDULED' | 'IN_PLAY' | 'FINISHED'>('ALL');
   const [timeSlotFilter, setTimeSlotFilter] = useState<'ALL' | 'TOP' | 'MORNING' | 'AFTERNOON' | 'NIGHT'>('ALL');
   const [minProbability, setMinProbability] = useState<number>(35);
 
@@ -168,7 +166,7 @@ export function SportDashboardView({
   useEffect(() => {
     let isMounted = true;
     setHistoryLoading(true);
-    fetch('/api/history')
+    fetch(`/api/history?sport=${encodeURIComponent(sport)}`)
       .then((res) => (res.ok ? res.json() : { history: [], parlays: [] }))
       .then((data) => {
         if (!isMounted) return;
@@ -326,7 +324,6 @@ export function SportDashboardView({
   // Count matches strictly matching filter conditions
   const valorCount = opportunities.filter((s) => s.pickBadge === 'valor' || s.expectedValue >= 5).length;
   const bombaCount = opportunities.filter((s) => (s.odds || 0) >= 2.0).length;
-  const mcpCount = opportunities.filter((s) => s.isMcpPick || s.isMcp).length;
   const wonCount = opportunities.filter((s) => s.result === 'WON' || s.status === 'won').length;
   const lostCount = opportunities.filter((s) => s.result === 'LOST' || s.status === 'lost').length;
   const scheduledCount = opportunities.filter((s) => (s.status === 'pending' || !s.result) && (s as any).status !== 'in_play').length;
@@ -363,8 +360,7 @@ export function SportDashboardView({
         if (s.pickBadge !== 'valor' && s.expectedValue < 5) return false;
       } else if (matchStatusFilter === 'BOMBA') {
         if ((s.odds || 0) < 2.0) return false;
-      } else if (matchStatusFilter === 'MCP') {
-        if (!s.isMcpPick && !s.isMcp) return false;
+
       } else if (matchStatusFilter === 'WON') {
         if (s.result !== 'WON' && s.status !== 'won') return false;
       } else if (matchStatusFilter === 'LOST') {
@@ -575,15 +571,7 @@ export function SportDashboardView({
           </div>
 
           <div className="flex items-center gap-2 self-start sm:self-auto">
-            {isAdmin && (
-              <button
-                onClick={() => setMcpModalOpen(true)}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-purple-500/40 bg-purple-950/60 px-3.5 py-2 text-xs font-black text-purple-300 shadow-md hover:bg-purple-900/60 transition cursor-pointer"
-              >
-                <span>🤖</span>
-                <span>Agente MCP {meta.displayName}</span>
-              </button>
-            )}
+
             {isAdmin && (
               <button
                 onClick={handleAdminSync}
@@ -953,16 +941,7 @@ export function SportDashboardView({
               >
                 💎 Valor ({valorCount})
               </button>
-              <button
-                onClick={() => setMatchStatusFilter('MCP')}
-                className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
-                  matchStatusFilter === 'MCP'
-                    ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30 border border-purple-500'
-                    : 'bg-purple-50 text-purple-800 border border-purple-200 hover:bg-purple-100 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800'
-                }`}
-              >
-                <span>🤖 Agente MCP ({mcpCount})</span>
-              </button>
+
               <button
                 onClick={() => setMatchStatusFilter('WON')}
                 className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
@@ -1653,12 +1632,7 @@ export function SportDashboardView({
         />
       )}
 
-      {/* Sport-Specific MCP Modal */}
-      <McpCountryAgentModal
-        isOpen={mcpModalOpen}
-        onClose={() => setMcpModalOpen(false)}
-        sport={sport}
-      />
+
     </div>
   );
 }

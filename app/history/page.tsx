@@ -43,9 +43,16 @@ export default function HistoryPage() {
   const fetchHistory = async (showLoader = false) => {
     try {
       if (showLoader) setLoading(true);
-      const res = await fetch("/api/history");
+      const res = await fetch("/api/history?sport=football");
       const data = await res.json();
       let items: HistoricalSettledPick[] = Array.isArray(data.history) ? [...data.history] : [];
+      // Strict guard against any non-football entries
+      items = items.filter((h) => {
+        const c = (h.country || "").toUpperCase();
+        const l = (h.league || "").toUpperCase();
+        const s = ((h as any).sport || "").toLowerCase();
+        return c !== "NHL" && !l.includes("NHL") && s !== "nhl" && c !== "NBA" && !l.includes("NBA") && s !== "nba" && c !== "NFL" && s !== "nfl";
+      });
       setHistoryItems(items);
       if (data.parlays) {
         setParlayItems(data.parlays);

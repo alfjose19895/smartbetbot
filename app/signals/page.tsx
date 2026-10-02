@@ -5,6 +5,7 @@ import { SportSelector } from "@/components/SportSelector";
 import React, { useState, useEffect } from "react";
 import { PredictionCard } from "@/components/PredictionCard";
 import { MatchDetailModal } from "@/components/MatchDetailModal";
+import { McpCountryAgentModal } from "@/components/McpCountryAgentModal";
 import { NewAlertsModal } from "@/components/NewAlertsModal";
 import { MarketOpportunity, getTimeSlot } from "@/lib/sports/prediction-engine";
 import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
@@ -136,6 +137,7 @@ export default function SignalsPage() {
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
+  const [mcpModalOpen, setMcpModalOpen] = useState(false);
   const [minProbability, setMinProbability] = useState<number>(35);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [syncing, setSyncing] = useState<boolean>(false);
@@ -433,6 +435,14 @@ export default function SignalsPage() {
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => setMcpModalOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-xs font-black text-white shadow-md shadow-purple-600/25 hover:from-purple-500 hover:to-indigo-500 transition cursor-pointer"
+              title="Abrir Agente MCP Fútbol"
+            >
+              <span>🤖</span>
+              <span>Agente MCP Fútbol</span>
+            </button>
             {isAdmin && (
               <button
                 onClick={handleSyncSignals}
@@ -745,6 +755,14 @@ export default function SignalsPage() {
         totalCount={signals.length}
         onClose={() => setNewAlertsModalOpen(false)}
         onOpenDetail={setActiveModalPick}
+      />
+
+      {/* Agente MCP Fútbol Modal */}
+      <McpCountryAgentModal
+        isOpen={mcpModalOpen}
+        onClose={() => setMcpModalOpen(false)}
+        onSelectPrediction={(p) => setActiveModalPick(p)}
+        sport="football"
       />
 
       {/* Match Detail Modal */}

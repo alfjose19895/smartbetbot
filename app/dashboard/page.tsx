@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { MatchDetailModal } from "@/components/MatchDetailModal";
+import { McpCountryAgentModal } from "@/components/McpCountryAgentModal";
 import { NewAlertsModal } from "@/components/NewAlertsModal";
 import { RecommendedParlay } from "@/components/RecommendedParlay";
 import { FeaturedDailyPicks } from "@/components/FeaturedDailyPicks";
@@ -94,6 +95,7 @@ export default function DashboardPage() {
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
   const [newlyDiscoveredAlerts, setNewlyDiscoveredAlerts] = useState<MarketOpportunity[]>([]);
   const [newAlertsModalOpen, setNewAlertsModalOpen] = useState<boolean>(false);
+  const [mcpModalOpen, setMcpModalOpen] = useState<boolean>(false);
   const [copiedPickId, setCopiedPickId] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [nhlSignalsCount, setNhlSignalsCount] = useState<number>(0);
@@ -403,6 +405,13 @@ export default function DashboardPage() {
               </p>
             </div>
             <div className="flex items-center gap-3 shrink-0">
+              <button
+                onClick={() => setMcpModalOpen(true)}
+                className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 px-4 py-2 text-xs font-black text-white shadow-md shadow-purple-600/25 transition cursor-pointer"
+              >
+                <span>🤖</span>
+                <span>Agente MCP Fútbol</span>
+              </button>
               <button
                 onClick={openPushModal}
                 className="flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 px-4 py-2 text-xs font-black text-white shadow transition cursor-pointer"
@@ -730,6 +739,14 @@ export default function DashboardPage() {
         totalCount={predictions.length}
         onClose={() => setNewAlertsModalOpen(false)}
         onOpenDetail={setActiveModalPick}
+      />
+
+      {/* Agente MCP Fútbol Modal */}
+      <McpCountryAgentModal
+        isOpen={mcpModalOpen}
+        onClose={() => setMcpModalOpen(false)}
+        onSelectPrediction={setActiveModalPick}
+        sport="football"
       />
 
       {/* Match Detail Modal */}

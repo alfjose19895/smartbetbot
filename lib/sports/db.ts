@@ -2272,7 +2272,7 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
         }
       }
 
-      const isPreSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST";
+      const isPreSettled = !isLiveMatch && (p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST");
 
       if (isPreSettled) {
         const isWon = p.result === "LOST" || p.status === "lost"
@@ -2316,7 +2316,8 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
         continue;
       }
 
-      if (parsedHomeGoals !== null && parsedAwayGoals !== null) {
+      const isFinishedMatch = Boolean((realScore as any)?.isFinished) || (p as any).status === "finished" || (p as any).matchTiming === "finished" || Boolean((p as any).isFinished);
+      if (isFinishedMatch && parsedHomeGoals !== null && parsedAwayGoals !== null) {
         const evaluation = evaluateMarketResult(p.market, parsedHomeGoals, parsedAwayGoals, {
           selection: p.selection,
           pick: p.pick,
