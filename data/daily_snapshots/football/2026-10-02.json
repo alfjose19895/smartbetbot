@@ -36,9 +36,13 @@
     "homeTeamId": 1095,
     "leagueLogo": "https://media.api-sports.io/football/leagues/5.png",
     "leagueTier": 1,
+    "liveMinute": "76",
+    "livePeriod": "2H",
     "smartScore": 99,
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.6 córners totales.",
+    "matchTiming": "live",
     "probability": 67.3,
+    "currentScore": "1 - 2",
     "bookmakerOdds": 1.83,
     "expectedValue": 23.2,
     "cornerAnalysis": {
@@ -149,6 +153,7 @@
     "pick": "Kazakhstan",
     "isMcp": true,
     "match": "Kazakhstan vs Moldova",
+    "sport": "football",
     "league": "UEFA Nations League",
     "market": "Ganador Local",
     "source": "mcp",
@@ -178,13 +183,16 @@
     "homeTeamId": 1095,
     "leagueLogo": "https://media.api-sports.io/football/leagues/5.png",
     "leagueTier": 1,
+    "liveMinute": "76",
+    "livePeriod": "2H",
     "smartScore": 99,
     "explanation": "Solidez posicional y eficacia en área propia: Kazakhstan concede menos de 0.9 xG de local, mientras que Moldova muestra dificultades para generar peligro constante a domicilio (0.7 xG foráneo).",
+    "matchTiming": "live",
     "probability": 60,
+    "currentScore": "1 - 2",
     "bookmakerOdds": 1.85,
     "expectedValue": 11.1,
-    "impliedProbability": 54.1,
-    "sport": "football"
+    "impliedProbability": 54.1
   },
   {
     "h2h": [],
@@ -336,6 +344,7 @@
     "pick": "Ranheim",
     "isMcp": true,
     "match": "Ranheim vs Egersund",
+    "sport": "football",
     "league": "1. Division (OBOS-ligaen)",
     "market": "Ganador Local",
     "source": "mcp",
@@ -370,8 +379,7 @@
     "probability": 53.1,
     "bookmakerOdds": 1.95,
     "expectedValue": 3.6,
-    "impliedProbability": 51.3,
-    "sport": "football"
+    "impliedProbability": 51.3
   },
   {
     "h2h": [],
@@ -984,6 +992,7 @@
     "pick": "Independiente",
     "isMcp": true,
     "match": "Independiente vs Instituto Cordoba",
+    "sport": "football",
     "league": "Liga Profesional Argentina",
     "market": "Ganador Local",
     "source": "mcp",
@@ -1018,8 +1027,7 @@
     "probability": 47.1,
     "bookmakerOdds": 2.45,
     "expectedValue": 15.3,
-    "impliedProbability": 40.8,
-    "sport": "football"
+    "impliedProbability": 40.8
   },
   {
     "h2h": [],

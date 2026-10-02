@@ -61,7 +61,7 @@ export const SPORTS_REGISTRY: Record<SupportedSport, SportMetadata> = {
     badgeBg: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
     borderColor: 'border-emerald-500/30',
     description: 'Modelo Poisson Dixon-Coles con xG, Córners y análisis de mercado avanzado.',
-    defaultMarkets: ['Over Córners', 'Ambos Equipos Anotan', 'Over 2.5 Goles', 'Under Córners', 'Under 2.5 Goles', 'Ganador Local', 'Ganador Visitante'],
+    defaultMarkets: ['Over Córners', 'Ambos Equipos Anotan', 'Over 2.5 Goles', 'Ganador Local', 'Ganador Visitante'],
     activeSeason: getCurrentSportSeason('football'),
     isLiveSupported: true
   },

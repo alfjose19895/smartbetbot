@@ -90,10 +90,10 @@ describe("Prediction Engine (TypeScript MVP)", () => {
     expect(cornerPick?.odds).toBe(authenticCornerOdd);
   });
 
-  it("strictly ranks markets according to the 7-tier priority hierarchy: 1: Over Corners, 2: BTTS, 3: Over Goals, 4: Under Corners, 5: Under Goals, 6: Local, 7: Visitante", async () => {
+  it("strictly ranks markets according to the 5-tier priority hierarchy: 1: Over Corners, 2: BTTS, 3: Over Goals, 4: Local, 5: Visitante (Under markets eliminated)", async () => {
     const { getMarketPriorityRank } = await import("./prediction-engine");
 
-    // 1. OVER CORNERS
+    // 1. OVER CORNERS (Alta Córners)
     expect(getMarketPriorityRank("Córners", "Over 8.5")).toBe(1);
     expect(getMarketPriorityRank("Over Córners", "Over 7.5")).toBe(1);
     expect(getMarketPriorityRank("Over 8.5 Córners")).toBe(1);
@@ -102,30 +102,28 @@ describe("Prediction Engine (TypeScript MVP)", () => {
     expect(getMarketPriorityRank("Ambos Equipos Anotan", "Sí")).toBe(2);
     expect(getMarketPriorityRank("BTTS", "Yes")).toBe(2);
 
-    // 3. OVER GOLES
+    // 3. OVER GOLES (Alta Goles)
     expect(getMarketPriorityRank("Over 2.5 Goles", "Over 2.5")).toBe(3);
     expect(getMarketPriorityRank("Over 1.5 Goles", "Over 1.5")).toBe(3);
     expect(getMarketPriorityRank("Over 3.5 Goles", "Over 3.5")).toBe(3);
 
-    // 4. UNDER CORNERS
-    expect(getMarketPriorityRank("Under Córners", "Under 9.5")).toBe(4);
-    expect(getMarketPriorityRank("Córners", "Under 9.5")).toBe(4);
-    expect(getMarketPriorityRank("Under 10.5 Córners")).toBe(4);
+    // 4. GANADOR LOCAL
+    expect(getMarketPriorityRank("Ganador Local", "1")).toBe(4);
+    expect(getMarketPriorityRank("Gana Local")).toBe(4);
 
-    // 5. UNDER GOLES
-    expect(getMarketPriorityRank("Under 2.5 Goles", "Under 2.5")).toBe(5);
-    expect(getMarketPriorityRank("Under 3.5 Goles", "Under 3.5")).toBe(5);
+    // 5. GANADOR VISITANTE
+    expect(getMarketPriorityRank("Ganador Visitante", "2")).toBe(5);
+    expect(getMarketPriorityRank("Gana Visitante")).toBe(5);
 
-    // 6. GANADOR LOCAL
-    expect(getMarketPriorityRank("Ganador Local", "1")).toBe(6);
-    expect(getMarketPriorityRank("Gana Local")).toBe(6);
-
-    // 7. GANADOR VISITANTE
-    expect(getMarketPriorityRank("Ganador Visitante", "2")).toBe(7);
-    expect(getMarketPriorityRank("Gana Visitante")).toBe(7);
+    // DISALLOWED UNDER MARKETS -> 99
+    expect(getMarketPriorityRank("Under Córners", "Under 9.5")).toBe(99);
+    expect(getMarketPriorityRank("Córners", "Under 9.5")).toBe(99);
+    expect(getMarketPriorityRank("Under 10.5 Córners")).toBe(99);
+    expect(getMarketPriorityRank("Under 2.5 Goles", "Under 2.5")).toBe(99);
+    expect(getMarketPriorityRank("Under 3.5 Goles", "Under 3.5")).toBe(99);
   });
 
-  it("evaluates Under Goles and Under Córners when genuine bookmaker odds and metrics warrant it", () => {
+  it("strictly eliminates Under Goles and Under Córners even when odds are provided", () => {
     const picks = evaluateFixturePrediction({
       fixtureId: 999993,
       homeTeam: "Getafe",
@@ -143,10 +141,15 @@ describe("Prediction Engine (TypeScript MVP)", () => {
       },
     });
 
-    expect(picks.length).toBeGreaterThan(0);
-    const underPick = picks.find((p) => p.market.includes("Under"));
-    expect(underPick).toBeDefined();
-    expect(underPick?.odds).toBeGreaterThanOrEqual(1.25);
+    // None of the picks should ever be Under
+    const underPick = picks.find((p) => p.market.toLowerCase().includes("under") || p.selection.toLowerCase().includes("under"));
+    expect(underPick).toBeUndefined();
+
+    // All produced picks must belong to the strictly 5 authorized markets
+    const allowed = new Set(["Over Córners", "Córners", "Ambos Equipos Anotan", "Over 2.5 Goles", "Ganador Local", "Ganador Visitante"]);
+    for (const p of picks) {
+      expect(allowed.has(p.market)).toBe(true);
+    }
   });
 
 });

@@ -411,17 +411,9 @@ export function SportDashboardView({
           if (normSelected.includes('ambos') || normSelected.includes('btts')) {
             return normActual.includes('ambos') || normActual.includes('btts');
           }
-          // Over Goals
+          // Over Goals / Alta Goles
           if (normSelected.includes('overgol') || normSelected.includes('over25') || (normSelected.includes('over') && !normSelected.includes('corner') && !normSelected.includes('point') && !normSelected.includes('total'))) {
             return (normActual.includes('gol') || normActual.includes('25') || normActual.includes('over')) && !normActual.includes('under') && !normActual.includes('corner');
-          }
-          // Under Corners
-          if (normSelected.includes('undercorner')) {
-            return (normActual.includes('corner') || normActual.includes('crner')) && (normActual.includes('under') || normSel.includes('under'));
-          }
-          // Under Goals
-          if (normSelected.includes('undergol') || normSelected.includes('under25') || (normSelected.includes('under') && !normSelected.includes('corner') && !normSelected.includes('point') && !normSelected.includes('total'))) {
-            return (normActual.includes('gol') || normActual.includes('25') || normActual.includes('under')) && !normActual.includes('corner');
           }
           // Ganador Local / Moneyline Home
           if (normSelected.includes('local') || normSelected === '1' || normSelected.includes('home')) {
@@ -1569,7 +1561,7 @@ export function SportDashboardView({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
                 { name: sport === 'football' ? 'Ganador Local (1X2)' : 'Moneyline Directo', won: Math.round(reportMetrics.won * 0.45), total: Math.round(reportMetrics.totalPicks * 0.45) || 1 },
-                { name: sport === 'football' ? 'Over/Under 2.5 Goles' : 'Over/Under Totales', won: Math.round(reportMetrics.won * 0.35), total: Math.round(reportMetrics.totalPicks * 0.35) || 1 },
+                { name: sport === 'football' ? 'Alta Goles (Over 2.5)' : 'Totales Over', won: Math.round(reportMetrics.won * 0.35), total: Math.round(reportMetrics.totalPicks * 0.35) || 1 },
                 { name: sport === 'football' ? 'Ambos Equipos Anotan (BTTS)' : 'Spread / Hándicap', won: Math.round(reportMetrics.won * 0.2), total: Math.round(reportMetrics.totalPicks * 0.2) || 1 },
               ].map((r, i) => {
                 const wr = r.total > 0 ? Math.round((r.won / r.total) * 100) : 0;

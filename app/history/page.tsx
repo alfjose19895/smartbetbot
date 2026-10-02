@@ -97,8 +97,6 @@ export default function HistoryPage() {
     "Over Córners",
     "Ambos Equipos Anotan",
     "Over 2.5 Goles",
-    "Under Córners",
-    "Under 2.5 Goles",
     "Ganador Local",
     "Ganador Visitante",
   ];
@@ -193,19 +191,11 @@ export default function HistoryPage() {
         if (normSelected.includes("overgol") || normSelected.includes("over25") || (normSelected.includes("over") && !normSelected.includes("corner"))) {
           return (normActual.includes("gol") || normActual.includes("25") || normActual.includes("over")) && !normActual.includes("under") && !normActual.includes("corner") && !normActual.includes("crner");
         }
-        // 4. Under Córners
-        if (normSelected.includes("undercorner")) {
-          return (normActual.includes("corner") || normActual.includes("crner")) && (normActual.includes("under") || normSel.includes("under"));
-        }
-        // 5. Under Goles (Under 2.5)
-        if (normSelected.includes("undergol") || normSelected.includes("under25") || (normSelected.includes("under") && !normSelected.includes("corner"))) {
-          return (normActual.includes("gol") || normActual.includes("25") || normActual.includes("under")) && !normActual.includes("corner") && !normActual.includes("crner");
-        }
-        // 6. Ganador Local
+        // 4. Ganador Local
         if (normSelected.includes("local") || normSelected === "1") {
           return normActual.includes("local") || normSel === "1" || normSel === "local";
         }
-        // 7. Ganador Visitante
+        // 5. Ganador Visitante
         if (normSelected.includes("visitante") || normSelected === "2") {
           return normActual.includes("visitante") || normSel === "2" || normSel === "visitante";
         }

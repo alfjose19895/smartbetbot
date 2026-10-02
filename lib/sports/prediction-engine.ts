@@ -1111,7 +1111,7 @@ export function generateH2HClashes(home: string, away: string, league: string, h
 
 
 export function getMarketPriorityRank(market: string, selection?: string): number {
-  if (!market && !selection) return 8;
+  if (!market && !selection) return 99;
   const m = (market || "").toLowerCase();
   const s = (selection || "").toLowerCase();
 
@@ -1119,28 +1119,25 @@ export function getMarketPriorityRank(market: string, selection?: string): numbe
   const isUnder = m.includes("under") || m.includes("menos") || s.includes("under") || s.includes("menos");
   const isGoal = m.includes("gol") || m.includes("goal") || m.includes("2.5") || m.includes("1.5") || m.includes("3.5") || s.includes("gol") || s.includes("goal");
 
-  // 1. OVER CORNERS
-  if (isCorner && !isUnder) return 1;
+  // UNDER MARKETS ARE STRICTLY ELIMINATED
+  if (isUnder) return 99;
+
+  // 1. ALTA CÓRNERS / OVER CORNERS
+  if (isCorner) return 1;
 
   // 2. AMBOS EQUIPOS ANOTAN
   if (m.includes("ambos") || m.includes("btts")) return 2;
 
-  // 3. OVER GOLES
-  if (isGoal && !isUnder && (m.includes("over") || m.includes("más") || m.includes("mas") || s.includes("over") || s.includes("más") || s.includes("mas") || m.includes("2.5") || m.includes("1.5") || m.includes("3.5"))) return 3;
+  // 3. ALTA GOLES / OVER GOLES
+  if (isGoal && (m.includes("over") || m.includes("más") || m.includes("mas") || s.includes("over") || s.includes("más") || s.includes("mas") || m.includes("2.5") || m.includes("1.5") || m.includes("3.5"))) return 3;
 
-  // 4. UNDER CORNERS
-  if (isCorner && isUnder) return 4;
+  // 4. GANADOR LOCAL
+  if (m.includes("ganador local") || m.includes("local") || s === "1" || s === "local") return 4;
 
-  // 5. UNDER GOLES
-  if (isGoal && isUnder) return 5;
+  // 5. GANADOR VISITANTE
+  if (m.includes("ganador visitante") || m.includes("visitante") || s === "2" || s === "visitante") return 5;
 
-  // 6. GANADOR LOCAL
-  if (m.includes("ganador local") || m.includes("local") || s === "1" || s === "local") return 6;
-
-  // 7. GANADOR VISITANTE
-  if (m.includes("ganador visitante") || m.includes("visitante") || s === "2" || s === "visitante") return 7;
-
-  return 8;
+  return 99;
 }
 
 export interface LiveMatchContext {
@@ -1661,81 +1658,7 @@ export function evaluateFixturePrediction(params: {
       });
     }
 
-    const hasRealUnderCornerOdds = Boolean(
-      marketOdds && (
-        marketOdds.cornersUnder65 || marketOdds.cornersUnder75 || marketOdds.cornersUnder85 ||
-        marketOdds.cornersUnder95 || marketOdds.cornersUnder105
-      )
-    );
-
-    // 4. PRIORIDAD #4: Motor Dinámico de Under Córners (corners_total_under_prematch)
-    if (hasCornerTelemetry && hasRealUnderCornerOdds) {
-      const cornerUnderOddsMap: Partial<Record<CornerLine, number>> = {};
-      if (marketOdds.cornersUnder65) cornerUnderOddsMap[6.5] = marketOdds.cornersUnder65;
-      if (marketOdds.cornersUnder75) cornerUnderOddsMap[7.5] = marketOdds.cornersUnder75;
-      if (marketOdds.cornersUnder85) cornerUnderOddsMap[8.5] = marketOdds.cornersUnder85;
-      if (marketOdds.cornersUnder95) cornerUnderOddsMap[9.5] = marketOdds.cornersUnder95;
-      if (marketOdds.cornersUnder105) cornerUnderOddsMap[10.5] = marketOdds.cornersUnder105;
-
-      const cornerEngine = new CornerLineSelectionEngine();
-      const cornerUnderResult = cornerEngine.evaluateUnderFixture({
-        homeTeam,
-        awayTeam,
-        league: canonicalLeague,
-        homeElo: rHomeBase,
-        awayElo: rAway,
-        oddsByLine: cornerUnderOddsMap,
-      });
-
-    if (
-      cornerUnderResult.status === "SIGNAL" &&
-      cornerUnderResult.recommended_candidate &&
-      typeof cornerUnderResult.recommended_candidate.decimal_odds === "number" &&
-      cornerUnderResult.recommended_candidate.decimal_odds >= 1.05
-    ) {
-      const rec = cornerUnderResult.recommended_candidate;
-      const finalOdds = rec.decimal_odds as number;
-      candidates.push({
-        market: "Under Córners",
-        selection: rec.selection,
-        prob: rec.model_probability,
-        odds: finalOdds,
-        minOddsThreshold: 1.25,
-        minProbThreshold: 0.55,
-        cornerAnalysis: {
-          expectedTotalCorners: cornerUnderResult.expected_total_corners,
-          expectedHomeCorners: cornerUnderResult.expected_home_corners,
-          expectedAwayCorners: cornerUnderResult.expected_away_corners,
-          distributionModel: cornerUnderResult.distribution_model,
-          dataQuality: cornerUnderResult.data_quality,
-          allCandidates: cornerUnderResult.all_candidates,
-          recommendedLine: rec.line,
-          saferLine: cornerUnderResult.safer_candidate?.line,
-          valueLine: cornerUnderResult.value_candidate?.line,
-        }
-      });
-    }
-
-    } // End if hasCornerTelemetry && hasRealUnderCornerOdds
-
-    // 5. PRIORIDAD #5: Under Goles (Strictly Under 2.5 Goles)
-    if (
-      marketOdds.under25 &&
-      marketOdds.under25 >= 1.25 &&
-      pUnder25 >= 0.48 &&
-      totalXg <= 2.65
-    ) {
-      candidates.push({
-        market: "Under 2.5 Goles",
-        selection: "Under 2.5",
-        prob: pUnder25,
-        odds: marketOdds.under25,
-        minOddsThreshold: 1.25,
-        minProbThreshold: 0.48,
-      });
-    }
-
-    // 6. PRIORIDAD #6: Ganador Local (1) - Mercado Secundario
+    // 4. PRIORIDAD #4: Ganador Local (1)
     if (effHomeWin && effHomeWin >= 1.18 && pHome >= 0.46) {
       candidates.push({
         market: "Ganador Local",
@@ -1747,7 +1670,7 @@ export function evaluateFixturePrediction(params: {
       });
     }
 
-    // 7. PRIORIDAD #7: Ganador Visitante (2) - Mercado Secundario
+    // 5. PRIORIDAD #5: Ganador Visitante (2)
     if (effAwayWin && effAwayWin >= 1.28 && pAway >= 0.48) {
       candidates.push({
         market: "Ganador Visitante",
@@ -1760,14 +1683,12 @@ export function evaluateFixturePrediction(params: {
     }
   }
 
-  // STRICT RULE: Only the 7 authorized hierarchy markets are permitted across the entire system
+  // STRICT RULE: Only the 5 authorized hierarchy markets are permitted across the entire football system
   const ALLOWED_MARKET_NAMES = new Set([
     "Over Córners",
     "Córners",
     "Ambos Equipos Anotan",
     "Over 2.5 Goles",
-    "Under Córners",
-    "Under 2.5 Goles",
     "Ganador Local",
     "Ganador Visitante",
   ]);
@@ -1930,7 +1851,7 @@ export function evaluateFixturePrediction(params: {
     }
   }
 
-  // STRICT USER HIERARCHY: 1: Over Corners > 2: BTTS > 3: Over Goals > 4: Under Corners > 5: Under Goals > 6: Local > 7: Visitante
+  // STRICT USER HIERARCHY (5 MARKETS): 1: Over Corners > 2: BTTS > 3: Over Goals > 4: Local > 5: Visitante
   return opportunities.sort((a, b) => {
     const aTier = a.leagueTier || 2;
     const bTier = b.leagueTier || 2;

@@ -2051,7 +2051,7 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     }
   }
 
-  // STRICT USER HIERARCHY: 1: Over Corners > 2: BTTS > 3: Over Goals > 4: Under Corners > 5: Under Goals > 6: Local > 7: Visitante
+  // STRICT USER HIERARCHY (5 MARKETS): 1: Over Corners > 2: BTTS > 3: Over Goals > 4: Local > 5: Visitante
   poolSeguras.sort((a, b) => {
     const aRank = getMarketPriorityRank(a.market, a.selection);
     const bRank = getMarketPriorityRank(b.market, b.selection);
@@ -2079,31 +2079,25 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
   const chosenMatchKeys = new Set<string>();
   const chosenTeams = new Set<string>();
 
-  // STRICT USER HIERARCHY ALLOCATION ENGINE (7 MARKETS):
-  // 1: Over Córners (Quota: 30%)
-  // 2: Ambos Equipos Anotan (Quota: 25%)
-  // 3: Over Goles (Quota: 18%)
-  // 4: Under Córners (Quota: 12%)
-  // 5: Under Goles (Quota: 8%)
-  // 6: Ganador Local (Quota: 4%)
-  // 7: Ganador Visitante (Quota: 3%)
+  // STRICT USER HIERARCHY ALLOCATION ENGINE (5 MARKETS):
+  // 1: Over Córners (Quota: 38%)
+  // 2: Ambos Equipos Anotan (Quota: 32%)
+  // 3: Over Goles (Quota: 20%)
+  // 4: Ganador Local (Quota: 6%)
+  // 5: Ganador Visitante (Quota: 4%)
   const pickPrioritizedAlerts = (pool: MarketOpportunity[], totalTarget: number): MarketOpportunity[] => {
     const selected: MarketOpportunity[] = [];
     const overCorners = pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 1);
     const btts = pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 2);
     const overGoals = pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 3);
-    const underCorners = pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 4);
-    const underGoals = pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 5);
-    const local = pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 6);
-    const away = pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 7);
+    const local = pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 4);
+    const away = pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 5);
 
-    const targetOverCorners = Math.max(1, Math.round(totalTarget * 0.30));
-    const targetBtts = Math.max(1, Math.round(totalTarget * 0.25));
-    const targetOverGoals = Math.max(1, Math.round(totalTarget * 0.18));
-    const targetUnderCorners = Math.max(0, Math.round(totalTarget * 0.12));
-    const targetUnderGoals = Math.max(0, Math.round(totalTarget * 0.08));
-    const targetLocal = Math.max(0, Math.round(totalTarget * 0.04));
-    const targetAway = Math.max(0, Math.round(totalTarget * 0.03));
+    const targetOverCorners = Math.max(1, Math.round(totalTarget * 0.38));
+    const targetBtts = Math.max(1, Math.round(totalTarget * 0.32));
+    const targetOverGoals = Math.max(1, Math.round(totalTarget * 0.20));
+    const targetLocal = Math.max(0, Math.round(totalTarget * 0.06));
+    const targetAway = Math.max(0, Math.round(totalTarget * 0.04));
 
     const takeFromList = (list: MarketOpportunity[], maxCount: number) => {
       let taken = 0;
@@ -2135,18 +2129,14 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     takeFromList(overCorners, targetOverCorners);
     takeFromList(btts, targetBtts);
     takeFromList(overGoals, targetOverGoals);
-    takeFromList(underCorners, targetUnderCorners);
-    takeFromList(underGoals, targetUnderGoals);
     takeFromList(local, targetLocal);
     takeFromList(away, targetAway);
 
-    // Fallback: If still under totalTarget, fill remaining slots from pool in strict 7-tier priority order
+    // Fallback: If still under totalTarget, fill remaining slots from pool in strict 5-tier priority order
     if (selected.length < totalTarget) {
       takeFromList(overCorners, totalTarget - selected.length);
       takeFromList(btts, totalTarget - selected.length);
       takeFromList(overGoals, totalTarget - selected.length);
-      takeFromList(underCorners, totalTarget - selected.length);
-      takeFromList(underGoals, totalTarget - selected.length);
       takeFromList(local, totalTarget - selected.length);
       takeFromList(away, totalTarget - selected.length);
     }
