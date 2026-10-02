@@ -1,39 +1,47 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import { MarketOpportunity } from "@/lib/sports/prediction-engine";
-import { shareCardAsImage, copyCardImageToClipboard } from "@/lib/sports/card-image-generator";
+import React, { useState } from 'react';
+import { MarketOpportunity } from '@/lib/sports/prediction-engine';
+import { shareCardAsImage, copyCardImageToClipboard } from '@/lib/sports/card-image-generator';
 
 interface FeaturedDailyPicksProps {
   smartPick: MarketOpportunity | null;
   bombaPick: MarketOpportunity | null;
+  nhlSmartPick?: MarketOpportunity | null;
   onOpenDetail?: (prediction: MarketOpportunity) => void;
 }
 
-export function FeaturedDailyPicks({ smartPick, bombaPick, onOpenDetail }: FeaturedDailyPicksProps) {
+export function FeaturedDailyPicks({ smartPick, bombaPick, nhlSmartPick, onOpenDetail }: FeaturedDailyPicksProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [copyingImageId, setCopyingImageId] = useState<string | null>(null);
   const [copyImageSuccessId, setCopyImageSuccessId] = useState<string | null>(null);
 
-  if (!smartPick && !bombaPick) return null;
+  if (!smartPick && !bombaPick && !nhlSmartPick) return null;
 
-  const handleCopyText = (pick: MarketOpportunity, isBomba: boolean) => {
-    const title = isBomba ? "💎 SELECCIÓN DE VALOR DEL DÍA (+EV)" : "👑 SMARTPICK DEL DÍA (MÁXIMA SEGURIDAD)";
+  const handleCopyText = (pick: MarketOpportunity, type: 'smart' | 'bomba' | 'nhl') => {
+    const title = type === 'bomba'
+      ? '💎 SELECCIÓN DE VALOR DEL DÍA (+EV)'
+      : type === 'nhl'
+      ? '🏒 SMARTPICK NHL DEL DÍA (+EV)'
+      : '👑 SMARTPICK FÚTBOL DEL DÍA (MÁXIMA SEGURIDAD)';
+
+    const sportIcon = (pick as any).sport === 'nhl' ? '🏒' : '⚽';
+
     const text = [
       `⭐ ${title} ⭐`,
-      `🏆 ${pick.league} ${pick.country ? `(${pick.country})` : ""}`,
-      `⚽ ${pick.homeTeam} vs ${pick.awayTeam}`,
-      `🎯 Pronóstico Oficial: ${pick.market} (${(pick.market.includes("Local") || pick.market.includes("1")) ? "1" : (pick.market.includes("Visitante") || pick.market.includes("2")) ? "2" : pick.selection})`,
+      `🏆 ${pick.league} ${pick.country ? `(${pick.country})` : ''}`,
+      `${sportIcon} ${pick.homeTeam} vs ${pick.awayTeam}`,
+      `🎯 Pronóstico Oficial: ${pick.market} (${pick.selection})`,
       `🏢 Cuota Casa de Apuestas: @${(pick.odds ?? 1.5).toFixed(2)}`,
       `🤖 Cuota Modelo SmartBetBot: @${(pick.fairOdds ?? pick.odds ?? 1.5).toFixed(2)}`,
       `📈 Probabilidad Estimada: ${pick.probability}% (+${pick.edge}% Valor)`,
-      `⭐ Confianza: ${pick.confidence || "Muy Alta"}`,
-      "",
+      `⭐ Confianza: ${pick.confidence || 'Muy Alta'}`,
+      '',
       `🧠 Análisis: "${pick.explanation}"`,
-      "",
-      "🔒 Pronóstico Oficial Cuantitativo de SmartBetBot AI",
-      "🌐 https://smartbetbot.educandotea.com",
-    ].join("\n");
+      '',
+      '🔒 Pronóstico Oficial Cuantitativo de SmartBetBot AI',
+      '🌐 https://smartbetbot.educandotea.com',
+    ].join('\n');
 
     const key = pick.id || pick.match;
     navigator.clipboard.writeText(text).then(() => {
@@ -56,258 +64,115 @@ export function FeaturedDailyPicks({ smartPick, bombaPick, onOpenDetail }: Featu
     }
   };
 
-  const renderFeaturedCard = (pick: MarketOpportunity, type: "smart" | "bomba") => {
-    const isBomba = type === "bomba";
-    const cardKey = pick.id || pick.match;
-    const isWon = pick.status === "won";
-    const isLost = pick.status === "lost";
+  const renderFeaturedCard = (pick: MarketOpportunity, type: 'smart' | 'bomba' | 'nhl') => {
+    const isBomba = type === 'bomba';
+    const isNhl = type === 'nhl';
+    const cardKey = pick.id || `${pick.fixtureId}-${pick.market}`;
 
-    const formattedTime = new Date(pick.kickoff).toLocaleTimeString("es-ES", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    const borderColor = isNhl
+      ? 'border-cyan-500/40 hover:border-cyan-400'
+      : isBomba
+      ? 'border-purple-500/40 hover:border-purple-400'
+      : 'border-amber-500/40 hover:border-amber-400';
 
-    const homeCornersHistory: number[] = (pick.homeLast5 || []).map((m) => m.totalCorners).filter((c): c is number => typeof c === "number");
-    const awayCornersHistory: number[] = (pick.awayLast5 || []).map((m) => m.totalCorners).filter((c): c is number => typeof c === "number");
-    const recentCornerPills: number[] =
-      homeCornersHistory.length > 0
-        ? homeCornersHistory
-        : (pick as any).homeCornerStats?.history && (pick as any).homeCornerStats.history.length > 0
-        ? (pick as any).homeCornerStats.history
-        : awayCornersHistory.length > 0
-        ? awayCornersHistory
-        : (pick as any).awayCornerStats?.history && (pick as any).awayCornerStats.history.length > 0
-        ? (pick as any).awayCornerStats.history
-        : [];
-    const avgCornerNum =
-      recentCornerPills.length > 0
-        ? (recentCornerPills.reduce((a, b) => a + b, 0) / recentCornerPills.length).toFixed(1)
-        : (pick as any).homeCornerStats?.avgTotal
-        ? ((pick as any).homeCornerStats.avgTotal).toFixed(1)
-        : pick.cornerAnalysis?.expectedTotalCorners
-        ? pick.cornerAnalysis.expectedTotalCorners.toFixed(1)
-        : null;
-    const isCornerPick = pick.market === "Córners" || (pick.market && (pick.market.toLowerCase().includes("córner") || pick.market.toLowerCase().includes("corner")));
+    const badgeBg = isNhl
+      ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-cyan-900/30'
+      : isBomba
+      ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-purple-900/30'
+      : 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-amber-900/30';
+
+    const glowColor = isNhl
+      ? 'from-cyan-500/10 via-transparent to-transparent'
+      : isBomba
+      ? 'from-purple-500/10 via-transparent to-transparent'
+      : 'from-amber-500/10 via-transparent to-transparent';
 
     return (
       <div
         key={cardKey}
-        onClick={() => onOpenDetail?.(pick)}
-        className={`relative overflow-hidden rounded-3xl border p-5 sm:p-6 shadow-xl transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 cursor-pointer flex flex-col justify-between ${
-          isBomba
-            ? "border-amber-500/40 bg-gradient-to-br from-slate-950 via-slate-900 to-orange-950/40 hover:border-amber-400"
-            : "border-emerald-500/40 bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950/40 hover:border-emerald-400"
-        }`}
+        className={`group relative flex flex-col justify-between overflow-hidden rounded-3xl border bg-slate-900/90 p-5 sm:p-6 shadow-xl backdrop-blur-xl transition-all hover:scale-[1.01] hover:shadow-2xl ${borderColor}`}
       >
-        {/* Glow ambient background */}
-        <div
-          className={`pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full blur-3xl opacity-25 ${
-            isBomba ? "bg-amber-500" : "bg-emerald-500"
-          }`}
-        />
+        {/* Subtle Background Glow */}
+        <div className={`pointer-events-none absolute inset-0 bg-gradient-to-b ${glowColor} opacity-70`} />
 
         <div>
-          {/* Header Badge */}
-          <div className="flex items-center justify-between gap-2 border-b border-slate-800/80 pb-3.5">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span
-                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-black tracking-wider uppercase shadow-md ${
-                  isBomba
-                    ? "bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-slate-950 shadow-orange-500/20"
-                    : "bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 text-slate-950 shadow-emerald-500/20"
-                }`}
-              >
-                <span>{isBomba ? "💎" : "👑"}</span>
-                <span>{isBomba ? "VALOR DEL DÍA" : "SMARTPICK DEL DÍA"}</span>
-              </span>
-
-              <span className="inline-flex items-center gap-1 rounded-full bg-slate-800/80 px-2.5 py-0.5 text-[10px] font-bold text-slate-300 border border-slate-700">
-                {isBomba ? "💎 Máximo Valor (+EV)" : "🛡️ Máxima Seguridad"}
+          {/* Top Header Badge & Kickoff */}
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <div className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-black uppercase shadow-sm ${badgeBg}`}>
+              <span>{isNhl ? '🏒' : isBomba ? '💎' : '👑'}</span>
+              <span>
+                {isNhl
+                  ? 'SMARTPICK NHL'
+                  : isBomba
+                  ? 'VALOR DEL DÍA (+EV)'
+                  : 'SMARTPICK FÚTBOL'}
               </span>
             </div>
 
-            {/* Match Settlement Status Badge */}
-            {isWon ? (
-              <span className="rounded-xl px-2.5 py-1 text-xs font-black bg-emerald-500 text-slate-950 shadow-md">
-                ✓ Ganado {pick.actualScore ? `(${pick.actualScore})` : ""}
+            <div className="flex items-center gap-1.5 text-xs text-slate-400 font-semibold">
+              <span>⏰</span>
+              <span>
+                {new Date(pick.kickoff).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })} hrs
               </span>
-            ) : isLost ? (
-              <span className="rounded-xl px-2.5 py-1 text-xs font-black bg-rose-600 text-white shadow-md">
-                ✗ Perdido {pick.actualScore ? `(${pick.actualScore})` : ""}
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1 rounded-xl bg-slate-800 px-2.5 py-1 text-[11px] font-bold text-slate-300">
-                ⏰ {formattedTime}
-              </span>
-            )}
+            </div>
           </div>
 
           {/* League & Country */}
-          <div className="mt-3 flex items-center gap-1.5 text-xs font-bold text-slate-400">
-            <span>🏆</span>
-            <span>{pick.league}</span>
-            {pick.country && (
-              <>
-                <span className="text-slate-600">•</span>
-                <span className="text-slate-300">{pick.country}</span>
-              </>
-            )}
+          <div className="text-[11px] font-bold text-slate-400 truncate mb-1">
+            🏆 {pick.league} {pick.country ? `(${pick.country})` : ''}
           </div>
 
-          {/* Teams */}
-          <div className="mt-2 rounded-2xl bg-slate-950/80 p-3.5 border border-slate-800/80">
-            <div className="text-base sm:text-lg font-black text-white leading-snug">
-              {pick.homeTeam} <span className="text-slate-500 font-normal text-sm">vs</span> {pick.awayTeam}
-            </div>
-          </div>
+          {/* Match Title */}
+          <h3 className="text-base sm:text-lg font-black text-white leading-snug mb-3">
+            {pick.homeTeam} <span className="text-slate-400 font-normal">vs</span> {pick.awayTeam}
+          </h3>
 
-          {/* Market Highlight */}
-          <div className="mt-3.5 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
-                🎯 Pronóstico Cuantitativo Oficial:
-              </span>
-              <span className="text-[10px] font-extrabold text-emerald-400">
-                +{pick.edge}% Valor
-              </span>
+          {/* Official Selection Display */}
+          <div className="rounded-2xl bg-slate-950/80 p-3.5 border border-slate-800/80 mb-3.5">
+            <div className="flex items-center justify-between text-[11px] text-slate-400 font-bold mb-1">
+              <span>Mercado Cuantitativo:</span>
+              <span className="text-emerald-400 font-black">{pick.market}</span>
             </div>
-            <div className="rounded-2xl bg-slate-900/90 px-4 py-2.5 border border-slate-800 text-sm font-black text-white flex items-center justify-between">
-              <span>{pick.market}</span>
-              <span className="text-xs font-bold text-slate-400">({pick.selection})</span>
+            <div className="text-sm sm:text-base font-black text-white flex items-center justify-between">
+              <span>{pick.selection}</span>
+              <span className="text-base sm:text-lg font-black text-emerald-400">@{(pick.odds ?? 1.5).toFixed(2)}</span>
             </div>
           </div>
 
-                    {/* Side-by-Side Odds Comparison Cards */}
-          <div className="mt-3.5 grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {/* Casa de Apuestas */}
-            <div className="rounded-2xl bg-sky-950/60 p-2.5 border border-sky-800/60 flex flex-col justify-between">
-              <span className="text-[9px] font-black uppercase text-sky-300">🏢 Cuota Casa</span>
-              <span className="text-lg font-black text-sky-200 mt-0.5">@{(pick.odds ?? 1.5).toFixed(2)}</span>
-              <span className="text-[9px] text-sky-400/80 mt-0.5">Casa de Apuestas</span>
+          {/* Odds & Metrics Grid */}
+          <div className="grid grid-cols-2 gap-2 text-center text-xs">
+            <div className="rounded-xl bg-slate-950/60 p-2 border border-slate-800/60">
+              <span className="text-[10px] text-slate-400 block font-semibold">Probabilidad IA</span>
+              <span className="text-sm font-black text-white mt-0.5 block">{pick.probability}%</span>
             </div>
-
-            {/* Cuota Modelo */}
-            <div className="rounded-2xl bg-indigo-950/60 p-2.5 border border-indigo-800/60 flex flex-col justify-between">
-              <span className="text-[9px] font-black uppercase text-indigo-300">🤖 Cuota Modelo</span>
-              <span className="text-lg font-black text-indigo-200 mt-0.5">@{(pick.fairOdds ?? pick.odds ?? 1.5).toFixed(2)}</span>
-              <span className="text-[9px] text-indigo-400/80 mt-0.5">SmartBetBot AI</span>
-            </div>
-
-            {/* Probabilidad */}
-            <div className="col-span-2 sm:col-span-1 rounded-2xl bg-emerald-950/60 p-2.5 border border-emerald-800/60 flex flex-col justify-between">
-              <span className="text-[9px] font-black uppercase text-emerald-300">📈 Probabilidad</span>
-              <span className="text-lg font-black text-emerald-200 mt-0.5">{pick.probability}%</span>
-              <span className="text-[9px] text-emerald-400/80 mt-0.5">Confianza {pick.confidence || "Alta"}</span>
+            <div className="rounded-xl bg-slate-950/60 p-2 border border-slate-800/60">
+              <span className="text-[10px] text-slate-400 block font-semibold">Ventaja (+EV)</span>
+              <span className="text-sm font-black text-emerald-400 mt-0.5 block">+{pick.edge || 5}%</span>
             </div>
           </div>
 
-          {/* Corner Statistics Snippet (Featured for Corners & Available Data) */}
-          {(isCornerPick || recentCornerPills.length > 0 || pick.cornerAnalysis || (pick as any).homeCornerStats) && (
-            <div className="mt-3.5 rounded-2xl bg-emerald-500/10 p-3 border border-emerald-500/25 dark:bg-emerald-950/30 dark:border-emerald-500/30">
-              <div className="flex items-center justify-between text-[11px] font-black text-slate-200 mb-1">
-                <span className="flex items-center gap-1.5 text-emerald-400">
-                  <span>🚩</span>
-                  <span>Historial de Córners Verificado</span>
-                </span>
-                {avgCornerNum && (
-                  <span className="rounded-md bg-emerald-500/20 px-2 py-0.5 text-[10px] font-black text-emerald-300">
-                    Prom: ~{avgCornerNum} /partido
-                  </span>
-                )}
-              </div>
-              {recentCornerPills.length > 0 ? (
-                <div className="flex items-center gap-1.5 flex-wrap mt-1">
-                  <span className="text-[10px] text-slate-400 font-semibold">Últimos:</span>
-                  {recentCornerPills.slice(0, 5).map((c, i) => (
-                    <span
-                      key={i}
-                      className={`rounded-lg px-2 py-0.5 text-[10px] font-black ${
-                        c >= 9
-                          ? "bg-emerald-600 text-white shadow-xs"
-                          : "bg-slate-800 text-slate-200"
-                      }`}
-                    >
-                      🚩 {c}
-                    </span>
-                  ))}
-                  <span className="text-[10px] font-bold text-emerald-300 ml-auto">
-                    {recentCornerPills.filter((c) => c > 8.5).length}/{recentCornerPills.length} Over 8.5
-                  </span>
-                </div>
-              ) : (pick as any).homeCornerStats ? (
-                <div className="text-[10px] text-slate-400 font-medium">
-                  Promedio Oficial: ~{(pick as any).homeCornerStats.avgTotal} córners/partido ({(pick as any).homeCornerStats.over85Rate}% Over 8.5)
-                </div>
-              ) : pick.cornerAnalysis ? (
-                <div className="text-[10px] text-slate-400 font-medium">
-                  Proyección Monte Carlo: ~{pick.cornerAnalysis.expectedTotalCorners.toFixed(1)} córners esperados (Local: ~{pick.cornerAnalysis.expectedHomeCorners.toFixed(1)} | Visita: ~{pick.cornerAnalysis.expectedAwayCorners.toFixed(1)})
-                </div>
-              ) : null}
-            </div>
-          )}
-
-          {/* Tactical Explanation */}
+          {/* Analysis Explanation */}
           {pick.explanation && (
-            <div className="mt-3.5 rounded-2xl bg-slate-950/60 p-3 border border-slate-800/60">
-              <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 mb-1">
-                <span>🧠</span>
-                <span>Análisis del Modelo:</span>
-              </div>
-              <p className="text-xs text-slate-300 font-medium leading-relaxed">
-                {pick.explanation}
-              </p>
-            </div>
+            <p className="mt-3 text-[11px] text-slate-300 italic leading-relaxed line-clamp-3 bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/40">
+              "{pick.explanation}"
+            </p>
           )}
         </div>
 
-        {/* Action Buttons Footer */}
-        <div className="mt-4 pt-3.5 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleCopyImage(pick);
-              }}
-              title="Copiar tarjeta gráfica"
-              className="flex items-center gap-1 rounded-xl bg-slate-800 px-3 py-1.5 text-xs font-bold text-white hover:bg-slate-700 transition cursor-pointer"
-            >
-              <span>📸</span>
-              <span>{copyImageSuccessId === cardKey ? "✓ ¡Copiada!" : "Imagen"}</span>
-            </button>
-
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                shareCardAsImage(pick, "whatsapp");
-              }}
-              title="Compartir en WhatsApp"
-              className="flex items-center gap-1 rounded-xl bg-emerald-600/30 px-2.5 py-1.5 text-xs font-bold text-emerald-300 hover:bg-emerald-600/50 border border-emerald-500/40 transition cursor-pointer"
-            >
-              <span>💬</span>
-              <span className="hidden sm:inline">WhatsApp</span>
-            </button>
-
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleCopyText(pick, isBomba);
-              }}
-              title="Copiar texto"
-              className="flex items-center gap-1 rounded-xl bg-slate-800 px-2.5 py-1.5 text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-700 transition cursor-pointer"
-            >
-              <span>📋</span>
-              <span>{copiedId === cardKey ? "✓ Copiado" : "Texto"}</span>
-            </button>
-          </div>
-
+        {/* Action Footer */}
+        <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between gap-2">
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpenDetail?.(pick);
-            }}
-            className="flex items-center gap-1 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 px-3 py-1.5 text-xs font-black text-slate-950 shadow-md shadow-emerald-500/20 hover:brightness-110 transition cursor-pointer"
+            onClick={() => onOpenDetail?.(pick)}
+            className="flex-1 py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition text-center cursor-pointer"
           >
-            <span>📊 H2H y Stats</span>
+            Ver H2H y Métricas
+          </button>
+          <button
+            onClick={() => handleCopyText(pick, type)}
+            className="p-2 rounded-xl border border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 transition cursor-pointer text-xs"
+            title="Copiar pronóstico"
+          >
+            {copiedId === cardKey ? '✓' : '📋'}
           </button>
         </div>
       </div>
@@ -315,27 +180,27 @@ export function FeaturedDailyPicks({ smartPick, bombaPick, onOpenDetail }: Featu
   };
 
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/90 p-5 sm:p-7 shadow-2xl backdrop-blur-xl">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
-        <div>
-          <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 px-3 py-1 text-xs font-black text-amber-400 border border-amber-500/30 uppercase">
-            <span>⭐</span>
-            <span>Pronósticos Estrella del Día</span>
+    <section className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-500/10 text-purple-400 text-base font-black border border-purple-500/20">
+            👑
+          </span>
+          <div>
+            <h2 className="text-lg sm:text-xl font-black text-white">
+              Picks Destacados Multi-Deporte del Día
+            </h2>
+            <p className="text-xs text-slate-400">
+              Las mejores oportunidades cuantitativas seleccionadas con mayor índice de valor (+EV) por disciplina
+            </p>
           </div>
-          <h2 className="mt-2 text-xl sm:text-2xl font-black text-white tracking-tight">
-            👑 SmartPick del Día & 💎 Valor del Día
-          </h2>
-          <p className="mt-0.5 text-xs text-slate-400">
-            Las dos mejores oportunidades seleccionadas por el modelo cuantitativo para apostar con máxima seguridad y máximo rendimiento.
-          </p>
         </div>
       </div>
 
-      {/* Dual Featured Cards Grid */}
-      <div className="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-5">
-        {smartPick && renderFeaturedCard(smartPick, "smart")}
-        {bombaPick && renderFeaturedCard(bombaPick, "bomba")}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {smartPick && renderFeaturedCard(smartPick, 'smart')}
+        {nhlSmartPick && renderFeaturedCard(nhlSmartPick, 'nhl')}
+        {bombaPick && renderFeaturedCard(bombaPick, 'bomba')}
       </div>
     </section>
   );
