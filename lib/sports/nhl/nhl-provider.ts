@@ -104,7 +104,13 @@ export class NHLProvider implements SportsDataProvider {
   }
 
   private get apiKey(): string {
-    return process.env.API_NHL_KEY || SPORTS_CONFIG.nhl.apiKey || '';
+    return (
+      process.env.API_NHL_KEY ||
+      process.env.NEXT_PUBLIC_SPORTS_API_KEY ||
+      process.env.API_FOOTBALL_KEY ||
+      SPORTS_CONFIG.nhl.apiKey ||
+      ''
+    );
   }
 
   private get headers(): Record<string, string> {

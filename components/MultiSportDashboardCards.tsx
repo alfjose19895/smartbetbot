@@ -10,7 +10,16 @@ interface MultiSportDashboardCardsProps {
   footballSignalsCount?: number;
   footballSmartPick?: MarketOpportunity | null;
   nhlSignalsCount?: number;
-  nhlSmartPick?: MultiSportSignal | null;
+  nhlSmartPick?: MultiSportSignal | MarketOpportunity | null;
+}
+
+function getSmartPickLabel(pick: any): string | null {
+  if (!pick) return null;
+  const home = pick.homeTeam || pick.game?.homeTeam?.name || pick.game?.homeTeam || '';
+  const market = pick.market || pick.selection || '';
+  if (home && market) return `${home} (${market})`;
+  if (home) return home;
+  return market || null;
 }
 
 export const MultiSportDashboardCards: React.FC<MultiSportDashboardCardsProps> = ({
@@ -26,9 +35,7 @@ export const MultiSportDashboardCards: React.FC<MultiSportDashboardCardsProps> =
       case 'football':
         return {
           signalsCount: footballSignalsCount,
-          smartPickText: footballSmartPick
-            ? `${footballSmartPick.homeTeam} (${footballSmartPick.market})`
-            : null,
+          smartPickText: getSmartPickLabel(footballSmartPick),
           href: '/sports/football',
           statusBadge: 'ACTIVO',
           statusColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
@@ -36,9 +43,7 @@ export const MultiSportDashboardCards: React.FC<MultiSportDashboardCardsProps> =
       case 'nhl':
         return {
           signalsCount: nhlSignalsCount,
-          smartPickText: nhlSmartPick
-            ? `${nhlSmartPick.game.homeTeam.name} (${nhlSmartPick.market})`
-            : null,
+          smartPickText: getSmartPickLabel(nhlSmartPick),
           href: '/sports/nhl',
           statusBadge: 'ACTIVO',
           statusColor: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
@@ -119,9 +124,9 @@ export const MultiSportDashboardCards: React.FC<MultiSportDashboardCardsProps> =
 
                 <div className="mt-2.5 space-y-1">
                   <div className="text-[11px] text-slate-400">
-                    Señales de hoy:{" "}
+                    Señales de hoy:{' '}
                     <strong className="text-white font-bold">
-                      {signalsCount > 0 ? `${signalsCount} activas` : "0 disponibles"}
+                      {signalsCount > 0 ? `${signalsCount} activas` : '0 disponibles'}
                     </strong>
                   </div>
 
@@ -132,9 +137,9 @@ export const MultiSportDashboardCards: React.FC<MultiSportDashboardCardsProps> =
                       </span>
                     ) : (
                       <span className="italic text-[10px] text-slate-500">
-                        {sport.id === "football" || sport.id === "nhl"
-                          ? "Calculando oportunidades +EV..."
-                          : "Temporada en calibración."}
+                        {sport.id === 'football' || sport.id === 'nhl'
+                          ? 'Calculando oportunidades +EV...'
+                          : 'Temporada en calibración.'}
                       </span>
                     )}
                   </div>

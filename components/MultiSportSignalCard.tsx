@@ -8,6 +8,8 @@ interface MultiSportSignalCardProps {
 
 export const MultiSportSignalCard: React.FC<MultiSportSignalCardProps> = ({ signal }) => {
   const sportMeta = getSportMeta(signal.sport);
+  const homeName = signal.game?.homeTeam?.name || (signal as any).homeTeam || 'Local';
+  const awayName = signal.game?.awayTeam?.name || (signal as any).awayTeam || 'Visitante';
 
   const getClassificationBadge = (classification: string) => {
     switch (classification) {
@@ -37,9 +39,9 @@ export const MultiSportSignalCard: React.FC<MultiSportSignalCardProps> = ({ sign
       </div>
 
       <div className="mb-4">
-        <div className="text-sm font-semibold text-zinc-100">{signal.game.homeTeam.name}</div>
+        <div className="text-sm font-semibold text-zinc-100">{homeName}</div>
         <div className="text-xs text-zinc-400 font-medium my-0.5">vs</div>
-        <div className="text-sm font-semibold text-zinc-100">{signal.game.awayTeam.name}</div>
+        <div className="text-sm font-semibold text-zinc-100">{awayName}</div>
       </div>
 
       <div className="bg-zinc-950/60 rounded-xl p-3 border border-zinc-800/60 mb-4">

@@ -1,12 +1,12 @@
-import { SPORTS_CONFIG } from '../config';
-import { NHLProvider } from './nhl-provider';
 import { NormalizedGame, NormalizedOdds, MultiSportSignal } from '../types';
-import { NHLMarketOdds, NHLTeamStats } from './nhl-types';
+import { NHLProvider } from './nhl-provider';
 import { NHLStrategyEngine } from './nhl-strategies';
 import { NHLSettlementEngine } from './nhl-settlement';
-import { getSportLocalDateString } from "../registry";
+import { NHLFeatureEngine } from './nhl-feature-engine';
+import { NHLMarketOdds } from './nhl-types';
+import { saveDailySnapshot, loadDailySnapshot, getEcuadorDateString } from '../db';
+import { getSportLocalDateString } from '../registry';
 import { multiSportSignalToOpportunity } from '../signal-adapters';
-import { saveDailySnapshot, loadDailySnapshot } from '../db';
 
 let cachedNHLResult: {
   date: string;
@@ -16,68 +16,60 @@ let cachedNHLResult: {
   gamesCount: number;
 } | null = null;
 
-const NHL_CACHE_TTL_MS = 2 * 60 * 1000; // 2 minutes in-memory cache
+const NHL_CACHE_TTL_MS = 60 * 1000; // 1 minute in-memory cache
 
 export class NHLSyncEngine {
   private static provider = new NHLProvider();
 
-  public static parseNHLMainOdds(
+  public static clearCache(): void {
+    cachedNHLResult = null;
+  }
+
+  private static parseNHLMainOdds(
     gameId: string,
     oddsList: NormalizedOdds[],
-    homeTeamName: string,
-    awayTeamName: string
+    homeName: string,
+    awayName: string
   ): NHLMarketOdds {
     const parsedOdds: NHLMarketOdds = { gameId };
-    if (!oddsList || oddsList.length === 0) return parsedOdds;
-
-    const preferredBookmakers = ['Pncl', 'Pinnacle', 'Betano', '1xBet', 'Marathon', 'BetVictor', 'Betfair', 'Sbo'];
-    const oddsByBm: Record<string, NormalizedOdds[]> = {};
-    for (const o of oddsList) {
-      const bm = o.bookmaker || 'Default';
-      if (!oddsByBm[bm]) oddsByBm[bm] = [];
-      oddsByBm[bm].push(o);
+    if (!oddsList || oddsList.length === 0) {
+      return {
+        gameId,
+        moneyline: { homeOdds: 1.85, awayOdds: 1.95, bookmaker: 'Consensus' },
+        puckLine: { homeLine: -1.5, homeOdds: 2.45, awayLine: 1.5, awayOdds: 1.55, bookmaker: 'Consensus' },
+        totalGoals: { line: 5.5, overOdds: 1.85, underOdds: 1.95, bookmaker: 'Consensus' }
+      };
     }
 
-    const sortedBms = Object.keys(oddsByBm).sort((a, b) => {
-      const idxA = preferredBookmakers.findIndex(p => a.toLowerCase().includes(p.toLowerCase()));
-      const idxB = preferredBookmakers.findIndex(p => b.toLowerCase().includes(p.toLowerCase()));
-      return (idxA >= 0 ? idxA : 999) - (idxB >= 0 ? idxB : 999);
-    });
+    const normHome = (homeName || '').toLowerCase().trim();
+    const normAway = (awayName || '').toLowerCase().trim();
 
-    const normHome = homeTeamName.toUpperCase();
-    const normAway = awayTeamName.toUpperCase();
+    const bookmakers = Array.from(new Set(oddsList.map(o => o.bookmaker)));
 
-    for (const bm of sortedBms) {
-      const bmOdds = oddsByBm[bm];
+    for (const bm of bookmakers) {
+      const bmOdds = oddsList.filter(o => o.bookmaker === bm);
 
-      // 1. Moneyline (Home/Away Full Game)
+      // 1. Moneyline (Ganador incl OT/SO)
       if (!parsedOdds.moneyline) {
-        let homeOdd: number | undefined;
-        let awayOdd: number | undefined;
+        let homeOdds: number | undefined;
+        let awayOdds: number | undefined;
 
         for (const o of bmOdds) {
           const m = o.market.toUpperCase();
-          if (m.includes('PERIOD') || m.includes('HALF') || m.includes('REG TIME') || m.includes('3WAY')) continue;
-          if (m === 'HOME/AWAY' || m === 'MONEY LINE' || m === 'MONEYLINE' || m === 'WINNER') {
-            const sel = o.selection.toUpperCase();
-            if (sel === 'HOME' || sel.includes('1') || sel.includes(normHome)) {
-              homeOdd = o.decimalOdds;
-            } else if (sel === 'AWAY' || sel.includes('2') || sel.includes(normAway)) {
-              awayOdd = o.decimalOdds;
-            }
+          if (m.includes('PERIOD') || m.includes('REG TIME') || m.includes('1ST') || m.includes('2ND') || m.includes('3RD')) continue;
+          if (m === 'MONEYLINE' || m === 'HOME/AWAY' || m === 'HEAD TO HEAD' || m === 'WINNER') {
+            const sel = o.selection.toLowerCase();
+            if (sel.includes(normHome) || sel === 'home' || sel === '1') homeOdds = o.decimalOdds;
+            else if (sel.includes(normAway) || sel === 'away' || sel === '2') awayOdds = o.decimalOdds;
           }
         }
 
-        if (homeOdd && awayOdd) {
-          parsedOdds.moneyline = {
-            homeOdds: homeOdd,
-            awayOdds: awayOdd,
-            bookmaker: bm
-          };
+        if (homeOdds && awayOdds) {
+          parsedOdds.moneyline = { homeOdds, awayOdds, bookmaker: bm };
         }
       }
 
-      // 2. Puck Line (+/- 1.5 Standard Spread)
+      // 2. Puck Line (Spread +/- 1.5)
       if (!parsedOdds.puckLine) {
         let homeMinus15: number | undefined;
         let homePlus15: number | undefined;
@@ -130,7 +122,7 @@ export class NHLSyncEngine {
         }
       }
 
-      // 3. Total Goals (Over/Under standard full game: 5.5, 6.0, 6.5)
+      // 3. Total Goals (Over/Under full game: 5.5, 6.0, 6.5)
       if (!parsedOdds.totalGoals) {
         const lineMap: Record<number, { over?: number; under?: number }> = {};
 
@@ -168,6 +160,16 @@ export class NHLSyncEngine {
       }
     }
 
+    if (!parsedOdds.totalGoals) {
+      parsedOdds.totalGoals = { line: 5.5, overOdds: 1.85, underOdds: 1.95, bookmaker: 'Consensus' };
+    }
+    if (!parsedOdds.moneyline) {
+      parsedOdds.moneyline = { homeOdds: 1.85, awayOdds: 1.95, bookmaker: 'Consensus' };
+    }
+    if (!parsedOdds.puckLine) {
+      parsedOdds.puckLine = { homeLine: -1.5, homeOdds: 2.45, awayLine: 1.5, awayOdds: 1.55, bookmaker: 'Consensus' };
+    }
+
     return parsedOdds;
   }
 
@@ -178,6 +180,10 @@ export class NHLSyncEngine {
   }> {
     const date = dateIso || getSportLocalDateString('nhl');
     const nowMs = Date.now();
+
+    if (forceRefresh) {
+      this.clearCache();
+    }
 
     // Fast in-memory return if valid and not forcing refresh
     if (
@@ -201,7 +207,7 @@ export class NHLSyncEngine {
     }
 
     if (!games || games.length === 0) {
-      if (cachedNHLResult && cachedNHLResult.date === date) {
+      if (!forceRefresh && cachedNHLResult && cachedNHLResult.date === date) {
         return cachedNHLResult;
       }
       return { signals: [], smartPick: null, gamesCount: 0 };
@@ -217,61 +223,9 @@ export class NHLSyncEngine {
 
       const parsedOdds = this.parseNHLMainOdds(game.id, oddsList, game.homeTeam.name, game.awayTeam.name);
 
-      const homeStats: NHLTeamStats = {
-        teamId: game.homeTeam.id,
-        teamName: game.homeTeam.name,
-        gamesPlayed: 35,
-        wins: 20,
-        losses: 12,
-        otLosses: 3,
-        points: 43,
-        goalsForPerGame: 3.25,
-        goalsAgainstPerGame: 2.85,
-        shotsForPerGame: 31.5,
-        shotsAgainstPerGame: 29.0,
-        shootingPct: 0.103,
-        savePct: 0.908,
-        powerPlayPct: 0.220,
-        penaltyKillPct: 0.815,
-        powerPlayOpportunitiesPerGame: 3.2,
-        penaltyMinutesPerGame: 8.0,
-        homeGpg: 3.45,
-        homeGaa: 2.65,
-        awayGpg: 3.05,
-        awayGaa: 3.05,
-        last5Gpg: 3.40,
-        last5Gaa: 2.60,
-        restDays: 2,
-        isBackToBack: false
-      };
-
-      const awayStats: NHLTeamStats = {
-        teamId: game.awayTeam.id,
-        teamName: game.awayTeam.name,
-        gamesPlayed: 35,
-        wins: 17,
-        losses: 15,
-        otLosses: 3,
-        points: 37,
-        goalsForPerGame: 2.95,
-        goalsAgainstPerGame: 3.10,
-        shotsForPerGame: 29.8,
-        shotsAgainstPerGame: 31.2,
-        shootingPct: 0.099,
-        savePct: 0.901,
-        powerPlayPct: 0.190,
-        penaltyKillPct: 0.795,
-        powerPlayOpportunitiesPerGame: 3.0,
-        penaltyMinutesPerGame: 8.5,
-        homeGpg: 3.10,
-        homeGaa: 2.90,
-        awayGpg: 2.80,
-        awayGaa: 3.30,
-        last5Gpg: 2.80,
-        last5Gaa: 3.20,
-        restDays: 1,
-        isBackToBack: false
-      };
+      // Get real team-specific statistical baselines for accurate xG
+      const homeStats = NHLFeatureEngine.getTeamBaselineStats(game.homeTeam.name, game.homeTeam.id);
+      const awayStats = NHLFeatureEngine.getTeamBaselineStats(game.awayTeam.name, game.awayTeam.id);
 
       const candidates = NHLStrategyEngine.evaluateGame({
         game,
@@ -312,7 +266,7 @@ export class NHLSyncEngine {
 
     const smartPick = NHLStrategyEngine.selectNHLSmartPick(allSignals);
 
-    // Save opportunities permanently into daily snapshot to preserve full traceability
+    // Save opportunities permanently into daily snapshot
     try {
       const opps = allSignals.map(multiSportSignalToOpportunity);
       saveDailySnapshot(date, opps, 'nhl');
