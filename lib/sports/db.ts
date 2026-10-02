@@ -348,6 +348,12 @@ export function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[]) {
 export async function settleAllSnapshotsWithRealScores(): Promise<{ settledDates: string[]; totalSettled: number }> {
   const nowMs = Date.now();
   const todayDateStr = getEcuadorDateString(nowMs);
+
+  // Auto-settle NHL multi-sport snapshot
+  try {
+    const { NHLSyncEngine } = await import("./nhl/nhl-sync");
+    await NHLSyncEngine.getTodayNHLSignals(todayDateStr, false);
+  } catch {}
   const snapshots = await getAllDailySnapshotsAsync();
   const todaySnap = loadDailySnapshot(todayDateStr) || getStoredPredictions();
   if (todaySnap && todaySnap.length > 0 && !snapshots[todayDateStr]) {

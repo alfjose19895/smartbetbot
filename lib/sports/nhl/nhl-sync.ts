@@ -1,8 +1,22 @@
-﻿import { getSportLocalDateString } from '../registry';
-import { MultiSportSignal, NormalizedOdds } from '../types';
+import { SPORTS_CONFIG } from '../config';
 import { NHLProvider } from './nhl-provider';
+import { NormalizedGame, NormalizedOdds, MultiSportSignal } from '../types';
+import { NHLMarketOdds, NHLTeamStats } from './nhl-types';
 import { NHLStrategyEngine } from './nhl-strategies';
-import { NHLTeamStats, NHLMarketOdds } from './nhl-types';
+import { NHLSettlementEngine } from './nhl-settlement';
+import { getSportLocalDateString } from "../registry";
+import { multiSportSignalToOpportunity } from '../signal-adapters';
+import { saveDailySnapshot, loadDailySnapshot } from '../db';
+
+let cachedNHLResult: {
+  date: string;
+  timestamp: number;
+  signals: MultiSportSignal[];
+  smartPick: MultiSportSignal | null;
+  gamesCount: number;
+} | null = null;
+
+const NHL_CACHE_TTL_MS = 2 * 60 * 1000; // 2 minutes in-memory cache
 
 export class NHLSyncEngine {
   private static provider = new NHLProvider();
@@ -157,23 +171,50 @@ export class NHLSyncEngine {
     return parsedOdds;
   }
 
-  public static async getTodayNHLSignals(dateIso?: string): Promise<{
+  public static async getTodayNHLSignals(dateIso?: string, forceRefresh = false): Promise<{
     signals: MultiSportSignal[];
     smartPick: MultiSportSignal | null;
     gamesCount: number;
   }> {
     const date = dateIso || getSportLocalDateString('nhl');
-    const games = await this.provider.getSchedule(date);
+    const nowMs = Date.now();
+
+    // Fast in-memory return if valid and not forcing refresh
+    if (
+      !forceRefresh &&
+      cachedNHLResult &&
+      cachedNHLResult.date === date &&
+      nowMs - cachedNHLResult.timestamp < NHL_CACHE_TTL_MS
+    ) {
+      return {
+        signals: cachedNHLResult.signals,
+        smartPick: cachedNHLResult.smartPick,
+        gamesCount: cachedNHLResult.gamesCount,
+      };
+    }
+
+    let games: NormalizedGame[] = [];
+    try {
+      games = await this.provider.getSchedule(date);
+    } catch {
+      games = [];
+    }
 
     if (!games || games.length === 0) {
+      if (cachedNHLResult && cachedNHLResult.date === date) {
+        return cachedNHLResult;
+      }
       return { signals: [], smartPick: null, gamesCount: 0 };
     }
 
     const allSignals: MultiSportSignal[] = [];
 
     for (const game of games) {
+      let oddsList: NormalizedOdds[] = [];
+      try {
+        oddsList = await this.provider.getOdds(game.id);
+      } catch {}
 
-      const oddsList = await this.provider.getOdds(game.id);
       const parsedOdds = this.parseNHLMainOdds(game.id, oddsList, game.homeTeam.name, game.awayTeam.name);
 
       const homeStats: NHLTeamStats = {
@@ -240,10 +281,52 @@ export class NHLSyncEngine {
       });
 
       const official = NHLStrategyEngine.selectOfficialSignals(candidates);
+
+      // Auto-settle finished games with real scores
+      for (const s of official) {
+        if (game.status === 'FINISHED' && typeof game.homeScore === 'number' && typeof game.awayScore === 'number') {
+          const settlement = NHLSettlementEngine.settleSignal(s, {
+            gameId: game.id,
+            status: 'FINISHED',
+            homeScore: game.homeScore,
+            awayScore: game.awayScore,
+          });
+
+          const isWon = settlement.status === 'WON';
+          const isLost = settlement.status === 'LOST';
+
+          (s as any).result = isWon ? 'WON' : isLost ? 'LOST' : settlement.status;
+          (s as any).actualScore = `${game.homeScore} - ${game.awayScore}`;
+          (s as any).status = isWon ? 'won' : isLost ? 'lost' : 'finished';
+          (s as any).profit = isWon ? Number(((s.decimalOdds || 1.85) - 1).toFixed(2)) : -1;
+        } else if (game.status === 'IN_PLAY') {
+          (s as any).status = 'in_play';
+          if (typeof game.homeScore === 'number' && typeof game.awayScore === 'number') {
+            (s as any).currentScore = `${game.homeScore} - ${game.awayScore}`;
+          }
+        }
+      }
+
       allSignals.push(...official);
     }
 
     const smartPick = NHLStrategyEngine.selectNHLSmartPick(allSignals);
+
+    // Save opportunities permanently into daily snapshot to preserve full traceability
+    try {
+      const opps = allSignals.map(multiSportSignalToOpportunity);
+      saveDailySnapshot(date, opps);
+    } catch (e) {
+      console.warn('[NHLSyncEngine] Error saving snapshot:', e);
+    }
+
+    cachedNHLResult = {
+      date,
+      timestamp: nowMs,
+      signals: allSignals,
+      smartPick,
+      gamesCount: games.length,
+    };
 
     return {
       signals: allSignals,
