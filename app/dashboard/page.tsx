@@ -234,14 +234,6 @@ export default function DashboardPage() {
     });
   };
 
-  const now = new Date();
-  const formattedToday = now.toLocaleDateString("es-ES", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-
   const todayDateStr = getEcuadorDateString(Date.now());
   const todayFootball = footballPredictions.filter((p) => {
     const pDate = p.kickoff ? getEcuadorDateString(p.kickoff) : todayDateStr;
@@ -257,70 +249,73 @@ export default function DashboardPage() {
 
   const topNhlPicks = nhlPredictions.slice(0, 6);
 
-  const totalActiveSignalsCount = todayFootball.length + nhlPredictions.length;
-  const highConfidenceCount = [...todayFootball, ...nhlPredictions].filter(
-    (p) => p.probability >= 65 || p.confidence === "Muy Alta"
-  ).length;
-
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-emerald-500 selection:text-slate-950">
       <Navbar />
 
       <main className="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-6 space-y-7 flex-1">
         {/* ======================================================== */}
-        {/* 1. HERO BANNER: Multi-Sport AI Engine                   */}
+        {/* 1. HERO BANNER (100% UNUNCROPPED 2:1 + ACTION BAR)     */}
         {/* ======================================================== */}
-        <section className="relative overflow-hidden rounded-3xl border border-emerald-500/30 bg-slate-900 shadow-2xl group">
-          <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] md:aspect-[3.2/1] max-h-[340px] overflow-hidden">
+        <section className="space-y-3">
+          {/* Banner Graphic Image Container - Aspect 2:1 Clean */}
+          <div className="relative w-full overflow-hidden rounded-3xl border border-emerald-500/30 bg-slate-900/90 shadow-2xl">
             <img
               src="/images/multisport-banner.jpg"
-              alt="SmartBetBot AI Multi-Sport Coverage"
-              className="w-full h-full object-cover object-center group-hover:scale-[1.01] transition-transform duration-500"
+              alt="SmartBetBot AI — La IA analiza, tú decides mejor"
+              className="w-full h-auto aspect-[2/1] object-contain rounded-3xl block"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
-            <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 px-3 py-1 text-[11px] font-black text-emerald-300 backdrop-blur-md">
-                  <span>⚡</span> <span>SUITE DEPORTIVA MULTI-DISCIPLINA IA</span>
-                </span>
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-white mt-1.5 drop-shadow-md">
-                  Fútbol • NHL • NBA • NFL • NCAAF
-                </h1>
-                <p className="text-xs text-slate-300 mt-0.5 hidden sm:block max-w-xl drop-shadow-xs">
-                  Modelos cuantitativos avanzados y valor esperado (+EV) con análisis en tiempo real.
-                </p>
-              </div>
+          </div>
 
-              <div className="flex items-center gap-2 flex-wrap">
-                <Link
-                  href="/admin?tab=mcp"
-                  className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 px-3.5 py-2 text-xs font-black text-white shadow-lg shadow-purple-950/50 transition cursor-pointer"
-                >
-                  <span>🤖</span>
-                  <span>Agente MCP Pronósticos</span>
-                </Link>
-                <Link
-                  href="/signals"
-                  className="flex items-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-950/40 hover:bg-emerald-900/50 px-3.5 py-2 text-xs font-bold text-emerald-300 transition cursor-pointer backdrop-blur-md"
-                >
-                  <span>⚽</span>
-                  <span>Fútbol ({todayFootball.length})</span>
-                </Link>
-                <Link
-                  href="/sports/nhl"
-                  className="flex items-center gap-1.5 rounded-xl border border-cyan-500/40 bg-cyan-950/40 hover:bg-cyan-900/50 px-3.5 py-2 text-xs font-bold text-cyan-300 transition cursor-pointer backdrop-blur-md"
-                >
-                  <span>🏒</span>
-                  <span>NHL ({nhlPredictions.length})</span>
-                </Link>
+          {/* Quick Action Navigation Bar */}
+          <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-900/80 p-3.5 sm:p-4 rounded-2xl border border-slate-800 shadow-sm backdrop-blur-md">
+            <div className="flex items-center gap-2">
+              <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-xs font-black uppercase tracking-wider text-slate-300">
+                Plataforma Multi-Deporte Inteligente
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 flex-wrap">
+              <Link
+                href="/admin?tab=mcp"
+                className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 px-3.5 py-2 text-xs font-black text-white shadow-md shadow-purple-950/40 transition cursor-pointer"
+              >
+                <span>🤖</span>
+                <span>Agente MCP Pronósticos</span>
+              </Link>
+              <Link
+                href="/signals"
+                className="flex items-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-950/40 hover:bg-emerald-900/50 px-3.5 py-2 text-xs font-bold text-emerald-300 transition cursor-pointer"
+              >
+                <span>⚽</span>
+                <span>Fútbol ({todayFootball.length})</span>
+              </Link>
+              <Link
+                href="/sports/nhl"
+                className="flex items-center gap-1.5 rounded-xl border border-cyan-500/40 bg-cyan-950/40 hover:bg-cyan-900/50 px-3.5 py-2 text-xs font-bold text-cyan-300 transition cursor-pointer"
+              >
+                <span>🏒</span>
+                <span>NHL ({nhlPredictions.length})</span>
+              </Link>
+              {isAdmin && (
                 <button
-                  onClick={openPushModal}
-                  className="flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 px-3.5 py-2 text-xs font-black text-white shadow-lg transition cursor-pointer"
+                  onClick={handleSyncPredictions}
+                  disabled={syncing}
+                  className="flex items-center gap-1.5 rounded-xl border border-purple-500/40 bg-purple-500/10 hover:bg-purple-500/20 px-3.5 py-2 text-xs font-bold text-purple-300 transition cursor-pointer disabled:opacity-50"
+                  title="Buscar alertas de hoy (Solo Administrador)"
                 >
-                  <span>🔔</span>
-                  <span>Alertas</span>
+                  <span className={syncing ? "animate-spin" : ""}>⚡</span>
+                  <span>{syncing ? "Buscando..." : "Buscar Alertas"}</span>
                 </button>
-              </div>
+              )}
+              <button
+                onClick={openPushModal}
+                className="flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 px-3.5 py-2 text-xs font-black text-white shadow-md transition cursor-pointer"
+              >
+                <span>🔔</span>
+                <span>Alertas Móvil</span>
+              </button>
             </div>
           </div>
         </section>
