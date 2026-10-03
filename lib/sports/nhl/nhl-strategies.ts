@@ -350,8 +350,19 @@ export class NHLStrategyEngine {
   public static selectNHLSmartPick(signals: MultiSportSignal[]): MultiSportSignal | null {
     if (!signals || signals.length === 0) return null;
     const candidates = [...signals];
-    candidates.sort((a, b) => (b.modelProbability * 100 + b.smartScore) - (a.modelProbability * 100 + a.smartScore));
-    const topPick = candidates[0];
+    // Filter out Gemini-vetoed signals if non-vetoed candidates exist
+    const nonVetoed = candidates.filter(s => !(s as any).aiVetoed);
+    const pool = nonVetoed.length > 0 ? nonVetoed : candidates;
+
+    pool.sort((a, b) => {
+      const aRisk = (a as any).aiRiskScore || 20;
+      const bRisk = (b as any).aiRiskScore || 20;
+      const aScore = (a.modelProbability * 100) + a.smartScore - (aRisk * 0.4);
+      const bScore = (b.modelProbability * 100) + b.smartScore - (bRisk * 0.4);
+      return bScore - aScore;
+    });
+
+    const topPick = pool[0];
     topPick.isSmartPick = true;
     topPick.classification = 'TOP PICK';
     return topPick;

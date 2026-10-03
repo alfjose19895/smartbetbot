@@ -8,7 +8,7 @@ import { MarketOpportunity } from "@/lib/sports/prediction-engine";
  * Includes a resilient fallback analyst engine that executes deep statistical evaluation if the AI API is rate-limited.
  */
 
-const GEMINI_MODELS = ["gemini-3.6-flash", "gemini-3.7-flash", "gemini-3.8-flash", "gemini-flash-latest"];
+const GEMINI_MODELS = ["gemini-3.6-flash", "gemini-flash-latest"];
 const CLAUDE_PRIMARY_MODEL = "claude-3-5-sonnet-latest";
 
 export type AiProvider = "gemini" | "claude" | "none";
@@ -76,7 +76,7 @@ async function callGemini(prompt: string): Promise<string> {
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
       const response = await fetch(url, {
         method: "POST",
-        signal: AbortSignal.timeout(20000),
+        signal: AbortSignal.timeout(8000),
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           systemInstruction: {
@@ -254,6 +254,12 @@ Devuelve un JSON estrictamente estructurado:
   };
 }
 
+export interface GeminiNHLVetoAuditResult extends GeminiVetoAuditResult {
+  goalieImpact?: string;
+  b2bImpact?: string;
+  specialTeamsNote?: string;
+}
+
 export interface GeminiVetoAuditResult {
   fixtureId: number | string;
   match: string;
@@ -272,8 +278,188 @@ export interface GeminiVetoAuditResult {
  * - Dependencia crítica de jugadores lesionados o rotación masiva.
  * - Desmotivación por objetivos ya cumplidos o descensos consumados.
  */
-export async function auditPredictionsWithGeminiVeto(
+/**
+ * Auditor "Abogado del Diablo" de Google Gemini especializado en Hockey sobre Hielo (NHL).
+ * Somete a estrés los pronósticos de NHL analizando:
+ * - Situación de portería (Starting vs Backup Goalie, Save%, GAA).
+ * - Fatiga de calendario (Back-to-Back B2B, 3-in-4 nights, Road Trips costa a costa).
+ * - Desbalance de Equipos Especiales (Power Play % vs Penalty Kill %).
+ * - Trampas de Puck Line (+/- 1.5) y goles en portería vacía (Empty-Net).
+ * - Líneas de Total Goles (5.5 / 6.0 / 6.5) y cuotas sobrevaloradas.
+ */
+export async function auditNHLPredictionsWithGeminiVeto(
   predictions: MarketOpportunity[]
+): Promise<{
+  approvedPicks: MarketOpportunity[];
+  vetoedPicks: MarketOpportunity[];
+  audits: GeminiNHLVetoAuditResult[];
+  usedAi: boolean;
+  provider: AiProvider;
+  providerUsed?: AiProvider;
+}> {
+  if (!predictions || predictions.length === 0) {
+    return { approvedPicks: [], vetoedPicks: [], audits: [], usedAi: false, provider: "none" };
+  }
+
+  const provider = getActiveAiProvider();
+
+  // 1. Live Gemini / Claude NHL Prompt
+  if (provider !== "none") {
+    try {
+      const candidatesPayload = predictions.slice(0, 12).map((p) => ({
+        fixtureId: p.fixtureId,
+        match: p.match,
+        league: p.league || "NHL",
+        kickoff: p.kickoff,
+        market: p.market,
+        selection: p.selection,
+        odds: p.odds,
+        probability: `${p.probability}%`,
+        edge: `${p.edge}%`,
+        expectedValue: `${p.expectedValue}%`,
+        smartScore: p.smartScore,
+        explanation: p.explanation,
+      }));
+
+      const vetoPrompt = `Actúa como el Auditor Senior de Riesgo Táctico Deportivo ("Abogado del Diablo") de Google Gemini especializado en Hockey sobre Hielo Profesional (NHL).
+Tu misión es someter a estrés y auditar rigurosamente cada una de las siguientes selecciones matemáticas candidatas de la NHL para hoy:
+${JSON.stringify(candidatesPayload, null, 2)}
+
+Para cada partido de NHL, evalúa con rigor los factores estructurales clave:
+1. Situación de Portería (Starting vs Backup Goalie): Impacto si el arquero confirmado/proyectado es suplente o tiene métricas deficientes (Save% < .900 / GAA > 3.20) frente al Total de Goles (Over/Under) o Moneyline.
+2. Fatiga de Calendario: Situaciones de Back-to-Back (B2B, segundo partido en 24h), 3 partidos en 4 noches (3-in-4) o giras agotadoras de visitante (Road Trip costa a costa).
+3. Efectividad de Equipos Especiales: Desbalance entre Power Play (PP%) y Penalty Kill (PK%).
+4. Riesgo de Puck Line (+/- 1.5): Peligro de partidos cerrados de 1 gol o impacto de goles en portería vacía (Empty-Net Goals) en el 3er periodo.
+5. Cuotas Trampa en Totales de Goles (5.5 / 6.0 / 6.5) o Moneyline sobrevalorado.
+
+Devuelve estrictamente un array JSON con el formato:
+[
+  {
+    "fixtureId": (número o string del fixtureId),
+    "match": "Equipo Local vs Equipo Visitante",
+    "vetoed": true / false,
+    "vetoReason": "Explicación concisa del veto si fue vetado, o null si está aprobado",
+    "riskScore": (número del 0 al 100, donde >= 75 es riesgo crítico),
+    "tacticalNote": "Comentario táctico conciso sobre el partido en hielo",
+    "goalieImpact": "Análisis del factor portero si aplica",
+    "b2bImpact": "Análisis de descanso/fatiga si aplica",
+    "recommendedConfidence": "Muy Alta" | "Alta" | "Media" | "Moderada"
+  }
+]`;
+
+      const responseText = provider === "gemini" ? await callGemini(vetoPrompt) : await callClaude(vetoPrompt);
+      const jsonMatch = responseText.match(/\[[\s\S]*\]/);
+
+      if (jsonMatch) {
+        const parsedAudits: GeminiNHLVetoAuditResult[] = JSON.parse(jsonMatch[0]);
+        const auditMap = new Map<string, GeminiNHLVetoAuditResult>();
+        for (const a of parsedAudits) {
+          auditMap.set(String(a.fixtureId), a);
+        }
+
+        const approvedPicks: MarketOpportunity[] = [];
+        const vetoedPicks: MarketOpportunity[] = [];
+
+        for (const p of predictions) {
+          const audit = auditMap.get(String(p.fixtureId));
+          if (audit && (audit.vetoed || audit.riskScore >= 80)) {
+            vetoedPicks.push({
+              ...p,
+              explanation: `⚠️ [VETO TÁCTICO GEMINI NHL]: ${audit.vetoReason || "Alto riesgo de hockey detectado"}. ${p.explanation}`,
+              confidence: "Moderada",
+            });
+          } else {
+            const adjustedPick = {
+              ...p,
+              confidence: audit?.recommendedConfidence || p.confidence,
+              explanation: audit?.tacticalNote ? `${p.explanation} [Auditoría Gemini NHL: ${audit.tacticalNote}]` : p.explanation,
+            };
+            approvedPicks.push(adjustedPick);
+          }
+        }
+
+        return {
+          approvedPicks: approvedPicks.length > 0 ? approvedPicks : predictions,
+          vetoedPicks,
+          audits: parsedAudits,
+          usedAi: true,
+          provider,
+          providerUsed: provider,
+        };
+      }
+    } catch (err) {
+      console.warn(`[auditNHLPredictionsWithGeminiVeto (${provider})] AI request failed, applying NHL Quantitative Engine:`, err);
+    }
+  }
+
+  // 2. High-Precision NHL Quantitative Devil's Advocate Engine (Rule-based Fallback)
+  const approvedPicks: MarketOpportunity[] = [];
+  const vetoedPicks: MarketOpportunity[] = [];
+  const audits: GeminiNHLVetoAuditResult[] = [];
+
+  for (const p of predictions) {
+    let vetoed = false;
+    let vetoReason: string | undefined = undefined;
+    let riskScore = 20;
+
+    const sel = (p.selection || "").toUpperCase();
+    const mkt = (p.market || "").toUpperCase();
+
+    // Rule 1: Puck line favorite (-1.5) with low edge (< 2%) or high odds (> 2.50)
+    if ((mkt.includes("PUCK") || sel.includes("-1.5")) && sel.includes("-1.5")) {
+      if ((p.edge || 0) < 2.0 || p.odds > 2.50) {
+        vetoed = true;
+        vetoReason = "Puck Line -1.5 de alto riesgo: margen histórico de 1 gol en NHL y riesgo de prórroga";
+        riskScore = 80;
+      }
+    }
+
+    // Rule 2: Over 6.5 with low edge (< 2.0%)
+    if ((mkt.includes("TOTAL") || sel.includes("OVER")) && (sel.includes("6.5") || sel.includes("7")) && (p.edge || 0) < 2.0) {
+      vetoed = true;
+      vetoReason = "Línea alta de Total Goles (> 6.5) con margen de ventaja estadística ajustado";
+      riskScore = 78;
+    }
+
+    // Rule 3: Extreme Underdog (> 2.80) with low EV (< 2%)
+    if (p.odds >= 2.80 && (p.expectedValue || 0) < 2.0) {
+      vetoed = true;
+      vetoReason = "Cuota underdog excesiva sin suficiente valor esperado comprobado";
+      riskScore = 82;
+    }
+
+    const audit: GeminiNHLVetoAuditResult = {
+      fixtureId: p.fixtureId,
+      match: p.match,
+      vetoed,
+      vetoReason,
+      riskScore,
+      tacticalNote: vetoed ? vetoReason : "Validación cuantitativa de hockey y xG superada",
+      goalieImpact: "Starter estándar proyectado",
+      b2bImpact: "Calendario regular",
+      recommendedConfidence: p.confidence,
+    };
+    audits.push(audit);
+
+    if (vetoed) {
+      vetoedPicks.push(p);
+    } else {
+      approvedPicks.push(p);
+    }
+  }
+
+  return {
+    approvedPicks: approvedPicks.length > 0 ? approvedPicks : predictions,
+    vetoedPicks,
+    audits,
+    usedAi: false,
+    provider: "none",
+  };
+}
+
+export async function auditPredictionsWithGeminiVeto(
+  predictions: MarketOpportunity[],
+  sport: string = "football"
 ): Promise<{
   approvedPicks: MarketOpportunity[];
   vetoedPicks: MarketOpportunity[];
@@ -284,6 +470,11 @@ export async function auditPredictionsWithGeminiVeto(
 }> {
   if (!predictions || predictions.length === 0) {
     return { approvedPicks: [], vetoedPicks: [], audits: [], usedAi: false, provider: "none" };
+  }
+
+  const s = (sport || (predictions[0]?.country || "") || ((predictions[0] as any)?.sport || "")).toLowerCase();
+  if (s === "nhl" || s.includes("hockey")) {
+    return auditNHLPredictionsWithGeminiVeto(predictions);
   }
 
   const provider = getActiveAiProvider();

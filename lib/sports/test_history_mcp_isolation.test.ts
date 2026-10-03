@@ -8,14 +8,16 @@ describe('Sport History Isolation & Settlement Timing', () => {
     const scheduledSignal: MultiSportSignal = {
       id: 'nhl-scheduled-1',
       sport: 'nhl',
-      gameId: 101,
+      gameId: '101',
       game: {
-        id: 101,
+        id: '101',
         sport: 'nhl',
+        provider: 'api-nhl',
+        providerGameId: '101',
         startsAt: '2026-10-02T02:30:00Z',
         status: 'SCHEDULED',
-        homeTeam: { id: 1, name: 'Florida Panthers', shortName: 'FLA' },
-        awayTeam: { id: 2, name: 'San Jose Sharks', shortName: 'SJS' },
+        homeTeam: { id: 1, name: 'Florida Panthers', code: 'FLA' },
+        awayTeam: { id: 2, name: 'San Jose Sharks', code: 'SJS' },
         league: { id: 1, name: 'NHL', season: '2026' },
       },
       market: 'Total Goles',
@@ -28,7 +30,9 @@ describe('Sport History Isolation & Settlement Timing', () => {
       smartScore: 85,
       classification: 'TOP PICK',
       isSmartPick: true,
-      publishedAt: '2026-10-01T20:00:00Z',
+      explanation: 'Análisis cuantitativo de valor esperado para NHL.',
+      dataQuality: 90,
+      createdAt: '2026-10-01T20:00:00Z',
     };
 
     const opp = multiSportSignalToOpportunity(scheduledSignal);
@@ -43,14 +47,16 @@ describe('Sport History Isolation & Settlement Timing', () => {
     const finishedSignal: MultiSportSignal = {
       id: 'nhl-finished-1',
       sport: 'nhl',
-      gameId: 102,
+      gameId: '102',
       game: {
-        id: 102,
+        id: '102',
         sport: 'nhl',
+        provider: 'api-nhl',
+        providerGameId: '102',
         startsAt: '2026-10-01T18:00:00Z',
         status: 'FINISHED',
-        homeTeam: { id: 3, name: 'Edmonton Oilers', shortName: 'EDM' },
-        awayTeam: { id: 4, name: 'Calgary Flames', shortName: 'CGY' },
+        homeTeam: { id: 3, name: 'Edmonton Oilers', code: 'EDM' },
+        awayTeam: { id: 4, name: 'Calgary Flames', code: 'CGY' },
         homeScore: 4,
         awayScore: 2,
         league: { id: 1, name: 'NHL', season: '2026' },
@@ -65,7 +71,9 @@ describe('Sport History Isolation & Settlement Timing', () => {
       smartScore: 84,
       classification: 'TOP PICK',
       isSmartPick: true,
-      publishedAt: '2026-10-01T15:00:00Z',
+      explanation: 'Análisis cuantitativo de valor esperado para NHL.',
+      dataQuality: 90,
+      createdAt: '2026-10-01T15:00:00Z',
     };
 
     const opp = multiSportSignalToOpportunity(finishedSignal);
@@ -93,6 +101,8 @@ describe('Sport History Isolation & Settlement Timing', () => {
       probability: 68,
       result: 'WON',
       profit: 0.75,
+      confidence: 'Alta',
+      explanation: 'Resultado auditado y liquidado oficialmente.',
     };
 
     const opp = historicalPickToOpportunity(nhlPick, 'nhl');

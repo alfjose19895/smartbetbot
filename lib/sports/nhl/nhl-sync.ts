@@ -264,6 +264,45 @@ export class NHLSyncEngine {
       allSignals.push(...official);
     }
 
+    // Google Gemini AI Hockey Risk & Tactical Veto Auditor
+    if (allSignals.length > 0) {
+      try {
+        const { auditNHLPredictionsWithGeminiVeto } = await import('../../ai/claude-analyst');
+        const oppsToAudit = allSignals.map(multiSportSignalToOpportunity);
+        const auditResult = await auditNHLPredictionsWithGeminiVeto(oppsToAudit);
+
+        const auditMap = new Map<string, any>();
+        for (const a of auditResult.audits) {
+          auditMap.set(String(a.fixtureId), a);
+        }
+
+        for (const s of allSignals) {
+          const audit = auditMap.get(String(s.gameId || s.id));
+          if (audit) {
+            (s as any).geminiAudited = true;
+            (s as any).aiRiskScore = audit.riskScore;
+            (s as any).goalieImpact = audit.goalieImpact;
+            (s as any).b2bImpact = audit.b2bImpact;
+
+            if (audit.vetoed || audit.riskScore >= 80) {
+              (s as any).aiVetoed = true;
+              (s as any).aiVetoReason = audit.vetoReason;
+              s.explanation = `⚠️ [VETO GEMINI NHL]: ${audit.vetoReason || 'Alto riesgo táctico detectado'}. ${s.explanation}`;
+              s.classification = 'WATCH';
+            } else if (audit.tacticalNote) {
+              (s as any).aiVetoed = false;
+              s.explanation = `${s.explanation} [Auditoría Gemini NHL: ${audit.tacticalNote}]`;
+              if (audit.recommendedConfidence === 'Muy Alta') {
+                s.classification = 'TOP PICK';
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('[NHLSyncEngine] Error running Gemini NHL audit:', err);
+      }
+    }
+
     const smartPick = NHLStrategyEngine.selectNHLSmartPick(allSignals);
 
     // Save opportunities permanently into daily snapshot

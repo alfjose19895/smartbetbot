@@ -95,6 +95,12 @@ export function multiSportSignalToOpportunity(s: MultiSportSignal): MarketOpport
     matchTiming: isLive ? 'live' : isFinished ? 'finished' : 'prematch',
     smartScore: s.smartScore || 80,
     sport: s.sport,
+    geminiAudited: (s as any).geminiAudited,
+    aiRiskScore: (s as any).aiRiskScore,
+    aiVetoed: (s as any).aiVetoed,
+    aiVetoReason: (s as any).aiVetoReason,
+    goalieImpact: (s as any).goalieImpact,
+    b2bImpact: (s as any).b2bImpact,
   } as unknown as MarketOpportunity;
 }
 
