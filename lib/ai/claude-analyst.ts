@@ -8,19 +8,18 @@ import { MarketOpportunity } from "@/lib/sports/prediction-engine";
  * Includes a resilient fallback analyst engine that executes deep statistical evaluation if the AI API is rate-limited.
  */
 
-const GEMINI_MODELS = ["gemini-3.6-flash", "gemini-1.5-flash-latest", "gemini-1.5-flash"];
+const GEMINI_MODELS = ["gemini-3.6-flash", "gemini-3.7-flash", "gemini-3.8-flash", "gemini-flash-latest"];
 const CLAUDE_PRIMARY_MODEL = "claude-3-5-sonnet-latest";
 
 export type AiProvider = "gemini" | "claude" | "none";
 
 export function getActiveAiProvider(): AiProvider {
-  if (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.trim().length > 5) {
+  const geminiKey = (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || "").replace(/['"]/g, "").trim();
+  if (geminiKey.length > 5) {
     return "gemini";
   }
-  if (process.env.GOOGLE_API_KEY && process.env.GOOGLE_API_KEY.trim().length > 5) {
-    return "gemini";
-  }
-  if (process.env.ANTHROPIC_API_KEY && process.env.ANTHROPIC_API_KEY.trim().length > 5) {
+  const anthropicKey = (process.env.ANTHROPIC_API_KEY || "").replace(/['"]/g, "").trim();
+  if (anthropicKey.length > 5) {
     return "claude";
   }
   return "none";
@@ -70,13 +69,14 @@ Reglas de análisis profesional y máxima efectividad:
 5. RESPUESTA EN JSON ESTRICTO: Devuelve ÚNICAMENTE un bloque JSON válido sin comentarios ni texto introductorio.`;
 
 async function callGemini(prompt: string): Promise<string> {
-  const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || "";
+  const apiKey = (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || "").replace(/['"]/g, "").trim();
   
   for (const model of GEMINI_MODELS) {
     try {
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
       const response = await fetch(url, {
         method: "POST",
+        signal: AbortSignal.timeout(20000),
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           systemInstruction: {
@@ -94,9 +94,12 @@ async function callGemini(prompt: string): Promise<string> {
         const data = await response.json();
         const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
         if (text) return text;
+      } else {
+        const errText = await response.text();
+        console.warn(`[Gemini API (${model})] HTTP ${response.status}:`, errText);
       }
     } catch (err) {
-      // try next model
+      console.warn(`[Gemini API (${model})] Fetch Error:`, err);
     }
   }
 
@@ -277,6 +280,7 @@ export async function auditPredictionsWithGeminiVeto(
   audits: GeminiVetoAuditResult[];
   usedAi: boolean;
   provider: AiProvider;
+  providerUsed?: AiProvider;
 }> {
   if (!predictions || predictions.length === 0) {
     return { approvedPicks: [], vetoedPicks: [], audits: [], usedAi: false, provider: "none" };
@@ -360,6 +364,7 @@ Devuelve estrictamente un array JSON con el formato:
           audits: parsedAudits,
           usedAi: true,
           provider,
+          providerUsed: provider,
         };
       }
     } catch (err) {
@@ -425,6 +430,7 @@ export async function auditPredictionsBatchWithClaude(
   audits: ClaudeMatchAudit[];
   usedAi: boolean;
   provider: AiProvider;
+  providerUsed?: AiProvider;
 }> {
   const vetoResult = await auditPredictionsWithGeminiVeto(predictions);
   return {
