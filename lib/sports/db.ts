@@ -2666,79 +2666,91 @@ export async function getHistoricalSettledParlays(): Promise<HistoricalSettledPa
   // Sort dates descending (newest first)
   const sortedDates = Object.keys(dateGroups).sort((a, b) => b.localeCompare(a));
 
+  const sports = ["football", "nhl", "nba", "nfl", "ncaaf"];
+
   for (const dateStr of sortedDates) {
     if (dateStr < HISTORY_START_DATE) continue;
 
-    // Load raw snapshot picks or fall back to settled history picks for that date
-    let rawPicks: MarketOpportunity[] = loadDailySnapshot(dateStr) || [];
-    if (!rawPicks || rawPicks.length === 0) {
-      rawPicks = dateGroups[dateStr] as any;
-    }
-    if (!rawPicks || rawPicks.length < 2) continue;
+    for (const sport of sports) {
+      // Load raw snapshot picks or fall back to settled history picks for that date and sport
+      let rawPicks: MarketOpportunity[] = loadDailySnapshot(dateStr, sport) || [];
+      if (!rawPicks || rawPicks.length === 0) {
+        rawPicks = (dateGroups[dateStr] || []).filter((p) => isSportMatch(p, sport)) as any;
+      }
+      if (!rawPicks || rawPicks.length < 2) continue;
 
-    const dailyParlays = getImmutableDailyParlays(rawPicks, dateStr);
+      const cacheKey = sport === "football" ? dateStr : `${sport}_${dateStr}`;
+      const dailyParlays = getImmutableDailyParlays(rawPicks, cacheKey);
 
-    const parlayConfigs = [
-      { key: "parlay1" as const, title: "🛡️ Doble Seguro (2 Selecciones)", idSuffix: "seguro", size: 2 },
-      { key: "parlay2" as const, title: "💎 Doble de Valor (2 Selecciones)", idSuffix: "valor", size: 2 },
-      { key: "parlay3" as const, title: "🔥 Doble Pro (2 Selecciones)", idSuffix: "pro", size: 2 },
-    ];
+      const parlayConfigs = [
+        { key: "parlay1" as const, title: "🛡️ Doble Seguro (2 Selecciones)", idSuffix: "seguro", size: 2 },
+        { key: "parlay2" as const, title: "💎 Doble de Valor (2 Selecciones)", idSuffix: "valor", size: 2 },
+        { key: "parlay3" as const, title: "🔥 Doble Pro (2 Selecciones)", idSuffix: "pro", size: 2 },
+      ];
 
-    for (const config of parlayConfigs) {
-      const parlayLegs = dailyParlays[config.key];
-      if (!parlayLegs || parlayLegs.length < 2) continue;
+      for (const config of parlayConfigs) {
+        const parlayLegs = dailyParlays[config.key];
+        if (!parlayLegs || parlayLegs.length < 2) continue;
 
-      const evaluatedLegs = parlayLegs.map((leg) => {
-        const hNorm = normalizeTeamName(leg.homeTeam || "").toLowerCase();
-        const aNorm = normalizeTeamName(leg.awayTeam || "").toLowerCase();
+        const evaluatedLegs = parlayLegs.map((leg) => {
+          const hNorm = normalizeTeamName(leg.homeTeam || "").toLowerCase();
+          const aNorm = normalizeTeamName(leg.awayTeam || "").toLowerCase();
+          
+          // Find matching settled pick
+          const matchPick =
+            settledLookup.get(`${hNorm}-${aNorm}-${dateStr}-${leg.market}`) ||
+            settledLookup.get(`${leg.homeTeam?.toLowerCase()}-${leg.awayTeam?.toLowerCase()}-${dateStr}-${leg.market}`) ||
+            settledLookup.get(`${leg.match?.toLowerCase()}-${dateStr}-${leg.market}`) ||
+            settledLookup.get(`${leg.match?.toLowerCase()}-${dateStr}`) ||
+            settledLookup.get(`${hNorm}-${aNorm}-${dateStr}`) ||
+            dateGroups[dateStr]?.find((p) => p.homeTeam === leg.homeTeam && p.awayTeam === leg.awayTeam);
+
+          const score = matchPick?.score || leg.actualScore || leg.currentScore || "-";
+          const isPending = !matchPick && (leg.status === "pending" || !leg.status || leg.matchTiming === "prematch" || leg.matchTiming === "live") && (!leg.result || leg.result === "PENDING");
+          const result: "WON" | "LOST" | "VOID" = matchPick
+            ? (matchPick.result as "WON" | "LOST")
+            : leg.status === "won" || leg.result === "WON"
+            ? "WON"
+            : leg.status === "lost" || leg.result === "LOST"
+            ? "LOST"
+            : isPending
+            ? ("PENDING" as any)
+            : "LOST";
+
+          return {
+            match: leg.match,
+            league: leg.league,
+            country: leg.country || (sport === "football" ? "Europa" : sport.toUpperCase()),
+            kickoff: leg.kickoff,
+            market: leg.market,
+            odds: leg.odds,
+            probability: leg.probability,
+            score: score,
+            result: result,
+          };
+        });
+
+        const totalOdds = Math.round(evaluatedLegs.reduce((acc, p) => acc * p.odds, 1) * 100) / 100;
+        const combinedProb = Math.round(evaluatedLegs.reduce((acc, p) => acc * (p.probability / 100), 1) * 1000) / 10;
+        const hasPending = evaluatedLegs.some((p) => (p.result as any) === "PENDING");
+        const anyLost = evaluatedLegs.some((p) => p.result === "LOST");
+        const allWon = evaluatedLegs.every((p) => p.result === "WON");
         
-        // Find matching settled pick
-        const matchPick =
-          settledLookup.get(`${hNorm}-${aNorm}-${dateStr}-${leg.market}`) ||
-          settledLookup.get(`${leg.homeTeam?.toLowerCase()}-${leg.awayTeam?.toLowerCase()}-${dateStr}-${leg.market}`) ||
-          settledLookup.get(`${leg.match?.toLowerCase()}-${dateStr}-${leg.market}`) ||
-          settledLookup.get(`${leg.match?.toLowerCase()}-${dateStr}`) ||
-          settledLookup.get(`${hNorm}-${aNorm}-${dateStr}`) ||
-          dateGroups[dateStr]?.find((p) => p.homeTeam === leg.homeTeam && p.awayTeam === leg.awayTeam);
+        let parlayResult: "WON" | "LOST" | "VOID" = allWon ? "WON" : anyLost ? "LOST" : hasPending ? ("PENDING" as any) : "LOST";
+        let profit = allWon ? Math.round((totalOdds - 1) * 100) / 100 : anyLost ? -1 : 0;
 
-        const score = matchPick?.score || leg.actualScore || leg.currentScore || "-";
-        const result: "WON" | "LOST" | "VOID" = matchPick
-          ? (matchPick.result as "WON" | "LOST")
-          : leg.status === "won" || leg.result === "WON"
-          ? "WON"
-          : leg.status === "lost" || leg.result === "LOST"
-          ? "LOST"
-          : "LOST";
-
-        return {
-          match: leg.match,
-          league: leg.league,
-          country: leg.country,
-          kickoff: leg.kickoff,
-          market: leg.market,
-          odds: leg.odds,
-          probability: leg.probability,
-          score: score,
-          result: result,
-        };
-      });
-
-      const totalOdds = Math.round(evaluatedLegs.reduce((acc, p) => acc * p.odds, 1) * 100) / 100;
-      const combinedProb = Math.round(evaluatedLegs.reduce((acc, p) => acc * (p.probability / 100), 1) * 1000) / 10;
-      const allWon = evaluatedLegs.every((p) => p.result === "WON");
-      const profit = allWon ? Math.round((totalOdds - 1) * 100) / 100 : -1;
-
-      result.push({
-        id: `parlay-${dateStr}-${config.idSuffix}`,
-        date: dateStr,
-        parlaySize: config.size,
-        title: config.title,
-        totalOdds,
-        combinedProbability: combinedProb,
-        result: allWon ? "WON" : "LOST",
-        profit,
-        legs: evaluatedLegs,
-      });
+        result.push({
+          id: sport === "football" ? `parlay-${dateStr}-${config.idSuffix}` : `parlay-${sport}-${dateStr}-${config.idSuffix}`,
+          date: dateStr,
+          parlaySize: config.size,
+          title: sport === "football" ? config.title : `${config.title} [${sport.toUpperCase()}]`,
+          totalOdds,
+          combinedProbability: combinedProb,
+          result: parlayResult,
+          profit,
+          legs: evaluatedLegs,
+        });
+      }
     }
   }
 

@@ -119,7 +119,8 @@ export function buildTripleExclusiveParlays(
   predictions: MarketOpportunity[],
   dateStr?: string
 ): TripleExclusiveParlays {
-  const targetDate = dateStr || getEcuadorDateString(Date.now());
+  const rawDate = dateStr || getEcuadorDateString(Date.now());
+  const targetDate = rawDate.includes('_') ? rawDate.split('_')[1] : rawDate;
   
   // Strict filter: >= 68% prob, Tier 1/2 leagues, 1.25 - 1.95 odds
   let strictPool = [...predictions].filter((p) => {
