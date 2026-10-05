@@ -45,7 +45,8 @@ export async function GET(request: NextRequest) {
         filteredHistory = filteredHistory.filter((h) => {
           const c = (h.country || "").toUpperCase();
           const l = (h.league || "").toUpperCase();
-          return c === "NHL" || l.includes("NHL");
+          const s = ((h as any).sport || "").toLowerCase();
+          return c === "NHL" || l.includes("NHL") || s === "nhl";
         });
         filteredParlays = filteredParlays.filter((p) =>
           p.legs.some((l) => (l.country || "").toUpperCase() === "NHL" || l.league.toUpperCase().includes("NHL"))
@@ -54,7 +55,8 @@ export async function GET(request: NextRequest) {
         filteredHistory = filteredHistory.filter((h) => {
           const c = (h.country || "").toUpperCase();
           const l = (h.league || "").toUpperCase();
-          return c === "NBA" || l.includes("NBA");
+          const s = ((h as any).sport || "").toLowerCase();
+          return c === "NBA" || l.includes("NBA") || s === "nba";
         });
         filteredParlays = filteredParlays.filter((p) =>
           p.legs.some((l) => (l.country || "").toUpperCase() === "NBA" || l.league.toUpperCase().includes("NBA"))
@@ -63,7 +65,8 @@ export async function GET(request: NextRequest) {
         filteredHistory = filteredHistory.filter((h) => {
           const c = (h.country || "").toUpperCase();
           const l = (h.league || "").toUpperCase();
-          return c === "NFL" || c === "NCAAF" || l.includes("NFL") || l.includes("NCAA");
+          const s = ((h as any).sport || "").toLowerCase();
+          return c === "NFL" || c === "NCAAF" || l.includes("NFL") || l.includes("NCAA") || s === "nfl" || s === "ncaaf";
         });
         filteredParlays = filteredParlays.filter((p) =>
           p.legs.some((l) => (l.country || "").toUpperCase() === "NFL" || l.league.toUpperCase().includes("NFL"))

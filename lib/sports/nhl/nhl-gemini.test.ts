@@ -25,6 +25,7 @@ describe('NHL Gemini AI Integration Suite', () => {
       smartScore: 82,
       explanation: 'El modelo proyecta xG de 3.65 vs 2.95 con ventaja ofensiva en Power Play.',
       sport: 'nhl',
+      status: 'pending',
     },
     {
       id: 'nhl_gemini_test_02',
@@ -46,6 +47,7 @@ describe('NHL Gemini AI Integration Suite', () => {
       smartScore: 84,
       explanation: 'Superioridad en posesión 5v5 (Corsi 54%) y portero titular confirmado.',
       sport: 'nhl',
+      status: 'pending',
     },
     {
       id: 'nhl_gemini_test_03',
@@ -67,6 +69,7 @@ describe('NHL Gemini AI Integration Suite', () => {
       smartScore: 65,
       explanation: 'Puck line de alta cuota con ventaja proyectada.',
       sport: 'nhl',
+      status: 'pending',
     },
   ];
 

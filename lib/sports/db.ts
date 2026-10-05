@@ -1,3 +1,10 @@
+import { SupportedSport, MultiSportSignal, SettlementStatus, NormalizedGame } from "./types";
+import { SportProviderRouter } from "./provider-router";
+import { NHLSettlementEngine } from "./nhl/nhl-settlement";
+import { NBASettlementEngine } from "./nba/nba-settlement";
+import { NFLSettlementEngine } from "./nfl/nfl-settlement";
+import { NCAAFSettlementEngine } from "./ncaaf/ncaaf-settlement";
+import { getSportLocalDateString } from "./registry";
 import { isExcludedMatch } from "./prediction-engine";
 import { getImmutableDailyParlays } from "./parlay-generator";
 import { auditPredictionsWithGeminiVeto } from "@/lib/ai/claude-analyst";
@@ -404,22 +411,190 @@ export function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[], s
 /**
  * Settles all snapshots across all historical dates that have un-settled pending matches whose kickoff is in the past.
  */
+
+export async function settleMultiSportSnapshot(dateStr: string, sport: SupportedSport): Promise<MarketOpportunity[]> {
+  if (sport === "football") {
+    return settleActiveSnapshotWithRealScores(dateStr);
+  }
+
+  const sportKey = (sport || "").toLowerCase() as SupportedSport;
+  let snapshot = (await loadDailySnapshotAsync(dateStr, sportKey)) || loadDailySnapshot(dateStr, sportKey);
+  if (!snapshot || !Array.isArray(snapshot) || snapshot.length === 0) {
+    return [];
+  }
+
+  const provider = SportProviderRouter.getProvider(sportKey);
+  if (!provider) return snapshot;
+
+  let games: NormalizedGame[] = [];
+  try {
+    const datesToQuery = new Set<string>([dateStr]);
+    const dObj = new Date(`${dateStr}T12:00:00Z`);
+    if (!isNaN(dObj.getTime())) {
+      const nextDay = new Date(dObj.getTime() + 86400000).toISOString().split("T")[0];
+      const prevDay = new Date(dObj.getTime() - 86400000).toISOString().split("T")[0];
+      datesToQuery.add(nextDay);
+      datesToQuery.add(prevDay);
+    }
+    const sportLocalDate = getSportLocalDateString(sportKey, dateStr);
+    if (sportLocalDate) datesToQuery.add(sportLocalDate);
+
+    for (const qDate of datesToQuery) {
+      try {
+        const dateGames = await provider.getSchedule(qDate);
+        if (dateGames && dateGames.length > 0) {
+          const existingIds = new Set(games.map((g) => g.id));
+          for (const dg of dateGames) {
+            if (!existingIds.has(dg.id)) {
+              games.push(dg);
+            }
+          }
+        }
+      } catch {}
+    }
+  } catch (err) {
+    console.warn(`[MultiSport-Settle] Error fetching schedule for ${sportKey} on ${dateStr}:`, err);
+    return snapshot;
+  }
+
+  if (!games || games.length === 0) {
+    return snapshot;
+  }
+
+  const gameMap = new Map<string, NormalizedGame>();
+  for (const g of games) {
+    gameMap.set(g.id, g);
+    if (g.providerGameId) {
+      gameMap.set(String(g.providerGameId), g);
+      gameMap.set(`${sportKey}_${g.providerGameId}`, g);
+    }
+    const hNorm = getCanonicalTeamKey(g.homeTeam.name);
+    const aNorm = getCanonicalTeamKey(g.awayTeam.name);
+    if (hNorm && aNorm) {
+      gameMap.set(`${hNorm}-${aNorm}`, g);
+    }
+  }
+
+  let hasUpdates = false;
+  const updatedSnapshot = snapshot.map((p) => {
+    const isAlreadySettled = (p.status === "won" || p.status === "lost") && Boolean(p.actualScore);
+    if (isAlreadySettled) {
+      return p;
+    }
+
+    const fixId = String(p.fixtureId || (p as any).gameId || "");
+    const cleanFixId = fixId.replace(`${sportKey}_`, "");
+    const hNorm = getCanonicalTeamKey(p.homeTeam || "");
+    const aNorm = getCanonicalTeamKey(p.awayTeam || "");
+
+    const game =
+      gameMap.get(fixId) ||
+      gameMap.get(cleanFixId) ||
+      gameMap.get(`${sportKey}_${cleanFixId}`) ||
+      gameMap.get(`${hNorm}-${aNorm}`);
+
+    if (!game) return p;
+
+    if (game.status === "FINISHED" && typeof game.homeScore === "number" && typeof game.awayScore === "number") {
+      hasUpdates = true;
+      const gameResult = {
+        gameId: game.id,
+        status: "FINISHED" as const,
+        homeScore: game.homeScore,
+        awayScore: game.awayScore,
+        overtime: (game as any).isOvertime,
+        shootout: (game as any).isShootout,
+      };
+
+      const signalAdapter: MultiSportSignal = {
+        id: p.id || String(game.id),
+        sport: sportKey,
+        gameId: game.id,
+        game,
+        market: p.market as any,
+        selection: p.selection,
+        line: (p as any).line,
+        decimalOdds: p.odds,
+        modelProbability: p.probability ? p.probability / 100 : 0.5,
+        smartEdge: p.edge ? p.edge / 100 : 0,
+        expectedValue: p.expectedValue || 0,
+        smartScore: p.confidenceScore || 50,
+        classification: "OFFICIAL" as any,
+        dataQuality: 100,
+        isSmartPick: false,
+        explanation: p.explanation || "",
+        createdAt: new Date().toISOString(),
+      };
+
+      let settlement: { status: SettlementStatus; homeScore: number; awayScore: number; detail: string } = {
+        status: "PENDING",
+        homeScore: game.homeScore,
+        awayScore: game.awayScore,
+        detail: "",
+      };
+
+      if (sportKey === "nhl") {
+        settlement = NHLSettlementEngine.settleSignal(signalAdapter, gameResult);
+      } else if (sportKey === "nba") {
+        settlement = NBASettlementEngine.settleSignal(signalAdapter, gameResult);
+      } else if (sportKey === "nfl") {
+        settlement = NFLSettlementEngine.settleSignal(signalAdapter, gameResult);
+      } else if (sportKey === "ncaaf") {
+        settlement = NCAAFSettlementEngine.settleSignal(signalAdapter, gameResult);
+      }
+
+      const isWon = settlement.status === "WON";
+      const isLost = settlement.status === "LOST";
+
+      return {
+        ...p,
+        status: isWon ? ("won" as const) : isLost ? ("lost" as const) : ("pending" as const),
+        result: isWon ? ("WON" as const) : isLost ? ("LOST" as const) : (settlement.status as any),
+        actualScore: `${game.homeScore} - ${game.awayScore}`,
+        profit: isWon ? Number(((p.odds || 1.85) - 1).toFixed(2)) : -1,
+        matchTiming: "finished" as const,
+        currentScore: undefined,
+      };
+    } else if (game.status === "IN_PLAY" && typeof game.homeScore === "number" && typeof game.awayScore === "number") {
+      hasUpdates = true;
+      return {
+        ...p,
+        status: "pending" as const,
+        currentScore: `${game.homeScore} - ${game.awayScore}`,
+        matchTiming: "live" as const,
+      };
+    }
+
+    return p;
+  });
+
+  if (hasUpdates) {
+    saveDailySnapshot(dateStr, updatedSnapshot, sportKey);
+    cachedSettledHistory = [];
+    historyCacheTimestamp = 0;
+  }
+
+  return updatedSnapshot;
+}
+
 export async function settleAllSnapshotsWithRealScores(): Promise<{ settledDates: string[]; totalSettled: number }> {
   const nowMs = Date.now();
   const todayDateStr = getEcuadorDateString(nowMs);
+  const sports: SupportedSport[] = ["football", "nhl", "nba", "nfl", "ncaaf"];
 
-  // Auto-settle NHL multi-sport snapshot
+  // Auto-settle NHL multi-sport snapshot for today
   try {
     const { NHLSyncEngine } = await import("./nhl/nhl-sync");
-    await NHLSyncEngine.getTodayNHLSignals(todayDateStr, false);
+    await NHLSyncEngine.getTodayNHLSignals(undefined, false);
   } catch {}
+
   const snapshots = await getAllDailySnapshotsAsync();
   const todaySnap = loadDailySnapshot(todayDateStr) || getStoredPredictions();
   if (todaySnap && todaySnap.length > 0 && !snapshots[todayDateStr]) {
     snapshots[todayDateStr] = todaySnap;
   }
   const allDates = Array.from(new Set([...Object.keys(snapshots), todayDateStr])).sort();
-  
+
   let totalSettled = 0;
   const settledDates: string[] = [];
 
@@ -428,15 +603,24 @@ export async function settleAllSnapshotsWithRealScores(): Promise<{ settledDates
     const snap = snapshots[dateStr] || loadDailySnapshot(dateStr) || [];
     const hasPendingPastKickoff = snap.some((p) => {
       const pKick = p.kickoff ? new Date(p.kickoff).getTime() : 0;
-      return p.status === "pending" && pKick <= nowMs;
+      return (p.status === "pending" || !p.status || (p as any).status === "in_play") && pKick <= nowMs;
     });
 
     if (hasPendingPastKickoff || dateStr === todayDateStr) {
       try {
-        const settled = await settleActiveSnapshotWithRealScores(dateStr);
-        if (settled && settled.length > 0) {
-          settledDates.push(dateStr);
-          totalSettled += settled.filter((p) => p.status === "won" || p.status === "lost").length;
+        for (const sport of sports) {
+          const settled =
+            sport === "football"
+              ? await settleActiveSnapshotWithRealScores(dateStr)
+              : await settleMultiSportSnapshot(dateStr, sport);
+
+          if (settled && settled.length > 0) {
+            const newlySettled = settled.filter((p) => p.status === "won" || p.status === "lost").length;
+            if (newlySettled > 0) {
+              if (!settledDates.includes(dateStr)) settledDates.push(dateStr);
+              totalSettled += newlySettled;
+            }
+          }
         }
       } catch (err) {
         console.warn(`[Auto-Settle] Error settling snapshot ${dateStr}:`, err);
@@ -824,6 +1008,7 @@ export interface HistoricalSettledParlay {
 }
 
 export interface HistoricalSettledPick {
+  sport?: string;
   id: string;
   date: string;
   kickoff: string;
