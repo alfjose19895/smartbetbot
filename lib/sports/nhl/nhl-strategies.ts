@@ -251,51 +251,52 @@ export class NHLStrategyEngine {
   public static selectBestSignalForGame(candidates: MultiSportPrediction[]): MultiSportSignal | null {
     if (!candidates || candidates.length === 0) return null;
 
-    // Filter by allowed 3 markets only, eliminating any Under and enforcing strict odds limits (<= 2.15)
+    // Filter by allowed 3 markets only, eliminating any Under, Double Chance, and enforcing strict odds bounds (1.30 - 2.15)
     const valid = candidates.filter(
       c =>
         ['PUCK LINE', 'MONEYLINE', 'TOTAL GOALS'].includes(c.market) &&
         !c.selection.toUpperCase().includes('UNDER') &&
+        !c.selection.toUpperCase().includes('DOBLE') &&
         c.decimalOdds <= 2.15 &&
         c.decimalOdds >= 1.30
     );
     if (valid.length === 0) return null;
 
-    // Helper to compute overall quality score
-    const getScore = (c: MultiSportPrediction) => (c.modelProbability * 100) + (c.smartEdge * 50) + c.smartScore;
+    // Helper to compute overall quality score prioritizing high model win probability
+    const getScore = (c: MultiSportPrediction) => (c.modelProbability * 150) + (c.smartEdge * 25) + (c.smartScore * 0.5);
 
-    // 1. STEP 1: Search High-Confidence PUCK LINE (+1.5 underdog or -1.5 favorite)
+    // 1. STEP 1: Search High-Confidence PUCK LINE (+1.5 underdog coverage or -1.5 dominant favorite)
     const pucklines = valid.filter(c => c.market === 'PUCK LINE');
     const qualifiedPL = pucklines
-      .filter(c => c.modelProbability >= 0.60 && c.decimalOdds >= 1.35 && c.decimalOdds <= 2.15 && c.smartEdge >= 0.01)
+      .filter(c => c.modelProbability >= 0.58 && c.decimalOdds >= 1.35 && c.decimalOdds <= 2.15)
       .sort((a, b) => getScore(b) - getScore(a));
 
     if (qualifiedPL.length > 0) {
       return this.toSignal(qualifiedPL[0]);
     }
 
-    // 2. STEP 2: Search Strong MONEYLINE (incl. OT)
+    // 2. STEP 2: Search Strong MONEYLINE (incl. OT/SO)
     const moneylines = valid.filter(c => c.market === 'MONEYLINE');
     const qualifiedML = moneylines
-      .filter(c => c.modelProbability >= 0.56 && c.decimalOdds >= 1.40 && c.decimalOdds <= 2.15 && c.expectedValue >= 0)
+      .filter(c => c.modelProbability >= 0.56 && c.decimalOdds >= 1.35 && c.decimalOdds <= 2.15)
       .sort((a, b) => getScore(b) - getScore(a));
 
     if (qualifiedML.length > 0) {
       return this.toSignal(qualifiedML[0]);
     }
 
-    // 3. STEP 3: Search High-Conviction OVER TOTAL GOALS
+    // 3. STEP 3: Search High-Conviction OVER TOTAL GOALS (5.5, 6.0)
     const totals = valid.filter(c => c.market === 'TOTAL GOALS');
     const qualifiedTotals = totals
-      .filter(c => c.modelProbability >= 0.58 && c.decimalOdds >= 1.45 && c.decimalOdds <= 2.15 && c.expectedValue >= 0)
+      .filter(c => c.modelProbability >= 0.56 && c.decimalOdds >= 1.40 && c.decimalOdds <= 2.15)
       .sort((a, b) => getScore(b) - getScore(a));
 
     if (qualifiedTotals.length > 0) {
       return this.toSignal(qualifiedTotals[0]);
     }
 
-    // Fallback: Pick candidate with highest composite score
-    const sorted = [...valid].sort((a, b) => getScore(b) - getScore(a));
+    // Fallback: Pick candidate with highest model probability (win-rate priority)
+    const sorted = [...valid].sort((a, b) => b.modelProbability - a.modelProbability);
     return this.toSignal(sorted[0]);
   }
 
