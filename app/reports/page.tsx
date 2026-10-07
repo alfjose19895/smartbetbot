@@ -5,6 +5,7 @@ import { Navbar } from "@/components/Navbar";
 import { SportSelector } from "@/components/SportSelector";
 import { useLanguage } from "@/context/LanguageContext";
 import { HistoricalSettledPick } from "@/lib/sports/db";
+import { matchesMarketFilter } from "@/lib/sports/registry";
 
 type TimeRangeFilter = "7d" | "30d" | "90d" | "all";
 type ModalityFilter = "all" | "prematch" | "live" | "mcp" | "bomba";
@@ -77,12 +78,7 @@ export default function ReportsPage() {
 
       // Market Filter
       if (marketFilter !== "all") {
-        const normSelected = marketFilter.toLowerCase().replace(/[^a-z0-9]/g, "");
-        const normActual = (item.market || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-        const isCornerMatch =
-          (normSelected.includes("corner") || normSelected.includes("crner")) &&
-          (normActual.includes("corner") || normActual.includes("crner"));
-        if (!isCornerMatch && !normActual.includes(normSelected) && !normSelected.includes(normActual)) {
+        if (!matchesMarketFilter(marketFilter, item.market, item.selection)) {
           return false;
         }
       }
@@ -166,12 +162,12 @@ export default function ReportsPage() {
 
     filteredItems.forEach((i) => {
       let canonicalMarket = i.market;
-      if (canonicalMarket.toLowerCase().includes("over 2.5")) canonicalMarket = "Over 2.5 Goles";
+      if (canonicalMarket.toLowerCase().includes("córner") || canonicalMarket.toLowerCase().includes("corner")) canonicalMarket = "Córners";
+      else if (canonicalMarket.toLowerCase().includes("over 2.5")) canonicalMarket = "Over 2.5 Goles";
+      else if (canonicalMarket.toLowerCase().includes("over 1.5")) canonicalMarket = "Over 1.5 Goles";
       else if (canonicalMarket.toLowerCase().includes("ganador local") || canonicalMarket.toLowerCase().includes("gana local")) canonicalMarket = "Ganador Local";
       else if (canonicalMarket.toLowerCase().includes("ganador visitante") || canonicalMarket.toLowerCase().includes("gana visitante")) canonicalMarket = "Ganador Visitante";
       else if (canonicalMarket.toLowerCase().includes("ambos")) canonicalMarket = "Ambos Equipos Anotan";
-      else if (canonicalMarket.toLowerCase().includes("over 1.5")) canonicalMarket = "Over 1.5 Goles";
-      else if (canonicalMarket.toLowerCase().includes("córner") || canonicalMarket.toLowerCase().includes("corner")) canonicalMarket = "Córners";
 
       if (!map[canonicalMarket]) {
         map[canonicalMarket] = { total: 0, won: 0, lost: 0, oddsSum: 0, profit: 0 };

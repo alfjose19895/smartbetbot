@@ -134,3 +134,182 @@ export function getAllSports(): SportMetadata[] {
 export function isValidSport(sport: string): sport is SupportedSport {
   return ['football', 'nba', 'nfl', 'ncaaf', 'nhl'].includes(sport);
 }
+
+
+/**
+ * Normalizes market or selection strings by stripping accents/diacritics and non-alphanumeric characters.
+ */
+export function normalizeMarketFilterString(str?: string | null): string {
+  if (!str) return '';
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
+}
+
+/**
+ * Robustly matches a selected market filter against a prediction market and selection.
+ * Specifically ensures 'Over Córners' / 'Corners' never filters for Goal markets (Over 2.5),
+ * and guarantees accurate filtering across both pre-match and historical views.
+ */
+export function matchesMarketFilter(
+  selectedFilter: string,
+  itemMarket?: string | null,
+  itemSelection?: string | null
+): boolean {
+  if (!selectedFilter || selectedFilter === 'ALL' || selectedFilter === 'all') return true;
+
+  const normSelected = normalizeMarketFilterString(selectedFilter);
+  const normActual = normalizeMarketFilterString(itemMarket);
+  const normSel = normalizeMarketFilterString(itemSelection);
+
+  // 1. CORNERS MARKET (Over Córners, Córners, Corners, Corner Lines)
+  const isSelectedCorner =
+    normSelected.includes('corner') ||
+    normSelected.includes('crner');
+
+  if (isSelectedCorner) {
+    const isUnderFilter = normSelected.includes('under') || normSelected.includes('menos');
+    const isActualCorner =
+      normActual.includes('corner') ||
+      normActual.includes('crner') ||
+      normSel.includes('corner') ||
+      normSel.includes('crner');
+
+    if (!isActualCorner) return false;
+
+    if (isUnderFilter) {
+      return (
+        normActual.includes('under') ||
+        normSel.includes('under') ||
+        normActual.includes('menos') ||
+        normSel.includes('menos')
+      );
+    }
+    // Over Corners: Ensure it does not match Under corner picks
+    return (
+      !normActual.includes('under') &&
+      !normSel.includes('under') &&
+      !normActual.includes('menos') &&
+      !normSel.includes('menos')
+    );
+  }
+
+  // 2. BOTH TEAMS TO SCORE (Ambos Equipos Anotan / BTTS)
+  const isSelectedBtts =
+    normSelected.includes('ambos') ||
+    normSelected.includes('btts') ||
+    normSelected.includes('anotan');
+
+  if (isSelectedBtts) {
+    return (
+      normActual.includes('ambos') ||
+      normActual.includes('btts') ||
+      normActual.includes('anotan') ||
+      normSel.includes('ambos') ||
+      normSel.includes('btts')
+    );
+  }
+
+  // 3. OVER GOALS (Over 2.5 Goles, Over 1.5 Goles, Over Goles, Total Goles, Over)
+  // Must strictly reject corner picks, American sport points/spreads, etc.
+  const isSelectedOverGoals =
+    normSelected.includes('overgol') ||
+    normSelected.includes('over25') ||
+    normSelected.includes('over15') ||
+    normSelected.includes('totalgol') ||
+    normSelected.includes('altagol') ||
+    normSelected.includes('masdegol') ||
+    (normSelected.includes('over') &&
+      !normSelected.includes('corner') &&
+      !normSelected.includes('crner') &&
+      !normSelected.includes('point') &&
+      !normSelected.includes('total') &&
+      !normSelected.includes('kuck') &&
+      !normSelected.includes('spread'));
+
+  if (isSelectedOverGoals) {
+    // Strictly NOT a corner pick
+    if (
+      normActual.includes('corner') ||
+      normActual.includes('crner') ||
+      normSel.includes('corner') ||
+      normSel.includes('crner')
+    ) {
+      return false;
+    }
+
+    const isGoalKeyword =
+      normActual.includes('gol') ||
+      normActual.includes('25') ||
+      normActual.includes('15') ||
+      normActual.includes('over') ||
+      normSel.includes('gol') ||
+      normSel.includes('25') ||
+      normSel.includes('15') ||
+      normSel.includes('over');
+
+    const isUnder =
+      normActual.includes('under') ||
+      normSel.includes('under') ||
+      normActual.includes('menos') ||
+      normSel.includes('menos');
+
+    return Boolean(isGoalKeyword && !isUnder);
+  }
+
+  // 4. GANADOR LOCAL / MONEYLINE HOME (1)
+  const isSelectedLocal =
+    normSelected.includes('local') ||
+    normSelected === '1' ||
+    normSelected.includes('home') ||
+    normSelected.includes('ganalocal');
+
+  if (isSelectedLocal) {
+    if (normActual.includes('visitante') || normActual.includes('away')) return false;
+    return (
+      normActual.includes('local') ||
+      normActual.includes('home') ||
+      normSel === '1' ||
+      normSel === 'local' ||
+      normSel.includes('home')
+    );
+  }
+
+  // 5. GANADOR VISITANTE / MONEYLINE AWAY (2)
+  const isSelectedAway =
+    normSelected.includes('visitante') ||
+    normSelected === '2' ||
+    normSelected.includes('away') ||
+    normSelected.includes('ganavisitante');
+
+  if (isSelectedAway) {
+    if (normActual.includes('local') || normActual.includes('home')) return false;
+    return (
+      normActual.includes('visitante') ||
+      normActual.includes('away') ||
+      normSel === '2' ||
+      normSel === 'visitante' ||
+      normSel.includes('away')
+    );
+  }
+
+  // 6. AMERICAN SPORTS MARKETS
+  if (normSelected.includes('puckline')) return normActual.includes('puckline');
+  if (normSelected.includes('spread')) return normActual.includes('spread');
+  if (normSelected.includes('moneyline')) return normActual.includes('moneyline');
+  if (normSelected.includes('totalpoint')) {
+    return normActual.includes('totalpoint') || (normActual.includes('total') && normActual.includes('point'));
+  }
+  if (normSelected.includes('teamtotal')) return normActual.includes('teamtotal');
+  if (normSelected.includes('totalgoal')) {
+    return (
+      (normActual.includes('total') && normActual.includes('goal')) ||
+      (normActual.includes('total') && normActual.includes('gol'))
+    );
+  }
+
+  // 7. DIRECT OR SUBSTRING MATCH FALLBACK
+  return normActual.includes(normSelected) || normSelected.includes(normActual);
+}

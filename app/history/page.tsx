@@ -7,6 +7,7 @@ import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
 import { useLanguage } from "@/context/LanguageContext";
 import { MultiSelectDropdown, DropdownOption } from "@/components/MultiSelectDropdown";
 import { HistoricalSettledPick, HistoricalSettledParlay } from "@/lib/sports/db";
+import { matchesMarketFilter } from "@/lib/sports/registry";
 
 function getConfidenceBadge(confidence?: string, prob?: number) {
   if (confidence === "Muy Alta" || (prob && prob >= 75)) {
@@ -101,10 +102,13 @@ export default function HistoryPage() {
     "Ganador Visitante",
   ];
 
-  const marketDropdownOptions: DropdownOption[] = availableMarkets.map((m) => ({
-    value: m,
-    label: m,
-  }));
+  const marketDropdownOptions: DropdownOption[] = availableMarkets.map((m) => {
+    const count = historyItems.filter((h) => matchesMarketFilter(m, h.market, h.selection)).length;
+    return {
+      value: m,
+      label: `${m} (${count})`,
+    };
+  });
 
   const getLocalDateStr = (d: Date | string) => {
     const dateObj = typeof d === "string" ? new Date(d) : d;
@@ -174,34 +178,7 @@ export default function HistoryPage() {
 
     // 5. Market Multi-Select (7 Core Markets in Strict Order)
     if (selectedMarkets.length > 0) {
-      const match = selectedMarkets.some((m) => {
-        const normSelected = m.toLowerCase().replace(/[^a-z0-9]/g, "");
-        const normActual = (item.market || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-        const normSel = (item.selection || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-
-        // 1. Over Córners
-        if (normSelected.includes("overcorner") || (normSelected.includes("corner") && !normSelected.includes("under"))) {
-          return (normActual.includes("corner") || normActual.includes("crner")) && !normActual.includes("under") && !normSel.includes("under");
-        }
-        // 2. Ambos Equipos Anotan (BTTS)
-        if (normSelected.includes("ambos") || normSelected.includes("btts")) {
-          return normActual.includes("ambos") || normActual.includes("btts");
-        }
-        // 3. Over Goles (Over 2.5)
-        if (normSelected.includes("overgol") || normSelected.includes("over25") || (normSelected.includes("over") && !normSelected.includes("corner"))) {
-          return (normActual.includes("gol") || normActual.includes("25") || normActual.includes("over")) && !normActual.includes("under") && !normActual.includes("corner") && !normActual.includes("crner");
-        }
-        // 4. Ganador Local
-        if (normSelected.includes("local") || normSelected === "1") {
-          return normActual.includes("local") || normSel === "1" || normSel === "local";
-        }
-        // 5. Ganador Visitante
-        if (normSelected.includes("visitante") || normSelected === "2") {
-          return normActual.includes("visitante") || normSel === "2" || normSel === "visitante";
-        }
-
-        return normActual.includes(normSelected) || normSelected.includes(normActual);
-      });
+      const match = selectedMarkets.some((m) => matchesMarketFilter(m, item.market, item.selection));
       if (!match) return false;
     }
 

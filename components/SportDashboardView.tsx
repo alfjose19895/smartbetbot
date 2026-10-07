@@ -10,7 +10,7 @@ import { PredictionCard } from '@/components/PredictionCard';
 import { MatchDetailModal } from '@/components/MatchDetailModal';
 import { MultiSelectDropdown, DropdownOption } from '@/components/MultiSelectDropdown';
 import { SupportedSport, MultiSportSignal } from '@/lib/sports/types';
-import { getSportMeta } from '@/lib/sports/registry';
+import { getSportMeta, matchesMarketFilter } from '@/lib/sports/registry';
 import { MarketOpportunity } from '@/lib/sports/prediction-engine';
 import { HistoricalSettledPick, HistoricalSettledParlay } from '@/lib/sports/db';
 import { useLanguage } from '@/context/LanguageContext';
@@ -321,10 +321,13 @@ export function SportDashboardView({
     const core = meta.defaultMarkets || [];
     const fromSignals = opportunities.map((s) => s.market).filter(Boolean);
     const combined = Array.from(new Set([...core, ...fromSignals]));
-    return combined.map((m) => ({
-      value: m,
-      label: m,
-    }));
+    return combined.map((m) => {
+      const count = opportunities.filter((s) => matchesMarketFilter(m, s.market, s.selection)).length;
+      return {
+        value: m,
+        label: `${m} (${count})`,
+      };
+    });
   }, [meta.defaultMarkets, opportunities]);
 
   const confidenceDropdownOptions: DropdownOption[] = [
@@ -411,34 +414,7 @@ export function SportDashboardView({
 
       // Market Multi-Select (Handles 7 Football Markets + American Sport Markets)
       if (selectedMarkets.length > 0) {
-        const match = selectedMarkets.some((m) => {
-          const normSelected = m.toLowerCase().replace(/[^a-z0-9]/g, '');
-          const normActual = (s.market || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-          const normSel = (s.selection || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-
-          // Over Corners
-          if (normSelected.includes('overcorner') || (normSelected.includes('corner') && !normSelected.includes('under'))) {
-            return (normActual.includes('corner') || normActual.includes('crner')) && !normActual.includes('under') && !normSel.includes('under');
-          }
-          // BTTS
-          if (normSelected.includes('ambos') || normSelected.includes('btts')) {
-            return normActual.includes('ambos') || normActual.includes('btts');
-          }
-          // Over Goals / Alta Goles
-          if (normSelected.includes('overgol') || normSelected.includes('over25') || (normSelected.includes('over') && !normSelected.includes('corner') && !normSelected.includes('point') && !normSelected.includes('total'))) {
-            return (normActual.includes('gol') || normActual.includes('25') || normActual.includes('over')) && !normActual.includes('under') && !normActual.includes('corner');
-          }
-          // Ganador Local / Moneyline Home
-          if (normSelected.includes('local') || normSelected === '1' || normSelected.includes('home')) {
-            return normActual.includes('local') || normActual.includes('home') || normSel === '1' || normSel.includes('home');
-          }
-          // Ganador Visitante / Moneyline Away
-          if (normSelected.includes('visitante') || normSelected === '2' || normSelected.includes('away')) {
-            return normActual.includes('visitante') || normActual.includes('away') || normSel === '2' || normSel.includes('away');
-          }
-
-          return normActual.includes(normSelected) || normSelected.includes(normActual);
-        });
+        const match = selectedMarkets.some((m) => matchesMarketFilter(m, s.market, s.selection));
         if (!match) return false;
       }
 

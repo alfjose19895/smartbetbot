@@ -7,6 +7,7 @@ import { MatchDetailModal } from "@/components/MatchDetailModal";
 import { NewAlertsModal } from "@/components/NewAlertsModal";
 import { MultiSelectDropdown, DropdownOption } from "@/components/MultiSelectDropdown";
 import { MarketOpportunity, getTimeSlot } from "@/lib/sports/prediction-engine";
+import { matchesMarketFilter } from "@/lib/sports/registry";
 import { useLanguage } from "@/context/LanguageContext";
 import { Navbar } from "@/components/Navbar";
 import { openPushModal } from "@/components/PushNotificationManager";
@@ -277,27 +278,7 @@ export default function SignalsPage() {
       "Ganador Visitante",
     ];
     return coreMarkets.map((m) => {
-      const count = activeSignals.filter((s) => {
-        const normSelected = m.toLowerCase().replace(/[^a-z0-9]/g, "");
-        const normActual = (s.market || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-        const normSel = (s.selection || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-        if (normSelected.includes("overcorner") || (normSelected.includes("corner") && !normSelected.includes("under"))) {
-          return (normActual.includes("corner") || normActual.includes("crner")) && !normActual.includes("under") && !normSel.includes("under");
-        }
-        if (normSelected.includes("ambos") || normSelected.includes("btts")) {
-          return normActual.includes("ambos") || normActual.includes("btts");
-        }
-        if (normSelected.includes("overgol") || normSelected.includes("over25") || normSelected.includes("over")) {
-          return (normActual.includes("gol") || normActual.includes("25") || normActual.includes("over")) && !normActual.includes("under") && !normActual.includes("corner");
-        }
-        if (normSelected.includes("local") || normSelected === "1") {
-          return normActual.includes("local") || normSel === "1" || normSel === "local";
-        }
-        if (normSelected.includes("visitante") || normSelected === "2") {
-          return normActual.includes("visitante") || normSel === "2" || normSel === "visitante";
-        }
-        return normActual.includes(normSelected) || normSelected.includes(normActual);
-      }).length;
+      const count = activeSignals.filter((s) => matchesMarketFilter(m, s.market, s.selection)).length;
       return {
         value: m,
         label: `${m} (${count})`,
@@ -348,27 +329,7 @@ export default function SignalsPage() {
       }
 
       if (selectedMarkets.length > 0) {
-        const match = selectedMarkets.some((m) => {
-          const normSelected = m.toLowerCase().replace(/[^a-z0-9]/g, "");
-          const normActual = (p.market || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-          const normSel = (p.selection || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-          if (normSelected.includes("overcorner") || (normSelected.includes("corner") && !normSelected.includes("under"))) {
-            return (normActual.includes("corner") || normActual.includes("crner")) && !normActual.includes("under") && !normSel.includes("under");
-          }
-          if (normSelected.includes("ambos") || normSelected.includes("btts")) {
-            return normActual.includes("ambos") || normActual.includes("btts");
-          }
-          if (normSelected.includes("overgol") || normSelected.includes("over25") || normSelected.includes("over")) {
-            return (normActual.includes("gol") || normActual.includes("25") || normActual.includes("over")) && !normActual.includes("under") && !normActual.includes("corner");
-          }
-          if (normSelected.includes("local") || normSelected === "1") {
-            return normActual.includes("local") || normSel === "1" || normSel === "local";
-          }
-          if (normSelected.includes("visitante") || normSelected === "2") {
-            return normActual.includes("visitante") || normSel === "2" || normSel === "visitante";
-          }
-          return normActual.includes(normSelected) || normSelected.includes(normActual);
-        });
+        const match = selectedMarkets.some((m) => matchesMarketFilter(m, p.market, p.selection));
         if (!match) return false;
       }
 

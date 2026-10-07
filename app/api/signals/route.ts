@@ -9,6 +9,7 @@ import {
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 import { NHLSyncEngine } from "@/lib/sports/nhl/nhl-sync";
 import { multiSportSignalToOpportunity } from "@/lib/sports/signal-adapters";
+import { matchesMarketFilter } from "@/lib/sports/registry";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +34,7 @@ export async function GET(request: NextRequest) {
       }
       if (marketFilter) {
         signals = signals.filter((p) =>
-          (p.market || "").toLowerCase().includes(marketFilter.toLowerCase())
+          matchesMarketFilter(marketFilter, p.market, (p as any).selection)
         );
       }
       if (minProb > 0) {
@@ -104,7 +105,7 @@ export async function GET(request: NextRequest) {
 
     if (marketFilter) {
       predictions = predictions.filter((p) =>
-        (p.market || "").toLowerCase().includes(marketFilter.toLowerCase())
+        matchesMarketFilter(marketFilter, p.market, (p as any).selection)
       );
     }
 

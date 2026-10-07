@@ -1,4 +1,5 @@
 import { NHLSyncEngine } from "@/lib/sports/nhl/nhl-sync";
+import { matchesMarketFilter } from "@/lib/sports/registry";
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
@@ -361,6 +362,8 @@ export async function POST(req: Request) {
       requestedMarket = mLower;
     } else if (qLower.includes("ambos marcan") || qLower.includes("ambos anotan") || qLower.includes("btts") || qLower.includes("ambos")) {
       requestedMarket = "ambos";
+    } else if (qLower.includes("córner") || qLower.includes("corner") || qLower.includes("corners") || qLower.includes("crner")) {
+      requestedMarket = "corners";
     } else if (qLower.includes("over 2.5") || qLower.includes("más de 2.5") || qLower.includes("mas de 2.5") || qLower.includes("over") || qLower.includes("goles")) {
       requestedMarket = "over";
     } else if (qLower.includes("gana visitante") || qLower.includes("victoria visitante") || qLower.includes("ganador visitante")) {
@@ -535,25 +538,9 @@ export async function POST(req: Request) {
     // 5. Market Filter (Multi-Market support & Natural Language)
     const effectiveMarkets = rawMarkets.length > 0 ? rawMarkets : (requestedMarket ? [requestedMarket] : []);
     if (effectiveMarkets.length > 0 && !effectiveMarkets.includes("all")) {
-      const matchMarket = filtered.filter((p) => {
-        const pMarket = (p.market || "").toLowerCase();
-        const pPick = (p.pick || "").toLowerCase();
-        return effectiveMarkets.some((mkt) => {
-          const m = mkt.toLowerCase().trim();
-          if (m === "all") return true;
-          if (m === "local") return pMarket.includes("local") || pMarket.includes("gana local") || pMarket.includes("ganador local");
-          if (m === "visitante") return pMarket.includes("visitante") || pMarket.includes("gana visitante") || pMarket.includes("ganador visitante");
-          if (m === "over") return pMarket.includes("over") || pMarket.includes("goles") || pMarket.includes("más");
-          if (m === "ambos") return pMarket.includes("ambos") || pMarket.includes("btts") || pMarket.includes("anotan");
-          if (m === "corners" || m.includes("córner") || m.includes("corner")) {
-            return pMarket.includes("córner") || pMarket.includes("corner") || pPick.includes("córner") || pPick.includes("corner");
-          }
-          return pMarket.includes(m);
-        });
+      filtered = filtered.filter((p) => {
+        return effectiveMarkets.some((mkt) => matchesMarketFilter(mkt, p.market, p.selection || p.pick));
       });
-      if (matchMarket.length > 0) {
-        filtered = matchMarket;
-      }
     }
 
     // 6. Probability / Confidence filtering
