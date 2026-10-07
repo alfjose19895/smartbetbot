@@ -1552,11 +1552,11 @@ export function SportDashboardView({
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
               <div>
                 <h2 className="text-lg sm:text-xl font-black text-white flex items-center gap-2">
-                  <span>??</span>
-                  <span>Historial Auditado y Liquidaci?n: {meta.displayName}</span>
+                  <span>📜</span>
+                  <span>Historial Auditado y Liquidación: {meta.displayName}</span>
                 </h2>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Registro transparente de todos los pron?sticos oficiales con resultados reales verificados y liquidaci?n exacta.
+                  Registro transparente de todos los pronósticos oficiales con resultados reales verificados y liquidación exacta.
                 </p>
               </div>
 
@@ -1568,7 +1568,7 @@ export function SportDashboardView({
                     historyViewMode === 'cards' ? 'bg-slate-800 text-white shadow-xs' : 'text-slate-400 hover:text-white'
                   }`}
                 >
-                  ?? Cards
+                  🗂️ Cards
                 </button>
                 <button
                   onClick={() => setHistoryViewMode('table')}
@@ -1576,7 +1576,7 @@ export function SportDashboardView({
                     historyViewMode === 'table' ? 'bg-slate-800 text-white shadow-xs' : 'text-slate-400 hover:text-white'
                   }`}
                 >
-                  ?? Tabla
+                  📊 Tabla
                 </button>
               </div>
             </div>
@@ -1584,7 +1584,7 @@ export function SportDashboardView({
             {/* Timing / Status Badges Strip */}
             <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 bg-slate-900/80 p-2.5 rounded-2xl border border-slate-800">
               <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 px-2 flex items-center gap-1">
-                ??? Filtro:
+                ⚡ Modalidad:
               </span>
               <button
                 onClick={() => { setHistoryTimingFilter('ALL'); setHistoryFilter('all'); }}
@@ -1594,7 +1594,7 @@ export function SportDashboardView({
                     : 'text-slate-300 hover:bg-slate-800'
                 }`}
               >
-                ?? Todos ({auditedHistoricalOpportunities.length})
+                🌐 Todos ({auditedHistoricalOpportunities.length})
               </button>
               <button
                 onClick={() => setHistoryTimingFilter(historyTimingFilter === 'PREMATCH' ? 'ALL' : 'PREMATCH')}
@@ -1604,7 +1604,7 @@ export function SportDashboardView({
                     : 'bg-cyan-500/10 text-cyan-300 hover:bg-cyan-500/20'
                 }`}
               >
-                ?? Pre-Match
+                📋 Pre-Match
               </button>
               <button
                 onClick={() => setHistoryTimingFilter(historyTimingFilter === 'VALOR' ? 'ALL' : 'VALOR')}
@@ -1614,7 +1614,7 @@ export function SportDashboardView({
                     : 'bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20'
                 }`}
               >
-                ?? Valor (+EV)
+                💎 Valor (+EV)
               </button>
               <button
                 onClick={() => setHistoryTimingFilter(historyTimingFilter === 'BOMBA' ? 'ALL' : 'BOMBA')}
@@ -1624,7 +1624,7 @@ export function SportDashboardView({
                     : 'bg-rose-500/10 text-rose-300 hover:bg-rose-500/20'
                 }`}
               >
-                ?? Bomba
+                💣 Bomba
               </button>
               <div className="h-4 w-px bg-slate-700 mx-1 hidden sm:block" />
               <button
@@ -1635,7 +1635,7 @@ export function SportDashboardView({
                     : 'bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20'
                 }`}
               >
-                <span>? Ganadas ({reportMetrics.won})</span>
+                <span>✓ Ganadas ({reportMetrics.won})</span>
               </button>
               <button
                 onClick={() => setHistoryFilter(historyFilter === 'lost' ? 'all' : 'lost')}
@@ -1645,7 +1645,7 @@ export function SportDashboardView({
                     : 'bg-rose-500/10 text-rose-300 hover:bg-rose-500/20'
                 }`}
               >
-                <span>? Perdidas ({reportMetrics.lost})</span>
+                <span>✗ Perdidas ({reportMetrics.lost})</span>
               </button>
             </div>
 
@@ -1654,12 +1654,12 @@ export function SportDashboardView({
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-2.5 sm:gap-3 items-center">
                 {/* Search Bar */}
                 <div className="relative lg:col-span-4">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">??</span>
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
                   <input
                     type="text"
                     value={historySearchQuery}
                     onChange={(e) => setHistorySearchQuery(e.target.value)}
-                    placeholder={sport === 'nhl' ? "Buscar equipo, divisi?n, mercado..." : "Buscar partido, equipo, mercado..."}
+                    placeholder={sport === 'nhl' ? "Buscar equipo, división, mercado..." : "Buscar partido, equipo, mercado..."}
                     className="w-full rounded-xl border border-slate-800 bg-slate-950 pl-10 pr-9 py-2 text-xs text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
                   />
                   {historySearchQuery && (
@@ -1667,7 +1667,7 @@ export function SportDashboardView({
                       onClick={() => setHistorySearchQuery('')}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs cursor-pointer"
                     >
-                      ?
+                      ✕
                     </button>
                   )}
                 </div>
@@ -1675,7 +1675,7 @@ export function SportDashboardView({
                 {/* Division / League Multi-Select */}
                 <div className="lg:col-span-3">
                   <MultiSelectDropdown
-                    label={sport === 'nhl' ? 'Divisi?n / Conf.' : 'Competici?n'}
+                    label={sport === 'nhl' ? 'División / Conf.' : 'Competición'}
                     options={historyDivisionOptions}
                     selected={historySelectedDivisions}
                     onChange={setHistorySelectedDivisions}
@@ -1701,11 +1701,11 @@ export function SportDashboardView({
                     onChange={(e) => setHistoryDateFilter(e.target.value as any)}
                     className="w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs font-bold text-slate-300 focus:border-emerald-500 focus:outline-hidden cursor-pointer"
                   >
-                    <option value="all">?? Toda la fecha</option>
+                    <option value="all">📅 Toda la fecha</option>
                     <option value="today">Hoy</option>
                     <option value="yesterday">Ayer</option>
-                    <option value="week">?ltimos 7 d?as</option>
-                    <option value="month">?ltimos 30 d?as</option>
+                    <option value="week">Últimos 7 días</option>
+                    <option value="month">Últimos 30 días</option>
                     <option value="custom">Personalizado...</option>
                   </select>
                 </div>
@@ -1714,7 +1714,7 @@ export function SportDashboardView({
               {/* Custom Date Input if selected */}
               {historyDateFilter === 'custom' && (
                 <div className="flex items-center gap-2 pt-2 border-t border-slate-800/80">
-                  <span className="text-xs text-slate-400 font-bold">Fecha espec?fica:</span>
+                  <span className="text-xs text-slate-400 font-bold">Fecha específica:</span>
                   <input
                     type="date"
                     value={historyCustomDate}
@@ -1740,13 +1740,13 @@ export function SportDashboardView({
                     {historySearchQuery && (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-800 text-white text-[11px]">
                         "{historySearchQuery}"
-                        <button onClick={() => setHistorySearchQuery('')} className="hover:text-rose-400 cursor-pointer">?</button>
+                        <button onClick={() => setHistorySearchQuery('')} className="hover:text-rose-400 cursor-pointer">✕</button>
                       </span>
                     )}
                     {historyTimingFilter !== 'ALL' && (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-800 text-cyan-300 text-[11px]">
                         {historyTimingFilter}
-                        <button onClick={() => setHistoryTimingFilter('ALL')} className="hover:text-rose-400 cursor-pointer">?</button>
+                        <button onClick={() => setHistoryTimingFilter('ALL')} className="hover:text-rose-400 cursor-pointer">✕</button>
                       </span>
                     )}
                     {historyFilter !== 'all' && (
@@ -1754,25 +1754,25 @@ export function SportDashboardView({
                         historyFilter === 'won' ? 'bg-emerald-950 text-emerald-300' : 'bg-rose-950 text-rose-300'
                       }`}>
                         {historyFilter === 'won' ? 'Ganadas' : 'Perdidas'}
-                        <button onClick={() => setHistoryFilter('all')} className="hover:text-rose-400 cursor-pointer">?</button>
+                        <button onClick={() => setHistoryFilter('all')} className="hover:text-rose-400 cursor-pointer">✕</button>
                       </span>
                     )}
                     {historySelectedDivisions.map((div) => (
                       <span key={div} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-800 text-white text-[11px]">
                         {div}
-                        <button onClick={() => setHistorySelectedDivisions(historySelectedDivisions.filter((d) => d !== div))} className="hover:text-rose-400 cursor-pointer">?</button>
+                        <button onClick={() => setHistorySelectedDivisions(historySelectedDivisions.filter((d) => d !== div))} className="hover:text-rose-400 cursor-pointer">✕</button>
                       </span>
                     ))}
                     {historySelectedMarkets.map((m) => (
                       <span key={m} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-800 text-white text-[11px]">
                         {m}
-                        <button onClick={() => setHistorySelectedMarkets(historySelectedMarkets.filter((x) => x !== m))} className="hover:text-rose-400 cursor-pointer">?</button>
+                        <button onClick={() => setHistorySelectedMarkets(historySelectedMarkets.filter((x) => x !== m))} className="hover:text-rose-400 cursor-pointer">✕</button>
                       </span>
                     ))}
                     {historyDateFilter !== 'all' && (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-800 text-amber-300 text-[11px]">
                         {historyDateFilter === 'custom' ? (historyCustomDate || 'Fecha personalizada') : historyDateFilter}
-                        <button onClick={() => { setHistoryDateFilter('all'); setHistoryCustomDate(''); }} className="hover:text-rose-400 cursor-pointer">?</button>
+                        <button onClick={() => { setHistoryDateFilter('all'); setHistoryCustomDate(''); }} className="hover:text-rose-400 cursor-pointer">✕</button>
                       </span>
                     )}
                   </div>
@@ -1780,7 +1780,7 @@ export function SportDashboardView({
                     onClick={handleClearHistoryFilters}
                     className="px-2.5 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-[11px] font-bold transition cursor-pointer"
                   >
-                    ??? Limpiar todos los filtros
+                    🗑️ Limpiar todos los filtros
                   </button>
                 </div>
               )}
@@ -1789,7 +1789,7 @@ export function SportDashboardView({
             {/* Results Count Banner */}
             <div className="flex items-center justify-between text-xs text-slate-400 px-1">
               <span>
-                Mostrando <strong className="text-white">{filteredHistory.length}</strong> de <strong className="text-white">{auditedHistoricalOpportunities.length}</strong> pron?sticos auditados
+                Mostrando <strong className="text-white">{filteredHistory.length}</strong> de <strong className="text-white">{auditedHistoricalOpportunities.length}</strong> pronósticos auditados
               </span>
             </div>
 
@@ -1801,23 +1801,23 @@ export function SportDashboardView({
               </div>
             ) : filteredHistory.length === 0 ? (
               <div className="rounded-3xl border border-dashed border-slate-800 bg-slate-900/40 p-12 text-center">
-                <span className="text-4xl mb-3 block">??</span>
+                <span className="text-4xl mb-3 block">🔍</span>
                 <h3 className="text-base font-black text-white">
                   {isHistoryFiltered
-                    ? 'No se encontraron pron?sticos con los filtros seleccionados'
-                    : `No hay pron?sticos auditados en el historial para ${meta.displayName}`}
+                    ? 'No se encontraron pronósticos con los filtros seleccionados'
+                    : `No hay pronósticos auditados en el historial para ${meta.displayName}`}
                 </h3>
                 <p className="text-xs text-slate-400 mt-1">
                   {isHistoryFiltered
-                    ? 'Prueba modificando o limpiando los filtros para ver m?s resultados.'
-                    : 'Los partidos se registrar?n y liquidar?n autom?ticamente con el resultado oficial.'}
+                    ? 'Prueba modificando o limpiando los filtros para ver más resultados.'
+                    : 'Los partidos se registrarán y liquidarán automáticamente con el resultado oficial.'}
                 </p>
                 {isHistoryFiltered && (
                   <button
                     onClick={handleClearHistoryFilters}
                     className="mt-4 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs cursor-pointer shadow-lg"
                   >
-                    Mostrar todos los pron?sticos
+                    Mostrar todos los pronósticos
                   </button>
                 )}
               </div>
@@ -1844,7 +1844,7 @@ export function SportDashboardView({
                         <th className="p-3.5">Cuota</th>
                         <th className="p-3.5">Prob.</th>
                         <th className="p-3.5">Resultado</th>
-                        <th className="p-3.5 text-right">An?lisis</th>
+                        <th className="p-3.5 text-right">Análisis</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-800/80">
@@ -1876,7 +1876,7 @@ export function SportDashboardView({
                               <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black ${
                                 isWon ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/30' : 'bg-rose-950 text-rose-300 border border-rose-500/30'
                               }`}>
-                                {isWon ? '? GANADA' : '? PERDIDA'}
+                                {isWon ? '✓ GANADA' : '✗ PERDIDA'}
                               </span>
                             </td>
                             <td className="p-3.5 text-right whitespace-nowrap">
@@ -1884,7 +1884,7 @@ export function SportDashboardView({
                                 onClick={() => setActiveModalPick(item)}
                                 className="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-emerald-600 text-[11px] font-bold text-white cursor-pointer"
                               >
-                                ?? H2H
+                                📊 H2H
                               </button>
                             </td>
                           </tr>

@@ -27,12 +27,13 @@
     "actualScore": "2 - 3",
     "aiRiskScore": 20,
     "explanation": "Proyección xG de 6.98 goles totales supera la línea de 5.5 (71.4% prob). [Auditoría Gemini NHL: Validación cuantitativa de hockey y xG superada]",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 71,
     "goalieImpact": "Starter estándar proyectado",
     "expectedValue": 0,
     "geminiAudited": true,
-    "confidenceScore": 70
+    "confidenceScore": 70,
+    "profit": -1
   },
   {
     "id": "nhl_444620_nhl_total_over",
@@ -62,12 +63,13 @@
     "actualScore": "3 - 1",
     "aiRiskScore": 20,
     "explanation": "Proyección xG de 6.57 goles totales supera la línea de 5.5 (66.4% prob). [Auditoría Gemini NHL: Validación cuantitativa de hockey y xG superada]",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 66,
     "goalieImpact": "Starter estándar proyectado",
     "expectedValue": 0,
     "geminiAudited": true,
-    "confidenceScore": 57
+    "confidenceScore": 57,
+    "profit": -1
   },
   {
     "id": "nhl_444621_nhl_total_over",
@@ -97,12 +99,13 @@
     "actualScore": "6 - 5",
     "aiRiskScore": 20,
     "explanation": "Proyección xG de 6.39 goles totales supera la línea de 5.5 (64.0% prob). [Auditoría Gemini NHL: Validación cuantitativa de hockey y xG superada]",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 64,
     "goalieImpact": "Starter estándar proyectado",
     "expectedValue": 0,
     "geminiAudited": true,
-    "confidenceScore": 41
+    "confidenceScore": 41,
+    "profit": 0.62
   },
   {
     "id": "nhl_444622_nhl_ml_home",
@@ -132,12 +135,13 @@
     "actualScore": "3 - 1",
     "aiRiskScore": 20,
     "explanation": "El modelo proyecta xG de 3.73 vs 2.58 dando a Edmonton Oilers 69.2% de probabilidad de victoria total. [Auditoría Gemini NHL: Validación cuantitativa de hockey y xG superada]",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 69,
     "goalieImpact": "Starter estándar proyectado",
     "expectedValue": 0,
     "geminiAudited": true,
-    "confidenceScore": 45
+    "confidenceScore": 45,
+    "profit": 0.5
   },
   {
     "id": "nhl_444623_nhl_ml_away",
@@ -167,12 +171,13 @@
     "actualScore": "2 - 3",
     "aiRiskScore": 20,
     "explanation": "El modelo proyecta xG de 3.31 vs 2.54 dando a Carolina Hurricanes 63.3% de probabilidad de victoria como visitante. [Auditoría Gemini NHL: Validación cuantitativa de hockey y xG superada]",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 63,
     "goalieImpact": "Starter estándar proyectado",
     "expectedValue": 0,
     "geminiAudited": true,
-    "confidenceScore": 61
+    "confidenceScore": 61,
+    "profit": 0.8
   },
   {
     "id": "nhl_444624_nhl_total_over",
@@ -202,12 +207,13 @@
     "actualScore": "1 - 4",
     "aiRiskScore": 20,
     "explanation": "Proyección xG de 6.44 goles totales supera la línea de 5.5 (65.3% prob). [Auditoría Gemini NHL: Validación cuantitativa de hockey y xG superada]",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 65,
     "goalieImpact": "Starter estándar proyectado",
     "expectedValue": 0,
     "geminiAudited": true,
-    "confidenceScore": 52
+    "confidenceScore": 52,
+    "profit": -1
   },
   {
     "id": "nhl_444625_nhl_total_over",
@@ -237,12 +243,13 @@
     "actualScore": "4 - 3",
     "aiRiskScore": 20,
     "explanation": "Proyección xG de 6.08 goles totales supera la línea de 5.5 (59.7% prob). [Auditoría Gemini NHL: Validación cuantitativa de hockey y xG superada]",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 60,
     "goalieImpact": "Starter estándar proyectado",
     "expectedValue": 0,
     "geminiAudited": true,
-    "confidenceScore": 9
+    "confidenceScore": 9,
+    "profit": 0.6
   },
   {
     "id": "nhl_444626_nhl_total_over",
@@ -272,12 +279,13 @@
     "actualScore": "6 - 0",
     "aiRiskScore": 20,
     "explanation": "Proyección xG de 6.21 goles totales supera la línea de 5.5 (61.4% prob). [Auditoría Gemini NHL: Validación cuantitativa de hockey y xG superada]",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 61,
     "goalieImpact": "Starter estándar proyectado",
     "expectedValue": 0,
     "geminiAudited": true,
-    "confidenceScore": 36
+    "confidenceScore": 36,
+    "profit": 0.67
   },
   {
     "id": "nhl_444627_nhl_ml_away",
@@ -307,12 +315,13 @@
     "actualScore": "4 - 1",
     "aiRiskScore": 20,
     "explanation": "El modelo proyecta xG de 3.09 vs 2.83 dando a Boston Bruins 54.7% de probabilidad de victoria como visitante. [Auditoría Gemini NHL: Validación cuantitativa de hockey y xG superada]",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 55,
     "goalieImpact": "Starter estándar proyectado",
     "expectedValue": 0,
     "geminiAudited": true,
-    "confidenceScore": 70
+    "confidenceScore": 70,
+    "profit": -1
   },
   {
     "id": "nhl_444628_nhl_total_over",
@@ -342,12 +351,13 @@
     "actualScore": "2 - 1",
     "aiRiskScore": 20,
     "explanation": "Proyección xG de 6.23 goles totales supera la línea de 5.5 (61.8% prob). [Auditoría Gemini NHL: Validación cuantitativa de hockey y xG superada]",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 62,
     "goalieImpact": "Starter estándar proyectado",
     "expectedValue": 0,
     "geminiAudited": true,
-    "confidenceScore": 60
+    "confidenceScore": 60,
+    "profit": -1
   },
   {
     "id": "nhl_444629_nhl_total_over",
@@ -377,12 +387,13 @@
     "actualScore": "6 - 1",
     "aiRiskScore": 20,
     "explanation": "Proyección xG de 6.65 goles totales supera la línea de 5.5 (67.3% prob). [Auditoría Gemini NHL: Validación cuantitativa de hockey y xG superada]",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 67,
     "goalieImpact": "Starter estándar proyectado",
     "expectedValue": 0,
     "geminiAudited": true,
-    "confidenceScore": 81
+    "confidenceScore": 81,
+    "profit": 0.57
   },
   {
     "id": "nhl_444630_nhl_ml_away",

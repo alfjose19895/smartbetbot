@@ -90,6 +90,7 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
 
     // History
     historyKicker: "Historial Oficial",
+    historyTotalPicks: "Pronósticos Evaluados",
     historyTitle: "Pronósticos Deportivos Resueltos",
     historySubtitle: "Registro histórico de partidos acontecidos con marcadores oficiales y cálculo de rentabilidad",
     historyEvaluated: "Partidos Evaluados",
@@ -215,6 +216,7 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
 
     // History
     historyKicker: "Official History",
+    historyTotalPicks: "Evaluated Predictions",
     historyTitle: "Resolved Sports Predictions",
     historySubtitle: "Official match track record with final scores and profitability metrics",
     historyEvaluated: "Evaluated Matches",

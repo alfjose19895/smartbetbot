@@ -32,7 +32,8 @@
     "goalieImpact": "Starter estándar proyectado",
     "expectedValue": 0,
     "geminiAudited": true,
-    "confidenceScore": 54
+    "confidenceScore": 54,
+    "profit": 0.91
   },
   {
     "id": "nhl_444633_nhl_ml_home",
@@ -67,7 +68,8 @@
     "goalieImpact": "Starter estándar proyectado",
     "expectedValue": 0,
     "geminiAudited": true,
-    "confidenceScore": 82
+    "confidenceScore": 82,
+    "profit": 0.8
   },
   {
     "id": "nhl_444634_nhl_ml_away",

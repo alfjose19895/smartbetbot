@@ -141,7 +141,11 @@
       "expectedHomeCorners": 5.8,
       "expectedTotalCorners": 10.42
     },
-    "impliedProbability": 55.6
+    "impliedProbability": 55.6,
+    "result": "WON",
+    "score": "6 - 4 (10 Córners)",
+    "profit": 0.8,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],

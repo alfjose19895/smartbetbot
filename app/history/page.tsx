@@ -1,13 +1,16 @@
-"use client";
+﻿"use client";
 
+import React, { useState, useEffect, useMemo } from "react";
 import { Navbar } from "@/components/Navbar";
 import { SportSelector } from "@/components/SportSelector";
-import React, { useState, useEffect } from "react";
-import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
-import { useLanguage } from "@/context/LanguageContext";
 import { MultiSelectDropdown, DropdownOption } from "@/components/MultiSelectDropdown";
+import { MatchDetailModal } from "@/components/MatchDetailModal";
+import { useLanguage } from "@/context/LanguageContext";
+import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
 import { HistoricalSettledPick, HistoricalSettledParlay } from "@/lib/sports/db";
+import { MarketOpportunity } from "@/lib/sports/prediction-engine";
 import { matchesMarketFilter } from "@/lib/sports/registry";
+import { SupportedSport } from "@/lib/sports/types";
 
 function getConfidenceBadge(confidence?: string, prob?: number) {
   if (confidence === "Muy Alta" || (prob && prob >= 75)) {
@@ -24,13 +27,21 @@ function getConfidenceBadge(confidence?: string, prob?: number) {
 
 export default function HistoryPage() {
   const { language, t } = useLanguage();
+
+  // Sport Filter
+  const [selectedSport, setSelectedSport] = useState<SupportedSport | "all">("all");
+
+  // Data state
   const [historyItems, setHistoryItems] = useState<HistoricalSettledPick[]>([]);
   const [parlayItems, setParlayItems] = useState<HistoricalSettledParlay[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
 
   // View state
   const [historyType, setHistoryType] = useState<"picks" | "parlays">("picks");
   const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
+
+  // Modal state
+  const [selectedPickForModal, setSelectedPickForModal] = useState<HistoricalSettledPick | null>(null);
 
   // Filters
   const [timingFilter, setTimingFilter] = useState<"ALL" | "PREMATCH" | "MCP" | "BOMBA">("ALL");
@@ -39,24 +50,23 @@ export default function HistoryPage() {
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
   const [selectedDateFilter, setSelectedDateFilter] = useState<"all" | "today" | "yesterday" | "week" | "month" | "custom">("all");
   const [customDate, setCustomDate] = useState<string>("");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
-  const fetchHistory = async (showLoader = false) => {
+  const fetchHistory = async (sport: SupportedSport | "all" = selectedSport, showLoader = false) => {
     try {
       if (showLoader) setLoading(true);
-      const res = await fetch("/api/history?sport=football");
+      const url = sport === "all" ? "/api/history" : `/api/history?sport=${encodeURIComponent(sport)}`;
+      const res = await fetch(url, { cache: "no-store" });
       const data = await res.json();
-      let items: HistoricalSettledPick[] = Array.isArray(data.history) ? [...data.history] : [];
-      // Strict guard against any non-football entries
-      items = items.filter((h) => {
-        const c = (h.country || "").toUpperCase();
-        const l = (h.league || "").toUpperCase();
-        const s = ((h as any).sport || "").toLowerCase();
-        return c !== "NHL" && !l.includes("NHL") && s !== "nhl" && c !== "NBA" && !l.includes("NBA") && s !== "nba" && c !== "NFL" && s !== "nfl";
-      });
-      setHistoryItems(items);
-      if (data.parlays) {
+      if (data && Array.isArray(data.history)) {
+        setHistoryItems(data.history);
+      } else {
+        setHistoryItems([]);
+      }
+      if (data && Array.isArray(data.parlays)) {
         setParlayItems(data.parlays);
+      } else {
+        setParlayItems([]);
       }
     } catch (err) {
       console.error("Error fetching history:", err);
@@ -66,49 +76,59 @@ export default function HistoryPage() {
   };
 
   useEffect(() => {
-    fetchHistory(true);
+    fetchHistory(selectedSport, true);
+  }, [selectedSport]);
+
+  useEffect(() => {
     const handleUpdated = () => {
-      fetchHistory(false);
+      fetchHistory(selectedSport, false);
     };
     window.addEventListener("predictions-updated", handleUpdated);
     return () => {
       window.removeEventListener("predictions-updated", handleUpdated);
     };
-  }, []);
+  }, [selectedSport]);
 
-  // Build classified league options grouped by Country
-  const leagueDropdownOptions: DropdownOption[] = SUPPORTED_LEAGUES.map((l) => ({
-    value: l.name,
-    label: `${l.name} (${l.country})`,
-    group: l.country,
-    badge: l.tier ? `Div ${l.tier}` : undefined,
-  }));
+﻿  // Build classified league options grouped by Country
+  const leagueDropdownOptions: DropdownOption[] = useMemo(() => {
+    const options: DropdownOption[] = SUPPORTED_LEAGUES.map((l) => ({
+      value: l.name,
+      label: `${l.name} (${l.country})`,
+      group: l.country,
+      badge: l.tier ? `Div ${l.tier}` : undefined,
+    }));
 
-  historyItems.forEach((h) => {
-    if (h.league && !leagueDropdownOptions.some((opt) => opt.value === h.league)) {
-      leagueDropdownOptions.push({
-        value: h.league,
-        label: h.league,
-        group: h.country || "Competiciones Oficiales",
-      });
-    }
-  });
+    historyItems.forEach((h) => {
+      if (h.league && !options.some((opt) => opt.value === h.league)) {
+        options.push({
+          value: h.league,
+          label: h.league,
+          group: h.country || "Competiciones Oficiales",
+        });
+      }
+    });
+    return options;
+  }, [historyItems]);
 
   const availableMarkets = [
     "Over Córners",
     "Ambos Equipos Anotan",
     "Over 2.5 Goles",
+    "Over 1.5 Goles",
     "Ganador Local",
     "Ganador Visitante",
+    "Doble Oportunidad",
   ];
 
-  const marketDropdownOptions: DropdownOption[] = availableMarkets.map((m) => {
-    const count = historyItems.filter((h) => matchesMarketFilter(m, h.market, h.selection)).length;
-    return {
-      value: m,
-      label: `${m} (${count})`,
-    };
-  });
+  const marketDropdownOptions: DropdownOption[] = useMemo(() => {
+    return availableMarkets.map((m) => {
+      const count = historyItems.filter((h) => matchesMarketFilter(m, h.market, h.selection)).length;
+      return {
+        value: m,
+        label: `${m} (${count})`,
+      };
+    });
+  }, [historyItems]);
 
   const getLocalDateStr = (d: Date | string) => {
     const dateObj = typeof d === "string" ? new Date(d) : d;
@@ -138,103 +158,136 @@ export default function HistoryPage() {
       (item.market && item.market.includes("MCP"))
     );
 
-  // Filter Individual Picks
-  const filteredHistory = historyItems.filter((item) => {
-    // 1. Search Query
-    if (searchQuery.trim().length > 0) {
-      const q = searchQuery.toLowerCase().trim();
-      const matchText = `${item.match} ${item.homeTeam} ${item.awayTeam} ${item.league} ${item.market} ${item.country || ""}`.toLowerCase();
-      if (!matchText.includes(q)) return false;
-    }
-
-    // 2. Timing / Modality Filter (Pre-Match, MCP, Bomba)
-    if (timingFilter === "PREMATCH") {
-      if (item.isLive || item.matchTiming === "live") return false;
-    } else if (timingFilter === "MCP") {
-      if (!isMcpItem(item)) return false;
-    } else if (timingFilter === "BOMBA") {
-      if (item.pickBadge !== "bomba" && item.odds < 2.05) return false;
-    }
-
-    // 3. Result Filter (WON / LOST)
-    if (filterResult === "WON" && !isWonItem(item)) return false;
-    if (filterResult === "LOST" && !isLostItem(item)) return false;
-
-    // 4. League Multi-Select
-    if (selectedLeagues.length > 0) {
-      const normLeague = (item.league || "").toLowerCase().trim();
-      const normCountry = (item.country || "").toLowerCase().trim();
-      const matched = selectedLeagues.some((sel) => {
-        const selLower = sel.toLowerCase().trim();
-        return (
-          normLeague.includes(selLower) ||
-          selLower.includes(normLeague) ||
-          normCountry === selLower ||
-          normCountry.includes(selLower)
-        );
-      });
-      if (!matched) return false;
-    }
-
-    // 5. Market Multi-Select (7 Core Markets in Strict Order)
-    if (selectedMarkets.length > 0) {
-      const match = selectedMarkets.some((m) => matchesMarketFilter(m, item.market, item.selection));
-      if (!match) return false;
-    }
-
-    // 6. Date Filter
-    if (selectedDateFilter === "today") {
-      const itemDate = item.date || (item.kickoff ? getLocalDateStr(item.kickoff) : "");
-      if (itemDate !== todayStr) return false;
-    } else if (selectedDateFilter === "yesterday") {
-      const itemDate = item.date || (item.kickoff ? getLocalDateStr(item.kickoff) : "");
-      if (itemDate !== yesterdayStr) return false;
-    } else if (selectedDateFilter === "week") {
-      const itemTime = new Date(item.kickoff || item.date).getTime();
-      if (isNaN(itemTime) || itemTime < sevenDaysAgoMs) return false;
-    } else if (selectedDateFilter === "month") {
-      const itemTime = new Date(item.kickoff || item.date).getTime();
-      if (isNaN(itemTime) || itemTime < thirtyDaysAgoMs) return false;
-    } else if (selectedDateFilter === "custom" && customDate) {
-      const itemDate = item.date || (item.kickoff ? getLocalDateStr(item.kickoff) : "");
-      if (itemDate !== customDate) return false;
-    }
-
-    return true;
-  });
-
-  // Filter Parlays
-  const filteredParlays = parlayItems.filter((p) => {
-    if (filterResult === "WON" && p.result !== "WON") return false;
-    if (filterResult === "LOST" && p.result !== "LOST") return false;
-    if (searchQuery.trim().length > 0) {
-      const q = searchQuery.toLowerCase().trim();
-      const matchText = `${p.legs.map((l) => `${l.match} ${l.league}`).join(" ")}`.toLowerCase();
-      if (!matchText.includes(q)) return false;
-    }
-    return true;
-  });
-
   const isWonItem = (item: HistoricalSettledPick) => item.result === "WON" || (item as any).status === "won";
   const isLostItem = (item: HistoricalSettledPick) => item.result === "LOST" || (item as any).status === "lost";
 
-  // Exact Counts for Badges
+  // Filter Individual Picks
+  const filteredHistory = useMemo(() => {
+    return historyItems.filter((item) => {
+      if (searchQuery.trim().length > 0) {
+        const q = searchQuery.toLowerCase().trim();
+        const matchText = `${item.match} ${item.homeTeam} ${item.awayTeam} ${item.league} ${item.market} ${item.selection} ${item.country || ""}`.toLowerCase();
+        if (!matchText.includes(q)) return false;
+      }
+
+      if (timingFilter === "PREMATCH") {
+        if (item.isLive || item.matchTiming === "live") return false;
+      } else if (timingFilter === "MCP") {
+        if (!isMcpItem(item)) return false;
+      } else if (timingFilter === "BOMBA") {
+        if (item.pickBadge !== "bomba" && item.odds < 2.05) return false;
+      }
+
+      if (filterResult === "WON" && !isWonItem(item)) return false;
+      if (filterResult === "LOST" && !isLostItem(item)) return false;
+
+      if (selectedLeagues.length > 0) {
+        const normLeague = (item.league || "").toLowerCase().trim();
+        const normCountry = (item.country || "").toLowerCase().trim();
+        const matched = selectedLeagues.some((sel) => {
+          const selLower = sel.toLowerCase().trim();
+          return (
+            normLeague.includes(selLower) ||
+            selLower.includes(normLeague) ||
+            normCountry === selLower ||
+            normCountry.includes(selLower)
+          );
+        });
+        if (!matched) return false;
+      }
+
+      if (selectedMarkets.length > 0) {
+        const match = selectedMarkets.some((m) => matchesMarketFilter(m, item.market, item.selection));
+        if (!match) return false;
+      }
+
+      if (selectedDateFilter === "today") {
+        const itemDate = item.date || (item.kickoff ? getLocalDateStr(item.kickoff) : "");
+        if (itemDate !== todayStr) return false;
+      } else if (selectedDateFilter === "yesterday") {
+        const itemDate = item.date || (item.kickoff ? getLocalDateStr(item.kickoff) : "");
+        if (itemDate !== yesterdayStr) return false;
+      } else if (selectedDateFilter === "week") {
+        const itemTime = new Date(item.kickoff || item.date).getTime();
+        if (isNaN(itemTime) || itemTime < sevenDaysAgoMs) return false;
+      } else if (selectedDateFilter === "month") {
+        const itemTime = new Date(item.kickoff || item.date).getTime();
+        if (isNaN(itemTime) || itemTime < thirtyDaysAgoMs) return false;
+      } else if (selectedDateFilter === "custom" && customDate) {
+        const itemDate = item.date || (item.kickoff ? getLocalDateStr(item.kickoff) : "");
+        if (itemDate !== customDate) return false;
+      }
+
+      return true;
+    });
+  }, [historyItems, searchQuery, timingFilter, filterResult, selectedLeagues, selectedMarkets, selectedDateFilter, customDate, todayStr, yesterdayStr, sevenDaysAgoMs, thirtyDaysAgoMs]);
+
+  const filteredParlays = useMemo(() => {
+    return parlayItems.filter((p) => {
+      if (filterResult === "WON" && p.result !== "WON") return false;
+      if (filterResult === "LOST" && p.result !== "LOST") return false;
+      if (searchQuery.trim().length > 0) {
+        const q = searchQuery.toLowerCase().trim();
+        const matchText = `${p.legs.map((l) => `${l.match} ${l.league}`).join(" ")}`.toLowerCase();
+        if (!matchText.includes(q)) return false;
+      }
+      return true;
+    });
+  }, [parlayItems, filterResult, searchQuery]);
+
   const prematchCount = historyItems.filter((h) => !h.isLive && h.matchTiming !== "live").length;
   const mcpCount = historyItems.filter((h) => isMcpItem(h)).length;
   const bombaCount = historyItems.filter((h) => h.pickBadge === "bomba" || h.odds >= 2.05).length;
   const wonCount = historyItems.filter(isWonItem).length;
   const lostCount = historyItems.filter(isLostItem).length;
 
-  // Overall Statistics from Filtered Items
   const totalSettled = filteredHistory.length;
   const totalWon = filteredHistory.filter(isWonItem).length;
   const winRate = totalSettled > 0 ? (totalWon / totalSettled) * 100 : 0;
-  const netProfit = filteredHistory.reduce((acc, i) => acc + (typeof i.profit === "number" ? i.profit : (isWonItem(i) ? (i.odds - 1) : -1)), 0);
-  const avgOdds = totalSettled > 0
-    ? (filteredHistory.reduce((acc, i) => acc + (i.odds || 0), 0) / totalSettled).toFixed(2)
-    : "—";
+  const netProfit = filteredHistory.reduce(
+    (acc, i) => acc + (typeof i.profit === "number" ? i.profit : (isWonItem(i) ? (i.odds - 1) : -1)),
+    0
+  );
+  const avgOdds =
+    totalSettled > 0
+      ? (filteredHistory.reduce((acc, i) => acc + (i.odds || 0), 0) / totalSettled).toFixed(2)
+      : "—";
 
-  return (
+  const modalPrediction: MarketOpportunity | null = useMemo(() => {
+    if (!selectedPickForModal) return null;
+    const p = selectedPickForModal as any;
+    return {
+      id: p.id || String(p.fixtureId || Math.random()),
+      fixtureId: Number(p.fixtureId) || 0,
+      match: p.match || `${p.homeTeam} vs ${p.awayTeam}`,
+      homeTeam: p.homeTeam,
+      awayTeam: p.awayTeam,
+      homeLogo: p.homeLogo,
+      awayLogo: p.awayLogo,
+      league: p.league,
+      leagueLogo: p.leagueLogo,
+      country: p.country,
+      kickoff: p.kickoff || p.date,
+      market: p.market,
+      selection: p.selection || p.market,
+      odds: p.odds || 1.85,
+      fairOdds: p.fairOdds || p.odds || 1.85,
+      probability: p.probability || 60,
+      confidence: p.confidence || "Alta",
+      expectedValue: p.expectedValue || (p.odds * ((p.probability || 60) / 100) - 1),
+      smartScore: p.smartScore || p.probability || 75,
+      status: p.result === "WON" ? "won" : p.result === "LOST" ? "lost" : "pending",
+      edge: p.edge || 0,
+      pickBadge: p.pickBadge || "estandar",
+      explanation: p.explanation,
+      h2h: p.h2h || [],
+      homeForm: p.homeForm || [],
+      awayForm: p.awayForm || [],
+      cornersSummary: p.cornersSummary,
+    } as MarketOpportunity;
+  }, [selectedPickForModal]);
+
+﻿  return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
       <Navbar />
 
@@ -247,19 +300,19 @@ export default function HistoryPage() {
                 📜
               </span>
               <span className="text-[11px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400">
-                {t("historyKicker")}
+                {t("historyKicker") || "Auditoría y Transparencia"}
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-              {t("historyTitle")}
+              {t("historyTitle") || "Historial Auditado de Pronósticos"}
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-2xl">
-              {t("historySubtitle")}
+              {t("historySubtitle") || "Registro oficial con resultados de partidos reales y liquidación exacta de todas las oportunidades."}
             </p>
           </div>
 
           {/* Type Toggle: Individual Picks vs Parlays */}
-          <div className="flex items-center gap-1.5 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+          <div className="flex items-center gap-1.5 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xs dark:border-slate-800 dark:bg-slate-900 self-start md:self-auto">
             <button
               onClick={() => setHistoryType("picks")}
               className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black transition cursor-pointer ${
@@ -285,11 +338,20 @@ export default function HistoryPage() {
           </div>
         </div>
 
+        {/* Sport Selector Carousel */}
+        <div className="mb-2">
+          <SportSelector
+            selectedSport={selectedSport}
+            onSelectSport={(s) => setSelectedSport(s)}
+            showAll={true}
+          />
+        </div>
+
         {/* Global Performance Summary Cards */}
         <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:gap-4">
           <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
             <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              {t("historyTotalPicks")}
+              {t("historyTotalPicks") || "Pronósticos Evaluados"}
             </span>
             <div className="mt-1 flex items-baseline gap-2">
               <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
@@ -301,7 +363,7 @@ export default function HistoryPage() {
 
           <div className="rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-50 to-white p-4 shadow-xs dark:from-emerald-950/20 dark:to-slate-900 dark:border-emerald-900/40">
             <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-              {t("historyWinRate")}
+              {t("historyWinRate") || "Tasa de Acierto"}
             </span>
             <div className="mt-1 flex items-baseline gap-2">
               <span className="text-2xl sm:text-3xl font-black text-emerald-700 dark:text-emerald-400">
@@ -315,7 +377,7 @@ export default function HistoryPage() {
 
           <div className="rounded-2xl border border-cyan-500/20 bg-gradient-to-br from-cyan-50 to-white p-4 shadow-xs dark:from-cyan-950/20 dark:to-slate-900 dark:border-cyan-900/40">
             <span className="text-[11px] font-extrabold uppercase tracking-wider text-cyan-600 dark:text-cyan-400">
-              {t("historyProfit")}
+              {t("historyProfit") || "Beneficio Neto (Yield)"}
             </span>
             <div className="mt-1 flex items-baseline gap-2">
               <span className={`text-2xl sm:text-3xl font-black ${netProfit >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
@@ -353,7 +415,7 @@ export default function HistoryPage() {
             </button>
 
             <button
-              onClick={() => setTimingFilter("PREMATCH")}
+              onClick={() => setTimingFilter(timingFilter === "PREMATCH" ? "ALL" : "PREMATCH")}
               className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
                 timingFilter === "PREMATCH"
                   ? "bg-emerald-600 text-white shadow-sm"
@@ -364,7 +426,7 @@ export default function HistoryPage() {
             </button>
 
             <button
-              onClick={() => setTimingFilter("MCP")}
+              onClick={() => setTimingFilter(timingFilter === "MCP" ? "ALL" : "MCP")}
               className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
                 timingFilter === "MCP"
                   ? "bg-purple-600 text-white shadow-sm"
@@ -374,7 +436,16 @@ export default function HistoryPage() {
               🤖 Agente MCP ({mcpCount})
             </button>
 
-
+            <button
+              onClick={() => setTimingFilter(timingFilter === "BOMBA" ? "ALL" : "BOMBA")}
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
+                timingFilter === "BOMBA"
+                  ? "bg-rose-600 text-white shadow-sm"
+                  : "bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800"
+              }`}
+            >
+              💣 Bomba ({bombaCount})
+            </button>
 
             <span className="h-4 w-px bg-slate-300 dark:bg-slate-700 mx-1 hidden sm:inline-block" />
 
@@ -387,27 +458,27 @@ export default function HistoryPage() {
                   : "text-slate-500 hover:text-slate-800 dark:hover:text-white"
               }`}
             >
-              {t("filterAll")}
+              {t("filterAll") || "Todos"}
             </button>
             <button
-              onClick={() => setFilterResult("WON")}
+              onClick={() => setFilterResult(filterResult === "WON" ? "ALL" : "WON")}
               className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
                 filterResult === "WON"
                   ? "bg-emerald-600 text-white shadow-sm"
                   : "bg-emerald-50 text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300"
               }`}
             >
-              {t("filterWon")} ({wonCount})
+              {t("filterWon") || "Ganadas"} ({wonCount})
             </button>
             <button
-              onClick={() => setFilterResult("LOST")}
+              onClick={() => setFilterResult(filterResult === "LOST" ? "ALL" : "LOST")}
               className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
                 filterResult === "LOST"
                   ? "bg-rose-600 text-white shadow-sm"
                   : "bg-rose-50 text-rose-800 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-rose-300"
               }`}
             >
-              {t("filterLost")} ({lostCount})
+              {t("filterLost") || "Perdidas"} ({lostCount})
             </button>
           </div>
 
@@ -421,7 +492,7 @@ export default function HistoryPage() {
                   : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
               }`}
             >
-              🗂️ {t("viewCards")}
+              🗂️ {t("viewCards") || "Cards"}
             </button>
             <button
               onClick={() => setViewMode("table")}
@@ -431,7 +502,7 @@ export default function HistoryPage() {
                   : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
               }`}
             >
-              📊 {t("viewTable")}
+              📊 {t("viewTable") || "Tabla"}
             </button>
           </div>
         </div>
@@ -444,13 +515,13 @@ export default function HistoryPage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar por equipo o liga..."
+              placeholder="Buscar por equipo, liga, mercado o país..."
               className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pl-9 pr-8 text-xs font-bold text-slate-800 placeholder-slate-400 outline-none focus:border-emerald-500 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 cursor-pointer"
               >
                 ✕
               </button>
@@ -459,7 +530,7 @@ export default function HistoryPage() {
 
           <div className="flex flex-wrap items-center gap-2">
             <MultiSelectDropdown
-              label={t("filterLeagueLabel").replace(":", "")}
+              label={t("filterLeagueLabel") ? t("filterLeagueLabel").replace(":", "") : "Competición"}
               options={leagueDropdownOptions}
               selected={selectedLeagues}
               onChange={setSelectedLeagues}
@@ -467,7 +538,7 @@ export default function HistoryPage() {
 
             {marketDropdownOptions.length > 0 && (
               <MultiSelectDropdown
-                label={t("filterMarketLabel").replace(":", "")}
+                label={t("filterMarketLabel") ? t("filterMarketLabel").replace(":", "") : "Mercado"}
                 options={marketDropdownOptions}
                 selected={selectedMarkets}
                 onChange={setSelectedMarkets}
@@ -503,18 +574,18 @@ export default function HistoryPage() {
                 }}
                 className="rounded-xl border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs font-extrabold text-slate-600 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 cursor-pointer"
               >
-                Limpiar
+                🗑️ Limpiar
               </button>
             )}
           </div>
         </div>
 
-        {/* Content View: Picks or Parlays */}
+﻿        {/* Content View: Picks or Parlays */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent mb-4" />
             <span className="text-sm font-bold text-slate-600 dark:text-slate-400">
-              Cargando historial verificado y marcadores oficiales...
+              Cargando historial auditado y marcadores oficiales...
             </span>
           </div>
         ) : historyType === "picks" ? (
@@ -525,7 +596,7 @@ export default function HistoryPage() {
                 No se encontraron registros para estos filtros
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm">
-                Prueba ajustando los filtros de fecha, liga o modalidad.
+                Prueba ajustando los filtros de fecha, liga, deporte o modalidad.
               </p>
             </div>
           ) : viewMode === "cards" ? (
@@ -535,6 +606,7 @@ export default function HistoryPage() {
                 const isWon = item.result === "WON";
                 const conf = getConfidenceBadge(item.confidence, item.probability);
                 const matchTime = item.kickoff ? new Date(item.kickoff).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }) : "";
+                const itemProfit = typeof item.profit === "number" ? item.profit : (isWon ? (item.odds ? item.odds - 1 : 0.85) : -1);
 
                 return (
                   <div
@@ -548,77 +620,71 @@ export default function HistoryPage() {
                     {/* Top Badges Strip */}
                     <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3 dark:border-slate-800">
                       <div className="flex flex-wrap items-center gap-1.5">
-                        <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                          <span>🕒 PRE-MATCH</span>
+                        <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-black uppercase text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                          PRE
                         </span>
-
                         {isMcpItem(item) && (
-                          <span className="inline-flex items-center gap-1 rounded-md bg-purple-100 px-2 py-0.5 text-[10px] font-black text-purple-800 dark:bg-purple-950 dark:text-purple-300 border border-purple-300 dark:border-purple-800">
-                            <span>🤖 MCP</span>
+                          <span className="rounded-md bg-purple-100 px-2 py-0.5 text-[10px] font-black text-purple-800 dark:bg-purple-950 dark:text-purple-300">
+                            🤖 MCP
                           </span>
                         )}
-
-                        {item.pickBadge === "bomba" && (
-                          <span className="inline-flex items-center gap-1 rounded-md bg-gradient-to-r from-orange-500 to-rose-500 px-2 py-0.5 text-[10px] font-black text-white shadow-xs">
-                            <span>💣 BOMBA</span>
+                        {(item.pickBadge === "bomba" || item.odds >= 2.05) && (
+                          <span className="rounded-md bg-rose-100 px-2 py-0.5 text-[10px] font-black text-rose-800 dark:bg-rose-950 dark:text-rose-300">
+                            💣 Bomba
                           </span>
                         )}
                       </div>
 
-                      {/* Result Pill */}
-                      {(() => {
-                        const itemProfit = typeof item.profit === "number" ? item.profit : (isWon ? (item.odds ? item.odds - 1 : 0.85) : -1);
-                        return (
-                          <span
-                            className={`inline-flex items-center gap-1 rounded-xl px-2.5 py-1 text-xs font-black shadow-xs ${
-                              isWon
-                                ? "bg-emerald-600 text-white"
-                                : "bg-rose-600 text-white"
-                            }`}
-                          >
-                            <span>{isWon ? "✓" : "✗"}</span>
-                            <span>{isWon ? t("wonBadge") : t("lostBadge")}</span>
-                            <span className="text-[10px] font-bold opacity-90">
-                              ({itemProfit >= 0 ? `+${itemProfit.toFixed(2)}` : itemProfit.toFixed(2)}u)
-                            </span>
-                          </span>
-                        );
-                      })()}
+                      {/* Result Badge with Profit Units */}
+                      <span
+                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-black ${
+                          isWon
+                            ? "bg-emerald-600 text-white"
+                            : "bg-rose-600 text-white"
+                        }`}
+                      >
+                        <span>{isWon ? "✓" : "✗"}</span>
+                        <span>{isWon ? (t("wonBadge") || "GANADA") : (t("lostBadge") || "PERDIDA")}</span>
+                        <span className="text-[10px] font-bold opacity-90">
+                          ({itemProfit >= 0 ? `+${itemProfit.toFixed(2)}` : itemProfit.toFixed(2)}u)
+                        </span>
+                      </span>
                     </div>
 
-                    {/* Match & Score */}
-                    <div className="my-3.5">
-                      <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 mb-1.5 flex-wrap gap-1">
-                        <span className="truncate max-w-[200px]">{item.league} {item.country ? `• ${item.country}` : ""}</span>
-                        <span className="flex items-center gap-1 text-slate-600 dark:text-slate-300 font-extrabold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md text-[10px]">
-                          <span>📅 {item.date}</span>
-                          {matchTime && <span className="text-emerald-700 dark:text-emerald-400 font-black">• ⏰ {matchTime}</span>}
-                        </span>
+                    {/* League & Kickoff Date */}
+                    <div className="mt-3 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                      <div className="flex items-center gap-1.5 truncate">
+                        <span>🏆</span>
+                        <span className="truncate max-w-[200px] font-bold">{item.league} {item.country ? `• ${item.country}` : ""}</span>
                       </div>
+                      <div className="shrink-0 font-extrabold text-slate-700 dark:text-slate-300">
+                        📅 {item.date} {matchTime ? `• ⏰ ${matchTime}` : ""}
+                      </div>
+                    </div>
 
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="truncate">
-                          <span className="font-black text-slate-900 dark:text-white text-sm truncate">
+                    {/* Match Teams & Official Score */}
+                    <div className="my-3.5 rounded-2xl bg-slate-50/80 p-3.5 border border-slate-100 dark:bg-slate-950/40 dark:border-slate-800/80">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="truncate text-left flex-1">
+                          <span className="font-black text-slate-900 dark:text-white text-sm truncate block">
                             {item.homeTeam}
                           </span>
                         </div>
-
-                        <span className="text-xs font-extrabold text-slate-400 shrink-0">vs</span>
-
-                        <div className="truncate text-right">
-                          <span className="font-black text-slate-900 dark:text-white text-sm truncate">
+                        <span className="text-xs font-black text-slate-400 shrink-0 px-1">vs</span>
+                        <div className="truncate text-right flex-1">
+                          <span className="font-black text-slate-900 dark:text-white text-sm truncate block">
                             {item.awayTeam}
                           </span>
                         </div>
                       </div>
 
                       {/* Official Score Strip */}
-                      <div className="mt-3 flex items-center justify-between rounded-xl bg-slate-50 p-2.5 border border-slate-200 dark:bg-slate-950/60 dark:border-slate-800">
+                      <div className="mt-3 flex items-center justify-between rounded-xl bg-white p-2 border border-slate-200 shadow-2xs dark:bg-slate-900 dark:border-slate-800">
                         <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                          {t("colScore")}:
+                          {t("colScore") || "Marcador Final"}:
                         </span>
                         <span className="text-sm font-black text-slate-900 dark:text-white tracking-wide">
-                          {item.score}
+                          {item.score || "Finalizado"}
                         </span>
                       </div>
                     </div>
@@ -626,17 +692,17 @@ export default function HistoryPage() {
                     {/* Market, Selection, Odds & Confidence */}
                     <div className="space-y-2 border-t border-slate-100 pt-3 dark:border-slate-800 text-xs">
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-500 font-semibold">{t("marketLabel")}:</span>
+                        <span className="text-slate-500 font-semibold">{t("marketLabel") || "Mercado"}:</span>
                         <span className="font-black text-slate-900 dark:text-white">{item.market}</span>
                       </div>
 
                       <div className="flex items-center justify-between">
                         <span className="text-slate-500 font-semibold">Selección:</span>
-                        <span className="font-bold text-emerald-700 dark:text-emerald-400">{item.selection}</span>
+                        <span className="font-black text-emerald-700 dark:text-emerald-400">{item.selection}</span>
                       </div>
 
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-500 font-semibold">{t("oddsLabel")}:</span>
+                        <span className="text-slate-500 font-semibold">{t("oddsLabel") || "Cuota"}:</span>
                         <span className="text-base font-black text-slate-900 dark:text-white">@{item.odds.toFixed(2)}</span>
                       </div>
 
@@ -649,6 +715,17 @@ export default function HistoryPage() {
                         </span>
                       </div>
                     </div>
+
+                    {/* Action Button: Ver H2H / Estadísticas */}
+                    <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800">
+                      <button
+                        onClick={() => setSelectedPickForModal(item)}
+                        className="w-full rounded-xl bg-slate-100 py-2 text-xs font-black text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        <span>📊</span>
+                        <span>Ver H2H y Estadísticas</span>
+                      </button>
+                    </div>
                   </div>
                 );
               })}
@@ -660,18 +737,20 @@ export default function HistoryPage() {
                 <thead className="border-b border-slate-200 bg-slate-50 text-[11px] font-black uppercase tracking-wider text-slate-500 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400">
                   <tr>
                     <th className="p-3.5">Modalidad</th>
-                    <th className="p-3.5">{t("colDate")} & Hora</th>
-                    <th className="p-3.5">{t("colMatch")}</th>
-                    <th className="p-3.5">{t("colScore")}</th>
-                    <th className="p-3.5">{t("colMarket")}</th>
-                    <th className="p-3.5">{t("colOdds")}</th>
-                    <th className="p-3.5">{t("colProb")}</th>
-                    <th className="p-3.5">{t("colResult")}</th>
+                    <th className="p-3.5">{t("colDate") || "Fecha"} & Hora</th>
+                    <th className="p-3.5">{t("colMatch") || "Partido & Liga"}</th>
+                    <th className="p-3.5">{t("colScore") || "Marcador"}</th>
+                    <th className="p-3.5">{t("colMarket") || "Mercado & Selección"}</th>
+                    <th className="p-3.5">{t("colOdds") || "Cuota"}</th>
+                    <th className="p-3.5">{t("colProb") || "Prob."}</th>
+                    <th className="p-3.5">{t("colResult") || "Liquidación"}</th>
+                    <th className="p-3.5 text-center">Detalle</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
                   {filteredHistory.map((item) => {
                     const isWon = item.result === "WON";
+                    const itemProfit = typeof item.profit === "number" ? item.profit : (isWon ? (item.odds ? item.odds - 1 : 0.85) : -1);
 
                     return (
                       <tr key={item.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition">
@@ -682,9 +761,12 @@ export default function HistoryPage() {
                           {isMcpItem(item) && (
                             <span className="ml-1 text-[10px] font-black text-purple-600 dark:text-purple-400">🤖 MCP</span>
                           )}
+                          {(item.pickBadge === "bomba" || item.odds >= 2.05) && (
+                            <span className="ml-1 text-[10px] font-black text-rose-600 dark:text-rose-400">💣</span>
+                          )}
                         </td>
                         <td className="p-3.5 whitespace-nowrap font-medium text-slate-500 dark:text-slate-400">
-                          <div className="font-bold">{item.date}</div>
+                          <div className="font-bold text-slate-900 dark:text-slate-200">{item.date}</div>
                           {item.kickoff && (
                             <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-extrabold">
                               ⏰ {new Date(item.kickoff).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}
@@ -692,15 +774,17 @@ export default function HistoryPage() {
                           )}
                         </td>
                         <td className="p-3.5 font-bold text-slate-900 dark:text-white">
-                          <div>{item.match}</div>
-                          <div className="text-[10px] font-medium text-slate-400">{item.league}</div>
+                          <div className="font-black">{item.match}</div>
+                          <div className="text-[10px] font-medium text-slate-400">{item.league} {item.country ? `• ${item.country}` : ""}</div>
                         </td>
                         <td className="p-3.5 font-black text-slate-900 dark:text-white whitespace-nowrap">
-                          {item.score}
+                          <span className="rounded-lg bg-slate-100 px-2 py-1 dark:bg-slate-800">
+                            {item.score || "—"}
+                          </span>
                         </td>
                         <td className="p-3.5 font-semibold text-slate-700 dark:text-slate-300">
-                          <div>{item.market}</div>
-                          <div className="text-[10px] text-emerald-600 dark:text-emerald-400">{item.selection}</div>
+                          <div className="font-black text-slate-900 dark:text-slate-100">{item.market}</div>
+                          <div className="text-[10px] font-black text-emerald-600 dark:text-emerald-400">{item.selection}</div>
                         </td>
                         <td className="p-3.5 font-black text-slate-900 dark:text-white whitespace-nowrap">
                           @{item.odds.toFixed(2)}
@@ -717,8 +801,20 @@ export default function HistoryPage() {
                             }`}
                           >
                             <span>{isWon ? "✓" : "✗"}</span>
-                            <span>{isWon ? t("wonBadge") : t("lostBadge")}</span>
+                            <span>{isWon ? (t("wonBadge") || "GANADA") : (t("lostBadge") || "PERDIDA")}</span>
+                            <span className="text-[10px] opacity-80">
+                              ({itemProfit >= 0 ? `+${itemProfit.toFixed(2)}` : itemProfit.toFixed(2)}u)
+                            </span>
                           </span>
+                        </td>
+                        <td className="p-3.5 text-center whitespace-nowrap">
+                          <button
+                            onClick={() => setSelectedPickForModal(item)}
+                            className="rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-black text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 transition cursor-pointer"
+                            title="Ver H2H y Estadísticas"
+                          >
+                            📊 H2H
+                          </button>
                         </td>
                       </tr>
                     );
@@ -740,54 +836,92 @@ export default function HistoryPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {filteredParlays.map((parlay) => {
                 const isWon = parlay.result === "WON";
+                const isLost = parlay.result === "LOST";
+                const isPending = !isWon && !isLost;
+
                 return (
                   <div
                     key={parlay.id}
                     className={`rounded-3xl border bg-white p-5 shadow-xs dark:bg-slate-900 ${
                       isWon
                         ? "border-emerald-500/30 dark:border-emerald-500/20"
-                        : "border-rose-500/30 dark:border-rose-500/20"
+                        : isLost
+                        ? "border-rose-500/30 dark:border-rose-500/20"
+                        : "border-amber-500/30 dark:border-amber-500/20"
                     }`}
                   >
+                    {/* Header */}
                     <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
-                      <div>
-                        <span className="text-xs font-extrabold text-slate-400 block">{parlay.date}</span>
-                        <h4 className="text-sm font-black text-slate-900 dark:text-white">{parlay.title}</h4>
-                      </div>
-                      <span
-                        className={`rounded-xl px-2.5 py-1 text-xs font-black ${
-                          isWon ? "bg-emerald-600 text-white" : "bg-rose-600 text-white"
-                        }`}
-                      >
-                        {isWon ? "✓ PARLAY GANADO" : "✗ PARLAY PERDIDO"}
-                      </span>
-                    </div>
-
-                    <div className="my-3 space-y-2">
-                      {parlay.legs.map((leg, li) => (
-                        <div
-                          key={li}
-                          className="flex items-center justify-between rounded-xl bg-slate-50 p-2 text-xs dark:bg-slate-950/60"
-                        >
-                          <div>
-                            <div className="font-bold text-slate-900 dark:text-white">{leg.match}</div>
-                            <div className="text-[10px] text-slate-500">{leg.market} • {leg.league}</div>
-                          </div>
-                          <div className="text-right">
-                            <span className="font-black text-slate-900 dark:text-white">@{leg.odds}</span>
-                            <span className={`block text-[10px] font-bold ${leg.result === "WON" ? "text-emerald-600" : "text-rose-600"}`}>
-                              {leg.result === "WON" ? "✓" : "✗"} ({leg.score})
-                            </span>
-                          </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">🎲</span>
+                        <div>
+                          <h4 className="font-black text-sm text-slate-900 dark:text-white">
+                            Parlay {parlay.legs.length} Selecciones
+                          </h4>
+                          <span className="text-[10px] text-slate-400 font-bold">{parlay.date}</span>
                         </div>
-                      ))}
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-black text-slate-900 dark:text-white bg-slate-100 px-2.5 py-1 rounded-xl dark:bg-slate-800">
+                          Cuota @{parlay.totalOdds.toFixed(2)}
+                        </span>
+                        <span
+                          className={`rounded-xl px-2.5 py-1 text-xs font-black ${
+                            isWon
+                              ? "bg-emerald-600 text-white"
+                              : isLost
+                              ? "bg-rose-600 text-white"
+                              : "bg-amber-500 text-slate-950"
+                          }`}
+                        >
+                          {isWon ? "✓ GANADA (+u)" : isLost ? "✗ PERDIDA (-1.0u)" : "⏳ PENDIENTE"}
+                        </span>
+                      </div>
                     </div>
 
-                    <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-xs dark:border-slate-800">
-                      <span className="font-bold text-slate-500">Cuota Total: @{parlay.totalOdds}</span>
-                      <span className={`font-black ${isWon ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
-                        Beneficio: {(typeof parlay.profit === 'number' ? parlay.profit : (parlay.result === 'WON' ? (parlay.totalOdds - 1) : -1)) >= 0 ? `+${(typeof parlay.profit === 'number' ? parlay.profit : (parlay.result === 'WON' ? (parlay.totalOdds - 1) : -1)).toFixed(2)}` : (typeof parlay.profit === 'number' ? parlay.profit : (parlay.result === 'WON' ? (parlay.totalOdds - 1) : -1)).toFixed(2)} u
-                      </span>
+                    {/* Legs List */}
+                    <div className="my-3 space-y-2.5">
+                      {parlay.legs.map((leg, idx) => {
+                        const legWon = leg.result === "WON" || (leg as any).status === "won";
+                        const legLost = leg.result === "LOST" || (leg as any).status === "lost";
+                        const legSelection = (leg as any).selection || leg.market;
+
+                        return (
+                          <div
+                            key={idx}
+                            className="flex items-center justify-between rounded-xl bg-slate-50 p-2.5 text-xs dark:bg-slate-950/60 border border-slate-100 dark:border-slate-800"
+                          >
+                            <div className="space-y-0.5">
+                              <div className="font-black text-slate-900 dark:text-white">
+                                {leg.match}
+                              </div>
+                              <div className="text-[10px] text-slate-500 dark:text-slate-400">
+                                {leg.league} • <span className="font-bold text-emerald-600 dark:text-emerald-400">{leg.market}: {legSelection}</span>
+                              </div>
+                            </div>
+
+                            <div className="text-right flex items-center gap-2">
+                              {leg.score && (
+                                <span className="text-[11px] font-extrabold text-slate-600 dark:text-slate-300 bg-white px-2 py-0.5 rounded-md dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                                  {leg.score}
+                                </span>
+                              )}
+                              <span
+                                className={`h-6 w-6 rounded-full flex items-center justify-center text-xs font-black ${
+                                  legWon
+                                    ? "bg-emerald-500 text-white"
+                                    : legLost
+                                    ? "bg-rose-500 text-white"
+                                    : "bg-slate-300 text-slate-700 dark:bg-slate-700 dark:text-slate-300"
+                                }`}
+                              >
+                                {legWon ? "✓" : legLost ? "✗" : "•"}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 );
@@ -796,6 +930,15 @@ export default function HistoryPage() {
           )
         )}
       </main>
+
+      {/* Match Detail Modal for H2H and Deep Stats */}
+      {selectedPickForModal && modalPrediction && (
+        <MatchDetailModal
+          prediction={modalPrediction}
+          onClose={() => setSelectedPickForModal(null)}
+          sport={selectedSport !== "all" ? selectedSport : undefined}
+        />
+      )}
     </div>
   );
 }

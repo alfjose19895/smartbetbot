@@ -26,7 +26,7 @@
     "confidence": "Media",
     "pickBadge": "bomba",
     "smartScore": 72,
-    "explanation": "Inter Turku exhibe mayor jerarqu\u00eda y pegada for\u00e1nea (1.2 xG de visita) con 2 victorias en sus salidas recientes. Su efectividad en transici\u00f3n r\u00e1pida ante la fragilidad defensiva de HJK Helsinki (0 ca\u00eddas) respalda el triunfo visitante.",
+    "explanation": "Inter Turku exhibe mayor jerarquía y pegada foránea (1.2 xG de visita) con 2 victorias en sus salidas recientes. Su efectividad en transición rápida ante la fragilidad defensiva de HJK Helsinki (0 caídas) respalda el triunfo visitante.",
     "status": "lost",
     "h2h": [
       {
@@ -143,7 +143,7 @@
     "leagueTier": 1,
     "actualScore": "2 - 1",
     "result": "LOST",
-    "profit": -1.0,
+    "profit": -1,
     "actualGoalsHome": 2,
     "actualGoalsAway": 1,
     "settledAt": "2026-09-12T04:31:15.899Z",
@@ -164,7 +164,7 @@
     "country": "Europa",
     "kickoff": "2026-09-09T11:45:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "Ambos Anotan: S\u00ed",
+    "selection": "Ambos Anotan: Sí",
     "odds": 1.75,
     "bookmakerOdds": 1.75,
     "modelOdds": 1.7,
@@ -176,8 +176,8 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 99,
-    "explanation": "Tanto Barcelona como Feyenoord han visto puerta en 4 de sus \u00faltimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
-    "status": "lost",
+    "explanation": "Tanto Barcelona como Feyenoord han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-11",
@@ -291,17 +291,19 @@
     "homeElo": 2010,
     "awayElo": 1810,
     "leagueTier": 1,
-    "actualScore": "5 - 1 (Ambos S\u00ed)",
+    "actualScore": "5 - 1 (Ambos Sí)",
     "isMcp": true,
     "isMcpPick": true,
     "source": "mcp",
     "bookmaker": "Bet365",
-    "result": "LOST",
-    "profit": -1.0,
+    "result": "WON",
+    "profit": 0.75,
     "actualGoalsHome": 5,
     "actualGoalsAway": 1,
     "settledAt": "2026-09-12T04:31:15.899Z",
-    "sport": "football"
+    "sport": "football",
+    "score": "5 - 1 (Ambos Sí)",
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1635741,
@@ -330,7 +332,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 89,
-    "explanation": "Solidez posicional y eficacia en \u00e1rea propia: VfB Stuttgart concede menos de 0.9 xG de local, mientras que Viking muestra dificultades para generar peligro constante a domicilio (1.2 xG for\u00e1neo).",
+    "explanation": "Solidez posicional y eficacia en área propia: VfB Stuttgart concede menos de 0.9 xG de local, mientras que Viking muestra dificultades para generar peligro constante a domicilio (1.2 xG foráneo).",
     "status": "won",
     "h2h": [
       {
@@ -481,7 +483,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 87,
-    "explanation": "Rendimiento muy fiable de Liverpool en su feudo (4 partidos sin caer en sus \u00faltimas 5 presentaciones). La brecha de generaci\u00f3n de ocasiones claras ante Atletico Madrid inclina con claridad la balanza estad\u00edstica hacia el triunfo local.",
+    "explanation": "Rendimiento muy fiable de Liverpool en su feudo (4 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Atletico Madrid inclina con claridad la balanza estadística hacia el triunfo local.",
     "status": "won",
     "h2h": [
       {
@@ -632,7 +634,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 85,
-    "explanation": "Sporting CP impone una marcada solvencia como anfitri\u00f3n (3 triunfos en sus \u00faltimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Galatasaray que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+    "explanation": "Sporting CP impone una marcada solvencia como anfitrión (3 triunfos en sus últimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Galatasaray que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
     "status": "won",
     "h2h": [
       {
@@ -783,7 +785,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 91,
-    "explanation": "Arsenal exhibe mayor jerarqu\u00eda y pegada for\u00e1nea (1.2 xG de visita) con 2 victorias en sus salidas recientes. Su efectividad en transici\u00f3n r\u00e1pida ante la fragilidad defensiva de Napoli (0 ca\u00eddas) respalda el triunfo visitante.",
+    "explanation": "Arsenal exhibe mayor jerarquía y pegada foránea (1.2 xG de visita) con 2 victorias en sus salidas recientes. Su efectividad en transición rápida ante la fragilidad defensiva de Napoli (0 caídas) respalda el triunfo visitante.",
     "status": "won",
     "h2h": [
       {
@@ -934,7 +936,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
     "smartScore": 99,
-    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
+    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
     "status": "won",
     "h2h": [
       {
@@ -1070,7 +1072,7 @@
     "league": "Copa Libertadores",
     "leagueId": 13,
     "leagueLogo": "https://media.api-sports.io/football/leagues/13.png",
-    "country": "Sudam\u00e9rica",
+    "country": "Sudamérica",
     "kickoff": "2026-09-09T17:00:00-05:00",
     "market": "Ganador Local",
     "selection": "Palmeiras",
@@ -1085,7 +1087,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 86,
-    "explanation": "Solidez posicional y eficacia en \u00e1rea propia: Palmeiras concede menos de 0.9 xG de local, mientras que LDU de Quito muestra dificultades para generar peligro constante a domicilio (1.2 xG for\u00e1neo).",
+    "explanation": "Solidez posicional y eficacia en área propia: Palmeiras concede menos de 0.9 xG de local, mientras que LDU de Quito muestra dificultades para generar peligro constante a domicilio (1.2 xG foráneo).",
     "status": "won",
     "h2h": [
       {
@@ -1236,7 +1238,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 78,
-    "explanation": "Rendimiento muy fiable de Philadelphia Union en su feudo (4 partidos sin caer en sus \u00faltimas 5 presentaciones). La brecha de generaci\u00f3n de ocasiones claras ante FC Cincinnati inclina con claridad la balanza estad\u00edstica hacia el triunfo local.",
+    "explanation": "Rendimiento muy fiable de Philadelphia Union en su feudo (4 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante FC Cincinnati inclina con claridad la balanza estadística hacia el triunfo local.",
     "status": "won",
     "h2h": [
       {
@@ -1387,7 +1389,7 @@
     "confidence": "Media",
     "pickBadge": "bomba",
     "smartScore": 75,
-    "explanation": "Solidez posicional y eficacia en \u00e1rea propia: Minnesota United FC concede menos de 0.9 xG de local, mientras que FC Dallas muestra dificultades para generar peligro constante a domicilio (1.2 xG for\u00e1neo).",
+    "explanation": "Solidez posicional y eficacia en área propia: Minnesota United FC concede menos de 0.9 xG de local, mientras que FC Dallas muestra dificultades para generar peligro constante a domicilio (1.2 xG foráneo).",
     "status": "lost",
     "h2h": [
       {
@@ -1505,7 +1507,7 @@
     "bookmaker": "Bet365",
     "actualScore": "1 - 2",
     "result": "LOST",
-    "profit": -1.0,
+    "profit": -1,
     "actualGoalsHome": 1,
     "actualGoalsAway": 2,
     "settledAt": "2026-09-12T04:31:15.899Z",
@@ -1538,7 +1540,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 87,
-    "explanation": "Vancouver Whitecaps ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras Los Angeles Galaxy acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas \u00e1reas.",
+    "explanation": "Vancouver Whitecaps ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Los Angeles Galaxy acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas áreas.",
     "status": "won",
     "h2h": [
       {
@@ -1689,7 +1691,7 @@
     "confidence": "Alta",
     "pickBadge": "mcp",
     "smartScore": 82,
-    "explanation": "Los Angeles FC impone una marcada solvencia como anfitri\u00f3n (3 triunfos en sus \u00faltimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un New York Red Bulls que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+    "explanation": "Los Angeles FC impone una marcada solvencia como anfitrión (3 triunfos en sus últimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un New York Red Bulls que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
     "status": "won",
     "h2h": [
       {

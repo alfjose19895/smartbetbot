@@ -27,7 +27,8 @@
     "actualScore": "1 - 3",
     "matchTiming": "finished",
     "smartScore": 67,
-    "sport": "nhl"
+    "sport": "nhl",
+    "profit": -1
   },
   {
     "id": "nhl_444590_nhl_total_over",
@@ -57,7 +58,8 @@
     "actualScore": "0 - 6",
     "matchTiming": "finished",
     "smartScore": 41,
-    "sport": "nhl"
+    "sport": "nhl",
+    "profit": 0.85
   },
   {
     "id": "nhl_432533_nhl_ml_home",
@@ -87,7 +89,8 @@
     "actualScore": "6 - 2",
     "matchTiming": "finished",
     "smartScore": 91,
-    "sport": "nhl"
+    "sport": "nhl",
+    "profit": 0.85
   },
   {
     "id": "nhl_432534_nhl_ml_home",
@@ -117,7 +120,8 @@
     "actualScore": "1 - 5",
     "matchTiming": "finished",
     "smartScore": 32,
-    "sport": "nhl"
+    "sport": "nhl",
+    "profit": -1
   },
   {
     "id": "nhl_432535_nhl_total_over",
@@ -147,7 +151,8 @@
     "actualScore": "2 - 0",
     "matchTiming": "finished",
     "smartScore": 86,
-    "sport": "nhl"
+    "sport": "nhl",
+    "profit": -1
   },
   {
     "id": "nhl_444591_nhl_total_over",
@@ -177,7 +182,8 @@
     "actualScore": "2 - 3",
     "matchTiming": "finished",
     "smartScore": 72,
-    "sport": "nhl"
+    "sport": "nhl",
+    "profit": -1
   },
   {
     "id": "nhl_444592_nhl_ml_away",
@@ -207,7 +213,8 @@
     "actualScore": "3 - 2",
     "matchTiming": "finished",
     "smartScore": 61,
-    "sport": "nhl"
+    "sport": "nhl",
+    "profit": -1
   },
   {
     "id": "nhl_444593_nhl_total_over",
@@ -237,7 +244,8 @@
     "actualScore": "2 - 4",
     "matchTiming": "finished",
     "smartScore": 85,
-    "sport": "nhl"
+    "sport": "nhl",
+    "profit": 0.85
   },
   {
     "id": "nhl_444594_nhl_total_over",
@@ -267,7 +275,8 @@
     "actualScore": "4 - 2",
     "matchTiming": "finished",
     "smartScore": 77,
-    "sport": "nhl"
+    "sport": "nhl",
+    "profit": 0.85
   },
   {
     "id": "nhl_444595_nhl_total_over",
@@ -297,7 +306,8 @@
     "actualScore": "4 - 3",
     "matchTiming": "finished",
     "smartScore": 78,
-    "sport": "nhl"
+    "sport": "nhl",
+    "profit": 0.85
   },
   {
     "id": "nhl_444596_nhl_total_over",
@@ -327,7 +337,8 @@
     "actualScore": "4 - 3",
     "matchTiming": "finished",
     "smartScore": 40,
-    "sport": "nhl"
+    "sport": "nhl",
+    "profit": 0.85
   },
   {
     "id": "nhl_444597_nhl_total_over",
@@ -357,7 +368,8 @@
     "actualScore": "1 - 4",
     "matchTiming": "finished",
     "smartScore": 58,
-    "sport": "nhl"
+    "sport": "nhl",
+    "profit": -1
   },
   {
     "id": "nhl_432536_nhl_total_over",
@@ -387,7 +399,8 @@
     "actualScore": "4 - 1",
     "matchTiming": "finished",
     "smartScore": 79,
-    "sport": "nhl"
+    "sport": "nhl",
+    "profit": -1
   },
   {
     "id": "nhl_432537_nhl_total_over",
@@ -417,6 +430,7 @@
     "actualScore": "2 - 4",
     "matchTiming": "finished",
     "smartScore": 66,
-    "sport": "nhl"
+    "sport": "nhl",
+    "profit": 0.85
   }
 ]

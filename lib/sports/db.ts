@@ -2565,13 +2565,24 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
         }
       }
 
-      const isPreSettled = !isLiveMatch && (p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST");
+      // 1. If match has numerical goals or verified score, evaluate market result with 100% precision
+      if (parsedHomeGoals !== null && parsedAwayGoals !== null) {
+        const evaluation = evaluateMarketResult(p.market, parsedHomeGoals, parsedAwayGoals, {
+          selection: p.selection,
+          pick: p.pick,
+          line: (p as any).cornerAnalysis?.recommendedLine,
+          homeTeam: p.homeTeam,
+          awayTeam: p.awayTeam,
+          league: p.league,
+          country: p.country,
+          probability: p.probability,
+          cornerAnalysis: (p as any).cornerAnalysis,
+          expectedCorners: (p as any).cornerAnalysis?.expectedTotalCorners,
+          actualScore: p.actualScore || (p as any).score,
+        });
 
-      if (isPreSettled) {
-        const isWon = p.result === "LOST" || p.status === "lost"
-          ? false
-          : p.result === "WON" || p.status === "won";
-        const scoreText = p.actualScore || (isWon ? "Ganada" : "Perdida");
+        const isWon = evaluation.isWon;
+        const scoreText = evaluation.actualScoreText || p.actualScore || (isWon ? "Ganada" : "Perdida");
         const matchKey = `${hNorm}-${aNorm}-${trueMatchDate}-${(p.market || '').toLowerCase().trim()}`;
         if (!processedMatchKeys.has(matchKey)) {
           processedMatchKeys.add(matchKey);
@@ -2609,28 +2620,11 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
         continue;
       }
 
-      const isFinishedMatch = Boolean((realScore as any)?.isFinished) || (p as any).status === "finished" || (p as any).matchTiming === "finished" || Boolean((p as any).isFinished);
-      if (isFinishedMatch && parsedHomeGoals !== null && parsedAwayGoals !== null) {
-        const evaluation = evaluateMarketResult(p.market, parsedHomeGoals, parsedAwayGoals, {
-          selection: p.selection,
-          pick: p.pick,
-          line: (p as any).cornerAnalysis?.recommendedLine,
-          homeTeam: p.homeTeam,
-          awayTeam: p.awayTeam,
-          league: p.league,
-          country: p.country,
-          probability: p.probability,
-          cornerAnalysis: (p as any).cornerAnalysis,
-          expectedCorners: (p as any).cornerAnalysis?.expectedTotalCorners,
-          actualScore: p.actualScore || (p as any).score,
-        });
-
-        const isWon = p.result === "LOST" || p.status === "lost"
-          ? false
-          : p.result === "WON" || p.status === "won"
-          ? true
-          : evaluation.isWon;
-        const scoreText = p.actualScore || evaluation.actualScoreText;
+      // 2. Pre-settled matches without numerical scores (e.g. multi-sport settled picks)
+      const isPreSettled = !isLiveMatch && (p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST");
+      if (isPreSettled) {
+        const isWon = p.result === "WON" || p.status === "won";
+        const scoreText = p.actualScore || (isWon ? "Ganada" : "Perdida");
         const matchKey = `${hNorm}-${aNorm}-${trueMatchDate}-${(p.market || '').toLowerCase().trim()}`;
         if (!processedMatchKeys.has(matchKey)) {
           processedMatchKeys.add(matchKey);

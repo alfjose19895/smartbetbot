@@ -27,7 +27,8 @@
     "actualScore": "0 - 7",
     "matchTiming": "finished",
     "smartScore": 87,
-    "sport": "nhl"
+    "sport": "nhl",
+    "profit": 2.55
   },
   {
     "id": "nhl_444604_nhl_total_over",
@@ -57,7 +58,8 @@
     "actualScore": "2 - 1",
     "matchTiming": "finished",
     "smartScore": 45,
-    "sport": "nhl"
+    "sport": "nhl",
+    "profit": -1
   },
   {
     "id": "nhl_444605_nhl_pl_away",
@@ -87,6 +89,7 @@
     "actualScore": "8 - 4",
     "matchTiming": "finished",
     "smartScore": 84,
-    "sport": "nhl"
+    "sport": "nhl",
+    "profit": -1
   }
 ]

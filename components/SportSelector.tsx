@@ -10,18 +10,36 @@ interface SportSelectorProps {
   selectedSport?: SupportedSport | 'all';
   onSelectSport?: (sport: SupportedSport | 'all') => void;
   asLinks?: boolean;
+  showAll?: boolean;
 }
 
 export const SportSelector: React.FC<SportSelectorProps> = ({
   selectedSport = 'all',
   onSelectSport,
-  asLinks = false
+  asLinks = false,
+  showAll = false
 }) => {
   const sports = getAllSports();
 
   return (
     <div className="w-full overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-slate-700">
       <div className="flex items-center space-x-2 min-w-max p-1.5 bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-800/80 shadow-md">
+        {showAll && (
+          <button
+            onClick={() => onSelectSport && onSelectSport('all')}
+            className={`px-3.5 py-2 rounded-xl transition-all duration-200 cursor-pointer flex items-center justify-center select-none ${
+              selectedSport === 'all'
+                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg font-black border border-emerald-400/40'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800/70 border border-transparent'
+            }`}
+            type="button"
+          >
+            <div className="flex items-center space-x-2">
+              <span className="text-lg">🌐</span>
+              <span className="font-black text-xs sm:text-sm tracking-wide">Todos los Deportes</span>
+            </div>
+          </button>
+        )}
         {sports.map(s => {
           const isSelected = selectedSport === s.id;
           const isEnabled = isSportFeatureEnabled(s.id);

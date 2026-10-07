@@ -55,7 +55,8 @@
     "matchTiming": "finished",
     "probability": 60,
     "expectedValue": 0,
-    "confidenceScore": 74
+    "confidenceScore": 74,
+    "profit": 1.1
   },
   {
     "id": "nhl_444615_nhl_total_over",
@@ -113,7 +114,8 @@
     "matchTiming": "finished",
     "probability": 72,
     "expectedValue": 0,
-    "confidenceScore": 82
+    "confidenceScore": 82,
+    "profit": -1
   },
   {
     "id": "nhl_444616_nhl_total_under",
@@ -144,7 +146,8 @@
     "expectedValue": 0,
     "confidenceScore": 43,
     "result": "LOST",
-    "actualScore": "3 - 4"
+    "actualScore": "3 - 4",
+    "profit": -1
   },
   {
     "id": "nhl_444616_nhl_pl_away",
@@ -258,7 +261,8 @@
     "expectedValue": 0,
     "confidenceScore": 47,
     "result": "LOST",
-    "actualScore": "0 - 4"
+    "actualScore": "0 - 4",
+    "profit": -1
   },
   {
     "id": "nhl_444618_nhl_total_over",
@@ -316,6 +320,7 @@
     "expectedValue": 0,
     "confidenceScore": 66,
     "result": "LOST",
-    "actualScore": "3 - 4"
+    "actualScore": "3 - 4",
+    "profit": -1
   }
 ]

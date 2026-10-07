@@ -27,7 +27,8 @@
     "matchTiming": "finished",
     "probability": 80,
     "expectedValue": 0,
-    "confidenceScore": 67
+    "confidenceScore": 67,
+    "profit": 0.38
   },
   {
     "id": "nhl_444607_nhl_total_over",
@@ -57,7 +58,8 @@
     "matchTiming": "finished",
     "probability": 65,
     "expectedValue": 0,
-    "confidenceScore": 69
+    "confidenceScore": 69,
+    "profit": -1
   },
   {
     "id": "nhl_444608_nhl_pl_home",
@@ -87,7 +89,8 @@
     "matchTiming": "finished",
     "probability": 80,
     "expectedValue": 0,
-    "confidenceScore": 86
+    "confidenceScore": 86,
+    "profit": 0.49
   },
   {
     "id": "nhl_444606_nhl_total_over",
@@ -117,7 +120,8 @@
     "actualScore": "6 - 3",
     "matchTiming": "finished",
     "smartScore": 51,
-    "sport": "nhl"
+    "sport": "nhl",
+    "profit": 0.64
   },
   {
     "id": "nhl_444607_nhl_pl_away",
@@ -147,7 +151,8 @@
     "actualScore": "3 - 2",
     "matchTiming": "finished",
     "smartScore": 81,
-    "sport": "nhl"
+    "sport": "nhl",
+    "profit": 3.2
   },
   {
     "id": "nhl_444608_nhl_ml_home",
@@ -177,7 +182,8 @@
     "actualScore": "5 - 1",
     "matchTiming": "finished",
     "smartScore": 75,
-    "sport": "nhl"
+    "sport": "nhl",
+    "profit": 1.2
   },
   {
     "id": "nhl_444609_nhl_pl_home",
@@ -207,7 +213,8 @@
     "matchTiming": "finished",
     "probability": 80,
     "expectedValue": 0,
-    "confidenceScore": 87
+    "confidenceScore": 87,
+    "profit": -1
   },
   {
     "id": "nhl_444609_nhl_ml_home",
@@ -237,7 +244,8 @@
     "actualScore": "1 - 3",
     "matchTiming": "finished",
     "smartScore": 72,
-    "sport": "nhl"
+    "sport": "nhl",
+    "profit": -1
   },
   {
     "id": "nhl_444611_nhl_total_under",
@@ -247,7 +255,7 @@
     "sport": "nhl",
     "league": "NHL",
     "market": "TOTAL GOALS",
-    "result": "LOST",
+    "result": "WON",
     "status": "won",
     "country": "NHL",
     "kickoff": "2026-10-01T21:00:00-04:00",
@@ -267,7 +275,8 @@
     "matchTiming": "finished",
     "probability": 65,
     "expectedValue": 0,
-    "confidenceScore": 9
+    "confidenceScore": 9,
+    "profit": 0.82
   },
   {
     "id": "nhl_444610_nhl_total_over",
@@ -297,7 +306,8 @@
     "matchTiming": "finished",
     "probability": 65,
     "expectedValue": 0,
-    "confidenceScore": 9
+    "confidenceScore": 9,
+    "profit": 0.64
   },
   {
     "id": "nhl_444612_nhl_pl_home",
@@ -307,7 +317,7 @@
     "sport": "nhl",
     "league": "NHL",
     "market": "PUCK LINE",
-    "status": "in_play",
+    "status": "lost",
     "country": "NHL",
     "kickoff": "2026-10-01T22:00:00-04:00",
     "awayTeam": "Florida Panthers",
@@ -323,11 +333,13 @@
     "smartScore": 91,
     "actualScore": "3 - 3",
     "explanation": "El modelo evalúa la cobertura de +1.5 con 79.6% de probabilidad considerando tendencia defensiva.",
-    "matchTiming": "live",
+    "matchTiming": "finished",
     "probability": 80,
     "currentScore": "3 - 3",
     "expectedValue": 0,
-    "confidenceScore": 91
+    "confidenceScore": 91,
+    "result": "LOST",
+    "profit": -1
   },
   {
     "id": "nhl_444613_nhl_pl_home",
@@ -357,7 +369,8 @@
     "probability": 80,
     "expectedValue": 0,
     "confidenceScore": 43,
-    "result": "LOST"
+    "result": "LOST",
+    "profit": -1
   },
   {
     "id": "nhl_444612_nhl_ml_away",
@@ -387,6 +400,7 @@
     "actualScore": "4 - 3",
     "matchTiming": "finished",
     "smartScore": 93,
-    "sport": "nhl"
+    "sport": "nhl",
+    "profit": -1
   }
 ]
