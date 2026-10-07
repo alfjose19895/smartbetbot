@@ -161,10 +161,15 @@ export function SportDashboardView({
   const [parlayCopyingImage, setParlayCopyingImage] = useState(false);
   const [parlayCopyImageSuccess, setParlayCopyImageSuccess] = useState(false);
 
-  // History state
-  const [historyViewMode, setHistoryViewMode] = useState<'cards' | 'table'>('cards');
+  // History rich filter states
+  const [historySearchQuery, setHistorySearchQuery] = useState('');
+  const [historyTimingFilter, setHistoryTimingFilter] = useState<'ALL' | 'PREMATCH' | 'VALOR' | 'BOMBA'>('ALL');
   const [historyFilter, setHistoryFilter] = useState<'all' | 'won' | 'lost'>('all');
-  const [historyDateFilter, setHistoryDateFilter] = useState<'all' | '7d' | '30d'>('30d');
+  const [historySelectedDivisions, setHistorySelectedDivisions] = useState<string[]>([]);
+  const [historySelectedMarkets, setHistorySelectedMarkets] = useState<string[]>([]);
+  const [historyDateFilter, setHistoryDateFilter] = useState<'all' | 'today' | 'yesterday' | 'week' | 'month' | '7d' | '30d' | 'custom'>('all');
+  const [historyCustomDate, setHistoryCustomDate] = useState<string>('');
+  const [historyViewMode, setHistoryViewMode] = useState<'cards' | 'table'>('cards');
 
   // Rich Filter States for Signals
   const [searchQuery, setSearchQuery] = useState('');
@@ -465,14 +470,147 @@ export function SportDashboardView({
   const parlayPotentialProfit = (parlayStake * (parlayTotalOdds - 1)).toFixed(2);
   const parlayTotalReturn = (parlayStake * parlayTotalOdds).toFixed(2);
 
-  // Filtered History
+  // Build Division / Conference Options for NHL History
+  const nhlDivisionsList = [
+    { value: 'Atlantic', label: 'Atlantic Division (Eastern)', group: 'Eastern Conference' },
+    { value: 'Metropolitan', label: 'Metropolitan Division (Eastern)', group: 'Eastern Conference' },
+    { value: 'Central', label: 'Central Division (Western)', group: 'Western Conference' },
+    { value: 'Pacific', label: 'Pacific Division (Western)', group: 'Western Conference' },
+  ];
+
+  const historyDivisionOptions: DropdownOption[] = useMemo(() => {
+    const opts: DropdownOption[] = sport === 'nhl' ? [...nhlDivisionsList] : [];
+    auditedHistoricalOpportunities.forEach((h) => {
+      if (h.league && !opts.some((o) => o.value === h.league)) {
+        opts.push({
+          value: h.league,
+          label: h.league,
+          group: h.country || meta.displayName,
+        });
+      }
+    });
+    return opts;
+  }, [sport, auditedHistoricalOpportunities, meta.displayName]);
+
+  const nhlHistoryMarkets = ['Moneyline', 'Puck Line', 'Total Goals'];
+  const historyMarketOptions: DropdownOption[] = useMemo(() => {
+    const markets = sport === 'nhl' ? nhlHistoryMarkets : ['Moneyline', 'Spread', 'Over/Under'];
+    return markets.map((m) => {
+      const count = auditedHistoricalOpportunities.filter((h) => matchesMarketFilter(m, h.market, h.selection)).length;
+      return {
+        value: m,
+        label: `${m} (${count})`,
+      };
+    });
+  }, [sport, auditedHistoricalOpportunities]);
+
+  const isHistoryFiltered =
+    historySearchQuery.trim().length > 0 ||
+    historyTimingFilter !== 'ALL' ||
+    historyFilter !== 'all' ||
+    historySelectedDivisions.length > 0 ||
+    historySelectedMarkets.length > 0 ||
+    historyDateFilter !== 'all' ||
+    Boolean(historyCustomDate);
+
+  const handleClearHistoryFilters = () => {
+    setHistorySearchQuery('');
+    setHistoryTimingFilter('ALL');
+    setHistoryFilter('all');
+    setHistorySelectedDivisions([]);
+    setHistorySelectedMarkets([]);
+    setHistoryDateFilter('all');
+    setHistoryCustomDate('');
+  };
+
+  // Filtered History with full multi-suite support
   const filteredHistory = useMemo(() => {
+    const now = new Date();
+    const getLocalDateStr = (d: Date | string) => {
+      const dateObj = typeof d === 'string' ? new Date(d) : d;
+      const year = dateObj.getFullYear();
+      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+    const todayStr = getLocalDateStr(now);
+    const yesterdayObj = new Date(now);
+    yesterdayObj.setDate(yesterdayObj.getDate() - 1);
+    const yesterdayStr = getLocalDateStr(yesterdayObj);
+    const sevenDaysAgoMs = now.getTime() - 7 * 86400000;
+    const thirtyDaysAgoMs = now.getTime() - 30 * 86400000;
+
     return auditedHistoricalOpportunities.filter((item) => {
+      // 1. Search Query
+      if (historySearchQuery.trim().length > 0) {
+        const q = historySearchQuery.toLowerCase().trim();
+        const text = `${item.match} ${item.homeTeam} ${item.awayTeam} ${item.league} ${item.market} ${item.selection || ''}`.toLowerCase();
+        if (!text.includes(q)) return false;
+      }
+
+      // 2. Result Filter
       if (historyFilter === 'won' && item.result !== 'WON') return false;
       if (historyFilter === 'lost' && item.result !== 'LOST') return false;
+
+      // 3. Timing / Badge Filter
+      if (historyTimingFilter === 'VALOR') {
+        if (item.pickBadge !== 'valor' && (item.edge || 0) < 10) return false;
+      } else if (historyTimingFilter === 'BOMBA') {
+        if (item.pickBadge !== 'bomba' && (item.odds || 0) < 2.0) return false;
+      } else if (historyTimingFilter === 'PREMATCH') {
+        if ((item as any).isLive || item.matchTiming === 'live') return false;
+      }
+
+      // 4. Division / League Multi-Select
+      if (historySelectedDivisions.length > 0) {
+        const normLeague = (item.league || '').toLowerCase();
+        const normHome = (item.homeTeam || '').toLowerCase();
+        const normAway = (item.awayTeam || '').toLowerCase();
+        const matched = historySelectedDivisions.some((sel) => {
+          const s = sel.toLowerCase();
+          return normLeague.includes(s) || normHome.includes(s) || normAway.includes(s);
+        });
+        if (!matched) return false;
+      }
+
+      // 5. Market Multi-Select
+      if (historySelectedMarkets.length > 0) {
+        const matched = historySelectedMarkets.some((m) => matchesMarketFilter(m, item.market, item.selection));
+        if (!matched) return false;
+      }
+
+      // 6. Date Filter
+      if (historyDateFilter === 'today') {
+        const itemDate = item.kickoff ? item.kickoff.split('T')[0] : '';
+        if (itemDate !== todayStr) return false;
+      } else if (historyDateFilter === 'yesterday') {
+        const itemDate = item.kickoff ? item.kickoff.split('T')[0] : '';
+        if (itemDate !== yesterdayStr) return false;
+      } else if (historyDateFilter === '7d' || historyDateFilter === 'week') {
+        const itemMs = item.kickoff ? new Date(item.kickoff).getTime() : 0;
+        if (itemMs < sevenDaysAgoMs) return false;
+      } else if (historyDateFilter === '30d' || historyDateFilter === 'month') {
+        const itemMs = item.kickoff ? new Date(item.kickoff).getTime() : 0;
+        if (itemMs < thirtyDaysAgoMs) return false;
+      } else if (historyDateFilter === 'custom') {
+        if (historyCustomDate) {
+          const itemDate = item.kickoff ? item.kickoff.split('T')[0] : '';
+          if (itemDate !== historyCustomDate) return false;
+        }
+      }
+
       return true;
     });
-  }, [auditedHistoricalOpportunities, historyFilter]);
+  }, [
+    auditedHistoricalOpportunities,
+    historySearchQuery,
+    historyFilter,
+    historyTimingFilter,
+    historySelectedDivisions,
+    historySelectedMarkets,
+    historyDateFilter,
+    historyCustomDate,
+  ]);
 
   // Report Metrics from Real History
   const reportMetrics = useMemo(() => {
@@ -1409,34 +1547,17 @@ export function SportDashboardView({
         {/* TAB 5: HISTORIAL AUDITADO (TABLE & CARDS VIEW)                            */}
         {/* ========================================================================= */}
         {activeTab === 'history' && (
-          <section className="space-y-5">
-            {/* Control Bar: View Toggle & Filters */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-900/90 p-4 shadow-xl">
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setHistoryFilter('all')}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
-                    historyFilter === 'all' ? 'bg-emerald-600 text-white' : 'bg-slate-950 text-slate-300 hover:bg-slate-800'
-                  }`}
-                >
-                  🌟 Todas ({auditedHistoricalOpportunities.length})
-                </button>
-                <button
-                  onClick={() => setHistoryFilter('won')}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
-                    historyFilter === 'won' ? 'bg-emerald-600 text-white' : 'bg-slate-950 text-slate-300 hover:bg-slate-800'
-                  }`}
-                >
-                  ✓ Ganadas ({auditedHistoricalOpportunities.filter((h) => h.result === 'WON').length})
-                </button>
-                <button
-                  onClick={() => setHistoryFilter('lost')}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
-                    historyFilter === 'lost' ? 'bg-rose-600 text-white' : 'bg-slate-950 text-slate-300 hover:bg-slate-800'
-                  }`}
-                >
-                  ✗ Perdidas ({auditedHistoricalOpportunities.filter((h) => h.result === 'LOST').length})
-                </button>
+          <section className="space-y-4">
+            {/* Header Description */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+              <div>
+                <h2 className="text-lg sm:text-xl font-black text-white flex items-center gap-2">
+                  <span>??</span>
+                  <span>Historial Auditado y Liquidaci?n: {meta.displayName}</span>
+                </h2>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Registro transparente de todos los pron?sticos oficiales con resultados reales verificados y liquidaci?n exacta.
+                </p>
               </div>
 
               {/* Cards vs Table View Toggle */}
@@ -1447,7 +1568,7 @@ export function SportDashboardView({
                     historyViewMode === 'cards' ? 'bg-slate-800 text-white shadow-xs' : 'text-slate-400 hover:text-white'
                   }`}
                 >
-                  🎴 Cards
+                  ?? Cards
                 </button>
                 <button
                   onClick={() => setHistoryViewMode('table')}
@@ -1455,11 +1576,224 @@ export function SportDashboardView({
                     historyViewMode === 'table' ? 'bg-slate-800 text-white shadow-xs' : 'text-slate-400 hover:text-white'
                   }`}
                 >
-                  📑 Tabla
+                  ?? Tabla
                 </button>
               </div>
             </div>
 
+            {/* Timing / Status Badges Strip */}
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 bg-slate-900/80 p-2.5 rounded-2xl border border-slate-800">
+              <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 px-2 flex items-center gap-1">
+                ??? Filtro:
+              </span>
+              <button
+                onClick={() => { setHistoryTimingFilter('ALL'); setHistoryFilter('all'); }}
+                className={`rounded-xl px-3 py-1.5 text-xs font-black transition cursor-pointer ${
+                  historyTimingFilter === 'ALL' && historyFilter === 'all'
+                    ? 'bg-slate-100 text-slate-950 shadow-sm font-black'
+                    : 'text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                ?? Todos ({auditedHistoricalOpportunities.length})
+              </button>
+              <button
+                onClick={() => setHistoryTimingFilter(historyTimingFilter === 'PREMATCH' ? 'ALL' : 'PREMATCH')}
+                className={`rounded-xl px-3 py-1.5 text-xs font-black transition cursor-pointer ${
+                  historyTimingFilter === 'PREMATCH'
+                    ? 'bg-cyan-500 text-slate-950 shadow-md font-black'
+                    : 'bg-cyan-500/10 text-cyan-300 hover:bg-cyan-500/20'
+                }`}
+              >
+                ?? Pre-Match
+              </button>
+              <button
+                onClick={() => setHistoryTimingFilter(historyTimingFilter === 'VALOR' ? 'ALL' : 'VALOR')}
+                className={`rounded-xl px-3 py-1.5 text-xs font-black transition cursor-pointer ${
+                  historyTimingFilter === 'VALOR'
+                    ? 'bg-emerald-500 text-slate-950 shadow-md font-black'
+                    : 'bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20'
+                }`}
+              >
+                ?? Valor (+EV)
+              </button>
+              <button
+                onClick={() => setHistoryTimingFilter(historyTimingFilter === 'BOMBA' ? 'ALL' : 'BOMBA')}
+                className={`rounded-xl px-3 py-1.5 text-xs font-black transition cursor-pointer ${
+                  historyTimingFilter === 'BOMBA'
+                    ? 'bg-rose-500 text-white shadow-md font-black'
+                    : 'bg-rose-500/10 text-rose-300 hover:bg-rose-500/20'
+                }`}
+              >
+                ?? Bomba
+              </button>
+              <div className="h-4 w-px bg-slate-700 mx-1 hidden sm:block" />
+              <button
+                onClick={() => setHistoryFilter(historyFilter === 'won' ? 'all' : 'won')}
+                className={`rounded-xl px-3 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1 ${
+                  historyFilter === 'won'
+                    ? 'bg-emerald-600 text-white shadow-md'
+                    : 'bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20'
+                }`}
+              >
+                <span>? Ganadas ({reportMetrics.won})</span>
+              </button>
+              <button
+                onClick={() => setHistoryFilter(historyFilter === 'lost' ? 'all' : 'lost')}
+                className={`rounded-xl px-3 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1 ${
+                  historyFilter === 'lost'
+                    ? 'bg-rose-600 text-white shadow-md'
+                    : 'bg-rose-500/10 text-rose-300 hover:bg-rose-500/20'
+                }`}
+              >
+                <span>? Perdidas ({reportMetrics.lost})</span>
+              </button>
+            </div>
+
+            {/* Search and Advanced Filter Bar */}
+            <div className="flex flex-col gap-3 rounded-2xl border border-slate-800 bg-slate-900/90 p-3 sm:p-4 shadow-xl">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-2.5 sm:gap-3 items-center">
+                {/* Search Bar */}
+                <div className="relative lg:col-span-4">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">??</span>
+                  <input
+                    type="text"
+                    value={historySearchQuery}
+                    onChange={(e) => setHistorySearchQuery(e.target.value)}
+                    placeholder={sport === 'nhl' ? "Buscar equipo, divisi?n, mercado..." : "Buscar partido, equipo, mercado..."}
+                    className="w-full rounded-xl border border-slate-800 bg-slate-950 pl-10 pr-9 py-2 text-xs text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
+                  />
+                  {historySearchQuery && (
+                    <button
+                      onClick={() => setHistorySearchQuery('')}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs cursor-pointer"
+                    >
+                      ?
+                    </button>
+                  )}
+                </div>
+
+                {/* Division / League Multi-Select */}
+                <div className="lg:col-span-3">
+                  <MultiSelectDropdown
+                    label={sport === 'nhl' ? 'Divisi?n / Conf.' : 'Competici?n'}
+                    options={historyDivisionOptions}
+                    selected={historySelectedDivisions}
+                    onChange={setHistorySelectedDivisions}
+                    placeholderAll={sport === 'nhl' ? 'Todas las divisiones' : 'Todas las competiciones'}
+                  />
+                </div>
+
+                {/* Market Multi-Select */}
+                <div className="lg:col-span-3">
+                  <MultiSelectDropdown
+                    label="Mercados"
+                    options={historyMarketOptions}
+                    selected={historySelectedMarkets}
+                    onChange={setHistorySelectedMarkets}
+                    placeholderAll="Todos los mercados"
+                  />
+                </div>
+
+                {/* Date Filter Dropdown */}
+                <div className="lg:col-span-2">
+                  <select
+                    value={historyDateFilter}
+                    onChange={(e) => setHistoryDateFilter(e.target.value as any)}
+                    className="w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs font-bold text-slate-300 focus:border-emerald-500 focus:outline-hidden cursor-pointer"
+                  >
+                    <option value="all">?? Toda la fecha</option>
+                    <option value="today">Hoy</option>
+                    <option value="yesterday">Ayer</option>
+                    <option value="week">?ltimos 7 d?as</option>
+                    <option value="month">?ltimos 30 d?as</option>
+                    <option value="custom">Personalizado...</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Custom Date Input if selected */}
+              {historyDateFilter === 'custom' && (
+                <div className="flex items-center gap-2 pt-2 border-t border-slate-800/80">
+                  <span className="text-xs text-slate-400 font-bold">Fecha espec?fica:</span>
+                  <input
+                    type="date"
+                    value={historyCustomDate}
+                    onChange={(e) => setHistoryCustomDate(e.target.value)}
+                    className="rounded-xl border border-slate-800 bg-slate-950 px-3 py-1.5 text-xs text-white focus:border-emerald-500 focus:outline-hidden"
+                  />
+                  {historyCustomDate && (
+                    <button
+                      onClick={() => setHistoryCustomDate('')}
+                      className="text-xs text-slate-400 hover:text-white underline cursor-pointer"
+                    >
+                      Limpiar fecha
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* Active Filters Summary & Reset */}
+              {isHistoryFiltered && (
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-800/80 text-xs">
+                  <div className="flex flex-wrap items-center gap-1.5 text-slate-400">
+                    <span className="font-bold text-slate-300">Filtros activos:</span>
+                    {historySearchQuery && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-800 text-white text-[11px]">
+                        "{historySearchQuery}"
+                        <button onClick={() => setHistorySearchQuery('')} className="hover:text-rose-400 cursor-pointer">?</button>
+                      </span>
+                    )}
+                    {historyTimingFilter !== 'ALL' && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-800 text-cyan-300 text-[11px]">
+                        {historyTimingFilter}
+                        <button onClick={() => setHistoryTimingFilter('ALL')} className="hover:text-rose-400 cursor-pointer">?</button>
+                      </span>
+                    )}
+                    {historyFilter !== 'all' && (
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] ${
+                        historyFilter === 'won' ? 'bg-emerald-950 text-emerald-300' : 'bg-rose-950 text-rose-300'
+                      }`}>
+                        {historyFilter === 'won' ? 'Ganadas' : 'Perdidas'}
+                        <button onClick={() => setHistoryFilter('all')} className="hover:text-rose-400 cursor-pointer">?</button>
+                      </span>
+                    )}
+                    {historySelectedDivisions.map((div) => (
+                      <span key={div} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-800 text-white text-[11px]">
+                        {div}
+                        <button onClick={() => setHistorySelectedDivisions(historySelectedDivisions.filter((d) => d !== div))} className="hover:text-rose-400 cursor-pointer">?</button>
+                      </span>
+                    ))}
+                    {historySelectedMarkets.map((m) => (
+                      <span key={m} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-800 text-white text-[11px]">
+                        {m}
+                        <button onClick={() => setHistorySelectedMarkets(historySelectedMarkets.filter((x) => x !== m))} className="hover:text-rose-400 cursor-pointer">?</button>
+                      </span>
+                    ))}
+                    {historyDateFilter !== 'all' && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-800 text-amber-300 text-[11px]">
+                        {historyDateFilter === 'custom' ? (historyCustomDate || 'Fecha personalizada') : historyDateFilter}
+                        <button onClick={() => { setHistoryDateFilter('all'); setHistoryCustomDate(''); }} className="hover:text-rose-400 cursor-pointer">?</button>
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    onClick={handleClearHistoryFilters}
+                    className="px-2.5 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-[11px] font-bold transition cursor-pointer"
+                  >
+                    ??? Limpiar todos los filtros
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Results Count Banner */}
+            <div className="flex items-center justify-between text-xs text-slate-400 px-1">
+              <span>
+                Mostrando <strong className="text-white">{filteredHistory.length}</strong> de <strong className="text-white">{auditedHistoricalOpportunities.length}</strong> pron?sticos auditados
+              </span>
+            </div>
+
+            {/* Content Views: Loading / Empty / Cards / Table */}
             {historyLoading ? (
               <div className="flex flex-col items-center justify-center py-20">
                 <div className="h-10 w-10 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent mb-3" />
@@ -1467,9 +1801,25 @@ export function SportDashboardView({
               </div>
             ) : filteredHistory.length === 0 ? (
               <div className="rounded-3xl border border-dashed border-slate-800 bg-slate-900/40 p-12 text-center">
-                <span className="text-4xl mb-3 block">📜</span>
-                <h3 className="text-base font-black text-white">No hay pronósticos auditados en el historial para {meta.displayName}</h3>
-                <p className="text-xs text-slate-400 mt-1">Los partidos se registrarán y liquidarán automáticamente con el resultado oficial.</p>
+                <span className="text-4xl mb-3 block">??</span>
+                <h3 className="text-base font-black text-white">
+                  {isHistoryFiltered
+                    ? 'No se encontraron pron?sticos con los filtros seleccionados'
+                    : `No hay pron?sticos auditados en el historial para ${meta.displayName}`}
+                </h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  {isHistoryFiltered
+                    ? 'Prueba modificando o limpiando los filtros para ver m?s resultados.'
+                    : 'Los partidos se registrar?n y liquidar?n autom?ticamente con el resultado oficial.'}
+                </p>
+                {isHistoryFiltered && (
+                  <button
+                    onClick={handleClearHistoryFilters}
+                    className="mt-4 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs cursor-pointer shadow-lg"
+                  >
+                    Mostrar todos los pron?sticos
+                  </button>
+                )}
               </div>
             ) : historyViewMode === 'cards' ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -1494,12 +1844,12 @@ export function SportDashboardView({
                         <th className="p-3.5">Cuota</th>
                         <th className="p-3.5">Prob.</th>
                         <th className="p-3.5">Resultado</th>
-                        <th className="p-3.5 text-right">Análisis</th>
+                        <th className="p-3.5 text-right">An?lisis</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-800/80">
                       {filteredHistory.map((item) => {
-                        const isWon = item.result === 'WON';
+                        const isWon = item.result === 'WON' || item.status === 'won';
                         return (
                           <tr key={item.id} className="hover:bg-slate-800/40 transition">
                             <td className="p-3.5 font-medium text-slate-400 whitespace-nowrap">
@@ -1510,7 +1860,7 @@ export function SportDashboardView({
                               <div className="text-[10px] text-slate-400 font-normal">{item.league}</div>
                             </td>
                             <td className="p-3.5 font-black text-white whitespace-nowrap">
-                              {item.actualScore || 'Finalizado'}
+                              {item.actualScore || (item as any).score || 'Finalizado'}
                             </td>
                             <td className="p-3.5 font-bold text-slate-300">
                               <div>{item.market}</div>
@@ -1526,7 +1876,7 @@ export function SportDashboardView({
                               <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black ${
                                 isWon ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/30' : 'bg-rose-950 text-rose-300 border border-rose-500/30'
                               }`}>
-                                {isWon ? '✓ GANADA' : '✗ PERDIDA'}
+                                {isWon ? '? GANADA' : '? PERDIDA'}
                               </span>
                             </td>
                             <td className="p-3.5 text-right whitespace-nowrap">
@@ -1534,7 +1884,7 @@ export function SportDashboardView({
                                 onClick={() => setActiveModalPick(item)}
                                 className="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-emerald-600 text-[11px] font-bold text-white cursor-pointer"
                               >
-                                📊 H2H
+                                ?? H2H
                               </button>
                             </td>
                           </tr>
@@ -1548,9 +1898,6 @@ export function SportDashboardView({
           </section>
         )}
 
-        {/* ========================================================================= */}
-        {/* TAB 6: MÉTRICAS & RENDIMIENTO (CALCULATED FROM REAL HISTORY)             */}
-        {/* ========================================================================= */}
         {activeTab === 'reports' && (
           <section className="space-y-4">
             <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-5 sm:p-6 shadow-xl">

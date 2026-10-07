@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+﻿import { NextRequest, NextResponse } from 'next/server';
 import { isSportFeatureEnabled } from '@/lib/sports/config';
 import { SportProviderRouter } from '@/lib/sports/provider-router';
 import { SupportedSport } from '@/lib/sports/types';
@@ -14,7 +14,17 @@ export async function GET(request: NextRequest) {
   }
 
   const todayIso = new Date().toISOString().split('T')[0];
-  const results: Record<string, { enabled: boolean; synced: number; error?: string; message?: string; games?: { id: string; home: string; away: string }[] }> = {};
+  const results: Record<
+    string,
+    {
+      enabled: boolean;
+      synced: number;
+      signalsGenerated?: number;
+      error?: string;
+      message?: string;
+      games?: { id: string; home: string; away: string }[];
+    }
+  > = {};
 
   const sports: SupportedSport[] = ['nba', 'nfl', 'ncaaf', 'nhl'];
 
@@ -32,16 +42,30 @@ export async function GET(request: NextRequest) {
 
     try {
       const schedule = await provider.getSchedule(todayIso);
+      let signalsGenerated = 0;
+
+      // When running for NHL, generate confirmed lineup signals and snapshot
+      if (sport === 'nhl') {
+        try {
+          const { NHLSyncEngine } = await import('@/lib/sports/nhl/nhl-sync');
+          const nhlData = await NHLSyncEngine.getTodayNHLSignals(todayIso, true);
+          signalsGenerated = nhlData.signals?.length || 0;
+        } catch (nhlErr) {
+          console.warn('[sync-multisport] NHL signals generation error:', nhlErr);
+        }
+      }
+
       results[sport] = {
         enabled: true,
         synced: schedule.length,
-        games: schedule.map(g => ({ id: g.id, home: g.homeTeam.name, away: g.awayTeam.name }))
+        signalsGenerated,
+        games: schedule.map((g) => ({ id: g.id, home: g.homeTeam.name, away: g.awayTeam.name })),
       };
     } catch (err) {
       results[sport] = {
         enabled: true,
         synced: 0,
-        error: err instanceof Error ? err.message : 'Sync error'
+        error: err instanceof Error ? err.message : 'Sync error',
       };
     }
   }
@@ -50,6 +74,6 @@ export async function GET(request: NextRequest) {
     success: true,
     date: todayIso,
     syncedAt: new Date().toISOString(),
-    results
+    results,
   });
 }

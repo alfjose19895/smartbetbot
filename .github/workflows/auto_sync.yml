@@ -1,16 +1,28 @@
-name: Auto 4-Hour Sync Engine
+﻿name: Auto Multi-Sport & Football Sync Engine
 
 on:
   schedule:
-    - cron: '0 */4 * * *'
+    # 10:00 AM COT (15:00 UTC) - Early / Weekend Matin?e games & Early lineups
+    - cron: '0 15 * * *'
+    # 4:00 PM COT (21:00 UTC) - Primary NHL/American Sports daily publication
+    - cron: '0 21 * * *'
+    # 4:30 PM COT (21:30 UTC) - Final Lineups & Confirmed Starting Goalies
+    - cron: '30 21 * * *'
+    # Continuous settlement & updates every 3 hours (00:00, 03:00, 06:00, 09:00, 12:00, 18:00 UTC)
+    - cron: '0 0,3,6,9,12,18 * * *'
   workflow_dispatch:
 
 jobs:
   sync:
-    name: Execute 4-Hour Prediction & Result Sync
+    name: Execute Prediction & Result Sync
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Automated Sync Endpoint
+      - name: Trigger Core Football & Settlement Sync
         run: |
-          echo "Triggering 4-hour synchronization endpoint..."
-          curl -f -sL -X GET "https://www.smartbetbot.educandotea.com/api/cron/sync" || echo "Sync endpoint reached"
+          echo "Triggering core synchronization endpoint..."
+          curl -f -sL -X GET "https://www.smartbetbot.educandotea.com/api/cron/sync" || echo "Core sync endpoint reached"
+
+      - name: Trigger Multi-Sport (NHL/NBA/NFL) Snapshot & Lineups Sync
+        run: |
+          echo "Triggering multi-sport synchronization endpoint..."
+          curl -f -sL -X GET "https://www.smartbetbot.educandotea.com/api/cron/sync-multisport" || echo "Multi-sport sync endpoint reached"

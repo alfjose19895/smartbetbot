@@ -1286,49 +1286,86 @@ export function evaluateMarketResult(
     return { isWon, actualScoreText: `${homeGoals} - ${awayGoals} (${totalGoals} Goles)` };
   }
 
-  // 4. Ganador Visitante / 2 / Away Win
+  // 4. Hándicap Asiático & Puck Line (NHL / Multi-Sport / Football)
+  const isPuckOrSpread =
+    mClean.includes("handicap") ||
+    mClean.includes("puck line") ||
+    mClean.includes("puckline") ||
+    mClean.includes("spread") ||
+    sClean.includes("+1.5") ||
+    sClean.includes("-1.5") ||
+    sClean.includes("+2.5") ||
+    sClean.includes("-2.5") ||
+    sClean.includes("+0.5") ||
+    sClean.includes("-0.5") ||
+    sClean.includes("+3.5") ||
+    sClean.includes("-3.5");
+
+  if (isPuckOrSpread) {
+    const diff = homeGoals - awayGoals;
+    const isHome =
+      (hNorm && sClean.includes(hNorm)) ||
+      sClean.includes("local") ||
+      sClean.includes("home") ||
+      mClean.includes("local") ||
+      mClean.includes("home");
+
+    const plusMatch = sClean.match(/\+\s*(\d+\.?\d*)/) || pClean.match(/\+\s*(\d+\.?\d*)/);
+    const minusMatch = sClean.match(/-\s*(\d+\.?\d*)/) || pClean.match(/-\s*(\d+\.?\d*)/);
+    const spreadVal = plusMatch ? parseFloat(plusMatch[1]) : minusMatch ? -parseFloat(minusMatch[1]) : 1.5;
+
+    const effectiveDiff = isHome ? diff : -diff;
+    const isWon = (effectiveDiff + spreadVal) > 0;
+    return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
+  }
+
+  // 5. Ganador Visitante / 2 / Away Win
   if (
-    mClean === "gana visitante" ||
-    mClean === "ganador visitante" ||
-    mClean === "2" ||
-    mClean === "away" ||
-    mClean.startsWith("gana visitante") ||
-    mClean.startsWith("ganador visitante") ||
-    (mClean.includes("visitante") && (mClean.includes("gana") || mClean.includes("ganador"))) ||
-    sClean === "2" ||
-    sClean === "visitante" ||
-    (aNorm && sClean.includes(aNorm)) ||
-    (aNorm && aNorm.includes(sClean) && sClean.length > 3)
+    !isPuckOrSpread && (
+      mClean === "gana visitante" ||
+      mClean === "ganador visitante" ||
+      mClean === "2" ||
+      mClean === "away" ||
+      mClean.startsWith("gana visitante") ||
+      mClean.startsWith("ganador visitante") ||
+      (mClean.includes("visitante") && (mClean.includes("gana") || mClean.includes("ganador"))) ||
+      sClean === "2" ||
+      sClean === "visitante" ||
+      (aNorm && sClean.includes(aNorm) && !sClean.includes("+") && !sClean.includes("-")) ||
+      (aNorm && aNorm.includes(sClean) && sClean.length > 3)
+    )
   ) {
     const isWon = awayGoals > homeGoals;
     return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
   }
 
-  // 5. Ganador Local / 1 / Home Win
+  // 6. Ganador Local / 1 / Home Win
   if (
-    mClean === "gana local" ||
-    mClean === "ganador local" ||
-    mClean === "1" ||
-    mClean === "home" ||
-    mClean.startsWith("gana local") ||
-    mClean.startsWith("ganador local") ||
-    (mClean.includes("local") && (mClean.includes("gana") || mClean.includes("ganador"))) ||
-    sClean === "1" ||
-    sClean === "local" ||
-    (hNorm && sClean.includes(hNorm)) ||
-    (hNorm && hNorm.includes(sClean) && sClean.length > 3)
+    !isPuckOrSpread && (
+      mClean === "gana local" ||
+      mClean === "ganador local" ||
+      mClean === "1" ||
+      mClean === "home" ||
+      mClean.startsWith("gana local") ||
+      mClean.startsWith("ganador local") ||
+      (mClean.includes("local") && (mClean.includes("gana") || mClean.includes("ganador"))) ||
+      sClean === "1" ||
+      sClean === "local" ||
+      (hNorm && sClean.includes(hNorm) && !sClean.includes("+") && !sClean.includes("-")) ||
+      (hNorm && hNorm.includes(sClean) && sClean.length > 3)
+    )
   ) {
     const isWon = homeGoals > awayGoals;
     return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
   }
 
-  // 6. Empate / X / Draw
+  // 7. Empate / X / Draw
   if (mClean === "empate" || mClean === "x" || mClean === "draw" || mClean.includes("empate") || mClean.includes("(x)") || sClean === "x" || sClean === "empate") {
     const isWon = homeGoals === awayGoals;
     return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
   }
 
-  // 7. Doble Oportunidad (1X, X2, 12)
+  // 8. Doble Oportunidad (1X, X2, 12)
   if (
     mClean.includes("doble oportunidad") ||
     mClean.includes("double chance") ||
@@ -1349,24 +1386,6 @@ export function evaluateMarketResult(
     }
     if (mClean.includes("12") || sClean.includes("12")) {
       const isWon = homeGoals !== awayGoals;
-      return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
-    }
-  }
-
-  // 8. Hándicap Asiático & Puck Line (NHL / Multi-Sport)
-  if (mClean.includes("handicap") || mClean.includes("puck line") || mClean.includes("puckline") || mClean.includes("spread")) {
-    const diff = homeGoals - awayGoals;
-    const isHome = sClean.includes(hNorm) || sClean.includes("local") || sClean.includes("home") || mClean.includes("local");
-
-    const plusMatch = sClean.match(/\+\s*(\d+\.?\d*)/);
-    const minusMatch = sClean.match(/-\s*(\d+\.?\d*)/);
-    const spreadVal = plusMatch ? parseFloat(plusMatch[1]) : minusMatch ? -parseFloat(minusMatch[1]) : 1.5;
-
-    if (isHome) {
-      const isWon = (diff + spreadVal) > 0;
-      return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
-    } else {
-      const isWon = (-diff + spreadVal) > 0;
       return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
     }
   }
