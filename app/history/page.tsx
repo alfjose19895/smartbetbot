@@ -52,6 +52,14 @@ export default function HistoryPage() {
   const [customDate, setCustomDate] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
+  const handleSelectSport = (sport: SupportedSport | "all") => {
+    setSelectedSport(sport);
+    // Reset specific filters when switching sport
+    setSelectedLeagues([]);
+    setSelectedMarkets([]);
+    setSearchQuery("");
+  };
+
   const fetchHistory = async (sport: SupportedSport | "all" = selectedSport, showLoader = false) => {
     try {
       if (showLoader) setLoading(true);
@@ -89,46 +97,197 @@ export default function HistoryPage() {
     };
   }, [selectedSport]);
 
-﻿  // Build classified league options grouped by Country
+﻿  // Build classified league / conference options tailored to the selected sport
   const leagueDropdownOptions: DropdownOption[] = useMemo(() => {
-    const options: DropdownOption[] = SUPPORTED_LEAGUES.map((l) => ({
-      value: l.name,
-      label: `${l.name} (${l.country})`,
-      group: l.country,
-      badge: l.tier ? `Div ${l.tier}` : undefined,
-    }));
+    const options: DropdownOption[] = [];
+    const seen = new Set<string>();
 
+    if (selectedSport === "football") {
+      SUPPORTED_LEAGUES.forEach((l) => {
+        seen.add(l.name.toLowerCase());
+        options.push({
+          value: l.name,
+          label: `${l.name} (${l.country})`,
+          group: l.country,
+          badge: l.tier ? `Div ${l.tier}` : undefined,
+        });
+      });
+    } else if (selectedSport === "nhl") {
+      const nhlDivisions: DropdownOption[] = [
+        { value: "NHL", label: "NHL (Liga Oficial)", group: "NHL" },
+        { value: "NHL Conferencia Este", label: "NHL Conferencia Este", group: "Conferencias" },
+        { value: "NHL Conferencia Oeste", label: "NHL Conferencia Oeste", group: "Conferencias" },
+        { value: "División Atlántico", label: "División Atlántico", group: "Divisiones" },
+        { value: "División Metropolitana", label: "División Metropolitana", group: "Divisiones" },
+        { value: "División Central", label: "División Central", group: "Divisiones" },
+        { value: "División Pacífico", label: "División Pacífico", group: "Divisiones" },
+      ];
+      nhlDivisions.forEach((opt) => {
+        seen.add(opt.value.toLowerCase());
+        options.push(opt);
+      });
+    } else if (selectedSport === "nba") {
+      const nbaOptions: DropdownOption[] = [
+        { value: "NBA", label: "NBA (Liga Oficial)", group: "NBA" },
+        { value: "NBA Conferencia Este", label: "NBA Conferencia Este", group: "Conferencias" },
+        { value: "NBA Conferencia Oeste", label: "NBA Conferencia Oeste", group: "Conferencias" },
+        { value: "División Atlántico", label: "División Atlántico", group: "Divisiones" },
+        { value: "División Central", label: "División Central", group: "Divisiones" },
+        { value: "División Sureste", label: "División Sureste", group: "Divisiones" },
+        { value: "División Noroeste", label: "División Noroeste", group: "Divisiones" },
+        { value: "División Pacífico", label: "División Pacífico", group: "Divisiones" },
+        { value: "División Suroeste", label: "División Suroeste", group: "Divisiones" },
+      ];
+      nbaOptions.forEach((opt) => {
+        seen.add(opt.value.toLowerCase());
+        options.push(opt);
+      });
+    } else if (selectedSport === "nfl") {
+      const nflOptions: DropdownOption[] = [
+        { value: "NFL", label: "NFL (Liga Oficial)", group: "NFL" },
+        { value: "NFL AFC", label: "Conferencia Americana (AFC)", group: "Conferencias" },
+        { value: "NFL NFC", label: "Conferencia Nacional (NFC)", group: "Conferencias" },
+      ];
+      nflOptions.forEach((opt) => {
+        seen.add(opt.value.toLowerCase());
+        options.push(opt);
+      });
+    } else if (selectedSport === "ncaaf") {
+      const ncaafOptions: DropdownOption[] = [
+        { value: "NCAAF", label: "NCAAF (Liga Oficial)", group: "NCAAF" },
+        { value: "SEC", label: "SEC Conference", group: "Conferencias" },
+        { value: "Big Ten", label: "Big Ten Conference", group: "Conferencias" },
+        { value: "Big 12", label: "Big 12 Conference", group: "Conferencias" },
+        { value: "ACC", label: "ACC Conference", group: "Conferencias" },
+      ];
+      ncaafOptions.forEach((opt) => {
+        seen.add(opt.value.toLowerCase());
+        options.push(opt);
+      });
+    } else {
+      // "all" sports: add sports categories and football leagues
+      SUPPORTED_LEAGUES.forEach((l) => {
+        seen.add(l.name.toLowerCase());
+        options.push({
+          value: l.name,
+          label: `${l.name} (${l.country})`,
+          group: `⚽ Fútbol - ${l.country}`,
+          badge: l.tier ? `Div ${l.tier}` : undefined,
+        });
+      });
+      options.push({ value: "NHL", label: "NHL Hockey", group: "🏒 NHL" });
+      seen.add("nhl");
+      options.push({ value: "NBA", label: "NBA Baloncesto", group: "🏀 NBA" });
+      seen.add("nba");
+      options.push({ value: "NFL", label: "NFL Fútbol Americano", group: "🏈 NFL" });
+      seen.add("nfl");
+      options.push({ value: "NCAAF", label: "NCAAF College", group: "🏈 NCAAF" });
+      seen.add("ncaaf");
+    }
+
+    // Also dynamically discover any unique leagues present in historyItems for the current view
     historyItems.forEach((h) => {
-      if (h.league && !options.some((opt) => opt.value === h.league)) {
+      if (h.league && !seen.has(h.league.toLowerCase())) {
+        seen.add(h.league.toLowerCase());
         options.push({
           value: h.league,
           label: h.league,
-          group: h.country || "Competiciones Oficiales",
+          group: h.country || (selectedSport !== "all" ? selectedSport.toUpperCase() : "Otras Competiciones"),
         });
       }
     });
+
     return options;
-  }, [historyItems]);
+  }, [selectedSport, historyItems]);
 
-  const availableMarkets = [
-    "Over Córners",
-    "Ambos Equipos Anotan",
-    "Over 2.5 Goles",
-    "Over 1.5 Goles",
-    "Ganador Local",
-    "Ganador Visitante",
-    "Doble Oportunidad",
-  ];
-
+  // Build classified market options tailored to the selected sport
   const marketDropdownOptions: DropdownOption[] = useMemo(() => {
-    return availableMarkets.map((m) => {
+    let defaultMarkets: string[] = [];
+
+    if (selectedSport === "football") {
+      defaultMarkets = [
+        "Over Córners",
+        "Ambos Equipos Anotan",
+        "Over 2.5 Goles",
+        "Over 1.5 Goles",
+        "Ganador Local",
+        "Ganador Visitante",
+        "Doble Oportunidad",
+      ];
+    } else if (selectedSport === "nhl") {
+      defaultMarkets = [
+        "MONEYLINE",
+        "PUCK LINE",
+        "TOTAL GOALS",
+        "TEAM TOTAL",
+      ];
+    } else if (selectedSport === "nba") {
+      defaultMarkets = [
+        "MONEYLINE",
+        "SPREAD",
+        "TOTAL POINTS",
+        "TEAM TOTAL",
+      ];
+    } else if (selectedSport === "nfl" || selectedSport === "ncaaf") {
+      defaultMarkets = [
+        "MONEYLINE",
+        "SPREAD",
+        "TOTAL POINTS",
+        "TEAM TOTAL",
+      ];
+    } else {
+      // "all" sports: union of core markets
+      defaultMarkets = [
+        "Over Córners",
+        "Ambos Equipos Anotan",
+        "Over 2.5 Goles",
+        "Ganador Local",
+        "Ganador Visitante",
+        "MONEYLINE",
+        "PUCK LINE",
+        "SPREAD",
+        "TOTAL GOALS",
+        "TOTAL POINTS",
+      ];
+    }
+
+    // Also dynamically add any market present in the loaded historyItems
+    const dynamicallyFound = historyItems
+      .map((h) => h.market)
+      .filter(Boolean);
+
+    const allAvailable = Array.from(new Set([...defaultMarkets, ...dynamicallyFound]));
+
+    // Display friendly market labels
+    const getFriendlyMarketLabel = (m: string) => {
+      switch (m.toUpperCase()) {
+        case "MONEYLINE":
+          return selectedSport === "nhl"
+            ? "Moneyline (Línea de Dinero)"
+            : "Moneyline (Ganador)";
+        case "PUCK LINE":
+          return "Puck Line (-1.5 / +1.5)";
+        case "SPREAD":
+          return "Spread (Hándicap)";
+        case "TOTAL GOALS":
+          return "Total Goles (Over/Under)";
+        case "TOTAL POINTS":
+          return "Total Puntos (Over/Under)";
+        case "TEAM TOTAL":
+          return "Total Equipo";
+        default:
+          return m;
+      }
+    };
+
+    return allAvailable.map((m) => {
       const count = historyItems.filter((h) => matchesMarketFilter(m, h.market, h.selection)).length;
       return {
         value: m,
-        label: `${m} (${count})`,
+        label: `${getFriendlyMarketLabel(m)} (${count})`,
       };
     });
-  }, [historyItems]);
+  }, [selectedSport, historyItems]);
 
   const getLocalDateStr = (d: Date | string) => {
     const dateObj = typeof d === "string" ? new Date(d) : d;
@@ -287,7 +446,28 @@ export default function HistoryPage() {
     } as MarketOpportunity;
   }, [selectedPickForModal]);
 
-﻿  return (
+﻿  // Dynamic filter label and placeholder based on sport
+  const leagueFilterLabel =
+    selectedSport === "nhl"
+      ? "División / Conf."
+      : selectedSport === "nba"
+      ? "Conferencia / Div."
+      : selectedSport === "nfl" || selectedSport === "ncaaf"
+      ? "Conferencia / Liga"
+      : t("filterLeagueLabel") ? t("filterLeagueLabel").replace(":", "") : "Competición";
+
+  const searchPlaceholder =
+    selectedSport === "nhl"
+      ? "Buscar equipo NHL, división, mercado..."
+      : selectedSport === "nba"
+      ? "Buscar equipo NBA, conferencia, mercado..."
+      : selectedSport === "nfl"
+      ? "Buscar equipo NFL, conferencia, mercado..."
+      : selectedSport === "ncaaf"
+      ? "Buscar equipo universitario, conferencia, mercado..."
+      : "Buscar por equipo, liga, mercado o país...";
+
+  return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
       <Navbar />
 
@@ -342,7 +522,7 @@ export default function HistoryPage() {
         <div className="mb-2">
           <SportSelector
             selectedSport={selectedSport}
-            onSelectSport={(s) => setSelectedSport(s)}
+            onSelectSport={handleSelectSport}
             showAll={true}
           />
         </div>
@@ -515,7 +695,7 @@ export default function HistoryPage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar por equipo, liga, mercado o país..."
+              placeholder={searchPlaceholder}
               className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pl-9 pr-8 text-xs font-bold text-slate-800 placeholder-slate-400 outline-none focus:border-emerald-500 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
             />
             {searchQuery && (
@@ -530,7 +710,7 @@ export default function HistoryPage() {
 
           <div className="flex flex-wrap items-center gap-2">
             <MultiSelectDropdown
-              label={t("filterLeagueLabel") ? t("filterLeagueLabel").replace(":", "") : "Competición"}
+              label={leagueFilterLabel}
               options={leagueDropdownOptions}
               selected={selectedLeagues}
               onChange={setSelectedLeagues}

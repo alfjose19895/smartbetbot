@@ -61,15 +61,25 @@ export async function GET(request: NextRequest) {
         filteredParlays = filteredParlays.filter((p) =>
           p.legs.some((l) => (l.country || "").toUpperCase() === "NBA" || l.league.toUpperCase().includes("NBA"))
         );
-      } else if (sport === "nfl" || sport === "ncaaf") {
+      } else if (sport === "nfl") {
         filteredHistory = filteredHistory.filter((h) => {
           const c = (h.country || "").toUpperCase();
           const l = (h.league || "").toUpperCase();
           const s = ((h as any).sport || "").toLowerCase();
-          return c === "NFL" || c === "NCAAF" || l.includes("NFL") || l.includes("NCAA") || s === "nfl" || s === "ncaaf";
+          return (c === "NFL" || l.includes("NFL") || s === "nfl") && !l.includes("NCAA") && s !== "ncaaf";
         });
         filteredParlays = filteredParlays.filter((p) =>
           p.legs.some((l) => (l.country || "").toUpperCase() === "NFL" || l.league.toUpperCase().includes("NFL"))
+        );
+      } else if (sport === "ncaaf") {
+        filteredHistory = filteredHistory.filter((h) => {
+          const c = (h.country || "").toUpperCase();
+          const l = (h.league || "").toUpperCase();
+          const s = ((h as any).sport || "").toLowerCase();
+          return c === "NCAAF" || l.includes("NCAA") || s === "ncaaf";
+        });
+        filteredParlays = filteredParlays.filter((p) =>
+          p.legs.some((l) => (l.country || "").toUpperCase() === "NCAAF" || l.league.toUpperCase().includes("NCAA"))
         );
       }
     }
