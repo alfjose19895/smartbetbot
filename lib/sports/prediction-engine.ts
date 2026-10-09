@@ -1838,7 +1838,8 @@ export function evaluateFixturePrediction(params: {
       if (edgePercent < minRequiredEdge && evPercent < 1.0) continue;
 
       // STRICT USER RULE: Only Alta (>= 58.0%) and Muy Alta (>= 75.0%)
-      if (item.prob < 0.58) continue;
+      const probPercentForFilter = Math.round(item.prob * 1000) / 10;
+      if (probPercentForFilter < 58.0) continue;
 
       opportunities.push(buildOpportunity(item));
     }
@@ -1949,4 +1950,5 @@ export function getFeaturedDailyPicks(predictions: MarketOpportunity[]): {
 
   return { smartPick, bombaPick };
 }
+
 
