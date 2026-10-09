@@ -1835,21 +1835,14 @@ export function evaluateFixturePrediction(params: {
     }
 
     // 3. Tier safety margin check
-    if (edgePercent < minRequiredEdge && evPercent < 1.0) continue;
+      if (edgePercent < minRequiredEdge && evPercent < 1.0) continue;
 
-    opportunities.push(buildOpportunity(item));
-  }
+      // STRICT USER RULE: Only Alta (>= 58.0%) and Muy Alta (>= 75.0%)
+      if (item.prob < 0.58) continue;
 
-  // Fallback: If no candidate passed all strict filters, select the single most probable candidate from valid lines
-  if (opportunities.length === 0) {
-    const sortedCandidates = [...candidates]
-      .filter((c) => c.odds >= 1.35 && c.prob > 0.30)
-      .sort((a, b) => b.prob - a.prob);
-
-    if (sortedCandidates.length > 0) {
-      opportunities.push(buildOpportunity(sortedCandidates[0]));
+      opportunities.push(buildOpportunity(item));
     }
-  }
+
 
   // STRICT USER HIERARCHY (5 MARKETS): 1: Over Corners > 2: BTTS > 3: Over Goals > 4: Local > 5: Visitante
   return opportunities.sort((a, b) => {
@@ -1956,3 +1949,4 @@ export function getFeaturedDailyPicks(predictions: MarketOpportunity[]): {
 
   return { smartPick, bombaPick };
 }
+
