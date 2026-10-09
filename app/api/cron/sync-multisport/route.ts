@@ -1,7 +1,8 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { isSportFeatureEnabled } from '@/lib/sports/config';
 import { SportProviderRouter } from '@/lib/sports/provider-router';
 import { SupportedSport } from '@/lib/sports/types';
+import { getSportLocalDateString } from '@/lib/sports/registry';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,7 +14,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   }
 
-  const todayIso = new Date().toISOString().split('T')[0];
+  const todayIso = getSportLocalDateString('nhl');
   const results: Record<
     string,
     {
@@ -77,3 +78,4 @@ export async function GET(request: NextRequest) {
     results,
   });
 }
+
