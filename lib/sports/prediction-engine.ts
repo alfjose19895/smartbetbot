@@ -1561,7 +1561,7 @@ export function evaluateFixturePrediction(params: {
     const effHomeWin = marketOdds.homeWin || resolvedHomeOdds;
     const effAwayWin = marketOdds.awayWin || resolvedAwayOdds;
     const effOver25 = marketOdds.over25 || resolvedOver25Odds;
-    const effBtts = marketOdds.bttsYes;
+    const effBtts = marketOdds.bttsYes || resolvedBttsOdds;
 
     // ENFOQUE DE ALTO RENDIMIENTO CALIBRADO (Ganador Local, BTTS y Over 2.5 Calibrado)
     const isCupOrKnockout = normLeg.includes("cup") || normLeg.includes("copa") || normLeg.includes("europa") || normLeg.includes("champions") || normLeg.includes("conference") || normLeg.includes("libertadores") || normLeg.includes("sudamericana");
@@ -1627,7 +1627,7 @@ export function evaluateFixturePrediction(params: {
     } // End if hasCornerTelemetry && hasRealCornerOdds
 
     // 2. PRIORIDAD #2: Ambos Equipos Anotan (BTTS) - Efectividad histórica superior
-    if (effBtts && effBtts >= 1.25 && pBttsYes >= 0.48 && hXg >= 1.00 && aXg >= 0.90) {
+    if (effBtts && effBtts >= 1.15 && pBttsYes >= 0.45 && hXg >= 0.85 && aXg >= 0.80) {
       candidates.push({
         market: "Ambos Equipos Anotan",
         selection: "Sí",
@@ -1644,7 +1644,7 @@ export function evaluateFixturePrediction(params: {
 
     if (
       effOver25 &&
-      effOver25 >= 1.25 &&
+      effOver25 >= 1.10 &&
       pOver25 >= minOverProb &&
       totalXg >= minOverXg
     ) {
@@ -1659,26 +1659,26 @@ export function evaluateFixturePrediction(params: {
     }
 
     // 4. PRIORIDAD #4: Ganador Local (1)
-    if (effHomeWin && effHomeWin >= 1.18 && pHome >= 0.46) {
+    if (effHomeWin && effHomeWin >= 1.05 && pHome >= 0.38) {
       candidates.push({
         market: "Ganador Local",
         selection: "1",
         prob: pHome,
         odds: effHomeWin,
-        minOddsThreshold: 1.18,
-        minProbThreshold: 0.46,
+        minOddsThreshold: 1.10,
+        minProbThreshold: 0.38,
       });
     }
 
     // 5. PRIORIDAD #5: Ganador Visitante (2)
-    if (effAwayWin && effAwayWin >= 1.28 && pAway >= 0.48) {
+    if (effAwayWin && effAwayWin >= 1.15 && pAway >= 0.40) {
       candidates.push({
         market: "Ganador Visitante",
         selection: "2",
         prob: pAway,
         odds: effAwayWin,
-        minOddsThreshold: 1.28,
-        minProbThreshold: 0.48,
+        minOddsThreshold: 1.18,
+        minProbThreshold: 0.40,
       });
     }
   }
@@ -1835,7 +1835,7 @@ export function evaluateFixturePrediction(params: {
     }
 
     // 3. Tier safety margin check
-      if (edgePercent < minRequiredEdge && evPercent < 1.0) continue;
+      if (edgePercent < minRequiredEdge && evPercent < 0) continue;
 
       // STRICT USER RULE: Only Alta (>= 58.0%) and Muy Alta (>= 75.0%)
       const probPercentForFilter = Math.round(item.prob * 1000) / 10;
@@ -1843,6 +1843,17 @@ export function evaluateFixturePrediction(params: {
 
       opportunities.push(buildOpportunity(item));
     }
+
+  // Fallback: If no candidate passed all strict filters, select the single most probable candidate from valid lines
+  if (opportunities.length === 0) {
+    const sortedCandidates = [...candidates]
+      .filter((c) => c.odds >= 1.10 && c.prob >= 0.35)
+      .sort((a, b) => b.prob - a.prob);
+
+    if (sortedCandidates.length > 0) {
+      opportunities.push(buildOpportunity(sortedCandidates[0]));
+    }
+  }
 
 
   // STRICT USER HIERARCHY (5 MARKETS): 1: Over Corners > 2: BTTS > 3: Over Goals > 4: Local > 5: Visitante

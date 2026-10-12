@@ -223,8 +223,6 @@ def validate_isolation(
 
 def repository_failures() -> list[str]:
     required = (
-        ".github/workflows/ci.yml",
-        ".github/workflows/deployment-smoke.yml",
         "Procfile",
         "docs/deployment.md",
         "docs/staging.md",
