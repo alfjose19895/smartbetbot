@@ -896,6 +896,17 @@ export default function HistoryPage() {
                       </div>
                     </div>
 
+                    {/* Analysis Quote Box */}
+                    <div className="mt-3 rounded-2xl bg-slate-50/90 p-3 border border-slate-200/70 dark:bg-slate-950/60 dark:border-slate-800">
+                      <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-400 mb-1">
+                        <span>🧠</span>
+                        <span>Análisis del Pronóstico</span>
+                      </div>
+                      <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed italic">
+                        &quot;{item.explanation || `Pronóstico liquidado oficialmente para ${item.market} (${item.selection}).`}&quot;
+                      </p>
+                    </div>
+
                     {/* Action Button: Ver H2H / Estadísticas */}
                     <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800">
                       <button

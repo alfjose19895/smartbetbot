@@ -504,11 +504,15 @@ export default function DashboardPage() {
                         </div>
                       </div>
 
-                      {pick.explanation && (
-                        <p className="text-[11px] text-slate-400 leading-relaxed italic line-clamp-2 mb-4">
-                          "{pick.explanation}"
+                      <div className="mt-3 mb-4 rounded-xl bg-slate-950/60 p-3 border border-slate-800/80">
+                        <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-emerald-400 mb-1">
+                          <span>🧠</span>
+                          <span>Análisis SmartBetBot</span>
+                        </div>
+                        <p className="text-xs text-slate-300 leading-relaxed italic">
+                          "{pick.explanation || `Análisis cuantitativo de valor esperado (+EV) con proyección estadística de ${pick.market}.`}"
                         </p>
-                      )}
+                      </div>
                     </div>
 
                     <div className="flex items-center gap-2 pt-2 border-t border-slate-800">
@@ -634,11 +638,15 @@ export default function DashboardPage() {
                         </div>
                       </div>
 
-                      {pick.explanation && (
-                        <p className="text-[11px] text-slate-400 leading-relaxed italic line-clamp-2 mb-4">
-                          "{pick.explanation}"
+                      <div className="mt-3 mb-4 rounded-xl bg-slate-950/60 p-3 border border-slate-800/80">
+                        <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-cyan-400 mb-1">
+                          <span>🏒</span>
+                          <span>Análisis Cuantitativo NHL</span>
+                        </div>
+                        <p className="text-xs text-slate-300 leading-relaxed italic">
+                          "{pick.explanation || `Análisis de valor esperado (+EV) y cobertura de hándicap para ${pick.market}.`}"
                         </p>
-                      )}
+                      </div>
                     </div>
 
                     <div className="flex items-center gap-2 pt-2 border-t border-slate-800">

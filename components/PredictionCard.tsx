@@ -622,6 +622,17 @@ export function PredictionCard({
                   </div>
                 </div>
               </div>
+
+              {/* AI Tactical Analysis Box */}
+              <div className="mt-3 rounded-2xl bg-slate-50/90 p-3 border border-slate-200/80 dark:bg-slate-950/80 dark:border-slate-800">
+                <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-400 mb-1">
+                  <span>🧠</span>
+                  <span>Análisis Cuantitativo SmartBetBot</span>
+                </div>
+                <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed italic">
+                  &quot;{prediction.explanation || `Análisis cuantitativo de valor esperado (+EV) con proyección estadística de ${prediction.market} (${prediction.selection}).`}&quot;
+                </p>
+              </div>
             </div>
 
             {/* Footer Buttons */}
@@ -964,14 +975,16 @@ export function PredictionCard({
             </div>
           )}
 
-          {/* AI Analysis Quote */}
-          {prediction.explanation && (
-            <div className="mt-3 rounded-2xl bg-slate-50/80 p-3 border border-slate-100 dark:bg-slate-950/60 dark:border-slate-800">
-              <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed italic">
-                &quot;{prediction.explanation}&quot;
-              </p>
+          {/* AI Analysis Quote Box */}
+          <div className="mt-3.5 rounded-2xl bg-slate-50/90 p-3.5 border border-slate-200/80 dark:bg-slate-950/80 dark:border-slate-800">
+            <div className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-400 mb-1.5">
+              <span>🧠</span>
+              <span>Análisis Cuantitativo SmartBetBot</span>
             </div>
-          )}
+            <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed italic">
+              &quot;{prediction.explanation || `Análisis cuantitativo de valor esperado (+EV) con proyección estadística de ${prediction.market} (${prediction.selection}).`}&quot;
+            </p>
+          </div>
         </div>
 
         {/* Action Footer: Visual Image Sharing Buttons */}

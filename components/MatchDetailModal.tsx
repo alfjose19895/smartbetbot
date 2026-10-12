@@ -166,6 +166,17 @@ export function MatchDetailModal({ prediction, onClose, sport: propSport }: Matc
           return null;
         })()}
 
+        {/* AI Tactical Analysis Banner */}
+        <div className="mx-4 sm:mx-5 mt-3 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 dark:bg-emerald-950/30 dark:border-emerald-500/30 shadow-xs">
+          <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-400 mb-1">
+            <span>🧠</span>
+            <span>Análisis Táctico & Cuantitativo SmartBetBot</span>
+          </div>
+          <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed italic">
+            &quot;{prediction.explanation || `Análisis cuantitativo de valor esperado (+EV) con proyección estadística de ${prediction.market} (${prediction.selection}).`}&quot;
+          </p>
+        </div>
+
         {/* Navigation Tabs */}
         <div className="flex border-b border-slate-200 bg-slate-100/50 p-1.5 gap-1.5 dark:border-slate-800 dark:bg-slate-950/60 overflow-x-auto">
           <button

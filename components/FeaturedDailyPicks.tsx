@@ -152,11 +152,15 @@ export function FeaturedDailyPicks({ smartPick, bombaPick, nhlSmartPick, onOpenD
           </div>
 
           {/* Analysis Explanation */}
-          {pick.explanation && (
-            <p className="mt-3 text-[11px] text-slate-300 italic leading-relaxed line-clamp-3 bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/40">
-              "{pick.explanation}"
+          <div className="mt-3 rounded-xl bg-slate-950/60 p-3 border border-slate-800/60">
+            <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-amber-400 mb-1">
+              <span>🧠</span>
+              <span>Análisis Destacado</span>
+            </div>
+            <p className="text-xs text-slate-300 italic leading-relaxed">
+              "{pick.explanation || `Análisis de máxima confianza para ${pick.market} (${pick.selection}).`}"
             </p>
-          )}
+          </div>
         </div>
 
         {/* Action Footer */}

@@ -80,11 +80,15 @@ export const MultiSportSignalCard: React.FC<MultiSportSignalCardProps> = ({ sign
         </div>
       </div>
 
-      {signal.explanation && (
-        <p className="text-xs text-zinc-400 leading-relaxed italic border-t border-zinc-800/60 pt-2">
-          {signal.explanation}
+      <div className="mt-3 rounded-xl bg-zinc-950/80 p-3 border border-zinc-800/80">
+        <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-emerald-400 mb-1">
+          <span>🧠</span>
+          <span>Análisis Cuantitativo</span>
+        </div>
+        <p className="text-xs text-zinc-300 leading-relaxed italic">
+          "{signal.explanation || `Proyección estadística de valor esperado (+EV) para ${signal.market}.`}"
         </p>
-      )}
+      </div>
     </div>
   );
 };
