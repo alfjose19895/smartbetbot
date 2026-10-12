@@ -1750,17 +1750,17 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
     }
   }
 
-  // Prioritize League Tier 1 > Tier 2 > Tier 3 and High-Winrate Core Markets (Ganador Local, BTTS, Over 2.5)
+  // Prioritize League Tier 1 > Tier 2 > Tier 3 > Tier 4 and Market Priority (Córners > BTTS > Over Goles > Local > Visitante)
   const rankedPicks = [...allOpportunities].sort((a, b) => {
     const aTier = a.leagueTier || 3;
     const bTier = b.leagueTier || 3;
     if (aTier !== bTier) {
       return aTier - bTier;
     }
-    const aIsFocus = a.market === "Ganador Local" || a.market === "Ambos Equipos Anotan" || a.market === "Over 2.5 Goles";
-    const bIsFocus = b.market === "Ganador Local" || b.market === "Ambos Equipos Anotan" || b.market === "Over 2.5 Goles";
-    if (aIsFocus !== bIsFocus) {
-      return aIsFocus ? -1 : 1;
+    const aRank = getMarketPriorityRank(a.market, a.selection);
+    const bRank = getMarketPriorityRank(b.market, b.selection);
+    if (aRank !== bRank) {
+      return aRank - bRank;
     }
     if (b.probability !== a.probability) {
       return b.probability - a.probability;
@@ -1774,7 +1774,21 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
   // Daily alert strategy: Dynamic Mathematical Quality Gate (prob >= 52%, edge >= 1%, odds 1.25-3.50)
   const dailyLimit = getDailyAlertLimit(new Date());
   const qualifiedPicks = rankedPicks.filter(isQualifiedOpportunity);
-  const candidatesToUse = qualifiedPicks.length > 0 ? qualifiedPicks.slice(0, Math.max(dailyLimit, 20)) : rankedPicks.slice(0, Math.max(dailyLimit, 20));
+  const basePool = qualifiedPicks.length > 0 ? qualifiedPicks : rankedPicks;
+
+  // Quota Protection: Cap Tier 4 leagues to max 2 picks when Tier 1 or Tier 2 matches are present
+  const hasEliteTiers = basePool.some((p) => (p.leagueTier || 3) <= 2);
+  let tier4Count = 0;
+  const filteredCandidates = basePool.filter((p) => {
+    const pTier = p.leagueTier || 3;
+    if (hasEliteTiers && pTier >= 4) {
+      if (tier4Count >= 2) return false;
+      tier4Count++;
+    }
+    return true;
+  });
+
+  const candidatesToUse = filteredCandidates.slice(0, Math.max(dailyLimit, 20));
 
   const initialTopPicks: MarketOpportunity[] = candidatesToUse.map((p) => {
     const prob = p.probability || 50;
@@ -2255,25 +2269,25 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     }
   }
 
-  // STRICT USER HIERARCHY (5 MARKETS): 1: Over Corners > 2: BTTS > 3: Over Goals > 4: Local > 5: Visitante
+  // STRICT USER HIERARCHY: Tier 1 > Tier 2 > Tier 3 > Tier 4; then 1: Over Corners > 2: BTTS > 3: Over Goals > 4: Local > 5: Visitante
   poolSeguras.sort((a, b) => {
-    const aRank = getMarketPriorityRank(a.market, a.selection);
-    const bRank = getMarketPriorityRank(b.market, b.selection);
-    if (aRank !== bRank) return aRank - bRank;
     const aTier = a.leagueTier || 3;
     const bTier = b.leagueTier || 3;
     if (aTier !== bTier) return aTier - bTier;
+    const aRank = getMarketPriorityRank(a.market, a.selection);
+    const bRank = getMarketPriorityRank(b.market, b.selection);
+    if (aRank !== bRank) return aRank - bRank;
     if (b.probability !== a.probability) return b.probability - a.probability;
     return (b.smartScore || 0) - (a.smartScore || 0);
   });
 
   poolValor.sort((a, b) => {
-    const aRank = getMarketPriorityRank(a.market, a.selection);
-    const bRank = getMarketPriorityRank(b.market, b.selection);
-    if (aRank !== bRank) return aRank - bRank;
     const aTier = a.leagueTier || 3;
     const bTier = b.leagueTier || 3;
     if (aTier !== bTier) return aTier - bTier;
+    const aRank = getMarketPriorityRank(a.market, a.selection);
+    const bRank = getMarketPriorityRank(b.market, b.selection);
+    if (aRank !== bRank) return aRank - bRank;
     const bEv = b.expectedValue || (b.probability * b.odds - 100);
     const aEv = a.expectedValue || (a.probability * a.odds - 100);
     if (bEv !== aEv) return bEv - aEv;
@@ -2291,11 +2305,14 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
   // 5: Ganador Visitante (Quota: 4%)
   const pickPrioritizedAlerts = (pool: MarketOpportunity[], totalTarget: number): MarketOpportunity[] => {
     const selected: MarketOpportunity[] = [];
-    const overCorners = pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 1);
-    const btts = pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 2);
-    const overGoals = pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 3);
-    const local = pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 4);
-    const away = pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 5);
+    const sortListByTierAndProb = (list: MarketOpportunity[]) =>
+      [...list].sort((a, b) => ((a.leagueTier || 3) - (b.leagueTier || 3)) || (b.probability - a.probability));
+
+    const overCorners = sortListByTierAndProb(pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 1));
+    const btts = sortListByTierAndProb(pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 2));
+    const overGoals = sortListByTierAndProb(pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 3));
+    const local = sortListByTierAndProb(pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 4));
+    const away = sortListByTierAndProb(pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 5));
 
     const targetOverCorners = Math.max(1, Math.round(totalTarget * 0.38));
     const targetBtts = Math.max(1, Math.round(totalTarget * 0.32));
@@ -2303,10 +2320,18 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     const targetLocal = Math.max(0, Math.round(totalTarget * 0.06));
     const targetAway = Math.max(0, Math.round(totalTarget * 0.04));
 
+    const hasEliteInPool = pool.some((p) => (p.leagueTier || 3) <= 2);
+    let tier4TakenCount = 0;
+
     const takeFromList = (list: MarketOpportunity[], maxCount: number) => {
       let taken = 0;
       for (const p of list) {
         if (taken >= maxCount || selected.length >= totalTarget) break;
+        const pTier = p.leagueTier || 3;
+        if (hasEliteInPool && pTier >= 4 && tier4TakenCount >= 2) {
+          continue;
+        }
+
         const hNorm = getCanonicalTeamKey(p.homeTeam);
         const aNorm = getCanonicalTeamKey(p.awayTeam);
         const matchKey = `${hNorm}-${aNorm}`;
@@ -2327,6 +2352,9 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
         chosenTeams.add(aNorm);
         selected.push(p);
         taken++;
+        if (hasEliteInPool && pTier >= 4) {
+          tier4TakenCount++;
+        }
       }
     };
 

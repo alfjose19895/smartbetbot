@@ -462,7 +462,7 @@ export function normalizeLeagueInfo(
   if (leagueId) {
     const matched = SUPPORTED_LEAGUES.find((l) => l.id === leagueId);
     if (matched) {
-      return { canonicalLeague: matched.name, country: matched.country, tier: matched.tier || 2 };
+      return { canonicalLeague: matched.name, country: matched.country, tier: matched.tier || 4 };
     }
   }
 
@@ -601,7 +601,7 @@ export function normalizeLeagueInfo(
 
   // Tier 2: Japón (J1 League & J2 League)
   if (norm.includes("j1 league") || norm.includes("j.league 1") || (norm.includes("j1") && normCountry.includes("japan")) || (norm.includes("j league") && !norm.includes("j2") && !norm.includes("j3")) || (normCountry.includes("japan") && !norm.includes("2") && !norm.includes("3") && !norm.includes("cup"))) {
-    return { canonicalLeague: "J1 League", country: "Japón", tier: 1 };
+    return { canonicalLeague: "J1 League", country: "Japón", tier: 2 };
   }
   if (norm.includes("j2 league") || norm.includes("j2") || norm.includes("j.league 2") || (normCountry.includes("japan") && norm.includes("2"))) {
     return { canonicalLeague: "J2 League", country: "Japón", tier: 2 };
@@ -612,7 +612,7 @@ export function normalizeLeagueInfo(
 
   // Tier 2: Corea del Sur (K League 1 & K League 2)
   if (norm.includes("k league 1") || norm.includes("k-league 1") || (norm.includes("k league") && !norm.includes("k league 2") && !norm.includes("k2") && !norm.includes("k3")) || (normCountry.includes("korea") && !norm.includes("2") && !norm.includes("3") && !norm.includes("cup"))) {
-    return { canonicalLeague: "K League 1", country: "Corea del Sur", tier: 1 };
+    return { canonicalLeague: "K League 1", country: "Corea del Sur", tier: 3 };
   }
   if (norm.includes("k league 2") || norm.includes("k2 league") || norm.includes("k-league 2") || norm.includes("k2") || (normCountry.includes("korea") && norm.includes("2"))) {
     return { canonicalLeague: "K League 2", country: "Corea del Sur", tier: 2 };
@@ -629,8 +629,8 @@ export function normalizeLeagueInfo(
 
   // Tier 2: Costa Rica & Américas
   if (norm.includes("costa rica") || normCountry.includes("costa rica") || norm.includes("fpd") || norm.includes("promerica")) {
-    if (norm.includes("ascenso") || norm.includes("segunda")) return { canonicalLeague: "Liga de Ascenso", country: "Costa Rica", tier: 3 };
-    return { canonicalLeague: "Primera División (Liga FPD)", country: "Costa Rica", tier: 2 };
+    if (norm.includes("ascenso") || norm.includes("segunda")) return { canonicalLeague: "Liga de Ascenso", country: "Costa Rica", tier: 4 };
+    return { canonicalLeague: "Primera División (Liga FPD)", country: "Costa Rica", tier: 4 };
   }
   if (norm.includes("liga pro") || normCountry.includes("ecuador")) {
     return { canonicalLeague: "Liga Pro", country: "Ecuador", tier: 2 };
@@ -642,23 +642,23 @@ export function normalizeLeagueInfo(
     return { canonicalLeague: "Liga Profesional Argentina", country: "Argentina", tier: 2 };
   }
   if (normCountry.includes("bolivia")) {
-    return { canonicalLeague: "Primera División", country: "Bolivia", tier: 2 };
+    return { canonicalLeague: "Primera División", country: "Bolivia", tier: 4 };
   }
   if (normCountry.includes("uruguay")) {
-    if (norm.includes("segunda")) return { canonicalLeague: "Segunda División", country: "Uruguay", tier: 2 };
-    return { canonicalLeague: "Primera División", country: "Uruguay", tier: 1 };
+    if (norm.includes("segunda")) return { canonicalLeague: "Segunda División", country: "Uruguay", tier: 4 };
+    return { canonicalLeague: "Primera División", country: "Uruguay", tier: 3 };
   }
   if (normCountry.includes("paraguay")) {
-    if (norm.includes("intermedia")) return { canonicalLeague: "Division Intermedia", country: "Paraguay", tier: 2 };
-    return { canonicalLeague: "Primera División", country: "Paraguay", tier: 1 };
+    if (norm.includes("intermedia")) return { canonicalLeague: "Division Intermedia", country: "Paraguay", tier: 4 };
+    return { canonicalLeague: "Primera División", country: "Paraguay", tier: 3 };
   }
   if (normCountry.includes("chile")) {
-    if (norm.includes("primera b") || norm.includes("segunda")) return { canonicalLeague: "Primera B", country: "Chile", tier: 2 };
-    return { canonicalLeague: "Primera División", country: "Chile", tier: 1 };
+    if (norm.includes("primera b") || norm.includes("segunda")) return { canonicalLeague: "Primera B", country: "Chile", tier: 4 };
+    return { canonicalLeague: "Primera División", country: "Chile", tier: 3 };
   }
   if (normCountry.includes("peru") || normCountry.includes("perú")) {
-    if (norm.includes("2") || norm.includes("segunda")) return { canonicalLeague: "Segunda División", country: "Perú", tier: 2 };
-    return { canonicalLeague: "Liga 1", country: "Perú", tier: 1 };
+    if (norm.includes("2") || norm.includes("segunda")) return { canonicalLeague: "Segunda División", country: "Perú", tier: 4 };
+    return { canonicalLeague: "Liga 1", country: "Perú", tier: 3 };
   }
   if (normCountry.includes("colombia")) {
     if (norm.includes("primera b") || norm.includes("torneo")) return { canonicalLeague: "Primera B", country: "Colombia", tier: 2 };
@@ -685,16 +685,16 @@ export function normalizeLeagueInfo(
     return { canonicalLeague: "NWSL Femenina", country: "Estados Unidos", tier: 2 };
   }
   if (leagueId === 253 || norm === "major league soccer" || norm === "major league soccer (mls)" || (norm.includes("major league") && !norm.includes("next pro"))) {
-    return { canonicalLeague: "Major League Soccer (MLS)", country: "Estados Unidos", tier: 1 };
+    return { canonicalLeague: "Major League Soccer (MLS)", country: "Estados Unidos", tier: 2 };
   }
   if (norm.includes("libertadores")) {
-    return { canonicalLeague: "Copa Libertadores", country: "Sudamérica", tier: 2 };
+    return { canonicalLeague: "Copa Libertadores", country: "Sudamérica", tier: 1 };
   }
   if (norm.includes("sudamericana")) {
-    return { canonicalLeague: "Copa Sudamericana", country: "Sudamérica", tier: 2 };
+    return { canonicalLeague: "Copa Sudamericana", country: "Sudamérica", tier: 1 };
   }
 
-  return { canonicalLeague: rawLeagueName || "Competición Oficial", country: rawCountry || "Mundial", tier: 3 };
+  return { canonicalLeague: rawLeagueName || "Competición Oficial", country: rawCountry || "Mundial", tier: 4 };
 }
 
 export const KNOWN_ELO_RATINGS: Record<string, number> = {
@@ -1730,8 +1730,8 @@ export function evaluateFixturePrediction(params: {
 
     const isEuroPriority = isPriorityEuropeanLeague(leagueId, canonicalLeague, country);
     const tierBonus = isEuroPriority
-      ? (tier === 1 ? 25 : tier === 2 ? 18 : 10)
-      : (tier === 1 ? 14 : tier === 2 ? 7 : 0);
+      ? (tier === 1 ? 30 : tier === 2 ? 22 : tier === 3 ? 12 : 0)
+      : (tier === 1 ? 25 : tier === 2 ? 16 : tier === 3 ? 8 : 0);
 
     const mRank = getMarketPriorityRank(item.market, item.selection);
     const marketPriorityBonus =
@@ -1743,7 +1743,7 @@ export function evaluateFixturePrediction(params: {
       mRank === 6 ? 6 :
       mRank === 7 ? 4 : 0;
 
-    const tierMultiplier = tier === 1 ? 1.25 : tier === 2 ? 1.00 : 0.85;
+    const tierMultiplier = tier === 1 ? 1.30 : tier === 2 ? 1.10 : tier === 3 ? 0.95 : 0.80;
 
     const rawScore = Math.round(
       (item.prob * 100 + (item.prob - 1 / item.odds) * 10 + tierBonus + marketPriorityBonus) * tierMultiplier
@@ -1813,12 +1813,15 @@ export function evaluateFixturePrediction(params: {
   };
 
   // RECOMENDACIÓN 3: SWEET SPOT Y FILTRO ANTI-CUOTAS TRAMPA
-  // Tier-based safety edge: Tier 1 requires >= 1.5% edge; Tier 2/3 requires >= 3.0% edge
-  const minRequiredEdge = tier === 1 ? 1.5 : tier === 2 ? 3.0 : 4.5;
+  // Tier-based safety edge: Tier 1 (>= 1.5%), Tier 2 (>= 2.5%), Tier 3 (>= 3.5%), Tier 4 (>= 4.5%)
+  const minRequiredEdge = tier === 1 ? 1.5 : tier === 2 ? 2.5 : tier === 3 ? 3.5 : 4.5;
 
   for (const item of candidates) {
     if (!item.odds || item.odds < item.minOddsThreshold) continue;
     if (item.prob < item.minProbThreshold) continue;
+
+    // Veto "Ganador Visitante" in Tier 3 & Tier 4 (high volatility, historical winrate only 57.1%)
+    if (tier >= 3 && item.market === "Ganador Visitante") continue;
 
     const evPercent = Math.round((item.prob * item.odds - 1) * 1000) / 10;
     const impliedProbability = 1 / item.odds;
@@ -1847,7 +1850,11 @@ export function evaluateFixturePrediction(params: {
   // Fallback: If no candidate passed all strict filters, select the single most probable candidate from valid lines
   if (opportunities.length === 0) {
     const sortedCandidates = [...candidates]
-      .filter((c) => c.odds >= 1.10 && c.prob >= 0.35)
+      .filter((c) => {
+        if (c.odds < 1.10 || c.prob < 0.35) return false;
+        if (tier >= 3 && c.market === "Ganador Visitante") return false;
+        return true;
+      })
       .sort((a, b) => b.prob - a.prob);
 
     if (sortedCandidates.length > 0) {
@@ -1858,8 +1865,8 @@ export function evaluateFixturePrediction(params: {
 
   // STRICT USER HIERARCHY (5 MARKETS): 1: Over Corners > 2: BTTS > 3: Over Goals > 4: Local > 5: Visitante
   return opportunities.sort((a, b) => {
-    const aTier = a.leagueTier || 2;
-    const bTier = b.leagueTier || 2;
+    const aTier = a.leagueTier || 3;
+    const bTier = b.leagueTier || 3;
     if (aTier !== bTier) {
       return aTier - bTier;
     }
