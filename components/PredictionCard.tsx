@@ -144,14 +144,21 @@ export function PredictionCard({
   const statusBadge = getMatchLiveStatusBadge(prediction.kickoff);
   const { time: formattedTime, date: formattedDateShort } = formatMatchKickoffTime(prediction.kickoff);
 
+  const isPending =
+    prediction.status === "pending" ||
+    prediction.matchTiming === "prematch" ||
+    (!prediction.status && !prediction.actualScore);
+
   const isWon =
-    prediction.status === "won" ||
-    (prediction as any).result === "WON" ||
-    (prediction.status as string) === "WON";
+    !isPending &&
+    (prediction.status === "won" ||
+      (prediction as any).result === "WON" ||
+      (prediction.status as string) === "WON");
   const isLost =
-    prediction.status === "lost" ||
-    (prediction as any).result === "LOST" ||
-    (prediction.status as string) === "LOST";
+    !isPending &&
+    (prediction.status === "lost" ||
+      (prediction as any).result === "LOST" ||
+      (prediction.status as string) === "LOST");
 
   const isMcp = Boolean(
     prediction.isMcp ||

@@ -237,13 +237,18 @@ export async function loadDailySnapshotAsync(dateStr: string, sport: string = "f
       mergedMap.set(key, { ...p, sport: sportKey as any });
     } else {
       const existing = mergedMap.get(key)!;
-      const isSettled = existing.status === "won" || existing.status === "lost";
+      const pKickoffMs = p.kickoff ? new Date(p.kickoff).getTime() : 0;
+      const isPrematch = p.status === "pending" || p.matchTiming === "prematch" || (pKickoffMs > 0 && Date.now() < pKickoffMs);
+      const isSettled = !isPrematch && (existing.status === "won" || existing.status === "lost");
       mergedMap.set(key, {
         ...existing,
         ...p,
         sport: sportKey as any,
-        status: isSettled ? existing.status : p.status || existing.status,
-        actualScore: existing.actualScore || p.actualScore,
+        status: isSettled ? existing.status : (p.status || existing.status),
+        actualScore: isSettled ? existing.actualScore : p.actualScore,
+        result: isSettled ? (existing as any).result : (p as any).result,
+        profit: isSettled ? (existing as any).profit : (p as any).profit,
+        matchTiming: isPrematch ? ("prematch" as const) : (p.matchTiming || existing.matchTiming),
         probability: existing.probability,
         odds: existing.odds,
         market: existing.market,
@@ -324,13 +329,16 @@ export function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[], s
           existing.result === "LOST" ||
           Boolean(existing.actualScore);
 
+        const pKickoffMs = p.kickoff ? new Date(p.kickoff).getTime() : 0;
+        const isPrematch = p.status === "pending" || p.matchTiming === "prematch" || (pKickoffMs > 0 && Date.now() < pKickoffMs);
         const updated = {
           ...existing,
           ...p,
           status: p.status || existing.status || "pending",
-          actualScore: p.actualScore !== undefined ? p.actualScore : existing.actualScore,
-          result: (p as any).result !== undefined ? (p as any).result : (existing as any).result,
-          profit: typeof (p as any).profit === "number" ? (p as any).profit : (existing as any).profit,
+          actualScore: isPrematch ? p.actualScore : (p.actualScore !== undefined ? p.actualScore : existing.actualScore),
+          result: isPrematch ? (p as any).result : ((p as any).result !== undefined ? (p as any).result : (existing as any).result),
+          profit: isPrematch ? (p as any).profit : (typeof (p as any).profit === "number" ? (p as any).profit : (existing as any).profit),
+          matchTiming: isPrematch ? ("prematch" as const) : (p.matchTiming || existing.matchTiming),
           homeLogo: p.homeLogo || existing.homeLogo,
           awayLogo: p.awayLogo || existing.awayLogo,
           leagueLogo: p.leagueLogo || existing.leagueLogo,
@@ -379,13 +387,16 @@ export function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[], s
             const key = getOpportunityKey(lp);
             if (cloudMergedMap.has(key)) {
               const existing = cloudMergedMap.get(key)!;
+              const lpKickoffMs = lp.kickoff ? new Date(lp.kickoff).getTime() : 0;
+              const isPrematch = lp.status === "pending" || lp.matchTiming === "prematch" || (lpKickoffMs > 0 && Date.now() < lpKickoffMs);
               cloudMergedMap.set(key, {
                 ...existing,
                 ...lp,
                 status: lp.status || existing.status,
-                actualScore: lp.actualScore !== undefined ? lp.actualScore : existing.actualScore,
-                result: (lp as any).result !== undefined ? (lp as any).result : (existing as any).result,
-                profit: typeof (lp as any).profit === "number" ? (lp as any).profit : (existing as any).profit,
+                actualScore: isPrematch ? lp.actualScore : (lp.actualScore !== undefined ? lp.actualScore : existing.actualScore),
+                result: isPrematch ? (lp as any).result : ((lp as any).result !== undefined ? (lp as any).result : (existing as any).result),
+                profit: isPrematch ? (lp as any).profit : (typeof (lp as any).profit === "number" ? (lp as any).profit : (existing as any).profit),
+                matchTiming: isPrematch ? ("prematch" as const) : (lp.matchTiming || existing.matchTiming),
               });
             } else {
               cloudMergedMap.set(key, lp);
@@ -809,15 +820,16 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string): Prom
 
       // TIME GUARD: If current time is before scheduled kickoff + 90 minutes, match CANNOT be FT finished!
       if (!isMatchTimeElapsed) {
-        // If match hasn't even kicked off yet, it must strictly be pending prematch
+        // 1. If match hasn't even kicked off yet, it must strictly be pending prematch
         if (!isPastKickoff) {
-          if (p.status !== "pending" || p.actualScore || (p as any).result) {
+          if (p.status !== "pending" || p.actualScore || (p as any).result || (p as any).profit) {
             hasUpdates = true;
             return {
               ...p,
               status: "pending" as const,
               result: undefined,
               actualScore: undefined,
+              profit: undefined,
               matchTiming: "prematch" as const,
               currentScore: undefined,
               livePeriod: undefined,
@@ -826,6 +838,40 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string): Prom
           }
           return p;
         }
+
+        // 2. If match is currently in-play (kickoff started, but < 90m)
+        if (scoreData && scoreData.isLive) {
+          const liveScoreText = `${scoreData.home} - ${scoreData.away}`;
+          hasUpdates = true;
+          return {
+            ...p,
+            status: "pending" as const,
+            result: undefined,
+            actualScore: undefined,
+            profit: undefined,
+            currentScore: liveScoreText,
+            matchTiming: "live" as const,
+            livePeriod: ["1H", "HT", "2H", "ET"].includes(scoreData.short) ? (scoreData.short as "1H" | "HT" | "2H" | "ET") : undefined,
+            liveMinute: scoreData.elapsed ? String(scoreData.elapsed) : undefined,
+          };
+        }
+
+        // 3. Match in play or unconfirmed without live score: keep strictly pending prematch without actualScore
+        if (p.status !== "pending" || p.actualScore || (p as any).result || (p as any).profit) {
+          hasUpdates = true;
+          return {
+            ...p,
+            status: "pending" as const,
+            result: undefined,
+            actualScore: undefined,
+            profit: undefined,
+            matchTiming: "prematch" as const,
+            currentScore: undefined,
+            livePeriod: undefined,
+            liveMinute: undefined,
+          };
+        }
+        return p;
       }
 
       // 1. MATCH IS FULLY FINISHED (FT, AET, PEN) -> Evaluate market result and permanently settle
@@ -991,8 +1037,22 @@ export async function getAllDailySnapshotsAsync(sportFilter?: string): Promise<R
       if (!error && Array.isArray(data)) {
         for (const row of data) {
           if (row.date && Array.isArray(row.picks) && row.picks.length > 0) {
-            result[row.date] = row.picks;
-            memorySnapshots[row.date] = row.picks;
+            const cleanedPicks = row.picks.map((p: any) => {
+              const pKickoffMs = p.kickoff ? new Date(p.kickoff).getTime() : 0;
+              if (pKickoffMs > 0 && Date.now() < pKickoffMs) {
+                return {
+                  ...p,
+                  status: "pending",
+                  result: undefined,
+                  actualScore: undefined,
+                  profit: undefined,
+                  matchTiming: "prematch",
+                };
+              }
+              return p;
+            });
+            result[row.date] = cleanedPicks;
+            memorySnapshots[row.date] = cleanedPicks;
           }
         }
       }

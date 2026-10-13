@@ -355,9 +355,13 @@ export function SportDashboardView({
   const historyEliteCount = auditedHistoricalOpportunities.filter((h) => isElitePick(h as any)).length;
   const valorCount = opportunities.filter((s) => s.pickBadge === 'valor' || s.expectedValue >= 5).length;
   const bombaCount = opportunities.filter((s) => (s.odds || 0) >= 2.0).length;
-  const wonCount = opportunities.filter((s) => s.result === 'WON' || s.status === 'won').length;
-  const lostCount = opportunities.filter((s) => s.result === 'LOST' || s.status === 'lost').length;
-  const scheduledCount = opportunities.filter((s) => (s.status === 'pending' || !s.result) && (s as any).status !== 'in_play').length;
+  const isOpportunityPending = (s: MarketOpportunity) => {
+    const pKick = s.kickoff ? new Date(s.kickoff).getTime() : 0;
+    return s.status === 'pending' || s.matchTiming === 'prematch' || (pKick > 0 && Date.now() < pKick);
+  };
+  const wonCount = opportunities.filter((s) => !isOpportunityPending(s) && (s.result === 'WON' || s.status === 'won')).length;
+  const lostCount = opportunities.filter((s) => !isOpportunityPending(s) && (s.result === 'LOST' || s.status === 'lost')).length;
+  const scheduledCount = opportunities.filter((s) => isOpportunityPending(s) && (s as any).status !== 'in_play').length;
   const inPlayCount = opportunities.filter((s) => (s as any).status === 'in_play').length;
   const finishedCount = opportunities.filter((s) => s.status === 'won' || s.status === 'lost' || s.result === 'WON' || s.result === 'LOST' || (s as any).status === 'finished').length;
   const topPickCount = opportunities.filter((s) => s.confidence === 'Muy Alta' || s.probability >= 68).length;
@@ -395,11 +399,11 @@ export function SportDashboardView({
         if ((s.odds || 0) < 2.0) return false;
 
       } else if (matchStatusFilter === 'WON') {
-        if (s.result !== 'WON' && s.status !== 'won') return false;
+        if (isOpportunityPending(s) || (s.result !== 'WON' && s.status !== 'won')) return false;
       } else if (matchStatusFilter === 'LOST') {
-        if (s.result !== 'LOST' && s.status !== 'lost') return false;
+        if (isOpportunityPending(s) || (s.result !== 'LOST' && s.status !== 'lost')) return false;
       } else if (matchStatusFilter === 'SCHEDULED') {
-        if (s.status === 'won' || s.status === 'lost' || s.result === 'WON' || s.result === 'LOST' || (s as any).status === 'finished' || (s as any).status === 'in_play') return false;
+        if (!isOpportunityPending(s) || (s as any).status === 'in_play') return false;
       } else if (matchStatusFilter === 'IN_PLAY') {
         if ((s as any).status !== 'in_play') return false;
       } else if (matchStatusFilter === 'FINISHED') {
