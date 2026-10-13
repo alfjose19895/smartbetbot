@@ -154,7 +154,7 @@
     "league": "Emperor Cup",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1540,
     "country": "Japón",
     "homeElo": 1652,
@@ -180,16 +180,16 @@
     "homeTeamId": 310,
     "leagueLogo": "https://media.api-sports.io/football/leagues/102.png",
     "leagueTier": 1,
-    "liveMinute": "28",
-    "livePeriod": "1H",
     "smartScore": 99,
     "explanation": "Fagiano Okayama impone una marcada solvencia como anfitrión (0 triunfos en sus últimos 5 compromisos) y promedia 2.5 xG en casa. Su dominio territorial y solidez defensiva ante un JEF United Chiba que ha cedido 0 derrotas fuera fundamentan la ventaja local.",
-    "matchTiming": "live",
+    "matchTiming": "finished",
     "probability": 63.4,
-    "currentScore": "0 - 0",
     "bookmakerOdds": 1.55,
     "expectedValue": -1.8,
-    "impliedProbability": 64.5
+    "impliedProbability": 64.5,
+    "actualScore": "1 - 0",
+    "result": "WON",
+    "profit": 0.55
   },
   {
     "h2h": [],
@@ -202,7 +202,7 @@
     "league": "Emperor Cup",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1491,
     "country": "Japón",
     "homeElo": 1600,
@@ -228,16 +228,16 @@
     "homeTeamId": 292,
     "leagueLogo": "https://media.api-sports.io/football/leagues/102.png",
     "leagueTier": 1,
-    "liveMinute": "37",
-    "livePeriod": "1H",
     "smartScore": 99,
     "explanation": "Solidez posicional y eficacia en área propia: FC Tokyo concede menos de 0.9 xG de local, mientras que Shonan Bellmare muestra dificultades para generar peligro constante a domicilio (0.8 xG foráneo).",
-    "matchTiming": "live",
+    "matchTiming": "finished",
     "probability": 63.1,
-    "currentScore": "2 - 0",
     "bookmakerOdds": 1.48,
     "expectedValue": -6.5,
-    "impliedProbability": 67.6
+    "impliedProbability": 67.6,
+    "actualScore": "4 - 0",
+    "result": "WON",
+    "profit": 0.48
   },
   {
     "h2h": [],
@@ -250,7 +250,7 @@
     "league": "Emperor Cup",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1575,
     "country": "Japón",
     "homeElo": 1531,
@@ -276,16 +276,16 @@
     "homeTeamId": 294,
     "leagueLogo": "https://media.api-sports.io/football/leagues/102.png",
     "leagueTier": 1,
-    "liveMinute": "54",
-    "livePeriod": "2H",
     "smartScore": 99,
     "explanation": "Tanto Kawasaki Frontale como Tegevajaro Miyazaki han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
-    "matchTiming": "live",
+    "matchTiming": "finished",
     "probability": 56.8,
-    "currentScore": "2 - 0",
     "bookmakerOdds": 1.64,
     "expectedValue": -6.9,
-    "impliedProbability": 61
+    "impliedProbability": 61,
+    "actualScore": "2 - 0 (No)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [],
@@ -298,7 +298,7 @@
     "league": "Emperor Cup",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1542,
     "country": "Japón",
     "homeElo": 1498,
@@ -324,16 +324,16 @@
     "homeTeamId": 283,
     "leagueLogo": "https://media.api-sports.io/football/leagues/102.png",
     "leagueTier": 1,
-    "liveMinute": "45",
-    "livePeriod": "HT",
     "smartScore": 99,
     "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
-    "matchTiming": "live",
+    "matchTiming": "finished",
     "probability": 52.5,
-    "currentScore": "1 - 1",
     "bookmakerOdds": 1.91,
     "expectedValue": 0.2,
-    "impliedProbability": 52.4
+    "impliedProbability": 52.4,
+    "actualScore": "2 - 1 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.91
   },
   {
     "h2h": [],
@@ -346,7 +346,7 @@
     "league": "Emperor Cup",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1488,
     "country": "Japón",
     "homeElo": 1524,
@@ -372,13 +372,10 @@
     "homeTeamId": 4319,
     "leagueLogo": "https://media.api-sports.io/football/leagues/102.png",
     "leagueTier": 1,
-    "liveMinute": "28",
-    "livePeriod": "1H",
     "smartScore": 99,
     "explanation": "Volumen constante por las bandas: El cruce táctico entre Gainare Tottori (5.9 córners de media en casa) y Tokyo Verdy (4.6 foráneos) proyecta 10.5 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
-    "matchTiming": "live",
+    "matchTiming": "finished",
     "probability": 57.1,
-    "currentScore": "0 - 0",
     "bookmakerOdds": 1.91,
     "expectedValue": 9.1,
     "cornerAnalysis": {
@@ -484,7 +481,10 @@
       "expectedHomeCorners": 5.91,
       "expectedTotalCorners": 10.47
     },
-    "impliedProbability": 52.4
+    "impliedProbability": 52.4,
+    "actualScore": "6 - 4 (10 Córners)",
+    "result": "WON",
+    "profit": 0.91
   },
   {
     "h2h": [],
@@ -497,7 +497,7 @@
     "league": "Veikkausliiga",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1960,
     "country": "Finlandia",
     "homeElo": 1484,
@@ -528,7 +528,11 @@
     "probability": 60.1,
     "bookmakerOdds": 1.75,
     "expectedValue": 5.1,
-    "impliedProbability": 57.1
+    "impliedProbability": 57.1,
+    "actualScore": "0 - 0 (0 Goles)",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -541,7 +545,7 @@
     "league": "Brasileirão Série A",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1551,
     "country": "Brasil",
     "homeElo": 1523,
@@ -572,7 +576,11 @@
     "probability": 52.9,
     "bookmakerOdds": 1.67,
     "expectedValue": -10.5,
-    "impliedProbability": 59.9
+    "impliedProbability": 59.9,
+    "actualScore": "1 - 1 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.7,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -585,7 +593,7 @@
     "league": "Brasileirão Série A",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1602,
     "country": "Brasil",
     "homeElo": 1609,
@@ -616,7 +624,11 @@
     "probability": 53.5,
     "bookmakerOdds": 1.7,
     "expectedValue": -10.3,
-    "impliedProbability": 58.8
+    "impliedProbability": 58.8,
+    "actualScore": "1 - 1 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.67,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -629,7 +641,7 @@
     "league": "Brasileirão Série A",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1554,
     "country": "Brasil",
     "homeElo": 1571,
@@ -660,7 +672,11 @@
     "probability": 49.6,
     "bookmakerOdds": 1.91,
     "expectedValue": -5.3,
-    "impliedProbability": 52.4
+    "impliedProbability": 52.4,
+    "actualScore": "2 - 1 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.91,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -673,7 +689,7 @@
     "league": "Brasileirão Série B",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1583,
     "country": "Brasil",
     "homeElo": 1505,
@@ -704,7 +720,11 @@
     "probability": 48.7,
     "bookmakerOdds": 1.91,
     "expectedValue": -6.9,
-    "impliedProbability": 52.4
+    "impliedProbability": 52.4,
+    "actualScore": "2 - 1 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.91,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -717,7 +737,7 @@
     "league": "Brasileirão Série B",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1592,
     "country": "Brasil",
     "homeElo": 1620,
@@ -748,7 +768,11 @@
     "probability": 52.8,
     "bookmakerOdds": 1.8,
     "expectedValue": -5,
-    "impliedProbability": 55.6
+    "impliedProbability": 55.6,
+    "actualScore": "1 - 2",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -761,7 +785,7 @@
     "league": "Brasileirão Série B",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1880,
     "country": "Brasil",
     "homeElo": 1515,
@@ -792,7 +816,11 @@
     "probability": 56.7,
     "bookmakerOdds": 1.95,
     "expectedValue": 10.5,
-    "impliedProbability": 51.3
+    "impliedProbability": 51.3,
+    "actualScore": "3 - 1 (4 Goles)",
+    "result": "WON",
+    "profit": 0.95,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -805,7 +833,7 @@
     "league": "Brasileirão Série B",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1504,
     "country": "Brasil",
     "homeElo": 1485,
@@ -836,7 +864,11 @@
     "probability": 50,
     "bookmakerOdds": 1.83,
     "expectedValue": -8.5,
-    "impliedProbability": 54.6
+    "impliedProbability": 54.6,
+    "actualScore": "0 - 1 (No)",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -849,7 +881,7 @@
     "league": "Brasileirão Série B",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1521,
     "country": "Brasil",
     "homeElo": 1592,
@@ -880,7 +912,11 @@
     "probability": 49.2,
     "bookmakerOdds": 2.15,
     "expectedValue": 5.8,
-    "impliedProbability": 46.5
+    "impliedProbability": 46.5,
+    "actualScore": "0 - 0",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -893,7 +929,7 @@
     "league": "Brasileirão Série A",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1596,
     "country": "Brasil",
     "homeElo": 1611,
@@ -924,6 +960,10 @@
     "probability": 50.9,
     "bookmakerOdds": 1.8,
     "expectedValue": -8.5,
-    "impliedProbability": 55.6
+    "impliedProbability": 55.6,
+    "actualScore": "2 - 0 (No)",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   }
 ]

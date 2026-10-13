@@ -659,7 +659,21 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string): Prom
   try {
     const realScoresMap: Record<string, { home: number; away: number; short: string; isFinished: boolean; isLive: boolean; elapsed?: number }> = {};
 
-    const registerScore = (homeName: string, awayName: string, homeGoals: number, awayGoals: number, shortStatus: string, fixtureId?: number, elapsed?: number) => {
+    const registerScore = (
+      homeName: string,
+      awayName: string,
+      homeGoals: number,
+      awayGoals: number,
+      shortStatus: string,
+      fixtureId?: number,
+      elapsed?: number,
+      leagueId?: number,
+      leagueName?: string
+    ) => {
+      // STRICT GUARD: Never register youth / reserve fixtures under generic senior team keys!
+      if (isYouthOrReserveFixture({ leagueId, leagueName, homeTeam: homeName, awayTeam: awayName })) {
+        return;
+      }
       const hNorm = getCanonicalTeamKey(homeName);
       const aNorm = getCanonicalTeamKey(awayName);
       
@@ -714,7 +728,17 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string): Prom
         const awayGoals = item.goals?.away ?? item.score?.fulltime?.away;
         const elapsed = typeof item.fixture?.status?.elapsed === 'number' ? item.fixture.status.elapsed : undefined;
         if (typeof homeGoals === "number" && typeof awayGoals === "number") {
-          registerScore(item.teams.home.name, item.teams.away.name, homeGoals, awayGoals, s, item.fixture?.id, elapsed);
+          registerScore(
+            item.teams.home.name,
+            item.teams.away.name,
+            homeGoals,
+            awayGoals,
+            s,
+            item.fixture?.id,
+            elapsed,
+            item.league?.id,
+            item.league?.name
+          );
         }
       }
     }
@@ -735,10 +759,10 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string): Prom
     const finishedCornerPicks = snapshot.filter((p) => {
       const isCorner = (p.market || "").toLowerCase().includes("corner") || (p.market || "").toLowerCase().includes("córner");
       if (!isCorner || !p.fixtureId) return false;
-      const hNorm = getCanonicalTeamKey(p.homeTeam);
-      const aNorm = getCanonicalTeamKey(p.awayTeam);
+      const pKickoffMs = p.kickoff ? new Date(p.kickoff).getTime() : 0;
+      if (pKickoffMs && nowMs < pKickoffMs + 90 * 60 * 1000) return false;
       const fixKey = `fix-${p.fixtureId}`;
-      const scoreData = realScoresMap[fixKey] || realScoresMap[`${hNorm}-${aNorm}`];
+      const scoreData = realScoresMap[fixKey];
       return scoreData && scoreData.isFinished;
     });
 
@@ -768,10 +792,41 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string): Prom
 
     let hasUpdates = false;
     const settledSnapshot = snapshot.map((p) => {
+      const pKickoffMs = p.kickoff ? new Date(p.kickoff).getTime() : 0;
+      const isPastKickoff = !pKickoffMs || nowMs >= pKickoffMs;
+      const isMatchTimeElapsed = !pKickoffMs || nowMs >= pKickoffMs + 90 * 60 * 1000;
+
       const hNorm = getCanonicalTeamKey(p.homeTeam);
       const aNorm = getCanonicalTeamKey(p.awayTeam);
       const fixKey = p.fixtureId ? `fix-${p.fixtureId}` : "";
-      const scoreData = (fixKey ? realScoresMap[fixKey] : undefined) || realScoresMap[`${hNorm}-${aNorm}`];
+      
+      // If fixtureId is known, prioritize the exact fixtureId score.
+      // Only fall back to team name if fixtureId is not present AND match time has elapsed!
+      let scoreData = fixKey ? realScoresMap[fixKey] : undefined;
+      if (!scoreData && !p.fixtureId && isMatchTimeElapsed) {
+        scoreData = realScoresMap[`${hNorm}-${aNorm}`];
+      }
+
+      // TIME GUARD: If current time is before scheduled kickoff + 90 minutes, match CANNOT be FT finished!
+      if (!isMatchTimeElapsed) {
+        // If match hasn't even kicked off yet, it must strictly be pending prematch
+        if (!isPastKickoff) {
+          if (p.status !== "pending" || p.actualScore || (p as any).result) {
+            hasUpdates = true;
+            return {
+              ...p,
+              status: "pending" as const,
+              result: undefined,
+              actualScore: undefined,
+              matchTiming: "prematch" as const,
+              currentScore: undefined,
+              livePeriod: undefined,
+              liveMinute: undefined,
+            };
+          }
+          return p;
+        }
+      }
 
       // 1. MATCH IS FULLY FINISHED (FT, AET, PEN) -> Evaluate market result and permanently settle
       if (scoreData && scoreData.isFinished && typeof scoreData.home === "number" && typeof scoreData.away === "number") {
@@ -847,8 +902,7 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string): Prom
       }
 
       // 3. MATCH IS UNSTARTED IN THE FUTURE (kickoffMs > nowMs) -> If mistakenly marked as won/lost, reset to pending
-      const pKickoffMs = p.kickoff ? new Date(p.kickoff).getTime() : 0;
-      if (pKickoffMs > nowMs && (p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore))) {
+      if (pKickoffMs && pKickoffMs > nowMs && (p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore))) {
         hasUpdates = true;
         return {
           ...p,
@@ -1113,6 +1167,34 @@ export function isCuratedLeague(leagueId?: number, leagueName?: string, country?
  * Rigorous and authentic market settlement evaluator for all sports betting markets.
  * Correctly evaluates Over/Under (0.5, 1.5, 2.5, 3.5, 4.5), 1X2, BTTS, Double Chance, Asian Handicap, Corners & Cards.
  */
+export function isYouthOrReserveFixture(fixture: {
+  leagueId?: number;
+  leagueName?: string;
+  homeTeam?: string;
+  awayTeam?: string;
+}): boolean {
+  if (fixture.leagueId === 14) return true; // UEFA Youth League (ID 14)
+  const l = (fixture.leagueName || "").toLowerCase();
+  if (
+    l.includes("youth") ||
+    l.includes("u19") ||
+    l.includes("u20") ||
+    l.includes("u21") ||
+    l.includes("primavera") ||
+    l.includes("reserve") ||
+    l.includes("development") ||
+    l.includes("torneo proyeccion") ||
+    l.includes("torneo reserva")
+  ) {
+    return true;
+  }
+  const h = (fixture.homeTeam || "").toLowerCase();
+  const a = (fixture.awayTeam || "").toLowerCase();
+  const youthRegex = /\b(u17|u18|u19|u20|u21|u23|sub-17|sub-19|sub-20|sub-23|youth|primavera)\b/i;
+  if (youthRegex.test(h) || youthRegex.test(a)) return true;
+  return false;
+}
+
 export function evaluateMarketResult(
   market: string,
   homeGoals: number,
@@ -1502,7 +1584,31 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
 
         let snapshotUpdated = false;
 
+        // Clean up any premature settlements before checking finished matches
+        for (const p of existingSnapshot) {
+          const pKickoffMs = p.kickoff ? new Date(p.kickoff).getTime() : 0;
+          if (pKickoffMs && nowMs < pKickoffMs) {
+            if (p.status !== "pending" || p.actualScore || (p as any).result) {
+              p.status = "pending";
+              p.result = undefined;
+              p.actualScore = undefined;
+              (p as any).profit = undefined;
+              snapshotUpdated = true;
+            }
+          }
+        }
+
         for (const fItem of finishedToday) {
+          // Reject youth / reserve league fixtures from matching senior snapshot
+          if (isYouthOrReserveFixture({
+            leagueId: fItem.league?.id,
+            leagueName: fItem.league?.name,
+            homeTeam: fItem.teams?.home?.name,
+            awayTeam: fItem.teams?.away?.name
+          })) {
+            continue;
+          }
+
           const hGoals = fItem.goals?.home ?? fItem.score?.fulltime?.home;
           const aGoals = fItem.goals?.away ?? fItem.score?.fulltime?.away;
           if (typeof hGoals === "number" && typeof aGoals === "number") {
@@ -1511,14 +1617,19 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
             const fixtureIdNum = Number(fItem.fixture?.id);
 
             for (const p of existingSnapshot) {
+              const pKickoffMs = p.kickoff ? new Date(p.kickoff).getTime() : 0;
+              // A match CANNOT be finished if current time is before scheduled kickoff + 90 minutes!
+              if (pKickoffMs && nowMs < pKickoffMs + 90 * 60 * 1000) {
+                continue;
+              }
+
               const pFixtureIdNum = Number(p.fixtureId);
               const pHNorm = getCanonicalTeamKey(p.homeTeam);
               const pANorm = getCanonicalTeamKey(p.awayTeam);
 
-              const isMatch =
-                (pFixtureIdNum && fixtureIdNum && pFixtureIdNum === fixtureIdNum) ||
-                (hNorm === pHNorm && aNorm === pANorm) ||
-                (hNorm.length > 3 && pHNorm.length > 3 && (hNorm.includes(pHNorm) || pHNorm.includes(hNorm)) && (aNorm.includes(pANorm) || pANorm.includes(aNorm)));
+              const isMatch = (pFixtureIdNum && fixtureIdNum)
+                ? pFixtureIdNum === fixtureIdNum
+                : (hNorm === pHNorm && aNorm === pANorm);
 
               if (isMatch) {
                 const evaluation = evaluateMarketResult(p.market, hGoals, aGoals, {
@@ -2518,6 +2629,14 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
       if (Array.isArray(allFixtures)) {
         for (const item of allFixtures) {
           if (!item.teams?.home?.name || !item.teams?.away?.name) continue;
+          if (isYouthOrReserveFixture({
+            leagueId: item.league?.id,
+            leagueName: item.league?.name,
+            homeTeam: item.teams?.home?.name,
+            awayTeam: item.teams?.away?.name
+          })) {
+            continue;
+          }
           const s = item.fixture?.status?.short;
           const isFinished =
             ["FT", "AET", "PEN", "120", "POST"].includes(s) ||
@@ -2584,16 +2703,22 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
       // Match true date strictly from kickoff
       const trueMatchDate = p.kickoff ? p.kickoff.split("T")[0] : dateStr;
       if (trueMatchDate < HISTORY_START_DATE) continue;
+
+      // TIME GUARD: A match cannot be settled in historical finished records if current time hasn't elapsed regulation time!
+      const pKickoffMs = p.kickoff ? new Date(p.kickoff).getTime() : 0;
+      if (pKickoffMs && nowMs < pKickoffMs + 90 * 60 * 1000) {
+        continue;
+      }
+
       const hNorm = getCanonicalTeamKey(p.homeTeam);
       const aNorm = getCanonicalTeamKey(p.awayTeam);
       const scoreKeyWithDate = `${hNorm}-${aNorm}-${dateStr}`;
       const scoreKeyGeneric = `${hNorm}-${aNorm}`;
       const fixKey = p.fixtureId ? `fix-${p.fixtureId}` : "";
 
-      const realScore =
-        (fixKey ? realScoresMap[fixKey] : undefined) ||
-        realScoresMap[scoreKeyWithDate] ||
-        realScoresMap[scoreKeyGeneric];
+      const realScore = fixKey
+        ? realScoresMap[fixKey]
+        : (realScoresMap[scoreKeyWithDate] || realScoresMap[scoreKeyGeneric]);
 
       const isLiveMatch = p.matchTiming === "live" || Boolean(p.currentScore) || Boolean(p.livePeriod);
       const isMcpPick = Boolean(p.isMcp || p.isMcpPick || p.source === "mcp" || p.pickBadge === "mcp" || (p.explanation && p.explanation.includes("MCP")) || (p.market && p.market.includes("MCP")));

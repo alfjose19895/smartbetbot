@@ -10,7 +10,7 @@
     "league": "UEFA Nations League",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1482,
     "country": "Europa",
     "homeElo": 1620,
@@ -36,13 +36,10 @@
     "homeTeamId": 1095,
     "leagueLogo": "https://media.api-sports.io/football/leagues/5.png",
     "leagueTier": 1,
-    "liveMinute": "76",
-    "livePeriod": "2H",
     "smartScore": 99,
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.6 córners totales.",
-    "matchTiming": "live",
+    "matchTiming": "finished",
     "probability": 67.3,
-    "currentScore": "1 - 2",
     "bookmakerOdds": 1.83,
     "expectedValue": 23.2,
     "cornerAnalysis": {
@@ -144,7 +141,10 @@
       "saferLine": 7.5,
       "valueLine": 10.5
     },
-    "impliedProbability": 54.6
+    "impliedProbability": 54.6,
+    "actualScore": "11 - 4 (15 Córners)",
+    "result": "WON",
+    "profit": 0.83
   },
   {
     "h2h": [],
@@ -157,7 +157,7 @@
     "league": "UEFA Nations League",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1482,
     "country": "Europa",
     "homeElo": 1620,
@@ -183,16 +183,16 @@
     "homeTeamId": 1095,
     "leagueLogo": "https://media.api-sports.io/football/leagues/5.png",
     "leagueTier": 1,
-    "liveMinute": "76",
-    "livePeriod": "2H",
     "smartScore": 99,
     "explanation": "Solidez posicional y eficacia en área propia: Kazakhstan concede menos de 0.9 xG de local, mientras que Moldova muestra dificultades para generar peligro constante a domicilio (0.7 xG foráneo).",
-    "matchTiming": "live",
+    "matchTiming": "finished",
     "probability": 60,
-    "currentScore": "1 - 2",
     "bookmakerOdds": 1.85,
     "expectedValue": 11.1,
-    "impliedProbability": 54.1
+    "impliedProbability": 54.1,
+    "actualScore": "1 - 2",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [],
@@ -205,7 +205,7 @@
     "league": "UEFA Nations League",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1641,
     "country": "Europa",
     "homeElo": 1586,
@@ -335,7 +335,11 @@
       "saferLine": 7.5,
       "valueLine": 10.5
     },
-    "impliedProbability": 55.6
+    "impliedProbability": 55.6,
+    "actualScore": "1 - 11 (12 Córners)",
+    "result": "WON",
+    "profit": 0.8,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -348,7 +352,7 @@
     "league": "1. Division (OBOS-ligaen)",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1589,
     "country": "Noruega",
     "homeElo": 1648,
@@ -379,7 +383,11 @@
     "probability": 53.1,
     "bookmakerOdds": 1.95,
     "expectedValue": 3.6,
-    "impliedProbability": 51.3
+    "impliedProbability": 51.3,
+    "actualScore": "5 - 0",
+    "result": "WON",
+    "profit": 0.95,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -392,7 +400,7 @@
     "league": "UEFA Nations League",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1780,
     "country": "Europa",
     "homeElo": 1546,
@@ -423,7 +431,11 @@
     "probability": 62.6,
     "bookmakerOdds": 1.57,
     "expectedValue": -1.8,
-    "impliedProbability": 63.7
+    "impliedProbability": 63.7,
+    "actualScore": "6 - 0 (6 Goles)",
+    "result": "WON",
+    "profit": 0.57,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -436,7 +448,7 @@
     "league": "Premier Division",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1498,
     "country": "Irlanda",
     "homeElo": 1647,
@@ -467,7 +479,11 @@
     "probability": 62.4,
     "bookmakerOdds": 1.53,
     "expectedValue": -4.5,
-    "impliedProbability": 65.4
+    "impliedProbability": 65.4,
+    "actualScore": "1 - 2 (3 Goles)",
+    "result": "WON",
+    "profit": 0.53,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -480,7 +496,7 @@
     "league": "UEFA Nations League",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1644,
     "country": "Europa",
     "homeElo": 1649,
@@ -511,7 +527,11 @@
     "probability": 60.4,
     "bookmakerOdds": 1.48,
     "expectedValue": -10.6,
-    "impliedProbability": 67.6
+    "impliedProbability": 67.6,
+    "actualScore": "3 - 0 (3 Goles)",
+    "result": "WON",
+    "profit": 0.48,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -524,7 +544,7 @@
     "league": "UEFA Nations League",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1635,
     "country": "Europa",
     "homeElo": 1531,
@@ -555,7 +575,11 @@
     "probability": 58.1,
     "bookmakerOdds": 1.57,
     "expectedValue": -8.8,
-    "impliedProbability": 63.7
+    "impliedProbability": 63.7,
+    "actualScore": "1 - 1 (2 Goles)",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -568,7 +592,7 @@
     "league": "UEFA Nations League",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1554,
     "country": "Europa",
     "homeElo": 1540,
@@ -698,7 +722,11 @@
       "saferLine": 6.5,
       "valueLine": 10.5
     },
-    "impliedProbability": 63.7
+    "impliedProbability": 63.7,
+    "actualScore": "4 - 0 (4 Córners)",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -711,7 +739,7 @@
     "league": "UEFA Nations League",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1642,
     "country": "Europa",
     "homeElo": 1494,
@@ -840,7 +868,11 @@
       "recommendedLine": 7.5,
       "valueLine": 9.5
     },
-    "impliedProbability": 65.4
+    "impliedProbability": 65.4,
+    "actualScore": "8 - 4 (12 Córners)",
+    "result": "WON",
+    "profit": 0.53,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -853,7 +885,7 @@
     "league": "UEFA Nations League",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1623,
     "country": "Europa",
     "homeElo": 1659,
@@ -983,7 +1015,11 @@
       "saferLine": 7.5,
       "valueLine": 10.5
     },
-    "impliedProbability": 55.6
+    "impliedProbability": 55.6,
+    "actualScore": "7 - 1 (8 Córners)",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -996,7 +1032,7 @@
     "league": "Liga Profesional Argentina",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1569,
     "country": "Argentina",
     "homeElo": 1640,
@@ -1027,7 +1063,11 @@
     "probability": 47.1,
     "bookmakerOdds": 2.45,
     "expectedValue": 15.3,
-    "impliedProbability": 40.8
+    "impliedProbability": 40.8,
+    "actualScore": "1 - 4",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -1040,7 +1080,7 @@
     "league": "Primera División",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1610,
     "country": "Chile",
     "homeElo": 1580,
@@ -1071,7 +1111,11 @@
     "probability": 56.6,
     "bookmakerOdds": 1.67,
     "expectedValue": -5.5,
-    "impliedProbability": 59.9
+    "impliedProbability": 59.9,
+    "actualScore": "0 - 2 (No)",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -1084,7 +1128,7 @@
     "league": "Brasileirão Série A",
     "market": "Under 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1572,
     "country": "Brasil",
     "homeElo": 1596,
@@ -1115,7 +1159,11 @@
     "probability": 54.7,
     "bookmakerOdds": 1.7,
     "expectedValue": -7,
-    "impliedProbability": 58.8
+    "impliedProbability": 58.8,
+    "actualScore": "1 - 2 (3 Goles)",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -1128,7 +1176,7 @@
     "league": "Liga Profesional Argentina",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1489,
     "country": "Argentina",
     "homeElo": 1484,
@@ -1259,7 +1307,11 @@
       "recommendedLine": 8.5,
       "valueLine": 10.5
     },
-    "impliedProbability": 55.6
+    "impliedProbability": 55.6,
+    "actualScore": "5 - 3 (8 Córners)",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -1272,7 +1324,7 @@
     "league": "Liga Profesional Argentina",
     "market": "Under 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1659,
     "country": "Argentina",
     "homeElo": 1551,
@@ -1303,6 +1355,10 @@
     "probability": 53.5,
     "bookmakerOdds": 1.75,
     "expectedValue": -6.3,
-    "impliedProbability": 57.1
+    "impliedProbability": 57.1,
+    "actualScore": "3 - 0 (3 Goles)",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   }
 ]

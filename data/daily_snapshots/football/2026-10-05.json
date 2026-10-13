@@ -835,7 +835,7 @@
     "league": "Liga Profesional Argentina",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1544,
     "country": "Argentina",
     "homeElo": 1481,
@@ -965,7 +965,11 @@
       "expectedHomeCorners": 5.69,
       "expectedTotalCorners": 10.38
     },
-    "impliedProbability": 55.6
+    "impliedProbability": 55.6,
+    "actualScore": "4 - 5 (9 Córners)",
+    "result": "WON",
+    "profit": 0.8,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -978,7 +982,7 @@
     "league": "Primera División",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1880,
     "country": "Uruguay",
     "homeElo": 1627,
@@ -1009,7 +1013,11 @@
     "probability": 71.9,
     "bookmakerOdds": 1.4,
     "expectedValue": 0.6,
-    "impliedProbability": 71.4
+    "impliedProbability": 71.4,
+    "actualScore": "2 - 0 (2 Goles)",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -1022,7 +1030,7 @@
     "league": "Primera A",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1646,
     "country": "Colombia",
     "homeElo": 1502,
@@ -1053,7 +1061,11 @@
     "probability": 53,
     "bookmakerOdds": 1.9,
     "expectedValue": 0.6,
-    "impliedProbability": 52.6
+    "impliedProbability": 52.6,
+    "actualScore": "0 - 1 (1 Goles)",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -1066,7 +1078,7 @@
     "league": "Liga Profesional Argentina",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1520,
     "country": "Argentina",
     "homeElo": 1549,
@@ -1196,6 +1208,10 @@
       "expectedHomeCorners": 6.13,
       "expectedTotalCorners": 10.58
     },
-    "impliedProbability": 54.6
+    "impliedProbability": 54.6,
+    "actualScore": "7 - 3 (10 Córners)",
+    "result": "WON",
+    "profit": 0.83,
+    "matchTiming": "finished"
   }
 ]

@@ -206,7 +206,7 @@
     "league": "UEFA Nations League",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1620,
     "country": "Europa",
     "homeElo": 1640,
@@ -334,7 +334,11 @@
       "expectedHomeCorners": 6,
       "expectedTotalCorners": 10.52
     },
-    "impliedProbability": 54.6
+    "impliedProbability": 54.6,
+    "actualScore": "7 - 6 (13 Córners)",
+    "result": "WON",
+    "profit": 0.83,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -347,7 +351,7 @@
     "league": "Primera División Femenina (Liga F)",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1780,
     "country": "España",
     "homeElo": 1531,
@@ -378,7 +382,11 @@
     "probability": 56.4,
     "bookmakerOdds": 1.95,
     "expectedValue": 10,
-    "impliedProbability": 51.3
+    "impliedProbability": 51.3,
+    "actualScore": "2 - 2 (4 Goles)",
+    "result": "WON",
+    "profit": 0.95,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -391,7 +399,7 @@
     "league": "UEFA Nations League",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1567,
     "country": "Europa",
     "homeElo": 1628,
@@ -521,7 +529,11 @@
       "expectedHomeCorners": 6.14,
       "expectedTotalCorners": 10.58
     },
-    "impliedProbability": 55.6
+    "impliedProbability": 55.6,
+    "actualScore": "9 - 1 (10 Córners)",
+    "result": "WON",
+    "profit": 0.8,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -534,7 +546,7 @@
     "league": "UEFA Nations League",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1646,
     "country": "Europa",
     "homeElo": 1483,
@@ -664,7 +676,11 @@
       "expectedHomeCorners": 5.65,
       "expectedTotalCorners": 10.36
     },
-    "impliedProbability": 54.6
+    "impliedProbability": 54.6,
+    "actualScore": "7 - 3 (10 Córners)",
+    "result": "WON",
+    "profit": 0.83,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -677,7 +693,7 @@
     "league": "Liga Profesional Argentina",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1647,
     "country": "Argentina",
     "homeElo": 1535,
@@ -805,7 +821,11 @@
       "expectedHomeCorners": 5.73,
       "expectedTotalCorners": 10.4
     },
-    "impliedProbability": 65.8
+    "impliedProbability": 65.8,
+    "actualScore": "3 - 8 (11 Córners)",
+    "result": "WON",
+    "profit": 0.52,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -818,7 +838,7 @@
     "league": "Primera División",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1568,
     "country": "Uruguay",
     "homeElo": 1526,
@@ -849,7 +869,11 @@
     "probability": 52.9,
     "bookmakerOdds": 1.83,
     "expectedValue": -3.2,
-    "impliedProbability": 54.6
+    "impliedProbability": 54.6,
+    "actualScore": "3 - 2 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.83,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -862,7 +886,7 @@
     "league": "UEFA Nations League",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1584,
     "country": "Europa",
     "homeElo": 1570,
@@ -992,7 +1016,11 @@
       "expectedHomeCorners": 5.98,
       "expectedTotalCorners": 10.51
     },
-    "impliedProbability": 54.9
+    "impliedProbability": 54.9,
+    "actualScore": "1 - 9 (10 Córners)",
+    "result": "WON",
+    "profit": 0.82,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -1005,7 +1033,7 @@
     "league": "UEFA Nations League",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1593,
     "country": "Europa",
     "homeElo": 1575,
@@ -1134,7 +1162,11 @@
       "expectedHomeCorners": 6.03,
       "expectedTotalCorners": 10.54
     },
-    "impliedProbability": 44.4
+    "impliedProbability": 44.4,
+    "actualScore": "4 - 3 (7 Córners)",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -1147,7 +1179,7 @@
     "league": "UEFA Nations League",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1635,
     "country": "Europa",
     "homeElo": 1627,
@@ -1278,7 +1310,11 @@
       "expectedHomeCorners": 6.03,
       "expectedTotalCorners": 10.54
     },
-    "impliedProbability": 46.7
+    "impliedProbability": 46.7,
+    "actualScore": "5 - 0 (5 Córners)",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -1291,7 +1327,7 @@
     "league": "Brasileirão Série B",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1485,
     "country": "Brasil",
     "homeElo": 1880,
@@ -1322,7 +1358,11 @@
     "probability": 60.9,
     "bookmakerOdds": 1.7,
     "expectedValue": 3.6,
-    "impliedProbability": 58.8
+    "impliedProbability": 58.8,
+    "actualScore": "2 - 0 (2 Goles)",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -1335,7 +1375,7 @@
     "league": "Brasileirão Série B",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1638,
     "country": "Brasil",
     "homeElo": 1521,
@@ -1472,7 +1512,11 @@
       "expectedHomeCorners": 5.74,
       "expectedTotalCorners": 10.4
     },
-    "impliedProbability": 68
+    "impliedProbability": 68,
+    "actualScore": "7 - 0 (7 Córners)",
+    "result": "WON",
+    "profit": 0.47,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -1485,7 +1529,7 @@
     "league": "Primera A",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1606,
     "country": "Colombia",
     "homeElo": 1524,
@@ -1615,6 +1659,10 @@
       "expectedHomeCorners": 5.89,
       "expectedTotalCorners": 10.47
     },
-    "impliedProbability": 45.5
+    "impliedProbability": 45.5,
+    "actualScore": "10 - 0 (10 Córners)",
+    "result": "WON",
+    "profit": 1.2,
+    "matchTiming": "finished"
   }
 ]
