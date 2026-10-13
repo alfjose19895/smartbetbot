@@ -291,7 +291,9 @@ export class NHLSyncEngine {
               s.classification = 'WATCH';
             } else if (audit.tacticalNote) {
               (s as any).aiVetoed = false;
-              s.explanation = `${s.explanation} [Auditoría Gemini NHL: ${audit.tacticalNote}]`;
+              if (!audit.tacticalNote.includes('Validación cuantitativa de hockey y xG superada')) {
+                s.explanation = `${s.explanation} [Auditoría Gemini NHL: ${audit.tacticalNote}]`;
+              }
               if (audit.recommendedConfidence === 'Muy Alta') {
                 s.classification = 'TOP PICK';
               }
