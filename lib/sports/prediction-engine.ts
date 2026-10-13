@@ -72,14 +72,23 @@ export function getTimeSlot(kickoffDateStr?: string): "morning" | "afternoon" | 
  * - Córners with Prob >= 68%: 85.2% win rate
  * - SmartScore >= 86 with Prob >= 70%: 82.4% win rate
  */
-export function isElitePick(opp: { probability?: number; smartScore?: number; pickBadge?: string; market?: string; isElite?: boolean }): boolean {
-  if (opp.isElite) return true;
-  if (opp.pickBadge === "elite") return true;
+export function isElitePick(opp: { probability?: number; smartScore?: number; pickBadge?: string; market?: string; isElite?: boolean; odds?: number }): boolean {
+  const odds = typeof opp.odds === "number" ? opp.odds : 1.50;
   const prob = typeof opp.probability === "number" ? opp.probability : 0;
-  if (prob >= 75.0) return true;
   const score = typeof opp.smartScore === "number" ? opp.smartScore : 0;
-  if (prob >= 70.0 && score >= 86) return true;
-  if (opp.market === "Córners" && prob >= 68.0) return true;
+
+  // REGLA DE ORO ÉLITE 80%+:
+  // 1. Una cuota superior a 1.80 es por definición una jugada de riesgo/valor/bomba, NUNCA un pick élite seguro de 80%.
+  if (odds > 1.80) return false;
+  // 2. Una cuota inferior a 1.25 está vetada por riesgo asimétrico.
+  if (odds < 1.25) return false;
+
+  // 3. Probabilidad matemática real estricta: mínimo 75.0%
+  if (prob >= 75.0) return true;
+
+  // 4. Excepción de ultra-seguridad: prob >= 72.0% solo si SmartScore >= 90 y cuota muy segura (<= 1.60)
+  if (prob >= 72.0 && score >= 90 && odds <= 1.60) return true;
+
   return false;
 }
 
@@ -1629,7 +1638,17 @@ export function evaluateFixturePrediction(params: {
         typeof cornerResult.recommended_candidate.decimal_odds === "number" &&
         cornerResult.recommended_candidate.decimal_odds >= 1.05
       ) {
-        const rec = cornerResult.recommended_candidate;
+        // PRIORIZAR CANDIDATO SEGURO (HIGH WIN RATE):
+        // Si el recomendado por EV tiene probabilidad < 60% o cuota > 1.90, y existe una línea más segura con probabilidad >= 60%,
+        // usar la línea más segura para proteger el objetivo de 80% de aciertos y evitar cuotas exageradas.
+        const effectiveCandidate = (
+          (cornerResult.recommended_candidate.model_probability < 0.60 || cornerResult.recommended_candidate.decimal_odds > 1.90) &&
+          cornerResult.safer_candidate &&
+          cornerResult.safer_candidate.model_probability >= 0.60 &&
+          Number(cornerResult.safer_candidate.decimal_odds) >= 1.15
+        ) ? cornerResult.safer_candidate : cornerResult.recommended_candidate;
+
+        const rec = effectiveCandidate;
         const finalOdds = rec.decimal_odds as number;
         candidates.push({
           market: "Córners",
@@ -1767,14 +1786,20 @@ export function evaluateFixturePrediction(params: {
     );
     const smartScore = Math.min(99, Math.max(70, rawScore));
 
-    const isElite = (probPercent >= 75.0) || ((probPercent >= 70.0 || item.market === "Córners") && smartScore >= 86);
+    // CALIBRACIÓN ESTRICTA ÉLITE 80%:
+    // Solo califica como ÉLITE si la probabilidad es de verdad >= 75.0% y la cuota está en la zona segura (1.25 a 1.80)
+    const isElite = (probPercent >= 75.0 && item.odds <= 1.80 && item.odds >= 1.25) ||
+                    (probPercent >= 72.0 && smartScore >= 90 && item.odds <= 1.60 && item.odds >= 1.25);
+
     let pickBadge: "bomba" | "valor" | "estandar" | "elite" = "estandar";
 
     if (isElite) {
       pickBadge = "elite";
-    } else if (probPercent >= 65.0 && edgePercent >= 2.5) {
+    } else if (item.odds >= 2.00 && edgePercent >= 2.0) {
+      pickBadge = "bomba";
+    } else if (probPercent >= 62.0 && edgePercent >= 2.0) {
       pickBadge = "valor";
-    } else if (item.odds >= 1.70 && edgePercent >= 2.0) {
+    } else if (item.odds >= 1.65 && edgePercent >= 1.5) {
       pickBadge = "valor";
     } else {
       pickBadge = "estandar";
@@ -1909,7 +1934,8 @@ export function evaluateFixturePrediction(params: {
   if (opportunities.length === 0) {
     const sortedCandidates = [...candidates]
       .filter((c) => {
-        if (c.odds < 1.10 || c.prob < 0.35) return false;
+        // En fallback, no forzar picks con cuotas exageradas (> 2.15) o probabilidades bajas (< 52%)
+        if (c.odds < 1.20 || c.odds > 2.15 || c.prob < 0.52) return false;
         if (tier >= 3 && c.market === "Ganador Visitante") return false;
         if (c.market === "Ganador Visitante" && c.prob < 0.70) return false;
         return true;
@@ -1925,8 +1951,8 @@ export function evaluateFixturePrediction(params: {
   // STRICT USER HIERARCHY (5 MARKETS): 1: Over Corners > 2: BTTS > 3: Over Goals > 4: Local > 5: Visitante
   return opportunities.sort((a, b) => {
     // Priority: Élite picks first (prob >= 75% or elite badge)
-    const aElite = a.isElite || a.pickBadge === "elite" || a.probability >= 75;
-    const bElite = b.isElite || b.pickBadge === "elite" || b.probability >= 75;
+    const aElite = isElitePick(a);
+    const bElite = isElitePick(b);
     if (aElite !== bElite) {
       return aElite ? -1 : 1;
     }

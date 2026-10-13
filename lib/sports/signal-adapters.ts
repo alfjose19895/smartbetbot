@@ -1,5 +1,5 @@
 import { MultiSportSignal } from './types';
-import { MarketOpportunity } from './prediction-engine';
+import { MarketOpportunity, isElitePick } from './prediction-engine';
 import { HistoricalSettledPick } from './db';
 
 export function multiSportSignalToOpportunity(s: MultiSportSignal): MarketOpportunity {
@@ -87,8 +87,8 @@ export function multiSportSignalToOpportunity(s: MultiSportSignal): MarketOpport
     confidence: (s.classification === 'TOP PICK' ? 'Muy Alta' : 'Alta') as any,
     confidenceScore: s.smartScore || 80,
     explanation: s.explanation || `Analisis cuantitativo de valor esperado (+EV) para ${s.sport.toUpperCase()}.`,
-    pickBadge: ((s.modelProbability || 0.55) >= 0.75 || (s.smartScore || 80) >= 88 || (s.isSmartPick && (s.modelProbability || 0.55) >= 0.70)) ? 'elite' : (s.isSmartPick ? 'valor' : (s.decimalOdds >= 2.0 ? 'bomba' : 'estandar')),
-    isElite: ((s.modelProbability || 0.55) >= 0.75 || (s.smartScore || 80) >= 88 || (s.isSmartPick && (s.modelProbability || 0.55) >= 0.70)),
+    pickBadge: isElitePick({ odds: s.decimalOdds || 1.85, probability: Math.round((s.modelProbability || 0.55) * 100), smartScore: s.smartScore || 80, market: s.market }) ? 'elite' : (s.isSmartPick ? 'valor' : ((s.decimalOdds || 1.85) >= 2.0 ? 'bomba' : 'estandar')),
+    isElite: isElitePick({ odds: s.decimalOdds || 1.85, probability: Math.round((s.modelProbability || 0.55) * 100), smartScore: s.smartScore || 80, market: s.market }),
     status: oppStatus,
     result: isFinished ? (isWon ? 'WON' : isLost ? 'LOST' : undefined) : undefined,
     actualScore: isFinished ? scoreStr : undefined,
@@ -134,8 +134,8 @@ export function historicalPickToOpportunity(h: HistoricalSettledPick, sportKey: 
     confidence: (h.confidence || (prob >= 75 ? 'Muy Alta' : 'Alta')) as any,
     confidenceScore: prob,
     explanation: 'Resultado auditado y liquidado oficialmente.',
-    pickBadge: (h.isElite || h.pickBadge === 'elite' || prob >= 75) ? 'elite' : (h.pickBadge || 'valor'),
-    isElite: Boolean(h.isElite || h.pickBadge === 'elite' || prob >= 75),
+    pickBadge: isElitePick({ odds, probability: prob, smartScore: prob, market: h.market }) ? 'elite' : ((h.pickBadge && h.pickBadge !== 'elite') ? h.pickBadge : (odds >= 2.0 ? 'bomba' : 'valor')),
+    isElite: isElitePick({ odds, probability: prob, smartScore: prob, market: h.market }),
     status: isWon ? 'won' : isLost ? 'lost' : 'finished',
     result: h.result,
     actualScore: h.score,

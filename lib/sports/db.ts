@@ -161,7 +161,15 @@ export function loadDailySnapshot(dateStr: string, sport: string = "football"): 
       const data = fs.readFileSync(sportFilePath, "utf-8");
       const picks = JSON.parse(data);
       if (Array.isArray(picks)) {
-        const filtered = picks.filter((p) => !isExcludedMatch(p.homeTeam, p.awayTeam, p.match) && isSportMatch(p, sportKey));
+        const calibrated = picks.map((p) => {
+          const elite = isElitePick(p);
+          return {
+            ...p,
+            isElite: elite,
+            pickBadge: (elite ? "elite" : (p.pickBadge === "elite" ? (p.odds >= 2.0 ? "bomba" : "valor") : (p.pickBadge || "estandar"))) as "bomba" | "valor" | "estandar" | "mcp" | "elite",
+          };
+        });
+        const filtered = calibrated.filter((p) => !isExcludedMatch(p.homeTeam, p.awayTeam, p.match) && isSportMatch(p, sportKey));
         memorySnapshots[memKey] = filtered;
         return filtered;
       }
@@ -173,7 +181,15 @@ export function loadDailySnapshot(dateStr: string, sport: string = "football"): 
       const data = fs.readFileSync(legacyPath, "utf-8");
       const picks = JSON.parse(data);
       if (Array.isArray(picks)) {
-        const filtered = picks.filter((p) => !isExcludedMatch(p.homeTeam, p.awayTeam, p.match) && isSportMatch(p, sportKey));
+        const calibrated = picks.map((p) => {
+          const elite = isElitePick(p);
+          return {
+            ...p,
+            isElite: elite,
+            pickBadge: (elite ? "elite" : (p.pickBadge === "elite" ? (p.odds >= 2.0 ? "bomba" : "valor") : (p.pickBadge || "estandar"))) as "bomba" | "valor" | "estandar" | "mcp" | "elite",
+          };
+        });
+        const filtered = calibrated.filter((p) => !isExcludedMatch(p.homeTeam, p.awayTeam, p.match) && isSportMatch(p, sportKey));
         memorySnapshots[memKey] = filtered;
         return filtered;
       }
@@ -1805,7 +1821,7 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
       isMcp: true,
       source: "mcp" as const,
       isElite,
-      pickBadge: isElite ? ("elite" as const) : (p.pickBadge || "mcp") as "bomba" | "valor" | "estandar" | "mcp" | "elite",
+      pickBadge: (isElite ? "elite" : (p.pickBadge === "elite" ? (p.odds >= 2.0 ? "bomba" : "valor") : (p.pickBadge || "estandar"))) as "bomba" | "valor" | "estandar" | "mcp" | "elite",
       timeSlot: getTimeSlot(p.kickoff),
       isTopPick: (prob >= 68.0 || conf === "Muy Alta") && (p.smartScore || 0) >= 88,
     };
