@@ -428,6 +428,15 @@ Devuelve estrictamente un array JSON con el formato:
       riskScore = 82;
     }
 
+    // Rule 4: Over 5.5 in mid-odds trap (1.65 - 1.85) with low edge (< 3.5%) - prevents 5-goal trap
+    if ((mkt.includes("TOTAL") || sel.includes("OVER")) && sel.includes("5.5")) {
+      if (p.odds >= 1.65 && p.odds <= 1.85 && (p.edge || 0) < 3.5) {
+        vetoed = true;
+        vetoReason = "Over 5.5 en zona de cuota trampa (1.65-1.85) con margen insuficiente: alto riesgo de cierre 3-2 (5 goles)";
+        riskScore = 80;
+      }
+    }
+
     const audit: GeminiNHLVetoAuditResult = {
       fixtureId: p.fixtureId,
       match: p.match,

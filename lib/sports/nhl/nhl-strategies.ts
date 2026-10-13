@@ -12,10 +12,10 @@ export const DEFAULT_NHL_STRATEGIES: Record<string, SportStrategyConfig> = {
     name: 'Handicap o Puck Line (+1.5 / -1.5)',
     description: 'Estrategia prioritaria de Puck Line con alta tasa de cobertura (70%+ en +1.5) y bajo riesgo',
     enabled: true,
-    minProbability: 0.58,
-    minEdge: 0.02,
-    minOdds: 1.35,
-    maxOdds: 2.15,
+    minProbability: 0.55,
+    minEdge: 0.015,
+    minOdds: 1.30,
+    maxOdds: 2.25,
     minDataQuality: 60
   },
   nhl_moneyline: {
@@ -27,7 +27,7 @@ export const DEFAULT_NHL_STRATEGIES: Record<string, SportStrategyConfig> = {
     enabled: true,
     minProbability: 0.56,
     minEdge: 0.02,
-    minOdds: 1.40,
+    minOdds: 1.35,
     maxOdds: 2.15,
     minDataQuality: 60
   },
@@ -36,10 +36,10 @@ export const DEFAULT_NHL_STRATEGIES: Record<string, SportStrategyConfig> = {
     sport: 'nhl',
     market: 'TOTAL GOALS',
     name: 'Total Goles (Over)',
-    description: 'Estrategia de total de goles Over con modelo bivariado Poisson y balance xG',
+    description: 'Estrategia de total de goles Over con filtro estricto anti-trampa de 5 goles',
     enabled: true,
-    minProbability: 0.58,
-    minEdge: 0.02,
+    minProbability: 0.62,
+    minEdge: 0.035,
     minOdds: 1.45,
     maxOdds: 2.15,
     minDataQuality: 60
@@ -76,7 +76,7 @@ export class NHLStrategyEngine {
 
       // Home Puck Line
       const homePlOdds = odds.puckLine.homeOdds || 1.55;
-      if (homePlOdds <= 2.15 && homePlOdds >= 1.30) {
+      if (homePlOdds <= 2.25 && homePlOdds >= 1.30) {
         const homePlEdge = calculateSmartEdge(sim.puckLineHomeProb, homePlOdds);
         const homePlEV = calculateExpectedValue(sim.puckLineHomeProb, homePlOdds);
         const homePlScore = calculateSmartScore({ modelProbability: sim.puckLineHomeProb, smartEdge: homePlEdge, expectedValue: homePlEV, dataQuality });
@@ -97,7 +97,7 @@ export class NHLStrategyEngine {
           smartEdge: homePlEdge,
           expectedValue: homePlEV,
           smartScore: homePlScore,
-          classification: homePlClass !== 'NO BET' ? homePlClass : (sim.puckLineHomeProb >= 0.58 ? 'QUALIFIED' : 'WATCH'),
+          classification: homePlClass !== 'NO BET' ? homePlClass : (sim.puckLineHomeProb >= 0.55 ? 'QUALIFIED' : 'WATCH'),
           dataQuality,
           explanation: `El modelo evalúa la cobertura de ${odds.puckLine.homeLine > 0 ? '+' : ''}${odds.puckLine.homeLine} con ${(sim.puckLineHomeProb * 100).toFixed(1)}% de probabilidad considerando margen proyectado de hockey.`,
           createdAt: nowIso
@@ -106,7 +106,7 @@ export class NHLStrategyEngine {
 
       // Away Puck Line
       const awayPlOdds = odds.puckLine.awayOdds || 1.65;
-      if (awayPlOdds <= 2.15 && awayPlOdds >= 1.30) {
+      if (awayPlOdds <= 2.25 && awayPlOdds >= 1.30) {
         const awayPlEdge = calculateSmartEdge(sim.puckLineAwayProb, awayPlOdds);
         const awayPlEV = calculateExpectedValue(sim.puckLineAwayProb, awayPlOdds);
         const awayPlScore = calculateSmartScore({ modelProbability: sim.puckLineAwayProb, smartEdge: awayPlEdge, expectedValue: awayPlEV, dataQuality });
@@ -127,7 +127,7 @@ export class NHLStrategyEngine {
           smartEdge: awayPlEdge,
           expectedValue: awayPlEV,
           smartScore: awayPlScore,
-          classification: awayPlClass !== 'NO BET' ? awayPlClass : (sim.puckLineAwayProb >= 0.58 ? 'QUALIFIED' : 'WATCH'),
+          classification: awayPlClass !== 'NO BET' ? awayPlClass : (sim.puckLineAwayProb >= 0.55 ? 'QUALIFIED' : 'WATCH'),
           dataQuality,
           explanation: `El modelo evalúa la cobertura de ${odds.puckLine.awayLine > 0 ? '+' : ''}${odds.puckLine.awayLine} con ${(sim.puckLineAwayProb * 100).toFixed(1)}% de probabilidad considerando margen proyectado de hockey.`,
           createdAt: nowIso
@@ -201,7 +201,7 @@ export class NHLStrategyEngine {
     }
 
     // ==========================================
-    // 3. TOTAL GOLES (OVER ONLY) - No Under 6.5
+    // 3. TOTAL GOLES (OVER ONLY) - Blindaje estricto anti-trampa de 5 goles
     // ==========================================
     if (odds?.totalGoals) {
       const totStrat = strategies.nhl_total || DEFAULT_NHL_STRATEGIES.nhl_total;
@@ -214,7 +214,16 @@ export class NHLStrategyEngine {
         const overEdge = calculateSmartEdge(overProb, overOdds);
         const overEV = calculateExpectedValue(overProb, overOdds);
         const overScore = calculateSmartScore({ modelProbability: overProb, smartEdge: overEdge, expectedValue: overEV, dataQuality });
-        const overClass = classifyOpportunity({ modelProbability: overProb, smartEdge: overEdge, smartScore: overScore, dataQuality, odds: overOdds, strategyConfig: totStrat });
+        const rawClass = classifyOpportunity({ modelProbability: overProb, smartEdge: overEdge, smartScore: overScore, dataQuality, odds: overOdds, strategyConfig: totStrat });
+
+        // Blindaje específico contra la trampa de 5 goles (3-2, 2-3):
+        // 1. Para línea 5.5, se requiere que el xG combinado proyectado sea >= 6.55 goles
+        // 2. Si la cuota está en la zona trampa (1.65 - 1.84), se exige edge >= 3.5% y probabilidad >= 63%
+        const isTrapOddsZone = overOdds >= 1.65 && overOdds <= 1.84;
+        const meetsStrictXG = targetLine <= 5.5 ? sim.expectedTotalGoals >= 6.55 : sim.expectedTotalGoals >= 6.85;
+        const meetsStrictEdge = isTrapOddsZone ? overEdge >= 0.035 && overProb >= 0.63 : overEdge >= 0.02;
+
+        const isOverQualified = rawClass !== 'NO BET' && meetsStrictXG && meetsStrictEdge && overProb >= 0.62;
 
         candidates.push({
           id: `${game.id}_nhl_total_over`,
@@ -231,7 +240,7 @@ export class NHLStrategyEngine {
           smartEdge: overEdge,
           expectedValue: overEV,
           smartScore: overScore,
-          classification: overClass !== 'NO BET' ? overClass : (overProb >= 0.58 ? 'QUALIFIED' : 'WATCH'),
+          classification: isOverQualified ? 'QUALIFIED' : 'WATCH',
           dataQuality,
           explanation: `Proyección xG de ${sim.expectedTotalGoals.toFixed(2)} goles totales supera la línea de ${targetLine} (${(overProb * 100).toFixed(1)}% prob).`,
           createdAt: nowIso
@@ -251,24 +260,28 @@ export class NHLStrategyEngine {
   public static selectBestSignalForGame(candidates: MultiSportPrediction[]): MultiSportSignal | null {
     if (!candidates || candidates.length === 0) return null;
 
-    // Filter by allowed 3 markets only, eliminating any Under, Double Chance, and enforcing strict odds bounds (1.30 - 2.15)
+    // Filter by allowed 3 markets only, eliminating any Under, Double Chance, and enforcing strict odds bounds (1.30 - 2.25)
     const valid = candidates.filter(
       c =>
         ['PUCK LINE', 'MONEYLINE', 'TOTAL GOALS'].includes(c.market) &&
         !c.selection.toUpperCase().includes('UNDER') &&
         !c.selection.toUpperCase().includes('DOBLE') &&
-        c.decimalOdds <= 2.15 &&
+        c.decimalOdds <= 2.25 &&
         c.decimalOdds >= 1.30
     );
     if (valid.length === 0) return null;
 
-    // Helper to compute overall quality score prioritizing high model win probability
-    const getScore = (c: MultiSportPrediction) => (c.modelProbability * 150) + (c.smartEdge * 25) + (c.smartScore * 0.5);
+    // Helper to compute overall quality score prioritizing high model win probability and Puck Line superiority
+    const getScore = (c: MultiSportPrediction) =>
+      (c.market === 'PUCK LINE' ? 30 : c.market === 'MONEYLINE' ? 10 : 0) +
+      (c.modelProbability * 150) +
+      (c.smartEdge * 25) +
+      (c.smartScore * 0.5);
 
     // 1. STEP 1: Search High-Confidence PUCK LINE (+1.5 underdog coverage or -1.5 dominant favorite)
     const pucklines = valid.filter(c => c.market === 'PUCK LINE');
     const qualifiedPL = pucklines
-      .filter(c => c.modelProbability >= 0.58 && c.decimalOdds >= 1.35 && c.decimalOdds <= 2.15)
+      .filter(c => c.modelProbability >= 0.55 && c.decimalOdds >= 1.30 && c.decimalOdds <= 2.25 && c.classification !== 'NO BET')
       .sort((a, b) => getScore(b) - getScore(a));
 
     if (qualifiedPL.length > 0) {
@@ -278,25 +291,35 @@ export class NHLStrategyEngine {
     // 2. STEP 2: Search Strong MONEYLINE (incl. OT/SO)
     const moneylines = valid.filter(c => c.market === 'MONEYLINE');
     const qualifiedML = moneylines
-      .filter(c => c.modelProbability >= 0.56 && c.decimalOdds >= 1.35 && c.decimalOdds <= 2.15)
+      .filter(c => c.modelProbability >= 0.56 && c.decimalOdds >= 1.35 && c.decimalOdds <= 2.15 && c.classification !== 'NO BET')
       .sort((a, b) => getScore(b) - getScore(a));
 
     if (qualifiedML.length > 0) {
       return this.toSignal(qualifiedML[0]);
     }
 
-    // 3. STEP 3: Search High-Conviction OVER TOTAL GOALS (5.5, 6.0)
+    // 3. STEP 3: Search High-Conviction OVER TOTAL GOALS (5.5, 6.0) with strict filter
     const totals = valid.filter(c => c.market === 'TOTAL GOALS');
     const qualifiedTotals = totals
-      .filter(c => c.modelProbability >= 0.56 && c.decimalOdds >= 1.40 && c.decimalOdds <= 2.15)
+      .filter(c => c.classification === 'QUALIFIED' && c.modelProbability >= 0.62 && c.smartEdge >= 0.035 && c.decimalOdds >= 1.40 && c.decimalOdds <= 2.15)
       .sort((a, b) => getScore(b) - getScore(a));
 
     if (qualifiedTotals.length > 0) {
       return this.toSignal(qualifiedTotals[0]);
     }
 
-    // Fallback: Pick candidate with highest model probability (win-rate priority)
-    const sorted = [...valid].sort((a, b) => b.modelProbability - a.modelProbability);
+    // Fallback: Prioritize Puck Line or Moneyline before resorting to Total Goals
+    const plFallbacks = pucklines.filter(c => c.modelProbability >= 0.52).sort((a, b) => getScore(b) - getScore(a));
+    if (plFallbacks.length > 0) {
+      return this.toSignal(plFallbacks[0]);
+    }
+
+    const mlFallbacks = moneylines.filter(c => c.modelProbability >= 0.53).sort((a, b) => getScore(b) - getScore(a));
+    if (mlFallbacks.length > 0) {
+      return this.toSignal(mlFallbacks[0]);
+    }
+
+    const sorted = [...valid].sort((a, b) => getScore(b) - getScore(a));
     return this.toSignal(sorted[0]);
   }
 
@@ -337,8 +360,10 @@ export class NHLStrategyEngine {
     pool.sort((a, b) => {
       const aRisk = (a as any).aiRiskScore || 20;
       const bRisk = (b as any).aiRiskScore || 20;
-      const aScore = (a.modelProbability * 100) + a.smartScore - (aRisk * 0.4);
-      const bScore = (b.modelProbability * 100) + b.smartScore - (bRisk * 0.4);
+      const aMarketBonus = a.market === 'PUCK LINE' ? 20 : a.market === 'MONEYLINE' ? 8 : 0;
+      const bMarketBonus = b.market === 'PUCK LINE' ? 20 : b.market === 'MONEYLINE' ? 8 : 0;
+      const aScore = (a.modelProbability * 100) + a.smartScore + aMarketBonus - (aRisk * 0.4);
+      const bScore = (b.modelProbability * 100) + b.smartScore + bMarketBonus - (bRisk * 0.4);
       return bScore - aScore;
     });
 
