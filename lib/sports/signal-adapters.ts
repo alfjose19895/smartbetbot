@@ -141,3 +141,87 @@ export function historicalPickToOpportunity(h: HistoricalSettledPick, sportKey: 
     sport: (h as any).sport || sportKey,
   } as unknown as MarketOpportunity;
 }
+
+
+export function opportunityToMultiSportSignal(opp: MarketOpportunity): MultiSportSignal {
+  const oppAny = opp as any;
+  const prob = (opp.probability || 60) / 100;
+  const edge = (opp.edge || 0) / 100;
+  const ev = (opp.expectedValue || 0) / 100;
+
+  const scoreStr = opp.actualScore || opp.currentScore;
+  let homeScore: number | undefined;
+  let awayScore: number | undefined;
+  if (scoreStr && scoreStr.includes('-')) {
+    const parts = scoreStr.split('-');
+    const h = parseInt(parts[0].trim(), 10);
+    const a = parseInt(parts[1].trim(), 10);
+    if (!isNaN(h)) homeScore = h;
+    if (!isNaN(a)) awayScore = a;
+  }
+
+  const isFinished = opp.status === 'won' || opp.status === 'lost' || oppAny.status === 'finished' || opp.matchTiming === 'finished';
+  const isLive = oppAny.status === 'in_play' || opp.matchTiming === 'live';
+  const gameStatus = isFinished ? 'FINISHED' : isLive ? 'IN_PLAY' : 'SCHEDULED';
+
+  const game = {
+    id: String(opp.fixtureId || opp.id),
+    sport: (oppAny.sport || 'nhl') as any,
+    provider: 'api-nhl',
+    providerGameId: String(opp.fixtureId || opp.id),
+    league: {
+      id: String(opp.leagueId || 57),
+      name: opp.league || 'NHL',
+      season: '2025-2026',
+    },
+    homeTeam: {
+      id: opp.homeTeamId || 1,
+      name: opp.homeTeam,
+    },
+    awayTeam: {
+      id: opp.awayTeamId || 2,
+      name: opp.awayTeam,
+    },
+    startsAt: opp.kickoff || new Date().toISOString(),
+    status: gameStatus as any,
+    homeScore,
+    awayScore,
+  };
+
+  const lineMatch = (opp.selection || '').match(/([+-]?\d+\.?\d*)/);
+  const line = lineMatch ? parseFloat(lineMatch[1]) : undefined;
+
+  const signal: MultiSportSignal = {
+    id: String(opp.id),
+    sport: (oppAny.sport || 'nhl') as any,
+    gameId: String(opp.fixtureId || opp.id),
+    game: game as any,
+    market: opp.market,
+    selection: opp.selection,
+    line,
+    modelProbability: prob,
+    decimalOdds: Number(opp.odds) || 1.85,
+    smartEdge: edge,
+    expectedValue: ev,
+    smartScore: opp.smartScore || opp.confidenceScore || 75,
+    classification: opp.confidence === 'Muy Alta' ? 'TOP PICK' : opp.confidence === 'Alta' ? 'STRONG' : 'QUALIFIED',
+    dataQuality: 85,
+    isSmartPick: opp.pickBadge === 'valor' || !!oppAny.isSmartPick,
+    explanation: opp.explanation || '',
+    createdAt: opp.kickoff || new Date().toISOString(),
+  };
+
+  // Preserve status, settlement and audit fields
+  (signal as any).status = opp.status;
+  (signal as any).result = opp.result;
+  (signal as any).actualScore = opp.actualScore;
+  (signal as any).currentScore = opp.currentScore;
+  (signal as any).geminiAudited = oppAny.geminiAudited;
+  (signal as any).aiRiskScore = oppAny.aiRiskScore;
+  (signal as any).aiVetoed = oppAny.aiVetoed;
+  (signal as any).aiVetoReason = oppAny.aiVetoReason;
+  (signal as any).goalieImpact = oppAny.goalieImpact;
+  (signal as any).b2bImpact = oppAny.b2bImpact;
+
+  return signal;
+}

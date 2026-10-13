@@ -6,7 +6,7 @@ import { NHLFeatureEngine } from './nhl-feature-engine';
 import { NHLMarketOdds } from './nhl-types';
 import { saveDailySnapshot, loadDailySnapshot, getEcuadorDateString } from '../db';
 import { getSportLocalDateString } from '../registry';
-import { multiSportSignalToOpportunity } from '../signal-adapters';
+import { multiSportSignalToOpportunity, opportunityToMultiSportSignal } from '../signal-adapters';
 
 let cachedNHLResult: {
   date: string;
@@ -197,6 +197,72 @@ export class NHLSyncEngine {
         smartPick: cachedNHLResult.smartPick,
         gamesCount: cachedNHLResult.gamesCount,
       };
+    }
+
+    // 2. Persistent Daily Snapshot Lock (11:00 AM Single Daily Sync):
+    // If an official daily snapshot already exists on disk for today and forceRefresh is false,
+    // lock and return the existing official snapshot to ensure total immutability, preventing pick variations.
+    if (!forceRefresh) {
+      const diskOpps = loadDailySnapshot(date, 'nhl');
+      if (diskOpps && diskOpps.length > 0) {
+        // Opportunistically check finished/live games to update scores & settlements without touching the predictions
+        try {
+          const games = await this.provider.getSchedule(date);
+          const gamesMap = new Map(games.map(g => [String(g.id), g]));
+          let updatedAny = false;
+
+          for (const opp of diskOpps) {
+            const liveGame = gamesMap.get(String(opp.fixtureId || opp.id));
+            if (liveGame && liveGame.status === 'FINISHED' && typeof liveGame.homeScore === 'number' && typeof liveGame.awayScore === 'number') {
+              if (opp.status !== 'won' && opp.status !== 'lost') {
+                const s = opportunityToMultiSportSignal(opp);
+                const settlement = NHLSettlementEngine.settleSignal(s, {
+                  gameId: liveGame.id,
+                  status: 'FINISHED',
+                  homeScore: liveGame.homeScore,
+                  awayScore: liveGame.awayScore,
+                });
+                const isWon = settlement.status === 'WON';
+                const isLost = settlement.status === 'LOST';
+                opp.status = isWon ? 'won' : isLost ? 'lost' : 'pending';
+                (opp as any).matchTiming = 'finished';
+                opp.result = isWon ? 'WON' : isLost ? 'LOST' : settlement.status;
+                opp.actualScore = `${liveGame.homeScore} - ${liveGame.awayScore}`;
+                (opp as any).profit = isWon ? Number(((opp.odds || 1.85) - 1).toFixed(2)) : -1;
+                updatedAny = true;
+              }
+            } else if (liveGame && liveGame.status === 'IN_PLAY' && typeof liveGame.homeScore === 'number') {
+              (opp as any).status = 'in_play';
+              (opp as any).matchTiming = 'live';
+              opp.currentScore = `${liveGame.homeScore} - ${liveGame.awayScore}`;
+              updatedAny = true;
+            }
+          }
+
+          if (updatedAny) {
+            saveDailySnapshot(date, diskOpps, 'nhl');
+          }
+        } catch {
+          // If live provider schedule check fails, proceed with disk snapshot as-is
+        }
+
+        const signals = diskOpps.map(opportunityToMultiSportSignal);
+        const smartPick = NHLStrategyEngine.selectNHLSmartPick(signals);
+
+        cachedNHLResult = {
+          date,
+          timestamp: nowMs,
+          signals,
+          smartPick,
+          gamesCount: signals.length,
+        };
+
+        return {
+          signals,
+          smartPick,
+          gamesCount: signals.length,
+        };
+      }
     }
 
     let games: NormalizedGame[] = [];
