@@ -5,7 +5,7 @@ import { Navbar } from "@/components/Navbar";
 import { SportSelector } from "@/components/SportSelector";
 import { useLanguage } from "@/context/LanguageContext";
 import { HistoricalSettledPick } from "@/lib/sports/db";
-import { matchesMarketFilter, getAllSports, getSportMetadata } from "@/lib/sports/registry";
+import { matchesMarketFilter, getAllSports, getSportMeta } from "@/lib/sports/registry";
 import { SupportedSport } from "@/lib/sports/types";
 
 type DateFilterMode = "all" | "today" | "yesterday" | "7d" | "30d" | "specific" | "range";
@@ -126,7 +126,7 @@ function ReportsContent() {
   }, [selectedSport]);
 
   const sportMeta = useMemo(() => {
-    return getSportMetadata(selectedSport) || { displayName: "Fútbol", icon: "⚽" };
+    return getSportMeta(selectedSport) || { displayName: "Fútbol", icon: "⚽" };
   }, [selectedSport]);
 
   // Extract canonical match date (YYYY-MM-DD)
@@ -1040,4 +1040,4 @@ function ReportsContent() {
       </main>
     </div>
   );
-}\n
+}

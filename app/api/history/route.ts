@@ -148,4 +148,4 @@ export async function GET(request: NextRequest) {
     const message = error instanceof Error ? error.message : "Error al cargar historial";
     return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
-}\n
+}

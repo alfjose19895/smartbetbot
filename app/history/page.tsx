@@ -215,7 +215,7 @@ export default function HistoryPage() {
         options.push({
           value: h.league,
           label: h.league,
-          group: h.country || (selectedSport !== "all" ? selectedSport.toUpperCase() : "Otras Competiciones"),
+          group: h.country || selectedSport.toUpperCase(),
         });
       }
     });
@@ -1268,7 +1268,7 @@ export default function HistoryPage() {
         <MatchDetailModal
           prediction={modalPrediction}
           onClose={() => setSelectedPickForModal(null)}
-          sport={selectedSport !== "all" ? selectedSport : undefined}
+          sport={selectedSport}
         />
       )}
     </div>
