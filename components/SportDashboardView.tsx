@@ -169,7 +169,15 @@ export function SportDashboardView({
   const [historySelectedMarkets, setHistorySelectedMarkets] = useState<string[]>([]);
   const [historyDateFilter, setHistoryDateFilter] = useState<'all' | 'today' | 'yesterday' | 'week' | 'month' | '7d' | '30d' | 'custom'>('all');
   const [historyCustomDate, setHistoryCustomDate] = useState<string>('');
+  const [historyProbFilter, setHistoryProbFilter] = useState<'all' | 'muy_alta' | 'alta' | 'media' | 'custom'>('all');
+  const [historyMinProbability, setHistoryMinProbability] = useState<number>(60);
   const [historyViewMode, setHistoryViewMode] = useState<'cards' | 'table'>('cards');
+
+  // Reports tab date and probability filters
+  const [reportDateFilter, setReportDateFilter] = useState<'all' | 'today' | 'yesterday' | '7d' | '30d' | 'custom'>('all');
+  const [reportCustomDate, setReportCustomDate] = useState<string>('');
+  const [reportProbFilter, setReportProbFilter] = useState<'all' | 'muy_alta' | 'alta' | 'media' | 'custom'>('all');
+  const [reportMinProbability, setReportMinProbability] = useState<number>(60);
 
   // Rich Filter States for Signals
   const [searchQuery, setSearchQuery] = useState('');
@@ -599,6 +607,13 @@ export function SportDashboardView({
         }
       }
 
+      // 7. Probability Filter
+      const prob = typeof item.probability === 'number' ? item.probability : (item.confidence === 'Muy Alta' ? 75 : 65);
+      if (historyProbFilter === 'muy_alta' && prob < 75) return false;
+      if (historyProbFilter === 'alta' && (prob < 68 || prob >= 75)) return false;
+      if (historyProbFilter === 'media' && (prob < 58 || prob >= 68)) return false;
+      if (historyProbFilter === 'custom' && prob < historyMinProbability) return false;
+
       return true;
     });
   }, [
@@ -610,15 +625,54 @@ export function SportDashboardView({
     historySelectedMarkets,
     historyDateFilter,
     historyCustomDate,
+    historyProbFilter,
+    historyMinProbability,
   ]);
 
-  // Report Metrics from Real History
+  // Filtered picks specifically for the reports tab (reacting to date and prob filters)
+  const filteredReportPicks = useMemo(() => {
+    const now = new Date();
+    const getLocalDateStr = (d: Date | string) => {
+      const dateObj = typeof d === 'string' ? new Date(d) : d;
+      const year = dateObj.getFullYear();
+      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+    const todayStr = getLocalDateStr(now);
+    const yesterdayObj = new Date(now);
+    yesterdayObj.setDate(yesterdayObj.getDate() - 1);
+    const yesterdayStr = getLocalDateStr(yesterdayObj);
+    const sevenDaysAgoMs = now.getTime() - 7 * 86400000;
+    const thirtyDaysAgoMs = now.getTime() - 30 * 86400000;
+
+    return auditedHistoricalOpportunities.filter((item) => {
+      const itemDate = item.kickoff ? item.kickoff.split('T')[0] : '';
+      const itemMs = item.kickoff ? new Date(item.kickoff).getTime() : 0;
+
+      if (reportDateFilter === 'today' && itemDate !== todayStr) return false;
+      if (reportDateFilter === 'yesterday' && itemDate !== yesterdayStr) return false;
+      if (reportDateFilter === '7d' && itemMs < sevenDaysAgoMs) return false;
+      if (reportDateFilter === '30d' && itemMs < thirtyDaysAgoMs) return false;
+      if (reportDateFilter === 'custom' && reportCustomDate && itemDate !== reportCustomDate) return false;
+
+      const prob = typeof item.probability === 'number' ? item.probability : (item.confidence === 'Muy Alta' ? 75 : 65);
+      if (reportProbFilter === 'muy_alta' && prob < 75) return false;
+      if (reportProbFilter === 'alta' && (prob < 68 || prob >= 75)) return false;
+      if (reportProbFilter === 'media' && (prob < 58 || prob >= 68)) return false;
+      if (reportProbFilter === 'custom' && prob < reportMinProbability) return false;
+
+      return true;
+    });
+  }, [auditedHistoricalOpportunities, reportDateFilter, reportCustomDate, reportProbFilter, reportMinProbability]);
+
+  // Dynamic Report Metrics from filtered report picks
   const reportMetrics = useMemo(() => {
-    const totalCount = auditedHistoricalOpportunities.length;
-    const wonCount = auditedHistoricalOpportunities.filter((h) => h.result === 'WON').length;
-    const lostCount = auditedHistoricalOpportunities.filter((h) => h.result === 'LOST').length;
+    const totalCount = filteredReportPicks.length;
+    const wonCount = filteredReportPicks.filter((h) => h.result === 'WON').length;
+    const lostCount = filteredReportPicks.filter((h) => h.result === 'LOST').length;
     const winRate = totalCount > 0 ? Math.round((wonCount / totalCount) * 100) : 0;
-    const netUnits = auditedHistoricalOpportunities.reduce((acc, h) => {
+    const netUnits = filteredReportPicks.reduce((acc, h) => {
       return acc + (h.result === 'WON' ? ((h.odds || 1.8) - 1) : -1);
     }, 0);
 
@@ -630,7 +684,23 @@ export function SportDashboardView({
       roi: totalCount > 0 ? Number(((netUnits / totalCount) * 100).toFixed(1)) : 0,
       netProfitUnits: Number(netUnits.toFixed(2)),
     };
-  }, [auditedHistoricalOpportunities]);
+  }, [filteredReportPicks]);
+
+  // Real market performance breakdown
+  const reportMarketStats = useMemo(() => {
+    const map: Record<string, { total: number; won: number }> = {};
+    filteredReportPicks.forEach((p) => {
+      let m = p.market || 'General';
+      if (!map[m]) map[m] = { total: 0, won: 0 };
+      map[m].total++;
+      if (p.result === 'WON') map[m].won++;
+    });
+    return Object.entries(map).map(([name, stat]) => ({
+      name,
+      won: stat.won,
+      total: stat.total,
+    })).sort((a, b) => b.total - a.total);
+  }, [filteredReportPicks]);
 
   const handleCopyCardImage = async (pick: MarketOpportunity) => {
     try {
@@ -1706,7 +1776,22 @@ export function SportDashboardView({
                     <option value="yesterday">Ayer</option>
                     <option value="week">Últimos 7 días</option>
                     <option value="month">Últimos 30 días</option>
-                    <option value="custom">Personalizado...</option>
+                    <option value="custom">Día específico...</option>
+                  </select>
+                </div>
+
+                {/* Probability Filter Dropdown */}
+                <div className="lg:col-span-2">
+                  <select
+                    value={historyProbFilter}
+                    onChange={(e) => setHistoryProbFilter(e.target.value as any)}
+                    className="w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs font-bold text-slate-300 focus:border-emerald-500 focus:outline-hidden cursor-pointer"
+                  >
+                    <option value="all">🎯 Probabilidad: Todas</option>
+                    <option value="muy_alta">⭐⭐⭐ Muy Alta (≥75%)</option>
+                    <option value="alta">⭐⭐ Alta (68% - 74%)</option>
+                    <option value="media">⭐ Media (58% - 67%)</option>
+                    <option value="custom">🎚️ Umbral (≥{historyMinProbability}%)</option>
                   </select>
                 </div>
               </div>
@@ -1900,17 +1985,104 @@ export function SportDashboardView({
 
         {activeTab === 'reports' && (
           <section className="space-y-4">
-            <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-5 sm:p-6 shadow-xl">
-              <div className="border-b border-slate-800 pb-4">
-                <h2 className="text-xl font-black text-white">Rendimiento por Mercado: {meta.displayName}</h2>
+            {/* Reports Filter Toolbar (Date Filter & Probability Filter) */}
+            <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-5 shadow-xl space-y-4">
+              <div className="border-b border-slate-800 pb-3">
+                <h2 className="text-xl font-black text-white flex items-center gap-2">
+                  <span>📈</span>
+                  <span>Reportes & Rendimiento Auditado: {meta.displayName}</span>
+                </h2>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Desglose de rentabilidad e índice de acierto histórico verificado por tipo de mercado en {meta.displayName}.
+                  Métricas y desglose de rentabilidad exclusiva de {meta.displayName}. Filtre por fecha específica o porcentaje de probabilidad.
                 </p>
               </div>
 
-              <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Date Filter Strip */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-xs font-bold text-slate-400">
+                  <span className="flex items-center gap-1">📅 Filtro de Fecha:</span>
+                  <span className="text-emerald-400 font-mono text-[11px]">
+                    {reportDateFilter === 'custom' && reportCustomDate ? `Día: ${reportCustomDate}` : reportDateFilter}
+                  </span>
+                </div>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {[
+                    { id: 'all', label: 'Histórico' },
+                    { id: 'today', label: 'Hoy' },
+                    { id: 'yesterday', label: 'Ayer' },
+                    { id: '7d', label: '7 Días' },
+                    { id: '30d', label: '30 Días' },
+                    { id: 'custom', label: 'Día Específico' },
+                  ].map((btn) => (
+                    <button
+                      key={btn.id}
+                      onClick={() => setReportDateFilter(btn.id as any)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer ${
+                        reportDateFilter === btn.id
+                          ? 'bg-emerald-600 text-white shadow-sm'
+                          : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
+                      }`}
+                    >
+                      {btn.label}
+                    </button>
+                  ))}
+                  {reportDateFilter === 'custom' && (
+                    <input
+                      type="date"
+                      value={reportCustomDate}
+                      onChange={(e) => setReportCustomDate(e.target.value)}
+                      className="rounded-xl border border-slate-800 bg-slate-950 px-3 py-1 text-xs text-white focus:border-emerald-500"
+                    />
+                  )}
+                </div>
+              </div>
+
+              {/* Probability Filter Strip */}
+              <div className="space-y-2 pt-2 border-t border-slate-800/80">
+                <div className="flex items-center justify-between text-xs font-bold text-slate-400">
+                  <span className="flex items-center gap-1">🎯 Filtro de Probabilidad:</span>
+                  <span className="text-cyan-400 font-mono text-[11px]">{filteredReportPicks.length} picks</span>
+                </div>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {[
+                    { id: 'all', label: 'Todas' },
+                    { id: 'muy_alta', label: '⭐⭐⭐ Muy Alta (≥75%)' },
+                    { id: 'alta', label: '⭐⭐ Alta (68% - 74%)' },
+                    { id: 'media', label: '⭐ Media (58% - 67%)' },
+                    { id: 'custom', label: `🎚️ Umbral (≥${reportMinProbability}%)` },
+                  ].map((btn) => (
+                    <button
+                      key={btn.id}
+                      onClick={() => setReportProbFilter(btn.id as any)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer ${
+                        reportProbFilter === btn.id
+                          ? 'bg-cyan-600 text-white shadow-sm'
+                          : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
+                      }`}
+                    >
+                      {btn.label}
+                    </button>
+                  ))}
+                  {reportProbFilter === 'custom' && (
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="range"
+                        min="45"
+                        max="85"
+                        value={reportMinProbability}
+                        onChange={(e) => setReportMinProbability(parseInt(e.target.value, 10))}
+                        className="w-24 accent-cyan-500 cursor-pointer"
+                      />
+                      <span className="text-xs font-black text-cyan-400">≥{reportMinProbability}%</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* KPIs Bar */}
+              <div className="pt-2 border-t border-slate-800 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-center">
-                  <span className="text-[10px] font-black uppercase text-slate-400">Tasa de Acierto Global</span>
+                  <span className="text-[10px] font-black uppercase text-slate-400">Tasa de Acierto</span>
                   <div className="text-3xl font-black text-emerald-400 mt-1">{reportMetrics.winRate}%</div>
                   <span className="text-xs text-slate-400 mt-0.5 block">{reportMetrics.won} ganadas de {reportMetrics.totalPicks}</span>
                 </div>
@@ -1929,13 +2101,11 @@ export function SportDashboardView({
               </div>
             </div>
 
-            {/* Market Progress Bars from Real Data */}
+            {/* Real Market Progress Bars */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                { name: sport === 'football' ? 'Ganador Local (1X2)' : 'Moneyline Directo', won: Math.round(reportMetrics.won * 0.45), total: Math.round(reportMetrics.totalPicks * 0.45) || 1 },
-                { name: sport === 'football' ? 'Alta Goles (Over 2.5)' : 'Totales Over', won: Math.round(reportMetrics.won * 0.35), total: Math.round(reportMetrics.totalPicks * 0.35) || 1 },
-                { name: sport === 'football' ? 'Ambos Equipos Anotan (BTTS)' : 'Spread / Hándicap', won: Math.round(reportMetrics.won * 0.2), total: Math.round(reportMetrics.totalPicks * 0.2) || 1 },
-              ].map((r, i) => {
+              {(reportMarketStats.length > 0 ? reportMarketStats : [
+                { name: 'Sin datos bajo este filtro', won: 0, total: 0 }
+              ]).map((r, i) => {
                 const wr = r.total > 0 ? Math.round((r.won / r.total) * 100) : 0;
                 const roi = Math.max(0, Math.round((wr * 1.85) - 100));
                 return (

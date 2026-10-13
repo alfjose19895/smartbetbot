@@ -10,6 +10,10 @@ export async function GET(request: NextRequest) {
     const league = searchParams.get("league");
     const result = searchParams.get("result");
     const date = searchParams.get("date");
+    const startDate = searchParams.get("startDate");
+    const endDate = searchParams.get("endDate");
+    const minProb = searchParams.get("minProb");
+    const maxProb = searchParams.get("maxProb");
     const type = searchParams.get("type"); // "picks" | "parlays" | "all"
 
     // Auto-liquidar todas las alertas finalizadas antes de servir historial
@@ -29,16 +33,18 @@ export async function GET(request: NextRequest) {
         filteredHistory = filteredHistory.filter((h) => {
           const c = (h.country || "").toUpperCase();
           const l = (h.league || "").toUpperCase();
-          const isNhl = c === "NHL" || l.includes("NHL");
-          const isNba = c === "NBA" || l.includes("NBA");
-          const isNfl = c === "NFL" || c === "NCAAF" || l.includes("NFL") || l.includes("NCAA");
+          const s = ((h as any).sport || "").toLowerCase();
+          const isNhl = c === "NHL" || l.includes("NHL") || s === "nhl";
+          const isNba = c === "NBA" || l.includes("NBA") || s === "nba";
+          const isNfl = c === "NFL" || c === "NCAAF" || l.includes("NFL") || l.includes("NCAA") || s === "nfl" || s === "ncaaf";
           return !isNhl && !isNba && !isNfl;
         });
         filteredParlays = filteredParlays.filter((p) =>
           p.legs.every((l) => {
             const c = (l.country || "").toUpperCase();
             const lg = (l.league || "").toUpperCase();
-            return c !== "NHL" && !lg.includes("NHL") && c !== "NBA" && !lg.includes("NBA") && c !== "NFL";
+            const s = ((l as any).sport || "").toLowerCase();
+            return c !== "NHL" && !lg.includes("NHL") && c !== "NBA" && !lg.includes("NBA") && c !== "NFL" && s !== "nhl";
           })
         );
       } else if (sport === "nhl") {
@@ -49,7 +55,7 @@ export async function GET(request: NextRequest) {
           return c === "NHL" || l.includes("NHL") || s === "nhl";
         });
         filteredParlays = filteredParlays.filter((p) =>
-          p.legs.some((l) => (l.country || "").toUpperCase() === "NHL" || l.league.toUpperCase().includes("NHL"))
+          p.legs.some((l) => (l.country || "").toUpperCase() === "NHL" || l.league.toUpperCase().includes("NHL") || ((l as any).sport || "").toLowerCase() === "nhl")
         );
       } else if (sport === "nba") {
         filteredHistory = filteredHistory.filter((h) => {
@@ -59,7 +65,7 @@ export async function GET(request: NextRequest) {
           return c === "NBA" || l.includes("NBA") || s === "nba";
         });
         filteredParlays = filteredParlays.filter((p) =>
-          p.legs.some((l) => (l.country || "").toUpperCase() === "NBA" || l.league.toUpperCase().includes("NBA"))
+          p.legs.some((l) => (l.country || "").toUpperCase() === "NBA" || l.league.toUpperCase().includes("NBA") || ((l as any).sport || "").toLowerCase() === "nba")
         );
       } else if (sport === "nfl") {
         filteredHistory = filteredHistory.filter((h) => {
@@ -69,7 +75,7 @@ export async function GET(request: NextRequest) {
           return (c === "NFL" || l.includes("NFL") || s === "nfl") && !l.includes("NCAA") && s !== "ncaaf";
         });
         filteredParlays = filteredParlays.filter((p) =>
-          p.legs.some((l) => (l.country || "").toUpperCase() === "NFL" || l.league.toUpperCase().includes("NFL"))
+          p.legs.some((l) => (l.country || "").toUpperCase() === "NFL" || l.league.toUpperCase().includes("NFL") || ((l as any).sport || "").toLowerCase() === "nfl")
         );
       } else if (sport === "ncaaf") {
         filteredHistory = filteredHistory.filter((h) => {
@@ -79,14 +85,45 @@ export async function GET(request: NextRequest) {
           return c === "NCAAF" || l.includes("NCAA") || s === "ncaaf";
         });
         filteredParlays = filteredParlays.filter((p) =>
-          p.legs.some((l) => (l.country || "").toUpperCase() === "NCAAF" || l.league.toUpperCase().includes("NCAA"))
+          p.legs.some((l) => (l.country || "").toUpperCase() === "NCAAF" || l.league.toUpperCase().includes("NCAA") || ((l as any).sport || "").toLowerCase() === "ncaaf")
         );
       }
     }
 
+    // Single Date Filter
     if (date && date !== "all") {
       filteredHistory = filteredHistory.filter((h) => h.date === date || (h.kickoff && h.kickoff.startsWith(date)));
       filteredParlays = filteredParlays.filter((p) => p.date === date);
+    }
+
+    // Date Range Filter
+    if (startDate) {
+      filteredHistory = filteredHistory.filter((h) => {
+        const d = h.date || (h.kickoff ? h.kickoff.split("T")[0] : "");
+        return d >= startDate;
+      });
+      filteredParlays = filteredParlays.filter((p) => p.date >= startDate);
+    }
+    if (endDate) {
+      filteredHistory = filteredHistory.filter((h) => {
+        const d = h.date || (h.kickoff ? h.kickoff.split("T")[0] : "");
+        return d <= endDate;
+      });
+      filteredParlays = filteredParlays.filter((p) => p.date <= endDate);
+    }
+
+    // Probability Range Filter
+    if (minProb) {
+      const minVal = parseFloat(minProb);
+      if (!isNaN(minVal)) {
+        filteredHistory = filteredHistory.filter((h) => (h.probability ?? 50) >= minVal);
+      }
+    }
+    if (maxProb) {
+      const maxVal = parseFloat(maxProb);
+      if (!isNaN(maxVal)) {
+        filteredHistory = filteredHistory.filter((h) => (h.probability ?? 50) <= maxVal);
+      }
     }
 
     if (league && league !== "all") {
@@ -111,4 +148,4 @@ export async function GET(request: NextRequest) {
     const message = error instanceof Error ? error.message : "Error al cargar historial";
     return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
-}
+}\n

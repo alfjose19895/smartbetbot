@@ -28,8 +28,19 @@ function getConfidenceBadge(confidence?: string, prob?: number) {
 export default function HistoryPage() {
   const { language, t } = useLanguage();
 
-  // Sport Filter
-  const [selectedSport, setSelectedSport] = useState<SupportedSport | "all">("all");
+  // Sport Filter (Strict isolation - default to football or URL param)
+  const [selectedSport, setSelectedSport] = useState<SupportedSport>("football");
+
+  // Read URL query param on mount if present
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const s = params.get("sport") as SupportedSport | null;
+      if (s && ["football", "nhl", "nba", "nfl", "ncaaf"].includes(s)) {
+        setSelectedSport(s);
+      }
+    }
+  }, []);
 
   // Data state
   const [historyItems, setHistoryItems] = useState<HistoricalSettledPick[]>([]);
@@ -48,22 +59,34 @@ export default function HistoryPage() {
   const [filterResult, setFilterResult] = useState<"ALL" | "WON" | "LOST">("ALL");
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
-  const [selectedDateFilter, setSelectedDateFilter] = useState<"all" | "today" | "yesterday" | "week" | "month" | "custom">("all");
+  const [selectedDateFilter, setSelectedDateFilter] = useState<"all" | "today" | "yesterday" | "week" | "month" | "specific" | "range" | "custom">("all");
   const [customDate, setCustomDate] = useState<string>("");
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
+
+  // Probability Filter State
+  const [probFilter, setProbFilter] = useState<"all" | "muy_alta" | "alta" | "media" | "baja" | "custom">("all");
+  const [minProbability, setMinProbability] = useState<number>(65);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   const handleSelectSport = (sport: SupportedSport | "all") => {
-    setSelectedSport(sport);
+    const nextSport = sport === "all" ? "football" : sport;
+    setSelectedSport(nextSport);
     // Reset specific filters when switching sport
     setSelectedLeagues([]);
     setSelectedMarkets([]);
     setSearchQuery("");
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      url.searchParams.set("sport", nextSport);
+      window.history.replaceState({}, "", url.toString());
+    }
   };
 
-  const fetchHistory = async (sport: SupportedSport | "all" = selectedSport, showLoader = false) => {
+  const fetchHistory = async (sport: SupportedSport = selectedSport, showLoader = false) => {
     try {
       if (showLoader) setLoading(true);
-      const url = sport === "all" ? "/api/history" : `/api/history?sport=${encodeURIComponent(sport)}`;
+      const url = `/api/history?sport=${encodeURIComponent(sport)}`;
       const res = await fetch(url, { cache: "no-store" });
       const data = await res.json();
       if (data && Array.isArray(data.history)) {
@@ -360,11 +383,11 @@ export default function HistoryPage() {
         if (!match) return false;
       }
 
+      // Date Filtering
+      const itemDate = item.date || (item.kickoff ? getLocalDateStr(item.kickoff) : "");
       if (selectedDateFilter === "today") {
-        const itemDate = item.date || (item.kickoff ? getLocalDateStr(item.kickoff) : "");
         if (itemDate !== todayStr) return false;
       } else if (selectedDateFilter === "yesterday") {
-        const itemDate = item.date || (item.kickoff ? getLocalDateStr(item.kickoff) : "");
         if (itemDate !== yesterdayStr) return false;
       } else if (selectedDateFilter === "week") {
         const itemTime = new Date(item.kickoff || item.date).getTime();
@@ -372,14 +395,33 @@ export default function HistoryPage() {
       } else if (selectedDateFilter === "month") {
         const itemTime = new Date(item.kickoff || item.date).getTime();
         if (isNaN(itemTime) || itemTime < thirtyDaysAgoMs) return false;
-      } else if (selectedDateFilter === "custom" && customDate) {
-        const itemDate = item.date || (item.kickoff ? getLocalDateStr(item.kickoff) : "");
+      } else if ((selectedDateFilter === "specific" || selectedDateFilter === "custom") && customDate) {
         if (itemDate !== customDate) return false;
+      } else if (selectedDateFilter === "range") {
+        if (startDate && itemDate < startDate) return false;
+        if (endDate && itemDate > endDate) return false;
+      }
+
+      // Probability Filtering
+      const prob = typeof item.probability === "number"
+        ? item.probability
+        : (item.confidence === "Muy Alta" ? 75 : item.confidence === "Alta" ? 65 : 55);
+
+      if (probFilter === "muy_alta") {
+        if (prob < 75) return false;
+      } else if (probFilter === "alta") {
+        if (prob < 68 || prob >= 75) return false;
+      } else if (probFilter === "media") {
+        if (prob < 58 || prob >= 68) return false;
+      } else if (probFilter === "baja") {
+        if (prob >= 58) return false;
+      } else if (probFilter === "custom") {
+        if (prob < minProbability) return false;
       }
 
       return true;
     });
-  }, [historyItems, searchQuery, timingFilter, filterResult, selectedLeagues, selectedMarkets, selectedDateFilter, customDate, todayStr, yesterdayStr, sevenDaysAgoMs, thirtyDaysAgoMs]);
+  }, [historyItems, searchQuery, timingFilter, filterResult, selectedLeagues, selectedMarkets, selectedDateFilter, customDate, startDate, endDate, probFilter, minProbability, todayStr, yesterdayStr, sevenDaysAgoMs, thirtyDaysAgoMs]);
 
   const filteredParlays = useMemo(() => {
     return parlayItems.filter((p) => {
@@ -518,12 +560,12 @@ export default function HistoryPage() {
           </div>
         </div>
 
-        {/* Sport Selector Carousel */}
+        {/* Sport Selector Carousel (Strict Sport Isolation) */}
         <div className="mb-2">
           <SportSelector
             selectedSport={selectedSport}
             onSelectSport={handleSelectSport}
-            showAll={true}
+            showAll={false}
           />
         </div>
 
@@ -725,12 +767,16 @@ export default function HistoryPage() {
               />
             )}
 
-            {/* Date Preset Selector */}
+            {/* Date Preset & Specific Day Selector */}
             <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
               <span>📅</span>
               <select
                 value={selectedDateFilter}
-                onChange={(e) => setSelectedDateFilter(e.target.value as any)}
+                onChange={(e) => {
+                  const val = e.target.value as any;
+                  setSelectedDateFilter(val);
+                  if (val === "specific" && !customDate) setCustomDate(todayStr);
+                }}
                 aria-label="Filtrar por período de fecha"
                 className="bg-transparent font-black text-slate-800 dark:text-white outline-none cursor-pointer"
               >
@@ -739,8 +785,99 @@ export default function HistoryPage() {
                 <option value="yesterday" className="dark:bg-slate-900">Ayer</option>
                 <option value="week" className="dark:bg-slate-900">Últimos 7 días</option>
                 <option value="month" className="dark:bg-slate-900">Últimos 30 días</option>
+                <option value="specific" className="dark:bg-slate-900">🎯 Día Específico</option>
+                <option value="range" className="dark:bg-slate-900">🗓️ Rango de Fechas</option>
               </select>
             </div>
+
+            {/* Selector de Día Específico si está activo */}
+            {selectedDateFilter === "specific" && (
+              <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-bold dark:border-slate-700 dark:bg-slate-800">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const cur = customDate ? new Date(`${customDate}T12:00:00`) : new Date();
+                    cur.setDate(cur.getDate() - 1);
+                    setCustomDate(getLocalDateStr(cur));
+                  }}
+                  className="px-1.5 py-0.5 rounded text-[11px] hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
+                  title="Día anterior"
+                >
+                  ◀
+                </button>
+                <input
+                  type="date"
+                  value={customDate || todayStr}
+                  onChange={(e) => setCustomDate(e.target.value)}
+                  className="bg-transparent font-black text-slate-800 dark:text-white outline-none cursor-pointer text-xs"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const cur = customDate ? new Date(`${customDate}T12:00:00`) : new Date();
+                    cur.setDate(cur.getDate() + 1);
+                    setCustomDate(getLocalDateStr(cur));
+                  }}
+                  className="px-1.5 py-0.5 rounded text-[11px] hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
+                  title="Día siguiente"
+                >
+                  ▶
+                </button>
+              </div>
+            )}
+
+            {/* Selector de Rango si está activo */}
+            {selectedDateFilter === "range" && (
+              <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-bold dark:border-slate-700 dark:bg-slate-800">
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  placeholder="Inicio"
+                  className="bg-transparent font-black text-slate-800 dark:text-white outline-none text-xs"
+                />
+                <span className="text-slate-400">-</span>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  placeholder="Fin"
+                  className="bg-transparent font-black text-slate-800 dark:text-white outline-none text-xs"
+                />
+              </div>
+            )}
+
+            {/* Probability Percentage Selector */}
+            <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+              <span>🎯</span>
+              <select
+                value={probFilter}
+                onChange={(e) => setProbFilter(e.target.value as any)}
+                aria-label="Filtrar por probabilidad del modelo"
+                className="bg-transparent font-black text-slate-800 dark:text-white outline-none cursor-pointer"
+              >
+                <option value="all" className="dark:bg-slate-900">Probabilidad: Todas</option>
+                <option value="muy_alta" className="dark:bg-slate-900">⭐⭐⭐ Muy Alta (≥75%)</option>
+                <option value="alta" className="dark:bg-slate-900">⭐⭐ Alta (68% - 74%)</option>
+                <option value="media" className="dark:bg-slate-900">⭐ Media (58% - 67%)</option>
+                <option value="baja" className="dark:bg-slate-900">⚠️ Moderada (&lt;58%)</option>
+                <option value="custom" className="dark:bg-slate-900">🎚️ Umbral (≥{minProbability}%)</option>
+              </select>
+            </div>
+
+            {probFilter === "custom" && (
+              <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-bold dark:border-slate-700 dark:bg-slate-800">
+                <input
+                  type="range"
+                  min="45"
+                  max="85"
+                  value={minProbability}
+                  onChange={(e) => setMinProbability(parseInt(e.target.value, 10))}
+                  className="w-20 accent-emerald-500 cursor-pointer"
+                />
+                <span className="font-black text-emerald-600 dark:text-emerald-400">≥{minProbability}%</span>
+              </div>
+            )}
 
             {(selectedLeagues.length > 0 || selectedMarkets.length > 0 || timingFilter !== "ALL" || filterResult !== "ALL" || selectedDateFilter !== "all" || searchQuery) && (
               <button
@@ -750,6 +887,10 @@ export default function HistoryPage() {
                   setTimingFilter("ALL");
                   setFilterResult("ALL");
                   setSelectedDateFilter("all");
+                  setCustomDate("");
+                  setStartDate("");
+                  setEndDate("");
+                  setProbFilter("all");
                   setSearchQuery("");
                 }}
                 className="rounded-xl border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs font-extrabold text-slate-600 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 cursor-pointer"
