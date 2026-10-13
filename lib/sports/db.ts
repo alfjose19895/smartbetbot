@@ -28,6 +28,7 @@ import {
   normalizeLeagueInfo,
   getTimeSlot,
   isQualifiedOpportunity,
+  isElitePick,
   getMarketPriorityRank,
 } from "./prediction-engine";
 
@@ -1028,7 +1029,8 @@ export interface HistoricalSettledPick {
   edge?: number;
   probability: number;
   confidence: "Muy Alta" | "Alta" | "Media" | "Moderada";
-  pickBadge?: "bomba" | "valor" | "estandar" | "mcp" | "nuevo";
+  pickBadge?: "bomba" | "valor" | "estandar" | "mcp" | "nuevo" | "elite";
+  isElite?: boolean;
   matchTiming?: "prematch" | "live";
   isLive?: boolean;
   isMcp?: boolean;
@@ -1432,7 +1434,7 @@ async function enrichCandidateFixturesWithOdds(
  * - Sábados y Domingos (Weekends, Sat-Sun): 20 pronósticos
  */
 export function getDailyAlertLimit(targetDate: Date = new Date()): number {
-  return 22;
+  return 12; // Curated daily target: 10 to 12 top-tier picks
 }
 
 export function getStoredPredictions(sport: string = "football"): MarketOpportunity[] {
@@ -1771,10 +1773,10 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
     return b.edge - a.edge;
   });
 
-  // Daily alert strategy: Dynamic Mathematical Quality Gate (prob >= 52%, edge >= 1%, odds 1.25-3.50)
+  // Daily alert strategy: Curated 10 to 12 picks per day (prob >= 60%, edge >= 1.5%, odds 1.25-2.20)
   const dailyLimit = getDailyAlertLimit(new Date());
   const qualifiedPicks = rankedPicks.filter(isQualifiedOpportunity);
-  const basePool = qualifiedPicks.length > 0 ? qualifiedPicks : rankedPicks;
+  const basePool = qualifiedPicks.length >= 10 ? qualifiedPicks : rankedPicks;
 
   // Quota Protection: Cap Tier 4 leagues to max 2 picks when Tier 1 or Tier 2 matches are present
   const hasEliteTiers = basePool.some((p) => (p.leagueTier || 3) <= 2);
@@ -1788,19 +1790,22 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
     return true;
   });
 
-  const candidatesToUse = filteredCandidates.slice(0, Math.max(dailyLimit, 20));
+  // Strictly target 10 to 12 top-tier, highest-conviction picks per day
+  const candidatesToUse = filteredCandidates.slice(0, dailyLimit);
 
   const initialTopPicks: MarketOpportunity[] = candidatesToUse.map((p) => {
     const prob = p.probability || 50;
     const conf: "Muy Alta" | "Alta" | "Media" | "Moderada" =
       prob >= 70 ? "Muy Alta" : prob >= 58 ? "Alta" : prob >= 50 ? "Media" : "Moderada";
+    const isElite = isElitePick(p);
     return {
       ...p,
       confidence: conf,
       isMcpPick: true,
       isMcp: true,
       source: "mcp" as const,
-      pickBadge: (p.pickBadge || "mcp") as "bomba" | "valor" | "estandar" | "mcp",
+      isElite,
+      pickBadge: isElite ? ("elite" as const) : (p.pickBadge || "mcp") as "bomba" | "valor" | "estandar" | "mcp" | "elite",
       timeSlot: getTimeSlot(p.kickoff),
       isTopPick: (prob >= 68.0 || conf === "Muy Alta") && (p.smartScore || 0) >= 88,
     };
@@ -2634,7 +2639,8 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
             edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
             probability: p.probability,
             confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
-            pickBadge: p.pickBadge,
+            pickBadge: isElitePick(p as any) ? "elite" : p.pickBadge,
+            isElite: isElitePick(p as any),
             matchTiming: isLiveMatch ? "live" : "prematch",
             isLive: isLiveMatch,
             isMcp: isMcpPick,
@@ -2676,7 +2682,8 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
             edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
             probability: p.probability,
             confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
-            pickBadge: p.pickBadge,
+            pickBadge: isElitePick(p as any) ? "elite" : p.pickBadge,
+            isElite: isElitePick(p as any),
             matchTiming: isLiveMatch ? "live" : "prematch",
             isLive: isLiveMatch,
             isMcp: isMcpPick,
@@ -2718,7 +2725,8 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
             edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
             probability: p.probability,
             confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
-            pickBadge: p.pickBadge,
+            pickBadge: isElitePick(p as any) ? "elite" : p.pickBadge,
+            isElite: isElitePick(p as any),
             matchTiming: isLiveMatch ? "live" : "prematch",
             isLive: isLiveMatch,
             isMcp: isMcpPick,
@@ -2777,7 +2785,8 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
             edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
             probability: p.probability,
             confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
-            pickBadge: p.pickBadge,
+            pickBadge: isElitePick(p as any) ? "elite" : p.pickBadge,
+            isElite: isElitePick(p as any),
             matchTiming: isLiveMatch ? "live" : "prematch",
             isLive: isLiveMatch,
             isMcp: isMcpPick,
@@ -2837,7 +2846,8 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
               edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
               probability: p.probability,
               confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
-              pickBadge: p.pickBadge,
+              pickBadge: isElitePick(p as any) ? "elite" : p.pickBadge,
+            isElite: isElitePick(p as any),
               matchTiming: "live",
               isLive: true,
               isMcp: isMcpPick,

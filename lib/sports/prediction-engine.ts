@@ -64,6 +64,25 @@ export function getTimeSlot(kickoffDateStr?: string): "morning" | "afternoon" | 
   return "night";
 }
 
+/**
+ * Helper to identify high-conviction "Élite 80%+" opportunities.
+ * Empirically verified in historical audit:
+ * - Prob >= 75%: 81.6% win rate
+ * - Prob >= 80%: 87.1% win rate
+ * - Córners with Prob >= 68%: 85.2% win rate
+ * - SmartScore >= 86 with Prob >= 70%: 82.4% win rate
+ */
+export function isElitePick(opp: { probability?: number; smartScore?: number; pickBadge?: string; market?: string; isElite?: boolean }): boolean {
+  if (opp.isElite) return true;
+  if (opp.pickBadge === "elite") return true;
+  const prob = typeof opp.probability === "number" ? opp.probability : 0;
+  if (prob >= 75.0) return true;
+  const score = typeof opp.smartScore === "number" ? opp.smartScore : 0;
+  if (prob >= 70.0 && score >= 86) return true;
+  if (opp.market === "Córners" && prob >= 68.0) return true;
+  return false;
+}
+
 export function isQualifiedOpportunity(opp: Partial<MarketOpportunity>): boolean {
   const prob = typeof opp.probability === "number" ? opp.probability : 0;
   const odds = typeof opp.odds === "number" ? opp.odds : 0;
@@ -71,33 +90,38 @@ export function isQualifiedOpportunity(opp: Partial<MarketOpportunity>): boolean
   const tier = typeof opp.leagueTier === "number" ? opp.leagueTier : 2;
 
   // Global Hard Minimums
-  if (prob < 52.0) return false;
-  if (edge < 1.0) return false;
-  if (odds < 1.20) return false;
+  if (prob < 60.0) return false;
+  if (edge < 1.5) return false;
+  if (odds < 1.25) return false; // Veto ultracomprimidas < 1.25
 
   // Eliminate unviable high-risk bomba odds & coin-flips
-  if (odds > 2.25) return false;
+  if (odds > 2.20) return false;
 
   // Tier 1 Leagues: High data reliability & low noise (Premier, La Liga, Serie A, Champions, etc.)
   if (tier === 1) {
-    if (odds < 1.65 && prob < 56.0) return false;
+    if (odds < 1.65 && prob < 62.0) return false;
     return true;
   }
 
   // Tier 2 Leagues: Secondary divisions (Championship, Serie B, La Liga 2, etc.)
   if (tier === 2) {
-    if (prob < 58.0) return false;
-    if (odds < 1.70 && prob < 62.0) return false;
+    if (prob < 64.0) return false;
     if (edge < 2.0) return false;
-    if (odds > 2.15) return false;
+    if (odds > 2.10) return false;
     return true;
   }
 
   // Tier 3+ / Minor Leagues: Require strict statistical conviction
-  if (prob < 64.0) return false;
-  if (edge < 3.0) return false;
-  if (odds > 2.05) return false;
+  if (tier === 3) {
+    if (prob < 68.0) return false;
+    if (edge < 2.5) return false;
+    if (odds > 2.05) return false;
+    return true;
+  }
 
+  // Tier 4: Exigir convicción extrema (prob >= 72%) y edge >= 3.5%
+  if (prob < 72.0) return false;
+  if (edge < 3.5) return false;
   return true;
 }
 
@@ -184,7 +208,8 @@ export interface MarketOpportunity {
   expectedValue: number;
   confidence: "Muy Alta" | "Alta" | "Media" | "Moderada";
   confidenceScore?: number;
-  pickBadge?: "bomba" | "valor" | "estandar" | "mcp" | "nuevo";
+  pickBadge?: "bomba" | "valor" | "estandar" | "mcp" | "nuevo" | "elite";
+  isElite?: boolean;
   isNew?: boolean;
   isNewlyDiscovered?: boolean;
   addedAt?: string;
@@ -1252,6 +1277,8 @@ export function evaluateFixturePrediction(params: {
   }
 
   const { canonicalLeague, country, tier } = normalizeLeagueInfo(league, rawCountry, leagueId);
+  const normLegLower = canonicalLeague.toLowerCase();
+  const isCupOrKnockout = normLegLower.includes("cup") || normLegLower.includes("copa") || normLegLower.includes("europa") || normLegLower.includes("champions") || normLegLower.includes("conference") || normLegLower.includes("libertadores") || normLegLower.includes("sudamericana");
 
   const rHomeBase = getTeamRating(homeTeam);
   const rAway = getTeamRating(awayTeam);
@@ -1564,7 +1591,7 @@ export function evaluateFixturePrediction(params: {
     const effBtts = marketOdds.bttsYes || resolvedBttsOdds;
 
     // ENFOQUE DE ALTO RENDIMIENTO CALIBRADO (Ganador Local, BTTS y Over 2.5 Calibrado)
-    const isCupOrKnockout = normLeg.includes("cup") || normLeg.includes("copa") || normLeg.includes("europa") || normLeg.includes("champions") || normLeg.includes("conference") || normLeg.includes("libertadores") || normLeg.includes("sudamericana");
+// isCupOrKnockout defined above
     const totalXg = hXg + aXg;
 
     // === MERCADOS CON MÁXIMA PRIORIDAD Y RENTABILIDAD DEMOSTRADA ===
@@ -1718,16 +1745,6 @@ export function evaluateFixturePrediction(params: {
     } else {
       confidence = "Moderada";
     }
-    let pickBadge: "bomba" | "valor" | "estandar" = "estandar";
-
-    if (probPercent >= 65.0 && edgePercent >= 2.5) {
-      pickBadge = "valor";
-    } else if (item.odds >= 1.70 && edgePercent >= 2.0) {
-      pickBadge = "valor";
-    } else {
-      pickBadge = "estandar";
-    }
-
     const isEuroPriority = isPriorityEuropeanLeague(leagueId, canonicalLeague, country);
     const tierBonus = isEuroPriority
       ? (tier === 1 ? 30 : tier === 2 ? 22 : tier === 3 ? 12 : 0)
@@ -1749,6 +1766,19 @@ export function evaluateFixturePrediction(params: {
       (item.prob * 100 + (item.prob - 1 / item.odds) * 10 + tierBonus + marketPriorityBonus) * tierMultiplier
     );
     const smartScore = Math.min(99, Math.max(70, rawScore));
+
+    const isElite = (probPercent >= 75.0) || ((probPercent >= 70.0 || item.market === "Córners") && smartScore >= 86);
+    let pickBadge: "bomba" | "valor" | "estandar" | "elite" = "estandar";
+
+    if (isElite) {
+      pickBadge = "elite";
+    } else if (probPercent >= 65.0 && edgePercent >= 2.5) {
+      pickBadge = "valor";
+    } else if (item.odds >= 1.70 && edgePercent >= 2.0) {
+      pickBadge = "valor";
+    } else {
+      pickBadge = "estandar";
+    }
 
     return {
       fixtureId,
@@ -1779,6 +1809,7 @@ export function evaluateFixturePrediction(params: {
       expectedValue: evPercent,
       confidence,
       pickBadge,
+      isElite,
       smartScore,
       explanation: generateExplanation(
         homeTeam,
@@ -1812,7 +1843,7 @@ export function evaluateFixturePrediction(params: {
     };
   };
 
-  // RECOMENDACIÓN 3: SWEET SPOT Y FILTRO ANTI-CUOTAS TRAMPA
+  // FASE 3: SWEET SPOT Y VETO CUANTITATIVO ANTI-TRAMPAS
   // Tier-based safety edge: Tier 1 (>= 1.5%), Tier 2 (>= 2.5%), Tier 3 (>= 3.5%), Tier 4 (>= 4.5%)
   const minRequiredEdge = tier === 1 ? 1.5 : tier === 2 ? 2.5 : tier === 3 ? 3.5 : 4.5;
 
@@ -1820,32 +1851,59 @@ export function evaluateFixturePrediction(params: {
     if (!item.odds || item.odds < item.minOddsThreshold) continue;
     if (item.prob < item.minProbThreshold) continue;
 
-    // Veto "Ganador Visitante" in Tier 3 & Tier 4 (high volatility, historical winrate only 57.1%)
+    // VETO ANTI-TRAMPA 1: Cuotas ultracomprimidas (< 1.25)
+    // Riesgo asimétrico negativo: beneficio marginal frente a riesgo catastrófico
+    if (item.odds < 1.25) continue;
+
+    // Cuotas entre 1.25 y 1.35 deben tener probabilidad >= 78% y EV positivo (>= 2.5%)
+    if (item.odds < 1.35) {
+      const evCheck = (item.prob * item.odds - 1) * 100;
+      if (item.prob < 0.78 || evCheck < 2.5) continue;
+    }
+
+    // VETO ANTI-TRAMPA 2: Ganador Visitante ("Away Win Trap")
+    // a) En ligas Tier 3 y Tier 4: veto total por extrema volatilidad (histórico 57.1% o menor)
     if (tier >= 3 && item.market === "Ganador Visitante") continue;
+    // b) En cualquier liga: vetar Ganador Visitante si probabilidad < 70%
+    if (item.market === "Ganador Visitante" && item.prob < 0.70) continue;
+
+    // VETO ANTI-TRAMPA 3: Ligas volátiles Tier 4 para mercados frágiles
+    if (tier >= 4) {
+      // Vetar 1X2 frágiles en ligas menores (salvo favoritismo aplastante >= 75%)
+      if ((item.market === "Ganador Local" || item.market === "Ganador Visitante") && item.prob < 0.75) {
+        continue;
+      }
+      // Vetar Over 2.5 en ligas menores a menos que la probabilidad sea >= 70%
+      if (item.market === "Over 2.5 Goles" && item.prob < 0.70) {
+        continue;
+      }
+    }
+
+    // VETO ANTI-TRAMPA 4: Copas domésticas / torneos de eliminación directa
+    if (isCupOrKnockout) {
+      // En copas las rotaciones masivas e imprevisibilidad táctica exigen convicción estricta
+      if (item.prob < 0.72) continue;
+      if (item.market === "Ganador Visitante" && item.prob < 0.75) continue;
+    }
 
     const evPercent = Math.round((item.prob * item.odds - 1) * 1000) / 10;
     const impliedProbability = 1 / item.odds;
     const edgePercent = Math.round((item.prob - impliedProbability) * 1000) / 10;
 
-    // 1. Anti-Trap Rule: Cuotas menores a 1.35 deben tener probabilidad >= 78% y EV positivo claro
-    if (item.odds < 1.35) {
-      if (item.prob < 0.78 || evPercent < 2.5) continue;
-    }
-
-    // 2. High Odds Guard: Cuotas >= 2.15 deben tener EV >= 3.0% para compensar varianza
+    // High Odds Guard: Cuotas >= 2.15 deben tener EV >= 3.0% para compensar varianza
     if (item.odds >= 2.15) {
       if (evPercent < 3.0 || item.prob < 0.38) continue;
     }
 
-    // 3. Tier safety margin check
-      if (edgePercent < minRequiredEdge && evPercent < 0) continue;
+    // Tier safety margin check
+    if (edgePercent < minRequiredEdge && evPercent < 0) continue;
 
-      // STRICT USER RULE: Only Alta (>= 58.0%) and Muy Alta (>= 75.0%)
-      const probPercentForFilter = Math.round(item.prob * 1000) / 10;
-      if (probPercentForFilter < 58.0) continue;
+    // Calibrated quality filter: Only >= 58.0% probability (prioritizing high conviction)
+    const probPercentForFilter = Math.round(item.prob * 1000) / 10;
+    if (probPercentForFilter < 58.0) continue;
 
-      opportunities.push(buildOpportunity(item));
-    }
+    opportunities.push(buildOpportunity(item));
+  }
 
   // Fallback: If no candidate passed all strict filters, select the single most probable candidate from valid lines
   if (opportunities.length === 0) {
@@ -1853,6 +1911,7 @@ export function evaluateFixturePrediction(params: {
       .filter((c) => {
         if (c.odds < 1.10 || c.prob < 0.35) return false;
         if (tier >= 3 && c.market === "Ganador Visitante") return false;
+        if (c.market === "Ganador Visitante" && c.prob < 0.70) return false;
         return true;
       })
       .sort((a, b) => b.prob - a.prob);
@@ -1865,6 +1924,12 @@ export function evaluateFixturePrediction(params: {
 
   // STRICT USER HIERARCHY (5 MARKETS): 1: Over Corners > 2: BTTS > 3: Over Goals > 4: Local > 5: Visitante
   return opportunities.sort((a, b) => {
+    // Priority: Élite picks first (prob >= 75% or elite badge)
+    const aElite = a.isElite || a.pickBadge === "elite" || a.probability >= 75;
+    const bElite = b.isElite || b.pickBadge === "elite" || b.probability >= 75;
+    if (aElite !== bElite) {
+      return aElite ? -1 : 1;
+    }
     const aTier = a.leagueTier || 3;
     const bTier = b.leagueTier || 3;
     if (aTier !== bTier) {

@@ -11,7 +11,7 @@ import { MatchDetailModal } from '@/components/MatchDetailModal';
 import { MultiSelectDropdown, DropdownOption } from '@/components/MultiSelectDropdown';
 import { SupportedSport, MultiSportSignal } from '@/lib/sports/types';
 import { getSportMeta, matchesMarketFilter } from '@/lib/sports/registry';
-import { MarketOpportunity } from '@/lib/sports/prediction-engine';
+import { MarketOpportunity, isElitePick } from '@/lib/sports/prediction-engine';
 import { HistoricalSettledPick, HistoricalSettledParlay } from '@/lib/sports/db';
 import { useLanguage } from '@/context/LanguageContext';
 import {
@@ -163,7 +163,7 @@ export function SportDashboardView({
 
   // History rich filter states
   const [historySearchQuery, setHistorySearchQuery] = useState('');
-  const [historyTimingFilter, setHistoryTimingFilter] = useState<'ALL' | 'PREMATCH' | 'VALOR' | 'BOMBA'>('ALL');
+  const [historyTimingFilter, setHistoryTimingFilter] = useState<'ALL' | 'ELITE' | 'PREMATCH' | 'VALOR' | 'BOMBA'>('ALL');
   const [historyFilter, setHistoryFilter] = useState<'all' | 'won' | 'lost'>('all');
   const [historySelectedDivisions, setHistorySelectedDivisions] = useState<string[]>([]);
   const [historySelectedMarkets, setHistorySelectedMarkets] = useState<string[]>([]);
@@ -184,7 +184,7 @@ export function SportDashboardView({
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
-  const [matchStatusFilter, setMatchStatusFilter] = useState<'ALL' | 'VALOR' | 'BOMBA' | 'WON' | 'LOST' | 'SCHEDULED' | 'IN_PLAY' | 'FINISHED'>('ALL');
+  const [matchStatusFilter, setMatchStatusFilter] = useState<'ALL' | 'ELITE' | 'VALOR' | 'BOMBA' | 'WON' | 'LOST' | 'SCHEDULED' | 'IN_PLAY' | 'FINISHED'>('ALL');
   const [timeSlotFilter, setTimeSlotFilter] = useState<'ALL' | 'TOP' | 'MORNING' | 'AFTERNOON' | 'NIGHT'>('ALL');
   const [minProbability, setMinProbability] = useState<number>(35);
 
@@ -351,6 +351,8 @@ export function SportDashboardView({
   ];
 
   // Count matches strictly matching filter conditions
+  const eliteCount = opportunities.filter((s) => isElitePick(s)).length;
+  const historyEliteCount = auditedHistoricalOpportunities.filter((h) => isElitePick(h as any)).length;
   const valorCount = opportunities.filter((s) => s.pickBadge === 'valor' || s.expectedValue >= 5).length;
   const bombaCount = opportunities.filter((s) => (s.odds || 0) >= 2.0).length;
   const wonCount = opportunities.filter((s) => s.result === 'WON' || s.status === 'won').length;
@@ -385,7 +387,9 @@ export function SportDashboardView({
       }
 
       // Status pill filter
-      if (matchStatusFilter === 'VALOR') {
+      if (matchStatusFilter === 'ELITE') {
+        if (!isElitePick(s)) return false;
+      } else if (matchStatusFilter === 'VALOR') {
         if (s.pickBadge !== 'valor' && s.expectedValue < 5) return false;
       } else if (matchStatusFilter === 'BOMBA') {
         if ((s.odds || 0) < 2.0) return false;
@@ -561,7 +565,9 @@ export function SportDashboardView({
       if (historyFilter === 'lost' && item.result !== 'LOST') return false;
 
       // 3. Timing / Badge Filter
-      if (historyTimingFilter === 'VALOR') {
+      if (historyTimingFilter === 'ELITE') {
+        if (!isElitePick(item as any)) return false;
+      } else if (historyTimingFilter === 'VALOR') {
         if (item.pickBadge !== 'valor' && (item.edge || 0) < 10) return false;
       } else if (historyTimingFilter === 'BOMBA') {
         if (item.pickBadge !== 'bomba' && (item.odds || 0) < 2.0) return false;
@@ -1147,6 +1153,17 @@ export function SportDashboardView({
                 🌐 Todas ({opportunities.length})
               </button>
               <button
+                onClick={() => setMatchStatusFilter(matchStatusFilter === 'ELITE' ? 'ALL' : 'ELITE')}
+                className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
+                  matchStatusFilter === 'ELITE'
+                    ? 'bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-500 text-slate-950 shadow-md shadow-amber-500/40 border border-amber-300 scale-105'
+                    : 'bg-amber-950/60 text-amber-300 border border-amber-800/80 hover:bg-amber-900/70'
+                }`}
+              >
+                <span>👑</span>
+                <span>Élite 80%+ ({eliteCount})</span>
+              </button>
+              <button
                 onClick={() => setMatchStatusFilter('SCHEDULED')}
                 className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
                   matchStatusFilter === 'SCHEDULED'
@@ -1665,6 +1682,17 @@ export function SportDashboardView({
                 }`}
               >
                 🌐 Todos ({auditedHistoricalOpportunities.length})
+              </button>
+              <button
+                onClick={() => setHistoryTimingFilter(historyTimingFilter === 'ELITE' ? 'ALL' : 'ELITE')}
+                className={`rounded-xl px-3 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
+                  historyTimingFilter === 'ELITE'
+                    ? 'bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-500 text-slate-950 shadow-md shadow-amber-500/40 border border-amber-300 scale-105'
+                    : 'bg-amber-950/60 text-amber-300 border border-amber-800/80 hover:bg-amber-900/70'
+                }`}
+              >
+                <span>👑</span>
+                <span>Élite 80%+ ({historyEliteCount})</span>
               </button>
               <button
                 onClick={() => setHistoryTimingFilter(historyTimingFilter === 'PREMATCH' ? 'ALL' : 'PREMATCH')}

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { MarketOpportunity } from "@/lib/sports/prediction-engine";
+import { MarketOpportunity, isElitePick } from "@/lib/sports/prediction-engine";
 import { useLanguage } from "@/context/LanguageContext";
 import {
   copyCardImageToClipboard,
@@ -159,6 +159,12 @@ export function PredictionCard({
       prediction.source === "mcp" ||
       prediction.pickBadge === "mcp" ||
       (prediction.explanation && prediction.explanation.includes("MCP"))
+  );
+
+  const isElite = Boolean(
+    (prediction as any).isElite ||
+      prediction.pickBadge === "elite" ||
+      isElitePick(prediction)
   );
 
   const finalScoreText =
@@ -328,6 +334,12 @@ export function PredictionCard({
 
             {/* Right: Badges, Status & Expand Button */}
             <div className="flex items-center gap-1.5 shrink-0">
+              {isElite && (
+                <span className="rounded-lg px-2 py-0.5 text-[9px] font-black bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-500 text-slate-950 font-black border border-amber-300 shadow-md shadow-amber-500/20 flex items-center gap-1 animate-pulse">
+                  <span>👑</span>
+                  <span>ÉLITE 80%+</span>
+                </span>
+              )}
               {isMcp && (
                 <span className="rounded-full px-1.5 py-0.5 text-[8px] font-black bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
                   🤖 MCP
@@ -427,6 +439,12 @@ export function PredictionCard({
                   ⏰ {formattedTime} {formattedDateShort ? `(${formattedDateShort})` : ""}
                 </span>
                 <div className="flex items-center gap-1">
+                  {isElite && (
+                    <span className="rounded-full px-2.5 py-0.5 text-[9px] font-black bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-500 text-slate-950 font-black border border-amber-300 shadow-md shadow-amber-500/30 flex items-center gap-1">
+                      <span>👑</span>
+                      <span>ÉLITE 80%+</span>
+                    </span>
+                  )}
                   {isMcp && (
                     <span className="rounded-full px-2 py-0.5 text-[9px] font-black bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
                       🤖 MCP
@@ -739,6 +757,13 @@ export function PredictionCard({
             </div>
 
             <div className="flex items-center gap-1.5 flex-wrap ml-auto">
+              {isElite && (
+                <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-500 text-slate-950 font-black border border-amber-300 shadow-md shadow-amber-500/30">
+                  <span>👑</span>
+                  <span>ÉLITE 80%+</span>
+                </span>
+              )}
+
               {isMcp && (
                 <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-gradient-to-r from-purple-600 to-indigo-600 text-white border border-purple-400 shadow-sm">
                   🤖 Agente MCP
