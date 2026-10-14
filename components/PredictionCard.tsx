@@ -924,7 +924,7 @@ export function PredictionCard({
                   {prediction.probability}%
                 </div>
                 <div className="text-[10px] text-slate-400 leading-tight">
-                  Confianza {prediction.confidence || "Muy Alta"}
+                  Confianza {pVal >= 70.0 ? "Muy Alta" : pVal >= 58.0 ? "Alta" : pVal >= 50.0 ? "Media" : "Moderada"}
                 </div>
               </div>
             </div>

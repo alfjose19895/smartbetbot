@@ -7,7 +7,7 @@ import { MatchDetailModal } from "@/components/MatchDetailModal";
 import { NewAlertsModal } from "@/components/NewAlertsModal";
 import { MultiSelectDropdown, DropdownOption } from "@/components/MultiSelectDropdown";
 import { MarketOpportunity, getTimeSlot, isElitePick } from "@/lib/sports/prediction-engine";
-import { matchesMarketFilter } from "@/lib/sports/registry";
+import { matchesMarketFilter, matchesConfidenceFilter } from "@/lib/sports/registry";
 import { useLanguage } from "@/context/LanguageContext";
 import { Navbar } from "@/components/Navbar";
 import { openPushModal } from "@/components/PushNotificationManager";
@@ -319,14 +319,9 @@ export default function SignalsPage() {
       }
 
       if (selectedConfidence.length > 0) {
-        const matchesConf = selectedConfidence.some((c) => {
-          if (c === "muy_alta") return p.confidence === "Muy Alta" || p.probability >= 70;
-          if (c === "alta") return p.confidence === "Alta" || (p.probability >= 58 && p.probability < 70);
-          if (c === "media") return p.confidence === "Media" || (p.probability >= 50 && p.probability < 58);
-          if (c === "moderada") return p.confidence === "Moderada" || p.probability < 50;
+        if (!matchesConfidenceFilter(selectedConfidence, p.probability, p.confidence)) {
           return false;
-        });
-        if (!matchesConf) return false;
+        }
       }
 
       if (selectedMarkets.length > 0) {

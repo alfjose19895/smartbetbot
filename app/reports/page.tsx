@@ -178,16 +178,16 @@ function ReportsContent() {
       // 2. Probability Filter
       const prob = typeof item.probability === "number"
         ? item.probability
-        : (item.confidence === "Muy Alta" ? 75 : item.confidence === "Alta" ? 65 : 55);
+        : (item.confidence === "Muy Alta" ? 75 : item.confidence === "Alta" ? 62 : item.confidence === "Media" ? 54 : 45);
 
       if (probFilter === "muy_alta") {
-        if (prob < 75) return false;
+        if (prob < 70) return false;
       } else if (probFilter === "alta") {
-        if (prob < 68 || prob >= 75) return false;
+        if (prob < 58 || prob >= 70) return false;
       } else if (probFilter === "media") {
-        if (prob < 58 || prob >= 68) return false;
+        if (prob < 50 || prob >= 58) return false;
       } else if (probFilter === "baja") {
-        if (prob >= 58) return false;
+        if (prob >= 50) return false;
       } else if (probFilter === "custom") {
         if (prob < minProbability) return false;
       }
@@ -265,10 +265,10 @@ function ReportsContent() {
     const media = { total: 0, won: 0, lost: 0, profit: 0, oddsSum: 0 };
 
     filteredItems.forEach((i) => {
-      const prob = i.probability ?? (i.confidence === "Muy Alta" ? 75 : 65);
+      const prob = i.probability ?? (i.confidence === "Muy Alta" ? 75 : i.confidence === "Alta" ? 62 : i.confidence === "Media" ? 54 : 45);
       let target = media;
-      if (prob >= 75 || i.confidence === "Muy Alta") target = muyAlta;
-      else if (prob >= 68 || i.confidence === "Alta") target = alta;
+      if (prob >= 70 || i.confidence === "Muy Alta") target = muyAlta;
+      else if (prob >= 58 || i.confidence === "Alta") target = alta;
 
       target.total++;
       if (i.result === "WON") target.won++;
@@ -279,21 +279,21 @@ function ReportsContent() {
 
     return {
       muyAlta: {
-        name: "⭐⭐⭐ Muy Alta (≥75%)",
+        name: "⭐⭐⭐ Muy Alta (≥70%)",
         ...muyAlta,
         winRate: muyAlta.total > 0 ? (muyAlta.won / muyAlta.total) * 100 : 0,
         avgOdds: muyAlta.total > 0 ? muyAlta.oddsSum / muyAlta.total : 0,
         color: "#10B981",
       },
       alta: {
-        name: "⭐⭐ Alta (68% - 74%)",
+        name: "⭐⭐ Alta (58% - 69%)",
         ...alta,
         winRate: alta.total > 0 ? (alta.won / alta.total) * 100 : 0,
         avgOdds: alta.total > 0 ? alta.oddsSum / alta.total : 0,
         color: "#06B6D4",
       },
       media: {
-        name: "⭐ Media (<68%)",
+        name: "⭐ Media (50% - 57%)",
         ...media,
         winRate: media.total > 0 ? (media.won / media.total) * 100 : 0,
         avgOdds: media.total > 0 ? media.oddsSum / media.total : 0,
@@ -571,10 +571,10 @@ function ReportsContent() {
           <div className="flex flex-wrap items-center gap-1.5">
             {[
               { id: "all", label: "🎲 Todas (0% - 100%)" },
-              { id: "muy_alta", label: "⭐⭐⭐ Muy Alta (≥75%)" },
-              { id: "alta", label: "⭐⭐ Alta (68% - 74%)" },
-              { id: "media", label: "⭐ Media (58% - 67%)" },
-              { id: "baja", label: "⚠️ Moderada (<58%)" },
+              { id: "muy_alta", label: "⭐⭐⭐ Muy Alta (≥70%)" },
+              { id: "alta", label: "⭐⭐ Alta (58% - 69%)" },
+              { id: "media", label: "⭐ Media (50% - 57%)" },
+              { id: "baja", label: "⚠️ Moderada (<50%)" },
               { id: "custom", label: `🎚️ Umbral (≥${minProbability}%)` },
             ].map((btn) => (
               <button

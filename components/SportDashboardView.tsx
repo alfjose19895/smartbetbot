@@ -10,7 +10,7 @@ import { PredictionCard } from '@/components/PredictionCard';
 import { MatchDetailModal } from '@/components/MatchDetailModal';
 import { MultiSelectDropdown, DropdownOption } from '@/components/MultiSelectDropdown';
 import { SupportedSport, MultiSportSignal } from '@/lib/sports/types';
-import { getSportMeta, matchesMarketFilter } from '@/lib/sports/registry';
+import { getSportMeta, matchesMarketFilter, matchesConfidenceFilter, CONFIDENCE_DROPDOWN_OPTIONS } from '@/lib/sports/registry';
 import { MarketOpportunity, isElitePick } from '@/lib/sports/prediction-engine';
 import { HistoricalSettledPick, HistoricalSettledParlay } from '@/lib/sports/db';
 import { useLanguage } from '@/context/LanguageContext';
@@ -54,7 +54,7 @@ export function multiSportSignalToOpportunity(s: MultiSportSignal): MarketOpport
     probability: Math.round((s.modelProbability || 0.55) * 100),
     edge: Math.round((s.smartEdge || 0.05) * 100),
     expectedValue: Math.round(s.expectedValue || 5),
-    confidence: (s.classification === 'TOP PICK' ? 'Muy Alta' : 'Alta') as any,
+    confidence: (Math.round((s.modelProbability || 0.55) * 100) >= 70 ? 'Muy Alta' : Math.round((s.modelProbability || 0.55) * 100) >= 58 ? 'Alta' : Math.round((s.modelProbability || 0.55) * 100) >= 50 ? 'Media' : 'Moderada') as any,
     confidenceScore: s.smartScore || 80,
     explanation: s.explanation || `Análisis cuantitativo de valor esperado (+EV) para ${s.sport.toUpperCase()}.`,
     pickBadge: s.isSmartPick ? 'valor' : (s.decimalOdds >= 2.0 ? 'bomba' : 'estandar'),
@@ -92,7 +92,7 @@ export function historicalPickToOpportunity(h: HistoricalSettledPick, sportKey: 
     probability: prob,
     edge: 6,
     expectedValue: 6,
-    confidence: (h.confidence || (prob >= 75 ? 'Muy Alta' : 'Alta')) as any,
+    confidence: (prob >= 70 ? 'Muy Alta' : prob >= 58 ? 'Alta' : prob >= 50 ? 'Media' : 'Moderada') as any,
     confidenceScore: prob,
     explanation: 'Resultado auditado y liquidado oficialmente.',
     pickBadge: 'valor',
@@ -170,6 +170,7 @@ export function SportDashboardView({
   const [historyDateFilter, setHistoryDateFilter] = useState<'all' | 'today' | 'yesterday' | 'week' | 'month' | '7d' | '30d' | 'custom'>('all');
   const [historyCustomDate, setHistoryCustomDate] = useState<string>('');
   const [historyProbFilter, setHistoryProbFilter] = useState<'all' | 'muy_alta' | 'alta' | 'media' | 'custom'>('all');
+  const [historySelectedConfidence, setHistorySelectedConfidence] = useState<string[]>([]);
   const [historyMinProbability, setHistoryMinProbability] = useState<number>(60);
   const [historyViewMode, setHistoryViewMode] = useState<'cards' | 'table'>('cards');
 
@@ -364,7 +365,7 @@ export function SportDashboardView({
   const scheduledCount = opportunities.filter((s) => isOpportunityPending(s) && (s as any).status !== 'in_play').length;
   const inPlayCount = opportunities.filter((s) => (s as any).status === 'in_play').length;
   const finishedCount = opportunities.filter((s) => s.status === 'won' || s.status === 'lost' || s.result === 'WON' || s.result === 'LOST' || (s as any).status === 'finished').length;
-  const topPickCount = opportunities.filter((s) => s.confidence === 'Muy Alta' || s.probability >= 68).length;
+  const topPickCount = opportunities.filter((s) => s.confidence === 'Muy Alta' || (s.probability || 0) >= 70).length;
   const morningCount = opportunities.filter((s) => getTimeSlot(s.kickoff) === 'morning').length;
   const afternoonCount = opportunities.filter((s) => getTimeSlot(s.kickoff) === 'afternoon').length;
   const nightCount = opportunities.filter((s) => getTimeSlot(s.kickoff) === 'night').length;
@@ -374,7 +375,7 @@ export function SportDashboardView({
     return opportunities.filter((s) => {
       // Franja Horaria / Top Convicción
       if (timeSlotFilter === 'TOP') {
-        if (s.confidence !== 'Muy Alta' && s.probability < 68) return false;
+        if (s.confidence !== 'Muy Alta' && (s.probability || 0) < 70) return false;
       } else if (timeSlotFilter === 'MORNING') {
         if (getTimeSlot(s.kickoff) !== 'morning') return false;
       } else if (timeSlotFilter === 'AFTERNOON') {
@@ -423,14 +424,7 @@ export function SportDashboardView({
 
       // Confidence Multi-Select
       if (selectedConfidence.length > 0) {
-        const isMatch = selectedConfidence.some((c) => {
-          if (c === 'muy_alta') return s.confidence === 'Muy Alta' || s.probability >= 70;
-          if (c === 'alta') return s.confidence === 'Alta' || (s.probability >= 58 && s.probability < 70);
-          if (c === 'media') return s.confidence === 'Media' || (s.probability >= 50 && s.probability < 58);
-          if (c === 'moderada') return s.confidence === 'Moderada' || s.probability < 50;
-          return false;
-        });
-        if (!isMatch) return false;
+        if (!matchesConfidenceFilter(selectedConfidence, s.probability, s.confidence)) return false;
       }
 
       // Market Multi-Select (Handles 7 Football Markets + American Sport Markets)
@@ -526,6 +520,7 @@ export function SportDashboardView({
     historyFilter !== 'all' ||
     historySelectedDivisions.length > 0 ||
     historySelectedMarkets.length > 0 ||
+    historySelectedConfidence.length > 0 ||
     historyDateFilter !== 'all' ||
     Boolean(historyCustomDate);
 
@@ -535,6 +530,7 @@ export function SportDashboardView({
     setHistoryFilter('all');
     setHistorySelectedDivisions([]);
     setHistorySelectedMarkets([]);
+    setHistorySelectedConfidence([]);
     setHistoryDateFilter('all');
     setHistoryCustomDate('');
   };
@@ -617,11 +613,14 @@ export function SportDashboardView({
         }
       }
 
-      // 7. Probability Filter
-      const prob = typeof item.probability === 'number' ? item.probability : (item.confidence === 'Muy Alta' ? 75 : 65);
-      if (historyProbFilter === 'muy_alta' && prob < 75) return false;
-      if (historyProbFilter === 'alta' && (prob < 68 || prob >= 75)) return false;
-      if (historyProbFilter === 'media' && (prob < 58 || prob >= 68)) return false;
+      // 7. Confidence & Probability Filter
+      if (historySelectedConfidence.length > 0) {
+        if (!matchesConfidenceFilter(historySelectedConfidence, item.probability, item.confidence)) return false;
+      }
+      const prob = typeof item.probability === 'number' ? item.probability : (item.confidence === 'Muy Alta' ? 75 : item.confidence === 'Alta' ? 62 : item.confidence === 'Media' ? 54 : 45);
+      if (historyProbFilter === 'muy_alta' && prob < 70) return false;
+      if (historyProbFilter === 'alta' && (prob < 58 || prob >= 70)) return false;
+      if (historyProbFilter === 'media' && (prob < 50 || prob >= 58)) return false;
       if (historyProbFilter === 'custom' && prob < historyMinProbability) return false;
 
       return true;
@@ -636,6 +635,7 @@ export function SportDashboardView({
     historyDateFilter,
     historyCustomDate,
     historyProbFilter,
+    historySelectedConfidence,
     historyMinProbability,
   ]);
 
@@ -666,10 +666,10 @@ export function SportDashboardView({
       if (reportDateFilter === '30d' && itemMs < thirtyDaysAgoMs) return false;
       if (reportDateFilter === 'custom' && reportCustomDate && itemDate !== reportCustomDate) return false;
 
-      const prob = typeof item.probability === 'number' ? item.probability : (item.confidence === 'Muy Alta' ? 75 : 65);
-      if (reportProbFilter === 'muy_alta' && prob < 75) return false;
-      if (reportProbFilter === 'alta' && (prob < 68 || prob >= 75)) return false;
-      if (reportProbFilter === 'media' && (prob < 58 || prob >= 68)) return false;
+      const prob = typeof item.probability === 'number' ? item.probability : (item.confidence === 'Muy Alta' ? 75 : item.confidence === 'Alta' ? 62 : item.confidence === 'Media' ? 54 : 45);
+      if (reportProbFilter === 'muy_alta' && prob < 70) return false;
+      if (reportProbFilter === 'alta' && (prob < 58 || prob >= 70)) return false;
+      if (reportProbFilter === 'media' && (prob < 50 || prob >= 58)) return false;
       if (reportProbFilter === 'custom' && prob < reportMinProbability) return false;
 
       return true;
@@ -1812,19 +1812,15 @@ export function SportDashboardView({
                   </select>
                 </div>
 
-                {/* Probability Filter Dropdown */}
+                {/* MultiSelect Confidence Dropdown */}
                 <div className="lg:col-span-2">
-                  <select
-                    value={historyProbFilter}
-                    onChange={(e) => setHistoryProbFilter(e.target.value as any)}
-                    className="w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs font-bold text-slate-300 focus:border-emerald-500 focus:outline-hidden cursor-pointer"
-                  >
-                    <option value="all">🎯 Probabilidad: Todas</option>
-                    <option value="muy_alta">⭐⭐⭐ Muy Alta (≥75%)</option>
-                    <option value="alta">⭐⭐ Alta (68% - 74%)</option>
-                    <option value="media">⭐ Media (58% - 67%)</option>
-                    <option value="custom">🎚️ Umbral (≥{historyMinProbability}%)</option>
-                  </select>
+                  <MultiSelectDropdown
+                    label="Confianza"
+                    options={confidenceDropdownOptions}
+                    selected={historySelectedConfidence}
+                    onChange={setHistorySelectedConfidence}
+                    placeholderAll="Toda Confianza"
+                  />
                 </div>
               </div>
 
@@ -1886,6 +1882,15 @@ export function SportDashboardView({
                         <button onClick={() => setHistorySelectedMarkets(historySelectedMarkets.filter((x) => x !== m))} className="hover:text-rose-400 cursor-pointer">✕</button>
                       </span>
                     ))}
+                    {historySelectedConfidence.map((c) => {
+                      const opt = confidenceDropdownOptions.find((o) => o.value === c);
+                      return (
+                        <span key={c} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-800 text-amber-300 text-[11px]">
+                          {opt ? opt.label : c}
+                          <button onClick={() => setHistorySelectedConfidence(historySelectedConfidence.filter((x) => x !== c))} className="hover:text-rose-400 cursor-pointer">✕</button>
+                        </span>
+                      );
+                    })}
                     {historyDateFilter !== 'all' && (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-800 text-amber-300 text-[11px]">
                         {historyDateFilter === 'custom' ? (historyCustomDate || 'Fecha personalizada') : historyDateFilter}
@@ -2078,9 +2083,9 @@ export function SportDashboardView({
                 <div className="flex flex-wrap items-center gap-1.5">
                   {[
                     { id: 'all', label: 'Todas' },
-                    { id: 'muy_alta', label: '⭐⭐⭐ Muy Alta (≥75%)' },
-                    { id: 'alta', label: '⭐⭐ Alta (68% - 74%)' },
-                    { id: 'media', label: '⭐ Media (58% - 67%)' },
+                    { id: 'muy_alta', label: '⭐⭐⭐ Muy Alta (≥70%)' },
+                    { id: 'alta', label: '⭐⭐ Alta (58% - 69%)' },
+                    { id: 'media', label: '⭐ Media (50% - 57%)' },
                     { id: 'custom', label: `🎚️ Umbral (≥${reportMinProbability}%)` },
                   ].map((btn) => (
                     <button

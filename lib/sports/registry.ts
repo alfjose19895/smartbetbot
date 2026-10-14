@@ -313,3 +313,55 @@ export function matchesMarketFilter(
   // 7. DIRECT OR SUBSTRING MATCH FALLBACK
   return normActual.includes(normSelected) || normSelected.includes(normActual);
 }
+
+
+export type ConfidenceTier = 'muy_alta' | 'alta' | 'media' | 'moderada';
+
+export interface ConfidenceDropdownOption {
+  value: ConfidenceTier;
+  label: string;
+}
+
+export const CONFIDENCE_DROPDOWN_OPTIONS: ConfidenceDropdownOption[] = [
+  { value: 'muy_alta', label: '⭐⭐⭐ Muy Alta (≥70%)' },
+  { value: 'alta', label: '⭐⭐ Alta (58% - 69%)' },
+  { value: 'media', label: '⭐ Media (50% - 57%)' },
+  { value: 'moderada', label: '⚠️ Moderada / Valor (<50%)' },
+];
+
+/**
+ * Canonical confidence tier evaluator for all sports (Football, NHL, NBA, NFL, NCAAF).
+ * Strictly maps:
+ * - >= 70%: 'muy_alta' (⭐⭐⭐ Muy Alta)
+ * - 58% - 69.9%: 'alta' (⭐⭐ Alta)
+ * - 50% - 57.9%: 'media' (⭐ Media)
+ * - < 50%: 'moderada' (⚠️ Moderada / Valor)
+ */
+export function getConfidenceTier(probability?: number, explicitConf?: string): ConfidenceTier {
+  const p = typeof probability === 'number' && !isNaN(probability) ? probability : 0;
+  if (p >= 70) return 'muy_alta';
+  if (p >= 58) return 'alta';
+  if (p >= 50) return 'media';
+  if (p > 0) return 'moderada';
+
+  if (explicitConf === 'Muy Alta') return 'muy_alta';
+  if (explicitConf === 'Alta') return 'alta';
+  if (explicitConf === 'Media') return 'media';
+  if (explicitConf === 'Moderada') return 'moderada';
+
+  return 'media';
+}
+
+/**
+ * Validates if an item's confidence strictly matches the user's selected confidence filter options.
+ * If user selects ['muy_alta', 'alta'], only items in those exact tiers will match.
+ */
+export function matchesConfidenceFilter(
+  selectedFilters: string[],
+  probability?: number,
+  explicitConf?: string
+): boolean {
+  if (!selectedFilters || selectedFilters.length === 0 || selectedFilters.includes('all')) return true;
+  const tier = getConfidenceTier(probability, explicitConf);
+  return selectedFilters.includes(tier);
+}

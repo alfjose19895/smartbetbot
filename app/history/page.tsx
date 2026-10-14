@@ -9,19 +9,32 @@ import { useLanguage } from "@/context/LanguageContext";
 import { SUPPORTED_LEAGUES } from "@/lib/sports/api-football";
 import { HistoricalSettledPick, HistoricalSettledParlay } from "@/lib/sports/db";
 import { MarketOpportunity } from "@/lib/sports/prediction-engine";
-import { matchesMarketFilter } from "@/lib/sports/registry";
+import { matchesMarketFilter, matchesConfidenceFilter, CONFIDENCE_DROPDOWN_OPTIONS } from "@/lib/sports/registry";
 import { SupportedSport } from "@/lib/sports/types";
 
 function getConfidenceBadge(confidence?: string, prob?: number) {
-  if (confidence === "Muy Alta" || (prob && prob >= 75)) {
+  const pVal = typeof prob === "number" && !isNaN(prob) ? prob : (confidence === "Muy Alta" ? 75 : confidence === "Alta" ? 62 : confidence === "Media" ? 54 : 45);
+  if (pVal >= 70) {
     return {
       label: "⭐⭐⭐ Muy Alta",
       cls: "bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700",
     };
   }
+  if (pVal >= 58) {
+    return {
+      label: "⭐⭐ Alta",
+      cls: "bg-cyan-100 text-cyan-900 border-cyan-300 dark:bg-cyan-950/80 dark:text-cyan-300 dark:border-cyan-700",
+    };
+  }
+  if (pVal >= 50) {
+    return {
+      label: "⭐ Media",
+      cls: "bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950/80 dark:text-amber-300 dark:border-amber-700",
+    };
+  }
   return {
-    label: "⭐⭐ Alta",
-    cls: "bg-cyan-100 text-cyan-900 border-cyan-300 dark:bg-cyan-950/80 dark:text-cyan-300 dark:border-cyan-700",
+    label: "⚠️ Moderada",
+    cls: "bg-rose-100 text-rose-900 border-rose-300 dark:bg-rose-950/80 dark:text-rose-300 dark:border-rose-700",
   };
 }
 
@@ -66,6 +79,7 @@ export default function HistoryPage() {
 
   // Probability Filter State
   const [probFilter, setProbFilter] = useState<"all" | "muy_alta" | "alta" | "media" | "baja" | "custom">("all");
+  const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
   const [minProbability, setMinProbability] = useState<number>(65);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -75,6 +89,7 @@ export default function HistoryPage() {
     // Reset specific filters when switching sport
     setSelectedLeagues([]);
     setSelectedMarkets([]);
+    setSelectedConfidence([]);
     setSearchQuery("");
     if (typeof window !== "undefined") {
       const url = new URL(window.location.href);
@@ -402,26 +417,30 @@ export default function HistoryPage() {
         if (endDate && itemDate > endDate) return false;
       }
 
-      // Probability Filtering
+      // Confidence & Probability Filtering
+      if (selectedConfidence.length > 0) {
+        if (!matchesConfidenceFilter(selectedConfidence, item.probability, item.confidence)) return false;
+      }
+
       const prob = typeof item.probability === "number"
         ? item.probability
-        : (item.confidence === "Muy Alta" ? 75 : item.confidence === "Alta" ? 65 : 55);
+        : (item.confidence === "Muy Alta" ? 75 : item.confidence === "Alta" ? 62 : item.confidence === "Media" ? 54 : 45);
 
       if (probFilter === "muy_alta") {
-        if (prob < 75) return false;
+        if (prob < 70) return false;
       } else if (probFilter === "alta") {
-        if (prob < 68 || prob >= 75) return false;
+        if (prob < 58 || prob >= 70) return false;
       } else if (probFilter === "media") {
-        if (prob < 58 || prob >= 68) return false;
+        if (prob < 50 || prob >= 58) return false;
       } else if (probFilter === "baja") {
-        if (prob >= 58) return false;
+        if (prob >= 50) return false;
       } else if (probFilter === "custom") {
         if (prob < minProbability) return false;
       }
 
       return true;
     });
-  }, [historyItems, searchQuery, timingFilter, filterResult, selectedLeagues, selectedMarkets, selectedDateFilter, customDate, startDate, endDate, probFilter, minProbability, todayStr, yesterdayStr, sevenDaysAgoMs, thirtyDaysAgoMs]);
+  }, [historyItems, searchQuery, timingFilter, filterResult, selectedLeagues, selectedMarkets, selectedDateFilter, customDate, startDate, endDate, probFilter, selectedConfidence, minProbability, todayStr, yesterdayStr, sevenDaysAgoMs, thirtyDaysAgoMs]);
 
   const filteredParlays = useMemo(() => {
     return parlayItems.filter((p) => {
@@ -847,23 +866,13 @@ export default function HistoryPage() {
               </div>
             )}
 
-            {/* Probability Percentage Selector */}
-            <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
-              <span>🎯</span>
-              <select
-                value={probFilter}
-                onChange={(e) => setProbFilter(e.target.value as any)}
-                aria-label="Filtrar por probabilidad del modelo"
-                className="bg-transparent font-black text-slate-800 dark:text-white outline-none cursor-pointer"
-              >
-                <option value="all" className="dark:bg-slate-900">Probabilidad: Todas</option>
-                <option value="muy_alta" className="dark:bg-slate-900">⭐⭐⭐ Muy Alta (≥75%)</option>
-                <option value="alta" className="dark:bg-slate-900">⭐⭐ Alta (68% - 74%)</option>
-                <option value="media" className="dark:bg-slate-900">⭐ Media (58% - 67%)</option>
-                <option value="baja" className="dark:bg-slate-900">⚠️ Moderada (&lt;58%)</option>
-                <option value="custom" className="dark:bg-slate-900">🎚️ Umbral (≥{minProbability}%)</option>
-              </select>
-            </div>
+            <MultiSelectDropdown
+              label="Confianza"
+              options={CONFIDENCE_DROPDOWN_OPTIONS}
+              selected={selectedConfidence}
+              onChange={setSelectedConfidence}
+              placeholderAll="Toda Confianza"
+            />
 
             {probFilter === "custom" && (
               <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-bold dark:border-slate-700 dark:bg-slate-800">
@@ -879,11 +888,12 @@ export default function HistoryPage() {
               </div>
             )}
 
-            {(selectedLeagues.length > 0 || selectedMarkets.length > 0 || timingFilter !== "ALL" || filterResult !== "ALL" || selectedDateFilter !== "all" || searchQuery) && (
+            {(selectedLeagues.length > 0 || selectedMarkets.length > 0 || selectedConfidence.length > 0 || timingFilter !== "ALL" || filterResult !== "ALL" || selectedDateFilter !== "all" || searchQuery) && (
               <button
                 onClick={() => {
                   setSelectedLeagues([]);
                   setSelectedMarkets([]);
+                  setSelectedConfidence([]);
                   setTimingFilter("ALL");
                   setFilterResult("ALL");
                   setSelectedDateFilter("all");
