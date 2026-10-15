@@ -6,7 +6,7 @@ import { PredictionCard } from "@/components/PredictionCard";
 import { MatchDetailModal } from "@/components/MatchDetailModal";
 import { NewAlertsModal } from "@/components/NewAlertsModal";
 import { MultiSelectDropdown, DropdownOption } from "@/components/MultiSelectDropdown";
-import { MarketOpportunity, getTimeSlot, isElitePick } from "@/lib/sports/prediction-engine";
+import { MarketOpportunity, getTimeSlot, isElitePick, isDestacadoPick } from "@/lib/sports/prediction-engine";
 import { matchesMarketFilter, matchesConfidenceFilter } from "@/lib/sports/registry";
 import { useLanguage } from "@/context/LanguageContext";
 import { Navbar } from "@/components/Navbar";
@@ -86,13 +86,14 @@ function getEcuadorDateString(d: Date | number | string = Date.now()): string {
 
 function matchesStatusBadgeFilter(
   p: MarketOpportunity,
-  filter: "ALL" | "ELITE" | "VALOR" | "BOMBA" | "MCP" | "WON" | "LOST" | "SCHEDULED" | "IN_PLAY" | "FINISHED"
+  filter: "ALL" | "DESTACADO" | "ELITE" | "VALOR" | "BOMBA" | "MCP" | "WON" | "LOST" | "SCHEDULED" | "IN_PLAY" | "FINISHED"
 ): boolean {
   const isWon = p.status === "won" || (p as any).result === "WON" || (p.status as string) === "WON";
   const isLost = p.status === "lost" || (p as any).result === "LOST" || (p.status as string) === "LOST";
   const isMcp = Boolean(p.isMcp || p.isMcpPick || p.source === "mcp" || p.pickBadge === "mcp" || (p.explanation && p.explanation.includes("MCP")));
 
   if (filter === "ALL") return true;
+  if (filter === "DESTACADO") return isDestacadoPick(p);
   if (filter === "ELITE") return isElitePick(p);
   if (filter === "VALOR") return p.pickBadge === "valor";
   if (filter === "BOMBA") return p.pickBadge === "bomba";
@@ -122,7 +123,7 @@ export default function SignalsPage() {
 
   // Search & Filters matching exact MultiSport / NHL suite structure
   const [searchQuery, setSearchQuery] = useState("");
-  const [matchStatusFilter, setMatchStatusFilter] = useState<"ALL" | "ELITE" | "VALOR" | "BOMBA" | "MCP" | "WON" | "LOST" | "SCHEDULED" | "IN_PLAY" | "FINISHED">("ALL");
+  const [matchStatusFilter, setMatchStatusFilter] = useState<"ALL" | "DESTACADO" | "ELITE" | "VALOR" | "BOMBA" | "MCP" | "WON" | "LOST" | "SCHEDULED" | "IN_PLAY" | "FINISHED">("ALL");
   const [timeSlotFilter, setTimeSlotFilter] = useState<"ALL" | "TOP" | "MORNING" | "AFTERNOON" | "NIGHT">("ALL");
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
@@ -335,6 +336,7 @@ export default function SignalsPage() {
     });
   }, [activeSignals, searchQuery, matchStatusFilter, timeSlotFilter, selectedLeagues, selectedConfidence, selectedMarkets, minProbability]);
 
+  const destacadosCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "DESTACADO")).length;
   const eliteCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "ELITE")).length;
   const wonCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "WON")).length;
   const lostCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "LOST")).length;
@@ -376,6 +378,14 @@ export default function SignalsPage() {
             >
               <span>🤖</span>
               <span>Agente MCP Pronósticos</span>
+            </Link>
+            <Link
+              href="/featured"
+              className="flex items-center gap-1.5 rounded-xl border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 px-3.5 py-2 text-xs font-bold text-amber-300 transition cursor-pointer"
+              title="Módulo de Pronósticos Destacados (Filtro 5 Estrellas)"
+            >
+              <span>⭐</span>
+              <span>Destacados ({destacadosCount})</span>
             </Link>
             <Link
               href="/signals"
@@ -490,6 +500,17 @@ export default function SignalsPage() {
               }`}
             >
               🌐 Todas ({activeSignals.length})
+            </button>
+            <button
+              onClick={() => setMatchStatusFilter(matchStatusFilter === "DESTACADO" ? "ALL" : "DESTACADO")}
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
+                matchStatusFilter === "DESTACADO"
+                  ? "bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-slate-950 shadow-md shadow-amber-500/40 border border-amber-300 scale-105"
+                  : "bg-amber-950/60 text-amber-300 border border-amber-800/80 hover:bg-amber-900/70"
+              }`}
+            >
+              <span className="tracking-tighter">⭐⭐⭐⭐⭐</span>
+              <span>Destacados ({destacadosCount})</span>
             </button>
             <button
               onClick={() => setMatchStatusFilter(matchStatusFilter === "ELITE" ? "ALL" : "ELITE")}
@@ -653,6 +674,26 @@ export default function SignalsPage() {
             </div>
           </div>
         </section>
+
+        {matchStatusFilter === "DESTACADO" && (
+          <div className="rounded-2xl border border-amber-500/40 bg-gradient-to-r from-amber-950/50 via-slate-900 to-amber-950/40 p-4 text-xs text-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
+            <div className="flex items-center gap-2">
+              <span className="text-amber-400 text-lg">⭐⭐⭐⭐⭐</span>
+              <div>
+                <span className="font-black text-amber-300 block">Filtro Destacados (5 Estrellas) Activo</span>
+                <span className="text-[11px] text-slate-300">
+                  Mostrando únicamente apuestas de fútbol que cumplen las 5 reglas: Alta Córners (≥70%), Ambos Anotan (≥58%), Alta Goles (≥72%), Ganador Local (≥58%), Ganador Visitante (≥71%).
+                </span>
+              </div>
+            </div>
+            <Link
+              href="/featured"
+              className="px-3.5 py-1.5 rounded-xl bg-amber-500 text-slate-950 font-black text-xs hover:bg-amber-400 transition whitespace-nowrap self-start sm:self-auto cursor-pointer"
+            >
+              Ver Módulo Completo →
+            </Link>
+          </div>
+        )}
 
         {/* Predictions Grid */}
         {loading ? (

@@ -153,11 +153,12 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
     SPORTS_OPTIONS.find((s) => s.id !== 'all' && s.activeMatches(pathname)) || SPORTS_OPTIONS[0];
 
   // Dynamic navigation links adapted to current sport context with global Settings option
-  const getSportHref = (type: 'dashboard' | 'signals' | 'parlay' | 'history' | 'reports' | 'settings') => {
+  const getSportHref = (type: 'dashboard' | 'signals' | 'featured' | 'parlay' | 'history' | 'reports' | 'settings') => {
     if (type === 'settings') return '/settings';
     if (currentSport.id === 'all' || currentSport.id === 'football') {
       if (type === 'dashboard') return '/dashboard';
       if (type === 'signals') return '/signals';
+      if (type === 'featured') return '/featured';
       if (type === 'parlay') return '/parlay';
       if (type === 'history') return '/history';
       if (type === 'reports') return '/reports';
@@ -186,6 +187,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
       icon: '📊',
     },
     { href: getSportHref('signals'), label: 'Pre-Match', icon: '📋' },
+    { href: getSportHref('featured'), label: 'Destacados ⭐', icon: '⭐' },
     { href: getSportHref('parlay'), label: t('navParlay'), icon: '🎲' },
     { href: getSportHref('history'), label: t('navHistory'), icon: '📜' },
     { href: getSportHref('reports'), label: 'Reportes', icon: '📈' },

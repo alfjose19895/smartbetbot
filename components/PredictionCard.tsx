@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { MarketOpportunity, isElitePick } from "@/lib/sports/prediction-engine";
+import { MarketOpportunity, isElitePick, isDestacadoPick, getDestacadoRuleMatch } from "@/lib/sports/prediction-engine";
 import { useLanguage } from "@/context/LanguageContext";
 import {
   copyCardImageToClipboard,
@@ -174,6 +174,14 @@ export function PredictionCard({
       isElitePick(prediction)
   );
 
+  const destacadoMatch = getDestacadoRuleMatch(prediction);
+  const isDestacado = Boolean(
+    prediction.isDestacado ||
+      destacadoMatch !== null ||
+      isDestacadoPick(prediction)
+  );
+  const destacadoRule = prediction.destacadoRule || destacadoMatch?.marketDescription;
+
   const finalScoreText =
     prediction.actualScore ||
     prediction.currentScore ||
@@ -341,6 +349,15 @@ export function PredictionCard({
 
             {/* Right: Badges, Status & Expand Button */}
             <div className="flex items-center gap-1.5 shrink-0">
+              {isDestacado && (
+                <span
+                  title={destacadoRule ? `Destacado 5 Estrellas: ${destacadoRule}` : "Pronóstico Destacado 5 Estrellas"}
+                  className="rounded-lg px-2 py-0.5 text-[9px] font-black bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-slate-950 font-black border border-amber-300 shadow-md shadow-amber-500/20 flex items-center gap-1 shrink-0"
+                >
+                  <span className="tracking-tighter">⭐⭐⭐⭐⭐</span>
+                  <span className="hidden sm:inline">DESTACADO</span>
+                </span>
+              )}
               {isElite && (
                 <span className="rounded-lg px-2 py-0.5 text-[9px] font-black bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-500 text-slate-950 font-black border border-amber-300 shadow-md shadow-amber-500/20 flex items-center gap-1 animate-pulse">
                   <span>👑</span>
@@ -446,6 +463,15 @@ export function PredictionCard({
                   ⏰ {formattedTime} {formattedDateShort ? `(${formattedDateShort})` : ""}
                 </span>
                 <div className="flex items-center gap-1">
+                  {isDestacado && (
+                    <span
+                      title={destacadoRule ? `Cumple: ${destacadoRule}` : "Filtro Destacados 5 Estrellas"}
+                      className="rounded-full px-2.5 py-0.5 text-[9px] font-black bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-slate-950 font-black border border-amber-300 shadow-md shadow-amber-500/30 flex items-center gap-1"
+                    >
+                      <span className="tracking-tighter">⭐⭐⭐⭐⭐</span>
+                      <span>DESTACADO {destacadoRule ? `(${destacadoRule})` : ""}</span>
+                    </span>
+                  )}
                   {isElite && (
                     <span className="rounded-full px-2.5 py-0.5 text-[9px] font-black bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-500 text-slate-950 font-black border border-amber-300 shadow-md shadow-amber-500/30 flex items-center gap-1">
                       <span>👑</span>

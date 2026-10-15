@@ -8,6 +8,7 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
 import { PredictionCard } from '@/components/PredictionCard';
 import { MatchDetailModal } from '@/components/MatchDetailModal';
+import { DestacadosModule } from '@/components/DestacadosModule';
 import { MultiSelectDropdown, DropdownOption } from '@/components/MultiSelectDropdown';
 import { SupportedSport, MultiSportSignal } from '@/lib/sports/types';
 import { getSportMeta, matchesMarketFilter, matchesConfidenceFilter, CONFIDENCE_DROPDOWN_OPTIONS } from '@/lib/sports/registry';
@@ -831,7 +832,7 @@ export function SportDashboardView({
           {[
             { id: 'dashboard', label: `Dashboard ${meta.displayName}`, icon: '📊' },
             { id: 'signals', label: `Pre-Match (${opportunities.length})`, icon: '📋' },
-            { id: 'featured', label: 'Destacados', icon: '⭐' },
+            { id: 'featured', label: sport === 'football' ? 'Destacados ⭐⭐⭐⭐⭐' : 'Destacados', icon: '⭐' },
             { id: 'parlay', label: 'Parlay del Día', icon: '🎲' },
             { id: 'history', label: `Historial (${auditedHistoricalOpportunities.length})`, icon: '📜' },
             { id: 'reports', label: 'Reportes & ROI', icon: '📈' },
@@ -1325,9 +1326,16 @@ export function SportDashboardView({
         )}
 
         {/* ========================================================================= */}
-        {/* TAB 3: DESTACADOS (SMARTPICK & BOMBA DEL DÍA)                             */}
+        {/* TAB 3: DESTACADOS (SMARTPICK & BOMBA DEL DÍA / MÓDULO 5 ESTRELLAS)        */}
         {/* ========================================================================= */}
         {activeTab === 'featured' && (
+          sport === 'football' ? (
+            <DestacadosModule
+              predictions={opportunities}
+              onOpenDetail={setActiveModalPick}
+              titleSuffix={`de ${meta.displayName}`}
+            />
+          ) : (
           <section className="space-y-5">
             <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-5 sm:p-7 shadow-xl">
               <div className="border-b border-slate-800 pb-4">
@@ -1473,6 +1481,7 @@ export function SportDashboardView({
               )}
             </div>
           </section>
+          )
         )}
 
         {/* ========================================================================= */}
