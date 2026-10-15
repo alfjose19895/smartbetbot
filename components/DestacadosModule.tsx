@@ -2,13 +2,16 @@
 
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
-import { PredictionCard } from "@/components/PredictionCard";
 import {
   MarketOpportunity,
   DESTACADOS_5_STARS_RULES,
   getDestacadoRuleMatch,
   isDestacadoPick,
 } from "@/lib/sports/prediction-engine";
+import {
+  copyCardImageToClipboard,
+  shareCardAsImage,
+} from "@/lib/sports/card-image-generator";
 
 interface DestacadosModuleProps {
   predictions?: MarketOpportunity[];
@@ -32,6 +35,9 @@ export function DestacadosModule({
   >("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [copiedSummary, setCopiedSummary] = useState(false);
+  const [copiedSingleId, setCopiedSingleId] = useState<string | null>(null);
+  const [copyingImageId, setCopyingImageId] = useState<string | null>(null);
+  const [copyImageSuccessId, setCopyImageSuccessId] = useState<string | null>(null);
 
   // Filter only football predictions that meet the 5 strict rules
   const allDestacados = useMemo(() => {
@@ -168,6 +174,46 @@ export function DestacadosModule({
     });
   };
 
+  const handleCopySingleText = (pick: MarketOpportunity) => {
+    const key = String(pick.id || pick.fixtureId || `${pick.homeTeam}-${pick.awayTeam}`);
+    const match = getDestacadoRuleMatch(pick);
+    const ruleLabel = match ? `[${match.icon} ${match.marketDescription}]` : "";
+
+    const text = [
+      "⭐⭐⭐⭐⭐ PRONÓSTICO DESTACADO ⭐⭐⭐⭐⭐",
+      `🏆 ${pick.league} ${pick.country ? `(${pick.country})` : ""}`,
+      `⚽ ${pick.homeTeam} vs ${pick.awayTeam}`,
+      `🎯 Pronóstico: ${pick.market} (${pick.selection})`,
+      `🏢 Cuota: @${(pick.odds ?? 1.5).toFixed(2)}`,
+      `📈 Probabilidad IA: ${pick.probability}% (+${pick.edge || 5}% Valor)`,
+      `✓ Regla Destacados: ${ruleLabel}`,
+      "",
+      `🧠 Análisis: "${pick.explanation || "Máxima certeza cuantitativa"}"`,
+      "",
+      "🔒 SmartBetBot AI Quantitative Engine",
+      "🌐 https://smartbetbot.educandotea.com",
+    ].join("\n");
+
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedSingleId(key);
+      setTimeout(() => setCopiedSingleId(null), 3000);
+    });
+  };
+
+  const handleCopyCardImage = async (pick: MarketOpportunity) => {
+    const key = String(pick.id || pick.fixtureId || `${pick.homeTeam}-${pick.awayTeam}`);
+    try {
+      setCopyingImageId(key);
+      const ok = await copyCardImageToClipboard(pick);
+      if (ok) {
+        setCopyImageSuccessId(key);
+        setTimeout(() => setCopyImageSuccessId(null), 3000);
+      }
+    } finally {
+      setCopyingImageId(null);
+    }
+  };
+
   return (
     <section className="space-y-6">
       {/* 1. Main Header Banner */}
@@ -202,7 +248,7 @@ export function DestacadosModule({
             {showBackLink && (
               <Link
                 href="/signals"
-                className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition border border-slate-700 flex items-center gap-1.5"
+                className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition border border-slate-700 flex items-center gap-1.5 cursor-pointer"
               >
                 <span>←</span>
                 <span>Ver Pre-Match</span>
@@ -405,41 +451,176 @@ export function DestacadosModule({
             </span>
           </div>
 
-          {/* Cards Grid */}
+          {/* Cards Grid: Perfectly Formatted Destacados Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredDestacados.map((pick) => {
               const ruleMatch = getDestacadoRuleMatch(pick);
-              const cardKey =
-                pick.id ||
-                `destacado-${pick.fixtureId}-${pick.market}-${pick.selection}`;
+              const cardKey = String(
+                pick.id || `${pick.fixtureId}-${pick.market}-${pick.selection}`
+              );
+
+              const isWon =
+                pick.status === "won" ||
+                (pick as any).result === "WON" ||
+                (pick.status as string) === "WON";
+              const isLost =
+                pick.status === "lost" ||
+                (pick as any).result === "LOST" ||
+                (pick.status as string) === "LOST";
+
+              const finalScore =
+                pick.actualScore || (pick as any).score || (pick as any).currentScore || "";
+
+              const kickoffDate = new Date(pick.kickoff);
+              const formattedTime = !isNaN(kickoffDate.getTime())
+                ? kickoffDate.toLocaleTimeString("es-ES", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })
+                : "Hoy";
 
               return (
                 <div
                   key={cardKey}
-                  className="relative group transition-transform duration-200 hover:-translate-y-0.5"
+                  className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-amber-500/40 bg-slate-900/95 p-5 shadow-xl backdrop-blur-xl transition-all duration-200 hover:border-amber-400 hover:shadow-2xl hover:scale-[1.01]"
                 >
-                  {/* Subtle 5-Star Golden Crown Top Ribbon */}
-                  <div className="mb-1.5 flex items-center justify-between px-2 text-[10px] font-black">
-                    <span className="text-amber-400 flex items-center gap-1">
-                      <span>⭐⭐⭐⭐⭐</span>
-                      <span className="uppercase tracking-wider">Destacado</span>
-                    </span>
+                  {/* Subtle Top Amber Glow */}
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-amber-500/10 via-transparent to-transparent opacity-80" />
+
+                  <div className="relative z-10">
+                    {/* Header Row: 5 Stars Badge + Kickoff Time / Status */}
+                    <div className="flex items-center justify-between gap-2 mb-2.5">
+                      <div className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 px-2.5 py-0.5 text-[10px] font-black text-slate-950 shadow-xs shrink-0">
+                        <span className="tracking-tighter">⭐⭐⭐⭐⭐</span>
+                        <span>DESTACADO</span>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {isWon ? (
+                          <span className="inline-flex items-center gap-1 rounded-xl px-2 py-0.5 text-[10px] font-black bg-emerald-500 text-slate-950 shadow-xs border border-emerald-400">
+                            ✓ Ganada {finalScore ? `(${finalScore})` : ""}
+                          </span>
+                        ) : isLost ? (
+                          <span className="inline-flex items-center gap-1 rounded-xl px-2 py-0.5 text-[10px] font-black bg-rose-600 text-white shadow-xs border border-rose-400">
+                            ✗ Perdida {finalScore ? `(${finalScore})` : ""}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 rounded-xl bg-slate-950/80 border border-slate-800 px-2 py-0.5 text-[10px] font-bold text-slate-300">
+                            ⏰ {formattedTime} hrs
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Integrated Qualifying Rule Banner (Never wraps awkwardly) */}
                     {ruleMatch && (
-                      <span className="rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-300 px-1.5 py-0.2 text-[9px] font-extrabold flex items-center gap-1">
-                        <span>{ruleMatch.icon}</span>
-                        <span>{ruleMatch.ruleName}</span>
-                      </span>
+                      <div className="mb-2.5 flex items-center justify-between gap-2 rounded-xl bg-amber-500/15 border border-amber-500/30 px-2.5 py-1 text-xs text-amber-300">
+                        <div className="flex items-center gap-1.5 truncate">
+                          <span>{ruleMatch.icon}</span>
+                          <span className="font-extrabold truncate text-[11px]">
+                            {ruleMatch.ruleName}
+                          </span>
+                        </div>
+                        <span className="rounded-md bg-amber-500/25 px-1.5 py-0.2 text-[10px] font-black text-amber-200 shrink-0">
+                          {pick.probability}% (≥ {ruleMatch.minProbability}%)
+                        </span>
+                      </div>
                     )}
+
+                    {/* League & Country */}
+                    <div className="text-[11px] font-bold text-slate-400 truncate mb-1">
+                      🏆 {pick.league} {pick.country ? `(${pick.country})` : ""}
+                    </div>
+
+                    {/* Match Teams Title */}
+                    <h3
+                      className="text-base sm:text-lg font-black text-white leading-snug mb-3 truncate"
+                      title={`${pick.homeTeam} vs ${pick.awayTeam}`}
+                    >
+                      {pick.homeTeam} <span className="text-slate-400 font-normal text-sm">vs</span> {pick.awayTeam}
+                    </h3>
+
+                    {/* Official Quantitative Selection Box */}
+                    <div className="rounded-2xl bg-slate-950/90 p-3 border border-slate-800/90 mb-3">
+                      <div className="flex items-center justify-between text-[11px] text-slate-400 font-bold mb-1">
+                        <span>Mercado Cuantitativo:</span>
+                        <span className="text-emerald-400 font-black truncate ml-2">
+                          {pick.market}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-sm font-black text-white truncate">
+                          {pick.selection}
+                        </span>
+                        <span className="text-base font-black text-emerald-400 shrink-0">
+                          @{(pick.odds ?? 1.5).toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Metrics Grid */}
+                    <div className="grid grid-cols-2 gap-2 text-center text-xs mb-3">
+                      <div className="rounded-xl bg-slate-950/60 p-2 border border-slate-800/60">
+                        <span className="text-[10px] text-slate-400 block font-semibold">
+                          Probabilidad IA
+                        </span>
+                        <span className="text-sm font-black text-white mt-0.5 block">
+                          {pick.probability}%
+                        </span>
+                      </div>
+                      <div className="rounded-xl bg-slate-950/60 p-2 border border-slate-800/60">
+                        <span className="text-[10px] text-slate-400 block font-semibold">
+                          Ventaja (+EV)
+                        </span>
+                        <span className="text-sm font-black text-emerald-400 mt-0.5 block">
+                          +{pick.edge || 5}%
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Analysis Explanation */}
+                    <div className="rounded-xl bg-slate-950/60 p-2.5 border border-slate-800/60 mb-3">
+                      <div className="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-amber-400 mb-0.5">
+                        <span>🧠</span>
+                        <span>Análisis Cuantitativo</span>
+                      </div>
+                      <p className="text-xs text-slate-300 italic line-clamp-2 leading-relaxed">
+                        "{pick.explanation || `Pronóstico con alta probabilidad (${pick.probability}%) y convicción estadística.`}"
+                      </p>
+                    </div>
                   </div>
 
-                  <PredictionCard
-                    prediction={{
-                      ...pick,
-                      isDestacado: true,
-                      destacadoRule: ruleMatch?.marketDescription,
-                    }}
-                    onOpenDetail={onOpenDetail}
-                  />
+                  {/* Actions Footer */}
+                  <div className="relative z-10 pt-2.5 border-t border-slate-800 flex items-center justify-between gap-1.5">
+                    <button
+                      onClick={() => onOpenDetail?.(pick)}
+                      className="flex-1 py-2 px-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition text-center cursor-pointer truncate"
+                    >
+                      H2H y Stats →
+                    </button>
+                    <button
+                      onClick={() => handleCopySingleText(pick)}
+                      className="p-2 rounded-xl border border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 transition cursor-pointer text-xs shrink-0"
+                      title="Copiar pronóstico"
+                    >
+                      {copiedSingleId === cardKey ? "✓" : "📋"}
+                    </button>
+                    <button
+                      onClick={() => handleCopyCardImage(pick)}
+                      disabled={copyingImageId === cardKey}
+                      className="p-2 rounded-xl border border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 transition cursor-pointer text-xs shrink-0 disabled:opacity-50"
+                      title="Copiar imagen de la tarjeta"
+                    >
+                      {copyImageSuccessId === cardKey ? "✓" : copyingImageId === cardKey ? "..." : "📸"}
+                    </button>
+                    <button
+                      onClick={() => shareCardAsImage(pick, "whatsapp")}
+                      className="p-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white transition cursor-pointer text-xs shrink-0"
+                      title="Compartir por WhatsApp"
+                    >
+                      💬
+                    </button>
+                  </div>
                 </div>
               );
             })}

@@ -351,11 +351,11 @@ export function PredictionCard({
             <div className="flex items-center gap-1.5 shrink-0">
               {isDestacado && (
                 <span
-                  title={destacadoRule ? `Destacado 5 Estrellas: ${destacadoRule}` : "Pronóstico Destacado 5 Estrellas"}
-                  className="rounded-lg px-2 py-0.5 text-[9px] font-black bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-slate-950 font-black border border-amber-300 shadow-md shadow-amber-500/20 flex items-center gap-1 shrink-0"
+                  title={destacadoRule ? `Destacado 5★: ${destacadoRule}` : "Pronóstico Destacado 5★"}
+                  className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[9px] font-black bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 shadow-xs shrink-0"
                 >
-                  <span className="tracking-tighter">⭐⭐⭐⭐⭐</span>
-                  <span className="hidden sm:inline">DESTACADO</span>
+                  <span>⭐</span>
+                  <span>5★</span>
                 </span>
               )}
               {isElite && (
@@ -462,14 +462,14 @@ export function PredictionCard({
                 <span className="inline-flex items-center gap-1 rounded-xl bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[11px] font-black text-emerald-700 dark:text-emerald-300">
                   ⏰ {formattedTime} {formattedDateShort ? `(${formattedDateShort})` : ""}
                 </span>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center flex-wrap gap-1">
                   {isDestacado && (
                     <span
                       title={destacadoRule ? `Cumple: ${destacadoRule}` : "Filtro Destacados 5 Estrellas"}
-                      className="rounded-full px-2.5 py-0.5 text-[9px] font-black bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-slate-950 font-black border border-amber-300 shadow-md shadow-amber-500/30 flex items-center gap-1"
+                      className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 shadow-xs shrink-0"
                     >
                       <span className="tracking-tighter">⭐⭐⭐⭐⭐</span>
-                      <span>DESTACADO {destacadoRule ? `(${destacadoRule})` : ""}</span>
+                      <span>DESTACADO</span>
                     </span>
                   )}
                   {isElite && (
@@ -790,6 +790,15 @@ export function PredictionCard({
             </div>
 
             <div className="flex items-center gap-1.5 flex-wrap ml-auto">
+              {isDestacado && (
+                <span
+                  title={destacadoRule ? `Cumple: ${destacadoRule}` : "Pronóstico Destacado 5 Estrellas"}
+                  className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 shadow-xs shrink-0"
+                >
+                  <span className="tracking-tighter">⭐⭐⭐⭐⭐</span>
+                  <span>DESTACADO</span>
+                </span>
+              )}
               {isElite && (
                 <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-500 text-slate-950 font-black border border-amber-300 shadow-md shadow-amber-500/30">
                   <span>👑</span>
