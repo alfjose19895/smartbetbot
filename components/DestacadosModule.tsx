@@ -38,6 +38,8 @@ export function DestacadosModule({
   const [copiedSingleId, setCopiedSingleId] = useState<string | null>(null);
   const [copyingImageId, setCopyingImageId] = useState<string | null>(null);
   const [copyImageSuccessId, setCopyImageSuccessId] = useState<string | null>(null);
+  const [allExpanded, setAllExpanded] = useState(true);
+  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
 
   // Filter only football predictions that meet the 5 strict rules
   const allDestacados = useMemo(() => {
@@ -63,6 +65,24 @@ export function DestacadosModule({
       return isDestacadoPick(p);
     });
   }, [predictions]);
+
+  const toggleCard = (key: string) => {
+    setExpandedCards((prev) => ({
+      ...prev,
+      [key]: prev[key] !== undefined ? !prev[key] : !allExpanded,
+    }));
+  };
+
+  const toggleAllCards = () => {
+    const next = !allExpanded;
+    setAllExpanded(next);
+    const updated: Record<string, boolean> = {};
+    allDestacados.forEach((p) => {
+      const key = String(p.id || p.fixtureId || `${p.homeTeam}-${p.awayTeam}-${p.market}`);
+      updated[key] = next;
+    });
+    setExpandedCards(updated);
+  };
 
   // Counts per rule
   const ruleCounts = useMemo(() => {
@@ -175,7 +195,7 @@ export function DestacadosModule({
   };
 
   const handleCopySingleText = (pick: MarketOpportunity) => {
-    const key = String(pick.id || pick.fixtureId || `${pick.homeTeam}-${pick.awayTeam}`);
+    const key = String(pick.id || pick.fixtureId || `${pick.homeTeam}-${pick.awayTeam}-${pick.market}`);
     const match = getDestacadoRuleMatch(pick);
     const ruleLabel = match ? `[${match.icon} ${match.marketDescription}]` : "";
 
@@ -201,7 +221,7 @@ export function DestacadosModule({
   };
 
   const handleCopyCardImage = async (pick: MarketOpportunity) => {
-    const key = String(pick.id || pick.fixtureId || `${pick.homeTeam}-${pick.awayTeam}`);
+    const key = String(pick.id || pick.fixtureId || `${pick.homeTeam}-${pick.awayTeam}-${pick.market}`);
     try {
       setCopyingImageId(key);
       const ok = await copyCardImageToClipboard(pick);
@@ -209,6 +229,8 @@ export function DestacadosModule({
         setCopyImageSuccessId(key);
         setTimeout(() => setCopyImageSuccessId(null), 3000);
       }
+    } catch {
+      // ignore
     } finally {
       setCopyingImageId(null);
     }
@@ -216,39 +238,48 @@ export function DestacadosModule({
 
   return (
     <section className="space-y-6">
-      {/* 1. Main Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl border border-amber-500/40 bg-gradient-to-br from-slate-900 via-slate-950 to-amber-950/30 p-6 sm:p-8 shadow-2xl text-white backdrop-blur-xl">
-        <div className="absolute -right-10 -top-10 h-64 w-64 rounded-full bg-amber-500/10 blur-3xl pointer-events-none" />
-        <div className="absolute -left-10 -bottom-10 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
+      {/* 1. Header Banner 5 Stars Flagship */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-500/20 via-slate-900 to-slate-950 p-6 sm:p-8 border border-amber-500/40 shadow-2xl backdrop-blur-xl">
+        <div className="pointer-events-none absolute -right-10 -top-10 h-64 w-64 rounded-full bg-amber-500/10 blur-3xl" />
+        <div className="pointer-events-none absolute -left-10 -bottom-10 h-64 w-64 rounded-full bg-yellow-500/10 blur-3xl" />
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
-            {/* Top 5-Stars Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/20 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-amber-300 border border-amber-500/40 shadow-sm">
-              <span className="text-amber-400 tracking-wider">⭐⭐⭐⭐⭐</span>
-              <span>Módulo Destacados • Fútbol</span>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20">
+                <span className="tracking-tighter">⭐⭐⭐⭐⭐</span>
+                <span>DESTACADOS DE FÚTBOL</span>
+              </span>
+              <span className="text-[11px] font-bold text-amber-300/90 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20">
+                Solo 5 Reglas Estrictas
+              </span>
             </div>
 
-            <div className="flex items-center gap-3 flex-wrap">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight flex items-center gap-2">
-                <span>Destacados</span>
-                <span className="text-amber-400 text-xl sm:text-2xl">⭐⭐⭐⭐⭐</span>
-                {titleSuffix && <span className="text-slate-400 text-lg font-bold">{titleSuffix}</span>}
-              </h2>
-            </div>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight flex items-center gap-2.5 flex-wrap">
+              <span>Pronósticos Destacados 5 Estrellas</span>
+              {titleSuffix && (
+                <span className="text-amber-400 font-bold text-lg sm:text-2xl">
+                  {titleSuffix}
+                </span>
+              )}
+            </h1>
 
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-medium">
-              Módulo personalizado de alta certeza estadística para fútbol. Únicamente califica y se visualiza
-              una apuesta si cumple estrictamente una de las <strong>5 reglas de oro</strong> del modelo cuantitativo.
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Módulo automatizado exclusivo para <strong>fútbol</strong>. Filtra únicamente
+              las apuestas que cumplen a rajatabla los 5 umbrales estadísticos de alta convicción:
+              <span className="block mt-1 text-[11px] text-amber-200/90 font-medium">
+                Alta de Córners (≥70%) · Ambos Anotan (≥58%) · Alta de Goles (≥72%) ·
+                Ganador Local (≥58%) · Ganador Visitante (≥71%).
+              </span>
             </p>
           </div>
 
-          {/* Quick Actions */}
-          <div className="flex items-center gap-2 flex-wrap self-start md:self-auto shrink-0">
+          {/* Quick Actions Header */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 self-start md:self-auto">
             {showBackLink && (
               <Link
                 href="/signals"
-                className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition border border-slate-700 flex items-center gap-1.5 cursor-pointer"
+                className="px-4 py-2.5 rounded-2xl bg-slate-800/80 hover:bg-slate-750 text-slate-200 text-xs font-bold transition border border-slate-700/80 flex items-center justify-center gap-1.5"
               >
                 <span>←</span>
                 <span>Ver Pre-Match</span>
@@ -258,42 +289,43 @@ export function DestacadosModule({
             {onRefresh && (
               <button
                 onClick={onRefresh}
-                disabled={loading}
-                className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition border border-slate-700 flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-                title="Actualizar datos de partidos"
+                className="px-4 py-2.5 rounded-2xl bg-slate-800/80 hover:bg-slate-750 text-slate-200 text-xs font-bold transition border border-slate-700/80 flex items-center justify-center gap-1.5 cursor-pointer"
+                title="Actualizar datos en vivo"
               >
-                <span className={loading ? "animate-spin" : ""}>🔄</span>
-                <span>Actualizar</span>
+                <span>🔄</span>
+                <span>Refrescar</span>
               </button>
             )}
 
             <button
               onClick={handleCopySummary}
               disabled={filteredDestacados.length === 0}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 text-xs font-black transition shadow-lg shadow-amber-500/20 flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-              title="Copiar lista formateada para WhatsApp/Telegram"
+              className={`px-5 py-2.5 rounded-2xl text-xs font-black transition flex items-center justify-center gap-2 cursor-pointer shadow-lg ${
+                copiedSummary
+                  ? "bg-emerald-500 text-slate-950 shadow-emerald-500/30"
+                  : "bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 hover:brightness-105 shadow-amber-500/30"
+              }`}
             >
               <span>{copiedSummary ? "✓" : "📋"}</span>
-              <span>{copiedSummary ? "¡Copiado!" : "Copiar Lista"}</span>
+              <span>{copiedSummary ? "¡Copiado al Portapapeles!" : "Copiar Todo el Módulo"}</span>
             </button>
           </div>
         </div>
 
-        {/* 2. KPI Metrics Strip */}
+        {/* 2. Top Metrics Bar */}
         <div className="mt-6 pt-5 border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className="rounded-2xl bg-slate-950/70 p-3.5 border border-slate-800/80">
             <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
-              Apuestas Destacadas
+              Total Destacadas
             </span>
-            <div className="text-2xl font-black text-amber-400 mt-0.5 flex items-baseline gap-1">
-              <span>{allDestacados.length}</span>
-              <span className="text-xs text-slate-400 font-bold">picks</span>
+            <div className="text-2xl font-black text-amber-400 mt-0.5">
+              {allDestacados.length}
             </div>
           </div>
 
           <div className="rounded-2xl bg-slate-950/70 p-3.5 border border-slate-800/80">
             <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
-              Probabilidad Promedio
+              Probabilidad Media
             </span>
             <div className="text-2xl font-black text-emerald-400 mt-0.5">
               {avgProb > 0 ? `${avgProb}%` : "—"}
@@ -436,8 +468,8 @@ export function DestacadosModule({
         </div>
       ) : (
         <div className="space-y-4">
-          {/* Header over cards */}
-          <div className="flex items-center justify-between text-xs text-slate-400 px-1">
+          {/* Header over cards: Count + Master Expand/Minimize Toggle */}
+          <div className="flex items-center justify-between text-xs text-slate-400 px-1 flex-wrap gap-2">
             <span className="font-bold flex items-center gap-1.5">
               <span>👑</span>
               <span>
@@ -446,19 +478,24 @@ export function DestacadosModule({
                 {selectedRuleFilter !== "ALL" ? "bajo este criterio" : "hoy"}
               </span>
             </span>
-            <span className="text-[11px] font-semibold">
-              Ordenadas por mayor probabilidad e índice de valor (+EV)
-            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={toggleAllCards}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 text-xs font-bold transition cursor-pointer shadow-xs"
+                title={allExpanded ? "Minimizar todas las tarjetas" : "Expandir todas las tarjetas"}
+              >
+                <span>{allExpanded ? "⤡" : "⤢"}</span>
+                <span>{allExpanded ? "Minimizar Todas" : "Expandir Todas"}</span>
+              </button>
+            </div>
           </div>
 
-          {/* Cards Grid: Perfectly Formatted Destacados Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {filteredDestacados.map((pick) => {
-              const ruleMatch = getDestacadoRuleMatch(pick);
               const cardKey = String(
-                pick.id || `${pick.fixtureId}-${pick.market}-${pick.selection}`
+                pick.id || pick.fixtureId || `${pick.homeTeam}-${pick.awayTeam}-${pick.market}`
               );
-
+              const ruleMatch = getDestacadoRuleMatch(pick);
               const isWon =
                 pick.status === "won" ||
                 (pick as any).result === "WON" ||
@@ -479,17 +516,27 @@ export function DestacadosModule({
                   })
                 : "Hoy";
 
+              const isCardExpanded =
+                expandedCards[cardKey] !== undefined ? expandedCards[cardKey] : allExpanded;
+
               return (
                 <div
                   key={cardKey}
-                  className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-amber-500/40 bg-slate-900/95 p-5 shadow-xl backdrop-blur-xl transition-all duration-200 hover:border-amber-400 hover:shadow-2xl hover:scale-[1.01]"
+                  className={`group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-amber-500/40 bg-slate-900/95 p-4.5 sm:p-5 shadow-xl backdrop-blur-xl transition-all duration-200 hover:border-amber-400 hover:shadow-2xl ${
+                    !isCardExpanded ? "cursor-pointer" : ""
+                  }`}
+                  onClick={() => {
+                    if (!isCardExpanded) {
+                      toggleCard(cardKey);
+                    }
+                  }}
                 >
                   {/* Subtle Top Amber Glow */}
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-amber-500/10 via-transparent to-transparent opacity-80" />
 
                   <div className="relative z-10">
-                    {/* Header Row: 5 Stars Badge + Kickoff Time / Status */}
-                    <div className="flex items-center justify-between gap-2 mb-2.5">
+                    {/* Header Row: 5 Stars Badge + Kickoff Time / Status + Toggle Button */}
+                    <div className="flex items-center justify-between gap-2 mb-2.5 min-w-0">
                       <div className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 px-2.5 py-0.5 text-[10px] font-black text-slate-950 shadow-xs shrink-0">
                         <span className="tracking-tighter">⭐⭐⭐⭐⭐</span>
                         <span>DESTACADO</span>
@@ -497,18 +544,32 @@ export function DestacadosModule({
 
                       <div className="flex items-center gap-1.5 shrink-0">
                         {isWon ? (
-                          <span className="inline-flex items-center gap-1 rounded-xl px-2 py-0.5 text-[10px] font-black bg-emerald-500 text-slate-950 shadow-xs border border-emerald-400">
+                          <span className="inline-flex items-center gap-1 rounded-xl px-2 py-0.5 text-[10px] font-black bg-emerald-500 text-slate-950 shadow-xs border border-emerald-400 shrink-0">
                             ✓ Ganada {finalScore ? `(${finalScore})` : ""}
                           </span>
                         ) : isLost ? (
-                          <span className="inline-flex items-center gap-1 rounded-xl px-2 py-0.5 text-[10px] font-black bg-rose-600 text-white shadow-xs border border-rose-400">
+                          <span className="inline-flex items-center gap-1 rounded-xl px-2 py-0.5 text-[10px] font-black bg-rose-600 text-white shadow-xs border border-rose-400 shrink-0">
                             ✗ Perdida {finalScore ? `(${finalScore})` : ""}
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 rounded-xl bg-slate-950/80 border border-slate-800 px-2 py-0.5 text-[10px] font-bold text-slate-300">
+                          <span className="inline-flex items-center gap-1 rounded-xl bg-slate-950/80 border border-slate-800 px-2 py-0.5 text-[10px] font-bold text-slate-300 shrink-0">
                             ⏰ {formattedTime} hrs
                           </span>
                         )}
+
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleCard(cardKey);
+                          }}
+                          className="inline-flex items-center gap-1 rounded-xl bg-slate-800 hover:bg-slate-700 px-2.5 py-0.5 text-[10px] font-bold text-slate-200 border border-slate-700 transition cursor-pointer"
+                          title={isCardExpanded ? "Minimizar tarjeta" : "Ampliar tarjeta"}
+                        >
+                          <span>{isCardExpanded ? "▲" : "▼"}</span>
+                          <span className="hidden sm:inline">
+                            {isCardExpanded ? "Minimizar" : "Ampliar"}
+                          </span>
+                        </button>
                       </div>
                     </div>
 
@@ -558,36 +619,41 @@ export function DestacadosModule({
                       </div>
                     </div>
 
-                    {/* Metrics Grid */}
-                    <div className="grid grid-cols-2 gap-2 text-center text-xs mb-3">
-                      <div className="rounded-xl bg-slate-950/60 p-2 border border-slate-800/60">
-                        <span className="text-[10px] text-slate-400 block font-semibold">
-                          Probabilidad IA
-                        </span>
-                        <span className="text-sm font-black text-white mt-0.5 block">
-                          {pick.probability}%
-                        </span>
-                      </div>
-                      <div className="rounded-xl bg-slate-950/60 p-2 border border-slate-800/60">
-                        <span className="text-[10px] text-slate-400 block font-semibold">
-                          Ventaja (+EV)
-                        </span>
-                        <span className="text-sm font-black text-emerald-400 mt-0.5 block">
-                          +{pick.edge || 5}%
-                        </span>
-                      </div>
-                    </div>
+                    {/* EXPANDED SECTION: Metrics Grid & AI Analysis */}
+                    {isCardExpanded && (
+                      <>
+                        {/* Metrics Grid */}
+                        <div className="grid grid-cols-2 gap-2 text-center text-xs mb-3">
+                          <div className="rounded-xl bg-slate-950/60 p-2 border border-slate-800/60">
+                            <span className="text-[10px] text-slate-400 block font-semibold">
+                              Probabilidad IA
+                            </span>
+                            <span className="text-sm font-black text-white mt-0.5 block">
+                              {pick.probability}%
+                            </span>
+                          </div>
+                          <div className="rounded-xl bg-slate-950/60 p-2 border border-slate-800/60">
+                            <span className="text-[10px] text-slate-400 block font-semibold">
+                              Ventaja (+EV)
+                            </span>
+                            <span className="text-sm font-black text-emerald-400 mt-0.5 block">
+                              +{pick.edge || 5}%
+                            </span>
+                          </div>
+                        </div>
 
-                    {/* Analysis Explanation */}
-                    <div className="rounded-xl bg-slate-950/60 p-2.5 border border-slate-800/60 mb-3">
-                      <div className="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-amber-400 mb-0.5">
-                        <span>🧠</span>
-                        <span>Análisis Cuantitativo</span>
-                      </div>
-                      <p className="text-xs text-slate-300 italic line-clamp-2 leading-relaxed">
-                        "{pick.explanation || `Pronóstico con alta probabilidad (${pick.probability}%) y convicción estadística.`}"
-                      </p>
-                    </div>
+                        {/* Analysis Explanation */}
+                        <div className="rounded-xl bg-slate-950/60 p-2.5 border border-slate-800/60 mb-3">
+                          <div className="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-amber-400 mb-0.5">
+                            <span>🧠</span>
+                            <span>Análisis Cuantitativo</span>
+                          </div>
+                          <p className="text-xs text-slate-300 italic line-clamp-3 leading-relaxed">
+                            "{pick.explanation || `Pronóstico con alta probabilidad (${pick.probability}%) y convicción estadística.`}"
+                          </p>
+                        </div>
+                      </>
+                    )}
                   </div>
 
                   {/* Actions Footer */}
@@ -620,6 +686,30 @@ export function DestacadosModule({
                     >
                       💬
                     </button>
+
+                    {!isCardExpanded ? (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleCard(cardKey);
+                        }}
+                        className="py-2 px-2.5 rounded-xl bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 text-xs font-black transition cursor-pointer shrink-0"
+                        title="Ampliar detalles"
+                      >
+                        ▼
+                      </button>
+                    ) : (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleCard(cardKey);
+                        }}
+                        className="py-2 px-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition cursor-pointer shrink-0"
+                        title="Minimizar detalles"
+                      >
+                        ▲
+                      </button>
+                    )}
                   </div>
                 </div>
               );

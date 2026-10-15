@@ -118,6 +118,7 @@ export default function SignalsPage() {
   const [loading, setLoading] = useState(true);
   const [activeModalPick, setActiveModalPick] = useState<MarketOpportunity | null>(null);
   const [newlyDiscoveredAlerts, setNewlyDiscoveredAlerts] = useState<MarketOpportunity[]>([]);
+  const [allExpanded, setAllExpanded] = useState(false);
   const [newAlertsModalOpen, setNewAlertsModalOpen] = useState<boolean>(false);
   const [nhlCount, setNhlCount] = useState<number>(0);
 
@@ -708,17 +709,40 @@ export default function SignalsPage() {
             <p className="text-xs text-slate-400 mt-1">Prueba seleccionando "Todas" o limpiando los filtros.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredPredictions.map((pick) => {
-              const key = pick.id || `${pick.fixtureId}-${pick.market}`;
-              return (
-                <PredictionCard
-                  key={key}
-                  prediction={pick}
-                  onOpenDetail={setActiveModalPick}
-                />
-              );
-            })}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between text-xs text-slate-400 px-1 flex-wrap gap-2">
+              <span className="font-bold flex items-center gap-1.5">
+                <span>📋</span>
+                <span>
+                  {filteredPredictions.length}{" "}
+                  {filteredPredictions.length === 1 ? "Pronóstico Pre-Match" : "Pronósticos Pre-Match"}
+                </span>
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setAllExpanded(!allExpanded)}
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 text-xs font-bold transition cursor-pointer shadow-xs"
+                  title={allExpanded ? "Minimizar todas las tarjetas" : "Expandir todas las tarjetas"}
+                >
+                  <span>{allExpanded ? "⤡" : "⤢"}</span>
+                  <span>{allExpanded ? "Minimizar Todas" : "Expandir Todas"}</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredPredictions.map((pick) => {
+                const key = pick.id || `${pick.fixtureId}-${pick.market}`;
+                return (
+                  <PredictionCard
+                    key={key}
+                    prediction={pick}
+                    onOpenDetail={setActiveModalPick}
+                    defaultExpanded={allExpanded}
+                  />
+                );
+              })}
+            </div>
           </div>
         )}
       </main>
