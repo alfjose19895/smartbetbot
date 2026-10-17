@@ -76,9 +76,9 @@ export async function GET(request: NextRequest) {
         predictions = getStoredPredictions("football");
       }
     } else {
-      predictions = getStoredPredictions("football");
+      predictions = (await loadDailySnapshotAsync(todayDateStr, "football")) || [];
       if (!predictions || predictions.length === 0) {
-        predictions = (await loadDailySnapshotAsync(todayDateStr, "football")) || [];
+        predictions = getStoredPredictions("football");
       }
       if (!predictions || predictions.length === 0) {
         try {

@@ -222,12 +222,6 @@ export async function loadDailySnapshotAsync(dateStr: string, sport: string = "f
     }
   }
 
-  // If disk has clean curated picks (10 to 16) and Supabase is bloated with raw picks (> 20), discard bloated cloud
-  if (diskPicks.length >= 10 && diskPicks.length <= 16 && supabasePicks.length > 20) {
-    saveDailySnapshot(dateStr, diskPicks, sportKey, true);
-    supabasePicks = [];
-  }
-
   if (diskPicks.length === 0 && supabasePicks.length === 0) {
     return null;
   }
@@ -275,17 +269,21 @@ export async function loadDailySnapshotAsync(dateStr: string, sport: string = "f
       ensureSnapshotsDir(sportKey);
       const filePath = path.join(SNAPSHOTS_DIR, sportKey, `${dateStr}.json`);
       fs.writeFileSync(filePath, JSON.stringify(finalCombined, null, 2), "utf-8");
-    } catch {}
+    } catch { }
   }
 
   return finalCombined;
 }
 
-export function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[], sport: string = "football", overwrite: boolean = false) {
+export async function saveDailySnapshotAsync(
+  dateStr: string,
+  picks: MarketOpportunity[],
+  sport: string = "football",
+  overwrite: boolean = false
+): Promise<MarketOpportunity[]> {
   const sportKey = (sport || "football").toLowerCase();
   const memKey = `${sportKey}_${dateStr}`;
 
-  // Tag incoming picks strictly with their sport identity
   const normalizedPicks = picks.map((p) => ({
     ...p,
     sport: sportKey as any,
@@ -295,157 +293,225 @@ export function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[], s
   if (process.env.VITEST || process.env.NODE_ENV === "test") {
     memorySnapshots[memKey] = normalizedPicks;
     if (sportKey === "football") memorySnapshots[dateStr] = normalizedPicks;
-    return;
+    return normalizedPicks;
+  }
+
+  ensureSnapshotsDir(sportKey);
+  const filePath = path.join(SNAPSHOTS_DIR, sportKey, `${dateStr}.json`);
+
+  let existingPicks: MarketOpportunity[] = memorySnapshots[memKey] || [];
+  if (existingPicks.length === 0 && fs.existsSync(filePath)) {
+    try {
+      const raw = fs.readFileSync(filePath, "utf-8");
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        existingPicks = parsed.filter((p) => isSportMatch(p, sportKey));
+      }
+    } catch { }
+  }
+
+  if (overwrite) {
+    existingPicks = existingPicks.filter(
+      (p) => p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST"
+    );
+  }
+
+  const mergedMap = new Map<string, MarketOpportunity>();
+  for (const p of existingPicks) {
+    mergedMap.set(getOpportunityKey(p), p);
+  }
+  for (const p of picks) {
+    const key = getOpportunityKey(p);
+    if (mergedMap.has(key)) {
+      const existing = mergedMap.get(key)!;
+      const pKickoffMs = p.kickoff ? new Date(p.kickoff).getTime() : 0;
+      const isPrematch = p.status === "pending" || p.matchTiming === "prematch" || (pKickoffMs > 0 && Date.now() < pKickoffMs);
+      mergedMap.set(key, {
+        ...existing,
+        ...p,
+        status: p.status || existing.status || "pending",
+        actualScore: isPrematch ? p.actualScore : (p.actualScore !== undefined ? p.actualScore : existing.actualScore),
+        result: isPrematch ? (p as any).result : ((p as any).result !== undefined ? (p as any).result : (existing as any).result),
+        profit: isPrematch ? (p as any).profit : (typeof (p as any).profit === "number" ? (p as any).profit : (existing as any).profit),
+        matchTiming: isPrematch ? ("prematch" as const) : (p.matchTiming || existing.matchTiming),
+        homeLogo: p.homeLogo || existing.homeLogo,
+        awayLogo: p.awayLogo || existing.awayLogo,
+        leagueLogo: p.leagueLogo || existing.leagueLogo,
+      });
+    } else {
+      mergedMap.set(key, p);
+    }
+  }
+
+  const mergedPicks = Array.from(mergedMap.values()).sort(
+    (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
+  );
+
+  memorySnapshots[memKey] = mergedPicks;
+  if (sportKey === "football") {
+    memorySnapshots[dateStr] = mergedPicks;
   }
 
   try {
-    ensureSnapshotsDir(sportKey);
-    const filePath = path.join(SNAPSHOTS_DIR, sportKey, `${dateStr}.json`);
+    fs.writeFileSync(filePath, JSON.stringify(mergedPicks, null, 2), "utf-8");
+  } catch { }
 
-    // Load existing picks strictly for this sport
-    let existingPicks: MarketOpportunity[] = memorySnapshots[memKey] || [];
-    if (existingPicks.length === 0 && fs.existsSync(filePath)) {
-      try {
-        const raw = fs.readFileSync(filePath, "utf-8");
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) {
-          existingPicks = parsed.filter((p) => isSportMatch(p, sportKey));
+  const supabase = getAdminClient();
+  if (supabase) {
+    try {
+      let cloudPicks: MarketOpportunity[] = [];
+      const { data: cloudData } = await supabase
+        .from("daily_snapshots")
+        .select("picks")
+        .eq("date", dateStr)
+        .maybeSingle();
+
+      if (cloudData && Array.isArray(cloudData.picks)) {
+        cloudPicks = cloudData.picks;
+      }
+
+      if (overwrite) {
+        cloudPicks = cloudPicks.filter(
+          (p) => p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST"
+        );
+      }
+
+      const cloudMergedMap = new Map<string, MarketOpportunity>();
+      for (const cp of cloudPicks) {
+        cloudMergedMap.set(getOpportunityKey(cp), cp);
+      }
+      for (const lp of mergedPicks) {
+        const key = getOpportunityKey(lp);
+        if (cloudMergedMap.has(key)) {
+          const existing = cloudMergedMap.get(key)!;
+          const lpKickoffMs = lp.kickoff ? new Date(lp.kickoff).getTime() : 0;
+          const isPrematch = lp.status === "pending" || lp.matchTiming === "prematch" || (lpKickoffMs > 0 && Date.now() < lpKickoffMs);
+          cloudMergedMap.set(key, {
+            ...existing,
+            ...lp,
+            status: lp.status || existing.status,
+            actualScore: isPrematch ? lp.actualScore : (lp.actualScore !== undefined ? lp.actualScore : existing.actualScore),
+            result: isPrematch ? (lp as any).result : ((lp as any).result !== undefined ? (lp as any).result : (existing as any).result),
+            profit: isPrematch ? (lp as any).profit : (typeof (lp as any).profit === "number" ? (lp as any).profit : (existing as any).profit),
+            matchTiming: isPrematch ? ("prematch" as const) : (lp.matchTiming || existing.matchTiming),
+          });
+        } else {
+          cloudMergedMap.set(key, lp);
         }
-      } catch {}
-    }
+      }
 
-    if (overwrite) {
-      existingPicks = existingPicks.filter(
-        (p) => p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST"
+      const finalCloudPicks = Array.from(cloudMergedMap.values()).sort(
+        (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
       );
+
+      const { error } = await supabase
+        .from("daily_snapshots")
+        .upsert(
+          {
+            date: dateStr,
+            picks: finalCloudPicks,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "date" }
+        );
+      if (error) {
+        console.warn(`[Supabase] Error saving daily snapshot for ${dateStr}:`, error.message);
+      }
+    } catch (dbErr) {
+      console.warn(`[Supabase] Exception upserting daily snapshot for ${dateStr}:`, dbErr);
     }
+  }
 
-    const mergedMap = new Map<string, MarketOpportunity>();
+  return mergedPicks;
+}
 
-    // Put all existing picks first indexed strictly by opportunity key
-    for (const p of existingPicks) {
-      const key = getOpportunityKey(p);
+export function saveDailySnapshot(
+  dateStr: string,
+  picks: MarketOpportunity[],
+  sport: string = "football",
+  overwrite: boolean = false
+): MarketOpportunity[] {
+  // Fire async sync for persistent cloud storage
+  saveDailySnapshotAsync(dateStr, picks, sport, overwrite).catch((err) => {
+    console.warn(`[saveDailySnapshot] Async sync warning:`, err);
+  });
+
+  const sportKey = (sport || "football").toLowerCase();
+  const memKey = `${sportKey}_${dateStr}`;
+
+  const normalizedPicks = picks.map((p) => ({
+    ...p,
+    sport: sportKey as any,
+    country: sportKey === "football" ? (p.country || "Europa") : (p.country || sportKey.toUpperCase()),
+  }));
+
+  if (process.env.VITEST || process.env.NODE_ENV === "test") {
+    memorySnapshots[memKey] = normalizedPicks;
+    if (sportKey === "football") memorySnapshots[dateStr] = normalizedPicks;
+    return normalizedPicks;
+  }
+
+  ensureSnapshotsDir(sportKey);
+  const filePath = path.join(SNAPSHOTS_DIR, sportKey, `${dateStr}.json`);
+
+  let existingPicks: MarketOpportunity[] = memorySnapshots[memKey] || [];
+  if (existingPicks.length === 0 && fs.existsSync(filePath)) {
+    try {
+      const raw = fs.readFileSync(filePath, "utf-8");
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        existingPicks = parsed.filter((p) => isSportMatch(p, sportKey));
+      }
+    } catch { }
+  }
+
+  if (overwrite) {
+    existingPicks = existingPicks.filter(
+      (p) => p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST"
+    );
+  }
+
+  const mergedMap = new Map<string, MarketOpportunity>();
+  for (const p of existingPicks) {
+    mergedMap.set(getOpportunityKey(p), p);
+  }
+  for (const p of picks) {
+    const key = getOpportunityKey(p);
+    if (mergedMap.has(key)) {
+      const existing = mergedMap.get(key)!;
+      const pKickoffMs = p.kickoff ? new Date(p.kickoff).getTime() : 0;
+      const isPrematch = p.status === "pending" || p.matchTiming === "prematch" || (pKickoffMs > 0 && Date.now() < pKickoffMs);
+      mergedMap.set(key, {
+        ...existing,
+        ...p,
+        status: p.status || existing.status || "pending",
+        actualScore: isPrematch ? p.actualScore : (p.actualScore !== undefined ? p.actualScore : existing.actualScore),
+        result: isPrematch ? (p as any).result : ((p as any).result !== undefined ? (p as any).result : (existing as any).result),
+        profit: isPrematch ? (p as any).profit : (typeof (p as any).profit === "number" ? (p as any).profit : (existing as any).profit),
+        matchTiming: isPrematch ? ("prematch" as const) : (p.matchTiming || existing.matchTiming),
+        homeLogo: p.homeLogo || existing.homeLogo,
+        awayLogo: p.awayLogo || existing.awayLogo,
+        leagueLogo: p.leagueLogo || existing.leagueLogo,
+      });
+    } else {
       mergedMap.set(key, p);
     }
-
-    // Merge incoming picks strictly by key (updating existing or appending new)
-    for (const p of picks) {
-      const key = getOpportunityKey(p);
-
-      if (mergedMap.has(key)) {
-        const existing = mergedMap.get(key)!;
-        const isSettled =
-          existing.status === "won" ||
-          existing.status === "lost" ||
-          existing.result === "WON" ||
-          existing.result === "LOST" ||
-          Boolean(existing.actualScore);
-
-        const pKickoffMs = p.kickoff ? new Date(p.kickoff).getTime() : 0;
-        const isPrematch = p.status === "pending" || p.matchTiming === "prematch" || (pKickoffMs > 0 && Date.now() < pKickoffMs);
-        const updated = {
-          ...existing,
-          ...p,
-          status: p.status || existing.status || "pending",
-          actualScore: isPrematch ? p.actualScore : (p.actualScore !== undefined ? p.actualScore : existing.actualScore),
-          result: isPrematch ? (p as any).result : ((p as any).result !== undefined ? (p as any).result : (existing as any).result),
-          profit: isPrematch ? (p as any).profit : (typeof (p as any).profit === "number" ? (p as any).profit : (existing as any).profit),
-          matchTiming: isPrematch ? ("prematch" as const) : (p.matchTiming || existing.matchTiming),
-          homeLogo: p.homeLogo || existing.homeLogo,
-          awayLogo: p.awayLogo || existing.awayLogo,
-          leagueLogo: p.leagueLogo || existing.leagueLogo,
-        };
-        mergedMap.set(key, updated);
-      } else {
-        mergedMap.set(key, p);
-      }
-    }
-
-    const mergedPicks = Array.from(mergedMap.values()).sort(
-      (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
-    );
-
-    memorySnapshots[memKey] = mergedPicks;
-    if (sportKey === "football") {
-      memorySnapshots[dateStr] = mergedPicks;
-    }
-
-    try {
-      fs.writeFileSync(filePath, JSON.stringify(mergedPicks, null, 2), "utf-8");
-    } catch {}
-
-    // Synchronize to Supabase Cloud Database with non-destructive merge
-    const supabase = getAdminClient();
-    if (supabase) {
-      (async () => {
-        try {
-          // Fetch cloud picks first to ensure cloud NEVER loses picks
-          let cloudPicks: MarketOpportunity[] = [];
-          const { data: cloudData } = await supabase
-            .from("daily_snapshots")
-            .select("picks")
-            .eq("date", dateStr)
-            .maybeSingle();
-
-          if (cloudData && Array.isArray(cloudData.picks)) {
-            cloudPicks = cloudData.picks;
-          }
-
-          if (overwrite) {
-            cloudPicks = cloudPicks.filter(
-              (p) => p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST"
-            );
-          }
-
-          const cloudMergedMap = new Map<string, MarketOpportunity>();
-          for (const cp of cloudPicks) {
-            cloudMergedMap.set(getOpportunityKey(cp), cp);
-          }
-          for (const lp of mergedPicks) {
-            const key = getOpportunityKey(lp);
-            if (cloudMergedMap.has(key)) {
-              const existing = cloudMergedMap.get(key)!;
-              const lpKickoffMs = lp.kickoff ? new Date(lp.kickoff).getTime() : 0;
-              const isPrematch = lp.status === "pending" || lp.matchTiming === "prematch" || (lpKickoffMs > 0 && Date.now() < lpKickoffMs);
-              cloudMergedMap.set(key, {
-                ...existing,
-                ...lp,
-                status: lp.status || existing.status,
-                actualScore: isPrematch ? lp.actualScore : (lp.actualScore !== undefined ? lp.actualScore : existing.actualScore),
-                result: isPrematch ? (lp as any).result : ((lp as any).result !== undefined ? (lp as any).result : (existing as any).result),
-                profit: isPrematch ? (lp as any).profit : (typeof (lp as any).profit === "number" ? (lp as any).profit : (existing as any).profit),
-                matchTiming: isPrematch ? ("prematch" as const) : (lp.matchTiming || existing.matchTiming),
-              });
-            } else {
-              cloudMergedMap.set(key, lp);
-            }
-          }
-
-          const finalCloudPicks = Array.from(cloudMergedMap.values()).sort(
-            (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
-          );
-
-          const { error } = await supabase
-            .from("daily_snapshots")
-            .upsert(
-              {
-                date: dateStr,
-                picks: finalCloudPicks,
-                updated_at: new Date().toISOString(),
-              },
-              { onConflict: "date" }
-            );
-          if (error) {
-            console.warn(`[Supabase] Error saving daily snapshot for ${dateStr}:`, error.message);
-          }
-        } catch (dbErr) {
-          console.warn(`[Supabase] Exception upserting daily snapshot for ${dateStr}:`, dbErr);
-        }
-      })();
-    }
-  } catch (err) {
-    console.warn(`Could not save daily snapshot for ${dateStr}:`, err);
   }
+
+  const mergedPicks = Array.from(mergedMap.values()).sort(
+    (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
+  );
+
+  memorySnapshots[memKey] = mergedPicks;
+  if (sportKey === "football") {
+    memorySnapshots[dateStr] = mergedPicks;
+  }
+
+  try {
+    fs.writeFileSync(filePath, JSON.stringify(mergedPicks, null, 2), "utf-8");
+  } catch { }
+
+  return mergedPicks;
 }
 
 /**
@@ -496,7 +562,7 @@ export async function settleMultiSportSnapshot(dateStr: string, sport: Supported
             }
           }
         }
-      } catch {}
+      } catch { }
     }
   } catch (err) {
     console.warn(`[MultiSport-Settle] Error fetching schedule for ${sportKey} on ${dateStr}:`, err);
@@ -632,7 +698,7 @@ export async function settleAllSnapshotsWithRealScores(): Promise<{ settledDates
   try {
     const { NHLSyncEngine } = await import("./nhl/nhl-sync");
     await NHLSyncEngine.getTodayNHLSignals(undefined, false);
-  } catch {}
+  } catch { }
 
   const snapshots = await getAllDailySnapshotsAsync();
   const todaySnap = loadDailySnapshot(todayDateStr) || getStoredPredictions();
@@ -705,7 +771,7 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string): Prom
       }
       const hNorm = getCanonicalTeamKey(homeName);
       const aNorm = getCanonicalTeamKey(awayName);
-      
+
       // STRICTLY require official finished match status (FT = Full Time, AET = After Extra Time, PEN = Penalties, POST = Match Completed)
       const isFinished = ["FT", "AET", "PEN", "120", "POST"].includes(shortStatus);
       // LIVE in-play statuses must NEVER be settled as final results
@@ -828,7 +894,7 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string): Prom
       const hNorm = getCanonicalTeamKey(p.homeTeam);
       const aNorm = getCanonicalTeamKey(p.awayTeam);
       const fixKey = p.fixtureId ? `fix-${p.fixtureId}` : "";
-      
+
       // If fixtureId is known, prioritize the exact fixtureId score.
       // Only fall back to team name if fixtureId is not present AND match time has elapsed!
       let scoreData = fixKey ? realScoresMap[fixKey] : undefined;
@@ -896,7 +962,7 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string): Prom
       if (scoreData && scoreData.isFinished && typeof scoreData.home === "number" && typeof scoreData.away === "number") {
         const isCorner = (p.market || "").toLowerCase().includes("corner") || (p.market || "").toLowerCase().includes("córner");
         const cornerStat = p.fixtureId ? cornerStatsMap[Number(p.fixtureId)] : undefined;
-        
+
         // If it is a corner pick and already settled with verified actual score and no new corner stats, preserve verified settlement!
         if (isCorner && !cornerStat && (p.status === "won" || p.status === "lost") && p.actualScore) {
           return p;
@@ -1037,12 +1103,12 @@ export async function getAllDailySnapshotsAsync(sportFilter?: string): Promise<R
                 result[dateStr] = (result[dateStr] || []).concat(sportPicks);
                 memorySnapshots[`${s}_${dateStr}`] = sportPicks;
               }
-            } catch {}
+            } catch { }
           }
         }
       }
     }
-  } catch {}
+  } catch { }
 
   // 3. Supabase Cloud Database snapshots (authoritative across all Vercel Lambdas)
   const supabase = getAdminClient();
@@ -1121,12 +1187,12 @@ function getAllDailySnapshots(sportFilter?: string): Record<string, MarketOpport
                 const sportPicks = parsed.filter((item) => isSportMatch(item, s));
                 result[dateStr] = (result[dateStr] || []).concat(sportPicks);
               }
-            } catch {}
+            } catch { }
           }
         }
       }
     }
-  } catch {}
+  } catch { }
   return result;
 }
 
@@ -1838,7 +1904,7 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
         );
       });
 
-// Single batch getOddsByDate already loads all available odds without hitting rate limits
+      // Single batch getOddsByDate already loads all available odds without hitting rate limits
 
       for (const item of todayFixtures) {
         if (!item.fixture?.id || !item.teams?.home?.name || !item.teams?.away?.name) continue;
@@ -1850,7 +1916,7 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
         // Allow evaluating all fixtures of today's slate to build complete full-day snapshot
         const shortStatus = item.fixture.status?.short || "NS";
         if (["PST", "CANC", "ABD", "AWD", "WO", "POST"].includes(shortStatus)) continue;
-      if (isExcludedMatch(item.teams?.home?.name, item.teams?.away?.name)) continue;
+        if (isExcludedMatch(item.teams?.home?.name, item.teams?.away?.name)) continue;
 
         // Skip non-curated leagues ("Otras Ligas") & youth leagues
         const legName = (item.league?.name || "").toLowerCase();
@@ -1865,7 +1931,7 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
               oddsItem = direct;
               oddsMapByFixture[item.fixture.id] = direct;
             }
-          } catch {}
+          } catch { }
         }
         const realMarketOdds = (oddsItem && oddsItem.bookmakers && oddsItem.bookmakers.length > 0)
           ? extractMarketOddsFromBookmaker(oddsItem)
@@ -2029,7 +2095,7 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
 
   // Merge with existing snapshot: if forceRefresh, only preserve user-published MCP picks, otherwise preserve active snapshot
   const mergedMap = new Map<string, MarketOpportunity>();
-  const snapshotToMerge = forceRefresh 
+  const snapshotToMerge = forceRefresh
     ? existingSnapshot.filter((p) => p.source === "mcp" && p.isMcpPick)
     : existingSnapshot;
 
@@ -2231,7 +2297,7 @@ export function addPredictionsToDailySnapshot(newPicks: MarketOpportunity[]): {
     existingSnapshot = getStoredPredictions();
   }
   existingSnapshot = Array.isArray(existingSnapshot) ? [...existingSnapshot] : [];
-  
+
   const existingMap = new Map<string, MarketOpportunity>();
   for (const p of existingSnapshot) {
     const h = getCanonicalTeamKey(p.homeTeam);
@@ -2406,7 +2472,34 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     const legName = (item.league?.name || "").toLowerCase();
     const hName = (item.teams.home.name || "").toLowerCase();
     const aName = (item.teams.away.name || "").toLowerCase();
-    if (legName.includes("primavera") || legName.includes("u18") || legName.includes("u19") || legName.includes("u20") || legName.includes("u21") || legName.includes("reserve") || legName.includes("next pro") || legName.includes("lowland") || legName.includes("non league")) continue;
+    if (
+      legName.includes("primavera") ||
+      legName.includes("u18") ||
+      legName.includes("u19") ||
+      legName.includes("u20") ||
+      legName.includes("u21") ||
+      legName.includes("reserve") ||
+      legName.includes("next pro") ||
+      legName.includes("lowland") ||
+      legName.includes("non league") ||
+      legName.includes("women") ||
+      legName.includes("femen") ||
+      legName.includes("dff") ||
+      hName.includes("women") ||
+      aName.includes("women") ||
+      hName.endsWith(" w") ||
+      aName.endsWith(" w") ||
+      hName.includes(" w ") ||
+      aName.includes(" w ") ||
+      hName.includes(" u18") ||
+      hName.includes(" u19") ||
+      hName.includes(" u20") ||
+      hName.includes(" u21") ||
+      aName.includes(" u18") ||
+      aName.includes(" u19") ||
+      aName.includes(" u20") ||
+      aName.includes(" u21")
+    ) continue;
     if (isExcludedMatch(hName, aName)) continue;
     if (hName.endsWith(" ii") || hName.endsWith(" 2") || aName.endsWith(" ii") || aName.endsWith(" 2")) continue;
     if (!isCuratedLeague(item.league?.id, item.league?.name, item.league?.country)) continue;
@@ -2590,8 +2683,8 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
   let merged: MarketOpportunity[] = [];
 
   if (existingSnapshot.length === 0) {
-    const selSeguras = pickPrioritizedAlerts(poolSeguras, 16);
-    const selValor = pickPrioritizedAlerts(poolValor, 8);
+    const selSeguras = pickPrioritizedAlerts(poolSeguras, 7);
+    const selValor = pickPrioritizedAlerts(poolValor, 5);
 
     newlyAdded = [...selSeguras, ...selValor].map((p) => ({
       ...p,
@@ -2601,9 +2694,9 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     }));
     merged = newlyAdded.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
   } else {
-    // Priority search: take prioritized candidates
-    const selSeguras = pickPrioritizedAlerts(poolSeguras, 10);
-    const selValor = pickPrioritizedAlerts(poolValor, 6);
+    // Priority search: take prioritized new candidates that do not exist in current snapshot
+    const selSeguras = pickPrioritizedAlerts(poolSeguras, 8);
+    const selValor = pickPrioritizedAlerts(poolValor, 4);
 
     newlyAdded = [...selSeguras, ...selValor].map((p) => ({
       ...p,
@@ -2626,7 +2719,7 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
   }
 
   if (newlyAdded.length > 0) {
-    saveDailySnapshot(todayDateStr, merged);
+    await saveDailySnapshotAsync(todayDateStr, merged, "football", false);
     cachedLivePredictions = merged;
     cacheTimestamp = nowMs;
     cachedSettledHistory = [];
@@ -2640,7 +2733,7 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
 
   const segurasCount = newlyAdded.filter((p) => p.pickBadge === "estandar").length;
   const valorCount = newlyAdded.filter((p) => p.pickBadge === "valor").length;
-  
+
   return {
     success: true,
     count: merged.length,
@@ -2963,7 +3056,7 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
       if (realScore && typeof realScore.home === "number" && typeof realScore.away === "number") {
         const homeGoals = realScore.home;
         const awayGoals = realScore.away;
-        
+
         const evaluation = evaluateMarketResult(p.market, homeGoals, awayGoals, {
           selection: p.selection,
           pick: p.pick,
@@ -3066,7 +3159,7 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
               probability: p.probability,
               confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
               pickBadge: isElitePick(p as any) ? "elite" : p.pickBadge,
-            isElite: isElitePick(p as any),
+              isElite: isElitePick(p as any),
               matchTiming: "live",
               isLive: true,
               isMcp: isMcpPick,
@@ -3150,7 +3243,7 @@ export async function getHistoricalSettledParlays(): Promise<HistoricalSettledPa
         const evaluatedLegs = parlayLegs.map((leg) => {
           const hNorm = normalizeTeamName(leg.homeTeam || "").toLowerCase();
           const aNorm = normalizeTeamName(leg.awayTeam || "").toLowerCase();
-          
+
           // Find matching settled pick
           const matchPick =
             settledLookup.get(`${hNorm}-${aNorm}-${dateStr}-${leg.market}`) ||
@@ -3165,12 +3258,12 @@ export async function getHistoricalSettledParlays(): Promise<HistoricalSettledPa
           const result: "WON" | "LOST" | "VOID" = matchPick
             ? (matchPick.result as "WON" | "LOST")
             : leg.status === "won" || leg.result === "WON"
-            ? "WON"
-            : leg.status === "lost" || leg.result === "LOST"
-            ? "LOST"
-            : isPending
-            ? ("PENDING" as any)
-            : "LOST";
+              ? "WON"
+              : leg.status === "lost" || leg.result === "LOST"
+                ? "LOST"
+                : isPending
+                  ? ("PENDING" as any)
+                  : "LOST";
 
           return {
             match: leg.match,
@@ -3190,7 +3283,7 @@ export async function getHistoricalSettledParlays(): Promise<HistoricalSettledPa
         const hasPending = evaluatedLegs.some((p) => (p.result as any) === "PENDING");
         const anyLost = evaluatedLegs.some((p) => p.result === "LOST");
         const allWon = evaluatedLegs.every((p) => p.result === "WON");
-        
+
         let parlayResult: "WON" | "LOST" | "VOID" = allWon ? "WON" : anyLost ? "LOST" : hasPending ? ("PENDING" as any) : "LOST";
         let profit = allWon ? Math.round((totalOdds - 1) * 100) / 100 : anyLost ? -1 : 0;
 
@@ -3439,8 +3532,8 @@ export async function searchLiveMarketDynamic(params: {
     let targetLeagueIds: number[] | undefined = Array.isArray(params.leagueIds) && params.leagueIds.length > 0
       ? params.leagueIds.map(Number)
       : params.leagueId
-      ? [Number(params.leagueId)]
-      : undefined;
+        ? [Number(params.leagueId)]
+        : undefined;
     let targetLeagueId = targetLeagueIds && targetLeagueIds.length === 1 ? targetLeagueIds[0] : (params.leagueId ? Number(params.leagueId) : undefined);
 
     // Detect league ID from query or params if not explicitly provided
@@ -3594,7 +3687,7 @@ export async function searchLiveMarketDynamic(params: {
             if (oddsItem) {
               oddsByFixtureId[f.fixture.id] = oddsItem;
             }
-          } catch {}
+          } catch { }
         })
       );
     }

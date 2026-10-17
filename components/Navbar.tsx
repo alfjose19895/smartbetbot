@@ -139,6 +139,13 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
         body: JSON.stringify({ sport: targetSport }),
       });
       if (res.ok) {
+        const data = await res.json().catch(() => ({}));
+        if (data.newAlerts && data.newAlerts.length > 0) {
+          window.dispatchEvent(new CustomEvent('new-alerts-discovered', { detail: { newAlerts: data.newAlerts } }));
+        }
+        if (Array.isArray(data.predictions)) {
+          window.dispatchEvent(new CustomEvent('predictions-updated', { detail: data.predictions }));
+        }
         window.location.reload();
       }
     } catch {
