@@ -25,7 +25,7 @@ import {
   isYouthOrReserveFixture,
   getDailyAlertLimit,
 } from './db';
-import { apiFootball } from './api-football';
+import { apiFootball, extractMarketOddsFromBookmaker, ApiFootballOddsItem } from './api-football';
 
 export * from './weekend-exclusive';
 
@@ -172,8 +172,20 @@ export function isSeniorCompetitiveFixture(item: any): boolean {
  */
 export async function fetchAndEvaluateDayFixtures(dateStr: string): Promise<MarketOpportunity[]> {
   try {
-    const fixtures = await apiFootball.getFixturesByDate(dateStr, 'America/Guayaquil');
+    const [fixtures, oddsList] = await Promise.all([
+      apiFootball.getFixturesByDate(dateStr, 'America/Guayaquil').catch(() => []),
+      apiFootball.getOddsByDate(dateStr, 'America/Guayaquil').catch(() => [] as ApiFootballOddsItem[]),
+    ]);
     if (!Array.isArray(fixtures) || fixtures.length === 0) return [];
+
+    const oddsMapByFixture: Record<number, ApiFootballOddsItem> = {};
+    if (Array.isArray(oddsList)) {
+      for (const item of oddsList) {
+        if (item.fixture?.id) {
+          oddsMapByFixture[item.fixture.id] = item;
+        }
+      }
+    }
 
     const candidates: MarketOpportunity[] = [];
     const usedTeams = new Set<string>();
@@ -184,6 +196,9 @@ export async function fetchAndEvaluateDayFixtures(dateStr: string): Promise<Mark
       const hNorm = item.teams.home.name.toLowerCase();
       const aNorm = item.teams.away.name.toLowerCase();
       if (usedTeams.has(hNorm) || usedTeams.has(aNorm)) continue;
+
+      const realOddsItem = oddsMapByFixture[item.fixture.id];
+      const realMarketOdds = extractMarketOddsFromBookmaker(realOddsItem);
 
       const evaluated = evaluateFixturePrediction({
         fixtureId: item.fixture.id,
@@ -198,6 +213,7 @@ export async function fetchAndEvaluateDayFixtures(dateStr: string): Promise<Mark
         country: item.league.country,
         leagueLogo: item.league.logo,
         kickoff: item.fixture.date,
+        marketOdds: realMarketOdds,
       });
 
       // Ordenar las opciones de este partido por prioridad de mercado (Córners > BTTS > Goles > 1X2)
@@ -230,7 +246,7 @@ export async function fetchAndEvaluateDayFixtures(dateStr: string): Promise<Mark
 
     if (curatedPicks.length > 0) {
       try {
-        saveDailySnapshot(dateStr, curatedPicks, 'football');
+        saveDailySnapshot(dateStr, curatedPicks, 'football', true);
       } catch (saveErr) {
         console.warn(`[WeekendExclusive] Error guardando daily snapshot para ${dateStr}:`, saveErr);
       }

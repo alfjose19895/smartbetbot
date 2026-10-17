@@ -275,7 +275,7 @@ export async function loadDailySnapshotAsync(dateStr: string, sport: string = "f
   return finalCombined;
 }
 
-export function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[], sport: string = "football") {
+export function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[], sport: string = "football", overwrite: boolean = false) {
   const sportKey = (sport || "football").toLowerCase();
   const memKey = `${sportKey}_${dateStr}`;
 
@@ -306,6 +306,12 @@ export function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[], s
           existingPicks = parsed.filter((p) => isSportMatch(p, sportKey));
         }
       } catch {}
+    }
+
+    if (overwrite) {
+      existingPicks = existingPicks.filter(
+        (p) => p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST"
+      );
     }
 
     const mergedMap = new Map<string, MarketOpportunity>();
