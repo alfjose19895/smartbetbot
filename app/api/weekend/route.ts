@@ -4,7 +4,7 @@ import {
   getWeekendCycleInfo,
   listWeekendEditions,
   WeekendExclusivePick,
-} from "@/lib/sports/weekend-exclusive";
+} from "@/lib/sports/weekend-exclusive-server";
 
 export const dynamic = "force-dynamic";
 

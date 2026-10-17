@@ -190,7 +190,7 @@ describe('Módulo Exclusivo Fin de Semana (Weekend Exclusive Engine)', () => {
 
   describe('Slate assembly', () => {
     it('compiles slate object with cycle and stats structure without crashing', async () => {
-      const { getWeekendExclusiveSlate } = await import('./weekend-exclusive');
+      const { getWeekendExclusiveSlate } = await import('./weekend-exclusive-server');
       const slate = await getWeekendExclusiveSlate({
         refDate: new Date('2026-10-16T15:00:00Z'),
       });
