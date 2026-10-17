@@ -246,10 +246,12 @@ export async function fetchAndEvaluateDayFixtures(dateStr: string): Promise<Mark
 
     if (curatedPicks.length > 0) {
       try {
-        // Only save an initial daily snapshot IF no snapshot exists yet (never overwrite an existing snapshot)
-        const existingSnapshot = (await loadDailySnapshotAsync(dateStr, 'football')) || loadDailySnapshot(dateStr, 'football');
-        if (!existingSnapshot || existingSnapshot.length === 0) {
-          saveDailySnapshot(dateStr, curatedPicks, 'football', false);
+        if (!(process.env.VITEST || process.env.NODE_ENV === 'test')) {
+          // Only save an initial daily snapshot IF no snapshot exists yet (never overwrite an existing snapshot)
+          const existingSnapshot = (await loadDailySnapshotAsync(dateStr, 'football')) || loadDailySnapshot(dateStr, 'football');
+          if (!existingSnapshot || existingSnapshot.length === 0) {
+            saveDailySnapshot(dateStr, curatedPicks, 'football', false);
+          }
         }
       } catch (saveErr) {
         console.warn(`[WeekendExclusive] Error guardando daily snapshot para ${dateStr}:`, saveErr);
@@ -413,7 +415,11 @@ export async function getWeekendExclusiveSlate(options?: {
     generatedAt: new Date().toISOString(),
   };
 
-  // Guardar en disco
+  // Guardar en disco (nunca escribir archivos de producción durante tests)
+  if (process.env.VITEST || process.env.NODE_ENV === 'test') {
+    return slate;
+  }
+
   if (finalOrdered.length > 0) {
     try {
       fs.writeFileSync(filePath, JSON.stringify(slate, null, 2), 'utf-8');
