@@ -43,7 +43,8 @@
     "homeElo": 1660,
     "awayElo": 1616,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1632107,
@@ -89,7 +90,8 @@
     "homeElo": 1504,
     "awayElo": 1585,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1556095,
@@ -135,7 +137,8 @@
     "homeElo": 1650,
     "awayElo": 1590,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1507087,
@@ -181,7 +184,8 @@
     "homeElo": 1650,
     "awayElo": 1535,
     "timeSlot": "morning",
-    "isTopPick": true
+    "isTopPick": true,
+    "sport": "football"
   },
   {
     "fixtureId": 1510474,
@@ -227,7 +231,8 @@
     "homeElo": 1620,
     "awayElo": 1502,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1565503,
@@ -273,7 +278,8 @@
     "homeElo": 1608,
     "awayElo": 1647,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1573615,
@@ -319,7 +325,8 @@
     "homeElo": 1740,
     "awayElo": 2010,
     "timeSlot": "morning",
-    "isTopPick": true
+    "isTopPick": true,
+    "sport": "football"
   },
   {
     "fixtureId": 1552194,
@@ -365,7 +372,9 @@
     "homeElo": 1645,
     "awayElo": 1494,
     "timeSlot": "morning",
-    "isTopPick": true
+    "isTopPick": true,
+    "matchTiming": "prematch",
+    "sport": "football"
   },
   {
     "fixtureId": 1550155,
@@ -411,7 +420,9 @@
     "homeElo": 1657,
     "awayElo": 1596,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "matchTiming": "prematch",
+    "sport": "football"
   },
   {
     "fixtureId": 1584436,
@@ -457,7 +468,8 @@
     "homeElo": 1578,
     "awayElo": 1483,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1497723,
@@ -503,7 +515,8 @@
     "homeElo": 1656,
     "awayElo": 1571,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1551356,
@@ -549,7 +562,8 @@
     "homeElo": 1599,
     "awayElo": 1536,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1576203,
@@ -595,7 +609,8 @@
     "homeElo": 1641,
     "awayElo": 1570,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1576204,
@@ -641,7 +656,8 @@
     "homeElo": 1620,
     "awayElo": 1606,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1494304,
@@ -687,7 +703,8 @@
     "homeElo": 1608,
     "awayElo": 1535,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1526002,
@@ -733,7 +750,8 @@
     "homeElo": 1649,
     "awayElo": 1552,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1549038,
@@ -779,7 +797,8 @@
     "homeElo": 1569,
     "awayElo": 1510,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1638109,
@@ -825,7 +844,8 @@
     "homeElo": 1655,
     "awayElo": 1549,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1495984,
@@ -871,7 +891,8 @@
     "homeElo": 1589,
     "awayElo": 1652,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1552195,
@@ -917,7 +938,9 @@
     "homeElo": 1659,
     "awayElo": 1644,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "matchTiming": "prematch",
+    "sport": "football"
   },
   {
     "fixtureId": 1561944,
@@ -963,7 +986,8 @@
     "homeElo": 1628,
     "awayElo": 1613,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1561947,
@@ -1009,7 +1033,8 @@
     "homeElo": 1538,
     "awayElo": 1595,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1550150,
@@ -1055,7 +1080,9 @@
     "homeElo": 1750,
     "awayElo": 1518,
     "timeSlot": "morning",
-    "isTopPick": true
+    "isTopPick": true,
+    "matchTiming": "prematch",
+    "sport": "football"
   },
   {
     "fixtureId": 1557427,
@@ -1101,7 +1128,9 @@
     "homeElo": 1670,
     "awayElo": 1620,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "matchTiming": "prematch",
+    "sport": "football"
   },
   {
     "fixtureId": 1557429,
@@ -1147,7 +1176,9 @@
     "homeElo": 1740,
     "awayElo": 1660,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "matchTiming": "prematch",
+    "sport": "football"
   },
   {
     "fixtureId": 1560045,
@@ -1193,7 +1224,8 @@
     "homeElo": 1605,
     "awayElo": 1543,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1644702,
@@ -1239,7 +1271,8 @@
     "homeElo": 1526,
     "awayElo": 1880,
     "timeSlot": "morning",
-    "isTopPick": true
+    "isTopPick": true,
+    "sport": "football"
   },
   {
     "fixtureId": 1549037,
@@ -1285,7 +1318,8 @@
     "homeElo": 1546,
     "awayElo": 1480,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1494301,
@@ -1331,7 +1365,8 @@
     "homeElo": 1614,
     "awayElo": 1519,
     "timeSlot": "morning",
-    "isTopPick": true
+    "isTopPick": true,
+    "sport": "football"
   },
   {
     "fixtureId": 1552197,
@@ -1377,7 +1412,9 @@
     "homeElo": 1515,
     "awayElo": 1780,
     "timeSlot": "morning",
-    "isTopPick": true
+    "isTopPick": true,
+    "matchTiming": "prematch",
+    "sport": "football"
   },
   {
     "fixtureId": 1494782,
@@ -1423,7 +1460,8 @@
     "homeElo": 1617,
     "awayElo": 1646,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1495987,
@@ -1469,7 +1507,8 @@
     "homeElo": 1607,
     "awayElo": 1538,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1561946,
@@ -1515,7 +1554,8 @@
     "homeElo": 1555,
     "awayElo": 1551,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1552789,
@@ -1561,7 +1601,8 @@
     "homeElo": 1620,
     "awayElo": 1559,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1557435,
@@ -1607,7 +1648,9 @@
     "homeElo": 1640,
     "awayElo": 1990,
     "timeSlot": "morning",
-    "isTopPick": true
+    "isTopPick": true,
+    "matchTiming": "prematch",
+    "sport": "football"
   },
   {
     "fixtureId": 1575189,
@@ -1653,7 +1696,9 @@
     "homeElo": 1485,
     "awayElo": 1488,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "matchTiming": "prematch",
+    "sport": "football"
   },
   {
     "fixtureId": 1549517,
@@ -1699,7 +1744,8 @@
     "homeElo": 1648,
     "awayElo": 1583,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1558027,
@@ -1745,7 +1791,8 @@
     "homeElo": 1656,
     "awayElo": 1603,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1553891,
@@ -1791,7 +1838,8 @@
     "homeElo": 1566,
     "awayElo": 1598,
     "timeSlot": "morning",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1570418,
@@ -1837,7 +1885,9 @@
     "homeElo": 1519,
     "awayElo": 1740,
     "timeSlot": "morning",
-    "isTopPick": true
+    "isTopPick": true,
+    "matchTiming": "prematch",
+    "sport": "football"
   },
   {
     "fixtureId": 1551702,
@@ -1883,7 +1933,8 @@
     "homeElo": 1540,
     "awayElo": 1506,
     "timeSlot": "afternoon",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1494785,
@@ -1929,7 +1980,8 @@
     "homeElo": 1584,
     "awayElo": 1512,
     "timeSlot": "afternoon",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1552196,
@@ -1975,7 +2027,8 @@
     "homeElo": 1571,
     "awayElo": 1495,
     "timeSlot": "afternoon",
-    "isTopPick": true
+    "isTopPick": true,
+    "sport": "football"
   },
   {
     "fixtureId": 1603056,
@@ -2021,7 +2074,8 @@
     "homeElo": 1646,
     "awayElo": 1571,
     "timeSlot": "afternoon",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1549513,
@@ -2067,7 +2121,8 @@
     "homeElo": 1632,
     "awayElo": 1506,
     "timeSlot": "afternoon",
-    "isTopPick": true
+    "isTopPick": true,
+    "sport": "football"
   },
   {
     "fixtureId": 1550152,
@@ -2113,7 +2168,9 @@
     "homeElo": 1870,
     "awayElo": 1770,
     "timeSlot": "afternoon",
-    "isTopPick": true
+    "isTopPick": true,
+    "matchTiming": "prematch",
+    "sport": "football"
   },
   {
     "fixtureId": 1549823,
@@ -2159,7 +2216,8 @@
     "homeElo": 1612,
     "awayElo": 1524,
     "timeSlot": "afternoon",
-    "isTopPick": true
+    "isTopPick": true,
+    "sport": "football"
   },
   {
     "fixtureId": 1638632,
@@ -2205,7 +2263,8 @@
     "homeElo": 1586,
     "awayElo": 1639,
     "timeSlot": "afternoon",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   },
   {
     "fixtureId": 1549509,
@@ -2251,7 +2310,8 @@
     "homeElo": 1880,
     "awayElo": 1616,
     "timeSlot": "afternoon",
-    "isTopPick": true
+    "isTopPick": true,
+    "sport": "football"
   },
   {
     "fixtureId": 1490555,
@@ -2297,7 +2357,9 @@
     "homeElo": 1593,
     "awayElo": 1495,
     "timeSlot": "afternoon",
-    "isTopPick": true
+    "isTopPick": true,
+    "matchTiming": "prematch",
+    "sport": "football"
   },
   {
     "fixtureId": 1619334,
@@ -2343,6 +2405,7 @@
     "homeElo": 1510,
     "awayElo": 1558,
     "timeSlot": "afternoon",
-    "isTopPick": false
+    "isTopPick": false,
+    "sport": "football"
   }
 ]
