@@ -26,6 +26,7 @@ import {
   getDailyAlertLimit,
 } from './db';
 import { apiFootball, extractMarketOddsFromBookmaker, ApiFootballOddsItem } from './api-football';
+import { auditPredictionsWithGeminiVeto } from '@/lib/ai/claude-analyst';
 
 export * from './weekend-exclusive';
 
@@ -242,7 +243,16 @@ export async function fetchAndEvaluateDayFixtures(dateStr: string): Promise<Mark
 
     // Limitar al rango diario oficial: 10 a 12 selecciones
     const dailyLimit = getDailyAlertLimit();
-    const curatedPicks = protectedPicks.slice(0, dailyLimit);
+    let curatedPicks = protectedPicks.slice(0, dailyLimit);
+
+    try {
+      const vetoResult = await auditPredictionsWithGeminiVeto(curatedPicks, 'football');
+      if (vetoResult?.approvedPicks && vetoResult.approvedPicks.length > 0) {
+        curatedPicks = vetoResult.approvedPicks;
+      }
+    } catch (vetoErr) {
+      console.warn('[WeekendExclusive] Gemini Veto daily fixtures warning:', vetoErr);
+    }
 
     if (curatedPicks.length > 0) {
       try {
@@ -458,38 +468,60 @@ export async function getWeekendExclusiveSlate(options?: {
     weekendOrder: idx + 1,
   }));
 
+  // Auditoría con Agente IA Google Gemini ("Abogado del Diablo" / Veto Táctico)
+  // Idéntico al estándar cuantitativo de Pre-Match (db.ts) y Corners VIP
+  let auditedWeekendPicks: WeekendExclusivePick[] = finalOrdered;
+  try {
+    const vetoResult = await auditPredictionsWithGeminiVeto(finalOrdered, 'football');
+    if (vetoResult?.approvedPicks && vetoResult.approvedPicks.length > 0) {
+      const auditMap = new Map(vetoResult.approvedPicks.map((p) => [String(p.fixtureId), p]));
+      auditedWeekendPicks = finalOrdered.map((p) => {
+        const audited = auditMap.get(String(p.fixtureId));
+        return audited
+          ? {
+              ...p,
+              explanation: audited.explanation,
+              confidence: audited.confidence || p.confidence,
+            }
+          : p;
+      });
+    }
+  } catch (vetoErr) {
+    console.warn('[WeekendExclusive] Gemini Veto audit warning:', vetoErr);
+  }
+
   // 5. Estadísticas de la edición
   const stats = {
-    totalPicks: finalOrdered.length,
+    totalPicks: auditedWeekendPicks.length,
     avgProbability:
-      finalOrdered.length > 0
+      auditedWeekendPicks.length > 0
         ? Math.round(
-            (finalOrdered.reduce((acc, p) => acc + (p.probability || 0), 0) / finalOrdered.length) * 10
+            (auditedWeekendPicks.reduce((acc, p) => acc + (p.probability || 0), 0) / auditedWeekendPicks.length) * 10
           ) / 10
         : 0,
     avgOdds:
-      finalOrdered.length > 0
+      auditedWeekendPicks.length > 0
         ? Math.round(
-            (finalOrdered.reduce((acc, p) => acc + (p.odds || 0), 0) / finalOrdered.length) * 100
+            (auditedWeekendPicks.reduce((acc, p) => acc + (p.odds || 0), 0) / auditedWeekendPicks.length) * 100
           ) / 100
         : 0,
     byRule: {
-      corners: finalOrdered.filter((p) => p.ruleMatch.ruleId === 'corners').length,
-      btts: finalOrdered.filter((p) => p.ruleMatch.ruleId === 'btts').length,
-      goals: finalOrdered.filter((p) => p.ruleMatch.ruleId === 'goals').length,
-      local: finalOrdered.filter((p) => p.ruleMatch.ruleId === 'local').length,
-      away: finalOrdered.filter((p) => p.ruleMatch.ruleId === 'away').length,
+      corners: auditedWeekendPicks.filter((p) => p.ruleMatch.ruleId === 'corners').length,
+      btts: auditedWeekendPicks.filter((p) => p.ruleMatch.ruleId === 'btts').length,
+      goals: auditedWeekendPicks.filter((p) => p.ruleMatch.ruleId === 'goals').length,
+      local: auditedWeekendPicks.filter((p) => p.ruleMatch.ruleId === 'local').length,
+      away: auditedWeekendPicks.filter((p) => p.ruleMatch.ruleId === 'away').length,
     },
     byDay: {
-      friday: finalOrdered.filter((p) => p.dayOfWeek === 'friday').length,
-      saturday: finalOrdered.filter((p) => p.dayOfWeek === 'saturday').length,
-      sunday: finalOrdered.filter((p) => p.dayOfWeek === 'sunday').length,
+      friday: auditedWeekendPicks.filter((p) => p.dayOfWeek === 'friday').length,
+      saturday: auditedWeekendPicks.filter((p) => p.dayOfWeek === 'saturday').length,
+      sunday: auditedWeekendPicks.filter((p) => p.dayOfWeek === 'sunday').length,
     },
   };
 
   const slate: WeekendSlate = {
     cycle,
-    picks: finalOrdered,
+    picks: auditedWeekendPicks,
     targetCount: WEEKEND_EXCLUSIVE_TARGET_COUNT,
     stats,
     generatedAt: new Date().toISOString(),

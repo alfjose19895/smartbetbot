@@ -18,6 +18,7 @@ import {
   getOpportunityKey,
 } from "./db";
 import { apiFootball, extractMarketOddsFromBookmaker, ApiFootballOddsItem } from "./api-football";
+import { auditPredictionsWithGeminiVeto } from "@/lib/ai/claude-analyst";
 
 function getEcuadorDateString(d: Date | number | string = Date.now()): string {
   try {
@@ -282,7 +283,21 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string): Promise
     }
   }
 
-  // 4. Fusionar nuevas alertas con el snapshot existente
+  // 4. Auditoría con Agente IA Google Gemini ("Abogado del Diablo" / Veto Táctico)
+  // Idéntico al estándar cuantitativo de Pre-Match (db.ts)
+  let approvedNewAlerts = newlyFoundAlerts;
+  if (newlyFoundAlerts.length > 0) {
+    try {
+      const vetoResult = await auditPredictionsWithGeminiVeto(newlyFoundAlerts, "football");
+      if (vetoResult?.approvedPicks && vetoResult.approvedPicks.length > 0) {
+        approvedNewAlerts = vetoResult.approvedPicks;
+      }
+    } catch (vetoErr) {
+      console.warn("[Corners VIP] Gemini Veto audit warning:", vetoErr);
+    }
+  }
+
+  // 5. Fusionar nuevas alertas con el snapshot existente
   const mergedMap = new Map<string, MarketOpportunity>();
   for (const p of existingSnapshot) {
     mergedMap.set(getOpportunityKey(p), {
@@ -294,7 +309,7 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string): Promise
     });
   }
 
-  for (const np of newlyFoundAlerts) {
+  for (const np of approvedNewAlerts) {
     const key = getOpportunityKey(np);
     if (!mergedMap.has(key)) {
       mergedMap.set(key, np);
@@ -305,18 +320,44 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string): Promise
     (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
   );
 
-  // 5. Guardar en disco y Supabase
+  // Asegurar auditoría en selecciones previas que aún no tengan nota de IA
+  const unaudited = finalPicks.filter(
+    (p) => !p.explanation?.includes("Auditoría") && !p.explanation?.includes("VETO")
+  );
+  if (unaudited.length > 0) {
+    try {
+      const batchResult = await auditPredictionsWithGeminiVeto(unaudited, "football");
+      if (batchResult?.approvedPicks && batchResult.approvedPicks.length > 0) {
+        const auditMap = new Map(batchResult.approvedPicks.map((p) => [getOpportunityKey(p), p]));
+        for (let i = 0; i < finalPicks.length; i++) {
+          const key = getOpportunityKey(finalPicks[i]);
+          const audited = auditMap.get(key);
+          if (audited) {
+            finalPicks[i] = {
+              ...finalPicks[i],
+              explanation: audited.explanation,
+              confidence: audited.confidence || finalPicks[i].confidence,
+            };
+          }
+        }
+      }
+    } catch (auditErr) {
+      console.warn("[Corners VIP] Gemini Veto audit on existing picks warning:", auditErr);
+    }
+  }
+
+  // 6. Guardar en disco y Supabase
   await saveCornersVipSnapshotAsync(targetDate, finalPicks, false);
 
   return {
     success: true,
-    newAlerts: newlyFoundAlerts,
+    newAlerts: approvedNewAlerts,
     totalAlerts: finalPicks.length,
     predictions: finalPicks,
     message:
-      newlyFoundAlerts.length > 0
-        ? `✓ Se descubrieron ${newlyFoundAlerts.length} nuevas alertas de Corners VIP para hoy.`
-        : `✓ Panel de Corners VIP al día (${finalPicks.length} alertas disponibles).`,
+      approvedNewAlerts.length > 0
+        ? `✓ Se descubrieron ${approvedNewAlerts.length} nuevas alertas de Corners VIP para hoy (auditadas por IA Gemini).`
+        : `✓ Panel de Corners VIP al día (${finalPicks.length} alertas auditadas disponibles).`,
   };
 }
 

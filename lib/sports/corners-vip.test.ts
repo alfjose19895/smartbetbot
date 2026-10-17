@@ -91,4 +91,14 @@ describe("Corners VIP Module Suite", () => {
     expect(slate.predictions.every((p) => p.isCornersVip === true)).toBe(true);
     expect(slate.stats.total).toBeGreaterThanOrEqual(1);
   });
+
+  it("applies unified Gemini AI Veto audit to corners picks", async () => {
+    const { auditPredictionsWithGeminiVeto } = await import("@/lib/ai/claude-analyst");
+    const vetoResult = await auditPredictionsWithGeminiVeto([mockCornerPick], "football");
+    expect(vetoResult).toBeDefined();
+    expect(vetoResult.approvedPicks.length).toBeGreaterThan(0);
+    const auditedPick = vetoResult.approvedPicks[0];
+    expect(auditedPick.fixtureId).toBe(mockCornerPick.fixtureId);
+    expect(auditedPick.explanation).toBeDefined();
+  });
 });

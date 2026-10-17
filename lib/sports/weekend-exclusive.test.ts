@@ -203,5 +203,29 @@ describe('Módulo Exclusivo Fin de Semana (Weekend Exclusive Engine)', () => {
       expect(slate.stats.byRule).toBeDefined();
       expect(slate.stats.byDay).toBeDefined();
     });
+
+    it('applies unified Gemini AI Veto audit to weekend slate picks', async () => {
+      const { auditPredictionsWithGeminiVeto } = await import('@/lib/ai/claude-analyst');
+      const sampleWeekendPick = {
+        fixtureId: 888101,
+        match: 'Liverpool vs Manchester City',
+        homeTeam: 'Liverpool',
+        awayTeam: 'Manchester City',
+        league: 'Premier League',
+        country: 'Inglaterra',
+        kickoff: '2026-10-18T16:30:00Z',
+        market: 'Córners',
+        selection: 'Over 8.5',
+        odds: 1.60,
+        probability: 70,
+        confidence: 'Muy Alta' as const,
+        explanation: 'Dominio posicional y alto volumen de centros proyectan más de 8.5 saques de esquina.',
+      } as unknown as import('./prediction-engine').MarketOpportunity;
+
+      const vetoResult = await auditPredictionsWithGeminiVeto([sampleWeekendPick], 'football');
+      expect(vetoResult).toBeDefined();
+      expect(vetoResult.approvedPicks.length).toBeGreaterThan(0);
+      expect(vetoResult.approvedPicks[0].fixtureId).toBe(888101);
+    });
   });
 });
