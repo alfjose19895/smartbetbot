@@ -246,7 +246,11 @@ export async function fetchAndEvaluateDayFixtures(dateStr: string): Promise<Mark
 
     if (curatedPicks.length > 0) {
       try {
-        saveDailySnapshot(dateStr, curatedPicks, 'football', true);
+        // Only save an initial daily snapshot IF no snapshot exists yet (never overwrite an existing snapshot)
+        const existingSnapshot = (await loadDailySnapshotAsync(dateStr, 'football')) || loadDailySnapshot(dateStr, 'football');
+        if (!existingSnapshot || existingSnapshot.length === 0) {
+          saveDailySnapshot(dateStr, curatedPicks, 'football', false);
+        }
       } catch (saveErr) {
         console.warn(`[WeekendExclusive] Error guardando daily snapshot para ${dateStr}:`, saveErr);
       }
@@ -290,21 +294,34 @@ export async function getWeekendExclusiveSlate(options?: {
   }
 
   // 2. Compilar pronósticos curados de Sábado y Domingo (prioridad central de fin de semana)
+  const isHealthyDailySnapshot = (picks: MarketOpportunity[] | null): boolean => {
+    if (!picks || !Array.isArray(picks) || picks.length === 0) return false;
+    return !picks.some((p) => {
+      const leg = (p.league || '').toLowerCase();
+      const h = (p.homeTeam || '').toLowerCase();
+      const a = (p.awayTeam || '').toLowerCase();
+      return (
+        isExcludedMatch(p.homeTeam, p.awayTeam, p.match) ||
+        leg.includes('primavera') ||
+        leg.includes('u18') ||
+        leg.includes('u19') ||
+        leg.includes('u20') ||
+        leg.includes('u21') ||
+        leg.includes('women') ||
+        leg.includes('femen') ||
+        h.includes('women') ||
+        a.includes('women')
+      );
+    });
+  };
+
   let satPicks = await loadDailySnapshotAsync(cycle.saturdayDate, 'football');
-  if (!satPicks || satPicks.length === 0 || satPicks.length > 20) {
+  if (!isHealthyDailySnapshot(satPicks)) {
     satPicks = await fetchAndEvaluateDayFixtures(cycle.saturdayDate);
   }
 
   let sunPicks = await loadDailySnapshotAsync(cycle.sundayDate, 'football');
-  if (!sunPicks || sunPicks.length === 0 || sunPicks.length > 20) {
-    sunPicks = await fetchAndEvaluateDayFixtures(cycle.sundayDate);
-  }
-
-  // Si sábado o domingo quedaron cortos, complementar
-  if (!satPicks || satPicks.length === 0) {
-    satPicks = await fetchAndEvaluateDayFixtures(cycle.saturdayDate);
-  }
-  if (!sunPicks || sunPicks.length === 0) {
+  if (!isHealthyDailySnapshot(sunPicks)) {
     sunPicks = await fetchAndEvaluateDayFixtures(cycle.sundayDate);
   }
 

@@ -251,7 +251,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-emerald-500 selection:text-slate-950">
-      <Navbar />
+      <Navbar onSync={handleSyncPredictions} syncing={syncing} />
 
       <main className="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-6 space-y-7 flex-1">
         {/* ======================================================== */}

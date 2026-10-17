@@ -146,7 +146,9 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
         if (Array.isArray(data.predictions)) {
           window.dispatchEvent(new CustomEvent('predictions-updated', { detail: data.predictions }));
         }
-        window.location.reload();
+        setTimeout(() => {
+          window.location.reload();
+        }, 800);
       }
     } catch {
     } finally {
