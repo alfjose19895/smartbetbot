@@ -40,7 +40,8 @@ const SPORTS_OPTIONS: Array<{
       p === '/parlay' ||
       p === '/history' ||
       p === '/reports' ||
-      p === '/featured',
+      p === '/featured' ||
+      p === '/weekend',
   },
   {
     id: 'nhl',
@@ -153,12 +154,13 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
     SPORTS_OPTIONS.find((s) => s.id !== 'all' && s.activeMatches(pathname)) || SPORTS_OPTIONS[0];
 
   // Dynamic navigation links adapted to current sport context with global Settings option
-  const getSportHref = (type: 'dashboard' | 'signals' | 'featured' | 'parlay' | 'history' | 'reports' | 'settings') => {
+  const getSportHref = (type: 'dashboard' | 'signals' | 'featured' | 'weekend' | 'parlay' | 'history' | 'reports' | 'settings') => {
     if (type === 'settings') return '/settings';
     if (currentSport.id === 'all' || currentSport.id === 'football') {
       if (type === 'dashboard') return '/dashboard';
       if (type === 'signals') return '/signals';
       if (type === 'featured') return '/featured';
+      if (type === 'weekend') return '/weekend';
       if (type === 'parlay') return '/parlay';
       if (type === 'history') return '/history';
       if (type === 'reports') return '/reports';
@@ -170,6 +172,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
 
   const checkIsActive = (href: string) => {
     if (href === '/settings') return pathname === '/settings';
+    if (href === '/weekend') return pathname === '/weekend';
     if (href.includes('?tab=')) {
       const [path, query] = href.split('?tab=');
       return pathname === path && currentTab === query;
@@ -188,6 +191,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
     },
     { href: getSportHref('signals'), label: 'Pre-Match', icon: '📋' },
     { href: getSportHref('featured'), label: 'Destacados ⭐', icon: '⭐' },
+    { href: getSportHref('weekend'), label: 'Finde VIP 💎', icon: '💎' },
     { href: getSportHref('parlay'), label: t('navParlay'), icon: '🎲' },
     { href: getSportHref('history'), label: t('navHistory'), icon: '📜' },
     { href: getSportHref('reports'), label: 'Reportes', icon: '📈' },
