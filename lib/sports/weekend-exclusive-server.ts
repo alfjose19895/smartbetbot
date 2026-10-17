@@ -353,9 +353,27 @@ export async function getWeekendExclusiveSlate(options?: {
       });
   };
 
-  const qualifiedFri = sortMatchesByTierAndMarket(mapWithDayMeta(friPicks || [], 'friday'));
-  const qualifiedSat = sortMatchesByTierAndMarket(mapWithDayMeta(satPicks || [], 'saturday'));
-  const qualifiedSun = sortMatchesByTierAndMarket(mapWithDayMeta(sunPicks || [], 'sunday'));
+  // Deduplicación estricta por partido y equipos
+  const deduplicatePicks = (list: WeekendExclusivePick[]): WeekendExclusivePick[] => {
+    const seenTeams = new Set<string>();
+    const seenMatches = new Set<string>();
+    const result: WeekendExclusivePick[] = [];
+    for (const p of list) {
+      const h = (p.homeTeam || '').toLowerCase().trim();
+      const a = (p.awayTeam || '').toLowerCase().trim();
+      const mKey = `${h}-${a}`;
+      if (seenTeams.has(h) || seenTeams.has(a) || seenMatches.has(mKey)) continue;
+      seenTeams.add(h);
+      seenTeams.add(a);
+      seenMatches.add(mKey);
+      result.push(p);
+    }
+    return result;
+  };
+
+  const qualifiedFri = deduplicatePicks(sortMatchesByTierAndMarket(mapWithDayMeta(friPicks || [], 'friday')));
+  const qualifiedSat = deduplicatePicks(sortMatchesByTierAndMarket(mapWithDayMeta(satPicks || [], 'saturday')));
+  const qualifiedSun = deduplicatePicks(sortMatchesByTierAndMarket(mapWithDayMeta(sunPicks || [], 'sunday')));
 
   // Aplicar protección de Tier 4 a cada día (máximo 1 viernes si hay pocos, 2 sábado y domingo)
   const cleanFri = applyTier4QuotaProtection(qualifiedFri, 1);
