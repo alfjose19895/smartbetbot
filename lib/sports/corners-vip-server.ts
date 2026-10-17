@@ -13,7 +13,6 @@ import {
   saveDailySnapshot,
   saveDailySnapshotAsync,
   settleActiveSnapshotWithRealScores,
-  isCuratedLeague,
   isYouthOrReserveFixture,
   getOpportunityKey,
 } from "./db";
@@ -132,8 +131,7 @@ function isSeniorCompetitiveCornerFixture(item: any): boolean {
   }
 
   if (isExcludedMatch(hName, aName)) return false;
-  if (!isCuratedLeague(item.league?.id, item.league?.name, item.league?.country)) return false;
-
+  // Incluir TODAS las ligas profesionales del mundo con cuotas y telemetría de saques de esquina
   return true;
 }
 
@@ -252,10 +250,25 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string): Promise
       marketOdds: realMarketOdds,
     });
 
-    // Filtrar estrictamente solo oportunidades de córners
+    // Filtrar estrictamente solo oportunidades de córners en modalidad OVER (no Under)
     const cornerOpps = opportunities.filter((p) => {
       const isCorner = p.market === "Córners" || (p.selection || "").toLowerCase().includes("córner");
-      return isCorner && p.probability >= 58 && p.odds >= 1.25 && p.odds <= 1.95;
+      const selLower = (p.selection || "").toLowerCase();
+      const mktLower = (p.market || "").toLowerCase();
+      const isUnder =
+        selLower.includes("under") ||
+        selLower.includes("menos") ||
+        selLower.includes("baja") ||
+        mktLower.includes("under") ||
+        mktLower.includes("menos") ||
+        mktLower.includes("baja");
+      const isOver =
+        selLower.includes("over") ||
+        selLower.includes("más") ||
+        selLower.includes("+") ||
+        mktLower.includes("over") ||
+        mktLower.includes("alta");
+      return isCorner && !isUnder && isOver && p.probability >= 58 && p.odds >= 1.25 && p.odds <= 1.95;
     });
 
     if (cornerOpps.length > 0) {
@@ -396,9 +409,27 @@ export async function getCornersVipSlate(dateStr?: string, forceRefresh = false)
     }
   }
 
-  // Filtrar exclusivamente córners y asegurar banderas VIP
+  // Filtrar exclusivamente córners en modalidad OVER (estrictamente no under) y asegurar banderas VIP
   const sanitizedPicks = picks
-    .filter((p) => p.market === "Córners" || (p.selection || "").toLowerCase().includes("córner"))
+    .filter((p) => {
+      const isCorner = p.market === "Córners" || (p.selection || "").toLowerCase().includes("córner");
+      const selLower = (p.selection || "").toLowerCase();
+      const mktLower = (p.market || "").toLowerCase();
+      const isUnder =
+        selLower.includes("under") ||
+        selLower.includes("menos") ||
+        selLower.includes("baja") ||
+        mktLower.includes("under") ||
+        mktLower.includes("menos") ||
+        mktLower.includes("baja");
+      const isOver =
+        selLower.includes("over") ||
+        selLower.includes("más") ||
+        selLower.includes("+") ||
+        mktLower.includes("over") ||
+        mktLower.includes("alta");
+      return isCorner && !isUnder && isOver;
+    })
     .map((p) => ({
       ...p,
       sport: "corners_vip" as any,

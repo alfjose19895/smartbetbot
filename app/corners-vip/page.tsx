@@ -222,7 +222,7 @@ export default function CornersVipPage() {
   }, [activeSignals]);
 
   const cornerLinesDropdownOptions: DropdownOption[] = useMemo(() => {
-    const lines = ["Over 6.5", "Over 7.5", "Over 8.5", "Over 9.5", "Over 10.5", "Under"];
+    const lines = ["Over 6.5", "Over 7.5", "Over 8.5", "Over 9.5", "Over 10.5"];
     return lines.map((line) => {
       const count = activeSignals.filter((s) => (s.selection || "").toLowerCase().includes(line.toLowerCase())).length;
       return {
@@ -241,6 +241,20 @@ export default function CornersVipPage() {
   // Filtering Logic
   const filteredPredictions = useMemo(() => {
     return activeSignals.filter((p) => {
+      // REGLA ESTRICTA: Exclusivamente Over de Córners (no Under)
+      const selLower = (p.selection || "").toLowerCase();
+      const mktLower = (p.market || "").toLowerCase();
+      if (
+        selLower.includes("under") ||
+        selLower.includes("menos") ||
+        selLower.includes("baja") ||
+        mktLower.includes("under") ||
+        mktLower.includes("menos") ||
+        mktLower.includes("baja")
+      ) {
+        return false;
+      }
+
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const matchTeams =

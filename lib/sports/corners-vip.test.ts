@@ -101,4 +101,27 @@ describe("Corners VIP Module Suite", () => {
     expect(auditedPick.fixtureId).toBe(mockCornerPick.fixtureId);
     expect(auditedPick.explanation).toBeDefined();
   });
+
+  it("strictly filters out Under corner selections, permitting exclusively Over", async () => {
+    const testDate = "2026-10-17";
+    const underPick: MarketOpportunity = {
+      ...mockCornerPick,
+      fixtureId: 999102,
+      selection: "Under 9.5",
+    };
+    const overPick: MarketOpportunity = {
+      ...mockCornerPick,
+      fixtureId: 999103,
+      selection: "Over 8.5",
+    };
+
+    await saveCornersVipSnapshotAsync(testDate, [underPick, overPick], true);
+    const slate = await getCornersVipSlate(testDate);
+    expect(slate.predictions.some((p) => p.fixtureId === 999102)).toBe(false);
+    expect(slate.predictions.some((p) => p.fixtureId === 999103)).toBe(true);
+    expect(slate.predictions.every((p) => !p.selection.toLowerCase().includes("under"))).toBe(true);
+
+    // Restore clean snapshot
+    await saveCornersVipSnapshotAsync(testDate, [mockCornerPick], true);
+  });
 });
