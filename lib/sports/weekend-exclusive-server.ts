@@ -380,32 +380,79 @@ export async function getWeekendExclusiveSlate(options?: {
   const cleanSat = applyTier4QuotaProtection(qualifiedSat, 2);
   const cleanSun = applyTier4QuotaProtection(qualifiedSun, 2);
 
-  // 4. Seleccionar exactamente 15 pronósticos equilibrados (Viernes, Sábado y Domingo)
-  // Cuota base objetivo: hasta 3 Viernes, 6 Sábado, 6 Domingo (adaptable dinámicamente)
-  const friQuota = Math.min(cleanFri.length, 3);
-  const remainingNeeded = WEEKEND_EXCLUSIVE_TARGET_COUNT - friQuota;
+  // 4. Seleccionar exactamente 15 pronósticos con prioridad a partidos que AÚN NO COMIENZAN y mayor cuota a CÓRNERS (Rank #1)
+  const nowMs = Date.now();
+  const allCandidates = deduplicatePicks([
+    ...qualifiedSat,
+    ...qualifiedSun,
+    ...qualifiedFri,
+  ]);
 
-  const satQuota = Math.min(cleanSat.length, Math.ceil(remainingNeeded / 2));
-  const sunQuota = Math.min(cleanSun.length, remainingNeeded - satQuota);
+  // Priorizar estrictamente partidos futuros / por comenzar (kickoff > now)
+  const unstarted = allCandidates.filter((p) => p.kickoff && new Date(p.kickoff).getTime() > nowMs);
+  const candidatePool = unstarted.length >= WEEKEND_EXCLUSIVE_TARGET_COUNT ? unstarted : allCandidates;
 
-  const curatedPicks: WeekendExclusivePick[] = [
-    ...cleanFri.slice(0, friQuota),
-    ...cleanSat.slice(0, satQuota),
-    ...cleanSun.slice(0, sunQuota),
-  ];
+  // Clasificar por Mercados respetando la jerarquía oficial
+  const cornersPool = applyTier4QuotaProtection(
+    candidatePool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 1),
+    2
+  );
+  const bttsPool = applyTier4QuotaProtection(
+    candidatePool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 2),
+    2
+  );
+  const goalsPool = applyTier4QuotaProtection(
+    candidatePool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 3),
+    1
+  );
+  const localPool = applyTier4QuotaProtection(
+    candidatePool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 4),
+    2
+  );
+  const awayPool = applyTier4QuotaProtection(
+    candidatePool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 5),
+    1
+  );
 
-  // Si faltasen picks para completar los 15 (ej. si el viernes tuvo menos oferta), rellenar de la bolsa restante
+  const curatedPicks: WeekendExclusivePick[] = [];
+  const chosenTeams = new Set<string>();
+
+  const takeFromPool = (pool: WeekendExclusivePick[], maxCount: number) => {
+    let taken = 0;
+    for (const p of pool) {
+      if (taken >= maxCount || curatedPicks.length >= WEEKEND_EXCLUSIVE_TARGET_COUNT) break;
+      const h = (p.homeTeam || '').toLowerCase().trim();
+      const a = (p.awayTeam || '').toLowerCase().trim();
+      if (chosenTeams.has(h) || chosenTeams.has(a)) continue;
+      chosenTeams.add(h);
+      chosenTeams.add(a);
+      curatedPicks.push(p);
+      taken++;
+    }
+  };
+
+  // Cuotas de Mercado oficiales SmartBetBot:
+  // 1: Córners (Dominante: 40-47% del slate -> hasta 7 selecciones)
+  // 2: Ambos Equipos Anotan (30-33% del slate -> hasta 5 selecciones)
+  // 3: Over Goles (hasta 3 selecciones)
+  // 4: Ganador Local (hasta 4 selecciones)
+  // 5: Ganador Visitante (hasta 1 selección)
+  takeFromPool(cornersPool, 7);
+  takeFromPool(bttsPool, 5);
+  takeFromPool(goalsPool, 3);
+  takeFromPool(localPool, 4);
+  takeFromPool(awayPool, 1);
+
+  // Relleno dinámico si faltasen selecciones en riguroso orden de mercados (Córners > BTTS > Goles > 1X2)
   if (curatedPicks.length < WEEKEND_EXCLUSIVE_TARGET_COUNT) {
-    const remainingPool = sortMatchesByTierAndMarket([
-      ...cleanFri.slice(friQuota),
-      ...cleanSat.slice(satQuota),
-      ...cleanSun.slice(sunQuota),
-    ]);
-    const needed = WEEKEND_EXCLUSIVE_TARGET_COUNT - curatedPicks.length;
-    curatedPicks.push(...remainingPool.slice(0, needed));
+    takeFromPool(cornersPool, WEEKEND_EXCLUSIVE_TARGET_COUNT - curatedPicks.length);
+    takeFromPool(bttsPool, WEEKEND_EXCLUSIVE_TARGET_COUNT - curatedPicks.length);
+    takeFromPool(goalsPool, WEEKEND_EXCLUSIVE_TARGET_COUNT - curatedPicks.length);
+    takeFromPool(localPool, WEEKEND_EXCLUSIVE_TARGET_COUNT - curatedPicks.length);
+    takeFromPool(awayPool, WEEKEND_EXCLUSIVE_TARGET_COUNT - curatedPicks.length);
   }
 
-  // Re-ordenar el conjunto global respetando Tiers y Mercados
+  // Re-ordenar el conjunto global respetando Tiers y Mercados (Córners > BTTS > Goles > 1X2)
   const finalOrdered = sortMatchesByTierAndMarket(curatedPicks).map((p, idx) => ({
     ...p,
     weekendOrder: idx + 1,
