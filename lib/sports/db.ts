@@ -222,6 +222,12 @@ export async function loadDailySnapshotAsync(dateStr: string, sport: string = "f
     }
   }
 
+  // If disk has clean curated picks (10 to 16) and Supabase is bloated with raw picks (> 20), discard bloated cloud
+  if (diskPicks.length >= 10 && diskPicks.length <= 16 && supabasePicks.length > 20) {
+    saveDailySnapshot(dateStr, diskPicks, sportKey, true);
+    supabasePicks = [];
+  }
+
   if (diskPicks.length === 0 && supabasePicks.length === 0) {
     return null;
   }
@@ -383,6 +389,12 @@ export function saveDailySnapshot(dateStr: string, picks: MarketOpportunity[], s
 
           if (cloudData && Array.isArray(cloudData.picks)) {
             cloudPicks = cloudData.picks;
+          }
+
+          if (overwrite) {
+            cloudPicks = cloudPicks.filter(
+              (p) => p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST"
+            );
           }
 
           const cloudMergedMap = new Map<string, MarketOpportunity>();
