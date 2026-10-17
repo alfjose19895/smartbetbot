@@ -282,10 +282,10 @@ export async function getWeekendExclusiveSlate(options?: {
       const content = fs.readFileSync(filePath, 'utf-8');
       const parsed: WeekendSlate = JSON.parse(content);
       if (Array.isArray(parsed.picks) && parsed.picks.length > 0) {
-        const hasSatSun = parsed.picks.some((p) => p.dayOfWeek === 'saturday' || p.dayOfWeek === 'sunday');
+        const hasWeekendDays = parsed.picks.some((p) => p.dayOfWeek === 'friday' || p.dayOfWeek === 'saturday' || p.dayOfWeek === 'sunday');
         // Validar que las ligas sean de calidad (no copadas por Tier 4)
         const tier1Count = parsed.picks.filter((p) => (p.leagueTier || 3) === 1).length;
-        if (hasSatSun && tier1Count >= 4) {
+        if (hasWeekendDays && tier1Count >= 4) {
           parsed.cycle = cycle;
           return parsed;
         }
@@ -295,7 +295,7 @@ export async function getWeekendExclusiveSlate(options?: {
     }
   }
 
-  // 2. Compilar pronósticos curados de Sábado y Domingo (prioridad central de fin de semana)
+  // 2. Compilar pronósticos curados de Viernes, Sábado y Domingo (Cartelera Completa Fin de Semana)
   const isHealthyDailySnapshot = (picks: MarketOpportunity[] | null): boolean => {
     if (!picks || !Array.isArray(picks) || picks.length === 0) return false;
     return !picks.some((p) => {
@@ -317,6 +317,11 @@ export async function getWeekendExclusiveSlate(options?: {
     });
   };
 
+  let friPicks = await loadDailySnapshotAsync(cycle.fridayDate, 'football');
+  if (!isHealthyDailySnapshot(friPicks)) {
+    friPicks = await fetchAndEvaluateDayFixtures(cycle.fridayDate);
+  }
+
   let satPicks = await loadDailySnapshotAsync(cycle.saturdayDate, 'football');
   if (!isHealthyDailySnapshot(satPicks)) {
     satPicks = await fetchAndEvaluateDayFixtures(cycle.saturdayDate);
@@ -327,13 +332,15 @@ export async function getWeekendExclusiveSlate(options?: {
     sunPicks = await fetchAndEvaluateDayFixtures(cycle.sundayDate);
   }
 
-  // 3. Preparar candidatos con su metadato de día
-  const mapWithDayMeta = (picks: MarketOpportunity[], dayOfWeek: 'saturday' | 'sunday'): WeekendExclusivePick[] => {
+  // 3. Preparar candidatos con su metadato de día (Viernes, Sábado o Domingo)
+  const mapWithDayMeta = (picks: MarketOpportunity[], dayOfWeek: 'friday' | 'saturday' | 'sunday'): WeekendExclusivePick[] => {
     return (picks || [])
       .filter((p) => isWeekendExclusivePick(p) && p.odds >= 1.25 && p.odds <= 1.80)
       .map((p) => {
         const ruleMatch = getWeekendExclusiveRuleMatch(p)!;
-        const dayLabel = dayOfWeek === 'saturday'
+        const dayLabel = dayOfWeek === 'friday'
+          ? `Viernes ${cycle.fridayDate.split('-')[2]}`
+          : dayOfWeek === 'saturday'
           ? `Sábado ${cycle.saturdayDate.split('-')[2]}`
           : `Domingo ${cycle.sundayDate.split('-')[2]}`;
         return {
@@ -346,25 +353,33 @@ export async function getWeekendExclusiveSlate(options?: {
       });
   };
 
+  const qualifiedFri = sortMatchesByTierAndMarket(mapWithDayMeta(friPicks || [], 'friday'));
   const qualifiedSat = sortMatchesByTierAndMarket(mapWithDayMeta(satPicks || [], 'saturday'));
   const qualifiedSun = sortMatchesByTierAndMarket(mapWithDayMeta(sunPicks || [], 'sunday'));
 
-  // Aplicar protección de Tier 4 a cada día
+  // Aplicar protección de Tier 4 a cada día (máximo 1 viernes si hay pocos, 2 sábado y domingo)
+  const cleanFri = applyTier4QuotaProtection(qualifiedFri, 1);
   const cleanSat = applyTier4QuotaProtection(qualifiedSat, 2);
   const cleanSun = applyTier4QuotaProtection(qualifiedSun, 2);
 
-  // 4. Seleccionar exactamente 15 pronósticos equilibrados (8 sábado + 7 domingo)
-  const satQuota = Math.min(cleanSat.length, 8);
-  const sunQuota = Math.min(cleanSun.length, WEEKEND_EXCLUSIVE_TARGET_COUNT - satQuota);
+  // 4. Seleccionar exactamente 15 pronósticos equilibrados (Viernes, Sábado y Domingo)
+  // Cuota base objetivo: hasta 3 Viernes, 6 Sábado, 6 Domingo (adaptable dinámicamente)
+  const friQuota = Math.min(cleanFri.length, 3);
+  const remainingNeeded = WEEKEND_EXCLUSIVE_TARGET_COUNT - friQuota;
+
+  const satQuota = Math.min(cleanSat.length, Math.ceil(remainingNeeded / 2));
+  const sunQuota = Math.min(cleanSun.length, remainingNeeded - satQuota);
 
   const curatedPicks: WeekendExclusivePick[] = [
+    ...cleanFri.slice(0, friQuota),
     ...cleanSat.slice(0, satQuota),
     ...cleanSun.slice(0, sunQuota),
   ];
 
-  // Si faltasen picks para completar los 15, rellenar de la bolsa restante de sábado o domingo
+  // Si faltasen picks para completar los 15 (ej. si el viernes tuvo menos oferta), rellenar de la bolsa restante
   if (curatedPicks.length < WEEKEND_EXCLUSIVE_TARGET_COUNT) {
     const remainingPool = sortMatchesByTierAndMarket([
+      ...cleanFri.slice(friQuota),
       ...cleanSat.slice(satQuota),
       ...cleanSun.slice(sunQuota),
     ]);
