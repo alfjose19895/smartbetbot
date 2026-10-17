@@ -10,7 +10,7 @@ import { SupportedSport } from "@/lib/sports/types";
 
 type DateFilterMode = "all" | "today" | "yesterday" | "7d" | "30d" | "specific" | "range";
 type ProbFilterMode = "all" | "muy_alta" | "alta" | "media" | "baja" | "custom";
-type ModalityFilter = "all" | "prematch" | "live" | "mcp" | "bomba";
+type ModalityFilter = "all" | "prematch" | "live" | "mcp" | "bomba" | "corners_vip";
 
 interface MetricItem {
   name: string;
@@ -196,11 +196,13 @@ function ReportsContent() {
       const isLive = item.isLive || item.matchTiming === "live";
       const isMcp = item.isMcp || item.pickBadge === "mcp";
       const isBomba = item.pickBadge === "bomba" || item.odds >= 2.05;
+      const isCornersVip = Boolean(item.isCornersVip || item.source === "corners_vip" || item.pickBadge === "corners_vip" || item.vipBadge === "Corners VIP");
 
       if (modalityFilter === "prematch" && isLive) return false;
       if (modalityFilter === "live" && !isLive) return false;
       if (modalityFilter === "mcp" && !isMcp) return false;
       if (modalityFilter === "bomba" && !isBomba) return false;
+      if (modalityFilter === "corners_vip" && !isCornersVip) return false;
 
       // 4. Market Filter
       if (marketFilter !== "all") {
@@ -249,12 +251,14 @@ function ReportsContent() {
     const livePicks = filteredItems.filter((h) => h.isLive || h.matchTiming === "live");
     const mcpPicks = filteredItems.filter((h) => h.isMcp || h.pickBadge === "mcp");
     const bombaPicks = filteredItems.filter((h) => h.pickBadge === "bomba" || h.odds >= 2.05);
+    const cornersVipPicks = filteredItems.filter((h) => h.isCornersVip || h.source === "corners_vip" || h.pickBadge === "corners_vip" || h.vipBadge === "Corners VIP");
 
     return {
       prematch: computeStats(prematchPicks),
       live: computeStats(livePicks),
       mcp: computeStats(mcpPicks),
       bomba: computeStats(bombaPicks),
+      corners_vip: computeStats(cornersVipPicks),
     };
   }, [filteredItems]);
 
@@ -649,16 +653,28 @@ function ReportsContent() {
               <span>🎯 Valor (+EV) ({comparativeMetrics.live.total})</span>
             </button>
             {selectedSport === "football" && (
-              <button
-                onClick={() => setModalityFilter("mcp")}
-                className={`rounded-xl px-3 py-1 text-xs font-black transition cursor-pointer ${
-                  modalityFilter === "mcp"
-                    ? "bg-purple-600 text-white"
-                    : "bg-purple-50 text-purple-800 hover:bg-purple-100 dark:bg-purple-950/60 dark:text-purple-300"
-                }`}
-              >
-                🤖 Agente MCP ({comparativeMetrics.mcp.total})
-              </button>
+              <>
+                <button
+                  onClick={() => setModalityFilter("mcp")}
+                  className={`rounded-xl px-3 py-1 text-xs font-black transition cursor-pointer ${
+                    modalityFilter === "mcp"
+                      ? "bg-purple-600 text-white"
+                      : "bg-purple-50 text-purple-800 hover:bg-purple-100 dark:bg-purple-950/60 dark:text-purple-300"
+                  }`}
+                >
+                  🤖 Agente MCP ({comparativeMetrics.mcp.total})
+                </button>
+                <button
+                  onClick={() => setModalityFilter("corners_vip")}
+                  className={`rounded-xl px-3 py-1 text-xs font-black transition cursor-pointer flex items-center gap-1 ${
+                    modalityFilter === "corners_vip"
+                      ? "bg-amber-500 text-slate-950 font-black shadow-md shadow-amber-500/30"
+                      : "bg-amber-500/10 text-amber-300 border border-amber-500/30 hover:bg-amber-500/20"
+                  }`}
+                >
+                  <span>🚩 Corners VIP ({comparativeMetrics.corners_vip.total})</span>
+                </button>
+              </>
             )}
           </div>
 
@@ -1003,7 +1019,14 @@ function ReportsContent() {
                           <div className="text-[10px] text-slate-400">{item.league}</div>
                         </td>
                         <td className="p-2.5">
-                          <span className="font-bold text-slate-800 dark:text-slate-200 block">{item.market}</span>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="font-bold text-slate-800 dark:text-slate-200">{item.market}</span>
+                            {(item.isCornersVip || item.source === "corners_vip" || item.pickBadge === "corners_vip" || item.vipBadge === "Corners VIP") && (
+                              <span className="rounded bg-amber-500/10 border border-amber-500/30 px-1.5 py-0.5 text-[9px] font-black text-amber-400">
+                                🚩 Corners VIP
+                              </span>
+                            )}
+                          </div>
                           <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-black">{item.selection}</span>
                         </td>
                         <td className="p-2.5 text-center font-black text-slate-900 dark:text-white">

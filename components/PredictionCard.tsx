@@ -196,6 +196,13 @@ export function PredictionCard({
       isElitePick(prediction)
   );
 
+  const isCornersVip = Boolean(
+    prediction.isCornersVip ||
+      prediction.source === "corners_vip" ||
+      prediction.pickBadge === "corners_vip" ||
+      prediction.vipBadge === "Corners VIP"
+  );
+
   const destacadoMatch = getDestacadoRuleMatch(prediction);
   const isDestacado = Boolean(
     prediction.isDestacado ||
@@ -386,7 +393,13 @@ export function PredictionCard({
               )}
 
               <div className="flex items-center flex-wrap gap-1 ml-auto">
-                {isDestacado && (
+                {isCornersVip && (
+                  <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-xs shrink-0 border border-amber-300">
+                    <span>🚩</span>
+                    <span>CORNERS VIP</span>
+                  </span>
+                )}
+                {isDestacado && !isCornersVip && (
                   <span
                     title={destacadoRule ? `Destacado: ${destacadoRule}` : "Pronóstico Destacado 5★"}
                     className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 shadow-xs shrink-0"
@@ -580,7 +593,13 @@ export function PredictionCard({
               </div>
 
               <div className="flex items-center gap-1.5 flex-wrap ml-auto">
-                {isDestacado && (
+                {isCornersVip && (
+                  <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black border border-amber-300 shadow-md shadow-amber-500/30 shrink-0">
+                    <span>🚩</span>
+                    <span>CORNERS VIP</span>
+                  </span>
+                )}
+                {isDestacado && !isCornersVip && (
                   <span
                     title={destacadoRule ? `Cumple: ${destacadoRule}` : "Pronóstico Destacado 5 Estrellas"}
                     className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 shadow-xs shrink-0"

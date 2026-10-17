@@ -41,7 +41,8 @@ const SPORTS_OPTIONS: Array<{
       p === '/history' ||
       p === '/reports' ||
       p === '/featured' ||
-      p === '/weekend',
+      p === '/weekend' ||
+      p === '/corners-vip',
   },
   {
     id: 'nhl',
@@ -182,6 +183,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
   const checkIsActive = (href: string) => {
     if (href === '/settings') return pathname === '/settings';
     if (href === '/weekend') return pathname === '/weekend';
+    if (href === '/corners-vip') return pathname === '/corners-vip';
     if (href.includes('?tab=')) {
       const [path, query] = href.split('?tab=');
       return pathname === path && currentTab === query;
@@ -200,7 +202,12 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
     },
     { href: getSportHref('signals'), label: 'Pre-Match', icon: '📋' },
     { href: getSportHref('featured'), label: 'Destacados ⭐', icon: '⭐' },
-    { href: getSportHref('weekend'), label: 'Finde VIP 💎', icon: '💎' },
+    ...(currentRole === 'admin'
+      ? [
+          { href: '/corners-vip', label: 'Corners VIP 🚩', icon: '🚩' },
+          { href: getSportHref('weekend'), label: 'Finde VIP 💎', icon: '💎' },
+        ]
+      : []),
     { href: getSportHref('parlay'), label: t('navParlay'), icon: '🎲' },
     { href: getSportHref('history'), label: t('navHistory'), icon: '📜' },
     { href: getSportHref('reports'), label: 'Reportes', icon: '📈' },

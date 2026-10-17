@@ -87,6 +87,9 @@ export async function GET(request: NextRequest) {
         filteredParlays = filteredParlays.filter((p) =>
           p.legs.some((l) => (l.country || "").toUpperCase() === "NCAAF" || l.league.toUpperCase().includes("NCAA") || ((l as any).sport || "").toLowerCase() === "ncaaf")
         );
+      } else if (sport === "corners_vip") {
+        filteredHistory = filteredHistory.filter((h) => h.isCornersVip || h.source === "corners_vip" || h.pickBadge === "corners_vip" || ((h as any).sport || "") === "corners_vip");
+        filteredParlays = [];
       }
     }
 

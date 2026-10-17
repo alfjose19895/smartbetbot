@@ -125,11 +125,26 @@ export function isSportMatch(p: any, targetSport: string = "football"): boolean 
   const l = (p.league || "").toUpperCase();
   const s = ((p.sport || "") as string).toLowerCase();
 
+  if (tSport === "corners_vip") {
+    return Boolean(
+      p.isCornersVip ||
+      p.source === "corners_vip" ||
+      p.pickBadge === "corners_vip" ||
+      s === "corners_vip" ||
+      (p.market === "Córners" && p.pickBadge === "corners_vip")
+    );
+  }
   if (tSport === "football") {
+    const isCornersVip = Boolean(
+      p.isCornersVip ||
+      p.source === "corners_vip" ||
+      p.pickBadge === "corners_vip" ||
+      s === "corners_vip"
+    );
     const isNhl = s === "nhl" || c === "NHL" || l.includes("NHL");
     const isNba = s === "nba" || c === "NBA" || l.includes("NBA");
     const isNfl = s === "nfl" || s === "ncaaf" || c === "NFL" || c === "NCAAF" || l.includes("NFL") || l.includes("NCAA");
-    return !isNhl && !isNba && !isNfl;
+    return !isCornersVip && !isNhl && !isNba && !isNfl;
   }
   if (tSport === "nhl") {
     return s === "nhl" || c === "NHL" || l.includes("NHL");
@@ -734,6 +749,16 @@ export async function settleAllSnapshotsWithRealScores(): Promise<{ settledDates
             }
           }
         }
+
+        // Auto-settle Corners VIP dedicated snapshots
+        const settledCorners = await settleActiveSnapshotWithRealScores(dateStr, "corners_vip");
+        if (settledCorners && settledCorners.length > 0) {
+          const newlySettled = settledCorners.filter((p) => p.status === "won" || p.status === "lost").length;
+          if (newlySettled > 0) {
+            if (!settledDates.includes(dateStr)) settledDates.push(dateStr);
+            totalSettled += newlySettled;
+          }
+        }
       } catch (err) {
         console.warn(`[Auto-Settle] Error settling snapshot ${dateStr}:`, err);
       }
@@ -743,10 +768,11 @@ export async function settleAllSnapshotsWithRealScores(): Promise<{ settledDates
   return { settledDates, totalSettled };
 }
 
-export async function settleActiveSnapshotWithRealScores(dateStr?: string): Promise<MarketOpportunity[]> {
+export async function settleActiveSnapshotWithRealScores(dateStr?: string, sport: string = "football"): Promise<MarketOpportunity[]> {
   const nowMs = Date.now();
   const targetDate = dateStr || getEcuadorDateString(nowMs);
-  let snapshot = (await loadDailySnapshotAsync(targetDate)) || loadDailySnapshot(targetDate);
+  const sportKey = (sport || "football").toLowerCase();
+  let snapshot = (await loadDailySnapshotAsync(targetDate, sportKey)) || loadDailySnapshot(targetDate, sportKey);
   if (!snapshot || !Array.isArray(snapshot) || snapshot.length === 0) {
     return [];
   }
@@ -1047,23 +1073,25 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string): Prom
     });
 
     if (hasUpdates) {
-      saveDailySnapshot(targetDate, settledSnapshot);
-      cachedLivePredictions = settledSnapshot;
-      cacheTimestamp = nowMs;
+      saveDailySnapshot(targetDate, settledSnapshot, sportKey);
+      if (sportKey === "football") {
+        cachedLivePredictions = settledSnapshot;
+        cacheTimestamp = nowMs;
+      }
       cachedSettledHistory = [];
       historyCacheTimestamp = 0;
     }
 
     return settledSnapshot;
   } catch (err) {
-    console.warn(`[settleActiveSnapshotWithRealScores] Error settling snapshot for ${targetDate}:`, err);
+    console.warn(`[settleActiveSnapshotWithRealScores] Error settling snapshot for ${targetDate} (${sportKey}):`, err);
     return snapshot;
   }
 }
 
 export async function getAllDailySnapshotsAsync(sportFilter?: string): Promise<Record<string, MarketOpportunity[]>> {
   const result: Record<string, MarketOpportunity[]> = {};
-  const sports = sportFilter ? [sportFilter.toLowerCase()] : ["football", "nhl", "nba", "nfl", "ncaaf"];
+  const sports = sportFilter ? [sportFilter.toLowerCase()] : ["football", "nhl", "nba", "nfl", "ncaaf", "corners_vip"];
 
   // 1. Memory snapshots
   for (const [key, p] of Object.entries(memorySnapshots)) {
@@ -1150,7 +1178,7 @@ export async function getAllDailySnapshotsAsync(sportFilter?: string): Promise<R
 
 function getAllDailySnapshots(sportFilter?: string): Record<string, MarketOpportunity[]> {
   const result: Record<string, MarketOpportunity[]> = {};
-  const sports = sportFilter ? [sportFilter.toLowerCase()] : ["football", "nhl", "nba", "nfl", "ncaaf"];
+  const sports = sportFilter ? [sportFilter.toLowerCase()] : ["football", "nhl", "nba", "nfl", "ncaaf", "corners_vip"];
 
   for (const [key, p] of Object.entries(memorySnapshots)) {
     for (const s of sports) {
@@ -1243,13 +1271,15 @@ export interface HistoricalSettledPick {
   edge?: number;
   probability: number;
   confidence: "Muy Alta" | "Alta" | "Media" | "Moderada";
-  pickBadge?: "bomba" | "valor" | "estandar" | "mcp" | "nuevo" | "elite";
+  pickBadge?: "bomba" | "valor" | "estandar" | "mcp" | "nuevo" | "elite" | "corners_vip";
   isElite?: boolean;
+  isCornersVip?: boolean;
+  vipBadge?: string;
   matchTiming?: "prematch" | "live";
   isLive?: boolean;
   isMcp?: boolean;
   isMcpPick?: boolean;
-  source?: "algorithm" | "mcp" | "manual";
+  source?: "algorithm" | "mcp" | "manual" | "corners_vip";
   livePeriod?: string;
   liveMinute?: string | number;
   result: "WON" | "LOST" | "VOID";
@@ -2892,7 +2922,13 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
         : (realScoresMap[scoreKeyWithDate] || realScoresMap[scoreKeyGeneric]);
 
       const isLiveMatch = p.matchTiming === "live" || Boolean(p.currentScore) || Boolean(p.livePeriod);
-      const isMcpPick = Boolean(p.isMcp || p.isMcpPick || p.source === "mcp" || p.pickBadge === "mcp" || (p.explanation && p.explanation.includes("MCP")) || (p.market && p.market.includes("MCP")));
+      const isCornersVipPick = Boolean(
+        (p as any).isCornersVip ||
+        p.source === "corners_vip" ||
+        p.pickBadge === "corners_vip" ||
+        (p as any).sport === "corners_vip"
+      );
+      const isMcpPick = !isCornersVipPick && Boolean(p.isMcp || p.isMcpPick || p.source === "mcp" || p.pickBadge === "mcp" || (p.explanation && p.explanation.includes("MCP")) || (p.market && p.market.includes("MCP")));
 
       // Always parse score and dynamically evaluate against market and selection
       let parsedHomeGoals: number | null = null;
@@ -2951,8 +2987,11 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
             edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
             probability: p.probability,
             confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
-            pickBadge: isElitePick(p as any) ? "elite" : p.pickBadge,
-            isElite: isElitePick(p as any),
+            pickBadge: isCornersVipPick ? "corners_vip" : (isElitePick(p as any) ? "elite" : p.pickBadge),
+            isElite: isCornersVipPick ? false : isElitePick(p as any),
+            isCornersVip: isCornersVipPick,
+            vipBadge: isCornersVipPick ? "Corners VIP" : undefined,
+            source: isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")),
             matchTiming: isLiveMatch ? "live" : "prematch",
             isLive: isLiveMatch,
             isMcp: isMcpPick,
@@ -2994,8 +3033,11 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
             edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
             probability: p.probability,
             confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
-            pickBadge: isElitePick(p as any) ? "elite" : p.pickBadge,
-            isElite: isElitePick(p as any),
+            pickBadge: isCornersVipPick ? "corners_vip" : (isElitePick(p as any) ? "elite" : p.pickBadge),
+            isElite: isCornersVipPick ? false : isElitePick(p as any),
+            isCornersVip: isCornersVipPick,
+            vipBadge: isCornersVipPick ? "Corners VIP" : undefined,
+            source: isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")),
             matchTiming: isLiveMatch ? "live" : "prematch",
             isLive: isLiveMatch,
             isMcp: isMcpPick,
@@ -3037,8 +3079,11 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
             edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
             probability: p.probability,
             confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
-            pickBadge: isElitePick(p as any) ? "elite" : p.pickBadge,
-            isElite: isElitePick(p as any),
+            pickBadge: isCornersVipPick ? "corners_vip" : (isElitePick(p as any) ? "elite" : p.pickBadge),
+            isElite: isCornersVipPick ? false : isElitePick(p as any),
+            isCornersVip: isCornersVipPick,
+            vipBadge: isCornersVipPick ? "Corners VIP" : undefined,
+            source: isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")),
             matchTiming: isLiveMatch ? "live" : "prematch",
             isLive: isLiveMatch,
             isMcp: isMcpPick,
@@ -3097,8 +3142,11 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
             edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
             probability: p.probability,
             confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
-            pickBadge: isElitePick(p as any) ? "elite" : p.pickBadge,
-            isElite: isElitePick(p as any),
+            pickBadge: isCornersVipPick ? "corners_vip" : (isElitePick(p as any) ? "elite" : p.pickBadge),
+            isElite: isCornersVipPick ? false : isElitePick(p as any),
+            isCornersVip: isCornersVipPick,
+            vipBadge: isCornersVipPick ? "Corners VIP" : undefined,
+            source: isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")),
             matchTiming: isLiveMatch ? "live" : "prematch",
             isLive: isLiveMatch,
             isMcp: isMcpPick,
@@ -3158,8 +3206,11 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
               edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
               probability: p.probability,
               confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
-              pickBadge: isElitePick(p as any) ? "elite" : p.pickBadge,
-              isElite: isElitePick(p as any),
+              pickBadge: isCornersVipPick ? "corners_vip" : (isElitePick(p as any) ? "elite" : p.pickBadge),
+              isElite: isCornersVipPick ? false : isElitePick(p as any),
+              isCornersVip: isCornersVipPick,
+              vipBadge: isCornersVipPick ? "Corners VIP" : undefined,
+              source: isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")),
               matchTiming: "live",
               isLive: true,
               isMcp: isMcpPick,

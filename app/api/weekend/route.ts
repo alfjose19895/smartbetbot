@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getVerifiedIdentity } from "@/features/auth/lib/session";
 import {
   getWeekendExclusiveSlate,
   getWeekendCycleInfo,
@@ -10,6 +11,18 @@ export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   try {
+    const identity = await getVerifiedIdentity();
+    const isAdmin =
+      identity &&
+      (identity.role === "admin" || (identity.email || "").toLowerCase().includes("ajhs1589"));
+
+    if (!isAdmin) {
+      return NextResponse.json(
+        { error: "Acceso no autorizado. El módulo Finde VIP es exclusivo para administradores." },
+        { status: 403 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const forceRefresh = searchParams.get("refresh") === "true";
     const dayFilter = (searchParams.get("day") || "all").toLowerCase();
@@ -84,6 +97,18 @@ export async function GET(request: NextRequest) {
 
 export async function POST() {
   try {
+    const identity = await getVerifiedIdentity();
+    const isAdmin =
+      identity &&
+      (identity.role === "admin" || (identity.email || "").toLowerCase().includes("ajhs1589"));
+
+    if (!isAdmin) {
+      return NextResponse.json(
+        { error: "Acceso no autorizado. El módulo Finde VIP es exclusivo para administradores." },
+        { status: 403 }
+      );
+    }
+
     const slate = await getWeekendExclusiveSlate({ forceRefresh: true });
     return NextResponse.json({
       success: true,

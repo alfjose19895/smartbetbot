@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useEffect, useMemo } from "react";
 import { Navbar } from "@/components/Navbar";
@@ -353,6 +353,14 @@ export default function HistoryPage() {
       item.pickBadge === "mcp" ||
       (item.explanation && item.explanation.includes("MCP")) ||
       (item.market && item.market.includes("MCP"))
+    );
+
+  const isCornersVipItem = (item: HistoricalSettledPick) =>
+    Boolean(
+      item.isCornersVip ||
+      item.source === "corners_vip" ||
+      item.pickBadge === "corners_vip" ||
+      item.vipBadge === "Corners VIP"
     );
 
   const isWonItem = (item: HistoricalSettledPick) => item.result === "WON" || (item as any).status === "won";
@@ -954,7 +962,12 @@ export default function HistoryPage() {
                         <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-black uppercase text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                           PRE
                         </span>
-                        {isMcpItem(item) && (
+                        {isCornersVipItem(item) && (
+                          <span className="rounded-md bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 text-[10px] font-black text-amber-400">
+                            🚩 Corners VIP
+                          </span>
+                        )}
+                        {isMcpItem(item) && !isCornersVipItem(item) && (
                           <span className="rounded-md bg-purple-100 px-2 py-0.5 text-[10px] font-black text-purple-800 dark:bg-purple-950 dark:text-purple-300">
                             🤖 MCP
                           </span>
@@ -1100,7 +1113,12 @@ export default function HistoryPage() {
                           <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                             <span>PRE</span>
                           </span>
-                          {isMcpItem(item) && (
+                          {isCornersVipItem(item) && (
+                            <span className="ml-1 inline-flex items-center gap-1 rounded bg-amber-500/10 border border-amber-500/30 px-1.5 py-0.5 text-[10px] font-black text-amber-400">
+                              🚩 Corners VIP
+                            </span>
+                          )}
+                          {isMcpItem(item) && !isCornersVipItem(item) && (
                             <span className="ml-1 text-[10px] font-black text-purple-600 dark:text-purple-400">🤖 MCP</span>
                           )}
                           {(item.pickBadge === "bomba" || item.odds >= 2.05) && (
