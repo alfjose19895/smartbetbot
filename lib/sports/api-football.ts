@@ -689,8 +689,15 @@ export function extractMatchDetails(stats?: ApiFootballFixtureStatistics[] | nul
   homeRedCards: number;
   awayRedCards: number;
   totalCards: number;
+  homeShotsOnGoal: number;
+  awayShotsOnGoal: number;
+  totalShotsOnGoal: number;
+  homeTotalShots: number;
+  awayTotalShots: number;
+  totalShots: number;
   hasStats: boolean;
   hasCornerStats: boolean;
+  hasShotStats: boolean;
 } {
   if (!stats || !Array.isArray(stats) || stats.length < 2) {
     return {
@@ -702,8 +709,15 @@ export function extractMatchDetails(stats?: ApiFootballFixtureStatistics[] | nul
       homeRedCards: 0,
       awayRedCards: 0,
       totalCards: 0,
+      homeShotsOnGoal: 0,
+      awayShotsOnGoal: 0,
+      totalShotsOnGoal: 0,
+      homeTotalShots: 0,
+      awayTotalShots: 0,
+      totalShots: 0,
       hasStats: false,
       hasCornerStats: false,
+      hasShotStats: false,
     };
   }
 
@@ -728,6 +742,17 @@ export function extractMatchDetails(stats?: ApiFootballFixtureStatistics[] | nul
   const homeRedCards = getStat(homeStats, "Red Cards") ?? 0;
   const awayRedCards = getStat(awayStats, "Red Cards") ?? 0;
 
+  const rawHomeShotsOnGoal = getStat(homeStats, "Shots on Goal") ?? getStat(homeStats, "shots on target");
+  const rawAwayShotsOnGoal = getStat(awayStats, "Shots on Goal") ?? getStat(awayStats, "shots on target");
+  const rawHomeTotalShots = getStat(homeStats, "Total Shots");
+  const rawAwayTotalShots = getStat(awayStats, "Total Shots");
+
+  const homeShotsOnGoal = rawHomeShotsOnGoal ?? 0;
+  const awayShotsOnGoal = rawAwayShotsOnGoal ?? 0;
+  const homeTotalShots = rawHomeTotalShots ?? 0;
+  const awayTotalShots = rawAwayTotalShots ?? 0;
+  const hasShotStats = rawHomeShotsOnGoal !== null || rawHomeTotalShots !== null;
+
   return {
     homeCorners,
     awayCorners,
@@ -737,8 +762,15 @@ export function extractMatchDetails(stats?: ApiFootballFixtureStatistics[] | nul
     homeRedCards,
     awayRedCards,
     totalCards: homeYellowCards + awayYellowCards + homeRedCards + awayRedCards,
+    homeShotsOnGoal,
+    awayShotsOnGoal,
+    totalShotsOnGoal: homeShotsOnGoal + awayShotsOnGoal,
+    homeTotalShots,
+    awayTotalShots,
+    totalShots: homeTotalShots + awayTotalShots,
     hasStats: homeStats.length > 0 || awayStats.length > 0,
     hasCornerStats,
+    hasShotStats,
   };
 }
 
@@ -768,6 +800,24 @@ export function extractMarketOddsFromBookmaker(oddsItem?: ApiFootballOddsItem | 
   cornersUnder95?: number;
   cornersOver105?: number;
   cornersUnder105?: number;
+  cardsOver35?: number;
+  cardsUnder35?: number;
+  cardsOver45?: number;
+  cardsUnder45?: number;
+  cardsOver55?: number;
+  cardsUnder55?: number;
+  shotsOnGoalOver75?: number;
+  shotsOnGoalUnder75?: number;
+  shotsOnGoalOver85?: number;
+  shotsOnGoalUnder85?: number;
+  shotsOnGoalOver95?: number;
+  shotsOnGoalUnder95?: number;
+  totalShotsOver215?: number;
+  totalShotsUnder215?: number;
+  totalShotsOver235?: number;
+  totalShotsUnder235?: number;
+  totalShotsOver255?: number;
+  totalShotsUnder255?: number;
 } {
   if (!oddsItem || !oddsItem.bookmakers || oddsItem.bookmakers.length === 0) {
     return {};
@@ -825,6 +875,24 @@ export function extractMarketOddsFromBookmaker(oddsItem?: ApiFootballOddsItem | 
     cornersUnder95?: number;
     cornersOver105?: number;
     cornersUnder105?: number;
+    cardsOver35?: number;
+    cardsUnder35?: number;
+    cardsOver45?: number;
+    cardsUnder45?: number;
+    cardsOver55?: number;
+    cardsUnder55?: number;
+    shotsOnGoalOver75?: number;
+    shotsOnGoalUnder75?: number;
+    shotsOnGoalOver85?: number;
+    shotsOnGoalUnder85?: number;
+    shotsOnGoalOver95?: number;
+    shotsOnGoalUnder95?: number;
+    totalShotsOver215?: number;
+    totalShotsUnder215?: number;
+    totalShotsOver235?: number;
+    totalShotsUnder235?: number;
+    totalShotsOver255?: number;
+    totalShotsUnder255?: number;
   } = {};
 
   let primaryBookmakerName = sortedBookmakers[0]?.name || "Bet365";
@@ -1054,6 +1122,129 @@ export function extractMarketOddsFromBookmaker(oddsItem?: ApiFootballOddsItem | 
           else if (isUnder && fullStr.includes("9.5") && !result.cornersUnder95) result.cornersUnder95 = odd;
           else if (isOver && fullStr.includes("10.5") && !result.cornersOver105) result.cornersOver105 = odd;
           else if (isUnder && fullStr.includes("10.5") && !result.cornersUnder105) result.cornersUnder105 = odd;
+        }
+      }
+    }
+  }
+
+  // 5. Extract Total Cards Over/Under lines across cascade
+  for (const bm of sortedBookmakers) {
+    if (!bm.bets || !Array.isArray(bm.bets)) continue;
+
+    for (const bet of bm.bets) {
+      const betId = Number(bet.id);
+      const betName = (bet.name || "").toLowerCase().trim();
+
+      if (
+        betName.includes("1st") ||
+        betName.includes("2nd") ||
+        betName.includes("half") ||
+        betName.includes("primer") ||
+        betName.includes("segund") ||
+        betName.includes("mitad") ||
+        betName.includes("home team") ||
+        betName.includes("away team") ||
+        betName.includes("red card")
+      ) {
+        continue;
+      }
+
+      if (
+        betId === 76 ||
+        betId === 29 ||
+        betName.includes("cards over/under") ||
+        betName.includes("total cards") ||
+        betName.includes("tarjetas total") ||
+        betName.includes("total tarjetas") ||
+        betName.includes("tarjetas más/menos") ||
+        betName.includes("booking points")
+      ) {
+        for (const val of bet.values || []) {
+          const vObj = val as Record<string, any>;
+          const rawVal = vObj.value !== undefined ? String(vObj.value) : "";
+          const rawHandicap = vObj.handicap !== undefined ? String(vObj.handicap) : "";
+          const rawTotal = vObj.total !== undefined ? String(vObj.total) : "";
+          const rawLine = vObj.line !== undefined ? String(vObj.line) : "";
+          const rawHeader = vObj.header !== undefined ? String(vObj.header) : "";
+          const fullStr = [rawVal, rawHandicap, rawTotal, rawLine, rawHeader].join(" ").toLowerCase().trim();
+
+          const odd = parseOdd(val.odd);
+          if (!odd) continue;
+
+          const isOver = fullStr.includes("over") || fullStr.includes(">") || fullStr.includes("+") || fullStr.includes("más") || fullStr.includes("mas");
+          const isUnder = fullStr.includes("under") || fullStr.includes("<") || fullStr.includes("-") || fullStr.includes("menos");
+
+          if (isOver && fullStr.includes("3.5") && !result.cardsOver35) result.cardsOver35 = odd;
+          else if (isUnder && fullStr.includes("3.5") && !result.cardsUnder35) result.cardsUnder35 = odd;
+          else if (isOver && fullStr.includes("4.5") && !result.cardsOver45) result.cardsOver45 = odd;
+          else if (isUnder && fullStr.includes("4.5") && !result.cardsUnder45) result.cardsUnder45 = odd;
+          else if (isOver && fullStr.includes("5.5") && !result.cardsOver55) result.cardsOver55 = odd;
+          else if (isUnder && fullStr.includes("5.5") && !result.cardsUnder55) result.cardsUnder55 = odd;
+        }
+      }
+    }
+  }
+
+  // 6. Extract Total Shots & Shots on Target Over/Under lines across cascade
+  for (const bm of sortedBookmakers) {
+    if (!bm.bets || !Array.isArray(bm.bets)) continue;
+
+    for (const bet of bm.bets) {
+      const betName = (bet.name || "").toLowerCase().trim();
+
+      if (
+        betName.includes("1st") ||
+        betName.includes("2nd") ||
+        betName.includes("half") ||
+        betName.includes("player")
+      ) {
+        continue;
+      }
+
+      if (
+        betName.includes("shots on target") ||
+        betName.includes("shots on goal") ||
+        betName.includes("tiros a puerta") ||
+        betName.includes("disparos a puerta") ||
+        betName.includes("total shots") ||
+        betName.includes("disparos total") ||
+        betName.includes("tiros total")
+      ) {
+        const isOnTarget =
+          betName.includes("target") ||
+          betName.includes("goal") ||
+          betName.includes("puerta");
+
+        for (const val of bet.values || []) {
+          const vObj = val as Record<string, any>;
+          const rawVal = vObj.value !== undefined ? String(vObj.value) : "";
+          const rawHandicap = vObj.handicap !== undefined ? String(vObj.handicap) : "";
+          const rawTotal = vObj.total !== undefined ? String(vObj.total) : "";
+          const rawLine = vObj.line !== undefined ? String(vObj.line) : "";
+          const rawHeader = vObj.header !== undefined ? String(vObj.header) : "";
+          const fullStr = [rawVal, rawHandicap, rawTotal, rawLine, rawHeader].join(" ").toLowerCase().trim();
+
+          const odd = parseOdd(val.odd);
+          if (!odd) continue;
+
+          const isOver = fullStr.includes("over") || fullStr.includes(">") || fullStr.includes("+") || fullStr.includes("más") || fullStr.includes("mas");
+          const isUnder = fullStr.includes("under") || fullStr.includes("<") || fullStr.includes("-") || fullStr.includes("menos");
+
+          if (isOnTarget) {
+            if (isOver && fullStr.includes("7.5") && !result.shotsOnGoalOver75) result.shotsOnGoalOver75 = odd;
+            else if (isUnder && fullStr.includes("7.5") && !result.shotsOnGoalUnder75) result.shotsOnGoalUnder75 = odd;
+            else if (isOver && fullStr.includes("8.5") && !result.shotsOnGoalOver85) result.shotsOnGoalOver85 = odd;
+            else if (isUnder && fullStr.includes("8.5") && !result.shotsOnGoalUnder85) result.shotsOnGoalUnder85 = odd;
+            else if (isOver && fullStr.includes("9.5") && !result.shotsOnGoalOver95) result.shotsOnGoalOver95 = odd;
+            else if (isUnder && fullStr.includes("9.5") && !result.shotsOnGoalUnder95) result.shotsOnGoalUnder95 = odd;
+          } else {
+            if (isOver && fullStr.includes("21.5") && !result.totalShotsOver215) result.totalShotsOver215 = odd;
+            else if (isUnder && fullStr.includes("21.5") && !result.totalShotsUnder215) result.totalShotsUnder215 = odd;
+            else if (isOver && fullStr.includes("23.5") && !result.totalShotsOver235) result.totalShotsOver235 = odd;
+            else if (isUnder && fullStr.includes("23.5") && !result.totalShotsUnder235) result.totalShotsUnder235 = odd;
+            else if (isOver && fullStr.includes("25.5") && !result.totalShotsOver255) result.totalShotsOver255 = odd;
+            else if (isUnder && fullStr.includes("25.5") && !result.totalShotsUnder255) result.totalShotsUnder255 = odd;
+          }
         }
       }
     }

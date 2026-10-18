@@ -42,7 +42,9 @@ const SPORTS_OPTIONS: Array<{
       p === '/reports' ||
       p === '/featured' ||
       p === '/weekend' ||
-      p === '/corners-vip',
+      p === '/corners-vip' ||
+      p === '/cards-vip' ||
+      p === '/shots-vip',
   },
   {
     id: 'nhl',
@@ -184,6 +186,8 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
     if (href === '/settings') return pathname === '/settings';
     if (href === '/weekend') return pathname === '/weekend';
     if (href === '/corners-vip') return pathname === '/corners-vip';
+    if (href === '/cards-vip') return pathname === '/cards-vip';
+    if (href === '/shots-vip') return pathname === '/shots-vip';
     if (href.includes('?tab=')) {
       const [path, query] = href.split('?tab=');
       return pathname === path && currentTab === query;
@@ -205,6 +209,8 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
     ...(currentRole === 'admin'
       ? [
           { href: '/corners-vip', label: 'Corners VIP 🚩', icon: '🚩' },
+          { href: '/cards-vip', label: 'Tarjetas VIP 🟨', icon: '🟨' },
+          { href: '/shots-vip', label: 'Disparos VIP 🎯', icon: '🎯' },
           { href: getSportHref('weekend'), label: 'Finde VIP 💎', icon: '💎' },
         ]
       : []),

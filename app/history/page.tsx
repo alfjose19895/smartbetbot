@@ -363,6 +363,22 @@ export default function HistoryPage() {
       item.vipBadge === "Corners VIP"
     );
 
+  const isCardsVipItem = (item: HistoricalSettledPick) =>
+    Boolean(
+      item.isCardsVip ||
+      item.source === "cards_vip" ||
+      item.pickBadge === "cards_vip" ||
+      item.vipBadge === "Tarjetas VIP"
+    );
+
+  const isShotsVipItem = (item: HistoricalSettledPick) =>
+    Boolean(
+      item.isShotsVip ||
+      item.source === "shots_vip" ||
+      item.pickBadge === "shots_vip" ||
+      item.vipBadge === "Disparos VIP"
+    );
+
   const isWonItem = (item: HistoricalSettledPick) => item.result === "WON" || (item as any).status === "won";
   const isLostItem = (item: HistoricalSettledPick) => item.result === "LOST" || (item as any).status === "lost";
 
@@ -967,7 +983,17 @@ export default function HistoryPage() {
                             🚩 Corners VIP
                           </span>
                         )}
-                        {isMcpItem(item) && !isCornersVipItem(item) && (
+                        {isCardsVipItem(item) && (
+                          <span className="rounded-md bg-yellow-500/10 border border-yellow-500/30 px-2 py-0.5 text-[10px] font-black text-yellow-400">
+                            🟨 Tarjetas VIP
+                          </span>
+                        )}
+                        {isShotsVipItem(item) && (
+                          <span className="rounded-md bg-cyan-500/10 border border-cyan-500/30 px-2 py-0.5 text-[10px] font-black text-cyan-400">
+                            🎯 Disparos VIP
+                          </span>
+                        )}
+                        {isMcpItem(item) && !isCornersVipItem(item) && !isCardsVipItem(item) && !isShotsVipItem(item) && (
                           <span className="rounded-md bg-purple-100 px-2 py-0.5 text-[10px] font-black text-purple-800 dark:bg-purple-950 dark:text-purple-300">
                             🤖 MCP
                           </span>
@@ -1118,7 +1144,17 @@ export default function HistoryPage() {
                               🚩 Corners VIP
                             </span>
                           )}
-                          {isMcpItem(item) && !isCornersVipItem(item) && (
+                          {isCardsVipItem(item) && (
+                            <span className="ml-1 inline-flex items-center gap-1 rounded bg-yellow-500/10 border border-yellow-500/30 px-1.5 py-0.5 text-[10px] font-black text-yellow-400">
+                              🟨 Tarjetas VIP
+                            </span>
+                          )}
+                          {isShotsVipItem(item) && (
+                            <span className="ml-1 inline-flex items-center gap-1 rounded bg-cyan-500/10 border border-cyan-500/30 px-1.5 py-0.5 text-[10px] font-black text-cyan-400">
+                              🎯 Disparos VIP
+                            </span>
+                          )}
+                          {isMcpItem(item) && !isCornersVipItem(item) && !isCardsVipItem(item) && !isShotsVipItem(item) && (
                             <span className="ml-1 text-[10px] font-black text-purple-600 dark:text-purple-400">🤖 MCP</span>
                           )}
                           {(item.pickBadge === "bomba" || item.odds >= 2.05) && (

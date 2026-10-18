@@ -10,7 +10,7 @@ import { SupportedSport } from "@/lib/sports/types";
 
 type DateFilterMode = "all" | "today" | "yesterday" | "7d" | "30d" | "specific" | "range";
 type ProbFilterMode = "all" | "muy_alta" | "alta" | "media" | "baja" | "custom";
-type ModalityFilter = "all" | "prematch" | "live" | "mcp" | "bomba" | "corners_vip";
+type ModalityFilter = "all" | "prematch" | "live" | "mcp" | "bomba" | "corners_vip" | "cards_vip" | "shots_vip";
 
 interface MetricItem {
   name: string;
@@ -197,12 +197,16 @@ function ReportsContent() {
       const isMcp = item.isMcp || item.pickBadge === "mcp";
       const isBomba = item.pickBadge === "bomba" || item.odds >= 2.05;
       const isCornersVip = Boolean(item.isCornersVip || item.source === "corners_vip" || item.pickBadge === "corners_vip" || item.vipBadge === "Corners VIP");
+      const isCardsVip = Boolean(item.isCardsVip || item.source === "cards_vip" || item.pickBadge === "cards_vip" || item.vipBadge === "Tarjetas VIP");
+      const isShotsVip = Boolean(item.isShotsVip || item.source === "shots_vip" || item.pickBadge === "shots_vip" || item.vipBadge === "Disparos VIP");
 
       if (modalityFilter === "prematch" && isLive) return false;
       if (modalityFilter === "live" && !isLive) return false;
       if (modalityFilter === "mcp" && !isMcp) return false;
       if (modalityFilter === "bomba" && !isBomba) return false;
       if (modalityFilter === "corners_vip" && !isCornersVip) return false;
+      if (modalityFilter === "cards_vip" && !isCardsVip) return false;
+      if (modalityFilter === "shots_vip" && !isShotsVip) return false;
 
       // 4. Market Filter
       if (marketFilter !== "all") {
@@ -252,6 +256,8 @@ function ReportsContent() {
     const mcpPicks = filteredItems.filter((h) => h.isMcp || h.pickBadge === "mcp");
     const bombaPicks = filteredItems.filter((h) => h.pickBadge === "bomba" || h.odds >= 2.05);
     const cornersVipPicks = filteredItems.filter((h) => h.isCornersVip || h.source === "corners_vip" || h.pickBadge === "corners_vip" || h.vipBadge === "Corners VIP");
+    const cardsVipPicks = filteredItems.filter((h) => h.isCardsVip || h.source === "cards_vip" || h.pickBadge === "cards_vip" || h.vipBadge === "Tarjetas VIP");
+    const shotsVipPicks = filteredItems.filter((h) => h.isShotsVip || h.source === "shots_vip" || h.pickBadge === "shots_vip" || h.vipBadge === "Disparos VIP");
 
     return {
       prematch: computeStats(prematchPicks),
@@ -259,6 +265,8 @@ function ReportsContent() {
       mcp: computeStats(mcpPicks),
       bomba: computeStats(bombaPicks),
       corners_vip: computeStats(cornersVipPicks),
+      cards_vip: computeStats(cardsVipPicks),
+      shots_vip: computeStats(shotsVipPicks),
     };
   }, [filteredItems]);
 
@@ -674,6 +682,26 @@ function ReportsContent() {
                 >
                   <span>🚩 Corners VIP ({comparativeMetrics.corners_vip.total})</span>
                 </button>
+                <button
+                  onClick={() => setModalityFilter("cards_vip")}
+                  className={`rounded-xl px-3 py-1 text-xs font-black transition cursor-pointer flex items-center gap-1 ${
+                    modalityFilter === "cards_vip"
+                      ? "bg-yellow-500 text-slate-950 font-black shadow-md shadow-yellow-500/30"
+                      : "bg-yellow-500/10 text-yellow-300 border border-yellow-500/30 hover:bg-yellow-500/20"
+                  }`}
+                >
+                  <span>🟨 Tarjetas VIP ({comparativeMetrics.cards_vip.total})</span>
+                </button>
+                <button
+                  onClick={() => setModalityFilter("shots_vip")}
+                  className={`rounded-xl px-3 py-1 text-xs font-black transition cursor-pointer flex items-center gap-1 ${
+                    modalityFilter === "shots_vip"
+                      ? "bg-cyan-500 text-slate-950 font-black shadow-md shadow-cyan-500/30"
+                      : "bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/20"
+                  }`}
+                >
+                  <span>🎯 Disparos VIP ({comparativeMetrics.shots_vip.total})</span>
+                </button>
               </>
             )}
           </div>
@@ -1024,6 +1052,16 @@ function ReportsContent() {
                             {(item.isCornersVip || item.source === "corners_vip" || item.pickBadge === "corners_vip" || item.vipBadge === "Corners VIP") && (
                               <span className="rounded bg-amber-500/10 border border-amber-500/30 px-1.5 py-0.5 text-[9px] font-black text-amber-400">
                                 🚩 Corners VIP
+                              </span>
+                            )}
+                            {(item.isCardsVip || item.source === "cards_vip" || item.pickBadge === "cards_vip" || item.vipBadge === "Tarjetas VIP") && (
+                              <span className="rounded bg-yellow-500/10 border border-yellow-500/30 px-1.5 py-0.5 text-[9px] font-black text-yellow-400">
+                                🟨 Tarjetas VIP
+                              </span>
+                            )}
+                            {(item.isShotsVip || item.source === "shots_vip" || item.pickBadge === "shots_vip" || item.vipBadge === "Disparos VIP") && (
+                              <span className="rounded bg-cyan-500/10 border border-cyan-500/30 px-1.5 py-0.5 text-[9px] font-black text-cyan-400">
+                                🎯 Disparos VIP
                               </span>
                             )}
                           </div>

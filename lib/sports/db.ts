@@ -101,7 +101,7 @@ function ensureSnapshotsDir(sport?: string) {
     if (!fs.existsSync(SNAPSHOTS_DIR)) {
       fs.mkdirSync(SNAPSHOTS_DIR, { recursive: true });
     }
-    const sports = ["football", "nhl", "nba", "nfl", "ncaaf"];
+    const sports = ["football", "nhl", "nba", "nfl", "ncaaf", "corners_vip", "cards_vip", "shots_vip"];
     for (const s of sports) {
       const p = path.join(SNAPSHOTS_DIR, s);
       if (!fs.existsSync(p)) {
@@ -134,6 +134,24 @@ export function isSportMatch(p: any, targetSport: string = "football"): boolean 
       (p.market === "Córners" && p.pickBadge === "corners_vip")
     );
   }
+  if (tSport === "cards_vip") {
+    return Boolean(
+      p.isCardsVip ||
+      p.source === "cards_vip" ||
+      p.pickBadge === "cards_vip" ||
+      s === "cards_vip" ||
+      (p.market === "Tarjetas" && p.pickBadge === "cards_vip")
+    );
+  }
+  if (tSport === "shots_vip") {
+    return Boolean(
+      p.isShotsVip ||
+      p.source === "shots_vip" ||
+      p.pickBadge === "shots_vip" ||
+      s === "shots_vip" ||
+      (p.market === "Disparos" && p.pickBadge === "shots_vip")
+    );
+  }
   if (tSport === "football") {
     const isCornersVip = Boolean(
       p.isCornersVip ||
@@ -141,10 +159,22 @@ export function isSportMatch(p: any, targetSport: string = "football"): boolean 
       p.pickBadge === "corners_vip" ||
       s === "corners_vip"
     );
+    const isCardsVip = Boolean(
+      p.isCardsVip ||
+      p.source === "cards_vip" ||
+      p.pickBadge === "cards_vip" ||
+      s === "cards_vip"
+    );
+    const isShotsVip = Boolean(
+      p.isShotsVip ||
+      p.source === "shots_vip" ||
+      p.pickBadge === "shots_vip" ||
+      s === "shots_vip"
+    );
     const isNhl = s === "nhl" || c === "NHL" || l.includes("NHL");
     const isNba = s === "nba" || c === "NBA" || l.includes("NBA");
     const isNfl = s === "nfl" || s === "ncaaf" || c === "NFL" || c === "NCAAF" || l.includes("NFL") || l.includes("NCAA");
-    return !isCornersVip && !isNhl && !isNba && !isNfl;
+    return !isCornersVip && !isCardsVip && !isShotsVip && !isNhl && !isNba && !isNfl;
   }
   if (tSport === "nhl") {
     return s === "nhl" || c === "NHL" || l.includes("NHL");
@@ -759,6 +789,26 @@ export async function settleAllSnapshotsWithRealScores(): Promise<{ settledDates
             totalSettled += newlySettled;
           }
         }
+
+        // Auto-settle Tarjetas VIP dedicated snapshots
+        const settledCards = await settleActiveSnapshotWithRealScores(dateStr, "cards_vip");
+        if (settledCards && settledCards.length > 0) {
+          const newlySettled = settledCards.filter((p) => p.status === "won" || p.status === "lost").length;
+          if (newlySettled > 0) {
+            if (!settledDates.includes(dateStr)) settledDates.push(dateStr);
+            totalSettled += newlySettled;
+          }
+        }
+
+        // Auto-settle Disparos VIP dedicated snapshots
+        const settledShots = await settleActiveSnapshotWithRealScores(dateStr, "shots_vip");
+        if (settledShots && settledShots.length > 0) {
+          const newlySettled = settledShots.filter((p) => p.status === "won" || p.status === "lost").length;
+          if (newlySettled > 0) {
+            if (!settledDates.includes(dateStr)) settledDates.push(dateStr);
+            totalSettled += newlySettled;
+          }
+        }
       } catch (err) {
         console.warn(`[Auto-Settle] Error settling snapshot ${dateStr}:`, err);
       }
@@ -875,11 +925,16 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string, sport
       }
     }
 
-    // Pre-fetch official statistics (Corner Kicks) for finished corner picks
-    const cornerStatsMap: Record<number, { homeCorners: number; awayCorners: number; totalCorners: number }> = {};
-    const finishedCornerPicks = snapshot.filter((p) => {
-      const isCorner = (p.market || "").toLowerCase().includes("corner") || (p.market || "").toLowerCase().includes("córner");
-      if (!isCorner || !p.fixtureId) return false;
+    // Pre-fetch official statistics (Corner Kicks, Cards, Shots) for finished special picks
+    const statsDetailsMap: Record<number, ReturnType<typeof extractMatchDetails>> = {};
+    const finishedSpecialPicks = snapshot.filter((p) => {
+      const mkt = (p.market || "").toLowerCase();
+      const sel = (p.selection || "").toLowerCase();
+      const isSpecial =
+        mkt.includes("corner") || mkt.includes("córner") ||
+        mkt.includes("tarjeta") || sel.includes("tarjeta") || mkt.includes("card") ||
+        mkt.includes("disparo") || sel.includes("disparo") || mkt.includes("tiro") || sel.includes("tiro") || mkt.includes("shot");
+      if (!isSpecial || !p.fixtureId) return false;
       const pKickoffMs = p.kickoff ? new Date(p.kickoff).getTime() : 0;
       if (pKickoffMs && nowMs < pKickoffMs + 90 * 60 * 1000) return false;
       const fixKey = `fix-${p.fixtureId}`;
@@ -887,21 +942,17 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string, sport
       return scoreData && scoreData.isFinished;
     });
 
-    if (finishedCornerPicks.length > 0) {
+    if (finishedSpecialPicks.length > 0) {
       await Promise.all(
-        finishedCornerPicks.map(async (p) => {
+        finishedSpecialPicks.map(async (p) => {
           const fixId = Number(p.fixtureId);
-          if (!fixId || cornerStatsMap[fixId]) return;
+          if (!fixId || statsDetailsMap[fixId]) return;
           try {
             const stats = await apiFootball.getFixtureStatistics(fixId);
             if (stats && Array.isArray(stats) && stats.length >= 2) {
               const details = extractMatchDetails(stats);
               if (details.hasStats) {
-                cornerStatsMap[fixId] = {
-                  homeCorners: details.homeCorners,
-                  awayCorners: details.awayCorners,
-                  totalCorners: details.totalCorners,
-                };
+                statsDetailsMap[fixId] = details;
               }
             }
           } catch (err) {
@@ -987,10 +1038,10 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string, sport
       // 1. MATCH IS FULLY FINISHED (FT, AET, PEN) -> Evaluate market result and permanently settle
       if (scoreData && scoreData.isFinished && typeof scoreData.home === "number" && typeof scoreData.away === "number") {
         const isCorner = (p.market || "").toLowerCase().includes("corner") || (p.market || "").toLowerCase().includes("córner");
-        const cornerStat = p.fixtureId ? cornerStatsMap[Number(p.fixtureId)] : undefined;
+        const fixDetails = p.fixtureId ? statsDetailsMap[Number(p.fixtureId)] : undefined;
 
         // If it is a corner pick and already settled with verified actual score and no new corner stats, preserve verified settlement!
-        if (isCorner && !cornerStat && (p.status === "won" || p.status === "lost") && p.actualScore) {
+        if (isCorner && !fixDetails && (p.status === "won" || p.status === "lost") && p.actualScore) {
           return p;
         }
 
@@ -1003,9 +1054,20 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string, sport
           league: p.league,
           country: p.country,
           probability: p.probability,
-          homeCorners: cornerStat?.homeCorners,
-          awayCorners: cornerStat?.awayCorners,
-          totalCorners: cornerStat?.totalCorners,
+          homeCorners: fixDetails?.homeCorners,
+          awayCorners: fixDetails?.awayCorners,
+          totalCorners: fixDetails?.totalCorners,
+          homeYellowCards: fixDetails?.homeYellowCards,
+          awayYellowCards: fixDetails?.awayYellowCards,
+          homeRedCards: fixDetails?.homeRedCards,
+          awayRedCards: fixDetails?.awayRedCards,
+          totalCards: fixDetails?.totalCards,
+          homeShotsOnGoal: fixDetails?.homeShotsOnGoal,
+          awayShotsOnGoal: fixDetails?.awayShotsOnGoal,
+          totalShotsOnGoal: fixDetails?.totalShotsOnGoal,
+          homeTotalShots: fixDetails?.homeTotalShots,
+          awayTotalShots: fixDetails?.awayTotalShots,
+          totalShots: fixDetails?.totalShots,
           cornerAnalysis: (p as any).cornerAnalysis,
           expectedCorners: (p as any).cornerAnalysis?.expectedTotalCorners,
           actualScore: p.actualScore || (p as any).score,
@@ -1091,7 +1153,7 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string, sport
 
 export async function getAllDailySnapshotsAsync(sportFilter?: string): Promise<Record<string, MarketOpportunity[]>> {
   const result: Record<string, MarketOpportunity[]> = {};
-  const sports = sportFilter ? [sportFilter.toLowerCase()] : ["football", "nhl", "nba", "nfl", "ncaaf", "corners_vip"];
+  const sports = sportFilter ? [sportFilter.toLowerCase()] : ["football", "nhl", "nba", "nfl", "ncaaf", "corners_vip", "cards_vip", "shots_vip"];
 
   // 1. Memory snapshots
   for (const [key, p] of Object.entries(memorySnapshots)) {
@@ -1178,7 +1240,7 @@ export async function getAllDailySnapshotsAsync(sportFilter?: string): Promise<R
 
 function getAllDailySnapshots(sportFilter?: string): Record<string, MarketOpportunity[]> {
   const result: Record<string, MarketOpportunity[]> = {};
-  const sports = sportFilter ? [sportFilter.toLowerCase()] : ["football", "nhl", "nba", "nfl", "ncaaf", "corners_vip"];
+  const sports = sportFilter ? [sportFilter.toLowerCase()] : ["football", "nhl", "nba", "nfl", "ncaaf", "corners_vip", "cards_vip", "shots_vip"];
 
   for (const [key, p] of Object.entries(memorySnapshots)) {
     for (const s of sports) {
@@ -1271,15 +1333,17 @@ export interface HistoricalSettledPick {
   edge?: number;
   probability: number;
   confidence: "Muy Alta" | "Alta" | "Media" | "Moderada";
-  pickBadge?: "bomba" | "valor" | "estandar" | "mcp" | "nuevo" | "elite" | "corners_vip";
+  pickBadge?: "bomba" | "valor" | "estandar" | "mcp" | "nuevo" | "elite" | "corners_vip" | "cards_vip" | "shots_vip";
   isElite?: boolean;
   isCornersVip?: boolean;
+  isCardsVip?: boolean;
+  isShotsVip?: boolean;
   vipBadge?: string;
   matchTiming?: "prematch" | "live";
   isLive?: boolean;
   isMcp?: boolean;
   isMcpPick?: boolean;
-  source?: "algorithm" | "mcp" | "manual" | "corners_vip";
+  source?: "algorithm" | "mcp" | "manual" | "corners_vip" | "cards_vip" | "shots_vip";
   livePeriod?: string;
   liveMinute?: string | number;
   result: "WON" | "LOST" | "VOID";
@@ -1389,6 +1453,17 @@ export function evaluateMarketResult(
     cornerAnalysis?: any;
     homeCards?: number;
     awayCards?: number;
+    totalCards?: number;
+    homeYellowCards?: number;
+    awayYellowCards?: number;
+    homeRedCards?: number;
+    awayRedCards?: number;
+    homeShotsOnGoal?: number;
+    awayShotsOnGoal?: number;
+    totalShotsOnGoal?: number;
+    homeTotalShots?: number;
+    awayTotalShots?: number;
+    totalShots?: number;
     actualScore?: string;
     score?: string;
   }
@@ -1499,6 +1574,101 @@ export function evaluateMarketResult(
     return {
       isWon,
       actualScoreText: `${homeCorners} - ${awayCorners} (${totalCorners} Córners)`,
+    };
+  }
+
+  // 0.1 Tarjetas Totales (Over / Under 3.5, 4.5, 5.5, etc.)
+  const isCardMarket =
+    mClean.includes("tarjeta") ||
+    sClean.includes("tarjeta") ||
+    pClean.includes("tarjeta") ||
+    aClean.includes("tarjeta") ||
+    mClean.includes("card") ||
+    sClean.includes("card");
+
+  if (isCardMarket) {
+    const combinedBetDesc = `${sClean} ${pClean} ${mClean}`;
+    let line = 4.5;
+    const lineMatch = combinedBetDesc.match(/(\d+(?:\.5|\.0)?)/);
+    if (lineMatch && lineMatch[1]) {
+      const parsed = parseFloat(lineMatch[1]);
+      if (parsed >= 1.5 && parsed <= 12.5) line = parsed;
+    }
+
+    const isUnder =
+      sClean.includes("under") ||
+      sClean.includes("menos") ||
+      pClean.includes("under") ||
+      pClean.includes("menos") ||
+      mClean.includes("under") ||
+      mClean.includes("menos");
+
+    const requiredCards = isUnder ? Math.floor(line) : Math.floor(line) + 1;
+    const yC = (options?.homeYellowCards || 0) + (options?.awayYellowCards || 0);
+    const rC = (options?.homeRedCards || 0) + (options?.awayRedCards || 0);
+    const genericCards = (options as any)?.homeCards !== undefined || (options as any)?.awayCards !== undefined
+      ? ((options as any)?.homeCards || 0) + ((options as any)?.awayCards || 0)
+      : undefined;
+    let totalCards = options?.totalCards ?? genericCards ?? (yC + rC);
+
+    if (typeof totalCards !== "number" || totalCards === 0) {
+      if (aClean) {
+        const dMatch = aClean.match(/(\d+)\s*tarjeta/i);
+        if (dMatch) totalCards = parseInt(dMatch[1], 10);
+      }
+    }
+
+    const isWon = isUnder ? (totalCards <= requiredCards) : (totalCards >= requiredCards);
+    return {
+      isWon,
+      actualScoreText: `${totalCards} Tarjetas (${yC} Amarillas, ${rC} Rojas)`,
+    };
+  }
+
+  // 0.2 Disparos Totales y Tiros a Puerta (Over / Under)
+  const isShotMarket =
+    mClean.includes("disparo") ||
+    sClean.includes("disparo") ||
+    pClean.includes("disparo") ||
+    aClean.includes("disparo") ||
+    mClean.includes("tiro") ||
+    sClean.includes("tiro") ||
+    pClean.includes("tiro") ||
+    mClean.includes("shot") ||
+    sClean.includes("shot");
+
+  if (isShotMarket) {
+    const combinedBetDesc = `${sClean} ${pClean} ${mClean}`;
+    const isOnTarget =
+      combinedBetDesc.includes("puerta") ||
+      combinedBetDesc.includes("arco") ||
+      combinedBetDesc.includes("target") ||
+      combinedBetDesc.includes("goal");
+
+    let line = isOnTarget ? 8.5 : 23.5;
+    const lineMatch = combinedBetDesc.match(/(\d+(?:\.5|\.0)?)/);
+    if (lineMatch && lineMatch[1]) {
+      const parsed = parseFloat(lineMatch[1]);
+      if (parsed >= 4.5 && parsed <= 45.5) line = parsed;
+    }
+
+    const isUnder =
+      sClean.includes("under") ||
+      sClean.includes("menos") ||
+      pClean.includes("under") ||
+      pClean.includes("menos") ||
+      mClean.includes("under") ||
+      mClean.includes("menos");
+
+    const requiredShots = isUnder ? Math.floor(line) : Math.floor(line) + 1;
+    const totalActualShots = isOnTarget
+      ? (options?.totalShotsOnGoal ?? ((options?.homeShotsOnGoal || 0) + (options?.awayShotsOnGoal || 0)))
+      : (options?.totalShots ?? ((options?.homeTotalShots || 0) + (options?.awayTotalShots || 0)));
+
+    const isWon = isUnder ? (totalActualShots <= requiredShots) : (totalActualShots >= requiredShots);
+    return {
+      isWon,
+      actualScoreText: `${totalActualShots} ${isOnTarget ? "Tiros a Puerta" : "Disparos Totales"}`,
     };
   }
 
@@ -2928,7 +3098,19 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
         p.pickBadge === "corners_vip" ||
         (p as any).sport === "corners_vip"
       );
-      const isMcpPick = !isCornersVipPick && Boolean(p.isMcp || p.isMcpPick || p.source === "mcp" || p.pickBadge === "mcp" || (p.explanation && p.explanation.includes("MCP")) || (p.market && p.market.includes("MCP")));
+      const isCardsVipPick = Boolean(
+        (p as any).isCardsVip ||
+        p.source === "cards_vip" ||
+        p.pickBadge === "cards_vip" ||
+        (p as any).sport === "cards_vip"
+      );
+      const isShotsVipPick = Boolean(
+        (p as any).isShotsVip ||
+        p.source === "shots_vip" ||
+        p.pickBadge === "shots_vip" ||
+        (p as any).sport === "shots_vip"
+      );
+      const isMcpPick = !isCornersVipPick && !isCardsVipPick && !isShotsVipPick && Boolean(p.isMcp || p.isMcpPick || p.source === "mcp" || p.pickBadge === "mcp" || (p.explanation && p.explanation.includes("MCP")) || (p.market && p.market.includes("MCP")));
 
       // Always parse score and dynamically evaluate against market and selection
       let parsedHomeGoals: number | null = null;
@@ -2987,11 +3169,13 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
             edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
             probability: p.probability,
             confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
-            pickBadge: isCornersVipPick ? "corners_vip" : (isElitePick(p as any) ? "elite" : p.pickBadge),
-            isElite: isCornersVipPick ? false : isElitePick(p as any),
+            pickBadge: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isCornersVipPick ? "corners_vip" : (isElitePick(p as any) ? "elite" : p.pickBadge))),
+            isElite: (isCornersVipPick || isCardsVipPick || isShotsVipPick) ? false : isElitePick(p as any),
             isCornersVip: isCornersVipPick,
-            vipBadge: isCornersVipPick ? "Corners VIP" : undefined,
-            source: isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")),
+            isCardsVip: isCardsVipPick,
+            isShotsVip: isShotsVipPick,
+            vipBadge: isCardsVipPick ? "Tarjetas VIP" : (isShotsVipPick ? "Disparos VIP" : (isCornersVipPick ? "Corners VIP" : undefined)),
+            source: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")))),
             matchTiming: isLiveMatch ? "live" : "prematch",
             isLive: isLiveMatch,
             isMcp: isMcpPick,
@@ -3033,11 +3217,13 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
             edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
             probability: p.probability,
             confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
-            pickBadge: isCornersVipPick ? "corners_vip" : (isElitePick(p as any) ? "elite" : p.pickBadge),
-            isElite: isCornersVipPick ? false : isElitePick(p as any),
+            pickBadge: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isCornersVipPick ? "corners_vip" : (isElitePick(p as any) ? "elite" : p.pickBadge))),
+            isElite: (isCornersVipPick || isCardsVipPick || isShotsVipPick) ? false : isElitePick(p as any),
             isCornersVip: isCornersVipPick,
-            vipBadge: isCornersVipPick ? "Corners VIP" : undefined,
-            source: isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")),
+            isCardsVip: isCardsVipPick,
+            isShotsVip: isShotsVipPick,
+            vipBadge: isCardsVipPick ? "Tarjetas VIP" : (isShotsVipPick ? "Disparos VIP" : (isCornersVipPick ? "Corners VIP" : undefined)),
+            source: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")))),
             matchTiming: isLiveMatch ? "live" : "prematch",
             isLive: isLiveMatch,
             isMcp: isMcpPick,
@@ -3079,11 +3265,13 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
             edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
             probability: p.probability,
             confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
-            pickBadge: isCornersVipPick ? "corners_vip" : (isElitePick(p as any) ? "elite" : p.pickBadge),
-            isElite: isCornersVipPick ? false : isElitePick(p as any),
+            pickBadge: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isCornersVipPick ? "corners_vip" : (isElitePick(p as any) ? "elite" : p.pickBadge))),
+            isElite: (isCornersVipPick || isCardsVipPick || isShotsVipPick) ? false : isElitePick(p as any),
             isCornersVip: isCornersVipPick,
-            vipBadge: isCornersVipPick ? "Corners VIP" : undefined,
-            source: isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")),
+            isCardsVip: isCardsVipPick,
+            isShotsVip: isShotsVipPick,
+            vipBadge: isCardsVipPick ? "Tarjetas VIP" : (isShotsVipPick ? "Disparos VIP" : (isCornersVipPick ? "Corners VIP" : undefined)),
+            source: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")))),
             matchTiming: isLiveMatch ? "live" : "prematch",
             isLive: isLiveMatch,
             isMcp: isMcpPick,
@@ -3142,11 +3330,13 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
             edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
             probability: p.probability,
             confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
-            pickBadge: isCornersVipPick ? "corners_vip" : (isElitePick(p as any) ? "elite" : p.pickBadge),
-            isElite: isCornersVipPick ? false : isElitePick(p as any),
+            pickBadge: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isCornersVipPick ? "corners_vip" : (isElitePick(p as any) ? "elite" : p.pickBadge))),
+            isElite: (isCornersVipPick || isCardsVipPick || isShotsVipPick) ? false : isElitePick(p as any),
             isCornersVip: isCornersVipPick,
-            vipBadge: isCornersVipPick ? "Corners VIP" : undefined,
-            source: isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")),
+            isCardsVip: isCardsVipPick,
+            isShotsVip: isShotsVipPick,
+            vipBadge: isCardsVipPick ? "Tarjetas VIP" : (isShotsVipPick ? "Disparos VIP" : (isCornersVipPick ? "Corners VIP" : undefined)),
+            source: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")))),
             matchTiming: isLiveMatch ? "live" : "prematch",
             isLive: isLiveMatch,
             isMcp: isMcpPick,
@@ -3206,11 +3396,13 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
               edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
               probability: p.probability,
               confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
-              pickBadge: isCornersVipPick ? "corners_vip" : (isElitePick(p as any) ? "elite" : p.pickBadge),
-              isElite: isCornersVipPick ? false : isElitePick(p as any),
+              pickBadge: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isCornersVipPick ? "corners_vip" : (isElitePick(p as any) ? "elite" : p.pickBadge))),
+              isElite: (isCornersVipPick || isCardsVipPick || isShotsVipPick) ? false : isElitePick(p as any),
               isCornersVip: isCornersVipPick,
-              vipBadge: isCornersVipPick ? "Corners VIP" : undefined,
-              source: isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")),
+              isCardsVip: isCardsVipPick,
+              isShotsVip: isShotsVipPick,
+              vipBadge: isCardsVipPick ? "Tarjetas VIP" : (isShotsVipPick ? "Disparos VIP" : (isCornersVipPick ? "Corners VIP" : undefined)),
+              source: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")))),
               matchTiming: "live",
               isLive: true,
               isMcp: isMcpPick,
