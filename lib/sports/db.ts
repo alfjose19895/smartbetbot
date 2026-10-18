@@ -3169,8 +3169,12 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
             edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
             probability: p.probability,
             confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
-            pickBadge: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isCornersVipPick ? "corners_vip" : (isElitePick(p as any) ? "elite" : p.pickBadge))),
-            isElite: (isCornersVipPick || isCardsVipPick || isShotsVipPick) ? false : isElitePick(p as any),
+            pickBadge: isElitePick(p as any)
+              ? "elite"
+              : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge)
+                ? p.pickBadge
+                : ((p.edge || 0) >= 4.0 ? "valor" : ((p.odds || 0) >= 2.0 ? "bomba" : "estandar"))),
+            isElite: isElitePick(p as any),
             isCornersVip: isCornersVipPick,
             isCardsVip: isCardsVipPick,
             isShotsVip: isShotsVipPick,
@@ -3217,8 +3221,12 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
             edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
             probability: p.probability,
             confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
-            pickBadge: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isCornersVipPick ? "corners_vip" : (isElitePick(p as any) ? "elite" : p.pickBadge))),
-            isElite: (isCornersVipPick || isCardsVipPick || isShotsVipPick) ? false : isElitePick(p as any),
+            pickBadge: isElitePick(p as any)
+              ? "elite"
+              : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge)
+                ? p.pickBadge
+                : ((p.edge || 0) >= 4.0 ? "valor" : ((p.odds || 0) >= 2.0 ? "bomba" : "estandar"))),
+            isElite: isElitePick(p as any),
             isCornersVip: isCornersVipPick,
             isCardsVip: isCardsVipPick,
             isShotsVip: isShotsVipPick,
@@ -3265,8 +3273,12 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
             edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
             probability: p.probability,
             confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
-            pickBadge: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isCornersVipPick ? "corners_vip" : (isElitePick(p as any) ? "elite" : p.pickBadge))),
-            isElite: (isCornersVipPick || isCardsVipPick || isShotsVipPick) ? false : isElitePick(p as any),
+            pickBadge: isElitePick(p as any)
+              ? "elite"
+              : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge)
+                ? p.pickBadge
+                : ((p.edge || 0) >= 4.0 ? "valor" : ((p.odds || 0) >= 2.0 ? "bomba" : "estandar"))),
+            isElite: isElitePick(p as any),
             isCornersVip: isCornersVipPick,
             isCardsVip: isCardsVipPick,
             isShotsVip: isShotsVipPick,
@@ -3330,8 +3342,12 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
             edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
             probability: p.probability,
             confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
-            pickBadge: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isCornersVipPick ? "corners_vip" : (isElitePick(p as any) ? "elite" : p.pickBadge))),
-            isElite: (isCornersVipPick || isCardsVipPick || isShotsVipPick) ? false : isElitePick(p as any),
+            pickBadge: isElitePick(p as any)
+              ? "elite"
+              : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge)
+                ? p.pickBadge
+                : ((p.edge || 0) >= 4.0 ? "valor" : ((p.odds || 0) >= 2.0 ? "bomba" : "estandar"))),
+            isElite: isElitePick(p as any),
             isCornersVip: isCornersVipPick,
             isCardsVip: isCardsVipPick,
             isShotsVip: isShotsVipPick,
@@ -3396,8 +3412,12 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
               edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
               probability: p.probability,
               confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
-              pickBadge: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isCornersVipPick ? "corners_vip" : (isElitePick(p as any) ? "elite" : p.pickBadge))),
-              isElite: (isCornersVipPick || isCardsVipPick || isShotsVipPick) ? false : isElitePick(p as any),
+              pickBadge: isElitePick(p as any)
+                ? "elite"
+                : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge)
+                  ? p.pickBadge
+                  : ((p.edge || 0) >= 4.0 ? "valor" : ((p.odds || 0) >= 2.0 ? "bomba" : "estandar"))),
+              isElite: isElitePick(p as any),
               isCornersVip: isCornersVipPick,
               isCardsVip: isCardsVipPick,
               isShotsVip: isShotsVipPick,

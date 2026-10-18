@@ -320,6 +320,8 @@ export default function CornersVipPage() {
   const valorCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "VALOR")).length;
   const scheduledCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "SCHEDULED")).length;
   const finishedCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "FINISHED")).length;
+  const settledCount = wonCount + lostCount;
+  const winRate = settledCount > 0 ? Math.round((wonCount / settledCount) * 1000) / 10 : 0;
   const topPickCount = activeSignals.filter((s) => s.isTopPick || s.probability >= 68.0 || s.confidence === "Muy Alta").length;
   const morningCount = activeSignals.filter((s) => s.timeSlot === "morning" || getTimeSlot(s.kickoff) === "morning").length;
   const afternoonCount = activeSignals.filter((s) => s.timeSlot === "afternoon" || getTimeSlot(s.kickoff) === "afternoon").length;
@@ -662,6 +664,59 @@ export default function CornersVipPage() {
                     </button>
                   )}
                 </div>
+              </div>
+            </section>
+
+            {/* STATS SUMMARY BAR */}
+            <section className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+              <div className="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-center items-center text-center">
+                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Total Alertas</span>
+                <span className="text-xl font-black text-white mt-0.5">{activeSignals.length}</span>
+              </div>
+              <div className="bg-slate-900/90 border border-emerald-900/40 p-3.5 rounded-2xl flex flex-col justify-center items-center text-center bg-emerald-950/10">
+                <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400">Ganadas</span>
+                <span className="text-xl font-black text-emerald-400 mt-0.5">✓ {wonCount}</span>
+              </div>
+              <div className="bg-slate-900/90 border border-rose-900/40 p-3.5 rounded-2xl flex flex-col justify-center items-center text-center bg-rose-950/10">
+                <span className="text-[10px] font-black uppercase tracking-wider text-rose-400">Perdidas</span>
+                <span className="text-xl font-black text-rose-400 mt-0.5">✗ {lostCount}</span>
+              </div>
+              <div className="bg-slate-900/90 border border-amber-500/30 p-3.5 rounded-2xl flex flex-col justify-center items-center text-center bg-amber-950/20 shadow-sm shadow-amber-500/10">
+                <span className="text-[10px] font-black uppercase tracking-wider text-amber-300">Tasa de Acierto</span>
+                <span className={`text-xl font-black mt-0.5 ${
+                  settledCount === 0
+                    ? "text-slate-400"
+                    : winRate >= 70
+                    ? "text-emerald-400"
+                    : winRate >= 50
+                    ? "text-yellow-400"
+                    : "text-rose-400"
+                }`}>
+                  {settledCount > 0 ? `${winRate}%` : "—"}
+                </span>
+                <span className="text-[9px] text-slate-500 font-bold mt-0.5">
+                  {settledCount > 0 ? `(${wonCount}/${settledCount} fin.)` : "Sin finalizar"}
+                </span>
+              </div>
+              <div className="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-center items-center text-center">
+                <span className="text-[10px] font-black uppercase tracking-wider text-blue-400">Pendientes</span>
+                <span className="text-xl font-black text-blue-400 mt-0.5">⏳ {scheduledCount}</span>
+              </div>
+              <div className="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-center items-center text-center">
+                <span className="text-[10px] font-black uppercase tracking-wider text-yellow-400">Prob. Media</span>
+                <span className="text-xl font-black text-yellow-400 mt-0.5">
+                  {activeSignals.length > 0
+                    ? Math.round((activeSignals.reduce((acc, p) => acc + (p.probability || 0), 0) / activeSignals.length) * 10) / 10
+                    : 0}%
+                </span>
+              </div>
+              <div className="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-center items-center text-center">
+                <span className="text-[10px] font-black uppercase tracking-wider text-cyan-400">Cuota Media</span>
+                <span className="text-xl font-black text-cyan-400 mt-0.5">
+                  {activeSignals.length > 0
+                    ? (activeSignals.reduce((acc, p) => acc + (p.odds || 0), 0) / activeSignals.length).toFixed(2)
+                    : "0.00"}
+                </span>
               </div>
             </section>
 

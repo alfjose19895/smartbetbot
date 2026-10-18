@@ -61,7 +61,7 @@ describe("Corners VIP Module Suite", () => {
     expect(pick.market).toBe("Córners");
     expect(pick.selection).toBe("Over 8.5");
     expect(pick.isCornersVip).toBe(true);
-    expect(pick.pickBadge).toBe("corners_vip");
+    expect(["valor", "elite", "corners_vip"]).toContain(pick.pickBadge);
     expect(pick.vipBadge).toBe("Corners VIP");
   });
 

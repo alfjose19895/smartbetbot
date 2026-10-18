@@ -93,7 +93,7 @@ export function isElitePick(opp: { probability?: number; smartScore?: number; pi
 }
 
 export interface DestacadoRuleMatch {
-  ruleId: 'corners' | 'btts' | 'goals' | 'local' | 'away';
+  ruleId: 'corners' | 'btts' | 'goals' | 'local' | 'away' | 'cards' | 'shots';
   ruleName: string;
   minProbability: number;
   actualProbability: number;
@@ -102,7 +102,7 @@ export interface DestacadoRuleMatch {
 }
 
 export const DESTACADOS_5_STARS_RULES: Array<{
-  id: 'corners' | 'btts' | 'goals' | 'local' | 'away';
+  id: 'corners' | 'btts' | 'goals' | 'local' | 'away' | 'cards' | 'shots';
   name: string;
   minProb: number;
   icon: string;
@@ -113,6 +113,8 @@ export const DESTACADOS_5_STARS_RULES: Array<{
   { id: 'goals', name: 'Alta de Goles', minProb: 72, icon: '🥅', description: 'Probabilidad ≥ 72%' },
   { id: 'local', name: 'Ganador Local', minProb: 58, icon: '🏠', description: 'Probabilidad ≥ 58%' },
   { id: 'away', name: 'Ganador Visitante', minProb: 71, icon: '✈️', description: 'Probabilidad ≥ 71%' },
+  { id: 'cards', name: 'Alta de Tarjetas', minProb: 70, icon: '🟨', description: 'Probabilidad ≥ 70%' },
+  { id: 'shots', name: 'Alta de Disparos', minProb: 70, icon: '🎯', description: 'Probabilidad ≥ 70%' },
 ];
 
 /**
@@ -275,6 +277,44 @@ export function getDestacadoRuleMatch(p: {
         actualProbability: prob,
         marketDescription: 'Ganador Visitante (≥ 71%)',
         icon: '✈️',
+      };
+    }
+    return null;
+  }
+
+  // 6. Tarjetas (Cards VIP): Probabilidad >= 70%
+  const isCard = m.includes('tarjeta') || m.includes('card') || s.includes('tarjeta') || s.includes('card');
+  if (isCard && !isUnder) {
+    if (prob >= 70) {
+      return {
+        ruleId: 'cards',
+        ruleName: 'Alta de Tarjetas',
+        minProbability: 70,
+        actualProbability: prob,
+        marketDescription: 'Alta de Tarjetas (≥ 70%)',
+        icon: '🟨',
+      };
+    }
+    return null;
+  }
+
+  // 7. Disparos (Shots VIP): Probabilidad >= 70%
+  const isShot =
+    m.includes('disparo') ||
+    m.includes('tiro') ||
+    m.includes('shot') ||
+    s.includes('disparo') ||
+    s.includes('tiro') ||
+    s.includes('shot');
+  if (isShot && !isUnder) {
+    if (prob >= 70) {
+      return {
+        ruleId: 'shots',
+        ruleName: 'Alta de Disparos',
+        minProbability: 70,
+        actualProbability: prob,
+        marketDescription: 'Alta de Disparos (≥ 70%)',
+        icon: '🎯',
       };
     }
     return null;

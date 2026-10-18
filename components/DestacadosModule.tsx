@@ -31,7 +31,7 @@ export function DestacadosModule({
   titleSuffix,
 }: DestacadosModuleProps) {
   const [selectedRuleFilter, setSelectedRuleFilter] = useState<
-    "ALL" | "corners" | "btts" | "goals" | "local" | "away"
+    "ALL" | "corners" | "btts" | "goals" | "local" | "away" | "cards" | "shots"
   >("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [copiedSummary, setCopiedSummary] = useState(false);
@@ -92,6 +92,8 @@ export function DestacadosModule({
       goals: 0,
       local: 0,
       away: 0,
+      cards: 0,
+      shots: 0,
     };
     allDestacados.forEach((p) => {
       const match = getDestacadoRuleMatch(p);

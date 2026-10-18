@@ -366,6 +366,22 @@ export function PredictionCard({
                       • {prediction.country}
                     </span>
                   )}
+                  {prediction.leagueTier && (
+                    <span
+                      className={`ml-1 inline-flex items-center px-1.5 py-0.2 rounded-md text-[9px] font-black shrink-0 ${
+                        prediction.leagueTier === 1
+                          ? "bg-amber-500/20 text-amber-500 border border-amber-500/40"
+                          : prediction.leagueTier === 2
+                          ? "bg-blue-500/20 text-blue-400 border border-blue-500/40"
+                          : prediction.leagueTier === 3
+                          ? "bg-slate-700/40 text-slate-400 border border-slate-600/40"
+                          : "bg-slate-800 text-slate-500 border border-slate-700/30"
+                      }`}
+                      title={`Liga Tier ${prediction.leagueTier}`}
+                    >
+                      T{prediction.leagueTier}
+                    </span>
+                  )}
                 </span>
               </div>
 
@@ -435,7 +451,7 @@ export function PredictionCard({
                     <span>FINDE VIP</span>
                   </span>
                 )}
-                {isDestacado && !isCornersVip && (
+                {isDestacado && (
                   <span
                     title={destacadoRule ? `Destacado: ${destacadoRule}` : "Pronóstico Destacado 5★"}
                     className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 shadow-xs shrink-0"
@@ -460,6 +476,12 @@ export function PredictionCard({
                   <span className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[9px] font-black bg-emerald-500 text-slate-950 shrink-0">
                     <span>💎</span>
                     <span>VALOR</span>
+                  </span>
+                )}
+                {prediction.pickBadge === "bomba" && (
+                  <span className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[9px] font-black bg-rose-500 text-white shrink-0">
+                    <span>💣</span>
+                    <span>BOMBA</span>
                   </span>
                 )}
                 <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[9px] border shrink-0 ${confidenceBadge.cls}`}>
@@ -581,6 +603,22 @@ export function PredictionCard({
                       • {prediction.country}
                     </span>
                   )}
+                  {prediction.leagueTier && (
+                    <span
+                      className={`ml-1 inline-flex items-center px-1.5 py-0.2 rounded-md text-[9px] font-black shrink-0 ${
+                        prediction.leagueTier === 1
+                          ? "bg-amber-500/20 text-amber-500 border border-amber-500/40"
+                          : prediction.leagueTier === 2
+                          ? "bg-blue-500/20 text-blue-400 border border-blue-500/40"
+                          : prediction.leagueTier === 3
+                          ? "bg-slate-700/40 text-slate-400 border border-slate-600/40"
+                          : "bg-slate-800 text-slate-500 border border-slate-700/30"
+                      }`}
+                      title={`Liga Tier ${prediction.leagueTier}`}
+                    >
+                      T{prediction.leagueTier}
+                    </span>
+                  )}
                 </span>
               </div>
 
@@ -653,7 +691,7 @@ export function PredictionCard({
                     <span>FINDE VIP</span>
                   </span>
                 )}
-                {isDestacado && !isCornersVip && (
+                {isDestacado && (
                   <span
                     title={destacadoRule ? `Cumple: ${destacadoRule}` : "Pronóstico Destacado 5 Estrellas"}
                     className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 shadow-xs shrink-0"
@@ -676,6 +714,11 @@ export function PredictionCard({
                 {prediction.pickBadge === "valor" && (
                   <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-emerald-500 text-slate-950 font-extrabold shadow-sm shadow-emerald-500/20 shrink-0">
                     💎 VALOR
+                  </span>
+                )}
+                {prediction.pickBadge === "bomba" && (
+                  <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-rose-500 text-white font-extrabold shadow-sm shadow-rose-500/20 shrink-0">
+                    💣 BOMBA
                   </span>
                 )}
                 <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] border shrink-0 ${confidenceBadge.cls}`}>

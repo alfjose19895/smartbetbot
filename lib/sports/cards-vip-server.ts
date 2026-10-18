@@ -5,6 +5,8 @@ import {
   isExcludedMatch,
   getCanonicalTeamKey,
   getTeamRating,
+  isElitePick,
+  normalizeLeagueInfo,
 } from "./prediction-engine";
 import {
   loadDailySnapshot,
@@ -66,14 +68,30 @@ export async function saveCardsVipSnapshotAsync(
   picks: MarketOpportunity[],
   overwrite = false
 ): Promise<MarketOpportunity[]> {
-  const taggedPicks = picks.map((p) => ({
-    ...p,
-    sport: "cards_vip" as any,
-    source: "cards_vip" as const,
-    isCardsVip: true,
-    pickBadge: "cards_vip" as const,
-    vipBadge: "Tarjetas VIP",
-  }));
+  const taggedPicks = picks.map((p) => {
+    const isElite = isElitePick(p);
+    const pickBadge = isElite
+      ? "elite"
+      : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge)
+        ? p.pickBadge
+        : (p.edge || 0) >= 4.0
+        ? "valor"
+        : (p.odds || 0) >= 2.0
+        ? "bomba"
+        : "estandar");
+    return {
+      ...p,
+      sport: "cards_vip" as any,
+      source: "cards_vip" as const,
+      isCardsVip: true,
+      pickBadge,
+      isElite,
+      vipBadge: "Tarjetas VIP",
+      confidence: (p.confidence as any) || (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : "Media"),
+      isDestacado: p.probability >= 70,
+      destacadoRule: "Alta de Tarjetas (≥ 70%)",
+    };
+  });
   return saveDailySnapshotAsync(dateStr, taggedPicks, "cards_vip", overwrite);
 }
 
@@ -209,9 +227,14 @@ export function evaluateFixtureCardsPrediction(params: {
     marketOdds,
   } = params;
 
+  const norm = normalizeLeagueInfo(league, country, leagueId);
+  const canonicalLeague = norm.canonicalLeague || league;
+  const normCountry = norm.country || country;
+  const tier = norm.tier || 3;
+
   // 1. Tasa base calibrada por país/liga (promedio histórico verificado de amonestaciones)
-  const cLower = (country || "").toLowerCase();
-  const lLower = (league || "").toLowerCase();
+  const cLower = (normCountry || "").toLowerCase();
+  const lLower = (canonicalLeague || "").toLowerCase();
 
   let baseLambda = 4.3; // Promedio estándar competitivo
   if (cLower.includes("spain") || cLower.includes("españa")) baseLambda = 5.2;
@@ -322,19 +345,23 @@ export function evaluateFixtureCardsPrediction(params: {
 
     const rawProb = poissonOver(expectedCards, c.threshold);
     const probPercent = Math.round(rawProb * 1000) / 10;
-    if (probPercent < c.minProb) continue;
+
+    const minTierProb =
+      tier === 1 ? 62.0 : tier === 2 ? 64.0 : tier === 3 ? 68.0 : 72.0;
+    const effectiveMinProb = Math.max(c.minProb, minTierProb);
+    if (probPercent < effectiveMinProb) continue;
 
     const fairOdds = Math.round((1 / rawProb) * 100) / 100;
 
     // Obtener cuota auténtica o deducir con margen bookmaker si es liga curada de alta jerarquía
     let effectiveOdds = c.realOdd;
     if (!effectiveOdds) {
-      if (isCuratedLeague(leagueId, league, country)) {
+      if (isCuratedLeague(leagueId, canonicalLeague, normCountry)) {
         effectiveOdds = Math.round((fairOdds * 0.94) * 100) / 100;
       }
     }
 
-    if (!effectiveOdds || effectiveOdds < 1.25 || effectiveOdds > 1.95) {
+    if (!effectiveOdds || effectiveOdds < 1.25 || effectiveOdds > 2.05) {
       continue;
     }
 
@@ -345,17 +372,25 @@ export function evaluateFixtureCardsPrediction(params: {
       continue;
     }
 
-    const confidence = probPercent >= 70 ? "Muy Alta" : probPercent >= 62 ? "Alta" : "Media";
+    const minTierEdge =
+      tier === 1 ? 1.5 : tier === 2 ? 2.0 : tier === 3 ? 2.5 : 3.5;
+    if (c.realOdd && edge < minTierEdge) {
+      continue;
+    }
 
-    opportunities.push({
+    const confidence = (probPercent >= 70 ? "Muy Alta" : probPercent >= 58 ? "Alta" : "Media") as "Muy Alta" | "Alta" | "Media";
+
+    const oppBase: MarketOpportunity = {
       fixtureId,
       match: `${homeTeam} vs ${awayTeam}`,
       homeTeam,
       awayTeam,
       homeLogo,
       awayLogo,
-      league,
-      country,
+      league: canonicalLeague,
+      leagueId,
+      leagueTier: tier,
+      country: normCountry,
       leagueLogo,
       kickoff,
       market: "Tarjetas",
@@ -368,14 +403,28 @@ export function evaluateFixtureCardsPrediction(params: {
       confidence,
       smartScore: Math.min(99, Math.round(probPercent * 1.1 + (isDerby ? 8 : 4))),
       status: "pending",
-      explanation: `Proyección disciplinaria calibrada de ${expectedCards.toFixed(1)} tarjetas totales.${
+      explanation: `Proyección disciplinaria calibrada de ${expectedCards.toFixed(1)} tarjetas totales en ${canonicalLeague} (Tier ${tier}).${
         referee ? ` Árbitro designado: ${referee}.` : ""
       }${isDerby ? " Encuentro de máxima rivalidad y alta tensión competitiva." : ""}`,
       isCardsVip: true,
-      pickBadge: "cards_vip",
       vipBadge: "Tarjetas VIP",
       isDestacado: probPercent >= 70,
       destacadoRule: "Alta de Tarjetas (≥ 70%)",
+    };
+
+    const isElite = isElitePick(oppBase);
+    const pickBadge = isElite
+      ? "elite"
+      : edge >= 5.0 && probPercent >= 65
+      ? "valor"
+      : effectiveOdds >= 2.0
+      ? "bomba"
+      : "estandar";
+
+    opportunities.push({
+      ...oppBase,
+      isElite,
+      pickBadge,
     });
   }
 
@@ -484,22 +533,44 @@ export async function searchAndAddNewCardsVipAlerts(dateStr?: string): Promise<{
       const selLower = (p.selection || "").toLowerCase();
       const isUnder = selLower.includes("under") || selLower.includes("menos") || selLower.includes("baja");
       const isOver = selLower.includes("over") || selLower.includes("más") || selLower.includes("+");
-      return isCard && !isUnder && isOver && p.probability >= 58 && p.odds >= 1.25 && p.odds <= 1.95;
+      const tier = p.leagueTier || 3;
+      const minTierProb = tier === 1 ? 62.0 : tier === 2 ? 64.0 : tier === 3 ? 68.0 : 72.0;
+      return isCard && !isUnder && isOver && p.probability >= minTierProb && p.odds >= 1.25 && p.odds <= 2.05;
     });
 
     if (validOpps.length > 0) {
-      // Elegir la opción de mayor probabilidad y mejor edge
-      validOpps.sort((a, b) => b.probability - a.probability || b.edge - a.edge);
+      // Elegir la opción de mayor jerarquía de liga, probabilidad y mejor edge
+      validOpps.sort((a, b) => {
+        const aTier = a.leagueTier || 3;
+        const bTier = b.leagueTier || 3;
+        if (aTier !== bTier) return aTier - bTier;
+        if (a.isElite !== b.isElite) return a.isElite ? -1 : 1;
+        if (b.probability !== a.probability) return b.probability - a.probability;
+        return (b.edge || 0) - (a.edge || 0);
+      });
       const bestCard = validOpps[0];
+
+      const isElite = isElitePick(bestCard);
+      const pickBadge = isElite
+        ? "elite"
+        : (bestCard.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(bestCard.pickBadge)
+          ? bestCard.pickBadge
+          : (bestCard.edge || 0) >= 4.0
+          ? "valor"
+          : (bestCard.odds || 0) >= 2.0
+          ? "bomba"
+          : "estandar");
 
       const taggedPick: MarketOpportunity = {
         ...bestCard,
         sport: "cards_vip" as any,
         source: "cards_vip",
         isCardsVip: true,
-        pickBadge: "cards_vip",
+        pickBadge,
+        isElite,
         vipBadge: "Tarjetas VIP",
         status: "pending",
+        confidence: (bestCard.probability >= 70 ? "Muy Alta" : bestCard.probability >= 58 ? "Alta" : "Media") as "Muy Alta" | "Alta" | "Media",
         isDestacado: bestCard.probability >= 70,
         destacadoRule: "Alta de Tarjetas (≥ 70%)",
         isNewlyDiscovered: true,
@@ -528,11 +599,22 @@ export async function searchAndAddNewCardsVipAlerts(dateStr?: string): Promise<{
   // 5. Fusionar nuevas alertas con el snapshot existente
   const mergedMap = new Map<string, MarketOpportunity>();
   for (const p of existingSnapshot) {
+    const isElite = isElitePick(p);
+    const pickBadge = isElite
+      ? "elite"
+      : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge)
+        ? p.pickBadge
+        : (p.edge || 0) >= 4.0
+        ? "valor"
+        : (p.odds || 0) >= 2.0
+        ? "bomba"
+        : "estandar");
     mergedMap.set(getOpportunityKey(p), {
       ...p,
       isCardsVip: true,
       source: "cards_vip",
-      pickBadge: "cards_vip",
+      pickBadge,
+      isElite,
       vipBadge: "Tarjetas VIP",
     });
   }
@@ -544,9 +626,18 @@ export async function searchAndAddNewCardsVipAlerts(dateStr?: string): Promise<{
     }
   }
 
-  const finalPicks = Array.from(mergedMap.values()).sort(
-    (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
-  );
+  const finalPicks = Array.from(mergedMap.values()).sort((a, b) => {
+    const aTier = a.leagueTier || 3;
+    const bTier = b.leagueTier || 3;
+    if (aTier !== bTier) return aTier - bTier;
+
+    const aRank = a.isElite ? 1 : a.isDestacado ? 2 : a.pickBadge === "valor" ? 3 : a.pickBadge === "bomba" ? 4 : 5;
+    const bRank = b.isElite ? 1 : b.isDestacado ? 2 : b.pickBadge === "valor" ? 3 : b.pickBadge === "bomba" ? 4 : 5;
+    if (aRank !== bRank) return aRank - bRank;
+
+    if (b.probability !== a.probability) return b.probability - a.probability;
+    return (b.edge || 0) - (a.edge || 0);
+  });
 
   // Asegurar auditoría en selecciones previas que aún no tengan nota de IA
   const unaudited = finalPicks.filter(
@@ -601,6 +692,7 @@ export async function getCardsVipSlate(dateStr?: string, forceRefresh = false): 
     pending: number;
     won: number;
     lost: number;
+    winRate?: number;
     avgProb: number;
     avgOdds: number;
   };
@@ -645,20 +737,50 @@ export async function getCardsVipSlate(dateStr?: string, forceRefresh = false): 
         mktLower.includes("alta");
       return isCard && !isUnder && isOver;
     })
-    .map((p) => ({
-      ...p,
-      sport: "cards_vip" as any,
-      source: "cards_vip" as const,
-      isCardsVip: true,
-      pickBadge: "cards_vip" as const,
-      vipBadge: "Tarjetas VIP",
-    }))
-    .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
+    .map((p) => {
+      const isElite = isElitePick(p);
+      const pickBadge = isElite
+        ? "elite"
+        : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge)
+          ? p.pickBadge
+          : (p.edge || 0) >= 4.0
+          ? "valor"
+          : (p.odds || 0) >= 2.0
+          ? "bomba"
+          : "estandar");
+
+      return {
+        ...p,
+        sport: "cards_vip" as any,
+        source: "cards_vip" as const,
+        isCardsVip: true,
+        pickBadge,
+        isElite,
+        vipBadge: "Tarjetas VIP",
+        confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : "Media") as "Muy Alta" | "Alta" | "Media",
+        isDestacado: p.probability >= 70,
+        destacadoRule: "Alta de Tarjetas (≥ 70%)",
+      };
+    })
+    .sort((a, b) => {
+      const aTier = a.leagueTier || 3;
+      const bTier = b.leagueTier || 3;
+      if (aTier !== bTier) return aTier - bTier;
+
+      const aRank = a.isElite ? 1 : a.isDestacado ? 2 : a.pickBadge === "valor" ? 3 : a.pickBadge === "bomba" ? 4 : 5;
+      const bRank = b.isElite ? 1 : b.isDestacado ? 2 : b.pickBadge === "valor" ? 3 : b.pickBadge === "bomba" ? 4 : 5;
+      if (aRank !== bRank) return aRank - bRank;
+
+      if (b.probability !== a.probability) return b.probability - a.probability;
+      return (b.edge || 0) - (a.edge || 0);
+    });
 
   const total = sanitizedPicks.length;
   const won = sanitizedPicks.filter((p) => p.status === "won" || (p as any).result === "WON").length;
   const lost = sanitizedPicks.filter((p) => p.status === "lost" || (p as any).result === "LOST").length;
-  const pending = total - (won + lost);
+  const settled = won + lost;
+  const pending = total - settled;
+  const winRate = settled > 0 ? Math.round((won / settled) * 100) : 0;
   const avgProb = total > 0 ? Math.round((sanitizedPicks.reduce((acc, p) => acc + (p.probability || 0), 0) / total) * 10) / 10 : 0;
   const avgOdds = total > 0 ? Math.round((sanitizedPicks.reduce((acc, p) => acc + (p.odds || 0), 0) / total) * 100) / 100 : 0;
 
@@ -671,6 +793,7 @@ export async function getCardsVipSlate(dateStr?: string, forceRefresh = false): 
       pending,
       won,
       lost,
+      winRate,
       avgProb,
       avgOdds,
     },

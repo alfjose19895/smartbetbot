@@ -6,6 +6,8 @@ import {
   isExcludedMatch,
   isCompetitionWithCornerTelemetry,
   getCanonicalTeamKey,
+  isElitePick,
+  normalizeLeagueInfo,
 } from "./prediction-engine";
 import {
   loadDailySnapshot,
@@ -67,14 +69,26 @@ export async function saveCornersVipSnapshotAsync(
   picks: MarketOpportunity[],
   overwrite = false
 ): Promise<MarketOpportunity[]> {
-  const taggedPicks = picks.map((p) => ({
-    ...p,
-    sport: "corners_vip" as any,
-    source: "corners_vip" as const,
-    isCornersVip: true,
-    pickBadge: "corners_vip" as const,
-    vipBadge: "Corners VIP",
-  }));
+  const taggedPicks = picks.map((p) => {
+    const isElite = isElitePick(p);
+    const pickBadge = isElite
+      ? "elite"
+      : p.odds >= 2.0 && (p.edge || 0) >= 2.0
+      ? "bomba"
+      : (p.probability >= 62.0 && (p.edge || 0) >= 2.0) || (p.odds >= 1.65 && (p.edge || 0) >= 1.5)
+      ? "valor"
+      : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge) ? p.pickBadge : "estandar");
+
+    return {
+      ...p,
+      sport: "corners_vip" as any,
+      source: "corners_vip" as const,
+      isCornersVip: true,
+      pickBadge,
+      isElite,
+      vipBadge: "Corners VIP",
+    };
+  });
   return saveDailySnapshotAsync(dateStr, taggedPicks, "corners_vip", overwrite);
 }
 
@@ -250,7 +264,7 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string): Promise
       marketOdds: realMarketOdds,
     });
 
-    // Filtrar estrictamente solo oportunidades de córners en modalidad OVER (no Under)
+    // Filtrar estrictamente solo oportunidades de córners en modalidad OVER respetando Tiers de Ligas
     const cornerOpps = opportunities.filter((p) => {
       const isCorner = p.market === "Córners" || (p.selection || "").toLowerCase().includes("córner");
       const selLower = (p.selection || "").toLowerCase();
@@ -268,7 +282,16 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string): Promise
         selLower.includes("+") ||
         mktLower.includes("over") ||
         mktLower.includes("alta");
-      return isCorner && !isUnder && isOver && p.probability >= 58 && p.odds >= 1.25 && p.odds <= 1.95;
+
+      const tier = p.leagueTier || 3;
+      // Umbrales calibrados por Tier de Liga
+      const meetsTierThreshold =
+        tier === 1 ? (p.probability >= 62 && (p.edge || 0) >= 1.5) :
+        tier === 2 ? (p.probability >= 64 && (p.edge || 0) >= 2.0) :
+        tier === 3 ? (p.probability >= 68 && (p.edge || 0) >= 2.5) :
+        (p.probability >= 72 && (p.edge || 0) >= 3.5);
+
+      return isCorner && !isUnder && isOver && meetsTierThreshold && p.odds >= 1.25 && p.odds <= 2.05;
     });
 
     if (cornerOpps.length > 0) {
@@ -276,16 +299,30 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string): Promise
       cornerOpps.sort((a, b) => b.probability - a.probability || b.edge - a.edge);
       const bestCorner = cornerOpps[0];
 
+      const isElite = isElitePick(bestCorner);
+      let pickBadge: "elite" | "valor" | "bomba" | "estandar" = "estandar";
+      if (isElite) {
+        pickBadge = "elite";
+      } else if (bestCorner.odds >= 2.00 && (bestCorner.edge || 0) >= 2.0) {
+        pickBadge = "bomba";
+      } else if (bestCorner.probability >= 62.0 && (bestCorner.edge || 0) >= 2.0) {
+        pickBadge = "valor";
+      } else if (bestCorner.odds >= 1.65 && (bestCorner.edge || 0) >= 1.5) {
+        pickBadge = "valor";
+      }
+
       const taggedPick: MarketOpportunity = {
         ...bestCorner,
         sport: "corners_vip" as any,
         source: "corners_vip",
         isCornersVip: true,
-        pickBadge: "corners_vip",
+        pickBadge,
+        isElite,
         vipBadge: "Corners VIP",
         status: "pending",
         isDestacado: bestCorner.probability >= 70,
         destacadoRule: "Alta de Córners (≥ 70%)",
+        confidence: bestCorner.probability >= 70 ? "Muy Alta" : bestCorner.probability >= 58 ? "Alta" : "Media",
         isNewlyDiscovered: true,
         addedAt: new Date().toISOString(),
       };
@@ -297,7 +334,6 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string): Promise
   }
 
   // 4. Auditoría con Agente IA Google Gemini ("Abogado del Diablo" / Veto Táctico)
-  // Idéntico al estándar cuantitativo de Pre-Match (db.ts)
   let approvedNewAlerts = newlyFoundAlerts;
   if (newlyFoundAlerts.length > 0) {
     try {
@@ -313,12 +349,25 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string): Promise
   // 5. Fusionar nuevas alertas con el snapshot existente
   const mergedMap = new Map<string, MarketOpportunity>();
   for (const p of existingSnapshot) {
+    const isElite = isElitePick(p);
+    const pickBadge = isElite
+      ? "elite"
+      : p.odds >= 2.0 && (p.edge || 0) >= 2.0
+      ? "bomba"
+      : (p.probability >= 62.0 && (p.edge || 0) >= 2.0) || (p.odds >= 1.65 && (p.edge || 0) >= 1.5)
+      ? "valor"
+      : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge) ? p.pickBadge : "estandar");
+
     mergedMap.set(getOpportunityKey(p), {
       ...p,
       isCornersVip: true,
       source: "corners_vip",
-      pickBadge: "corners_vip",
+      pickBadge,
+      isElite,
       vipBadge: "Corners VIP",
+      confidence: p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : "Media",
+      isDestacado: p.probability >= 70,
+      destacadoRule: "Alta de Córners (≥ 70%)",
     });
   }
 
@@ -329,9 +378,19 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string): Promise
     }
   }
 
-  const finalPicks = Array.from(mergedMap.values()).sort(
-    (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
-  );
+  // Ordenamiento canónico: Tier de Liga (T1 > T2 > T3 > T4) > Élite/Destacado > Probabilidad > Edge
+  const finalPicks = Array.from(mergedMap.values()).sort((a, b) => {
+    const aTier = a.leagueTier || 3;
+    const bTier = b.leagueTier || 3;
+    if (aTier !== bTier) return aTier - bTier;
+
+    const aRank = a.isElite ? 1 : a.isDestacado ? 2 : a.pickBadge === "valor" ? 3 : a.pickBadge === "bomba" ? 4 : 5;
+    const bRank = b.isElite ? 1 : b.isDestacado ? 2 : b.pickBadge === "valor" ? 3 : b.pickBadge === "bomba" ? 4 : 5;
+    if (aRank !== bRank) return aRank - bRank;
+
+    if (b.probability !== a.probability) return b.probability - a.probability;
+    return (b.edge || 0) - (a.edge || 0);
+  });
 
   // Asegurar auditoría en selecciones previas que aún no tengan nota de IA
   const unaudited = finalPicks.filter(
@@ -386,6 +445,7 @@ export async function getCornersVipSlate(dateStr?: string, forceRefresh = false)
     pending: number;
     won: number;
     lost: number;
+    winRate?: number;
     avgProb: number;
     avgOdds: number;
   };
@@ -430,20 +490,48 @@ export async function getCornersVipSlate(dateStr?: string, forceRefresh = false)
         mktLower.includes("alta");
       return isCorner && !isUnder && isOver;
     })
-    .map((p) => ({
-      ...p,
-      sport: "corners_vip" as any,
-      source: "corners_vip" as const,
-      isCornersVip: true,
-      pickBadge: "corners_vip" as const,
-      vipBadge: "Corners VIP",
-    }))
-    .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
+    .map((p) => {
+      const isElite = isElitePick(p);
+      const pickBadge = isElite
+        ? "elite"
+        : p.odds >= 2.0 && (p.edge || 0) >= 2.0
+        ? "bomba"
+        : (p.probability >= 62.0 && (p.edge || 0) >= 2.0) || (p.odds >= 1.65 && (p.edge || 0) >= 1.5)
+        ? "valor"
+        : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge) ? p.pickBadge : "estandar");
+
+      return {
+        ...p,
+        sport: "corners_vip" as any,
+        source: "corners_vip" as const,
+        isCornersVip: true,
+        pickBadge,
+        isElite,
+        vipBadge: "Corners VIP",
+        confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : "Media") as "Muy Alta" | "Alta" | "Media",
+        isDestacado: p.probability >= 70,
+        destacadoRule: "Alta de Córners (≥ 70%)",
+      };
+    })
+    .sort((a, b) => {
+      const aTier = a.leagueTier || 3;
+      const bTier = b.leagueTier || 3;
+      if (aTier !== bTier) return aTier - bTier;
+
+      const aRank = a.isElite ? 1 : a.isDestacado ? 2 : a.pickBadge === "valor" ? 3 : a.pickBadge === "bomba" ? 4 : 5;
+      const bRank = b.isElite ? 1 : b.isDestacado ? 2 : b.pickBadge === "valor" ? 3 : b.pickBadge === "bomba" ? 4 : 5;
+      if (aRank !== bRank) return aRank - bRank;
+
+      if (b.probability !== a.probability) return b.probability - a.probability;
+      return (b.edge || 0) - (a.edge || 0);
+    });
 
   const total = sanitizedPicks.length;
   const won = sanitizedPicks.filter((p) => p.status === "won" || (p as any).result === "WON").length;
   const lost = sanitizedPicks.filter((p) => p.status === "lost" || (p as any).result === "LOST").length;
-  const pending = total - (won + lost);
+  const settled = won + lost;
+  const pending = total - settled;
+  const winRate = settled > 0 ? Math.round((won / settled) * 100) : 0;
   const avgProb = total > 0 ? Math.round((sanitizedPicks.reduce((acc, p) => acc + (p.probability || 0), 0) / total) * 10) / 10 : 0;
   const avgOdds = total > 0 ? Math.round((sanitizedPicks.reduce((acc, p) => acc + (p.odds || 0), 0) / total) * 100) / 100 : 0;
 
@@ -456,6 +544,7 @@ export async function getCornersVipSlate(dateStr?: string, forceRefresh = false)
       pending,
       won,
       lost,
+      winRate,
       avgProb,
       avgOdds,
     },
