@@ -7,6 +7,7 @@ import {
   DESTACADOS_5_STARS_RULES,
   getDestacadoRuleMatch,
   isDestacadoPick,
+  sortByKickoff,
 } from "@/lib/sports/prediction-engine";
 import {
   copyCardImageToClipboard,
@@ -43,7 +44,7 @@ export function DestacadosModule({
 
   // Filter only football predictions that meet the 5 strict rules
   const allDestacados = useMemo(() => {
-    return predictions.filter((p) => {
+    const list = predictions.filter((p) => {
       // Must be football
       const sp = ((p as any).sport || "").toLowerCase();
       const c = (p.country || "").toUpperCase();
@@ -64,6 +65,7 @@ export function DestacadosModule({
       }
       return isDestacadoPick(p);
     });
+    return sortByKickoff(list, "asc");
   }, [predictions]);
 
   const toggleCard = (key: string) => {
@@ -106,7 +108,7 @@ export function DestacadosModule({
 
   // Filtered by selected rule and search query
   const filteredDestacados = useMemo(() => {
-    return allDestacados.filter((p) => {
+    const list = allDestacados.filter((p) => {
       const match = getDestacadoRuleMatch(p);
       if (selectedRuleFilter !== "ALL" && match?.ruleId !== selectedRuleFilter) {
         return false;
@@ -126,6 +128,7 @@ export function DestacadosModule({
       }
       return true;
     });
+    return sortByKickoff(list, "asc");
   }, [allDestacados, selectedRuleFilter, searchQuery]);
 
   // Metrics

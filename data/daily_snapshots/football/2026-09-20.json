@@ -28,11 +28,11 @@
     ],
     "edge": 12.6,
     "odds": 1.53,
-    "pick": "Over 7.5 C\u00f3rners",
+    "pick": "Over 7.5 Córners",
     "isMcp": true,
     "match": "Incheon United vs Daejeon Citizen",
     "league": "K League 1",
-    "market": "C\u00f3rners",
+    "market": "Córners",
     "profit": -1,
     "result": "LOST",
     "source": "mcp",
@@ -145,8 +145,8 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/292.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "actualScore": "1 - 3 (4 C\u00f3rners)",
-    "explanation": "Presi\u00f3n ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulaci\u00f3n cuantitativa respalda la l\u00ednea de C\u00f3rners con una media esperada de 10.7 c\u00f3rners totales.",
+    "actualScore": "1 - 3 (4 Córners)",
+    "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.7 córners totales.",
     "matchTiming": "finished",
     "probability": 78,
     "bookmakerOdds": 1.53,
@@ -286,11 +286,11 @@
     ],
     "edge": 8.2,
     "odds": 1.46,
-    "pick": "Over 7.5 C\u00f3rners",
+    "pick": "Over 7.5 Córners",
     "isMcp": true,
     "match": "Pohang Steelers vs FC Seoul",
     "league": "K League 1",
-    "market": "C\u00f3rners",
+    "market": "Córners",
     "profit": -1,
     "result": "LOST",
     "source": "mcp",
@@ -403,8 +403,8 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/292.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "actualScore": "3 - 4 (7 C\u00f3rners)",
-    "explanation": "Patr\u00f3n de repliegue y rechaces: Pohang Steelers sostiene una alta cadencia de llegadas al \u00faltimo tercio generando tiros de esquina constantes, mientras que FC Seoul concede m\u00e1s de 5.2 c\u00f3rners en promedio cuando juega de visitante.",
+    "actualScore": "3 - 4 (7 Córners)",
+    "explanation": "Patrón de repliegue y rechaces: Pohang Steelers sostiene una alta cadencia de llegadas al último tercio generando tiros de esquina constantes, mientras que FC Seoul concede más de 5.2 córners en promedio cuando juega de visitante.",
     "matchTiming": "finished",
     "probability": 76.7,
     "bookmakerOdds": 1.46,
@@ -426,7 +426,7 @@
           "devig_probability": 0.779,
           "model_probability": 0.845,
           "rejection_reasons": [
-            "Cuota disponible inferior al m\u00ednimo requerido: @1.22 < @1.25",
+            "Cuota disponible inferior al mínimo requerido: @1.22 < @1.25",
             "Smart Edge insuficiente: +2.5% < +4.0%"
           ],
           "implied_probability": 0.82,
@@ -525,7 +525,7 @@
         "winner": "away",
         "awayTeam": "Sevilla W",
         "homeTeam": "Granad. Tenerife W",
-        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
+        "competition": "Primera División Femenina (Liga F)"
       },
       {
         "date": "2026-03-24",
@@ -533,7 +533,7 @@
         "winner": "home",
         "awayTeam": "Granad. Tenerife W",
         "homeTeam": "Sevilla W",
-        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
+        "competition": "Primera División Femenina (Liga F)"
       },
       {
         "date": "2025-09-25",
@@ -541,22 +541,22 @@
         "winner": "away",
         "awayTeam": "Sevilla W",
         "homeTeam": "Granad. Tenerife W",
-        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
+        "competition": "Primera División Femenina (Liga F)"
       }
     ],
     "edge": 16.7,
     "odds": 1.67,
-    "pick": "Over 7.5 C\u00f3rners",
+    "pick": "Over 7.5 Córners",
     "isMcp": true,
     "match": "Granad. Tenerife W vs Sevilla W",
-    "league": "Primera Divisi\u00f3n Femenina (Liga F)",
-    "market": "C\u00f3rners",
+    "league": "Primera División Femenina (Liga F)",
+    "market": "Córners",
     "profit": 0.67,
     "result": "WON",
     "source": "mcp",
     "status": "won",
     "awayElo": 1690,
-    "country": "Espa\u00f1a",
+    "country": "España",
     "homeElo": 1570,
     "kickoff": "2026-09-20T05:00:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/1920.png",
@@ -573,7 +573,7 @@
         "isHome": false,
         "result": "L",
         "opponent": "Rival A",
-        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
+        "competition": "Primera División Femenina (Liga F)"
       },
       {
         "date": "2026-09-11",
@@ -581,7 +581,7 @@
         "isHome": true,
         "result": "D",
         "opponent": "Rival B",
-        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
+        "competition": "Primera División Femenina (Liga F)"
       },
       {
         "date": "2026-09-06",
@@ -589,7 +589,7 @@
         "isHome": false,
         "result": "W",
         "opponent": "Rival C",
-        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
+        "competition": "Primera División Femenina (Liga F)"
       },
       {
         "date": "2026-09-01",
@@ -597,7 +597,7 @@
         "isHome": true,
         "result": "W",
         "opponent": "Rival D",
-        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
+        "competition": "Primera División Femenina (Liga F)"
       },
       {
         "date": "2026-08-27",
@@ -605,7 +605,7 @@
         "isHome": false,
         "result": "L",
         "opponent": "Rival E",
-        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
+        "competition": "Primera División Femenina (Liga F)"
       }
     ],
     "bookmaker": "Bet365",
@@ -617,7 +617,7 @@
         "isHome": true,
         "result": "D",
         "opponent": "Rival A",
-        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
+        "competition": "Primera División Femenina (Liga F)"
       },
       {
         "date": "2026-09-11",
@@ -625,7 +625,7 @@
         "isHome": false,
         "result": "W",
         "opponent": "Rival B",
-        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
+        "competition": "Primera División Femenina (Liga F)"
       },
       {
         "date": "2026-09-06",
@@ -633,7 +633,7 @@
         "isHome": true,
         "result": "L",
         "opponent": "Rival C",
-        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
+        "competition": "Primera División Femenina (Liga F)"
       },
       {
         "date": "2026-09-01",
@@ -641,7 +641,7 @@
         "isHome": false,
         "result": "D",
         "opponent": "Rival D",
-        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
+        "competition": "Primera División Femenina (Liga F)"
       },
       {
         "date": "2026-08-27",
@@ -649,7 +649,7 @@
         "isHome": true,
         "result": "W",
         "opponent": "Rival E",
-        "competition": "Primera Divisi\u00f3n Femenina (Liga F)"
+        "competition": "Primera División Femenina (Liga F)"
       }
     ],
     "isMcpPick": true,
@@ -663,8 +663,8 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/142.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "actualScore": "6 - 4 (10 C\u00f3rners)",
-    "explanation": "Volumen constante por las bandas: El cruce t\u00e1ctico entre Granad. Tenerife W (5.8 c\u00f3rners de media en casa) y Sevilla W (4.6 for\u00e1neos) proyecta 10.4 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
+    "actualScore": "6 - 4 (10 Córners)",
+    "explanation": "Volumen constante por las bandas: El cruce táctico entre Granad. Tenerife W (5.8 córners de media en casa) y Sevilla W (4.6 foráneos) proyecta 10.4 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
     "matchTiming": "finished",
     "probability": 76.6,
     "bookmakerOdds": 1.67,
@@ -686,7 +686,7 @@
           "devig_probability": null,
           "model_probability": 0.85,
           "rejection_reasons": [
-            "Cuota real de casa de apuestas no disponible para esta l\u00ednea"
+            "Cuota real de casa de apuestas no disponible para esta línea"
           ],
           "implied_probability": null,
           "qualification_status": "ODDS_UNAVAILABLE"
@@ -722,7 +722,7 @@
           "devig_probability": null,
           "model_probability": 0.667,
           "rejection_reasons": [
-            "Cuota real de casa de apuestas no disponible para esta l\u00ednea"
+            "Cuota real de casa de apuestas no disponible para esta línea"
           ],
           "implied_probability": null,
           "qualification_status": "ODDS_UNAVAILABLE"
@@ -741,7 +741,7 @@
           "devig_probability": null,
           "model_probability": 0.567,
           "rejection_reasons": [
-            "Cuota real de casa de apuestas no disponible para esta l\u00ednea"
+            "Cuota real de casa de apuestas no disponible para esta línea"
           ],
           "implied_probability": null,
           "qualification_status": "ODDS_UNAVAILABLE"
@@ -760,7 +760,7 @@
           "devig_probability": null,
           "model_probability": 0.463,
           "rejection_reasons": [
-            "Cuota real de casa de apuestas no disponible para esta l\u00ednea"
+            "Cuota real de casa de apuestas no disponible para esta línea"
           ],
           "implied_probability": null,
           "qualification_status": "ODDS_UNAVAILABLE"
@@ -804,17 +804,17 @@
     ],
     "edge": 28.3,
     "odds": 2,
-    "pick": "Over 7.5 C\u00f3rners",
+    "pick": "Over 7.5 Córners",
     "isMcp": true,
     "match": "Feyenoord vs Utrecht",
     "league": "Eredivisie",
-    "market": "C\u00f3rners",
+    "market": "Córners",
     "profit": 1,
     "result": "WON",
     "source": "mcp",
     "status": "won",
     "awayElo": 1495,
-    "country": "Pa\u00edses Bajos",
+    "country": "Países Bajos",
     "homeElo": 1810,
     "kickoff": "2026-09-20T05:15:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/207.png",
@@ -921,8 +921,8 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/88.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "actualScore": "6 - 3 (9 C\u00f3rners)",
-    "explanation": "Volumen constante por las bandas: El cruce t\u00e1ctico entre Feyenoord (6.5 c\u00f3rners de media en casa) y Utrecht (4.3 for\u00e1neos) proyecta 10.8 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
+    "actualScore": "6 - 3 (9 Córners)",
+    "explanation": "Volumen constante por las bandas: El cruce táctico entre Feyenoord (6.5 córners de media en casa) y Utrecht (4.3 foráneos) proyecta 10.8 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
     "matchTiming": "finished",
     "probability": 78.3,
     "bookmakerOdds": 2,
@@ -944,7 +944,7 @@
           "devig_probability": null,
           "model_probability": 0.861,
           "rejection_reasons": [
-            "Cuota real de casa de apuestas no disponible para esta l\u00ednea"
+            "Cuota real de casa de apuestas no disponible para esta línea"
           ],
           "implied_probability": null,
           "qualification_status": "ODDS_UNAVAILABLE"
@@ -981,7 +981,7 @@
           "model_probability": 0.696,
           "rejection_reasons": [
             "Probabilidad del modelo inferior al umbral: 69.6% < 72.0%",
-            "Cuota disponible inferior al m\u00ednimo requerido: @1.22 < @1.40",
+            "Cuota disponible inferior al mínimo requerido: @1.22 < @1.40",
             "Smart Edge insuficiente: +-12.4% < +6.0%"
           ],
           "implied_probability": 0.82,
@@ -1002,7 +1002,7 @@
           "model_probability": 0.596,
           "rejection_reasons": [
             "Probabilidad del modelo inferior al umbral: 59.6% < 70.0%",
-            "Cuota disponible inferior al m\u00ednimo requerido: @1.42 < @1.50",
+            "Cuota disponible inferior al mínimo requerido: @1.42 < @1.50",
             "Smart Edge insuficiente: +-10.8% < +7.0%"
           ],
           "implied_probability": 0.704,
@@ -1068,11 +1068,11 @@
     ],
     "edge": 38.1,
     "odds": 2.1,
-    "pick": "Over 6.5 C\u00f3rners",
+    "pick": "Over 6.5 Córners",
     "isMcp": true,
     "match": "Celtic vs Rangers",
     "league": "Premiership",
-    "market": "C\u00f3rners",
+    "market": "Córners",
     "profit": 1.1,
     "result": "WON",
     "source": "mcp",
@@ -1185,8 +1185,8 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/179.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "actualScore": "8 - 4 (12 C\u00f3rners)",
-    "explanation": "Patr\u00f3n de repliegue y rechaces: Celtic sostiene una alta cadencia de llegadas al \u00faltimo tercio generando tiros de esquina constantes, mientras que Rangers concede m\u00e1s de 5.2 c\u00f3rners en promedio cuando juega de visitante.",
+    "actualScore": "8 - 4 (12 Córners)",
+    "explanation": "Patrón de repliegue y rechaces: Celtic sostiene una alta cadencia de llegadas al último tercio generando tiros de esquina constantes, mientras que Rangers concede más de 5.2 córners en promedio cuando juega de visitante.",
     "matchTiming": "finished",
     "probability": 85.7,
     "bookmakerOdds": 2.1,
@@ -1225,7 +1225,7 @@
           "devig_probability": 0.848,
           "model_probability": 0.779,
           "rejection_reasons": [
-            "Cuota disponible inferior al m\u00ednimo requerido: @1.12 < @1.30",
+            "Cuota disponible inferior al mínimo requerido: @1.12 < @1.30",
             "Smart Edge insuficiente: +-11.4% < +5.0%"
           ],
           "implied_probability": 0.893,
@@ -1246,7 +1246,7 @@
           "model_probability": 0.689,
           "rejection_reasons": [
             "Probabilidad del modelo inferior al umbral: 68.9% < 72.0%",
-            "Cuota disponible inferior al m\u00ednimo requerido: @1.25 < @1.40",
+            "Cuota disponible inferior al mínimo requerido: @1.25 < @1.40",
             "Smart Edge insuficiente: +-11.1% < +6.0%"
           ],
           "implied_probability": 0.8,
@@ -1267,7 +1267,7 @@
           "model_probability": 0.583,
           "rejection_reasons": [
             "Probabilidad del modelo inferior al umbral: 58.3% < 70.0%",
-            "Cuota disponible inferior al m\u00ednimo requerido: @1.49 < @1.50",
+            "Cuota disponible inferior al mínimo requerido: @1.49 < @1.50",
             "Smart Edge insuficiente: +-8.8% < +7.0%"
           ],
           "implied_probability": 0.671,
@@ -1308,160 +1308,6 @@
     "h2h": [
       {
         "date": "2026-07-22",
-        "score": "1-2",
-        "winner": "away",
-        "awayTeam": "Union St. Gilloise",
-        "homeTeam": "Antwerp",
-        "competition": "Jupiler Pro League"
-      },
-      {
-        "date": "2026-03-24",
-        "score": "2-0",
-        "winner": "home",
-        "awayTeam": "Antwerp",
-        "homeTeam": "Union St. Gilloise",
-        "competition": "Jupiler Pro League"
-      },
-      {
-        "date": "2025-09-25",
-        "score": "1-3",
-        "winner": "away",
-        "awayTeam": "Union St. Gilloise",
-        "homeTeam": "Antwerp",
-        "competition": "Jupiler Pro League"
-      }
-    ],
-    "edge": 1,
-    "odds": 1.6,
-    "pick": "Over 2.5 Goles",
-    "isMcp": true,
-    "match": "Antwerp vs Union St. Gilloise",
-    "league": "Jupiler Pro League",
-    "market": "Over 2.5 Goles",
-    "profit": -1,
-    "result": "LOST",
-    "source": "mcp",
-    "status": "lost",
-    "awayElo": 1514,
-    "country": "B\u00e9lgica",
-    "homeElo": 1497,
-    "kickoff": "2026-09-20T06:30:00-05:00",
-    "awayLogo": "https://media.api-sports.io/football/teams/1393.png",
-    "awayTeam": "Union St. Gilloise",
-    "fairOdds": 1.73,
-    "homeLogo": "https://media.api-sports.io/football/teams/740.png",
-    "homeTeam": "Antwerp",
-    "leagueId": 144,
-    "timeSlot": "morning",
-    "awayLast5": [
-      {
-        "date": "2026-09-16",
-        "score": "1-2",
-        "isHome": true,
-        "result": "D",
-        "opponent": "Rival A",
-        "competition": "Jupiler Pro League"
-      },
-      {
-        "date": "2026-09-11",
-        "score": "1-2",
-        "isHome": false,
-        "result": "W",
-        "opponent": "Rival B",
-        "competition": "Jupiler Pro League"
-      },
-      {
-        "date": "2026-09-06",
-        "score": "0-3",
-        "isHome": true,
-        "result": "L",
-        "opponent": "Rival C",
-        "competition": "Jupiler Pro League"
-      },
-      {
-        "date": "2026-09-01",
-        "score": "1-2",
-        "isHome": false,
-        "result": "D",
-        "opponent": "Rival D",
-        "competition": "Jupiler Pro League"
-      },
-      {
-        "date": "2026-08-27",
-        "score": "2-1",
-        "isHome": true,
-        "result": "W",
-        "opponent": "Rival E",
-        "competition": "Jupiler Pro League"
-      }
-    ],
-    "bookmaker": "Bet365",
-    "fixtureId": 1558640,
-    "homeLast5": [
-      {
-        "date": "2026-09-16",
-        "score": "1-3",
-        "isHome": false,
-        "result": "L",
-        "opponent": "Rival A",
-        "competition": "Jupiler Pro League"
-      },
-      {
-        "date": "2026-09-11",
-        "score": "1-2",
-        "isHome": true,
-        "result": "D",
-        "opponent": "Rival B",
-        "competition": "Jupiler Pro League"
-      },
-      {
-        "date": "2026-09-06",
-        "score": "1-2",
-        "isHome": false,
-        "result": "W",
-        "opponent": "Rival C",
-        "competition": "Jupiler Pro League"
-      },
-      {
-        "date": "2026-09-01",
-        "score": "0-3",
-        "isHome": true,
-        "result": "L",
-        "opponent": "Rival D",
-        "competition": "Jupiler Pro League"
-      },
-      {
-        "date": "2026-08-27",
-        "score": "1-2",
-        "isHome": false,
-        "result": "D",
-        "opponent": "Rival E",
-        "competition": "Jupiler Pro League"
-      }
-    ],
-    "isMcpPick": true,
-    "isTopPick": false,
-    "modelOdds": 1.73,
-    "pickBadge": "estandar",
-    "selection": "Over 2.5",
-    "awayTeamId": 1393,
-    "confidence": "Media",
-    "homeTeamId": 740,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/144.png",
-    "leagueTier": 1,
-    "smartScore": 99,
-    "actualScore": "0 - 2 (2 Goles)",
-    "explanation": "Alta expectativa anotadora: Antwerp genera 1.6 xG en casa y Union St. Gilloise promedia 1.3 xG fuera, proyectando 2.9 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o m\u00e1s tantos.",
-    "probability": 57.8,
-    "bookmakerOdds": 1.6,
-    "expectedValue": -7.5,
-    "impliedProbability": 62.5,
-    "sport": "football"
-  },
-  {
-    "h2h": [
-      {
-        "date": "2026-07-22",
         "score": "2-1",
         "winner": "home",
         "awayTeam": "1. FC Heidenheim",
@@ -1487,11 +1333,11 @@
     ],
     "edge": 33.9,
     "odds": 2,
-    "pick": "Over 6.5 C\u00f3rners",
+    "pick": "Over 6.5 Córners",
     "isMcp": true,
     "match": "Arminia Bielefeld vs 1. FC Heidenheim",
     "league": "2. Bundesliga",
-    "market": "C\u00f3rners",
+    "market": "Córners",
     "profit": 1,
     "result": "WON",
     "source": "mcp",
@@ -1604,8 +1450,8 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/79.png",
     "leagueTier": 2,
     "smartScore": 99,
-    "actualScore": "5 - 6 (11 C\u00f3rners)",
-    "explanation": "Presi\u00f3n ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulaci\u00f3n cuantitativa respalda la l\u00ednea de C\u00f3rners con una media esperada de 10.3 c\u00f3rners totales.",
+    "actualScore": "5 - 6 (11 Córners)",
+    "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.3 córners totales.",
     "matchTiming": "finished",
     "probability": 83.9,
     "bookmakerOdds": 2,
@@ -1645,7 +1491,7 @@
           "model_probability": 0.755,
           "rejection_reasons": [
             "Probabilidad del modelo inferior al umbral: 75.5% < 76.0%",
-            "Cuota disponible inferior al m\u00ednimo requerido: @1.13 < @1.30",
+            "Cuota disponible inferior al mínimo requerido: @1.13 < @1.30",
             "Smart Edge insuficiente: +-13.0% < +5.0%"
           ],
           "implied_probability": 0.885,
@@ -1666,7 +1512,7 @@
           "model_probability": 0.657,
           "rejection_reasons": [
             "Probabilidad del modelo inferior al umbral: 65.7% < 72.0%",
-            "Cuota disponible inferior al m\u00ednimo requerido: @1.28 < @1.40",
+            "Cuota disponible inferior al mínimo requerido: @1.28 < @1.40",
             "Smart Edge insuficiente: +-12.4% < +6.0%"
           ],
           "implied_probability": 0.781,
@@ -1752,11 +1598,11 @@
     ],
     "edge": 48.2,
     "odds": 2.85,
-    "pick": "Over 6.5 C\u00f3rners",
+    "pick": "Over 6.5 Córners",
     "isMcp": true,
     "match": "Energie Cottbus vs FC St. Pauli",
     "league": "2. Bundesliga",
-    "market": "C\u00f3rners",
+    "market": "Córners",
     "profit": 1.85,
     "result": "WON",
     "source": "mcp",
@@ -1869,8 +1715,8 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/79.png",
     "leagueTier": 2,
     "smartScore": 99,
-    "actualScore": "9 - 3 (12 C\u00f3rners)",
-    "explanation": "Presi\u00f3n ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulaci\u00f3n cuantitativa respalda la l\u00ednea de C\u00f3rners con una media esperada de 10.2 c\u00f3rners totales.",
+    "actualScore": "9 - 3 (12 Córners)",
+    "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.2 córners totales.",
     "matchTiming": "finished",
     "probability": 83.3,
     "bookmakerOdds": 2.85,
@@ -1910,7 +1756,7 @@
           "model_probability": 0.748,
           "rejection_reasons": [
             "Probabilidad del modelo inferior al umbral: 74.8% < 76.0%",
-            "Cuota disponible inferior al m\u00ednimo requerido: @1.12 < @1.30",
+            "Cuota disponible inferior al mínimo requerido: @1.12 < @1.30",
             "Smart Edge insuficiente: +-14.5% < +5.0%"
           ],
           "implied_probability": 0.893,
@@ -1931,7 +1777,7 @@
           "model_probability": 0.646,
           "rejection_reasons": [
             "Probabilidad del modelo inferior al umbral: 64.6% < 72.0%",
-            "Cuota disponible inferior al m\u00ednimo requerido: @1.27 < @1.40",
+            "Cuota disponible inferior al mínimo requerido: @1.27 < @1.40",
             "Smart Edge insuficiente: +-14.1% < +6.0%"
           ],
           "implied_probability": 0.787,
@@ -1952,7 +1798,7 @@
           "model_probability": 0.544,
           "rejection_reasons": [
             "Probabilidad del modelo inferior al umbral: 54.4% < 70.0%",
-            "Cuota disponible inferior al m\u00ednimo requerido: @1.49 < @1.50",
+            "Cuota disponible inferior al mínimo requerido: @1.49 < @1.50",
             "Smart Edge insuficiente: +-12.7% < +7.0%"
           ],
           "implied_probability": 0.671,
@@ -1987,6 +1833,689 @@
       "expectedTotalCorners": 10.24
     },
     "impliedProbability": 35.1,
+    "sport": "football"
+  },
+  {
+    "h2h": [
+      {
+        "date": "2026-07-22",
+        "score": "1-2",
+        "winner": "away",
+        "awayTeam": "Union St. Gilloise",
+        "homeTeam": "Antwerp",
+        "competition": "Jupiler Pro League"
+      },
+      {
+        "date": "2026-03-24",
+        "score": "2-0",
+        "winner": "home",
+        "awayTeam": "Antwerp",
+        "homeTeam": "Union St. Gilloise",
+        "competition": "Jupiler Pro League"
+      },
+      {
+        "date": "2025-09-25",
+        "score": "1-3",
+        "winner": "away",
+        "awayTeam": "Union St. Gilloise",
+        "homeTeam": "Antwerp",
+        "competition": "Jupiler Pro League"
+      }
+    ],
+    "edge": 1,
+    "odds": 1.6,
+    "pick": "Over 2.5 Goles",
+    "isMcp": true,
+    "match": "Antwerp vs Union St. Gilloise",
+    "league": "Jupiler Pro League",
+    "market": "Over 2.5 Goles",
+    "profit": -1,
+    "result": "LOST",
+    "source": "mcp",
+    "status": "lost",
+    "awayElo": 1514,
+    "country": "Bélgica",
+    "homeElo": 1497,
+    "kickoff": "2026-09-20T06:30:00-05:00",
+    "awayLogo": "https://media.api-sports.io/football/teams/1393.png",
+    "awayTeam": "Union St. Gilloise",
+    "fairOdds": 1.73,
+    "homeLogo": "https://media.api-sports.io/football/teams/740.png",
+    "homeTeam": "Antwerp",
+    "leagueId": 144,
+    "timeSlot": "morning",
+    "awayLast5": [
+      {
+        "date": "2026-09-16",
+        "score": "1-2",
+        "isHome": true,
+        "result": "D",
+        "opponent": "Rival A",
+        "competition": "Jupiler Pro League"
+      },
+      {
+        "date": "2026-09-11",
+        "score": "1-2",
+        "isHome": false,
+        "result": "W",
+        "opponent": "Rival B",
+        "competition": "Jupiler Pro League"
+      },
+      {
+        "date": "2026-09-06",
+        "score": "0-3",
+        "isHome": true,
+        "result": "L",
+        "opponent": "Rival C",
+        "competition": "Jupiler Pro League"
+      },
+      {
+        "date": "2026-09-01",
+        "score": "1-2",
+        "isHome": false,
+        "result": "D",
+        "opponent": "Rival D",
+        "competition": "Jupiler Pro League"
+      },
+      {
+        "date": "2026-08-27",
+        "score": "2-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival E",
+        "competition": "Jupiler Pro League"
+      }
+    ],
+    "bookmaker": "Bet365",
+    "fixtureId": 1558640,
+    "homeLast5": [
+      {
+        "date": "2026-09-16",
+        "score": "1-3",
+        "isHome": false,
+        "result": "L",
+        "opponent": "Rival A",
+        "competition": "Jupiler Pro League"
+      },
+      {
+        "date": "2026-09-11",
+        "score": "1-2",
+        "isHome": true,
+        "result": "D",
+        "opponent": "Rival B",
+        "competition": "Jupiler Pro League"
+      },
+      {
+        "date": "2026-09-06",
+        "score": "1-2",
+        "isHome": false,
+        "result": "W",
+        "opponent": "Rival C",
+        "competition": "Jupiler Pro League"
+      },
+      {
+        "date": "2026-09-01",
+        "score": "0-3",
+        "isHome": true,
+        "result": "L",
+        "opponent": "Rival D",
+        "competition": "Jupiler Pro League"
+      },
+      {
+        "date": "2026-08-27",
+        "score": "1-2",
+        "isHome": false,
+        "result": "D",
+        "opponent": "Rival E",
+        "competition": "Jupiler Pro League"
+      }
+    ],
+    "isMcpPick": true,
+    "isTopPick": false,
+    "modelOdds": 1.73,
+    "pickBadge": "estandar",
+    "selection": "Over 2.5",
+    "awayTeamId": 1393,
+    "confidence": "Media",
+    "homeTeamId": 740,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/144.png",
+    "leagueTier": 1,
+    "smartScore": 99,
+    "actualScore": "0 - 2 (2 Goles)",
+    "explanation": "Alta expectativa anotadora: Antwerp genera 1.6 xG en casa y Union St. Gilloise promedia 1.3 xG fuera, proyectando 2.9 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
+    "probability": 57.8,
+    "bookmakerOdds": 1.6,
+    "expectedValue": -7.5,
+    "impliedProbability": 62.5,
+    "sport": "football"
+  },
+  {
+    "h2h": [
+      {
+        "date": "2026-07-22",
+        "score": "1-2",
+        "winner": "away",
+        "awayTeam": "IF Elfsborg",
+        "homeTeam": "Djurgardens IF",
+        "competition": "Allsvenskan"
+      },
+      {
+        "date": "2026-03-24",
+        "score": "2-0",
+        "winner": "home",
+        "awayTeam": "Djurgardens IF",
+        "homeTeam": "IF Elfsborg",
+        "competition": "Allsvenskan"
+      },
+      {
+        "date": "2025-09-25",
+        "score": "1-3",
+        "winner": "away",
+        "awayTeam": "IF Elfsborg",
+        "homeTeam": "Djurgardens IF",
+        "competition": "Allsvenskan"
+      }
+    ],
+    "edge": 37.1,
+    "odds": 2.18,
+    "pick": "Over 6.5 Córners",
+    "isMcp": true,
+    "match": "Djurgardens IF vs IF Elfsborg",
+    "league": "Allsvenskan",
+    "market": "Córners",
+    "profit": 1.18,
+    "result": "WON",
+    "source": "mcp",
+    "status": "won",
+    "awayElo": 1575,
+    "country": "Suecia",
+    "homeElo": 1540,
+    "kickoff": "2026-09-20T07:00:00-05:00",
+    "awayLogo": "https://media.api-sports.io/football/teams/372.png",
+    "awayTeam": "IF Elfsborg",
+    "fairOdds": 1.2,
+    "homeLogo": "https://media.api-sports.io/football/teams/364.png",
+    "homeTeam": "Djurgardens IF",
+    "leagueId": 113,
+    "timeSlot": "morning",
+    "awayLast5": [
+      {
+        "date": "2026-09-16",
+        "score": "1-2",
+        "isHome": false,
+        "result": "D",
+        "opponent": "Rival A",
+        "competition": "Allsvenskan"
+      },
+      {
+        "date": "2026-09-11",
+        "score": "2-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival B",
+        "competition": "Allsvenskan"
+      },
+      {
+        "date": "2026-09-06",
+        "score": "0-3",
+        "isHome": false,
+        "result": "L",
+        "opponent": "Rival C",
+        "competition": "Allsvenskan"
+      },
+      {
+        "date": "2026-09-01",
+        "score": "1-2",
+        "isHome": true,
+        "result": "D",
+        "opponent": "Rival D",
+        "competition": "Allsvenskan"
+      },
+      {
+        "date": "2026-08-27",
+        "score": "3-1",
+        "isHome": false,
+        "result": "W",
+        "opponent": "Rival E",
+        "competition": "Allsvenskan"
+      }
+    ],
+    "bookmaker": "Bet365",
+    "fixtureId": 1494283,
+    "homeLast5": [
+      {
+        "date": "2026-09-16",
+        "score": "2-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival A",
+        "competition": "Allsvenskan"
+      },
+      {
+        "date": "2026-09-11",
+        "score": "1-3",
+        "isHome": false,
+        "result": "L",
+        "opponent": "Rival B",
+        "competition": "Allsvenskan"
+      },
+      {
+        "date": "2026-09-06",
+        "score": "1-2",
+        "isHome": true,
+        "result": "D",
+        "opponent": "Rival C",
+        "competition": "Allsvenskan"
+      },
+      {
+        "date": "2026-09-01",
+        "score": "1-2",
+        "isHome": false,
+        "result": "W",
+        "opponent": "Rival D",
+        "competition": "Allsvenskan"
+      },
+      {
+        "date": "2026-08-27",
+        "score": "0-3",
+        "isHome": true,
+        "result": "L",
+        "opponent": "Rival E",
+        "competition": "Allsvenskan"
+      }
+    ],
+    "isMcpPick": true,
+    "isTopPick": true,
+    "modelOdds": 1.2,
+    "pickBadge": "mcp",
+    "selection": "Over 6.5",
+    "awayTeamId": 372,
+    "confidence": "Muy Alta",
+    "homeTeamId": 364,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/113.png",
+    "leagueTier": 1,
+    "smartScore": 99,
+    "actualScore": "4 - 7 (11 Córners)",
+    "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.2 córners totales.",
+    "matchTiming": "finished",
+    "probability": 83,
+    "bookmakerOdds": 2.18,
+    "expectedValue": 80.9,
+    "cornerAnalysis": {
+      "dataQuality": 0.85,
+      "allCandidates": [
+        {
+          "line": 6.5,
+          "selection": "Over 6.5",
+          "smart_edge": 0.371,
+          "smart_score": 92,
+          "data_quality": 0.85,
+          "decimal_odds": 2.18,
+          "expected_value": 0.809,
+          "expected_margin": 3.24,
+          "expected_corners": 10.24,
+          "required_corners": 7,
+          "devig_probability": 0.436,
+          "model_probability": 0.83,
+          "rejection_reasons": [],
+          "implied_probability": 0.459,
+          "qualification_status": "QUALIFIED"
+        },
+        {
+          "line": 7.5,
+          "selection": "Over 7.5",
+          "smart_edge": -0.052,
+          "smart_score": 0,
+          "data_quality": 0.85,
+          "decimal_odds": 1.26,
+          "expected_value": -0.065,
+          "expected_margin": 2.24,
+          "expected_corners": 10.24,
+          "required_corners": 8,
+          "devig_probability": 0.754,
+          "model_probability": 0.742,
+          "rejection_reasons": [
+            "Probabilidad del modelo inferior al umbral: 74.2% < 76.0%",
+            "Cuota disponible inferior al mínimo requerido: @1.26 < @1.30",
+            "Smart Edge insuficiente: +-5.2% < +5.0%"
+          ],
+          "implied_probability": 0.794,
+          "qualification_status": "REJECTED_PROB"
+        },
+        {
+          "line": 8.5,
+          "selection": "Over 8.5",
+          "smart_edge": 0.049,
+          "smart_score": 0,
+          "data_quality": 0.85,
+          "decimal_odds": 1.67,
+          "expected_value": 0.082,
+          "expected_margin": 1.24,
+          "expected_corners": 10.24,
+          "required_corners": 9,
+          "devig_probability": 0.569,
+          "model_probability": 0.648,
+          "rejection_reasons": [
+            "Probabilidad del modelo inferior al umbral: 64.8% < 72.0%",
+            "Smart Edge insuficiente: +4.9% < +6.0%"
+          ],
+          "implied_probability": 0.599,
+          "qualification_status": "REJECTED_PROB"
+        },
+        {
+          "line": 9.5,
+          "selection": "Over 9.5",
+          "smart_edge": 0.014,
+          "smart_score": 0,
+          "data_quality": 0.85,
+          "decimal_odds": 1.89,
+          "expected_value": 0.026,
+          "expected_margin": 0.24,
+          "expected_corners": 10.24,
+          "required_corners": 10,
+          "devig_probability": 0.503,
+          "model_probability": 0.543,
+          "rejection_reasons": [
+            "Probabilidad del modelo inferior al umbral: 54.3% < 70.0%",
+            "Smart Edge insuficiente: +1.4% < +7.0%"
+          ],
+          "implied_probability": 0.529,
+          "qualification_status": "REJECTED_PROB"
+        },
+        {
+          "line": 10.5,
+          "selection": "Over 10.5",
+          "smart_edge": 0.012,
+          "smart_score": 0,
+          "data_quality": 0.85,
+          "decimal_odds": 2.33,
+          "expected_value": 0.028,
+          "expected_margin": -0.76,
+          "expected_corners": 10.24,
+          "required_corners": 11,
+          "devig_probability": 0.408,
+          "model_probability": 0.441,
+          "rejection_reasons": [
+            "Calidad de datos insuficiente: 85% < 88%",
+            "Probabilidad del modelo inferior al umbral: 44.1% < 68.0%",
+            "Smart Edge insuficiente: +1.2% < +8.0%"
+          ],
+          "implied_probability": 0.429,
+          "qualification_status": "REJECTED_PROB"
+        }
+      ],
+      "recommendedLine": 6.5,
+      "distributionModel": "Negative Binomial",
+      "expectedAwayCorners": 4.56,
+      "expectedHomeCorners": 5.68,
+      "expectedTotalCorners": 10.24
+    },
+    "impliedProbability": 45.9,
+    "sport": "football"
+  },
+  {
+    "h2h": [
+      {
+        "date": "2026-07-22",
+        "score": "1-2",
+        "winner": "away",
+        "awayTeam": "Randers FC",
+        "homeTeam": "Sonderjyske",
+        "competition": "Superliga"
+      },
+      {
+        "date": "2026-03-24",
+        "score": "2-0",
+        "winner": "home",
+        "awayTeam": "Sonderjyske",
+        "homeTeam": "Randers FC",
+        "competition": "Superliga"
+      },
+      {
+        "date": "2025-09-25",
+        "score": "1-3",
+        "winner": "away",
+        "awayTeam": "Randers FC",
+        "homeTeam": "Sonderjyske",
+        "competition": "Superliga"
+      }
+    ],
+    "edge": 45.9,
+    "odds": 2.7,
+    "pick": "Over 6.5 Córners",
+    "isMcp": true,
+    "match": "Sonderjyske vs Randers FC",
+    "league": "Superliga",
+    "market": "Córners",
+    "profit": 1.7,
+    "result": "WON",
+    "source": "mcp",
+    "status": "won",
+    "awayElo": 1648,
+    "country": "Dinamarca",
+    "homeElo": 1569,
+    "kickoff": "2026-09-20T07:00:00-05:00",
+    "awayLogo": "https://media.api-sports.io/football/teams/401.png",
+    "awayTeam": "Randers FC",
+    "fairOdds": 1.21,
+    "homeLogo": "https://media.api-sports.io/football/teams/396.png",
+    "homeTeam": "Sonderjyske",
+    "leagueId": 119,
+    "timeSlot": "morning",
+    "awayLast5": [
+      {
+        "date": "2026-09-16",
+        "score": "1-2",
+        "isHome": true,
+        "result": "L",
+        "opponent": "Rival A",
+        "competition": "Superliga"
+      },
+      {
+        "date": "2026-09-11",
+        "score": "1-2",
+        "isHome": false,
+        "result": "D",
+        "opponent": "Rival B",
+        "competition": "Superliga"
+      },
+      {
+        "date": "2026-09-06",
+        "score": "2-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival C",
+        "competition": "Superliga"
+      },
+      {
+        "date": "2026-09-01",
+        "score": "0-3",
+        "isHome": false,
+        "result": "L",
+        "opponent": "Rival D",
+        "competition": "Superliga"
+      },
+      {
+        "date": "2026-08-27",
+        "score": "1-2",
+        "isHome": true,
+        "result": "D",
+        "opponent": "Rival E",
+        "competition": "Superliga"
+      }
+    ],
+    "bookmaker": "Bet365",
+    "fixtureId": 1549026,
+    "homeLast5": [
+      {
+        "date": "2026-09-16",
+        "score": "0-3",
+        "isHome": false,
+        "result": "L",
+        "opponent": "Rival A",
+        "competition": "Superliga"
+      },
+      {
+        "date": "2026-09-11",
+        "score": "1-2",
+        "isHome": true,
+        "result": "D",
+        "opponent": "Rival B",
+        "competition": "Superliga"
+      },
+      {
+        "date": "2026-09-06",
+        "score": "3-1",
+        "isHome": false,
+        "result": "W",
+        "opponent": "Rival C",
+        "competition": "Superliga"
+      },
+      {
+        "date": "2026-09-01",
+        "score": "2-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival D",
+        "competition": "Superliga"
+      },
+      {
+        "date": "2026-08-27",
+        "score": "0-3",
+        "isHome": false,
+        "result": "L",
+        "opponent": "Rival E",
+        "competition": "Superliga"
+      }
+    ],
+    "isMcpPick": true,
+    "isTopPick": true,
+    "modelOdds": 1.21,
+    "pickBadge": "mcp",
+    "selection": "Over 6.5",
+    "awayTeamId": 401,
+    "confidence": "Muy Alta",
+    "homeTeamId": 396,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/119.png",
+    "leagueTier": 1,
+    "smartScore": 99,
+    "actualScore": "5 - 4 (9 Córners)",
+    "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.2 córners totales.",
+    "matchTiming": "finished",
+    "probability": 82.9,
+    "bookmakerOdds": 2.7,
+    "expectedValue": 123.8,
+    "cornerAnalysis": {
+      "dataQuality": 0.85,
+      "allCandidates": [
+        {
+          "line": 6.5,
+          "selection": "Over 6.5",
+          "smart_edge": 0.459,
+          "smart_score": 92,
+          "data_quality": 0.85,
+          "decimal_odds": 2.7,
+          "expected_value": 1.238,
+          "expected_margin": 3.2,
+          "expected_corners": 10.2,
+          "required_corners": 7,
+          "devig_probability": 0.352,
+          "model_probability": 0.829,
+          "rejection_reasons": [],
+          "implied_probability": 0.37,
+          "qualification_status": "QUALIFIED"
+        },
+        {
+          "line": 7.5,
+          "selection": "Over 7.5",
+          "smart_edge": -0.147,
+          "smart_score": 0,
+          "data_quality": 0.85,
+          "decimal_odds": 1.13,
+          "expected_value": -0.166,
+          "expected_margin": 2.2,
+          "expected_corners": 10.2,
+          "required_corners": 8,
+          "devig_probability": 0.841,
+          "model_probability": 0.738,
+          "rejection_reasons": [
+            "Probabilidad del modelo inferior al umbral: 73.8% < 76.0%",
+            "Cuota disponible inferior al mínimo requerido: @1.13 < @1.30",
+            "Smart Edge insuficiente: +-14.7% < +5.0%"
+          ],
+          "implied_probability": 0.885,
+          "qualification_status": "REJECTED_PROB"
+        },
+        {
+          "line": 8.5,
+          "selection": "Over 8.5",
+          "smart_edge": -0.136,
+          "smart_score": 0,
+          "data_quality": 0.85,
+          "decimal_odds": 1.29,
+          "expected_value": -0.176,
+          "expected_margin": 1.2,
+          "expected_corners": 10.2,
+          "required_corners": 9,
+          "devig_probability": 0.736,
+          "model_probability": 0.639,
+          "rejection_reasons": [
+            "Probabilidad del modelo inferior al umbral: 63.9% < 72.0%",
+            "Cuota disponible inferior al mínimo requerido: @1.29 < @1.40",
+            "Smart Edge insuficiente: +-13.6% < +6.0%"
+          ],
+          "implied_probability": 0.775,
+          "qualification_status": "REJECTED_PROB"
+        },
+        {
+          "line": 9.5,
+          "selection": "Over 9.5",
+          "smart_edge": -0.117,
+          "smart_score": 0,
+          "data_quality": 0.85,
+          "decimal_odds": 1.54,
+          "expected_value": -0.181,
+          "expected_margin": 0.2,
+          "expected_corners": 10.2,
+          "required_corners": 10,
+          "devig_probability": 0.617,
+          "model_probability": 0.532,
+          "rejection_reasons": [
+            "Probabilidad del modelo inferior al umbral: 53.2% < 70.0%",
+            "Smart Edge insuficiente: +-11.7% < +7.0%"
+          ],
+          "implied_probability": 0.649,
+          "qualification_status": "REJECTED_PROB"
+        },
+        {
+          "line": 10.5,
+          "selection": "Over 10.5",
+          "smart_edge": -0.102,
+          "smart_score": 0,
+          "data_quality": 0.85,
+          "decimal_odds": 1.88,
+          "expected_value": -0.192,
+          "expected_margin": -0.8,
+          "expected_corners": 10.2,
+          "required_corners": 11,
+          "devig_probability": 0.505,
+          "model_probability": 0.43,
+          "rejection_reasons": [
+            "Calidad de datos insuficiente: 85% < 88%",
+            "Probabilidad del modelo inferior al umbral: 43.0% < 68.0%",
+            "Smart Edge insuficiente: +-10.2% < +8.0%"
+          ],
+          "implied_probability": 0.532,
+          "qualification_status": "REJECTED_PROB"
+        }
+      ],
+      "recommendedLine": 6.5,
+      "distributionModel": "Negative Binomial",
+      "expectedAwayCorners": 4.53,
+      "expectedHomeCorners": 5.67,
+      "expectedTotalCorners": 10.2
+    },
+    "impliedProbability": 37,
     "sport": "football"
   },
   {
@@ -2128,15 +2657,15 @@
     "isTopPick": false,
     "modelOdds": 1.71,
     "pickBadge": "estandar",
-    "selection": "S\u00ed",
+    "selection": "Sí",
     "awayTeamId": 377,
     "confidence": "Alta",
     "homeTeamId": 766,
     "leagueLogo": "https://media.api-sports.io/football/leagues/113.png",
     "leagueTier": 1,
     "smartScore": 90,
-    "actualScore": "2 - 1 (Ambos S\u00ed)",
-    "explanation": "Eficacia bilateral en ataque: Halmstad anota con regularidad en su estadio (1.5 xG) pero concede ocasiones (1 goles en contra), mientras que AIK Stockholm cuenta con pegada for\u00e1nea (1.3 xG). El patr\u00f3n estad\u00edstico favorece la anotaci\u00f3n mutua.",
+    "actualScore": "2 - 1 (Ambos Sí)",
+    "explanation": "Eficacia bilateral en ataque: Halmstad anota con regularidad en su estadio (1.5 xG) pero concede ocasiones (1 goles en contra), mientras que AIK Stockholm cuenta con pegada foránea (1.3 xG). El patrón estadístico favorece la anotación mutua.",
     "probability": 58.5,
     "bookmakerOdds": 1.57,
     "expectedValue": -8.1,
@@ -2280,14 +2809,14 @@
     "isTopPick": false,
     "modelOdds": 1.73,
     "pickBadge": "estandar",
-    "selection": "S\u00ed",
+    "selection": "Sí",
     "awayTeamId": 400,
     "confidence": "Media",
     "homeTeamId": 407,
     "leagueLogo": "https://media.api-sports.io/football/leagues/119.png",
     "leagueTier": 1,
     "smartScore": 89,
-    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porter\u00edas por la postura ofensiva de sus t\u00e9cnicos y las desatenciones en repliegue.",
+    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
     "probability": 57.9,
     "bookmakerOdds": 1.57,
     "expectedValue": -9.1,
@@ -2295,535 +2824,6 @@
     "actualScore": "0 - 1 (No)",
     "result": "LOST",
     "profit": -1,
-    "sport": "football"
-  },
-  {
-    "h2h": [
-      {
-        "date": "2026-07-22",
-        "score": "1-2",
-        "winner": "away",
-        "awayTeam": "IF Elfsborg",
-        "homeTeam": "Djurgardens IF",
-        "competition": "Allsvenskan"
-      },
-      {
-        "date": "2026-03-24",
-        "score": "2-0",
-        "winner": "home",
-        "awayTeam": "Djurgardens IF",
-        "homeTeam": "IF Elfsborg",
-        "competition": "Allsvenskan"
-      },
-      {
-        "date": "2025-09-25",
-        "score": "1-3",
-        "winner": "away",
-        "awayTeam": "IF Elfsborg",
-        "homeTeam": "Djurgardens IF",
-        "competition": "Allsvenskan"
-      }
-    ],
-    "edge": 37.1,
-    "odds": 2.18,
-    "pick": "Over 6.5 C\u00f3rners",
-    "isMcp": true,
-    "match": "Djurgardens IF vs IF Elfsborg",
-    "league": "Allsvenskan",
-    "market": "C\u00f3rners",
-    "profit": 1.18,
-    "result": "WON",
-    "source": "mcp",
-    "status": "won",
-    "awayElo": 1575,
-    "country": "Suecia",
-    "homeElo": 1540,
-    "kickoff": "2026-09-20T07:00:00-05:00",
-    "awayLogo": "https://media.api-sports.io/football/teams/372.png",
-    "awayTeam": "IF Elfsborg",
-    "fairOdds": 1.2,
-    "homeLogo": "https://media.api-sports.io/football/teams/364.png",
-    "homeTeam": "Djurgardens IF",
-    "leagueId": 113,
-    "timeSlot": "morning",
-    "awayLast5": [
-      {
-        "date": "2026-09-16",
-        "score": "1-2",
-        "isHome": false,
-        "result": "D",
-        "opponent": "Rival A",
-        "competition": "Allsvenskan"
-      },
-      {
-        "date": "2026-09-11",
-        "score": "2-1",
-        "isHome": true,
-        "result": "W",
-        "opponent": "Rival B",
-        "competition": "Allsvenskan"
-      },
-      {
-        "date": "2026-09-06",
-        "score": "0-3",
-        "isHome": false,
-        "result": "L",
-        "opponent": "Rival C",
-        "competition": "Allsvenskan"
-      },
-      {
-        "date": "2026-09-01",
-        "score": "1-2",
-        "isHome": true,
-        "result": "D",
-        "opponent": "Rival D",
-        "competition": "Allsvenskan"
-      },
-      {
-        "date": "2026-08-27",
-        "score": "3-1",
-        "isHome": false,
-        "result": "W",
-        "opponent": "Rival E",
-        "competition": "Allsvenskan"
-      }
-    ],
-    "bookmaker": "Bet365",
-    "fixtureId": 1494283,
-    "homeLast5": [
-      {
-        "date": "2026-09-16",
-        "score": "2-1",
-        "isHome": true,
-        "result": "W",
-        "opponent": "Rival A",
-        "competition": "Allsvenskan"
-      },
-      {
-        "date": "2026-09-11",
-        "score": "1-3",
-        "isHome": false,
-        "result": "L",
-        "opponent": "Rival B",
-        "competition": "Allsvenskan"
-      },
-      {
-        "date": "2026-09-06",
-        "score": "1-2",
-        "isHome": true,
-        "result": "D",
-        "opponent": "Rival C",
-        "competition": "Allsvenskan"
-      },
-      {
-        "date": "2026-09-01",
-        "score": "1-2",
-        "isHome": false,
-        "result": "W",
-        "opponent": "Rival D",
-        "competition": "Allsvenskan"
-      },
-      {
-        "date": "2026-08-27",
-        "score": "0-3",
-        "isHome": true,
-        "result": "L",
-        "opponent": "Rival E",
-        "competition": "Allsvenskan"
-      }
-    ],
-    "isMcpPick": true,
-    "isTopPick": true,
-    "modelOdds": 1.2,
-    "pickBadge": "mcp",
-    "selection": "Over 6.5",
-    "awayTeamId": 372,
-    "confidence": "Muy Alta",
-    "homeTeamId": 364,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/113.png",
-    "leagueTier": 1,
-    "smartScore": 99,
-    "actualScore": "4 - 7 (11 C\u00f3rners)",
-    "explanation": "Presi\u00f3n ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulaci\u00f3n cuantitativa respalda la l\u00ednea de C\u00f3rners con una media esperada de 10.2 c\u00f3rners totales.",
-    "matchTiming": "finished",
-    "probability": 83,
-    "bookmakerOdds": 2.18,
-    "expectedValue": 80.9,
-    "cornerAnalysis": {
-      "dataQuality": 0.85,
-      "allCandidates": [
-        {
-          "line": 6.5,
-          "selection": "Over 6.5",
-          "smart_edge": 0.371,
-          "smart_score": 92,
-          "data_quality": 0.85,
-          "decimal_odds": 2.18,
-          "expected_value": 0.809,
-          "expected_margin": 3.24,
-          "expected_corners": 10.24,
-          "required_corners": 7,
-          "devig_probability": 0.436,
-          "model_probability": 0.83,
-          "rejection_reasons": [],
-          "implied_probability": 0.459,
-          "qualification_status": "QUALIFIED"
-        },
-        {
-          "line": 7.5,
-          "selection": "Over 7.5",
-          "smart_edge": -0.052,
-          "smart_score": 0,
-          "data_quality": 0.85,
-          "decimal_odds": 1.26,
-          "expected_value": -0.065,
-          "expected_margin": 2.24,
-          "expected_corners": 10.24,
-          "required_corners": 8,
-          "devig_probability": 0.754,
-          "model_probability": 0.742,
-          "rejection_reasons": [
-            "Probabilidad del modelo inferior al umbral: 74.2% < 76.0%",
-            "Cuota disponible inferior al m\u00ednimo requerido: @1.26 < @1.30",
-            "Smart Edge insuficiente: +-5.2% < +5.0%"
-          ],
-          "implied_probability": 0.794,
-          "qualification_status": "REJECTED_PROB"
-        },
-        {
-          "line": 8.5,
-          "selection": "Over 8.5",
-          "smart_edge": 0.049,
-          "smart_score": 0,
-          "data_quality": 0.85,
-          "decimal_odds": 1.67,
-          "expected_value": 0.082,
-          "expected_margin": 1.24,
-          "expected_corners": 10.24,
-          "required_corners": 9,
-          "devig_probability": 0.569,
-          "model_probability": 0.648,
-          "rejection_reasons": [
-            "Probabilidad del modelo inferior al umbral: 64.8% < 72.0%",
-            "Smart Edge insuficiente: +4.9% < +6.0%"
-          ],
-          "implied_probability": 0.599,
-          "qualification_status": "REJECTED_PROB"
-        },
-        {
-          "line": 9.5,
-          "selection": "Over 9.5",
-          "smart_edge": 0.014,
-          "smart_score": 0,
-          "data_quality": 0.85,
-          "decimal_odds": 1.89,
-          "expected_value": 0.026,
-          "expected_margin": 0.24,
-          "expected_corners": 10.24,
-          "required_corners": 10,
-          "devig_probability": 0.503,
-          "model_probability": 0.543,
-          "rejection_reasons": [
-            "Probabilidad del modelo inferior al umbral: 54.3% < 70.0%",
-            "Smart Edge insuficiente: +1.4% < +7.0%"
-          ],
-          "implied_probability": 0.529,
-          "qualification_status": "REJECTED_PROB"
-        },
-        {
-          "line": 10.5,
-          "selection": "Over 10.5",
-          "smart_edge": 0.012,
-          "smart_score": 0,
-          "data_quality": 0.85,
-          "decimal_odds": 2.33,
-          "expected_value": 0.028,
-          "expected_margin": -0.76,
-          "expected_corners": 10.24,
-          "required_corners": 11,
-          "devig_probability": 0.408,
-          "model_probability": 0.441,
-          "rejection_reasons": [
-            "Calidad de datos insuficiente: 85% < 88%",
-            "Probabilidad del modelo inferior al umbral: 44.1% < 68.0%",
-            "Smart Edge insuficiente: +1.2% < +8.0%"
-          ],
-          "implied_probability": 0.429,
-          "qualification_status": "REJECTED_PROB"
-        }
-      ],
-      "recommendedLine": 6.5,
-      "distributionModel": "Negative Binomial",
-      "expectedAwayCorners": 4.56,
-      "expectedHomeCorners": 5.68,
-      "expectedTotalCorners": 10.24
-    },
-    "impliedProbability": 45.9,
-    "sport": "football"
-  },
-  {
-    "h2h": [
-      {
-        "date": "2026-07-22",
-        "score": "1-2",
-        "winner": "away",
-        "awayTeam": "Randers FC",
-        "homeTeam": "Sonderjyske",
-        "competition": "Superliga"
-      },
-      {
-        "date": "2026-03-24",
-        "score": "2-0",
-        "winner": "home",
-        "awayTeam": "Sonderjyske",
-        "homeTeam": "Randers FC",
-        "competition": "Superliga"
-      },
-      {
-        "date": "2025-09-25",
-        "score": "1-3",
-        "winner": "away",
-        "awayTeam": "Randers FC",
-        "homeTeam": "Sonderjyske",
-        "competition": "Superliga"
-      }
-    ],
-    "edge": 45.9,
-    "odds": 2.7,
-    "pick": "Over 6.5 C\u00f3rners",
-    "isMcp": true,
-    "match": "Sonderjyske vs Randers FC",
-    "league": "Superliga",
-    "market": "C\u00f3rners",
-    "profit": 1.7,
-    "result": "WON",
-    "source": "mcp",
-    "status": "won",
-    "awayElo": 1648,
-    "country": "Dinamarca",
-    "homeElo": 1569,
-    "kickoff": "2026-09-20T07:00:00-05:00",
-    "awayLogo": "https://media.api-sports.io/football/teams/401.png",
-    "awayTeam": "Randers FC",
-    "fairOdds": 1.21,
-    "homeLogo": "https://media.api-sports.io/football/teams/396.png",
-    "homeTeam": "Sonderjyske",
-    "leagueId": 119,
-    "timeSlot": "morning",
-    "awayLast5": [
-      {
-        "date": "2026-09-16",
-        "score": "1-2",
-        "isHome": true,
-        "result": "L",
-        "opponent": "Rival A",
-        "competition": "Superliga"
-      },
-      {
-        "date": "2026-09-11",
-        "score": "1-2",
-        "isHome": false,
-        "result": "D",
-        "opponent": "Rival B",
-        "competition": "Superliga"
-      },
-      {
-        "date": "2026-09-06",
-        "score": "2-1",
-        "isHome": true,
-        "result": "W",
-        "opponent": "Rival C",
-        "competition": "Superliga"
-      },
-      {
-        "date": "2026-09-01",
-        "score": "0-3",
-        "isHome": false,
-        "result": "L",
-        "opponent": "Rival D",
-        "competition": "Superliga"
-      },
-      {
-        "date": "2026-08-27",
-        "score": "1-2",
-        "isHome": true,
-        "result": "D",
-        "opponent": "Rival E",
-        "competition": "Superliga"
-      }
-    ],
-    "bookmaker": "Bet365",
-    "fixtureId": 1549026,
-    "homeLast5": [
-      {
-        "date": "2026-09-16",
-        "score": "0-3",
-        "isHome": false,
-        "result": "L",
-        "opponent": "Rival A",
-        "competition": "Superliga"
-      },
-      {
-        "date": "2026-09-11",
-        "score": "1-2",
-        "isHome": true,
-        "result": "D",
-        "opponent": "Rival B",
-        "competition": "Superliga"
-      },
-      {
-        "date": "2026-09-06",
-        "score": "3-1",
-        "isHome": false,
-        "result": "W",
-        "opponent": "Rival C",
-        "competition": "Superliga"
-      },
-      {
-        "date": "2026-09-01",
-        "score": "2-1",
-        "isHome": true,
-        "result": "W",
-        "opponent": "Rival D",
-        "competition": "Superliga"
-      },
-      {
-        "date": "2026-08-27",
-        "score": "0-3",
-        "isHome": false,
-        "result": "L",
-        "opponent": "Rival E",
-        "competition": "Superliga"
-      }
-    ],
-    "isMcpPick": true,
-    "isTopPick": true,
-    "modelOdds": 1.21,
-    "pickBadge": "mcp",
-    "selection": "Over 6.5",
-    "awayTeamId": 401,
-    "confidence": "Muy Alta",
-    "homeTeamId": 396,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/119.png",
-    "leagueTier": 1,
-    "smartScore": 99,
-    "actualScore": "5 - 4 (9 C\u00f3rners)",
-    "explanation": "Presi\u00f3n ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulaci\u00f3n cuantitativa respalda la l\u00ednea de C\u00f3rners con una media esperada de 10.2 c\u00f3rners totales.",
-    "matchTiming": "finished",
-    "probability": 82.9,
-    "bookmakerOdds": 2.7,
-    "expectedValue": 123.8,
-    "cornerAnalysis": {
-      "dataQuality": 0.85,
-      "allCandidates": [
-        {
-          "line": 6.5,
-          "selection": "Over 6.5",
-          "smart_edge": 0.459,
-          "smart_score": 92,
-          "data_quality": 0.85,
-          "decimal_odds": 2.7,
-          "expected_value": 1.238,
-          "expected_margin": 3.2,
-          "expected_corners": 10.2,
-          "required_corners": 7,
-          "devig_probability": 0.352,
-          "model_probability": 0.829,
-          "rejection_reasons": [],
-          "implied_probability": 0.37,
-          "qualification_status": "QUALIFIED"
-        },
-        {
-          "line": 7.5,
-          "selection": "Over 7.5",
-          "smart_edge": -0.147,
-          "smart_score": 0,
-          "data_quality": 0.85,
-          "decimal_odds": 1.13,
-          "expected_value": -0.166,
-          "expected_margin": 2.2,
-          "expected_corners": 10.2,
-          "required_corners": 8,
-          "devig_probability": 0.841,
-          "model_probability": 0.738,
-          "rejection_reasons": [
-            "Probabilidad del modelo inferior al umbral: 73.8% < 76.0%",
-            "Cuota disponible inferior al m\u00ednimo requerido: @1.13 < @1.30",
-            "Smart Edge insuficiente: +-14.7% < +5.0%"
-          ],
-          "implied_probability": 0.885,
-          "qualification_status": "REJECTED_PROB"
-        },
-        {
-          "line": 8.5,
-          "selection": "Over 8.5",
-          "smart_edge": -0.136,
-          "smart_score": 0,
-          "data_quality": 0.85,
-          "decimal_odds": 1.29,
-          "expected_value": -0.176,
-          "expected_margin": 1.2,
-          "expected_corners": 10.2,
-          "required_corners": 9,
-          "devig_probability": 0.736,
-          "model_probability": 0.639,
-          "rejection_reasons": [
-            "Probabilidad del modelo inferior al umbral: 63.9% < 72.0%",
-            "Cuota disponible inferior al m\u00ednimo requerido: @1.29 < @1.40",
-            "Smart Edge insuficiente: +-13.6% < +6.0%"
-          ],
-          "implied_probability": 0.775,
-          "qualification_status": "REJECTED_PROB"
-        },
-        {
-          "line": 9.5,
-          "selection": "Over 9.5",
-          "smart_edge": -0.117,
-          "smart_score": 0,
-          "data_quality": 0.85,
-          "decimal_odds": 1.54,
-          "expected_value": -0.181,
-          "expected_margin": 0.2,
-          "expected_corners": 10.2,
-          "required_corners": 10,
-          "devig_probability": 0.617,
-          "model_probability": 0.532,
-          "rejection_reasons": [
-            "Probabilidad del modelo inferior al umbral: 53.2% < 70.0%",
-            "Smart Edge insuficiente: +-11.7% < +7.0%"
-          ],
-          "implied_probability": 0.649,
-          "qualification_status": "REJECTED_PROB"
-        },
-        {
-          "line": 10.5,
-          "selection": "Over 10.5",
-          "smart_edge": -0.102,
-          "smart_score": 0,
-          "data_quality": 0.85,
-          "decimal_odds": 1.88,
-          "expected_value": -0.192,
-          "expected_margin": -0.8,
-          "expected_corners": 10.2,
-          "required_corners": 11,
-          "devig_probability": 0.505,
-          "model_probability": 0.43,
-          "rejection_reasons": [
-            "Calidad de datos insuficiente: 85% < 88%",
-            "Probabilidad del modelo inferior al umbral: 43.0% < 68.0%",
-            "Smart Edge insuficiente: +-10.2% < +8.0%"
-          ],
-          "implied_probability": 0.532,
-          "qualification_status": "REJECTED_PROB"
-        }
-      ],
-      "recommendedLine": 6.5,
-      "distributionModel": "Negative Binomial",
-      "expectedAwayCorners": 4.53,
-      "expectedHomeCorners": 5.67,
-      "expectedTotalCorners": 10.2
-    },
-    "impliedProbability": 37,
     "sport": "football"
   },
   {
@@ -2963,19 +2963,19 @@
     "isTopPick": false,
     "modelOdds": 1.72,
     "pickBadge": "estandar",
-    "selection": "S\u00ed",
+    "selection": "Sí",
     "awayTeamId": 1025,
     "confidence": "Alta",
     "homeTeamId": 1028,
     "leagueLogo": "https://media.api-sports.io/football/leagues/218.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "explanation": "Tanto Ried como Wolfsberger AC han visto puerta en 4 de sus \u00faltimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
+    "explanation": "Tanto Ried como Wolfsberger AC han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
     "probability": 58.1,
     "bookmakerOdds": 1.67,
     "expectedValue": -3,
     "impliedProbability": 59.9,
-    "actualScore": "4 - 1 (Ambos S\u00ed)",
+    "actualScore": "4 - 1 (Ambos Sí)",
     "result": "WON",
     "profit": 0.67,
     "sport": "football"
@@ -3017,7 +3017,7 @@
     "source": "mcp",
     "status": "won",
     "awayElo": 1582,
-    "country": "Hungr\u00eda",
+    "country": "Hungría",
     "homeElo": 1575,
     "kickoff": "2026-09-20T07:45:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/2414.png",
@@ -3117,19 +3117,19 @@
     "isTopPick": false,
     "modelOdds": 1.72,
     "pickBadge": "estandar",
-    "selection": "S\u00ed",
+    "selection": "Sí",
     "awayTeamId": 2414,
     "confidence": "Alta",
     "homeTeamId": 2255,
     "leagueLogo": "https://media.api-sports.io/football/leagues/271.png",
     "leagueTier": 1,
     "smartScore": 90,
-    "explanation": "Tanto Ujpest como Zalaegerszegi TE han visto puerta en 4 de sus \u00faltimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
+    "explanation": "Tanto Ujpest como Zalaegerszegi TE han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
     "probability": 58.2,
     "bookmakerOdds": 1.57,
     "expectedValue": -8.6,
     "impliedProbability": 63.7,
-    "actualScore": "2 - 1 (Ambos S\u00ed)",
+    "actualScore": "2 - 1 (Ambos Sí)",
     "result": "WON",
     "profit": 0.57,
     "sport": "football"
@@ -3271,14 +3271,14 @@
     "isTopPick": false,
     "modelOdds": 1.73,
     "pickBadge": "estandar",
-    "selection": "S\u00ed",
+    "selection": "Sí",
     "awayTeamId": 2170,
     "confidence": "Alta",
     "homeTeamId": 2240,
     "leagueLogo": "https://media.api-sports.io/football/leagues/113.png",
     "leagueTier": 1,
     "smartScore": 89,
-    "explanation": "Tanto Mjallby AIF como Gais han visto puerta en 4 de sus \u00faltimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
+    "explanation": "Tanto Mjallby AIF como Gais han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
     "probability": 58,
     "bookmakerOdds": 1.57,
     "expectedValue": -9,
@@ -3325,7 +3325,7 @@
     "source": "mcp",
     "status": "lost",
     "awayElo": 1494,
-    "country": "Pa\u00edses Bajos",
+    "country": "Países Bajos",
     "homeElo": 1639,
     "kickoff": "2026-09-20T09:45:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/410.png",
@@ -3432,320 +3432,12 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/88.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "explanation": "Rendimiento muy fiable de NEC Nijmegen en su feudo (3 partidos sin caer en sus \u00faltimas 5 presentaciones). La brecha de generaci\u00f3n de ocasiones claras ante GO Ahead Eagles inclina con claridad la balanza estad\u00edstica hacia el triunfo local.",
+    "explanation": "Rendimiento muy fiable de NEC Nijmegen en su feudo (3 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante GO Ahead Eagles inclina con claridad la balanza estadística hacia el triunfo local.",
     "probability": 61.8,
     "bookmakerOdds": 1.9,
     "expectedValue": 17.5,
     "impliedProbability": 52.6,
     "actualScore": "1 - 1",
-    "result": "LOST",
-    "profit": -1,
-    "sport": "football"
-  },
-  {
-    "h2h": [
-      {
-        "date": "2026-07-22",
-        "score": "1-2",
-        "winner": "away",
-        "awayTeam": "Gyori ETO FC",
-        "homeTeam": "MTK Budapest",
-        "competition": "NB I (OTP Bank Liga)"
-      },
-      {
-        "date": "2026-03-24",
-        "score": "2-0",
-        "winner": "home",
-        "awayTeam": "MTK Budapest",
-        "homeTeam": "Gyori ETO FC",
-        "competition": "NB I (OTP Bank Liga)"
-      },
-      {
-        "date": "2025-09-25",
-        "score": "1-3",
-        "winner": "away",
-        "awayTeam": "Gyori ETO FC",
-        "homeTeam": "MTK Budapest",
-        "competition": "NB I (OTP Bank Liga)"
-      }
-    ],
-    "edge": 1,
-    "odds": 1.4,
-    "pick": "Ambos Equipos Anotan",
-    "isMcp": true,
-    "match": "MTK Budapest vs Gyori ETO FC",
-    "league": "NB I (OTP Bank Liga)",
-    "market": "Ambos Equipos Anotan",
-    "source": "mcp",
-    "status": "won",
-    "awayElo": 1535,
-    "country": "Hungr\u00eda",
-    "homeElo": 1492,
-    "kickoff": "2026-09-20T10:00:00-05:00",
-    "awayLogo": "https://media.api-sports.io/football/teams/2402.png",
-    "awayTeam": "Gyori ETO FC",
-    "fairOdds": 1.58,
-    "homeLogo": "https://media.api-sports.io/football/teams/2396.png",
-    "homeTeam": "MTK Budapest",
-    "leagueId": 271,
-    "timeSlot": "morning",
-    "awayLast5": [
-      {
-        "date": "2026-09-16",
-        "score": "1-2",
-        "isHome": false,
-        "result": "D",
-        "opponent": "Rival A",
-        "competition": "NB I (OTP Bank Liga)"
-      },
-      {
-        "date": "2026-09-11",
-        "score": "2-1",
-        "isHome": true,
-        "result": "W",
-        "opponent": "Rival B",
-        "competition": "NB I (OTP Bank Liga)"
-      },
-      {
-        "date": "2026-09-06",
-        "score": "1-3",
-        "isHome": false,
-        "result": "L",
-        "opponent": "Rival C",
-        "competition": "NB I (OTP Bank Liga)"
-      },
-      {
-        "date": "2026-09-01",
-        "score": "0-3",
-        "isHome": true,
-        "result": "L",
-        "opponent": "Rival D",
-        "competition": "NB I (OTP Bank Liga)"
-      },
-      {
-        "date": "2026-08-27",
-        "score": "1-2",
-        "isHome": false,
-        "result": "D",
-        "opponent": "Rival E",
-        "competition": "NB I (OTP Bank Liga)"
-      }
-    ],
-    "bookmaker": "Bet365",
-    "fixtureId": 1560245,
-    "homeLast5": [
-      {
-        "date": "2026-09-16",
-        "score": "2-1",
-        "isHome": true,
-        "result": "W",
-        "opponent": "Rival A",
-        "competition": "NB I (OTP Bank Liga)"
-      },
-      {
-        "date": "2026-09-11",
-        "score": "1-3",
-        "isHome": false,
-        "result": "L",
-        "opponent": "Rival B",
-        "competition": "NB I (OTP Bank Liga)"
-      },
-      {
-        "date": "2026-09-06",
-        "score": "0-3",
-        "isHome": true,
-        "result": "L",
-        "opponent": "Rival C",
-        "competition": "NB I (OTP Bank Liga)"
-      },
-      {
-        "date": "2026-09-01",
-        "score": "1-2",
-        "isHome": false,
-        "result": "D",
-        "opponent": "Rival D",
-        "competition": "NB I (OTP Bank Liga)"
-      },
-      {
-        "date": "2026-08-27",
-        "score": "2-1",
-        "isHome": true,
-        "result": "W",
-        "opponent": "Rival E",
-        "competition": "NB I (OTP Bank Liga)"
-      }
-    ],
-    "isMcpPick": true,
-    "isTopPick": false,
-    "modelOdds": 1.58,
-    "pickBadge": "estandar",
-    "selection": "S\u00ed",
-    "awayTeamId": 2402,
-    "confidence": "Alta",
-    "homeTeamId": 2396,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/271.png",
-    "leagueTier": 1,
-    "smartScore": 96,
-    "explanation": "Tanto MTK Budapest como Gyori ETO FC han visto puerta en 4 de sus \u00faltimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
-    "probability": 63.4,
-    "bookmakerOdds": 1.4,
-    "expectedValue": -11.2,
-    "impliedProbability": 71.4,
-    "actualScore": "1 - 2 (Ambos S\u00ed)",
-    "result": "WON",
-    "profit": 0.4,
-    "sport": "football"
-  },
-  {
-    "h2h": [
-      {
-        "date": "2026-07-22",
-        "score": "1-2",
-        "winner": "away",
-        "awayTeam": "Start",
-        "homeTeam": "Sandefjord",
-        "competition": "Eliteserien"
-      },
-      {
-        "date": "2026-03-24",
-        "score": "2-0",
-        "winner": "home",
-        "awayTeam": "Sandefjord",
-        "homeTeam": "Start",
-        "competition": "Eliteserien"
-      },
-      {
-        "date": "2025-09-25",
-        "score": "1-1",
-        "winner": "draw",
-        "awayTeam": "Start",
-        "homeTeam": "Sandefjord",
-        "competition": "Eliteserien"
-      }
-    ],
-    "edge": 1,
-    "odds": 1.57,
-    "pick": "Ambos Equipos Anotan",
-    "isMcp": true,
-    "match": "Sandefjord vs Start",
-    "league": "Eliteserien",
-    "market": "Ambos Equipos Anotan",
-    "source": "mcp",
-    "status": "lost",
-    "awayElo": 1646,
-    "country": "Noruega",
-    "homeElo": 1604,
-    "kickoff": "2026-09-20T10:00:00-05:00",
-    "awayLogo": "https://media.api-sports.io/football/teams/334.png",
-    "awayTeam": "Start",
-    "fairOdds": 1.7,
-    "homeLogo": "https://media.api-sports.io/football/teams/332.png",
-    "homeTeam": "Sandefjord",
-    "leagueId": 103,
-    "timeSlot": "morning",
-    "awayLast5": [
-      {
-        "date": "2026-09-16",
-        "score": "1-2",
-        "isHome": true,
-        "result": "D",
-        "opponent": "Rival A",
-        "competition": "Eliteserien"
-      },
-      {
-        "date": "2026-09-11",
-        "score": "3-1",
-        "isHome": false,
-        "result": "W",
-        "opponent": "Rival B",
-        "competition": "Eliteserien"
-      },
-      {
-        "date": "2026-09-06",
-        "score": "2-1",
-        "isHome": true,
-        "result": "W",
-        "opponent": "Rival C",
-        "competition": "Eliteserien"
-      },
-      {
-        "date": "2026-09-01",
-        "score": "0-3",
-        "isHome": false,
-        "result": "L",
-        "opponent": "Rival D",
-        "competition": "Eliteserien"
-      },
-      {
-        "date": "2026-08-27",
-        "score": "1-2",
-        "isHome": true,
-        "result": "D",
-        "opponent": "Rival E",
-        "competition": "Eliteserien"
-      }
-    ],
-    "bookmaker": "Bet365",
-    "fixtureId": 1494767,
-    "homeLast5": [
-      {
-        "date": "2026-09-16",
-        "score": "1-2",
-        "isHome": true,
-        "result": "D",
-        "opponent": "Rival A",
-        "competition": "Eliteserien"
-      },
-      {
-        "date": "2026-09-11",
-        "score": "3-1",
-        "isHome": false,
-        "result": "W",
-        "opponent": "Rival B",
-        "competition": "Eliteserien"
-      },
-      {
-        "date": "2026-09-06",
-        "score": "1-2",
-        "isHome": true,
-        "result": "L",
-        "opponent": "Rival C",
-        "competition": "Eliteserien"
-      },
-      {
-        "date": "2026-09-01",
-        "score": "1-2",
-        "isHome": false,
-        "result": "D",
-        "opponent": "Rival D",
-        "competition": "Eliteserien"
-      },
-      {
-        "date": "2026-08-27",
-        "score": "2-1",
-        "isHome": true,
-        "result": "W",
-        "opponent": "Rival E",
-        "competition": "Eliteserien"
-      }
-    ],
-    "isMcpPick": true,
-    "isTopPick": false,
-    "modelOdds": 1.7,
-    "pickBadge": "estandar",
-    "selection": "S\u00ed",
-    "awayTeamId": 334,
-    "confidence": "Alta",
-    "homeTeamId": 332,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/103.png",
-    "leagueTier": 1,
-    "smartScore": 90,
-    "explanation": "Tanto Sandefjord como Start han visto puerta en 4 de sus \u00faltimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
-    "probability": 58.7,
-    "bookmakerOdds": 1.57,
-    "expectedValue": -7.8,
-    "impliedProbability": 63.7,
-    "actualScore": "3 - 0 (No)",
     "result": "LOST",
     "profit": -1,
     "sport": "football"
@@ -3887,21 +3579,175 @@
     "isTopPick": false,
     "modelOdds": 1.54,
     "pickBadge": "mcp",
-    "selection": "S\u00ed",
+    "selection": "Sí",
     "awayTeamId": 6976,
     "confidence": "Alta",
     "homeTeamId": 330,
     "leagueLogo": "https://media.api-sports.io/football/leagues/104.png",
     "leagueTier": 2,
     "smartScore": 71,
-    "explanation": "Tanto ODD Ballklubb como Egersund han visto puerta en 4 de sus \u00faltimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
+    "explanation": "Tanto ODD Ballklubb como Egersund han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
     "probability": 64.9,
     "bookmakerOdds": 1.36,
     "expectedValue": -11.8,
     "impliedProbability": 73.5,
-    "actualScore": "5 - 1 (Ambos S\u00ed)",
+    "actualScore": "5 - 1 (Ambos Sí)",
     "result": "WON",
     "profit": 0.36,
+    "sport": "football"
+  },
+  {
+    "h2h": [
+      {
+        "date": "2026-07-22",
+        "score": "1-2",
+        "winner": "away",
+        "awayTeam": "Gyori ETO FC",
+        "homeTeam": "MTK Budapest",
+        "competition": "NB I (OTP Bank Liga)"
+      },
+      {
+        "date": "2026-03-24",
+        "score": "2-0",
+        "winner": "home",
+        "awayTeam": "MTK Budapest",
+        "homeTeam": "Gyori ETO FC",
+        "competition": "NB I (OTP Bank Liga)"
+      },
+      {
+        "date": "2025-09-25",
+        "score": "1-3",
+        "winner": "away",
+        "awayTeam": "Gyori ETO FC",
+        "homeTeam": "MTK Budapest",
+        "competition": "NB I (OTP Bank Liga)"
+      }
+    ],
+    "edge": 1,
+    "odds": 1.4,
+    "pick": "Ambos Equipos Anotan",
+    "isMcp": true,
+    "match": "MTK Budapest vs Gyori ETO FC",
+    "league": "NB I (OTP Bank Liga)",
+    "market": "Ambos Equipos Anotan",
+    "source": "mcp",
+    "status": "won",
+    "awayElo": 1535,
+    "country": "Hungría",
+    "homeElo": 1492,
+    "kickoff": "2026-09-20T10:00:00-05:00",
+    "awayLogo": "https://media.api-sports.io/football/teams/2402.png",
+    "awayTeam": "Gyori ETO FC",
+    "fairOdds": 1.58,
+    "homeLogo": "https://media.api-sports.io/football/teams/2396.png",
+    "homeTeam": "MTK Budapest",
+    "leagueId": 271,
+    "timeSlot": "morning",
+    "awayLast5": [
+      {
+        "date": "2026-09-16",
+        "score": "1-2",
+        "isHome": false,
+        "result": "D",
+        "opponent": "Rival A",
+        "competition": "NB I (OTP Bank Liga)"
+      },
+      {
+        "date": "2026-09-11",
+        "score": "2-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival B",
+        "competition": "NB I (OTP Bank Liga)"
+      },
+      {
+        "date": "2026-09-06",
+        "score": "1-3",
+        "isHome": false,
+        "result": "L",
+        "opponent": "Rival C",
+        "competition": "NB I (OTP Bank Liga)"
+      },
+      {
+        "date": "2026-09-01",
+        "score": "0-3",
+        "isHome": true,
+        "result": "L",
+        "opponent": "Rival D",
+        "competition": "NB I (OTP Bank Liga)"
+      },
+      {
+        "date": "2026-08-27",
+        "score": "1-2",
+        "isHome": false,
+        "result": "D",
+        "opponent": "Rival E",
+        "competition": "NB I (OTP Bank Liga)"
+      }
+    ],
+    "bookmaker": "Bet365",
+    "fixtureId": 1560245,
+    "homeLast5": [
+      {
+        "date": "2026-09-16",
+        "score": "2-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival A",
+        "competition": "NB I (OTP Bank Liga)"
+      },
+      {
+        "date": "2026-09-11",
+        "score": "1-3",
+        "isHome": false,
+        "result": "L",
+        "opponent": "Rival B",
+        "competition": "NB I (OTP Bank Liga)"
+      },
+      {
+        "date": "2026-09-06",
+        "score": "0-3",
+        "isHome": true,
+        "result": "L",
+        "opponent": "Rival C",
+        "competition": "NB I (OTP Bank Liga)"
+      },
+      {
+        "date": "2026-09-01",
+        "score": "1-2",
+        "isHome": false,
+        "result": "D",
+        "opponent": "Rival D",
+        "competition": "NB I (OTP Bank Liga)"
+      },
+      {
+        "date": "2026-08-27",
+        "score": "2-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival E",
+        "competition": "NB I (OTP Bank Liga)"
+      }
+    ],
+    "isMcpPick": true,
+    "isTopPick": false,
+    "modelOdds": 1.58,
+    "pickBadge": "estandar",
+    "selection": "Sí",
+    "awayTeamId": 2402,
+    "confidence": "Alta",
+    "homeTeamId": 2396,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/271.png",
+    "leagueTier": 1,
+    "smartScore": 96,
+    "explanation": "Tanto MTK Budapest como Gyori ETO FC han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
+    "probability": 63.4,
+    "bookmakerOdds": 1.4,
+    "expectedValue": -11.2,
+    "impliedProbability": 71.4,
+    "actualScore": "1 - 2 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.4,
     "sport": "football"
   },
   {
@@ -4041,19 +3887,19 @@
     "isTopPick": false,
     "modelOdds": 1.58,
     "pickBadge": "mcp",
-    "selection": "S\u00ed",
+    "selection": "Sí",
     "awayTeamId": 758,
     "confidence": "Alta",
     "homeTeamId": 323,
     "leagueLogo": "https://media.api-sports.io/football/leagues/104.png",
     "leagueTier": 2,
     "smartScore": 70,
-    "explanation": "Tanto Stabaek como Sogndal han visto puerta en 4 de sus \u00faltimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
+    "explanation": "Tanto Stabaek como Sogndal han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
     "probability": 63.3,
     "bookmakerOdds": 1.4,
     "expectedValue": -11.4,
     "impliedProbability": 71.4,
-    "actualScore": "2 - 1 (Ambos S\u00ed)",
+    "actualScore": "2 - 1 (Ambos Sí)",
     "result": "WON",
     "profit": 0.4,
     "sport": "football"
@@ -4195,19 +4041,19 @@
     "isTopPick": false,
     "modelOdds": 1.59,
     "pickBadge": "mcp",
-    "selection": "S\u00ed",
+    "selection": "Sí",
     "awayTeamId": 7012,
     "confidence": "Alta",
     "homeTeamId": 2146,
     "leagueLogo": "https://media.api-sports.io/football/leagues/104.png",
     "leagueTier": 2,
     "smartScore": 70,
-    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porter\u00edas por la postura ofensiva de sus t\u00e9cnicos y las desatenciones en repliegue.",
+    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
     "probability": 62.9,
     "bookmakerOdds": 1.4,
     "expectedValue": -12,
     "impliedProbability": 71.4,
-    "actualScore": "1 - 2 (Ambos S\u00ed)",
+    "actualScore": "1 - 2 (Ambos Sí)",
     "result": "WON",
     "profit": 0.4,
     "sport": "football"
@@ -4349,19 +4195,327 @@
     "isTopPick": false,
     "modelOdds": 1.61,
     "pickBadge": "mcp",
-    "selection": "S\u00ed",
+    "selection": "Sí",
     "awayTeamId": 324,
     "confidence": "Alta",
     "homeTeamId": 2153,
     "leagueLogo": "https://media.api-sports.io/football/leagues/104.png",
     "leagueTier": 2,
     "smartScore": 70,
-    "explanation": "Eficacia bilateral en ataque: Raufoss anota con regularidad en su estadio (1.6 xG) pero concede ocasiones (1 goles en contra), mientras que Stromsgodset cuenta con pegada for\u00e1nea (1.2 xG). El patr\u00f3n estad\u00edstico favorece la anotaci\u00f3n mutua.",
+    "explanation": "Eficacia bilateral en ataque: Raufoss anota con regularidad en su estadio (1.6 xG) pero concede ocasiones (1 goles en contra), mientras que Stromsgodset cuenta con pegada foránea (1.2 xG). El patrón estadístico favorece la anotación mutua.",
     "probability": 62.2,
     "bookmakerOdds": 1.44,
     "expectedValue": -10.4,
     "impliedProbability": 69.4,
     "actualScore": "0 - 2 (No)",
+    "result": "LOST",
+    "profit": -1,
+    "sport": "football"
+  },
+  {
+    "h2h": [
+      {
+        "date": "2026-07-22",
+        "score": "1-2",
+        "winner": "away",
+        "awayTeam": "Start",
+        "homeTeam": "Sandefjord",
+        "competition": "Eliteserien"
+      },
+      {
+        "date": "2026-03-24",
+        "score": "2-0",
+        "winner": "home",
+        "awayTeam": "Sandefjord",
+        "homeTeam": "Start",
+        "competition": "Eliteserien"
+      },
+      {
+        "date": "2025-09-25",
+        "score": "1-1",
+        "winner": "draw",
+        "awayTeam": "Start",
+        "homeTeam": "Sandefjord",
+        "competition": "Eliteserien"
+      }
+    ],
+    "edge": 1,
+    "odds": 1.57,
+    "pick": "Ambos Equipos Anotan",
+    "isMcp": true,
+    "match": "Sandefjord vs Start",
+    "league": "Eliteserien",
+    "market": "Ambos Equipos Anotan",
+    "source": "mcp",
+    "status": "lost",
+    "awayElo": 1646,
+    "country": "Noruega",
+    "homeElo": 1604,
+    "kickoff": "2026-09-20T10:00:00-05:00",
+    "awayLogo": "https://media.api-sports.io/football/teams/334.png",
+    "awayTeam": "Start",
+    "fairOdds": 1.7,
+    "homeLogo": "https://media.api-sports.io/football/teams/332.png",
+    "homeTeam": "Sandefjord",
+    "leagueId": 103,
+    "timeSlot": "morning",
+    "awayLast5": [
+      {
+        "date": "2026-09-16",
+        "score": "1-2",
+        "isHome": true,
+        "result": "D",
+        "opponent": "Rival A",
+        "competition": "Eliteserien"
+      },
+      {
+        "date": "2026-09-11",
+        "score": "3-1",
+        "isHome": false,
+        "result": "W",
+        "opponent": "Rival B",
+        "competition": "Eliteserien"
+      },
+      {
+        "date": "2026-09-06",
+        "score": "2-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival C",
+        "competition": "Eliteserien"
+      },
+      {
+        "date": "2026-09-01",
+        "score": "0-3",
+        "isHome": false,
+        "result": "L",
+        "opponent": "Rival D",
+        "competition": "Eliteserien"
+      },
+      {
+        "date": "2026-08-27",
+        "score": "1-2",
+        "isHome": true,
+        "result": "D",
+        "opponent": "Rival E",
+        "competition": "Eliteserien"
+      }
+    ],
+    "bookmaker": "Bet365",
+    "fixtureId": 1494767,
+    "homeLast5": [
+      {
+        "date": "2026-09-16",
+        "score": "1-2",
+        "isHome": true,
+        "result": "D",
+        "opponent": "Rival A",
+        "competition": "Eliteserien"
+      },
+      {
+        "date": "2026-09-11",
+        "score": "3-1",
+        "isHome": false,
+        "result": "W",
+        "opponent": "Rival B",
+        "competition": "Eliteserien"
+      },
+      {
+        "date": "2026-09-06",
+        "score": "1-2",
+        "isHome": true,
+        "result": "L",
+        "opponent": "Rival C",
+        "competition": "Eliteserien"
+      },
+      {
+        "date": "2026-09-01",
+        "score": "1-2",
+        "isHome": false,
+        "result": "D",
+        "opponent": "Rival D",
+        "competition": "Eliteserien"
+      },
+      {
+        "date": "2026-08-27",
+        "score": "2-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival E",
+        "competition": "Eliteserien"
+      }
+    ],
+    "isMcpPick": true,
+    "isTopPick": false,
+    "modelOdds": 1.7,
+    "pickBadge": "estandar",
+    "selection": "Sí",
+    "awayTeamId": 334,
+    "confidence": "Alta",
+    "homeTeamId": 332,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/103.png",
+    "leagueTier": 1,
+    "smartScore": 90,
+    "explanation": "Tanto Sandefjord como Start han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
+    "probability": 58.7,
+    "bookmakerOdds": 1.57,
+    "expectedValue": -7.8,
+    "impliedProbability": 63.7,
+    "actualScore": "3 - 0 (No)",
+    "result": "LOST",
+    "profit": -1,
+    "sport": "football"
+  },
+  {
+    "h2h": [
+      {
+        "date": "2026-07-22",
+        "score": "1-2",
+        "winner": "away",
+        "awayTeam": "Lille",
+        "homeTeam": "Nice",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-03-24",
+        "score": "2-0",
+        "winner": "home",
+        "awayTeam": "Nice",
+        "homeTeam": "Lille",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2025-09-25",
+        "score": "1-3",
+        "winner": "away",
+        "awayTeam": "Lille",
+        "homeTeam": "Nice",
+        "competition": "Ligue 1"
+      }
+    ],
+    "edge": 13.6,
+    "odds": 2.15,
+    "pick": "Lille",
+    "isMcp": true,
+    "match": "Nice vs Lille",
+    "league": "Ligue 1",
+    "market": "Ganador Visitante",
+    "source": "mcp",
+    "status": "lost",
+    "awayElo": 1800,
+    "country": "Francia",
+    "homeElo": 1503,
+    "kickoff": "2026-09-20T10:15:00-05:00",
+    "awayLogo": "https://media.api-sports.io/football/teams/79.png",
+    "awayTeam": "Lille",
+    "fairOdds": 1.66,
+    "homeLogo": "https://media.api-sports.io/football/teams/84.png",
+    "homeTeam": "Nice",
+    "leagueId": 61,
+    "timeSlot": "morning",
+    "awayLast5": [
+      {
+        "date": "2026-09-16",
+        "score": "1-2",
+        "isHome": true,
+        "result": "L",
+        "opponent": "Rival A",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-09-11",
+        "score": "2-1",
+        "isHome": false,
+        "result": "W",
+        "opponent": "Rival B",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-09-06",
+        "score": "3-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival C",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-09-01",
+        "score": "2-3",
+        "isHome": false,
+        "result": "L",
+        "opponent": "Rival D",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-08-27",
+        "score": "2-2",
+        "isHome": true,
+        "result": "D",
+        "opponent": "Rival E",
+        "competition": "Ligue 1"
+      }
+    ],
+    "bookmaker": "Bet365",
+    "fixtureId": 1552770,
+    "homeLast5": [
+      {
+        "date": "2026-09-16",
+        "score": "1-2",
+        "isHome": false,
+        "result": "D",
+        "opponent": "Rival A",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-09-11",
+        "score": "2-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival B",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-09-06",
+        "score": "1-3",
+        "isHome": false,
+        "result": "L",
+        "opponent": "Rival C",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-09-01",
+        "score": "1-2",
+        "isHome": true,
+        "result": "D",
+        "opponent": "Rival D",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-08-27",
+        "score": "1-2",
+        "isHome": false,
+        "result": "W",
+        "opponent": "Rival E",
+        "competition": "Ligue 1"
+      }
+    ],
+    "isMcpPick": true,
+    "isTopPick": false,
+    "modelOdds": 1.66,
+    "pickBadge": "mcp",
+    "selection": "2",
+    "awayTeamId": 79,
+    "confidence": "Alta",
+    "homeTeamId": 84,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/61.png",
+    "leagueTier": 1,
+    "smartScore": 99,
+    "explanation": "Lille exhibe mayor jerarquía y pegada foránea (3.4 xG de visita) con 2 victorias en sus salidas recientes. Su efectividad en transición rápida ante la fragilidad defensiva de Nice (1 caídas) respalda el triunfo visitante.",
+    "probability": 60.1,
+    "bookmakerOdds": 2.15,
+    "expectedValue": 29.3,
+    "impliedProbability": 46.5,
+    "actualScore": "2 - 1",
     "result": "LOST",
     "profit": -1,
     "sport": "football"
@@ -4510,7 +4664,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/61.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "explanation": "Alta expectativa anotadora: Nice genera 0.5 xG en casa y Lille promedia 3.4 xG fuera, proyectando 3.9 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o m\u00e1s tantos.",
+    "explanation": "Alta expectativa anotadora: Nice genera 0.5 xG en casa y Lille promedia 3.4 xG fuera, proyectando 3.9 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
     "probability": 58.1,
     "bookmakerOdds": 1.91,
     "expectedValue": 10.9,
@@ -4518,160 +4672,6 @@
     "actualScore": "2 - 1 (3 Goles)",
     "result": "WON",
     "profit": 0.91,
-    "sport": "football"
-  },
-  {
-    "h2h": [
-      {
-        "date": "2026-07-22",
-        "score": "1-2",
-        "winner": "away",
-        "awayTeam": "Lille",
-        "homeTeam": "Nice",
-        "competition": "Ligue 1"
-      },
-      {
-        "date": "2026-03-24",
-        "score": "2-0",
-        "winner": "home",
-        "awayTeam": "Nice",
-        "homeTeam": "Lille",
-        "competition": "Ligue 1"
-      },
-      {
-        "date": "2025-09-25",
-        "score": "1-3",
-        "winner": "away",
-        "awayTeam": "Lille",
-        "homeTeam": "Nice",
-        "competition": "Ligue 1"
-      }
-    ],
-    "edge": 13.6,
-    "odds": 2.15,
-    "pick": "Lille",
-    "isMcp": true,
-    "match": "Nice vs Lille",
-    "league": "Ligue 1",
-    "market": "Ganador Visitante",
-    "source": "mcp",
-    "status": "lost",
-    "awayElo": 1800,
-    "country": "Francia",
-    "homeElo": 1503,
-    "kickoff": "2026-09-20T10:15:00-05:00",
-    "awayLogo": "https://media.api-sports.io/football/teams/79.png",
-    "awayTeam": "Lille",
-    "fairOdds": 1.66,
-    "homeLogo": "https://media.api-sports.io/football/teams/84.png",
-    "homeTeam": "Nice",
-    "leagueId": 61,
-    "timeSlot": "morning",
-    "awayLast5": [
-      {
-        "date": "2026-09-16",
-        "score": "1-2",
-        "isHome": true,
-        "result": "L",
-        "opponent": "Rival A",
-        "competition": "Ligue 1"
-      },
-      {
-        "date": "2026-09-11",
-        "score": "2-1",
-        "isHome": false,
-        "result": "W",
-        "opponent": "Rival B",
-        "competition": "Ligue 1"
-      },
-      {
-        "date": "2026-09-06",
-        "score": "3-1",
-        "isHome": true,
-        "result": "W",
-        "opponent": "Rival C",
-        "competition": "Ligue 1"
-      },
-      {
-        "date": "2026-09-01",
-        "score": "2-3",
-        "isHome": false,
-        "result": "L",
-        "opponent": "Rival D",
-        "competition": "Ligue 1"
-      },
-      {
-        "date": "2026-08-27",
-        "score": "2-2",
-        "isHome": true,
-        "result": "D",
-        "opponent": "Rival E",
-        "competition": "Ligue 1"
-      }
-    ],
-    "bookmaker": "Bet365",
-    "fixtureId": 1552770,
-    "homeLast5": [
-      {
-        "date": "2026-09-16",
-        "score": "1-2",
-        "isHome": false,
-        "result": "D",
-        "opponent": "Rival A",
-        "competition": "Ligue 1"
-      },
-      {
-        "date": "2026-09-11",
-        "score": "2-1",
-        "isHome": true,
-        "result": "W",
-        "opponent": "Rival B",
-        "competition": "Ligue 1"
-      },
-      {
-        "date": "2026-09-06",
-        "score": "1-3",
-        "isHome": false,
-        "result": "L",
-        "opponent": "Rival C",
-        "competition": "Ligue 1"
-      },
-      {
-        "date": "2026-09-01",
-        "score": "1-2",
-        "isHome": true,
-        "result": "D",
-        "opponent": "Rival D",
-        "competition": "Ligue 1"
-      },
-      {
-        "date": "2026-08-27",
-        "score": "1-2",
-        "isHome": false,
-        "result": "W",
-        "opponent": "Rival E",
-        "competition": "Ligue 1"
-      }
-    ],
-    "isMcpPick": true,
-    "isTopPick": false,
-    "modelOdds": 1.66,
-    "pickBadge": "mcp",
-    "selection": "2",
-    "awayTeamId": 79,
-    "confidence": "Alta",
-    "homeTeamId": 84,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/61.png",
-    "leagueTier": 1,
-    "smartScore": 99,
-    "explanation": "Lille exhibe mayor jerarqu\u00eda y pegada for\u00e1nea (3.4 xG de visita) con 2 victorias en sus salidas recientes. Su efectividad en transici\u00f3n r\u00e1pida ante la fragilidad defensiva de Nice (1 ca\u00eddas) respalda el triunfo visitante.",
-    "probability": 60.1,
-    "bookmakerOdds": 2.15,
-    "expectedValue": 29.3,
-    "impliedProbability": 46.5,
-    "actualScore": "2 - 1",
-    "result": "LOST",
-    "profit": -1,
     "sport": "football"
   },
   {
@@ -4811,14 +4811,14 @@
     "isTopPick": false,
     "modelOdds": 1.57,
     "pickBadge": "estandar",
-    "selection": "S\u00ed",
+    "selection": "Sí",
     "awayTeamId": 1660,
     "confidence": "Alta",
     "homeTeamId": 174,
     "leagueLogo": "https://media.api-sports.io/football/leagues/78.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porter\u00edas por la postura ofensiva de sus t\u00e9cnicos y las desatenciones en repliegue.",
+    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
     "probability": 63.7,
     "bookmakerOdds": 1.44,
     "expectedValue": -8.3,
@@ -4965,19 +4965,19 @@
     "isTopPick": false,
     "modelOdds": 1.66,
     "pickBadge": "estandar",
-    "selection": "S\u00ed",
+    "selection": "Sí",
     "awayTeamId": 33,
     "confidence": "Alta",
     "homeTeamId": 36,
     "leagueLogo": "https://media.api-sports.io/football/leagues/39.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porter\u00edas por la postura ofensiva de sus t\u00e9cnicos y las desatenciones en repliegue.",
+    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
     "probability": 60.4,
     "bookmakerOdds": 1.5,
     "expectedValue": -9.4,
     "impliedProbability": 66.7,
-    "actualScore": "1 - 1 (Ambos S\u00ed)",
+    "actualScore": "1 - 1 (Ambos Sí)",
     "result": "WON",
     "profit": 0.5,
     "sport": "football"
@@ -5119,19 +5119,19 @@
     "isTopPick": false,
     "modelOdds": 1.61,
     "pickBadge": "estandar",
-    "selection": "S\u00ed",
+    "selection": "Sí",
     "awayTeamId": 398,
     "confidence": "Alta",
     "homeTeamId": 2070,
     "leagueLogo": "https://media.api-sports.io/football/leagues/119.png",
     "leagueTier": 1,
     "smartScore": 94,
-    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porter\u00edas por la postura ofensiva de sus t\u00e9cnicos y las desatenciones en repliegue.",
+    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
     "probability": 62,
     "bookmakerOdds": 1.44,
     "expectedValue": -10.7,
     "impliedProbability": 69.4,
-    "actualScore": "4 - 1 (Ambos S\u00ed)",
+    "actualScore": "4 - 1 (Ambos Sí)",
     "result": "WON",
     "profit": 0.44,
     "sport": "football"
@@ -5280,7 +5280,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/135.png",
     "leagueTier": 1,
     "smartScore": 95,
-    "explanation": "Juventus impone una marcada solvencia como anfitri\u00f3n (2 triunfos en sus \u00faltimos 5 compromisos) y promedia 1.5 xG en casa. Su dominio territorial y solidez defensiva ante un Atalanta que ha cedido 0 derrotas fuera fundamentan la ventaja local.",
+    "explanation": "Juventus impone una marcada solvencia como anfitrión (2 triunfos en sus últimos 5 compromisos) y promedia 1.5 xG en casa. Su dominio territorial y solidez defensiva ante un Atalanta que ha cedido 0 derrotas fuera fundamentan la ventaja local.",
     "probability": 51.9,
     "bookmakerOdds": 1.7,
     "expectedValue": -11.7,
@@ -5327,7 +5327,7 @@
     "source": "mcp",
     "status": "won",
     "awayElo": 1659,
-    "country": "Espa\u00f1a",
+    "country": "España",
     "homeElo": 1760,
     "kickoff": "2026-09-20T11:30:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/539.png",
@@ -5434,7 +5434,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/140.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "explanation": "Solidez posicional y eficacia en \u00e1rea propia: Villarreal concede menos de 0.9 xG de local, mientras que Levante muestra dificultades para generar peligro constante a domicilio (0.7 xG for\u00e1neo).",
+    "explanation": "Solidez posicional y eficacia en área propia: Villarreal concede menos de 0.9 xG de local, mientras que Levante muestra dificultades para generar peligro constante a domicilio (0.7 xG foráneo).",
     "probability": 64.6,
     "bookmakerOdds": 1.5,
     "expectedValue": -3.1,
@@ -5481,7 +5481,7 @@
     "source": "mcp",
     "status": "lost",
     "awayElo": 1720,
-    "country": "Espa\u00f1a",
+    "country": "España",
     "homeElo": 1489,
     "kickoff": "2026-09-20T11:30:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/543.png",
@@ -5588,7 +5588,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/140.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "explanation": "Diferencial de calidad y estructura a favor de Real Betis (+231 Elo). El conjunto visitante impone condiciones en duelos individuales y supera en volumen de remates al conjunto anfitri\u00f3n.",
+    "explanation": "Diferencial de calidad y estructura a favor de Real Betis (+231 Elo). El conjunto visitante impone condiciones en duelos individuales y supera en volumen de remates al conjunto anfitrión.",
     "probability": 59.2,
     "bookmakerOdds": 2,
     "expectedValue": 18.5,
@@ -5742,7 +5742,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/78.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 3.8 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
+    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 3.8 tantos respaldan un desarrollo con múltiples celebraciones.",
     "probability": 67.9,
     "bookmakerOdds": 1.44,
     "expectedValue": -2.2,
@@ -5789,7 +5789,7 @@
     "source": "mcp",
     "status": "lost",
     "awayElo": 1658,
-    "country": "Hungr\u00eda",
+    "country": "Hungría",
     "homeElo": 1563,
     "kickoff": "2026-09-20T12:30:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/651.png",
@@ -5896,7 +5896,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/271.png",
     "leagueTier": 1,
     "smartScore": 89,
-    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.9 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
+    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.9 tantos respaldan un desarrollo con múltiples celebraciones.",
     "probability": 57.9,
     "bookmakerOdds": 1.57,
     "expectedValue": -9.1,
@@ -5904,6 +5904,263 @@
     "actualScore": "1 - 1 (2 Goles)",
     "result": "LOST",
     "profit": -1,
+    "sport": "football"
+  },
+  {
+    "h2h": [
+      {
+        "date": "2026-07-22",
+        "score": "1-2",
+        "winner": "away",
+        "awayTeam": "Paris Saint Germain",
+        "homeTeam": "Marseille",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-03-24",
+        "score": "2-0",
+        "winner": "home",
+        "awayTeam": "Marseille",
+        "homeTeam": "Paris Saint Germain",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2025-09-25",
+        "score": "1-3",
+        "winner": "away",
+        "awayTeam": "Paris Saint Germain",
+        "homeTeam": "Marseille",
+        "competition": "Ligue 1"
+      }
+    ],
+    "edge": 9.8,
+    "odds": 1.83,
+    "pick": "Over 8.5 Córners",
+    "isMcp": true,
+    "match": "Marseille vs Paris Saint Germain",
+    "league": "Ligue 1",
+    "market": "Córners",
+    "source": "mcp",
+    "status": "won",
+    "awayElo": 1970,
+    "country": "Francia",
+    "homeElo": 1790,
+    "kickoff": "2026-09-20T13:45:00-05:00",
+    "awayLogo": "https://media.api-sports.io/football/teams/85.png",
+    "awayTeam": "Paris Saint Germain",
+    "fairOdds": 1.55,
+    "homeLogo": "https://media.api-sports.io/football/teams/81.png",
+    "homeTeam": "Marseille",
+    "leagueId": 61,
+    "timeSlot": "afternoon",
+    "awayLast5": [
+      {
+        "date": "2026-09-16",
+        "score": "2-1",
+        "isHome": false,
+        "result": "W",
+        "opponent": "Rival A",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-09-11",
+        "score": "3-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival B",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-09-06",
+        "score": "2-2",
+        "isHome": false,
+        "result": "D",
+        "opponent": "Rival C",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-09-01",
+        "score": "3-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival D",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-08-27",
+        "score": "2-1",
+        "isHome": false,
+        "result": "W",
+        "opponent": "Rival E",
+        "competition": "Ligue 1"
+      }
+    ],
+    "bookmaker": "Bet365",
+    "fixtureId": 1552773,
+    "homeLast5": [
+      {
+        "date": "2026-09-16",
+        "score": "2-2",
+        "isHome": true,
+        "result": "D",
+        "opponent": "Rival A",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-09-11",
+        "score": "2-1",
+        "isHome": false,
+        "result": "W",
+        "opponent": "Rival B",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-09-06",
+        "score": "3-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival C",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-09-01",
+        "score": "2-2",
+        "isHome": false,
+        "result": "D",
+        "opponent": "Rival D",
+        "competition": "Ligue 1"
+      },
+      {
+        "date": "2026-08-27",
+        "score": "3-1",
+        "isHome": true,
+        "result": "W",
+        "opponent": "Rival E",
+        "competition": "Ligue 1"
+      }
+    ],
+    "isMcpPick": true,
+    "isTopPick": false,
+    "modelOdds": 1.55,
+    "pickBadge": "mcp",
+    "selection": "Over 8.5",
+    "awayTeamId": 85,
+    "confidence": "Alta",
+    "homeTeamId": 81,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/61.png",
+    "leagueTier": 1,
+    "smartScore": 99,
+    "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.2 córners totales.",
+    "probability": 64.4,
+    "bookmakerOdds": 1.83,
+    "expectedValue": 17.9,
+    "cornerAnalysis": {
+      "dataQuality": 0.85,
+      "allCandidates": [
+        {
+          "line": 6.5,
+          "selection": "Over 6.5",
+          "smart_edge": -0.016,
+          "smart_score": 0,
+          "data_quality": 0.85,
+          "decimal_odds": 1.18,
+          "expected_value": -0.019,
+          "expected_margin": 3.23,
+          "expected_corners": 10.23,
+          "required_corners": 7,
+          "devig_probability": 0.805,
+          "model_probability": 0.831,
+          "rejection_reasons": [
+            "Smart Edge insuficiente: +-1.6% < +2.0%"
+          ],
+          "implied_probability": 0.847,
+          "qualification_status": "REJECTED_EDGE"
+        },
+        {
+          "line": 7.5,
+          "selection": "Over 7.5",
+          "smart_edge": 0.015,
+          "smart_score": 0,
+          "data_quality": 0.85,
+          "decimal_odds": 1.37,
+          "expected_value": 0.021,
+          "expected_margin": 2.23,
+          "expected_corners": 10.23,
+          "required_corners": 8,
+          "devig_probability": 0.693,
+          "model_probability": 0.745,
+          "rejection_reasons": [
+            "Smart Edge insuficiente: +1.5% < +3.0%"
+          ],
+          "implied_probability": 0.73,
+          "qualification_status": "REJECTED_EDGE"
+        },
+        {
+          "line": 8.5,
+          "selection": "Over 8.5",
+          "smart_edge": 0.098,
+          "smart_score": 66,
+          "data_quality": 0.85,
+          "decimal_odds": 1.83,
+          "expected_value": 0.179,
+          "expected_margin": 1.23,
+          "expected_corners": 10.23,
+          "required_corners": 9,
+          "devig_probability": 0.519,
+          "model_probability": 0.644,
+          "rejection_reasons": [],
+          "implied_probability": 0.546,
+          "qualification_status": "QUALIFIED"
+        },
+        {
+          "line": 9.5,
+          "selection": "Over 9.5",
+          "smart_edge": 0.093,
+          "smart_score": 0,
+          "data_quality": 0.85,
+          "decimal_odds": 2.25,
+          "expected_value": 0.208,
+          "expected_margin": 0.23,
+          "expected_corners": 10.23,
+          "required_corners": 10,
+          "devig_probability": 0.422,
+          "model_probability": 0.537,
+          "rejection_reasons": [
+            "Probabilidad del modelo inferior al umbral: 53.7% < 54.0%"
+          ],
+          "implied_probability": 0.444,
+          "qualification_status": "REJECTED_PROB"
+        },
+        {
+          "line": 10.5,
+          "selection": "Over 10.5",
+          "smart_edge": 0.062,
+          "smart_score": 0,
+          "data_quality": 0.85,
+          "decimal_odds": 2.7,
+          "expected_value": 0.166,
+          "expected_margin": -0.77,
+          "expected_corners": 10.23,
+          "required_corners": 11,
+          "devig_probability": 0.352,
+          "model_probability": 0.432,
+          "rejection_reasons": [
+            "Probabilidad del modelo inferior al umbral: 43.2% < 44.0%"
+          ],
+          "implied_probability": 0.37,
+          "qualification_status": "REJECTED_PROB"
+        }
+      ],
+      "recommendedLine": 8.5,
+      "distributionModel": "Negative Binomial",
+      "expectedAwayCorners": 4.87,
+      "expectedHomeCorners": 5.36,
+      "expectedTotalCorners": 10.23
+    },
+    "impliedProbability": 54.6,
+    "actualScore": "3 - 7 (10 Córners)",
+    "result": "WON",
+    "profit": 0.83,
     "sport": "football"
   },
   {
@@ -6050,7 +6307,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/135.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "explanation": "Alta expectativa anotadora: AC Milan genera 3.4 xG en casa y Lecce promedia 0.4 xG fuera, proyectando 3.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o m\u00e1s tantos.",
+    "explanation": "Alta expectativa anotadora: AC Milan genera 3.4 xG en casa y Lecce promedia 0.4 xG fuera, proyectando 3.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
     "probability": 63.2,
     "bookmakerOdds": 1.62,
     "expectedValue": 2.4,
@@ -6058,263 +6315,6 @@
     "actualScore": "3 - 0 (3 Goles)",
     "result": "WON",
     "profit": 0.62,
-    "sport": "football"
-  },
-  {
-    "h2h": [
-      {
-        "date": "2026-07-22",
-        "score": "1-2",
-        "winner": "away",
-        "awayTeam": "Paris Saint Germain",
-        "homeTeam": "Marseille",
-        "competition": "Ligue 1"
-      },
-      {
-        "date": "2026-03-24",
-        "score": "2-0",
-        "winner": "home",
-        "awayTeam": "Marseille",
-        "homeTeam": "Paris Saint Germain",
-        "competition": "Ligue 1"
-      },
-      {
-        "date": "2025-09-25",
-        "score": "1-3",
-        "winner": "away",
-        "awayTeam": "Paris Saint Germain",
-        "homeTeam": "Marseille",
-        "competition": "Ligue 1"
-      }
-    ],
-    "edge": 9.8,
-    "odds": 1.83,
-    "pick": "Over 8.5 C\u00f3rners",
-    "isMcp": true,
-    "match": "Marseille vs Paris Saint Germain",
-    "league": "Ligue 1",
-    "market": "C\u00f3rners",
-    "source": "mcp",
-    "status": "won",
-    "awayElo": 1970,
-    "country": "Francia",
-    "homeElo": 1790,
-    "kickoff": "2026-09-20T13:45:00-05:00",
-    "awayLogo": "https://media.api-sports.io/football/teams/85.png",
-    "awayTeam": "Paris Saint Germain",
-    "fairOdds": 1.55,
-    "homeLogo": "https://media.api-sports.io/football/teams/81.png",
-    "homeTeam": "Marseille",
-    "leagueId": 61,
-    "timeSlot": "afternoon",
-    "awayLast5": [
-      {
-        "date": "2026-09-16",
-        "score": "2-1",
-        "isHome": false,
-        "result": "W",
-        "opponent": "Rival A",
-        "competition": "Ligue 1"
-      },
-      {
-        "date": "2026-09-11",
-        "score": "3-1",
-        "isHome": true,
-        "result": "W",
-        "opponent": "Rival B",
-        "competition": "Ligue 1"
-      },
-      {
-        "date": "2026-09-06",
-        "score": "2-2",
-        "isHome": false,
-        "result": "D",
-        "opponent": "Rival C",
-        "competition": "Ligue 1"
-      },
-      {
-        "date": "2026-09-01",
-        "score": "3-1",
-        "isHome": true,
-        "result": "W",
-        "opponent": "Rival D",
-        "competition": "Ligue 1"
-      },
-      {
-        "date": "2026-08-27",
-        "score": "2-1",
-        "isHome": false,
-        "result": "W",
-        "opponent": "Rival E",
-        "competition": "Ligue 1"
-      }
-    ],
-    "bookmaker": "Bet365",
-    "fixtureId": 1552773,
-    "homeLast5": [
-      {
-        "date": "2026-09-16",
-        "score": "2-2",
-        "isHome": true,
-        "result": "D",
-        "opponent": "Rival A",
-        "competition": "Ligue 1"
-      },
-      {
-        "date": "2026-09-11",
-        "score": "2-1",
-        "isHome": false,
-        "result": "W",
-        "opponent": "Rival B",
-        "competition": "Ligue 1"
-      },
-      {
-        "date": "2026-09-06",
-        "score": "3-1",
-        "isHome": true,
-        "result": "W",
-        "opponent": "Rival C",
-        "competition": "Ligue 1"
-      },
-      {
-        "date": "2026-09-01",
-        "score": "2-2",
-        "isHome": false,
-        "result": "D",
-        "opponent": "Rival D",
-        "competition": "Ligue 1"
-      },
-      {
-        "date": "2026-08-27",
-        "score": "3-1",
-        "isHome": true,
-        "result": "W",
-        "opponent": "Rival E",
-        "competition": "Ligue 1"
-      }
-    ],
-    "isMcpPick": true,
-    "isTopPick": false,
-    "modelOdds": 1.55,
-    "pickBadge": "mcp",
-    "selection": "Over 8.5",
-    "awayTeamId": 85,
-    "confidence": "Alta",
-    "homeTeamId": 81,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/61.png",
-    "leagueTier": 1,
-    "smartScore": 99,
-    "explanation": "Presi\u00f3n ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulaci\u00f3n cuantitativa respalda la l\u00ednea de C\u00f3rners con una media esperada de 10.2 c\u00f3rners totales.",
-    "probability": 64.4,
-    "bookmakerOdds": 1.83,
-    "expectedValue": 17.9,
-    "cornerAnalysis": {
-      "dataQuality": 0.85,
-      "allCandidates": [
-        {
-          "line": 6.5,
-          "selection": "Over 6.5",
-          "smart_edge": -0.016,
-          "smart_score": 0,
-          "data_quality": 0.85,
-          "decimal_odds": 1.18,
-          "expected_value": -0.019,
-          "expected_margin": 3.23,
-          "expected_corners": 10.23,
-          "required_corners": 7,
-          "devig_probability": 0.805,
-          "model_probability": 0.831,
-          "rejection_reasons": [
-            "Smart Edge insuficiente: +-1.6% < +2.0%"
-          ],
-          "implied_probability": 0.847,
-          "qualification_status": "REJECTED_EDGE"
-        },
-        {
-          "line": 7.5,
-          "selection": "Over 7.5",
-          "smart_edge": 0.015,
-          "smart_score": 0,
-          "data_quality": 0.85,
-          "decimal_odds": 1.37,
-          "expected_value": 0.021,
-          "expected_margin": 2.23,
-          "expected_corners": 10.23,
-          "required_corners": 8,
-          "devig_probability": 0.693,
-          "model_probability": 0.745,
-          "rejection_reasons": [
-            "Smart Edge insuficiente: +1.5% < +3.0%"
-          ],
-          "implied_probability": 0.73,
-          "qualification_status": "REJECTED_EDGE"
-        },
-        {
-          "line": 8.5,
-          "selection": "Over 8.5",
-          "smart_edge": 0.098,
-          "smart_score": 66,
-          "data_quality": 0.85,
-          "decimal_odds": 1.83,
-          "expected_value": 0.179,
-          "expected_margin": 1.23,
-          "expected_corners": 10.23,
-          "required_corners": 9,
-          "devig_probability": 0.519,
-          "model_probability": 0.644,
-          "rejection_reasons": [],
-          "implied_probability": 0.546,
-          "qualification_status": "QUALIFIED"
-        },
-        {
-          "line": 9.5,
-          "selection": "Over 9.5",
-          "smart_edge": 0.093,
-          "smart_score": 0,
-          "data_quality": 0.85,
-          "decimal_odds": 2.25,
-          "expected_value": 0.208,
-          "expected_margin": 0.23,
-          "expected_corners": 10.23,
-          "required_corners": 10,
-          "devig_probability": 0.422,
-          "model_probability": 0.537,
-          "rejection_reasons": [
-            "Probabilidad del modelo inferior al umbral: 53.7% < 54.0%"
-          ],
-          "implied_probability": 0.444,
-          "qualification_status": "REJECTED_PROB"
-        },
-        {
-          "line": 10.5,
-          "selection": "Over 10.5",
-          "smart_edge": 0.062,
-          "smart_score": 0,
-          "data_quality": 0.85,
-          "decimal_odds": 2.7,
-          "expected_value": 0.166,
-          "expected_margin": -0.77,
-          "expected_corners": 10.23,
-          "required_corners": 11,
-          "devig_probability": 0.352,
-          "model_probability": 0.432,
-          "rejection_reasons": [
-            "Probabilidad del modelo inferior al umbral: 43.2% < 44.0%"
-          ],
-          "implied_probability": 0.37,
-          "qualification_status": "REJECTED_PROB"
-        }
-      ],
-      "recommendedLine": 8.5,
-      "distributionModel": "Negative Binomial",
-      "expectedAwayCorners": 4.87,
-      "expectedHomeCorners": 5.36,
-      "expectedTotalCorners": 10.23
-    },
-    "impliedProbability": 54.6,
-    "actualScore": "3 - 7 (10 C\u00f3rners)",
-    "result": "WON",
-    "profit": 0.83,
     "sport": "football"
   },
   {
@@ -6454,19 +6454,19 @@
     "isTopPick": false,
     "modelOdds": 1.74,
     "pickBadge": "estandar",
-    "selection": "S\u00ed",
+    "selection": "Sí",
     "awayTeamId": 1135,
     "confidence": "Media",
     "homeTeamId": 1147,
     "leagueLogo": "https://media.api-sports.io/football/leagues/239.png",
     "leagueTier": 1,
     "smartScore": 89,
-    "explanation": "Eficacia bilateral en ataque: Fortaleza FC anota con regularidad en su estadio (1.2 xG) pero concede ocasiones (2 goles en contra), mientras que Junior cuenta con pegada for\u00e1nea (1.6 xG). El patr\u00f3n estad\u00edstico favorece la anotaci\u00f3n mutua.",
+    "explanation": "Eficacia bilateral en ataque: Fortaleza FC anota con regularidad en su estadio (1.2 xG) pero concede ocasiones (2 goles en contra), mientras que Junior cuenta con pegada foránea (1.6 xG). El patrón estadístico favorece la anotación mutua.",
     "probability": 57.5,
     "bookmakerOdds": 1.76,
     "expectedValue": 1.2,
     "impliedProbability": 56.8,
-    "actualScore": "1 - 4 (Ambos S\u00ed)",
+    "actualScore": "1 - 4 (Ambos Sí)",
     "result": "WON",
     "profit": 0.76,
     "sport": "football"
@@ -6479,7 +6479,7 @@
         "winner": "home",
         "awayTeam": "Defensor Sporting",
         "homeTeam": "Club Nacional",
-        "competition": "Primera Divisi\u00f3n"
+        "competition": "Primera División"
       },
       {
         "date": "2026-03-24",
@@ -6487,7 +6487,7 @@
         "winner": "away",
         "awayTeam": "Club Nacional",
         "homeTeam": "Defensor Sporting",
-        "competition": "Primera Divisi\u00f3n"
+        "competition": "Primera División"
       },
       {
         "date": "2025-09-25",
@@ -6495,7 +6495,7 @@
         "winner": "home",
         "awayTeam": "Defensor Sporting",
         "homeTeam": "Club Nacional",
-        "competition": "Primera Divisi\u00f3n"
+        "competition": "Primera División"
       }
     ],
     "edge": 1,
@@ -6503,7 +6503,7 @@
     "pick": "Club Nacional",
     "isMcp": true,
     "match": "Club Nacional vs Defensor Sporting",
-    "league": "Primera Divisi\u00f3n",
+    "league": "Primera División",
     "market": "Ganador Local",
     "source": "mcp",
     "status": "won",
@@ -6525,7 +6525,7 @@
         "isHome": true,
         "result": "L",
         "opponent": "Rival A",
-        "competition": "Primera Divisi\u00f3n"
+        "competition": "Primera División"
       },
       {
         "date": "2026-09-11",
@@ -6533,7 +6533,7 @@
         "isHome": false,
         "result": "D",
         "opponent": "Rival B",
-        "competition": "Primera Divisi\u00f3n"
+        "competition": "Primera División"
       },
       {
         "date": "2026-09-06",
@@ -6541,7 +6541,7 @@
         "isHome": true,
         "result": "W",
         "opponent": "Rival C",
-        "competition": "Primera Divisi\u00f3n"
+        "competition": "Primera División"
       },
       {
         "date": "2026-09-01",
@@ -6549,7 +6549,7 @@
         "isHome": false,
         "result": "L",
         "opponent": "Rival D",
-        "competition": "Primera Divisi\u00f3n"
+        "competition": "Primera División"
       },
       {
         "date": "2026-08-27",
@@ -6557,7 +6557,7 @@
         "isHome": true,
         "result": "D",
         "opponent": "Rival E",
-        "competition": "Primera Divisi\u00f3n"
+        "competition": "Primera División"
       }
     ],
     "bookmaker": "Bet365",
@@ -6569,7 +6569,7 @@
         "isHome": false,
         "result": "L",
         "opponent": "Rival A",
-        "competition": "Primera Divisi\u00f3n"
+        "competition": "Primera División"
       },
       {
         "date": "2026-09-11",
@@ -6577,7 +6577,7 @@
         "isHome": true,
         "result": "D",
         "opponent": "Rival B",
-        "competition": "Primera Divisi\u00f3n"
+        "competition": "Primera División"
       },
       {
         "date": "2026-09-06",
@@ -6585,7 +6585,7 @@
         "isHome": false,
         "result": "W",
         "opponent": "Rival C",
-        "competition": "Primera Divisi\u00f3n"
+        "competition": "Primera División"
       },
       {
         "date": "2026-09-01",
@@ -6593,7 +6593,7 @@
         "isHome": true,
         "result": "L",
         "opponent": "Rival D",
-        "competition": "Primera Divisi\u00f3n"
+        "competition": "Primera División"
       },
       {
         "date": "2026-08-27",
@@ -6601,7 +6601,7 @@
         "isHome": false,
         "result": "D",
         "opponent": "Rival E",
-        "competition": "Primera Divisi\u00f3n"
+        "competition": "Primera División"
       }
     ],
     "isMcpPick": true,
@@ -6615,7 +6615,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/268.png",
     "leagueTier": 1,
     "smartScore": 93,
-    "explanation": "Rendimiento muy fiable de Club Nacional en su feudo (3 partidos sin caer en sus \u00faltimas 5 presentaciones). La brecha de generaci\u00f3n de ocasiones claras ante Defensor Sporting inclina con claridad la balanza estad\u00edstica hacia el triunfo local.",
+    "explanation": "Rendimiento muy fiable de Club Nacional en su feudo (3 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Defensor Sporting inclina con claridad la balanza estadística hacia el triunfo local.",
     "probability": 60.6,
     "bookmakerOdds": 1.64,
     "expectedValue": -0.7,
@@ -6769,7 +6769,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/253.png",
     "leagueTier": 1,
     "smartScore": 99,
-    "explanation": "Inter Miami impone una marcada solvencia como anfitri\u00f3n (2 triunfos en sus \u00faltimos 5 compromisos) y promedia 3.4 xG en casa. Su dominio territorial y solidez defensiva ante un San Diego que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+    "explanation": "Inter Miami impone una marcada solvencia como anfitrión (2 triunfos en sus últimos 5 compromisos) y promedia 3.4 xG en casa. Su dominio territorial y solidez defensiva ante un San Diego que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
     "probability": 74.7,
     "bookmakerOdds": 1.44,
     "expectedValue": 7.6,
@@ -6787,7 +6787,7 @@
         "winner": "away",
         "awayTeam": "Inter San Carlos",
         "homeTeam": "LD Alajuelense",
-        "competition": "Primera Divisi\u00f3n (Liga FPD)"
+        "competition": "Primera División (Liga FPD)"
       },
       {
         "date": "2026-03-24",
@@ -6795,7 +6795,7 @@
         "winner": "home",
         "awayTeam": "LD Alajuelense",
         "homeTeam": "Inter San Carlos",
-        "competition": "Primera Divisi\u00f3n (Liga FPD)"
+        "competition": "Primera División (Liga FPD)"
       },
       {
         "date": "2025-09-25",
@@ -6803,7 +6803,7 @@
         "winner": "away",
         "awayTeam": "Inter San Carlos",
         "homeTeam": "LD Alajuelense",
-        "competition": "Primera Divisi\u00f3n (Liga FPD)"
+        "competition": "Primera División (Liga FPD)"
       }
     ],
     "edge": 1.8,
@@ -6811,7 +6811,7 @@
     "pick": "Over 2.5 Goles",
     "isMcp": true,
     "match": "LD Alajuelense vs Inter San Carlos",
-    "league": "Primera Divisi\u00f3n (Liga FPD)",
+    "league": "Primera División (Liga FPD)",
     "market": "Over 2.5 Goles",
     "source": "mcp",
     "status": "won",
@@ -6833,7 +6833,7 @@
         "isHome": true,
         "result": "W",
         "opponent": "Rival A",
-        "competition": "Primera Divisi\u00f3n (Liga FPD)"
+        "competition": "Primera División (Liga FPD)"
       },
       {
         "date": "2026-09-11",
@@ -6841,7 +6841,7 @@
         "isHome": false,
         "result": "D",
         "opponent": "Rival B",
-        "competition": "Primera Divisi\u00f3n (Liga FPD)"
+        "competition": "Primera División (Liga FPD)"
       },
       {
         "date": "2026-09-06",
@@ -6849,7 +6849,7 @@
         "isHome": true,
         "result": "W",
         "opponent": "Rival C",
-        "competition": "Primera Divisi\u00f3n (Liga FPD)"
+        "competition": "Primera División (Liga FPD)"
       },
       {
         "date": "2026-09-01",
@@ -6857,7 +6857,7 @@
         "isHome": false,
         "result": "W",
         "opponent": "Rival D",
-        "competition": "Primera Divisi\u00f3n (Liga FPD)"
+        "competition": "Primera División (Liga FPD)"
       },
       {
         "date": "2026-08-27",
@@ -6865,7 +6865,7 @@
         "isHome": true,
         "result": "L",
         "opponent": "Rival E",
-        "competition": "Primera Divisi\u00f3n (Liga FPD)"
+        "competition": "Primera División (Liga FPD)"
       }
     ],
     "bookmaker": "Bet365",
@@ -6877,7 +6877,7 @@
         "isHome": false,
         "result": "D",
         "opponent": "Rival A",
-        "competition": "Primera Divisi\u00f3n (Liga FPD)"
+        "competition": "Primera División (Liga FPD)"
       },
       {
         "date": "2026-09-11",
@@ -6885,7 +6885,7 @@
         "isHome": true,
         "result": "W",
         "opponent": "Rival B",
-        "competition": "Primera Divisi\u00f3n (Liga FPD)"
+        "competition": "Primera División (Liga FPD)"
       },
       {
         "date": "2026-09-06",
@@ -6893,7 +6893,7 @@
         "isHome": false,
         "result": "L",
         "opponent": "Rival C",
-        "competition": "Primera Divisi\u00f3n (Liga FPD)"
+        "competition": "Primera División (Liga FPD)"
       },
       {
         "date": "2026-09-01",
@@ -6901,7 +6901,7 @@
         "isHome": true,
         "result": "D",
         "opponent": "Rival D",
-        "competition": "Primera Divisi\u00f3n (Liga FPD)"
+        "competition": "Primera División (Liga FPD)"
       },
       {
         "date": "2026-08-27",
@@ -6909,7 +6909,7 @@
         "isHome": false,
         "result": "W",
         "opponent": "Rival E",
-        "competition": "Primera Divisi\u00f3n (Liga FPD)"
+        "competition": "Primera División (Liga FPD)"
       }
     ],
     "isMcpPick": true,
@@ -6923,7 +6923,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/162.png",
     "leagueTier": 1,
     "smartScore": 95,
-    "explanation": "Propuesta vertical y transiciones din\u00e1micas: Tanto LD Alajuelense como Inter San Carlos promedian m\u00e1s de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la l\u00ednea de 2.5 goles.",
+    "explanation": "Propuesta vertical y transiciones dinámicas: Tanto LD Alajuelense como Inter San Carlos promedian más de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la línea de 2.5 goles.",
     "probability": 61.6,
     "bookmakerOdds": 1.67,
     "expectedValue": 3,
@@ -6970,7 +6970,7 @@
     "source": "mcp",
     "status": "lost",
     "awayElo": 1538,
-    "country": "M\u00e9xico",
+    "country": "México",
     "homeElo": 1622,
     "kickoff": "2026-09-20T19:00:00-05:00",
     "awayLogo": "https://media.api-sports.io/football/teams/2280.png",
@@ -7077,7 +7077,7 @@
     "leagueLogo": "https://media.api-sports.io/football/leagues/262.png",
     "leagueTier": 1,
     "smartScore": 90,
-    "explanation": "Solidez posicional y eficacia en \u00e1rea propia: CF Pachuca concede menos de 0.9 xG de local, mientras que Club Tijuana muestra dificultades para generar peligro constante a domicilio (0.8 xG for\u00e1neo).",
+    "explanation": "Solidez posicional y eficacia en área propia: CF Pachuca concede menos de 0.9 xG de local, mientras que Club Tijuana muestra dificultades para generar peligro constante a domicilio (0.8 xG foráneo).",
     "probability": 57.7,
     "bookmakerOdds": 1.8,
     "expectedValue": 3.8,

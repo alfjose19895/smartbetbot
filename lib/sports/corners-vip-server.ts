@@ -1,4 +1,4 @@
-import fs from "fs";
+﻿import fs from "fs";
 import path from "path";
 import {
   MarketOpportunity,
@@ -8,6 +8,7 @@ import {
   getCanonicalTeamKey,
   isElitePick,
   normalizeLeagueInfo,
+  sortByKickoff,
 } from "./prediction-engine";
 import {
   loadDailySnapshot,
@@ -574,14 +575,9 @@ export async function getCornersVipSlate(dateStr?: string, forceRefresh = false)
       };
     })
     .sort((a, b) => {
-      const aTier = a.leagueTier || 3;
-      const bTier = b.leagueTier || 3;
-      if (aTier !== bTier) return aTier - bTier;
-
-      const aRank = a.isElite ? 1 : a.isDestacado ? 2 : a.pickBadge === "valor" ? 3 : a.pickBadge === "bomba" ? 4 : 5;
-      const bRank = b.isElite ? 1 : b.isDestacado ? 2 : b.pickBadge === "valor" ? 3 : b.pickBadge === "bomba" ? 4 : 5;
-      if (aRank !== bRank) return aRank - bRank;
-
+      const timeA = a.kickoff ? new Date(a.kickoff).getTime() : Infinity;
+      const timeB = b.kickoff ? new Date(b.kickoff).getTime() : Infinity;
+      if (timeA !== timeB) return timeA - timeB;
       if (b.probability !== a.probability) return b.probability - a.probability;
       return (b.edge || 0) - (a.edge || 0);
     });
@@ -610,3 +606,4 @@ export async function getCornersVipSlate(dateStr?: string, forceRefresh = false)
     },
   };
 }
+

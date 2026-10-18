@@ -5,10 +5,12 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { HomePicksGrid } from "@/components/HomePicksGrid";
 import { LaunchOfferSection } from "@/components/LaunchOfferSection";
 import { getStoredPredictions } from "@/lib/sports/db";
-import { MarketOpportunity, getFeaturedDailyPicks } from "@/lib/sports/prediction-engine";
+import { MarketOpportunity, getFeaturedDailyPicks,
+  sortByKickoff,
+} from "@/lib/sports/prediction-engine";
 
 export default async function HomePage() {
-  const allPicks = getStoredPredictions();
+  const allPicks = sortByKickoff(getStoredPredictions(), "asc");
   const featuredPicks: MarketOpportunity[] = allPicks.slice(0, 3);
   const { smartPick } = getFeaturedDailyPicks(allPicks);
 

@@ -150,6 +150,157 @@
     "sport": "football"
   },
   {
+    "fixtureId": 1635741,
+    "match": "VfB Stuttgart vs Viking",
+    "homeTeam": "VfB Stuttgart",
+    "awayTeam": "Viking",
+    "homeTeamId": 172,
+    "awayTeamId": 759,
+    "homeLogo": "https://media.api-sports.io/football/teams/172.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/759.png",
+    "league": "UEFA Champions League",
+    "leagueId": 2,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/2.png",
+    "country": "Europa",
+    "kickoff": "2026-09-09T11:45:00-05:00",
+    "market": "Ganador Local",
+    "selection": "VfB Stuttgart",
+    "odds": 1.4,
+    "bookmakerOdds": 1.4,
+    "modelOdds": 1.74,
+    "fairOdds": 1.39,
+    "probability": 72,
+    "impliedProbability": 55.6,
+    "edge": 1,
+    "expectedValue": 3.6,
+    "confidence": "Muy Alta",
+    "pickBadge": "estandar",
+    "smartScore": 89,
+    "explanation": "Solidez posicional y eficacia en área propia: VfB Stuttgart concede menos de 0.9 xG de local, mientras que Viking muestra dificultades para generar peligro constante a domicilio (1.2 xG foráneo).",
+    "status": "won",
+    "h2h": [
+      {
+        "date": "2026-07-11",
+        "homeTeam": "VfB Stuttgart",
+        "awayTeam": "Viking",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-03-13",
+        "homeTeam": "Viking",
+        "awayTeam": "VfB Stuttgart",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2025-09-14",
+        "homeTeam": "VfB Stuttgart",
+        "awayTeam": "Viking",
+        "score": "1-1",
+        "winner": "draw",
+        "competition": "UEFA Champions League"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-05",
+        "opponent": "Rival A",
+        "isHome": true,
+        "score": "3-1",
+        "result": "W",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-31",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "2-0",
+        "result": "W",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-26",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "0-1",
+        "result": "L",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-21",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "2-0",
+        "result": "W",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-16",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "3-1",
+        "result": "W",
+        "competition": "UEFA Champions League"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-05",
+        "opponent": "Rival A",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-31",
+        "opponent": "Rival B",
+        "isHome": false,
+        "score": "1-0",
+        "result": "W",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-26",
+        "opponent": "Rival C",
+        "isHome": true,
+        "score": "2-1",
+        "result": "W",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-21",
+        "opponent": "Rival D",
+        "isHome": false,
+        "score": "0-2",
+        "result": "L",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-16",
+        "opponent": "Rival E",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
+        "competition": "UEFA Champions League"
+      }
+    ],
+    "homeElo": 1790,
+    "awayElo": 1556,
+    "leagueTier": 1,
+    "bookmaker": "Bet365",
+    "actualScore": "3 - 1",
+    "result": "WON",
+    "profit": 0.4,
+    "actualGoalsHome": 3,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.899Z",
+    "sport": "football"
+  },
+  {
     "fixtureId": 1635628,
     "match": "Barcelona vs Feyenoord",
     "homeTeam": "Barcelona",
@@ -306,57 +457,57 @@
     "matchTiming": "finished"
   },
   {
-    "fixtureId": 1635741,
-    "match": "VfB Stuttgart vs Viking",
-    "homeTeam": "VfB Stuttgart",
-    "awayTeam": "Viking",
-    "homeTeamId": 172,
-    "awayTeamId": 759,
-    "homeLogo": "https://media.api-sports.io/football/teams/172.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/759.png",
+    "fixtureId": 1635705,
+    "match": "Paris Saint Germain vs Slovan Bratislava",
+    "homeTeam": "Paris Saint Germain",
+    "awayTeam": "Slovan Bratislava",
+    "homeTeamId": 85,
+    "awayTeamId": 656,
+    "homeLogo": "https://media.api-sports.io/football/teams/85.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/656.png",
     "league": "UEFA Champions League",
     "leagueId": 2,
     "leagueLogo": "https://media.api-sports.io/football/leagues/2.png",
     "country": "Europa",
-    "kickoff": "2026-09-09T11:45:00-05:00",
-    "market": "Ganador Local",
-    "selection": "VfB Stuttgart",
-    "odds": 1.4,
-    "bookmakerOdds": 1.4,
-    "modelOdds": 1.74,
-    "fairOdds": 1.39,
-    "probability": 72,
-    "impliedProbability": 55.6,
-    "edge": 1,
-    "expectedValue": 3.6,
+    "kickoff": "2026-09-09T14:00:00-05:00",
+    "market": "Over 2.5 Goles",
+    "selection": "Over 2.5",
+    "odds": 1.36,
+    "bookmakerOdds": 1.36,
+    "modelOdds": 1.78,
+    "fairOdds": 1.28,
+    "probability": 78,
+    "impliedProbability": 57.8,
+    "edge": 6.3,
+    "expectedValue": -2.7,
     "confidence": "Muy Alta",
     "pickBadge": "estandar",
-    "smartScore": 89,
-    "explanation": "Solidez posicional y eficacia en área propia: VfB Stuttgart concede menos de 0.9 xG de local, mientras que Viking muestra dificultades para generar peligro constante a domicilio (1.2 xG foráneo).",
+    "smartScore": 99,
+    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
     "status": "won",
     "h2h": [
       {
         "date": "2026-07-11",
-        "homeTeam": "VfB Stuttgart",
-        "awayTeam": "Viking",
+        "homeTeam": "Paris Saint Germain",
+        "awayTeam": "Slovan Bratislava",
         "score": "2-1",
         "winner": "home",
         "competition": "UEFA Champions League"
       },
       {
         "date": "2026-03-13",
-        "homeTeam": "Viking",
-        "awayTeam": "VfB Stuttgart",
+        "homeTeam": "Slovan Bratislava",
+        "awayTeam": "Paris Saint Germain",
         "score": "0-2",
         "winner": "away",
         "competition": "UEFA Champions League"
       },
       {
         "date": "2025-09-14",
-        "homeTeam": "VfB Stuttgart",
-        "awayTeam": "Viking",
-        "score": "1-1",
-        "winner": "draw",
+        "homeTeam": "Paris Saint Germain",
+        "awayTeam": "Slovan Bratislava",
+        "score": "3-0",
+        "winner": "home",
         "competition": "UEFA Champions League"
       }
     ],
@@ -364,40 +515,40 @@
       {
         "date": "2026-09-05",
         "opponent": "Rival A",
-        "isHome": true,
-        "score": "3-1",
+        "isHome": false,
+        "score": "1-0",
         "result": "W",
         "competition": "UEFA Champions League"
       },
       {
         "date": "2026-08-31",
         "opponent": "Rival B",
-        "isHome": false,
-        "score": "2-0",
+        "isHome": true,
+        "score": "2-1",
         "result": "W",
         "competition": "UEFA Champions League"
       },
       {
         "date": "2026-08-26",
         "opponent": "Rival C",
-        "isHome": true,
-        "score": "0-1",
+        "isHome": false,
+        "score": "0-2",
         "result": "L",
         "competition": "UEFA Champions League"
       },
       {
         "date": "2026-08-21",
         "opponent": "Rival D",
-        "isHome": false,
-        "score": "2-0",
-        "result": "W",
+        "isHome": true,
+        "score": "1-1",
+        "result": "D",
         "competition": "UEFA Champions League"
       },
       {
         "date": "2026-08-16",
         "opponent": "Rival E",
-        "isHome": true,
-        "score": "3-1",
+        "isHome": false,
+        "score": "1-0",
         "result": "W",
         "competition": "UEFA Champions League"
       }
@@ -407,51 +558,51 @@
         "date": "2026-09-05",
         "opponent": "Rival A",
         "isHome": true,
-        "score": "1-1",
-        "result": "D",
+        "score": "2-1",
+        "result": "W",
         "competition": "UEFA Champions League"
       },
       {
         "date": "2026-08-31",
         "opponent": "Rival B",
         "isHome": false,
-        "score": "1-0",
-        "result": "W",
+        "score": "0-2",
+        "result": "L",
         "competition": "UEFA Champions League"
       },
       {
         "date": "2026-08-26",
         "opponent": "Rival C",
         "isHome": true,
-        "score": "2-1",
-        "result": "W",
+        "score": "1-1",
+        "result": "D",
         "competition": "UEFA Champions League"
       },
       {
         "date": "2026-08-21",
         "opponent": "Rival D",
         "isHome": false,
-        "score": "0-2",
-        "result": "L",
+        "score": "1-0",
+        "result": "W",
         "competition": "UEFA Champions League"
       },
       {
         "date": "2026-08-16",
         "opponent": "Rival E",
         "isHome": true,
-        "score": "1-1",
-        "result": "D",
+        "score": "2-1",
+        "result": "W",
         "competition": "UEFA Champions League"
       }
     ],
-    "homeElo": 1790,
-    "awayElo": 1556,
+    "homeElo": 1653,
+    "awayElo": 1552,
     "leagueTier": 1,
     "bookmaker": "Bet365",
-    "actualScore": "3 - 1",
+    "actualScore": "6 - 1 (7 Goles)",
     "result": "WON",
-    "profit": 0.4,
-    "actualGoalsHome": 3,
+    "profit": 0.36,
+    "actualGoalsHome": 6,
     "actualGoalsAway": 1,
     "settledAt": "2026-09-12T04:31:15.899Z",
     "sport": "football"
@@ -905,157 +1056,6 @@
     "result": "WON",
     "profit": 1.15,
     "actualGoalsHome": 0,
-    "actualGoalsAway": 1,
-    "settledAt": "2026-09-12T04:31:15.899Z",
-    "sport": "football"
-  },
-  {
-    "fixtureId": 1635705,
-    "match": "Paris Saint Germain vs Slovan Bratislava",
-    "homeTeam": "Paris Saint Germain",
-    "awayTeam": "Slovan Bratislava",
-    "homeTeamId": 85,
-    "awayTeamId": 656,
-    "homeLogo": "https://media.api-sports.io/football/teams/85.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/656.png",
-    "league": "UEFA Champions League",
-    "leagueId": 2,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/2.png",
-    "country": "Europa",
-    "kickoff": "2026-09-09T14:00:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.36,
-    "bookmakerOdds": 1.36,
-    "modelOdds": 1.78,
-    "fairOdds": 1.28,
-    "probability": 78,
-    "impliedProbability": 57.8,
-    "edge": 6.3,
-    "expectedValue": -2.7,
-    "confidence": "Muy Alta",
-    "pickBadge": "estandar",
-    "smartScore": 99,
-    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
-    "status": "won",
-    "h2h": [
-      {
-        "date": "2026-07-11",
-        "homeTeam": "Paris Saint Germain",
-        "awayTeam": "Slovan Bratislava",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-03-13",
-        "homeTeam": "Slovan Bratislava",
-        "awayTeam": "Paris Saint Germain",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2025-09-14",
-        "homeTeam": "Paris Saint Germain",
-        "awayTeam": "Slovan Bratislava",
-        "score": "3-0",
-        "winner": "home",
-        "competition": "UEFA Champions League"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-05",
-        "opponent": "Rival A",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-31",
-        "opponent": "Rival B",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-26",
-        "opponent": "Rival C",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-21",
-        "opponent": "Rival D",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-16",
-        "opponent": "Rival E",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-05",
-        "opponent": "Rival A",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-31",
-        "opponent": "Rival B",
-        "isHome": false,
-        "score": "0-2",
-        "result": "L",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-26",
-        "opponent": "Rival C",
-        "isHome": true,
-        "score": "1-1",
-        "result": "D",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-21",
-        "opponent": "Rival D",
-        "isHome": false,
-        "score": "1-0",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-16",
-        "opponent": "Rival E",
-        "isHome": true,
-        "score": "2-1",
-        "result": "W",
-        "competition": "UEFA Champions League"
-      }
-    ],
-    "homeElo": 1653,
-    "awayElo": 1552,
-    "leagueTier": 1,
-    "bookmaker": "Bet365",
-    "actualScore": "6 - 1 (7 Goles)",
-    "result": "WON",
-    "profit": 0.36,
-    "actualGoalsHome": 6,
     "actualGoalsAway": 1,
     "settledAt": "2026-09-12T04:31:15.899Z",
     "sport": "football"

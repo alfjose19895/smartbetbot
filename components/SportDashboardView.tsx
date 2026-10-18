@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { openPushModal } from '@/components/PushNotificationManager';
 import Link from 'next/link';
@@ -12,7 +12,7 @@ import { DestacadosModule } from '@/components/DestacadosModule';
 import { MultiSelectDropdown, DropdownOption } from '@/components/MultiSelectDropdown';
 import { SupportedSport, MultiSportSignal } from '@/lib/sports/types';
 import { getSportMeta, matchesMarketFilter, matchesConfidenceFilter, CONFIDENCE_DROPDOWN_OPTIONS } from '@/lib/sports/registry';
-import { MarketOpportunity, isElitePick } from '@/lib/sports/prediction-engine';
+import { MarketOpportunity, isElitePick, sortByKickoff } from '@/lib/sports/prediction-engine';
 import { HistoricalSettledPick, HistoricalSettledParlay } from '@/lib/sports/db';
 import { useLanguage } from '@/context/LanguageContext';
 import {
@@ -373,7 +373,7 @@ export function SportDashboardView({
 
   // Filter signals strictly matching all active constraints
   const filteredOpportunities = useMemo(() => {
-    return opportunities.filter((s) => {
+    const list = opportunities.filter((s) => {
       // Franja Horaria / Top Convicción
       if (timeSlotFilter === 'TOP') {
         if (s.confidence !== 'Muy Alta' && (s.probability || 0) < 70) return false;
@@ -441,6 +441,7 @@ export function SportDashboardView({
 
       return true;
     });
+    return sortByKickoff(list, 'asc');
   }, [opportunities, timeSlotFilter, searchQuery, matchStatusFilter, selectedLeagues, selectedConfidence, selectedMarkets, minProbability]);
 
   // Curated Parlays
@@ -2216,3 +2217,4 @@ export function SportDashboardView({
     </div>
   );
 }
+

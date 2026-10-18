@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
@@ -8,7 +8,7 @@ import { NewAlertsModal } from "@/components/NewAlertsModal";
 import { RecommendedParlay } from "@/components/RecommendedParlay";
 import { FeaturedDailyPicks } from "@/components/FeaturedDailyPicks";
 import { MultiSportDashboardCards } from "@/components/MultiSportDashboardCards";
-import { MarketOpportunity, getFeaturedDailyPicks } from "@/lib/sports/prediction-engine";
+import { MarketOpportunity, getFeaturedDailyPicks, sortByKickoff } from "@/lib/sports/prediction-engine";
 import { useLanguage } from "@/context/LanguageContext";
 import { openPushModal } from "@/components/PushNotificationManager";
 
@@ -235,19 +235,21 @@ export default function DashboardPage() {
   };
 
   const todayDateStr = getEcuadorDateString(Date.now());
-  const todayFootball = footballPredictions.filter((p) => {
-    const pDate = p.kickoff ? getEcuadorDateString(p.kickoff) : todayDateStr;
-    return pDate === todayDateStr;
-  });
+  const todayFootball = sortByKickoff(
+    footballPredictions.filter((p) => {
+      const pDate = p.kickoff ? getEcuadorDateString(p.kickoff) : todayDateStr;
+      return pDate === todayDateStr;
+    }),
+    "asc"
+  );
 
   // Featured SmartPick & Bomba from football
   const { smartPick, bombaPick } = getFeaturedDailyPicks(todayFootball.length > 0 ? todayFootball : footballPredictions);
 
-  const topFootballPicks = (todayFootball.length > 0 ? todayFootball : footballPredictions)
-    .filter((p) => p.probability >= 58)
-    .slice(0, 6);
+  const sortedFb = sortByKickoff(todayFootball.length > 0 ? todayFootball : footballPredictions, "asc");
+  const topFootballPicks = sortedFb.filter((p) => p.probability >= 58).slice(0, 6);
 
-  const topNhlPicks = nhlPredictions.slice(0, 6);
+  const topNhlPicks = sortByKickoff(nhlPredictions, "asc").slice(0, 6);
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-emerald-500 selection:text-slate-950">
@@ -831,3 +833,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+

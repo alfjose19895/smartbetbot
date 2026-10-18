@@ -26,7 +26,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 81,
-    "explanation": "Solidez posicional y eficacia en \u00e1rea propia: Ilves concede menos de 0.9 xG de local, mientras que FF Jaro muestra dificultades para generar peligro constante a domicilio (1.2 xG for\u00e1neo).",
+    "explanation": "Solidez posicional y eficacia en área propia: Ilves concede menos de 0.9 xG de local, mientras que FF Jaro muestra dificultades para generar peligro constante a domicilio (1.2 xG foráneo).",
     "status": "won",
     "h2h": [
       {
@@ -120,7 +120,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 81,
-    "explanation": "Lahti impone una marcada solvencia como anfitri\u00f3n (3 triunfos en sus \u00faltimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Mariehamn que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+    "explanation": "Lahti impone una marcada solvencia como anfitrión (3 triunfos en sus últimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Mariehamn que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
     "status": "won",
     "h2h": [
       {
@@ -211,7 +211,7 @@
     "confidence": "Media",
     "pickBadge": "estandar",
     "smartScore": 73,
-    "explanation": "Club Brujas ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras Aston Villa acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas \u00e1reas.",
+    "explanation": "Club Brujas ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Aston Villa acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas áreas.",
     "status": "won",
     "h2h": [
       {
@@ -396,7 +396,7 @@
     "confidence": "Muy Alta",
     "pickBadge": "valor",
     "smartScore": 86,
-    "explanation": "Diferencial cualitativo a favor de Al-Ittihad FC (+100 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presi\u00f3n alta neutralizan el planteamiento defensivo de Al-Fayha.",
+    "explanation": "Diferencial cualitativo a favor de Al-Ittihad FC (+100 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Al-Fayha.",
     "status": "won",
     "h2h": [
       {
@@ -487,7 +487,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 78,
-    "explanation": "Al-Ittihad FC ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras Al-Fayha acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas \u00e1reas.",
+    "explanation": "Al-Ittihad FC ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Al-Fayha acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas áreas.",
     "status": "won",
     "h2h": [
       {
@@ -578,7 +578,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 81,
-    "explanation": "Diferencial de calidad y estructura a favor de Newcastle (+100 Elo). El conjunto visitante impone condiciones en duelos individuales y supera en volumen de remates al conjunto anfitri\u00f3n.",
+    "explanation": "Diferencial de calidad y estructura a favor de Newcastle (+100 Elo). El conjunto visitante impone condiciones en duelos individuales y supera en volumen de remates al conjunto anfitrión.",
     "status": "won",
     "h2h": [
       {
@@ -646,97 +646,6 @@
     "sport": "football"
   },
   {
-    "fixtureId": 1635658,
-    "match": "Millwall vs Newcastle",
-    "homeTeam": "Millwall",
-    "awayTeam": "Newcastle",
-    "homeTeamId": 38,
-    "awayTeamId": 34,
-    "homeLogo": "https://media.api-sports.io/football/teams/38.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/34.png",
-    "league": "League Cup",
-    "leagueId": 48,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/48.png",
-    "country": "Inglaterra",
-    "kickoff": "2026-09-08T13:45:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.65,
-    "bookmakerOdds": 1.65,
-    "modelOdds": 1.69,
-    "fairOdds": 1.69,
-    "probability": 59,
-    "impliedProbability": 60.6,
-    "edge": 1,
-    "expectedValue": -2.7,
-    "confidence": "Alta",
-    "pickBadge": "estandar",
-    "smartScore": 75,
-    "explanation": "Duelo de \u00e1reas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con m\u00faltiples celebraciones.",
-    "status": "lost",
-    "h2h": [
-      {
-        "date": "2026-07-10",
-        "homeTeam": "Millwall",
-        "awayTeam": "Newcastle",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-03-12",
-        "homeTeam": "Newcastle",
-        "awayTeam": "Millwall",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "League Cup"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-04",
-        "opponent": "Rival A",
-        "score": "2-0",
-        "result": "W",
-        "venue": "home",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-30",
-        "opponent": "Rival B",
-        "score": "1-1",
-        "result": "D",
-        "venue": "away",
-        "competition": "League Cup"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-03",
-        "opponent": "Rival C",
-        "score": "1-2",
-        "result": "L",
-        "venue": "away",
-        "competition": "League Cup"
-      },
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival D",
-        "score": "0-0",
-        "result": "D",
-        "venue": "home",
-        "competition": "League Cup"
-      }
-    ],
-    "actualScore": "0 - 1 (1 Goles)",
-    "actualGoalsHome": 0,
-    "actualGoalsAway": 1,
-    "settledAt": "2026-09-12T04:31:15.876Z",
-    "result": "LOST",
-    "profit": -1.0,
-    "sport": "football"
-  },
-  {
     "fixtureId": 1635659,
     "match": "Bolton vs West Ham",
     "homeTeam": "Bolton",
@@ -763,7 +672,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 76,
-    "explanation": "Diferencial de calidad y estructura a favor de West Ham (+100 Elo). El conjunto visitante impone condiciones en duelos individuales y supera en volumen de remates al conjunto anfitri\u00f3n.",
+    "explanation": "Diferencial de calidad y estructura a favor de West Ham (+100 Elo). El conjunto visitante impone condiciones en duelos individuales y supera en volumen de remates al conjunto anfitrión.",
     "status": "won",
     "h2h": [
       {
@@ -828,6 +737,97 @@
     "sport": "football"
   },
   {
+    "fixtureId": 1635658,
+    "match": "Millwall vs Newcastle",
+    "homeTeam": "Millwall",
+    "awayTeam": "Newcastle",
+    "homeTeamId": 38,
+    "awayTeamId": 34,
+    "homeLogo": "https://media.api-sports.io/football/teams/38.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/34.png",
+    "league": "League Cup",
+    "leagueId": 48,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/48.png",
+    "country": "Inglaterra",
+    "kickoff": "2026-09-08T13:45:00-05:00",
+    "market": "Over 2.5 Goles",
+    "selection": "Over 2.5",
+    "odds": 1.65,
+    "bookmakerOdds": 1.65,
+    "modelOdds": 1.69,
+    "fairOdds": 1.69,
+    "probability": 59,
+    "impliedProbability": 60.6,
+    "edge": 1,
+    "expectedValue": -2.7,
+    "confidence": "Alta",
+    "pickBadge": "estandar",
+    "smartScore": 75,
+    "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
+    "status": "lost",
+    "h2h": [
+      {
+        "date": "2026-07-10",
+        "homeTeam": "Millwall",
+        "awayTeam": "Newcastle",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "League Cup"
+      },
+      {
+        "date": "2026-03-12",
+        "homeTeam": "Newcastle",
+        "awayTeam": "Millwall",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "League Cup"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-04",
+        "opponent": "Rival A",
+        "score": "2-0",
+        "result": "W",
+        "venue": "home",
+        "competition": "League Cup"
+      },
+      {
+        "date": "2026-08-30",
+        "opponent": "Rival B",
+        "score": "1-1",
+        "result": "D",
+        "venue": "away",
+        "competition": "League Cup"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival C",
+        "score": "1-2",
+        "result": "L",
+        "venue": "away",
+        "competition": "League Cup"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival D",
+        "score": "0-0",
+        "result": "D",
+        "venue": "home",
+        "competition": "League Cup"
+      }
+    ],
+    "actualScore": "0 - 1 (1 Goles)",
+    "actualGoalsHome": 0,
+    "actualGoalsAway": 1,
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "LOST",
+    "profit": -1,
+    "sport": "football"
+  },
+  {
     "fixtureId": 1635652,
     "match": "Borussia Dortmund vs Villarreal",
     "homeTeam": "Borussia Dortmund",
@@ -854,7 +854,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 94,
-    "explanation": "Diferencial cualitativo a favor de Borussia Dortmund (+100 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presi\u00f3n alta neutralizan el planteamiento defensivo de Villarreal.",
+    "explanation": "Diferencial cualitativo a favor de Borussia Dortmund (+100 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Villarreal.",
     "status": "won",
     "h2h": [
       {
@@ -922,188 +922,6 @@
     "sport": "football"
   },
   {
-    "fixtureId": 1635652,
-    "match": "Borussia Dortmund vs Villarreal",
-    "homeTeam": "Borussia Dortmund",
-    "awayTeam": "Villarreal",
-    "homeTeamId": 165,
-    "awayTeamId": 533,
-    "homeLogo": "https://media.api-sports.io/football/teams/165.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/533.png",
-    "league": "UEFA Champions League",
-    "leagueId": 2,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/2.png",
-    "country": "Europa",
-    "kickoff": "2026-09-08T14:00:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.5,
-    "bookmakerOdds": 1.5,
-    "modelOdds": 1.6,
-    "fairOdds": 1.6,
-    "probability": 62.5,
-    "impliedProbability": 66.7,
-    "edge": 1,
-    "expectedValue": -6.2,
-    "confidence": "Alta",
-    "pickBadge": "estandar",
-    "smartScore": 79,
-    "explanation": "Borussia Dortmund ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras Villarreal acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas \u00e1reas.",
-    "status": "won",
-    "h2h": [
-      {
-        "date": "2026-07-10",
-        "homeTeam": "Borussia Dortmund",
-        "awayTeam": "Villarreal",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-03-12",
-        "homeTeam": "Villarreal",
-        "awayTeam": "Borussia Dortmund",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "UEFA Champions League"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-04",
-        "opponent": "Rival A",
-        "score": "2-0",
-        "result": "W",
-        "venue": "home",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-30",
-        "opponent": "Rival B",
-        "score": "1-1",
-        "result": "D",
-        "venue": "away",
-        "competition": "UEFA Champions League"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-03",
-        "opponent": "Rival C",
-        "score": "1-2",
-        "result": "L",
-        "venue": "away",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival D",
-        "score": "0-0",
-        "result": "D",
-        "venue": "home",
-        "competition": "UEFA Champions League"
-      }
-    ],
-    "actualScore": "3 - 2 (5 Goles)",
-    "actualGoalsHome": 3,
-    "actualGoalsAway": 2,
-    "settledAt": "2026-09-12T04:31:15.876Z",
-    "result": "WON",
-    "profit": 0.5,
-    "sport": "football"
-  },
-  {
-    "fixtureId": 1635652,
-    "match": "Borussia Dortmund vs Villarreal",
-    "homeTeam": "Borussia Dortmund",
-    "awayTeam": "Villarreal",
-    "homeTeamId": 165,
-    "awayTeamId": 533,
-    "homeLogo": "https://media.api-sports.io/football/teams/165.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/533.png",
-    "league": "UEFA Champions League",
-    "leagueId": 2,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/2.png",
-    "country": "Europa",
-    "kickoff": "2026-09-08T14:00:00-05:00",
-    "market": "Ambos Equipos Anotan",
-    "selection": "S\u00ed",
-    "odds": 1.65,
-    "bookmakerOdds": 1.65,
-    "modelOdds": 1.67,
-    "fairOdds": 1.67,
-    "probability": 60,
-    "impliedProbability": 60.6,
-    "edge": 1,
-    "expectedValue": -1,
-    "confidence": "Alta",
-    "pickBadge": "estandar",
-    "smartScore": 76,
-    "explanation": "Eficacia bilateral en ataque: Borussia Dortmund anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Villarreal cuenta con pegada for\u00e1nea (1.2 xG). El patr\u00f3n estad\u00edstico favorece la anotaci\u00f3n mutua.",
-    "status": "won",
-    "h2h": [
-      {
-        "date": "2026-07-10",
-        "homeTeam": "Borussia Dortmund",
-        "awayTeam": "Villarreal",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-03-12",
-        "homeTeam": "Villarreal",
-        "awayTeam": "Borussia Dortmund",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "UEFA Champions League"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-04",
-        "opponent": "Rival A",
-        "score": "2-0",
-        "result": "W",
-        "venue": "home",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-30",
-        "opponent": "Rival B",
-        "score": "1-1",
-        "result": "D",
-        "venue": "away",
-        "competition": "UEFA Champions League"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-03",
-        "opponent": "Rival C",
-        "score": "1-2",
-        "result": "L",
-        "venue": "away",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival D",
-        "score": "0-0",
-        "result": "D",
-        "venue": "home",
-        "competition": "UEFA Champions League"
-      }
-    ],
-    "actualScore": "3 - 2 (Ambos S\u00ed)",
-    "actualGoalsHome": 3,
-    "actualGoalsAway": 2,
-    "settledAt": "2026-09-12T04:31:15.876Z",
-    "result": "WON",
-    "profit": 0.65,
-    "sport": "football"
-  },
-  {
     "fixtureId": 1635653,
     "match": "Real Madrid vs Inter",
     "homeTeam": "Real Madrid",
@@ -1130,7 +948,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 87,
-    "explanation": "Diferencial cualitativo a favor de Real Madrid (+100 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presi\u00f3n alta neutralizan el planteamiento defensivo de Inter.",
+    "explanation": "Diferencial cualitativo a favor de Real Madrid (+100 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Inter.",
     "status": "won",
     "h2h": [
       {
@@ -1198,97 +1016,6 @@
     "sport": "football"
   },
   {
-    "fixtureId": 1635653,
-    "match": "Real Madrid vs Inter",
-    "homeTeam": "Real Madrid",
-    "awayTeam": "Inter",
-    "homeTeamId": 541,
-    "awayTeamId": 505,
-    "homeLogo": "https://media.api-sports.io/football/teams/541.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/505.png",
-    "league": "UEFA Champions League",
-    "leagueId": 2,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/2.png",
-    "country": "Europa",
-    "kickoff": "2026-09-08T14:00:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.44,
-    "bookmakerOdds": 1.44,
-    "modelOdds": 1.61,
-    "fairOdds": 1.61,
-    "probability": 62.2,
-    "impliedProbability": 69.4,
-    "edge": 1,
-    "expectedValue": -10.4,
-    "confidence": "Alta",
-    "pickBadge": "estandar",
-    "smartScore": 78,
-    "explanation": "Alta expectativa anotadora: Real Madrid genera 1.6 xG en casa y Inter promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o m\u00e1s tantos.",
-    "status": "won",
-    "h2h": [
-      {
-        "date": "2026-07-10",
-        "homeTeam": "Real Madrid",
-        "awayTeam": "Inter",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-03-12",
-        "homeTeam": "Inter",
-        "awayTeam": "Real Madrid",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "UEFA Champions League"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-04",
-        "opponent": "Rival A",
-        "score": "2-0",
-        "result": "W",
-        "venue": "home",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-30",
-        "opponent": "Rival B",
-        "score": "1-1",
-        "result": "D",
-        "venue": "away",
-        "competition": "UEFA Champions League"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-03",
-        "opponent": "Rival C",
-        "score": "1-2",
-        "result": "L",
-        "venue": "away",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival D",
-        "score": "0-0",
-        "result": "D",
-        "venue": "home",
-        "competition": "UEFA Champions League"
-      }
-    ],
-    "actualScore": "2 - 1 (3 Goles)",
-    "actualGoalsHome": 2,
-    "actualGoalsAway": 1,
-    "settledAt": "2026-09-12T04:31:15.876Z",
-    "result": "WON",
-    "profit": 0.44,
-    "sport": "football"
-  },
-  {
     "fixtureId": 1635654,
     "match": "FC Porto vs Manchester City",
     "homeTeam": "FC Porto",
@@ -1315,7 +1042,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 84,
-    "explanation": "Diferencial de calidad y estructura a favor de Manchester City (+100 Elo). El conjunto visitante impone condiciones en duelos individuales y supera en volumen de remates al conjunto anfitri\u00f3n.",
+    "explanation": "Diferencial de calidad y estructura a favor de Manchester City (+100 Elo). El conjunto visitante impone condiciones en duelos individuales y supera en volumen de remates al conjunto anfitrión.",
     "status": "won",
     "h2h": [
       {
@@ -1380,14 +1107,14 @@
     "sport": "football"
   },
   {
-    "fixtureId": 1635654,
-    "match": "FC Porto vs Manchester City",
-    "homeTeam": "FC Porto",
-    "awayTeam": "Manchester City",
-    "homeTeamId": 212,
-    "awayTeamId": 50,
-    "homeLogo": "https://media.api-sports.io/football/teams/212.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/50.png",
+    "fixtureId": 1635652,
+    "match": "Borussia Dortmund vs Villarreal",
+    "homeTeam": "Borussia Dortmund",
+    "awayTeam": "Villarreal",
+    "homeTeamId": 165,
+    "awayTeamId": 533,
+    "homeLogo": "https://media.api-sports.io/football/teams/165.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/533.png",
     "league": "UEFA Champions League",
     "leagueId": 2,
     "leagueLogo": "https://media.api-sports.io/football/leagues/2.png",
@@ -1395,126 +1122,32 @@
     "kickoff": "2026-09-08T14:00:00-05:00",
     "market": "Over 2.5 Goles",
     "selection": "Over 2.5",
-    "odds": 1.7,
-    "bookmakerOdds": 1.7,
-    "modelOdds": 1.72,
-    "fairOdds": 1.72,
-    "probability": 58,
-    "impliedProbability": 58.8,
+    "odds": 1.5,
+    "bookmakerOdds": 1.5,
+    "modelOdds": 1.6,
+    "fairOdds": 1.6,
+    "probability": 62.5,
+    "impliedProbability": 66.7,
     "edge": 1,
-    "expectedValue": -1.4,
+    "expectedValue": -6.2,
     "confidence": "Alta",
     "pickBadge": "estandar",
-    "smartScore": 74,
-    "explanation": "FC Porto ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras Manchester City acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas \u00e1reas.",
-    "status": "lost",
-    "h2h": [
-      {
-        "date": "2026-07-10",
-        "homeTeam": "FC Porto",
-        "awayTeam": "Manchester City",
-        "score": "2-1",
-        "winner": "home",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-03-12",
-        "homeTeam": "Manchester City",
-        "awayTeam": "FC Porto",
-        "score": "0-2",
-        "winner": "away",
-        "competition": "UEFA Champions League"
-      }
-    ],
-    "homeLast5": [
-      {
-        "date": "2026-09-04",
-        "opponent": "Rival A",
-        "score": "2-0",
-        "result": "W",
-        "venue": "home",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-30",
-        "opponent": "Rival B",
-        "score": "1-1",
-        "result": "D",
-        "venue": "away",
-        "competition": "UEFA Champions League"
-      }
-    ],
-    "awayLast5": [
-      {
-        "date": "2026-09-03",
-        "opponent": "Rival C",
-        "score": "1-2",
-        "result": "L",
-        "venue": "away",
-        "competition": "UEFA Champions League"
-      },
-      {
-        "date": "2026-08-29",
-        "opponent": "Rival D",
-        "score": "0-0",
-        "result": "D",
-        "venue": "home",
-        "competition": "UEFA Champions League"
-      }
-    ],
-    "isMcp": true,
-    "isMcpPick": true,
-    "source": "mcp",
-    "actualScore": "0 - 2 (2 Goles)",
-    "actualGoalsHome": 0,
-    "actualGoalsAway": 2,
-    "settledAt": "2026-09-12T04:31:15.876Z",
-    "result": "LOST",
-    "profit": -1.0,
-    "sport": "football"
-  },
-  {
-    "fixtureId": 1635656,
-    "match": "Lille vs Real Betis",
-    "homeTeam": "Lille",
-    "awayTeam": "Real Betis",
-    "homeTeamId": 79,
-    "awayTeamId": 543,
-    "homeLogo": "https://media.api-sports.io/football/teams/79.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/543.png",
-    "league": "UEFA Champions League",
-    "leagueId": 2,
-    "leagueLogo": "https://media.api-sports.io/football/leagues/2.png",
-    "country": "Europa",
-    "kickoff": "2026-09-08T14:00:00-05:00",
-    "market": "Over 2.5 Goles",
-    "selection": "Over 2.5",
-    "odds": 1.8,
-    "bookmakerOdds": 1.8,
-    "modelOdds": 1.8,
-    "fairOdds": 1.8,
-    "probability": 55.5,
-    "impliedProbability": 55.6,
-    "edge": 1,
-    "expectedValue": -0.1,
-    "confidence": "Media",
-    "pickBadge": "estandar",
-    "smartScore": 72,
-    "explanation": "Alta expectativa anotadora: Lille genera 1.6 xG en casa y Real Betis promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o m\u00e1s tantos.",
+    "smartScore": 79,
+    "explanation": "Borussia Dortmund ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Villarreal acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas áreas.",
     "status": "won",
     "h2h": [
       {
         "date": "2026-07-10",
-        "homeTeam": "Lille",
-        "awayTeam": "Real Betis",
+        "homeTeam": "Borussia Dortmund",
+        "awayTeam": "Villarreal",
         "score": "2-1",
         "winner": "home",
         "competition": "UEFA Champions League"
       },
       {
         "date": "2026-03-12",
-        "homeTeam": "Real Betis",
-        "awayTeam": "Lille",
+        "homeTeam": "Villarreal",
+        "awayTeam": "Borussia Dortmund",
         "score": "0-2",
         "winner": "away",
         "competition": "UEFA Champions League"
@@ -1556,56 +1189,56 @@
         "competition": "UEFA Champions League"
       }
     ],
-    "actualScore": "2 - 3 (5 Goles)",
-    "actualGoalsHome": 2,
-    "actualGoalsAway": 3,
+    "actualScore": "3 - 2 (5 Goles)",
+    "actualGoalsHome": 3,
+    "actualGoalsAway": 2,
     "settledAt": "2026-09-12T04:31:15.876Z",
     "result": "WON",
-    "profit": 0.8,
+    "profit": 0.5,
     "sport": "football"
   },
   {
-    "fixtureId": 1635656,
-    "match": "Lille vs Real Betis",
-    "homeTeam": "Lille",
-    "awayTeam": "Real Betis",
-    "homeTeamId": 79,
-    "awayTeamId": 543,
-    "homeLogo": "https://media.api-sports.io/football/teams/79.png",
-    "awayLogo": "https://media.api-sports.io/football/teams/543.png",
+    "fixtureId": 1635653,
+    "match": "Real Madrid vs Inter",
+    "homeTeam": "Real Madrid",
+    "awayTeam": "Inter",
+    "homeTeamId": 541,
+    "awayTeamId": 505,
+    "homeLogo": "https://media.api-sports.io/football/teams/541.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/505.png",
     "league": "UEFA Champions League",
     "leagueId": 2,
     "leagueLogo": "https://media.api-sports.io/football/leagues/2.png",
     "country": "Europa",
     "kickoff": "2026-09-08T14:00:00-05:00",
-    "market": "Ganador Local",
-    "selection": "Lille",
-    "odds": 2.1,
-    "bookmakerOdds": 2.1,
-    "modelOdds": 1.79,
-    "fairOdds": 1.79,
-    "probability": 56,
-    "impliedProbability": 47.6,
-    "edge": 8.4,
-    "expectedValue": 17.6,
-    "confidence": "Media",
-    "pickBadge": "bomba",
-    "smartScore": 79,
-    "explanation": "Lille impone una marcada solvencia como anfitri\u00f3n (3 triunfos en sus \u00faltimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Real Betis que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
-    "status": "lost",
+    "market": "Over 2.5 Goles",
+    "selection": "Over 2.5",
+    "odds": 1.44,
+    "bookmakerOdds": 1.44,
+    "modelOdds": 1.61,
+    "fairOdds": 1.61,
+    "probability": 62.2,
+    "impliedProbability": 69.4,
+    "edge": 1,
+    "expectedValue": -10.4,
+    "confidence": "Alta",
+    "pickBadge": "estandar",
+    "smartScore": 78,
+    "explanation": "Alta expectativa anotadora: Real Madrid genera 1.6 xG en casa y Inter promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
+    "status": "won",
     "h2h": [
       {
         "date": "2026-07-10",
-        "homeTeam": "Lille",
-        "awayTeam": "Real Betis",
+        "homeTeam": "Real Madrid",
+        "awayTeam": "Inter",
         "score": "2-1",
         "winner": "home",
         "competition": "UEFA Champions League"
       },
       {
         "date": "2026-03-12",
-        "homeTeam": "Real Betis",
-        "awayTeam": "Lille",
+        "homeTeam": "Inter",
+        "awayTeam": "Real Madrid",
         "score": "0-2",
         "winner": "away",
         "competition": "UEFA Champions League"
@@ -1647,12 +1280,12 @@
         "competition": "UEFA Champions League"
       }
     ],
-    "actualScore": "2 - 3",
+    "actualScore": "2 - 1 (3 Goles)",
     "actualGoalsHome": 2,
-    "actualGoalsAway": 3,
+    "actualGoalsAway": 1,
     "settledAt": "2026-09-12T04:31:15.876Z",
-    "result": "LOST",
-    "profit": -1.0,
+    "result": "WON",
+    "profit": 0.44,
     "sport": "football"
   },
   {
@@ -1682,7 +1315,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 78,
-    "explanation": "Crystal Palace impone una marcada solvencia como anfitri\u00f3n (3 triunfos en sus \u00faltimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Middlesbrough que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+    "explanation": "Crystal Palace impone una marcada solvencia como anfitrión (3 triunfos en sus últimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Middlesbrough que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
     "status": "won",
     "h2h": [
       {
@@ -1750,6 +1383,97 @@
     "sport": "football"
   },
   {
+    "fixtureId": 1635652,
+    "match": "Borussia Dortmund vs Villarreal",
+    "homeTeam": "Borussia Dortmund",
+    "awayTeam": "Villarreal",
+    "homeTeamId": 165,
+    "awayTeamId": 533,
+    "homeLogo": "https://media.api-sports.io/football/teams/165.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/533.png",
+    "league": "UEFA Champions League",
+    "leagueId": 2,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/2.png",
+    "country": "Europa",
+    "kickoff": "2026-09-08T14:00:00-05:00",
+    "market": "Ambos Equipos Anotan",
+    "selection": "Sí",
+    "odds": 1.65,
+    "bookmakerOdds": 1.65,
+    "modelOdds": 1.67,
+    "fairOdds": 1.67,
+    "probability": 60,
+    "impliedProbability": 60.6,
+    "edge": 1,
+    "expectedValue": -1,
+    "confidence": "Alta",
+    "pickBadge": "estandar",
+    "smartScore": 76,
+    "explanation": "Eficacia bilateral en ataque: Borussia Dortmund anota con regularidad en su estadio (1.6 xG) pero concede ocasiones, mientras que Villarreal cuenta con pegada foránea (1.2 xG). El patrón estadístico favorece la anotación mutua.",
+    "status": "won",
+    "h2h": [
+      {
+        "date": "2026-07-10",
+        "homeTeam": "Borussia Dortmund",
+        "awayTeam": "Villarreal",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-03-12",
+        "homeTeam": "Villarreal",
+        "awayTeam": "Borussia Dortmund",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "UEFA Champions League"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-04",
+        "opponent": "Rival A",
+        "score": "2-0",
+        "result": "W",
+        "venue": "home",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-30",
+        "opponent": "Rival B",
+        "score": "1-1",
+        "result": "D",
+        "venue": "away",
+        "competition": "UEFA Champions League"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival C",
+        "score": "1-2",
+        "result": "L",
+        "venue": "away",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival D",
+        "score": "0-0",
+        "result": "D",
+        "venue": "home",
+        "competition": "UEFA Champions League"
+      }
+    ],
+    "actualScore": "3 - 2 (Ambos Sí)",
+    "actualGoalsHome": 3,
+    "actualGoalsAway": 2,
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "WON",
+    "profit": 0.65,
+    "sport": "football"
+  },
+  {
     "fixtureId": 1635660,
     "match": "Crystal Palace vs Middlesbrough",
     "homeTeam": "Crystal Palace",
@@ -1776,7 +1500,7 @@
     "confidence": "Alta",
     "pickBadge": "estandar",
     "smartScore": 75,
-    "explanation": "Crystal Palace ha marcado en 4 de sus \u00faltimos 5 compromisos en su feudo, mientras Middlesbrough acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas \u00e1reas.",
+    "explanation": "Crystal Palace ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Middlesbrough acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas áreas.",
     "status": "won",
     "h2h": [
       {
@@ -1841,6 +1565,282 @@
     "sport": "football"
   },
   {
+    "fixtureId": 1635654,
+    "match": "FC Porto vs Manchester City",
+    "homeTeam": "FC Porto",
+    "awayTeam": "Manchester City",
+    "homeTeamId": 212,
+    "awayTeamId": 50,
+    "homeLogo": "https://media.api-sports.io/football/teams/212.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/50.png",
+    "league": "UEFA Champions League",
+    "leagueId": 2,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/2.png",
+    "country": "Europa",
+    "kickoff": "2026-09-08T14:00:00-05:00",
+    "market": "Over 2.5 Goles",
+    "selection": "Over 2.5",
+    "odds": 1.7,
+    "bookmakerOdds": 1.7,
+    "modelOdds": 1.72,
+    "fairOdds": 1.72,
+    "probability": 58,
+    "impliedProbability": 58.8,
+    "edge": 1,
+    "expectedValue": -1.4,
+    "confidence": "Alta",
+    "pickBadge": "estandar",
+    "smartScore": 74,
+    "explanation": "FC Porto ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Manchester City acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas áreas.",
+    "status": "lost",
+    "h2h": [
+      {
+        "date": "2026-07-10",
+        "homeTeam": "FC Porto",
+        "awayTeam": "Manchester City",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-03-12",
+        "homeTeam": "Manchester City",
+        "awayTeam": "FC Porto",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "UEFA Champions League"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-04",
+        "opponent": "Rival A",
+        "score": "2-0",
+        "result": "W",
+        "venue": "home",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-30",
+        "opponent": "Rival B",
+        "score": "1-1",
+        "result": "D",
+        "venue": "away",
+        "competition": "UEFA Champions League"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival C",
+        "score": "1-2",
+        "result": "L",
+        "venue": "away",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival D",
+        "score": "0-0",
+        "result": "D",
+        "venue": "home",
+        "competition": "UEFA Champions League"
+      }
+    ],
+    "isMcp": true,
+    "isMcpPick": true,
+    "source": "mcp",
+    "actualScore": "0 - 2 (2 Goles)",
+    "actualGoalsHome": 0,
+    "actualGoalsAway": 2,
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "LOST",
+    "profit": -1,
+    "sport": "football"
+  },
+  {
+    "fixtureId": 1635656,
+    "match": "Lille vs Real Betis",
+    "homeTeam": "Lille",
+    "awayTeam": "Real Betis",
+    "homeTeamId": 79,
+    "awayTeamId": 543,
+    "homeLogo": "https://media.api-sports.io/football/teams/79.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/543.png",
+    "league": "UEFA Champions League",
+    "leagueId": 2,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/2.png",
+    "country": "Europa",
+    "kickoff": "2026-09-08T14:00:00-05:00",
+    "market": "Ganador Local",
+    "selection": "Lille",
+    "odds": 2.1,
+    "bookmakerOdds": 2.1,
+    "modelOdds": 1.79,
+    "fairOdds": 1.79,
+    "probability": 56,
+    "impliedProbability": 47.6,
+    "edge": 8.4,
+    "expectedValue": 17.6,
+    "confidence": "Media",
+    "pickBadge": "bomba",
+    "smartScore": 79,
+    "explanation": "Lille impone una marcada solvencia como anfitrión (3 triunfos en sus últimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Real Betis que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+    "status": "lost",
+    "h2h": [
+      {
+        "date": "2026-07-10",
+        "homeTeam": "Lille",
+        "awayTeam": "Real Betis",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-03-12",
+        "homeTeam": "Real Betis",
+        "awayTeam": "Lille",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "UEFA Champions League"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-04",
+        "opponent": "Rival A",
+        "score": "2-0",
+        "result": "W",
+        "venue": "home",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-30",
+        "opponent": "Rival B",
+        "score": "1-1",
+        "result": "D",
+        "venue": "away",
+        "competition": "UEFA Champions League"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival C",
+        "score": "1-2",
+        "result": "L",
+        "venue": "away",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival D",
+        "score": "0-0",
+        "result": "D",
+        "venue": "home",
+        "competition": "UEFA Champions League"
+      }
+    ],
+    "actualScore": "2 - 3",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 3,
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "LOST",
+    "profit": -1,
+    "sport": "football"
+  },
+  {
+    "fixtureId": 1635656,
+    "match": "Lille vs Real Betis",
+    "homeTeam": "Lille",
+    "awayTeam": "Real Betis",
+    "homeTeamId": 79,
+    "awayTeamId": 543,
+    "homeLogo": "https://media.api-sports.io/football/teams/79.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/543.png",
+    "league": "UEFA Champions League",
+    "leagueId": 2,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/2.png",
+    "country": "Europa",
+    "kickoff": "2026-09-08T14:00:00-05:00",
+    "market": "Over 2.5 Goles",
+    "selection": "Over 2.5",
+    "odds": 1.8,
+    "bookmakerOdds": 1.8,
+    "modelOdds": 1.8,
+    "fairOdds": 1.8,
+    "probability": 55.5,
+    "impliedProbability": 55.6,
+    "edge": 1,
+    "expectedValue": -0.1,
+    "confidence": "Media",
+    "pickBadge": "estandar",
+    "smartScore": 72,
+    "explanation": "Alta expectativa anotadora: Lille genera 1.6 xG en casa y Real Betis promedia 1.2 xG fuera, proyectando 2.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
+    "status": "won",
+    "h2h": [
+      {
+        "date": "2026-07-10",
+        "homeTeam": "Lille",
+        "awayTeam": "Real Betis",
+        "score": "2-1",
+        "winner": "home",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-03-12",
+        "homeTeam": "Real Betis",
+        "awayTeam": "Lille",
+        "score": "0-2",
+        "winner": "away",
+        "competition": "UEFA Champions League"
+      }
+    ],
+    "homeLast5": [
+      {
+        "date": "2026-09-04",
+        "opponent": "Rival A",
+        "score": "2-0",
+        "result": "W",
+        "venue": "home",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-30",
+        "opponent": "Rival B",
+        "score": "1-1",
+        "result": "D",
+        "venue": "away",
+        "competition": "UEFA Champions League"
+      }
+    ],
+    "awayLast5": [
+      {
+        "date": "2026-09-03",
+        "opponent": "Rival C",
+        "score": "1-2",
+        "result": "L",
+        "venue": "away",
+        "competition": "UEFA Champions League"
+      },
+      {
+        "date": "2026-08-29",
+        "opponent": "Rival D",
+        "score": "0-0",
+        "result": "D",
+        "venue": "home",
+        "competition": "UEFA Champions League"
+      }
+    ],
+    "actualScore": "2 - 3 (5 Goles)",
+    "actualGoalsHome": 2,
+    "actualGoalsAway": 3,
+    "settledAt": "2026-09-12T04:31:15.876Z",
+    "result": "WON",
+    "profit": 0.8,
+    "sport": "football"
+  },
+  {
     "fixtureId": 1635657,
     "match": "Boca Juniors vs Sao Paulo",
     "homeTeam": "Boca Juniors",
@@ -1852,7 +1852,7 @@
     "league": "Copa Sudamericana",
     "leagueId": 11,
     "leagueLogo": "https://media.api-sports.io/football/leagues/11.png",
-    "country": "Sudam\u00e9rica",
+    "country": "Sudamérica",
     "kickoff": "2026-09-08T19:30:00-05:00",
     "market": "Ganador Local",
     "selection": "Boca Juniors",
@@ -1867,7 +1867,7 @@
     "confidence": "Alta",
     "pickBadge": "valor",
     "smartScore": 86,
-    "explanation": "Boca Juniors impone una marcada solvencia como anfitri\u00f3n (3 triunfos en sus \u00faltimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Sao Paulo que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
+    "explanation": "Boca Juniors impone una marcada solvencia como anfitrión (3 triunfos en sus últimos 5 compromisos) y promedia 1.6 xG en casa. Su dominio territorial y solidez defensiva ante un Sao Paulo que ha cedido 2 derrotas fuera fundamentan la ventaja local.",
     "status": "won",
     "h2h": [
       {
@@ -1943,10 +1943,10 @@
     "league": "Copa Sudamericana",
     "leagueId": 11,
     "leagueLogo": "https://media.api-sports.io/football/leagues/11.png",
-    "country": "Sudam\u00e9rica",
+    "country": "Sudamérica",
     "kickoff": "2026-09-08T19:30:00-05:00",
     "market": "Ambos Equipos Anotan",
-    "selection": "S\u00ed",
+    "selection": "Sí",
     "odds": 2.1,
     "bookmakerOdds": 2.1,
     "modelOdds": 1.78,
@@ -1958,7 +1958,7 @@
     "confidence": "Media",
     "pickBadge": "bomba",
     "smartScore": 80,
-    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porter\u00edas por la postura ofensiva de sus t\u00e9cnicos y las desatenciones en repliegue.",
+    "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
     "status": "lost",
     "h2h": [
       {
@@ -2022,7 +2022,7 @@
     "actualGoalsAway": 0,
     "settledAt": "2026-09-12T04:31:15.876Z",
     "result": "LOST",
-    "profit": -1.0,
+    "profit": -1,
     "sport": "football"
   }
 ]

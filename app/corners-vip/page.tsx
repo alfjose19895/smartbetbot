@@ -11,6 +11,7 @@ import {
   MarketOpportunity,
   getTimeSlot,
   isElitePick,
+  sortByKickoff,
   isDestacadoPick,
 } from "@/lib/sports/prediction-engine";
 
@@ -165,7 +166,7 @@ export default function CornersVipPage() {
         setPredictions(cleanPicks);
 
         if (data.newAlerts && data.newAlerts.length > 0) {
-          setNewlyDiscoveredAlerts(data.newAlerts);
+          setNewlyDiscoveredAlerts(sortByKickoff(data.newAlerts, "asc"));
           setNewAlertsModalOpen(true);
           setSearchMessage(`✓ ¡Se descubrieron ${data.newAlerts.length} nuevas alertas de Córners VIP! Agregadas al panel.`);
         } else {
@@ -191,10 +192,11 @@ export default function CornersVipPage() {
 
   const todayDateStr = getEcuadorDateString(Date.now());
   const activeSignals = useMemo(() => {
-    return predictions.filter((p) => {
+    const list = predictions.filter((p) => {
       const pDate = p.kickoff ? getEcuadorDateString(p.kickoff) : todayDateStr;
       return pDate === todayDateStr;
     });
+    return sortByKickoff(list, "asc");
   }, [predictions, todayDateStr]);
 
   // Dropdown Options
@@ -240,7 +242,7 @@ export default function CornersVipPage() {
 
   // Filtering Logic
   const filteredPredictions = useMemo(() => {
-    return activeSignals.filter((p) => {
+    const list = activeSignals.filter((p) => {
       // REGLA ESTRICTA: Exclusivamente Over de Córners (no Under)
       const selLower = (p.selection || "").toLowerCase();
       const mktLower = (p.market || "").toLowerCase();
@@ -301,6 +303,7 @@ export default function CornersVipPage() {
 
       return true;
     });
+    return sortByKickoff(list, "asc");
   }, [
     activeSignals,
     searchQuery,

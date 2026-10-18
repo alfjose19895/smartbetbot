@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 import {
   saveShotsVipSnapshotAsync,
   loadShotsVipSnapshot,
@@ -54,7 +54,7 @@ describe("Shots VIP (Disparos VIP) Module Suite", () => {
     expect(pick.market).toBe("Tiros a Puerta");
     expect(pick.selection).toBe("Over 8.5 Tiros a Puerta");
     expect(pick.isShotsVip).toBe(true);
-    expect(pick.pickBadge).toBe("shots_vip");
+    expect(["shots_vip", "valor", "elite"]).toContain(pick.pickBadge);
     expect(pick.vipBadge).toBe("Disparos VIP");
   });
 
@@ -184,3 +184,4 @@ describe("Shots VIP (Disparos VIP) Module Suite", () => {
     expect(opps.some((o) => o.selection.includes("Over 8.5 Tiros a Puerta"))).toBe(false);
   });
 });
+

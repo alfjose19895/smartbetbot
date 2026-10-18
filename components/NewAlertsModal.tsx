@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { MarketOpportunity } from "@/lib/sports/prediction-engine";
+import React, { useState, useMemo } from "react";
+import { MarketOpportunity, sortByKickoff } from "@/lib/sports/prediction-engine";
 import { formatMatchKickoffTime } from "@/components/PredictionCard";
 
 interface NewAlertsModalProps {
@@ -22,9 +22,11 @@ export function NewAlertsModal({
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [copiedAll, setCopiedAll] = useState(false);
 
+  const sortedAlerts = useMemo(() => sortByKickoff(newAlerts || [], "asc"), [newAlerts]);
+
   if (!isOpen || !newAlerts || newAlerts.length === 0) return null;
 
-  const segurasCount = newAlerts.filter((p) => p.pickBadge === "estandar" || (!p.pickBadge && p.odds < 1.72)).length;
+  const segurasCount = sortedAlerts.filter((p) => p.pickBadge === "estandar" || (!p.pickBadge && p.odds < 1.72)).length;
   const valorCount = newAlerts.filter((p) => p.pickBadge === "valor").length;
 
   const handleCopySingle = (e: React.MouseEvent, pick: MarketOpportunity) => {

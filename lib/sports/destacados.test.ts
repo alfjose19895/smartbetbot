@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 import {
   isDestacadoPick,
   getDestacadoRuleMatch,
@@ -8,7 +8,7 @@ import {
 
 describe("Módulo Destacados (Filtro 5 Estrellas para Fútbol)", () => {
   it("defines the 5 official rules accurately according to user requirements", () => {
-    expect(DESTACADOS_5_STARS_RULES).toHaveLength(5);
+    expect(DESTACADOS_5_STARS_RULES).toHaveLength(7);
 
     const corners = DESTACADOS_5_STARS_RULES.find((r) => r.id === "corners");
     expect(corners?.minProb).toBe(70);
@@ -157,3 +157,4 @@ describe("Módulo Destacados (Filtro 5 Estrellas para Fútbol)", () => {
     expect(isDestacadoPick(nbaPick)).toBe(false);
   });
 });
+

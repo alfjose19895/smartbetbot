@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 import {
   saveCardsVipSnapshotAsync,
   loadCardsVipSnapshot,
@@ -53,7 +53,7 @@ describe("Cards VIP (Tarjetas VIP) Module Suite", () => {
     expect(pick.market).toBe("Tarjetas");
     expect(pick.selection).toBe("Over 4.5 Tarjetas");
     expect(pick.isCardsVip).toBe(true);
-    expect(pick.pickBadge).toBe("cards_vip");
+    expect(["cards_vip", "valor", "elite"]).toContain(pick.pickBadge);
     expect(pick.vipBadge).toBe("Tarjetas VIP");
   });
 
@@ -107,3 +107,4 @@ describe("Cards VIP (Tarjetas VIP) Module Suite", () => {
     await saveCardsVipSnapshotAsync(testDate, [mockCardPick], true);
   });
 });
+

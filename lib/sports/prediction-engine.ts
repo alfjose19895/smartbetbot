@@ -65,6 +65,38 @@ export function getTimeSlot(kickoffDateStr?: string): "morning" | "afternoon" | 
 }
 
 /**
+ * Ordena una lista de oportunidades / partidos por horario de inicio (kickoff).
+ * Por defecto orden ascendente (más temprano a más tarde), con desempate por probabilidad y valor esperado (+EV).
+ */
+export function sortByKickoff<T extends { kickoff?: string | number | null; probability?: number; edge?: number }>(
+  items: T[],
+  direction: "asc" | "desc" = "asc"
+): T[] {
+  if (!Array.isArray(items) || items.length <= 1) return items ? [...items] : [];
+
+  return [...items].sort((a, b) => {
+    const timeA = a.kickoff ? new Date(a.kickoff).getTime() : NaN;
+    const timeB = b.kickoff ? new Date(b.kickoff).getTime() : NaN;
+    const validA = isNaN(timeA) ? (direction === "asc" ? Infinity : -Infinity) : timeA;
+    const validB = isNaN(timeB) ? (direction === "asc" ? Infinity : -Infinity) : timeB;
+
+    if (validA !== validB) {
+      return direction === "asc" ? validA - validB : validB - validA;
+    }
+
+    // Desempate 1: Mayor probabilidad matemática primero
+    const probA = typeof a.probability === "number" ? a.probability : 0;
+    const probB = typeof b.probability === "number" ? b.probability : 0;
+    if (probB !== probA) return probB - probA;
+
+    // Desempate 2: Mayor ventaja (+EV / Edge)
+    const edgeA = typeof a.edge === "number" ? a.edge : 0;
+    const edgeB = typeof b.edge === "number" ? b.edge : 0;
+    return edgeB - edgeA;
+  });
+}
+
+/**
  * Helper to identify high-conviction "Élite 80%+" opportunities.
  * Empirically verified in historical audit:
  * - Prob >= 75%: 81.6% win rate

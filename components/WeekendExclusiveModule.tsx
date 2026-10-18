@@ -11,7 +11,7 @@ import {
   WeekendSlate,
   getWeekendCycleInfo,
 } from "@/lib/sports/weekend-exclusive";
-import { MarketOpportunity } from "@/lib/sports/prediction-engine";
+import { MarketOpportunity, sortByKickoff } from "@/lib/sports/prediction-engine";
 import { copyCardImageToClipboard } from "@/lib/sports/card-image-generator";
 
 interface WeekendExclusiveModuleProps {
@@ -123,11 +123,11 @@ export function WeekendExclusiveModule({
     };
   }, [initialSlate]);
 
-  const allPicks = useMemo(() => slate?.picks || [], [slate]);
+  const allPicks = useMemo(() => sortByKickoff(slate?.picks || [], "asc"), [slate]);
 
   // Filtered picks by day, rule, and search
   const filteredPicks = useMemo(() => {
-    return allPicks.filter((p) => {
+    const list = allPicks.filter((p) => {
       if (selectedDay !== "all" && p.dayOfWeek !== selectedDay) {
         return false;
       }
@@ -144,6 +144,7 @@ export function WeekendExclusiveModule({
       }
       return true;
     });
+    return sortByKickoff(list, "asc");
   }, [allPicks, selectedDay, selectedRule, searchQuery]);
 
   // Counts by day
@@ -228,7 +229,7 @@ export function WeekendExclusiveModule({
     ];
 
     days.forEach((d) => {
-      const picksInDay = filteredPicks.filter((p) => p.dayOfWeek === d.id);
+      const picksInDay = sortByKickoff(filteredPicks.filter((p) => p.dayOfWeek === d.id), "asc");
       if (picksInDay.length > 0) {
         lines.push("", d.label, "====================");
         picksInDay.forEach((p) => {

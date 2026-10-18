@@ -211,12 +211,24 @@ export function buildTripleExclusiveParlays(
     return b.edge - a.edge;
   });
 
+  const sortLegs = (picks: MarketOpportunity[]) =>
+    [...picks].sort((a, b) => {
+      const timeA = a.kickoff ? new Date(a.kickoff).getTime() : Infinity;
+      const timeB = b.kickoff ? new Date(b.kickoff).getTime() : Infinity;
+      if (timeA !== timeB) return timeA - timeB;
+      return (b.probability || 0) - (a.probability || 0);
+    });
+
+  const sortedP1 = sortLegs(parlay1);
+  const sortedP2 = sortLegs(parlay2);
+  const sortedP3 = sortLegs(parlay3);
+
   return {
-    parlay1,
-    parlay2,
-    parlay3,
-    elite3: parlay1,
-    premium5: [...parlay1, ...parlay2],
+    parlay1: sortedP1,
+    parlay2: sortedP2,
+    parlay3: sortedP3,
+    elite3: sortedP1,
+    premium5: [...sortedP1, ...sortedP2],
   };
 }
 

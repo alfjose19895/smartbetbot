@@ -572,7 +572,15 @@ export async function getWeekendExclusiveSlate(options?: {
   }
 
   // Re-ordenar el conjunto global respetando Tiers y Mercados (Córners > BTTS > Goles > 1X2)
-  const finalOrdered = sortMatchesByTierAndMarket(curatedPicks).map((p, idx) => ({
+  const finalOrdered = [...curatedPicks]
+    .sort((a, b) => {
+      const timeA = a.kickoff ? new Date(a.kickoff).getTime() : Infinity;
+      const timeB = b.kickoff ? new Date(b.kickoff).getTime() : Infinity;
+      if (timeA !== timeB) return timeA - timeB;
+      if (b.probability !== a.probability) return b.probability - a.probability;
+      return (b.edge || 0) - (a.edge || 0);
+    })
+    .map((p, idx) => ({
     ...p,
     weekendOrder: idx + 1,
   }));

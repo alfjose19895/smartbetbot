@@ -6,7 +6,8 @@ import { PredictionCard } from "@/components/PredictionCard";
 import { MatchDetailModal } from "@/components/MatchDetailModal";
 import { NewAlertsModal } from "@/components/NewAlertsModal";
 import { MultiSelectDropdown, DropdownOption } from "@/components/MultiSelectDropdown";
-import { MarketOpportunity, getTimeSlot, isElitePick, isDestacadoPick } from "@/lib/sports/prediction-engine";
+import { MarketOpportunity, getTimeSlot, isElitePick,
+  sortByKickoff, isDestacadoPick } from "@/lib/sports/prediction-engine";
 import { matchesMarketFilter, matchesConfidenceFilter } from "@/lib/sports/registry";
 import { useLanguage } from "@/context/LanguageContext";
 import { Navbar } from "@/components/Navbar";
@@ -218,7 +219,7 @@ export default function SignalsPage() {
             (p: MarketOpportunity) => p.status === "pending" || (!p.actualScore && p.status !== "won" && p.status !== "lost")
           );
           if (todayPending.length > 0) {
-            setNewlyDiscoveredAlerts(todayPending);
+            setNewlyDiscoveredAlerts(sortByKickoff(todayPending, "asc"));
             setNewAlertsModalOpen(true);
           }
           setSyncMessage(`✓ Mercado de hoy al día (${data.count || cleanPicks.length} alertas activas).`);
@@ -242,10 +243,11 @@ export default function SignalsPage() {
 
   const todayDateStr = getEcuadorDateString(Date.now());
   const activeSignals = useMemo(() => {
-    return predictions.filter((p) => {
+    const list = predictions.filter((p) => {
       const pDate = p.kickoff ? getEcuadorDateString(p.kickoff) : todayDateStr;
       return pDate === todayDateStr;
     });
+    return sortByKickoff(list, "asc");
   }, [predictions, todayDateStr]);
 
   // Dropdown Options Generation
@@ -297,7 +299,7 @@ export default function SignalsPage() {
   ];
 
   const filteredPredictions = useMemo(() => {
-    return activeSignals.filter((p) => {
+    const list = activeSignals.filter((p) => {
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const matchTeams = p.homeTeam.toLowerCase().includes(q) || p.awayTeam.toLowerCase().includes(q) || (p.match || "").toLowerCase().includes(q);
@@ -335,6 +337,7 @@ export default function SignalsPage() {
 
       return true;
     });
+    return sortByKickoff(list, "asc");
   }, [activeSignals, searchQuery, matchStatusFilter, timeSlotFilter, selectedLeagues, selectedConfidence, selectedMarkets, minProbability]);
 
   const destacadosCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "DESTACADO")).length;
