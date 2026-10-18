@@ -157,6 +157,19 @@ export function DestacadosModule({
     ).length;
   }, [allDestacados]);
 
+  const pendingCount = useMemo(() => {
+    return allDestacados.filter(
+      (p) =>
+        p.status !== "won" &&
+        p.status !== "lost" &&
+        (p as any).result !== "WON" &&
+        (p as any).result !== "LOST"
+    ).length;
+  }, [allDestacados]);
+
+  const settledCount = wonCount + lostCount;
+  const winRate = settledCount > 0 ? Math.round((wonCount / settledCount) * 1000) / 10 : 0;
+
   const handleCopySummary = () => {
     if (filteredDestacados.length === 0) return;
 
@@ -164,7 +177,8 @@ export function DestacadosModule({
       "⭐⭐⭐⭐⭐ PRONÓSTICOS DESTACADOS — SMARTBETBOT ⭐⭐⭐⭐⭐",
       "🏆 Filtro Cuantitativo de Alta Convicción (Fútbol)",
       `📅 Fecha: ${new Intl.DateTimeFormat("es-ES", { dateStyle: "full" }).format(new Date())}`,
-      `📊 Total Selecciones: ${filteredDestacados.length} | Prob. Media: ${avgProb}% | Cuota Media: @${avgOdds.toFixed(2)}`,
+      `📊 Selecciones: ${filteredDestacados.length} | Ganadas: ${wonCount} | Perdidas: ${lostCount} | Acierto: ${settledCount > 0 ? `${winRate}%` : "En juego"}`,
+      `📈 Prob. Media: ${avgProb}% | Cuota Media: @${avgOdds.toFixed(2)}`,
       "",
       "---------------------------------------------",
     ];
@@ -172,10 +186,18 @@ export function DestacadosModule({
     filteredDestacados.forEach((p, idx) => {
       const match = getDestacadoRuleMatch(p);
       const ruleLabel = match ? `[${match.icon} ${match.marketDescription}]` : "";
+      const statusText =
+        p.status === "won" || (p as any).result === "WON"
+          ? `✓ GANADA ${p.actualScore ? `(${p.actualScore})` : ""}`
+          : p.status === "lost" || (p as any).result === "LOST"
+          ? `✗ PERDIDA ${p.actualScore ? `(${p.actualScore})` : ""}`
+          : "⏳ Pendiente";
+
       lines.push(
         `${idx + 1}. ⭐ ${p.homeTeam} vs ${p.awayTeam} (${p.league})`,
         `   🎯 Mercado: ${p.market} (${p.selection})`,
         `   📈 Probabilidad: ${p.probability}% | Cuota: @${(p.odds ?? 1.5).toFixed(2)}`,
+        `   📊 Estado: ${statusText}`,
         `   ✓ Regla Cumplida: ${ruleLabel}`,
         `   🧠 Análisis: "${p.explanation || "Máxima convicción estadística"}"`,
         ""
@@ -198,6 +220,12 @@ export function DestacadosModule({
     const key = String(pick.id || pick.fixtureId || `${pick.homeTeam}-${pick.awayTeam}-${pick.market}`);
     const match = getDestacadoRuleMatch(pick);
     const ruleLabel = match ? `[${match.icon} ${match.marketDescription}]` : "";
+    const statusText =
+      pick.status === "won" || (pick as any).result === "WON"
+        ? `✓ GANADA ${pick.actualScore ? `(${pick.actualScore})` : ""}`
+        : pick.status === "lost" || (pick as any).result === "LOST"
+        ? `✗ PERDIDA ${pick.actualScore ? `(${pick.actualScore})` : ""}`
+        : "⏳ Pendiente";
 
     const text = [
       "⭐⭐⭐⭐⭐ PRONÓSTICO DESTACADO ⭐⭐⭐⭐⭐",
@@ -206,6 +234,7 @@ export function DestacadosModule({
       `🎯 Pronóstico: ${pick.market} (${pick.selection})`,
       `🏢 Cuota: @${(pick.odds ?? 1.5).toFixed(2)}`,
       `📈 Probabilidad IA: ${pick.probability}% (+${pick.edge || 5}% Valor)`,
+      `📊 Estado: ${statusText}`,
       `✓ Regla Destacados: ${ruleLabel}`,
       "",
       `🧠 Análisis: "${pick.explanation || "Máxima certeza cuantitativa"}"`,
@@ -313,8 +342,8 @@ export function DestacadosModule({
         </div>
 
         {/* 2. Top Metrics Bar */}
-        <div className="mt-6 pt-5 border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="rounded-2xl bg-slate-950/70 p-3.5 border border-slate-800/80">
+        <div className="mt-6 pt-5 border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+          <div className="rounded-2xl bg-slate-950/70 p-3.5 border border-slate-800/80 text-center">
             <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
               Total Destacadas
             </span>
@@ -323,7 +352,54 @@ export function DestacadosModule({
             </div>
           </div>
 
-          <div className="rounded-2xl bg-slate-950/70 p-3.5 border border-slate-800/80">
+          <div className="rounded-2xl bg-emerald-950/20 p-3.5 border border-emerald-900/40 text-center">
+            <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 block">
+              Ganadas
+            </span>
+            <div className="text-2xl font-black text-emerald-400 mt-0.5">
+              ✓ {wonCount}
+            </div>
+          </div>
+
+          <div className="rounded-2xl bg-rose-950/20 p-3.5 border border-rose-900/40 text-center">
+            <span className="text-[10px] font-black uppercase tracking-wider text-rose-400 block">
+              Perdidas
+            </span>
+            <div className="text-2xl font-black text-rose-400 mt-0.5">
+              ✗ {lostCount}
+            </div>
+          </div>
+
+          <div className="rounded-2xl bg-amber-950/30 p-3.5 border border-amber-500/40 text-center shadow-sm shadow-amber-500/10">
+            <span className="text-[10px] font-black uppercase tracking-wider text-amber-300 block">
+              Tasa de Acierto
+            </span>
+            <div className={`text-2xl font-black mt-0.5 ${
+              settledCount === 0
+                ? "text-slate-400"
+                : winRate >= 70
+                ? "text-emerald-400"
+                : winRate >= 50
+                ? "text-yellow-400"
+                : "text-rose-400"
+            }`}>
+              {settledCount > 0 ? `${winRate}%` : "—"}
+            </div>
+            <span className="text-[9px] text-slate-500 font-bold block mt-0.5">
+              {settledCount > 0 ? `(${wonCount}/${settledCount} fin.)` : "Sin finalizar"}
+            </span>
+          </div>
+
+          <div className="rounded-2xl bg-slate-950/70 p-3.5 border border-slate-800/80 text-center">
+            <span className="text-[10px] font-black uppercase tracking-wider text-blue-400 block">
+              Pendientes
+            </span>
+            <div className="text-2xl font-black text-blue-400 mt-0.5">
+              ⏳ {pendingCount}
+            </div>
+          </div>
+
+          <div className="rounded-2xl bg-slate-950/70 p-3.5 border border-slate-800/80 text-center">
             <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
               Probabilidad Media
             </span>
@@ -332,25 +408,12 @@ export function DestacadosModule({
             </div>
           </div>
 
-          <div className="rounded-2xl bg-slate-950/70 p-3.5 border border-slate-800/80">
+          <div className="rounded-2xl bg-slate-950/70 p-3.5 border border-slate-800/80 text-center">
             <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
               Cuota Promedio
             </span>
             <div className="text-2xl font-black text-white mt-0.5">
               {avgOdds > 0 ? `@${avgOdds.toFixed(2)}` : "—"}
-            </div>
-          </div>
-
-          <div className="rounded-2xl bg-slate-950/70 p-3.5 border border-slate-800/80">
-            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
-              Auditoría Hoy
-            </span>
-            <div className="text-2xl font-black text-white mt-0.5 flex items-center gap-1.5">
-              <span className="text-emerald-400 font-black">{wonCount}✓</span>
-              {lostCount > 0 && <span className="text-rose-400 text-sm font-bold">{lostCount}✗</span>}
-              {wonCount === 0 && lostCount === 0 && (
-                <span className="text-xs text-slate-400 font-semibold">En progreso</span>
-              )}
             </div>
           </div>
         </div>
@@ -522,9 +585,13 @@ export function DestacadosModule({
               return (
                 <div
                   key={cardKey}
-                  className={`group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-amber-500/40 bg-slate-900/95 p-4.5 sm:p-5 shadow-xl backdrop-blur-xl transition-all duration-200 hover:border-amber-400 hover:shadow-2xl ${
-                    !isCardExpanded ? "cursor-pointer" : ""
-                  }`}
+                  className={`group relative flex flex-col justify-between overflow-hidden rounded-3xl p-4.5 sm:p-5 shadow-xl backdrop-blur-xl transition-all duration-200 ${
+                    isWon
+                      ? "border-2 border-emerald-500 bg-gradient-to-b from-emerald-950/30 via-slate-900/95 to-slate-950 shadow-emerald-500/10"
+                      : isLost
+                      ? "border-2 border-rose-500 bg-gradient-to-b from-rose-950/30 via-slate-900/95 to-slate-950 shadow-rose-500/10"
+                      : "border border-amber-500/40 bg-slate-900/95 hover:border-amber-400 hover:shadow-2xl"
+                  } ${!isCardExpanded ? "cursor-pointer" : ""}`}
                   onClick={() => {
                     if (!isCardExpanded) {
                       toggleCard(cardKey);
@@ -544,12 +611,12 @@ export function DestacadosModule({
 
                       <div className="flex items-center gap-1.5 shrink-0">
                         {isWon ? (
-                          <span className="inline-flex items-center gap-1 rounded-xl px-2 py-0.5 text-[10px] font-black bg-emerald-500 text-slate-950 shadow-xs border border-emerald-400 shrink-0">
-                            ✓ Ganada {finalScore ? `(${finalScore})` : ""}
+                          <span className="inline-flex items-center gap-1 rounded-xl px-2.5 py-0.5 text-[10px] font-black bg-emerald-500 text-slate-950 shadow-xs border border-emerald-400 shrink-0">
+                            ✓ GANADA {finalScore ? `• ${finalScore}` : ""}
                           </span>
                         ) : isLost ? (
-                          <span className="inline-flex items-center gap-1 rounded-xl px-2 py-0.5 text-[10px] font-black bg-rose-600 text-white shadow-xs border border-rose-400 shrink-0">
-                            ✗ Perdida {finalScore ? `(${finalScore})` : ""}
+                          <span className="inline-flex items-center gap-1 rounded-xl px-2.5 py-0.5 text-[10px] font-black bg-rose-600 text-white shadow-xs border border-rose-400 shrink-0">
+                            ✗ PERDIDA {finalScore ? `• ${finalScore}` : ""}
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 rounded-xl bg-slate-950/80 border border-slate-800 px-2 py-0.5 text-[10px] font-bold text-slate-300 shrink-0">

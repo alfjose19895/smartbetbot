@@ -101,6 +101,10 @@ export interface WeekendSlate {
     totalPicks: number;
     avgProbability: number;
     avgOdds: number;
+    won?: number;
+    lost?: number;
+    pending?: number;
+    winRate?: number;
     byRule: {
       corners: number;
       btts: number;

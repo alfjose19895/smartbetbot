@@ -227,5 +227,84 @@ describe('Módulo Exclusivo Fin de Semana (Weekend Exclusive Engine)', () => {
       expect(vetoResult.approvedPicks.length).toBeGreaterThan(0);
       expect(vetoResult.approvedPicks[0].fixtureId).toBe(888101);
     });
+
+    it('settles weekend slate picks and computes winRate and settlement quantities', async () => {
+      const { settleWeekendSlate } = await import('./weekend-exclusive-server');
+      const mockCycle = getWeekendCycleInfo(new Date('2026-10-16T12:00:00Z'));
+
+      const mockSlate: import('./weekend-exclusive').WeekendSlate = {
+        cycle: mockCycle,
+        targetCount: 15,
+        picks: [
+          {
+            id: 'pick-1',
+            fixtureId: 9991,
+            homeTeam: 'Arsenal',
+            awayTeam: 'Chelsea',
+            league: 'Premier League',
+            market: 'Córners',
+            selection: 'Over 8.5',
+            odds: 1.65,
+            probability: 75,
+            confidence: 'Muy Alta',
+            status: 'won',
+            actualScore: '11 corners',
+            dayOfWeek: 'saturday',
+            dayLabel: 'Sábado 17',
+            weekendOrder: 1,
+            ruleMatch: { ruleId: 'corners', ruleName: 'Córners Over 8.5', minProb: 70, icon: '🚩', marketDescription: 'Over 8.5 Córners' },
+          } as any,
+          {
+            id: 'pick-2',
+            fixtureId: 9992,
+            homeTeam: 'Real Madrid',
+            awayTeam: 'Barcelona',
+            league: 'La Liga',
+            market: 'Ambos Anotan',
+            selection: 'Sí',
+            odds: 1.70,
+            probability: 68,
+            confidence: 'Alta',
+            status: 'lost',
+            actualScore: '0 - 1',
+            dayOfWeek: 'sunday',
+            dayLabel: 'Domingo 18',
+            weekendOrder: 2,
+            ruleMatch: { ruleId: 'btts', ruleName: 'Ambos Anotan (BTTS)', minProb: 58, icon: '⚽', marketDescription: 'Ambos Marcan' },
+          } as any,
+          {
+            id: 'pick-3',
+            fixtureId: 9993,
+            homeTeam: 'Bayern Munich',
+            awayTeam: 'Dortmund',
+            league: 'Bundesliga',
+            market: 'Total Goles',
+            selection: 'Over 2.5',
+            odds: 1.55,
+            probability: 76,
+            confidence: 'Muy Alta',
+            status: 'pending',
+            dayOfWeek: 'saturday',
+            dayLabel: 'Sábado 17',
+            weekendOrder: 3,
+            ruleMatch: { ruleId: 'goals', ruleName: 'Over Goles (+2.5)', minProb: 72, icon: '🔥', marketDescription: 'Más de 2.5 Goles' },
+          } as any,
+        ],
+        stats: {
+          totalPicks: 3,
+          avgProbability: 73,
+          avgOdds: 1.63,
+          byRule: { corners: 1, btts: 1, goals: 1, local: 0, away: 0 },
+          byDay: { friday: 0, saturday: 2, sunday: 1 },
+        },
+        generatedAt: new Date().toISOString(),
+      };
+
+      const settled = await settleWeekendSlate(mockSlate);
+      expect(settled.stats.won).toBe(1);
+      expect(settled.stats.lost).toBe(1);
+      expect(settled.stats.pending).toBe(1);
+      expect(settled.stats.winRate).toBe(50); // 1 won / 2 settled = 50%
+    });
   });
 });

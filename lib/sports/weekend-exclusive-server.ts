@@ -15,6 +15,7 @@ import {
   evaluateFixturePrediction,
   isExcludedMatch,
   getMarketPriorityRank,
+  getCanonicalTeamKey,
 } from './prediction-engine';
 import {
   loadDailySnapshot,
@@ -24,6 +25,7 @@ import {
   isCuratedLeague,
   isYouthOrReserveFixture,
   getDailyAlertLimit,
+  settleActiveSnapshotWithRealScores,
 } from './db';
 import { apiFootball, extractMarketOddsFromBookmaker, ApiFootballOddsItem } from './api-football';
 import { auditPredictionsWithGeminiVeto } from '@/lib/ai/claude-analyst';
@@ -276,6 +278,113 @@ export async function fetchAndEvaluateDayFixtures(dateStr: string): Promise<Mark
 }
 
 /**
+ * Liquida las selecciones del fin de semana con los marcadores y estadísticas oficiales
+ * de Viernes, Sábado y Domingo, calculando cantidades ganadas, perdidas, pendientes y % de acierto.
+ */
+export async function settleWeekendSlate(slate: WeekendSlate, filePath?: string): Promise<WeekendSlate> {
+  if (!slate || !Array.isArray(slate.picks) || slate.picks.length === 0) {
+    return slate;
+  }
+
+  try {
+    const [friSettled, satSettled, sunSettled] = await Promise.all([
+      settleActiveSnapshotWithRealScores(slate.cycle.fridayDate, 'football').catch(() => []),
+      settleActiveSnapshotWithRealScores(slate.cycle.saturdayDate, 'football').catch(() => []),
+      settleActiveSnapshotWithRealScores(slate.cycle.sundayDate, 'football').catch(() => []),
+    ]);
+
+    const allSettled = [...friSettled, ...satSettled, ...sunSettled];
+    const settledByFixId = new Map<number, MarketOpportunity>();
+    const settledByTeams = new Map<string, MarketOpportunity>();
+
+    for (const p of allSettled) {
+      if (p.fixtureId) {
+        settledByFixId.set(Number(p.fixtureId), p);
+      }
+      const hNorm = getCanonicalTeamKey(p.homeTeam);
+      const aNorm = getCanonicalTeamKey(p.awayTeam);
+      if (hNorm && aNorm) {
+        settledByTeams.set(`${hNorm}-${aNorm}`, p);
+      }
+    }
+
+    let hasUpdates = false;
+    const updatedPicks: WeekendExclusivePick[] = slate.picks.map((pick) => {
+      let match = pick.fixtureId ? settledByFixId.get(Number(pick.fixtureId)) : undefined;
+      if (!match) {
+        const hNorm = getCanonicalTeamKey(pick.homeTeam);
+        const aNorm = getCanonicalTeamKey(pick.awayTeam);
+        match = settledByTeams.get(`${hNorm}-${aNorm}`);
+      }
+
+      if (match) {
+        const matchStatus = match.status;
+        const matchResult = (match as any).result;
+        const matchActualScore = match.actualScore;
+        const isFinishedSettled = matchStatus === 'won' || matchStatus === 'lost' || matchResult === 'WON' || matchResult === 'LOST';
+
+        if (isFinishedSettled) {
+          if (pick.status !== matchStatus || pick.actualScore !== matchActualScore || (pick as any).result !== matchResult) {
+            hasUpdates = true;
+          }
+          return {
+            ...pick,
+            status: matchStatus,
+            actualScore: matchActualScore || pick.actualScore,
+            result: matchResult || (matchStatus === 'won' ? 'WON' : 'LOST'),
+            profit: (match as any).profit ?? pick.profit,
+            currentScore: match.currentScore || pick.currentScore,
+            livePeriod: match.livePeriod,
+            liveMinute: match.liveMinute,
+          };
+        } else if (match.currentScore && (match.matchTiming === 'live' || match.currentScore !== pick.currentScore)) {
+          hasUpdates = true;
+          return {
+            ...pick,
+            currentScore: match.currentScore,
+            matchTiming: match.matchTiming || pick.matchTiming,
+            livePeriod: match.livePeriod,
+            liveMinute: match.liveMinute,
+          };
+        }
+      }
+      return pick;
+    });
+
+    const wonCount = updatedPicks.filter((p) => p.status === 'won' || (p as any).result === 'WON').length;
+    const lostCount = updatedPicks.filter((p) => p.status === 'lost' || (p as any).result === 'LOST').length;
+    const settledCount = wonCount + lostCount;
+    const pendingCount = updatedPicks.length - settledCount;
+    const winRate = settledCount > 0 ? Math.round((wonCount / settledCount) * 100) : 0;
+
+    const updatedSlate: WeekendSlate = {
+      ...slate,
+      picks: updatedPicks,
+      stats: {
+        ...slate.stats,
+        won: wonCount,
+        lost: lostCount,
+        pending: pendingCount,
+        winRate,
+      },
+    };
+
+    if (hasUpdates && filePath && !process.env.VITEST && process.env.NODE_ENV !== 'test') {
+      try {
+        fs.writeFileSync(filePath, JSON.stringify(updatedSlate, null, 2), 'utf-8');
+      } catch (err) {
+        console.warn('[WeekendExclusive] Error guardando slate liquidado en disco:', err);
+      }
+    }
+
+    return updatedSlate;
+  } catch (err) {
+    console.warn('[WeekendExclusive] Error liquidando cartelera de fin de semana:', err);
+    return slate;
+  }
+}
+
+/**
  * Obtiene o compila el conjunto de 15 pronósticos de élite para el fin de semana.
  */
 export async function getWeekendExclusiveSlate(options?: {
@@ -297,7 +406,7 @@ export async function getWeekendExclusiveSlate(options?: {
         const tier1Count = parsed.picks.filter((p) => (p.leagueTier || 3) === 1).length;
         if (hasWeekendDays && tier1Count >= 4) {
           parsed.cycle = cycle;
-          return parsed;
+          return await settleWeekendSlate(parsed, filePath);
         }
       }
     } catch {
@@ -540,7 +649,7 @@ export async function getWeekendExclusiveSlate(options?: {
     }
   }
 
-  return slate;
+  return await settleWeekendSlate(slate, filePath);
 }
 
 /**

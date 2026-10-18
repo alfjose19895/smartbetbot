@@ -166,21 +166,17 @@ export function PredictionCard({
   const statusBadge = getMatchLiveStatusBadge(prediction.kickoff);
   const { time: formattedTime, date: formattedDateShort } = formatMatchKickoffTime(prediction.kickoff);
 
-  const isPending =
-    prediction.status === "pending" ||
-    prediction.matchTiming === "prematch" ||
-    (!prediction.status && !prediction.actualScore);
-
-  const isWon =
-    !isPending &&
-    (prediction.status === "won" ||
+  const isWon = Boolean(
+    prediction.status === "won" ||
       (prediction as any).result === "WON" ||
-      (prediction.status as string) === "WON");
-  const isLost =
-    !isPending &&
-    (prediction.status === "lost" ||
+      (prediction.status as string) === "WON"
+  );
+  const isLost = Boolean(
+    prediction.status === "lost" ||
       (prediction as any).result === "LOST" ||
-      (prediction.status as string) === "LOST");
+      (prediction.status as string) === "LOST"
+  );
+  const isPending = !isWon && !isLost;
 
   const isMcp = Boolean(
     prediction.isMcp ||
@@ -201,6 +197,28 @@ export function PredictionCard({
       prediction.source === "corners_vip" ||
       prediction.pickBadge === "corners_vip" ||
       prediction.vipBadge === "Corners VIP"
+  );
+
+  const isCardsVip = Boolean(
+    prediction.isCardsVip ||
+      prediction.source === "cards_vip" ||
+      prediction.pickBadge === "cards_vip" ||
+      prediction.vipBadge === "Tarjetas VIP"
+  );
+
+  const isShotsVip = Boolean(
+    prediction.isShotsVip ||
+      prediction.source === "shots_vip" ||
+      prediction.pickBadge === "shots_vip" ||
+      prediction.vipBadge === "Disparos VIP"
+  );
+
+  const isWeekendVip = Boolean(
+    (prediction as any).isWeekendVip ||
+      (prediction as any).source === "weekend" ||
+      (prediction as any).pickBadge === "weekend" ||
+      prediction.vipBadge === "Finde VIP" ||
+      prediction.vipBadge === "Weekend Exclusive"
   );
 
   const destacadoMatch = getDestacadoRuleMatch(prediction);
@@ -357,12 +375,12 @@ export function PredictionCard({
                 </span>
 
                 {isWon ? (
-                  <span className="inline-flex items-center gap-1 rounded-xl px-2 py-0.5 text-[10px] font-black bg-emerald-500 text-slate-950 shadow-xs border border-emerald-400 shrink-0">
-                    ✓ Ganada
+                  <span className="inline-flex items-center gap-1 rounded-xl px-2.5 py-0.5 text-[10px] font-black bg-emerald-500 text-slate-950 shadow-xs border border-emerald-400 shrink-0">
+                    ✓ Ganada {finalScoreText ? `(${finalScoreText})` : ""}
                   </span>
                 ) : isLost ? (
-                  <span className="inline-flex items-center gap-1 rounded-xl px-2 py-0.5 text-[10px] font-black bg-rose-600 text-white shadow-xs border border-rose-400 shrink-0">
-                    ✗ Perdida
+                  <span className="inline-flex items-center gap-1 rounded-xl px-2.5 py-0.5 text-[10px] font-black bg-rose-600 text-white shadow-xs border border-rose-400 shrink-0">
+                    ✗ Perdida {finalScoreText ? `(${finalScoreText})` : ""}
                   </span>
                 ) : statusBadge ? (
                   <span className={`inline-flex items-center rounded-xl px-2 py-0.5 text-[9px] font-black border shrink-0 ${statusBadge.cls}`}>
@@ -397,6 +415,24 @@ export function PredictionCard({
                   <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-xs shrink-0 border border-amber-300">
                     <span>🚩</span>
                     <span>CORNERS VIP</span>
+                  </span>
+                )}
+                {isCardsVip && (
+                  <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black bg-gradient-to-r from-yellow-500 to-amber-500 text-slate-950 shadow-xs shrink-0 border border-yellow-300">
+                    <span>🟨</span>
+                    <span>TARJETAS VIP</span>
+                  </span>
+                )}
+                {isShotsVip && (
+                  <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black bg-gradient-to-r from-cyan-500 to-blue-500 text-slate-950 shadow-xs shrink-0 border border-cyan-300">
+                    <span>🎯</span>
+                    <span>DISPAROS VIP</span>
+                  </span>
+                )}
+                {isWeekendVip && (
+                  <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-xs shrink-0 border border-indigo-400">
+                    <span>💎</span>
+                    <span>FINDE VIP</span>
                   </span>
                 )}
                 {isDestacado && !isCornersVip && (
@@ -555,11 +591,11 @@ export function PredictionCard({
 
                 {isWon ? (
                   <span className="inline-flex items-center gap-1 rounded-xl px-2.5 py-1 text-xs font-black bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30 border border-emerald-400 shrink-0">
-                    ✓ GANADA
+                    ✓ GANADA {finalScoreText ? `(${finalScoreText})` : ""}
                   </span>
                 ) : isLost ? (
                   <span className="inline-flex items-center gap-1 rounded-xl px-2.5 py-1 text-xs font-black bg-rose-600 text-white shadow-md shadow-rose-600/30 border border-rose-400 shrink-0">
-                    ✗ PERDIDA
+                    ✗ PERDIDA {finalScoreText ? `(${finalScoreText})` : ""}
                   </span>
                 ) : statusBadge ? (
                   <span className={`inline-flex items-center rounded-xl px-2.5 py-1 text-[10px] font-black border shrink-0 ${statusBadge.cls}`}>
@@ -597,6 +633,24 @@ export function PredictionCard({
                   <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black border border-amber-300 shadow-md shadow-amber-500/30 shrink-0">
                     <span>🚩</span>
                     <span>CORNERS VIP</span>
+                  </span>
+                )}
+                {isCardsVip && (
+                  <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-gradient-to-r from-yellow-500 to-amber-500 text-slate-950 font-black border border-yellow-300 shadow-md shadow-yellow-500/30 shrink-0">
+                    <span>🟨</span>
+                    <span>TARJETAS VIP</span>
+                  </span>
+                )}
+                {isShotsVip && (
+                  <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-gradient-to-r from-cyan-500 to-blue-500 text-slate-950 font-black border border-cyan-300 shadow-md shadow-cyan-500/30 shrink-0">
+                    <span>🎯</span>
+                    <span>DISPAROS VIP</span>
+                  </span>
+                )}
+                {isWeekendVip && (
+                  <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-black border border-indigo-400 shadow-md shadow-indigo-500/30 shrink-0">
+                    <span>💎</span>
+                    <span>FINDE VIP</span>
                   </span>
                 )}
                 {isDestacado && !isCornersVip && (

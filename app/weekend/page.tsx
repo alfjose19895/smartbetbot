@@ -96,6 +96,18 @@ export default function WeekendExclusivePage() {
                     🚩 Corners VIP
                   </Link>
                   <Link
+                    href="/cards-vip"
+                    className="rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-3.5 py-2 text-xs font-bold text-yellow-300 hover:bg-yellow-500/20 transition"
+                  >
+                    🟨 Tarjetas VIP
+                  </Link>
+                  <Link
+                    href="/shots-vip"
+                    className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-2 text-xs font-bold text-cyan-300 hover:bg-cyan-500/20 transition"
+                  >
+                    🎯 Disparos VIP
+                  </Link>
+                  <Link
                     href="/featured"
                     className="rounded-xl border border-slate-700 bg-slate-800 px-3.5 py-2 text-xs font-bold text-slate-200 hover:bg-slate-700 transition"
                   >

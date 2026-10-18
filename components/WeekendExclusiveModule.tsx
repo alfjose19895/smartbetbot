@@ -174,6 +174,19 @@ export function WeekendExclusiveModule({
     return counts;
   }, [allPicks]);
 
+  // Settlement stats
+  const wonCount = useMemo(
+    () => allPicks.filter((p) => p.status === "won" || (p as any).result === "WON").length,
+    [allPicks]
+  );
+  const lostCount = useMemo(
+    () => allPicks.filter((p) => p.status === "lost" || (p as any).result === "LOST").length,
+    [allPicks]
+  );
+  const settledCount = wonCount + lostCount;
+  const pendingCount = allPicks.length - settledCount;
+  const winRate = settledCount > 0 ? Math.round((wonCount / settledCount) * 100) : 0;
+
   // Card expand/minimize
   const toggleCard = (key: string) => {
     setExpandedCards((prev) => ({
@@ -201,7 +214,8 @@ export function WeekendExclusiveModule({
       "💎⭐⭐⭐⭐⭐ EXCLUSIVAS FIN DE SEMANA — SMARTBETBOT ⭐⭐⭐⭐⭐💎",
       "🏆 Cartelera Oficial de 15 Selecciones de Alta Probabilidad",
       `📅 Ciclo: ${liveCycle.fridayDate} al ${liveCycle.sundayDate}`,
-      `📊 Selecciones: ${filteredPicks.length} | Prob. Media: ${slate?.stats.avgProbability || 0}% | Cuota Media: @${(slate?.stats.avgOdds || 1.5).toFixed(2)}`,
+      `📊 Selecciones: ${filteredPicks.length} | Ganadas: ${wonCount} | Perdidas: ${lostCount} | Acierto: ${settledCount > 0 ? `${winRate}%` : "En juego"}`,
+      `📈 Prob. Media: ${slate?.stats.avgProbability || 0}% | Cuota Media: @${(slate?.stats.avgOdds || 1.5).toFixed(2)}`,
       "",
       "---------------------------------------------",
     ];
@@ -219,10 +233,18 @@ export function WeekendExclusiveModule({
         lines.push("", d.label, "====================");
         picksInDay.forEach((p) => {
           const ruleLabel = p.ruleMatch ? `[${p.ruleMatch.icon} ${p.ruleMatch.ruleName}]` : "";
+          const statusText =
+            p.status === "won" || (p as any).result === "WON"
+              ? `✓ GANADA ${p.actualScore ? `(${p.actualScore})` : ""}`
+              : p.status === "lost" || (p as any).result === "LOST"
+              ? `✗ PERDIDA ${p.actualScore ? `(${p.actualScore})` : ""}`
+              : "⏳ Pendiente";
+
           lines.push(
             `#${p.weekendOrder || "⭐"} ${p.homeTeam} vs ${p.awayTeam} (${p.league})`,
             `   🎯 Selección: ${p.market} (${p.selection})`,
             `   📈 Probabilidad: ${p.probability}% | Cuota: @${(p.odds ?? 1.5).toFixed(2)}`,
+            `   📊 Estado: ${statusText}`,
             `   ✓ Regla Cumplida: ${ruleLabel}`,
             `   🧠 Análisis: "${p.explanation || "Máxima convicción estadística"}"`,
             ""
@@ -247,6 +269,12 @@ export function WeekendExclusiveModule({
   const handleCopySingleText = (pick: WeekendExclusivePick) => {
     const key = String(pick.id || pick.fixtureId || `${pick.homeTeam}-${pick.awayTeam}-${pick.market}`);
     const ruleLabel = pick.ruleMatch ? `[${pick.ruleMatch.icon} ${pick.ruleMatch.ruleName}]` : "";
+    const statusText =
+      pick.status === "won" || (pick as any).result === "WON"
+        ? `✓ GANADA ${pick.actualScore ? `(${pick.actualScore})` : ""}`
+        : pick.status === "lost" || (pick as any).result === "LOST"
+        ? `✗ PERDIDA ${pick.actualScore ? `(${pick.actualScore})` : ""}`
+        : "⏳ Pendiente";
 
     const text = [
       "💎 EXCLUSIVA FIN DE SEMANA SMARTBETBOT 💎",
@@ -255,6 +283,7 @@ export function WeekendExclusiveModule({
       `🎯 Pronóstico: ${pick.market} (${pick.selection})`,
       `🏢 Cuota: @${(pick.odds ?? 1.5).toFixed(2)}`,
       `📈 Probabilidad IA: ${pick.probability}% (+${pick.edge || 5}% Valor)`,
+      `📊 Estado: ${statusText}`,
       `✓ Regla Fin de Semana: ${ruleLabel}`,
       "",
       `🧠 Análisis: "${pick.explanation || "Máxima certeza cuantitativa"}"`,
@@ -421,25 +450,100 @@ export function WeekendExclusiveModule({
       </div>
 
       {/* 2. Key Metrics Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
+        {/* Total Cartelera */}
         <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 backdrop-blur-sm">
           <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-            Objetivo Cumplido
+            Total Cartelera
           </div>
           <div className="mt-1 flex items-baseline gap-2">
             <span className="text-2xl sm:text-3xl font-black text-white">
               {allPicks.length}
             </span>
-            <span className="text-xs text-slate-400 font-medium">/ 15 Pronósticos</span>
+            <span className="text-xs text-slate-400 font-medium">/ 15</span>
           </div>
           <div className="mt-1 text-[11px] text-indigo-400 font-semibold">
-            {allPicks.length >= 15 ? "✓ Cartelera Completa" : "En compilación activa"}
+            {allPicks.length >= 15 ? "✓ Completa" : "En compilación"}
           </div>
         </div>
 
+        {/* Ganadas */}
+        <div className="rounded-2xl border border-emerald-500/20 bg-emerald-950/20 p-4 backdrop-blur-sm">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1">
+            <span>✓ Ganadas</span>
+          </div>
+          <div className="mt-1 flex items-baseline gap-2">
+            <span className="text-2xl sm:text-3xl font-black text-emerald-400">
+              {wonCount}
+            </span>
+            <span className="text-xs text-slate-400 font-medium">aciertos</span>
+          </div>
+          <div className="mt-1 text-[11px] text-emerald-500 font-medium">
+            Liquidados FT
+          </div>
+        </div>
+
+        {/* Perdidas */}
+        <div className="rounded-2xl border border-rose-500/20 bg-rose-950/20 p-4 backdrop-blur-sm">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-rose-400 flex items-center gap-1">
+            <span>✗ Perdidas</span>
+          </div>
+          <div className="mt-1 flex items-baseline gap-2">
+            <span className="text-2xl sm:text-3xl font-black text-rose-400">
+              {lostCount}
+            </span>
+            <span className="text-xs text-slate-400 font-medium">fallos</span>
+          </div>
+          <div className="mt-1 text-[11px] text-rose-400/80 font-medium">
+            Sin acierto
+          </div>
+        </div>
+
+        {/* Tasa de Acierto */}
+        <div className="rounded-2xl border border-indigo-500/30 bg-indigo-950/30 p-4 backdrop-blur-sm">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-indigo-300">
+            Tasa de Acierto
+          </div>
+          <div className="mt-1 flex items-baseline gap-2">
+            <span
+              className={`text-2xl sm:text-3xl font-black ${
+                settledCount === 0
+                  ? "text-slate-400"
+                  : winRate >= 70
+                  ? "text-emerald-400"
+                  : winRate >= 50
+                  ? "text-amber-400"
+                  : "text-rose-400"
+              }`}
+            >
+              {settledCount > 0 ? `${winRate}%` : "—"}
+            </span>
+          </div>
+          <div className="mt-1 text-[11px] text-slate-400 font-medium">
+            {settledCount > 0 ? `${settledCount} resueltos` : "Esperando cierre"}
+          </div>
+        </div>
+
+        {/* Pendientes */}
+        <div className="rounded-2xl border border-amber-500/20 bg-amber-950/20 p-4 backdrop-blur-sm">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">
+            <span>⏳ Pendientes</span>
+          </div>
+          <div className="mt-1 flex items-baseline gap-2">
+            <span className="text-2xl sm:text-3xl font-black text-amber-400">
+              {pendingCount}
+            </span>
+            <span className="text-xs text-slate-400 font-medium">espera</span>
+          </div>
+          <div className="mt-1 text-[11px] text-amber-400/80 font-medium">
+            Por disputar
+          </div>
+        </div>
+
+        {/* Probabilidad Media */}
         <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 backdrop-blur-sm">
           <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-            Probabilidad Media
+            Prob. Media
           </div>
           <div className="mt-1 flex items-baseline gap-2">
             <span className="text-2xl sm:text-3xl font-black text-emerald-400">
@@ -447,13 +551,14 @@ export function WeekendExclusiveModule({
             </span>
           </div>
           <div className="mt-1 text-[11px] text-slate-400 font-medium">
-            Convicción Cuantitativa IA
+            Convicción Cuantitativa
           </div>
         </div>
 
+        {/* Cuota Media */}
         <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 backdrop-blur-sm">
           <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-            Cuota Promedio
+            Cuota Media
           </div>
           <div className="mt-1 flex items-baseline gap-2">
             <span className="text-2xl sm:text-3xl font-black text-cyan-400">
@@ -462,26 +567,6 @@ export function WeekendExclusiveModule({
           </div>
           <div className="mt-1 text-[11px] text-slate-400 font-medium">
             Rango óptimo seguro
-          </div>
-        </div>
-
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 backdrop-blur-sm">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-            Distribución por Días
-          </div>
-          <div className="mt-1.5 flex items-center gap-2 text-xs font-bold text-slate-300">
-            <span className="rounded bg-slate-800 px-1.5 py-0.5 text-indigo-300">
-              Vie: {dayCounts.friday}
-            </span>
-            <span className="rounded bg-slate-800 px-1.5 py-0.5 text-purple-300">
-              Sáb: {dayCounts.saturday}
-            </span>
-            <span className="rounded bg-slate-800 px-1.5 py-0.5 text-pink-300">
-              Dom: {dayCounts.sunday}
-            </span>
-          </div>
-          <div className="mt-1 text-[11px] text-slate-400 font-medium">
-            3 Fechas de Acción
           </div>
         </div>
       </div>
@@ -673,14 +758,54 @@ export function WeekendExclusiveModule({
                   timeZone: "America/Guayaquil",
                 })
               : "";
+            const isWon = pick.status === "won" || (pick as any).result === "WON";
+            const isLost = pick.status === "lost" || (pick as any).result === "LOST";
+            const isPending = !isWon && !isLost;
+            const finalScore = pick.actualScore || (pick as any).score;
 
             return (
               <div
                 key={cardKey}
-                className="group relative flex flex-col justify-between rounded-2xl border border-slate-800 bg-gradient-to-b from-slate-900/90 to-slate-950/90 p-4 sm:p-5 shadow-lg transition-all hover:border-indigo-500/40 hover:shadow-indigo-500/5 backdrop-blur-sm"
+                className={`group relative flex flex-col justify-between rounded-2xl border transition-all backdrop-blur-sm p-4 sm:p-5 shadow-lg ${
+                  isWon
+                    ? "border-emerald-500/60 bg-emerald-950/20 shadow-emerald-500/10 ring-1 ring-emerald-500/30"
+                    : isLost
+                    ? "border-rose-500/60 bg-rose-950/20 shadow-rose-500/10 ring-1 ring-rose-500/30"
+                    : "border-slate-800 bg-gradient-to-b from-slate-900/90 to-slate-950/90 hover:border-indigo-500/40 hover:shadow-indigo-500/5"
+                }`}
               >
-                {/* Card Top: Day Pill + Rule Badge */}
+                {/* Card Top: Settlement Status Banner + Day Pill + Rule Badge */}
                 <div>
+                  {/* Settlement Status Banner */}
+                  {isWon && (
+                    <div className="mb-3 flex items-center justify-between rounded-xl border border-emerald-500/40 bg-emerald-950/70 px-3 py-1.5 text-xs font-black text-emerald-400">
+                      <span className="flex items-center gap-1.5">
+                        <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                        ✓ GANADA {finalScore ? `(${finalScore})` : ""}
+                      </span>
+                      <span className="text-[10px] uppercase tracking-wider text-emerald-300/80 font-bold">Liquidado FT</span>
+                    </div>
+                  )}
+                  {isLost && (
+                    <div className="mb-3 flex items-center justify-between rounded-xl border border-rose-500/40 bg-rose-950/70 px-3 py-1.5 text-xs font-black text-rose-400">
+                      <span className="flex items-center gap-1.5">
+                        <span>✗</span> PERDIDA {finalScore ? `(${finalScore})` : ""}
+                      </span>
+                      <span className="text-[10px] uppercase tracking-wider text-rose-300/80 font-bold">Liquidado FT</span>
+                    </div>
+                  )}
+                  {isPending && (pick.matchTiming === "live" || pick.currentScore) && (
+                    <div className="mb-3 flex items-center justify-between rounded-xl border border-amber-500/40 bg-amber-950/70 px-3 py-1.5 text-xs font-black text-amber-300">
+                      <span className="flex items-center gap-1.5">
+                        <span className="h-2 w-2 rounded-full bg-amber-400 animate-ping" />
+                        EN VIVO {pick.currentScore ? `(${pick.currentScore})` : ""}
+                      </span>
+                      <span className="text-[10px] uppercase tracking-wider text-amber-300/80 font-bold">
+                        {pick.liveMinute ? `${pick.liveMinute}'` : "En juego"}
+                      </span>
+                    </div>
+                  )}
+
                   <div className="flex items-center justify-between gap-2 mb-3">
                     <span className="inline-flex items-center gap-1 rounded-lg bg-indigo-950/90 border border-indigo-500/40 px-2.5 py-1 text-[11px] font-black text-indigo-300">
                       <span>📅</span>
