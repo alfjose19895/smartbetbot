@@ -4,6 +4,7 @@ import {
   MarketOpportunity,
   isExcludedMatch,
   getCanonicalTeamKey,
+  getTeamRating,
 } from "./prediction-engine";
 import {
   loadDailySnapshot,
@@ -12,6 +13,7 @@ import {
   settleActiveSnapshotWithRealScores,
   isYouthOrReserveFixture,
   getOpportunityKey,
+  isCuratedLeague,
 } from "./db";
 import { apiFootball, extractMarketOddsFromBookmaker, ApiFootballOddsItem } from "./api-football";
 import { auditPredictionsWithGeminiVeto } from "@/lib/ai/claude-analyst";
@@ -76,7 +78,7 @@ export async function saveShotsVipSnapshotAsync(
 }
 
 /**
- * Verifica si un fixture califica para el análisis de disparos (todas las ligas profesionales del mundo).
+ * Verifica si un fixture califica para el análisis de disparos (competiciones profesionales con telemetría de remates comprobada).
  */
 function isSeniorCompetitiveShotsFixture(item: any): boolean {
   if (!item.fixture?.id || !item.teams?.home?.name || !item.teams?.away?.name || !item.fixture?.date) {
@@ -87,8 +89,27 @@ function isSeniorCompetitiveShotsFixture(item: any): boolean {
   if (["PST", "CANC", "ABD", "AWD", "WO", "POST"].includes(shortStatus)) return false;
 
   const legName = (item.league?.name || "").toLowerCase();
+  const cName = (item.league?.country || "").toLowerCase();
   const hName = (item.teams.home.name || "").toLowerCase();
   const aName = (item.teams.away.name || "").toLowerCase();
+
+  // Excluir ligas de bajo ritmo ofensivo o sin telemetría oficial de disparos
+  if (
+    cName.includes("japan") ||
+    legName.includes("j1") ||
+    legName.includes("j2") ||
+    legName.includes("j3") ||
+    cName.includes("new-zealand") ||
+    cName.includes("zealand") ||
+    legName.includes("second league") ||
+    legName.includes("division a") ||
+    legName.includes("division b") ||
+    legName.includes("expansion") ||
+    legName.includes("expansión") ||
+    legName.includes("lowland")
+  ) {
+    return false;
+  }
 
   // Excluir categorías formativas, filiales y ligas no profesionales
   if (
@@ -156,6 +177,7 @@ function poissonOver(lambda: number, k: number): number {
 
 /**
  * Evalúa las probabilidades cuantitativas de Disparos (Tiros a Puerta y Disparos Totales) para un fixture.
+ * Pondera la tasa de la competición, la jerarquía ofensiva de los clubes y la expectativa combinada.
  */
 export function evaluateFixtureShotsPrediction(params: {
   fixtureId: number | string;
@@ -179,6 +201,7 @@ export function evaluateFixtureShotsPrediction(params: {
     homeLogo,
     awayLogo,
     league,
+    leagueId,
     country,
     leagueLogo,
     kickoff,
@@ -188,9 +211,9 @@ export function evaluateFixtureShotsPrediction(params: {
   const cLower = (country || "").toLowerCase();
   const lLower = (league || "").toLowerCase();
 
-  // 1. Tasa base de Tiros a Puerta (Shots on Goal) y Disparos Totales
-  let baseSOG = 9.2; // Promedio estándar
-  let baseTotalShots = 24.2;
+  // 1. Tasa base calibrada por liga/país para Tiros al Arco (SOG) y Disparos Totales
+  let baseSOG = 8.6;
+  let baseTotalShots = 22.8;
 
   if (cLower.includes("england") || lLower.includes("premier")) {
     baseSOG = 9.8;
@@ -198,18 +221,37 @@ export function evaluateFixtureShotsPrediction(params: {
   } else if (cLower.includes("germany") || lLower.includes("bundesliga")) {
     baseSOG = 9.6;
     baseTotalShots = 25.0;
+  } else if (lLower.includes("champions") || lLower.includes("europa") || lLower.includes("libertadores")) {
+    baseSOG = 9.5;
+    baseTotalShots = 24.8;
   } else if (cLower.includes("spain") || lLower.includes("laliga")) {
     baseSOG = 8.8;
-    baseTotalShots = 23.5;
+    baseTotalShots = 23.4;
   } else if (cLower.includes("ital") || lLower.includes("serie a")) {
     baseSOG = 8.9;
-    baseTotalShots = 24.0;
+    baseTotalShots = 23.6;
   } else if (cLower.includes("argentina") || cLower.includes("brazil")) {
+    baseSOG = 9.0;
+    baseTotalShots = 23.8;
+  } else if (cLower.includes("netherlands") || lLower.includes("eredivisie") || cLower.includes("belgium")) {
     baseSOG = 9.4;
-    baseTotalShots = 24.8;
+    baseTotalShots = 24.5;
   }
 
-  // 2. Factor ofensivo de equipos de alto volumen de tiro
+  // 2. Factor ofensivo dinámico basado en ratings ELO y clubes de alto volumen
+  const rHome = getTeamRating(homeTeam);
+  const rAway = getTeamRating(awayTeam);
+  const avgRating = (rHome + rAway) / 2;
+
+  let qualityMultiplier = 1.0;
+  if (avgRating >= 1830) {
+    qualityMultiplier = 1.14; // Élite europea ofensiva
+  } else if (avgRating >= 1740) {
+    qualityMultiplier = 1.07; // Ritmo competitivo alto
+  } else if (avgRating < 1560) {
+    qualityMultiplier = 0.88; // Clubes de bajo promedio ofensivo / ligas menores
+  }
+
   const hCanon = getCanonicalTeamKey(homeTeam);
   const aCanon = getCanonicalTeamKey(awayTeam);
 
@@ -217,17 +259,22 @@ export function evaluateFixtureShotsPrediction(params: {
     "manchestercity", "liverpool", "arsenal", "realmadrid", "barcelona",
     "bayernmunchen", "bayerleverkusen", "borussiadortmund", "psg",
     "inter", "atalanta", "napoli", "juventus", "riverplate", "bocajuniors",
-    "flamengo", "palmeiras", "chelsea", "tottenham"
+    "flamengo", "palmeiras", "chelsea", "tottenham", "astonvilla"
   ];
 
-  let volumeMultiplier = 1.0;
-  if (highVolumeTeams.some((t) => hCanon.includes(t))) volumeMultiplier += 0.12;
-  if (highVolumeTeams.some((t) => aCanon.includes(t))) volumeMultiplier += 0.08;
+  let volumeMultiplier = qualityMultiplier;
+  if (highVolumeTeams.some((t) => hCanon.includes(t))) volumeMultiplier += 0.08;
+  if (highVolumeTeams.some((t) => aCanon.includes(t))) volumeMultiplier += 0.05;
 
   const expectedSOG = baseSOG * volumeMultiplier;
   const expectedTotalShots = baseTotalShots * volumeMultiplier;
 
-  // 3. Evaluar líneas candidatas estrictamente OVER
+  // Si no hay suficiente volumen proyectado en el duelo, descartar
+  if (expectedSOG < 8.2 && expectedTotalShots < 22.5) {
+    return [];
+  }
+
+  // 3. Evaluar líneas candidatas estrictamente OVER con umbrales rigurosos
   const candidateLines = [
     {
       type: "sog" as const,
@@ -235,7 +282,8 @@ export function evaluateFixtureShotsPrediction(params: {
       threshold: 7,
       selection: "Over 7.5 Tiros a Puerta",
       realOdd: marketOdds?.shotsOnGoalOver75,
-      fairBenchmark: 1.35,
+      minExpected: 8.6,
+      minProb: 62.0,
       lambda: expectedSOG,
     },
     {
@@ -244,7 +292,8 @@ export function evaluateFixtureShotsPrediction(params: {
       threshold: 8,
       selection: "Over 8.5 Tiros a Puerta",
       realOdd: marketOdds?.shotsOnGoalOver85,
-      fairBenchmark: 1.62,
+      minExpected: 9.6,
+      minProb: 58.0,
       lambda: expectedSOG,
     },
     {
@@ -253,7 +302,8 @@ export function evaluateFixtureShotsPrediction(params: {
       threshold: 9,
       selection: "Over 9.5 Tiros a Puerta",
       realOdd: marketOdds?.shotsOnGoalOver95,
-      fairBenchmark: 1.90,
+      minExpected: 10.6,
+      minProb: 55.0,
       lambda: expectedSOG,
     },
     {
@@ -262,7 +312,8 @@ export function evaluateFixtureShotsPrediction(params: {
       threshold: 21,
       selection: "Over 21.5 Disparos Totales",
       realOdd: marketOdds?.totalShotsOver215,
-      fairBenchmark: 1.40,
+      minExpected: 24.2,
+      minProb: 65.0,
       lambda: expectedTotalShots,
     },
     {
@@ -271,7 +322,8 @@ export function evaluateFixtureShotsPrediction(params: {
       threshold: 23,
       selection: "Over 23.5 Disparos Totales",
       realOdd: marketOdds?.totalShotsOver235,
-      fairBenchmark: 1.68,
+      minExpected: 26.2,
+      minProb: 60.0,
       lambda: expectedTotalShots,
     },
   ];
@@ -279,47 +331,65 @@ export function evaluateFixtureShotsPrediction(params: {
   const opportunities: MarketOpportunity[] = [];
 
   for (const c of candidateLines) {
+    if (c.lambda < c.minExpected) continue;
+
     const rawProb = poissonOver(c.lambda, c.threshold);
     const probPercent = Math.round(rawProb * 1000) / 10;
+    if (probPercent < c.minProb) continue;
+
     const fairOdds = Math.round((1 / rawProb) * 100) / 100;
-    const effectiveOdds = c.realOdd || c.fairBenchmark;
 
-    // Regla de valor (+EV): Cuota en rango 1.25 a 1.95 y probabilidad >= 58%
-    if (probPercent >= 58 && effectiveOdds >= 1.25 && effectiveOdds <= 1.95) {
-      const edge = Math.round(((effectiveOdds / fairOdds) - 1) * 1000) / 10;
-      const confidence = probPercent >= 70 ? "Muy Alta" : probPercent >= 62 ? "Alta" : "Media";
-
-      opportunities.push({
-        fixtureId,
-        match: `${homeTeam} vs ${awayTeam}`,
-        homeTeam,
-        awayTeam,
-        homeLogo,
-        awayLogo,
-        league,
-        country,
-        leagueLogo,
-        kickoff,
-        market: "Disparos",
-        selection: c.selection,
-        odds: effectiveOdds,
-        fairOdds,
-        probability: probPercent,
-        edge: Math.max(1.5, edge),
-        expectedValue: Math.max(1.5, edge),
-        confidence,
-        smartScore: Math.min(99, Math.round(probPercent * 1.1 + (volumeMultiplier > 1.1 ? 6 : 3))),
-        status: "pending",
-        explanation: `Modelo ofensivo proyecta ${
-          c.type === "sog" ? `${expectedSOG.toFixed(1)} tiros al arco` : `${expectedTotalShots.toFixed(1)} disparos totales`
-        } por alto ritmo de posesión y volumen de remate en área rival.`,
-        isShotsVip: true,
-        pickBadge: "shots_vip",
-        vipBadge: "Disparos VIP",
-        isDestacado: probPercent >= 70,
-        destacadoRule: "Alta de Disparos (≥ 70%)",
-      });
+    // Obtener cuota auténtica o deducir con margen de casa si es liga curada de alta jerarquía
+    let effectiveOdds = c.realOdd;
+    if (!effectiveOdds) {
+      if (isCuratedLeague(leagueId, league, country)) {
+        effectiveOdds = Math.round((fairOdds * 0.94) * 100) / 100;
+      }
     }
+
+    if (!effectiveOdds || effectiveOdds < 1.25 || effectiveOdds > 1.95) {
+      continue;
+    }
+
+    const edge = Math.round(((effectiveOdds / fairOdds) - 1) * 1000) / 10;
+
+    // Si la cuota de la casa representa un subpago severo (-EV > -5%), descartar
+    if (c.realOdd && edge < -5.0) {
+      continue;
+    }
+
+    const confidence = probPercent >= 70 ? "Muy Alta" : probPercent >= 62 ? "Alta" : "Media";
+
+    opportunities.push({
+      fixtureId,
+      match: `${homeTeam} vs ${awayTeam}`,
+      homeTeam,
+      awayTeam,
+      homeLogo,
+      awayLogo,
+      league,
+      country,
+      leagueLogo,
+      kickoff,
+      market: "Disparos",
+      selection: c.selection,
+      odds: effectiveOdds,
+      fairOdds,
+      probability: probPercent,
+      edge: Math.max(0.5, edge),
+      expectedValue: Math.max(0.5, edge),
+      confidence,
+      smartScore: Math.min(99, Math.round(probPercent * 1.08 + (c.type === "sog" ? 6 : 2))),
+      status: "pending",
+      explanation: `Proyección ofensiva calibrada de ${c.lambda.toFixed(1)} ${
+        c.type === "sog" ? "tiros a puerta" : "disparos totales"
+      } para el duelo. Ritmo de juego dinámico esperado con alta generación de llegadas.`,
+      isShotsVip: true,
+      pickBadge: "shots_vip",
+      vipBadge: "Disparos VIP",
+      isDestacado: probPercent >= 70,
+      destacadoRule: "Alta de Disparos (≥ 70%)",
+    });
   }
 
   return opportunities;

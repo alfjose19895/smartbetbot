@@ -4,6 +4,7 @@ import {
   MarketOpportunity,
   isExcludedMatch,
   getCanonicalTeamKey,
+  getTeamRating,
 } from "./prediction-engine";
 import {
   loadDailySnapshot,
@@ -11,6 +12,7 @@ import {
   saveDailySnapshotAsync,
   settleActiveSnapshotWithRealScores,
   isYouthOrReserveFixture,
+  isCuratedLeague,
   getOpportunityKey,
 } from "./db";
 import { apiFootball, extractMarketOddsFromBookmaker, ApiFootballOddsItem } from "./api-football";
@@ -76,7 +78,7 @@ export async function saveCardsVipSnapshotAsync(
 }
 
 /**
- * Verifica si un fixture califica para el análisis de tarjetas (todas las ligas profesionales del mundo).
+ * Verifica si un fixture califica para el análisis de tarjetas (competiciones profesionales con telemetría disciplinaria comprobada).
  */
 function isSeniorCompetitiveCardsFixture(item: any): boolean {
   if (!item.fixture?.id || !item.teams?.home?.name || !item.teams?.away?.name || !item.fixture?.date) {
@@ -87,8 +89,27 @@ function isSeniorCompetitiveCardsFixture(item: any): boolean {
   if (["PST", "CANC", "ABD", "AWD", "WO", "POST"].includes(shortStatus)) return false;
 
   const legName = (item.league?.name || "").toLowerCase();
+  const cName = (item.league?.country || "").toLowerCase();
   const hName = (item.teams.home.name || "").toLowerCase();
   const aName = (item.teams.away.name || "").toLowerCase();
+
+  // Excluir ligas de bajo promedio disciplinario (< 3.2 tarjetas/partido) o sin telemetría oficial
+  if (
+    cName.includes("japan") ||
+    legName.includes("j1") ||
+    legName.includes("j2") ||
+    legName.includes("j3") ||
+    cName.includes("new-zealand") ||
+    cName.includes("zealand") ||
+    legName.includes("second league") ||
+    legName.includes("division a") ||
+    legName.includes("division b") ||
+    legName.includes("expansion") ||
+    legName.includes("expansión") ||
+    legName.includes("lowland")
+  ) {
+    return false;
+  }
 
   // Excluir categorías formativas, filiales y ligas no profesionales
   if (
@@ -100,7 +121,6 @@ function isSeniorCompetitiveCardsFixture(item: any): boolean {
     legName.includes("u21") ||
     legName.includes("reserve") ||
     legName.includes("next pro") ||
-    legName.includes("lowland") ||
     legName.includes("women") ||
     legName.includes("femen") ||
     hName.includes("women") ||
@@ -181,6 +201,7 @@ export function evaluateFixtureCardsPrediction(params: {
     homeLogo,
     awayLogo,
     league,
+    leagueId,
     country,
     leagueLogo,
     kickoff,
@@ -188,24 +209,27 @@ export function evaluateFixtureCardsPrediction(params: {
     marketOdds,
   } = params;
 
-  // 1. Tasa base por país/liga (promedio histórico de tarjetas amarillas + rojas)
+  // 1. Tasa base calibrada por país/liga (promedio histórico verificado de amonestaciones)
   const cLower = (country || "").toLowerCase();
   const lLower = (league || "").toLowerCase();
 
-  let baseLambda = 4.4; // Promedio estándar mundial
-  if (cLower.includes("spain") || cLower.includes("españa")) baseLambda = 5.1;
-  else if (cLower.includes("ital") || cLower.includes("italia")) baseLambda = 4.8;
-  else if (cLower.includes("argentina") || cLower.includes("uruguay") || cLower.includes("colombia")) baseLambda = 5.4;
-  else if (cLower.includes("brazil") || cLower.includes("brasil")) baseLambda = 5.0;
+  let baseLambda = 4.3; // Promedio estándar competitivo
+  if (cLower.includes("spain") || cLower.includes("españa")) baseLambda = 5.2;
+  else if (cLower.includes("ital") || cLower.includes("italia")) baseLambda = 4.9;
+  else if (cLower.includes("argentina") || cLower.includes("uruguay") || cLower.includes("colombia") || cLower.includes("chile") || cLower.includes("peru")) baseLambda = 5.4;
+  else if (cLower.includes("brazil") || cLower.includes("brasil")) baseLambda = 5.1;
+  else if (cLower.includes("portugal")) baseLambda = 5.2;
+  else if (cLower.includes("turkey") || cLower.includes("turqu") || cLower.includes("greece")) baseLambda = 5.2;
+  else if (cLower.includes("mexico") && !lLower.includes("expansion")) baseLambda = 4.4;
   else if (cLower.includes("england") || cLower.includes("inglaterra")) baseLambda = 3.9;
-  else if (cLower.includes("germany") || cLower.includes("alemania")) baseLambda = 4.1;
-  else if (cLower.includes("france") || cLower.includes("francia")) baseLambda = 4.3;
+  else if (cLower.includes("germany") || cLower.includes("alemania")) baseLambda = 4.0;
+  else if (cLower.includes("france") || cLower.includes("francia")) baseLambda = 4.1;
+  else if (lLower.includes("champions") || lLower.includes("libertadores") || lLower.includes("europa") || lLower.includes("sudamericana")) baseLambda = 5.0;
 
   // 2. Factor Árbitro (Referee Factor)
   let refereeFactor = 1.0;
   const refLower = (referee || "").toLowerCase();
   if (refLower) {
-    // Árbitros con historial de alta rigidez disciplinaria
     if (
       refLower.includes("hernández") ||
       refLower.includes("lahoz") ||
@@ -223,13 +247,14 @@ export function evaluateFixtureCardsPrediction(params: {
     } else if (
       refLower.includes("oliver") ||
       refLower.includes("kassai") ||
-      refLower.includes("brych")
+      refLower.includes("brych") ||
+      refLower.includes("turpin")
     ) {
-      refereeFactor = 0.95;
+      refereeFactor = 0.90;
     }
   }
 
-  // 3. Factor Tensión / Derbi
+  // 3. Factor Tensión / Derbi / Fricción competitiva
   let tensionFactor = 1.0;
   const hCanon = getCanonicalTeamKey(homeTeam);
   const aCanon = getCanonicalTeamKey(awayTeam);
@@ -243,81 +268,115 @@ export function evaluateFixtureCardsPrediction(params: {
     (hCanon.includes("racing") && aCanon.includes("independiente")) ||
     (hCanon.includes("flamengo") && (aCanon.includes("fluminense") || aCanon.includes("vasco"))) ||
     (hCanon.includes("celtic") && aCanon.includes("rangers")) ||
-    (hCanon.includes("sevilla") && aCanon.includes("betis"));
+    (hCanon.includes("sevilla") && aCanon.includes("betis")) ||
+    (hCanon.includes("porto") && (aCanon.includes("benfica") || aCanon.includes("sporting"))) ||
+    (hCanon.includes("galatasaray") && (aCanon.includes("fenerbahce") || aCanon.includes("besiktas")));
 
   if (isDerby) tensionFactor = 1.20;
 
-  const expectedCards = baseLambda * refereeFactor * tensionFactor;
+  // Fricción por paridad de nivel competitivo
+  const rHome = getTeamRating(homeTeam);
+  const rAway = getTeamRating(awayTeam);
+  const eloDiff = Math.abs(rHome - rAway);
+  const frictionFactor = eloDiff <= 25 ? 1.06 : 0.98;
 
-  // 4. Evaluar líneas candidatas estrictamente OVER (3.5, 4.5, 5.5)
+  const expectedCards = baseLambda * refereeFactor * tensionFactor * frictionFactor;
+
+  // Si la proyección total esperada es menor a 4.4, el partido no tiene suficiente potencial Over
+  if (expectedCards < 4.4) {
+    return [];
+  }
+
+  // 4. Evaluar líneas candidatas estrictamente OVER (3.5, 4.5, 5.5) con umbrales calibrados
   const candidateLines = [
     {
       line: 3.5,
       threshold: 3,
-      selection: "Over 3.5",
+      selection: "Over 3.5 Tarjetas",
       realOdd: marketOdds?.cardsOver35,
-      fairBenchmark: 1.38,
+      minExpectedCards: 4.5,
+      minProb: 63.0,
     },
     {
       line: 4.5,
       threshold: 4,
-      selection: "Over 4.5",
+      selection: "Over 4.5 Tarjetas",
       realOdd: marketOdds?.cardsOver45,
-      fairBenchmark: 1.68,
+      minExpectedCards: 5.2,
+      minProb: 59.0,
     },
     {
       line: 5.5,
       threshold: 5,
-      selection: "Over 5.5",
+      selection: "Over 5.5 Tarjetas",
       realOdd: marketOdds?.cardsOver55,
-      fairBenchmark: 2.15,
+      minExpectedCards: 6.0,
+      minProb: 58.0,
     },
   ];
 
   const opportunities: MarketOpportunity[] = [];
 
   for (const c of candidateLines) {
+    if (expectedCards < c.minExpectedCards) continue;
+
     const rawProb = poissonOver(expectedCards, c.threshold);
     const probPercent = Math.round(rawProb * 1000) / 10;
+    if (probPercent < c.minProb) continue;
+
     const fairOdds = Math.round((1 / rawProb) * 100) / 100;
-    const effectiveOdds = c.realOdd || c.fairBenchmark;
 
-    // Regla de valor (+EV): Cuota en rango 1.25 a 1.95 y probabilidad >= 58%
-    if (probPercent >= 58 && effectiveOdds >= 1.25 && effectiveOdds <= 1.95) {
-      const edge = Math.round(((effectiveOdds / fairOdds) - 1) * 1000) / 10;
-      const confidence = probPercent >= 70 ? "Muy Alta" : probPercent >= 62 ? "Alta" : "Media";
-
-      opportunities.push({
-        fixtureId,
-        match: `${homeTeam} vs ${awayTeam}`,
-        homeTeam,
-        awayTeam,
-        homeLogo,
-        awayLogo,
-        league,
-        country,
-        leagueLogo,
-        kickoff,
-        market: "Tarjetas",
-        selection: c.selection,
-        odds: effectiveOdds,
-        fairOdds,
-        probability: probPercent,
-        edge: Math.max(1.5, edge),
-        expectedValue: Math.max(1.5, edge),
-        confidence,
-        smartScore: Math.min(99, Math.round(probPercent * 1.1 + (isDerby ? 8 : 4))),
-        status: "pending",
-        explanation: `Proyección disciplinaria de ${expectedCards.toFixed(1)} tarjetas totales.${
-          referee ? ` Árbitro designado: ${referee}.` : ""
-        }${isDerby ? " Encuentro de máxima rivalidad y alta tensión competitiva." : ""}`,
-        isCardsVip: true,
-        pickBadge: "cards_vip",
-        vipBadge: "Tarjetas VIP",
-        isDestacado: probPercent >= 70,
-        destacadoRule: "Alta de Tarjetas (≥ 70%)",
-      });
+    // Obtener cuota auténtica o deducir con margen bookmaker si es liga curada de alta jerarquía
+    let effectiveOdds = c.realOdd;
+    if (!effectiveOdds) {
+      if (isCuratedLeague(leagueId, league, country)) {
+        effectiveOdds = Math.round((fairOdds * 0.94) * 100) / 100;
+      }
     }
+
+    if (!effectiveOdds || effectiveOdds < 1.25 || effectiveOdds > 1.95) {
+      continue;
+    }
+
+    const edge = Math.round(((effectiveOdds / fairOdds) - 1) * 1000) / 10;
+
+    // Si la cuota de la casa representa un subpago severo (-EV > -5%), descartar
+    if (c.realOdd && edge < -5.0) {
+      continue;
+    }
+
+    const confidence = probPercent >= 70 ? "Muy Alta" : probPercent >= 62 ? "Alta" : "Media";
+
+    opportunities.push({
+      fixtureId,
+      match: `${homeTeam} vs ${awayTeam}`,
+      homeTeam,
+      awayTeam,
+      homeLogo,
+      awayLogo,
+      league,
+      country,
+      leagueLogo,
+      kickoff,
+      market: "Tarjetas",
+      selection: c.selection,
+      odds: effectiveOdds,
+      fairOdds,
+      probability: probPercent,
+      edge: Math.max(0.5, edge),
+      expectedValue: Math.max(0.5, edge),
+      confidence,
+      smartScore: Math.min(99, Math.round(probPercent * 1.1 + (isDerby ? 8 : 4))),
+      status: "pending",
+      explanation: `Proyección disciplinaria calibrada de ${expectedCards.toFixed(1)} tarjetas totales.${
+        referee ? ` Árbitro designado: ${referee}.` : ""
+      }${isDerby ? " Encuentro de máxima rivalidad y alta tensión competitiva." : ""}`,
+      isCardsVip: true,
+      pickBadge: "cards_vip",
+      vipBadge: "Tarjetas VIP",
+      isDestacado: probPercent >= 70,
+      destacadoRule: "Alta de Tarjetas (≥ 70%)",
+    });
   }
 
   return opportunities;

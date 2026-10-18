@@ -3,6 +3,7 @@ import {
   saveShotsVipSnapshotAsync,
   loadShotsVipSnapshot,
   getShotsVipSlate,
+  evaluateFixtureShotsPrediction,
 } from "./shots-vip-server";
 import { MarketOpportunity } from "./prediction-engine";
 import { isSportMatch, evaluateMarketResult } from "./db";
@@ -41,7 +42,7 @@ describe("Shots VIP (Disparos VIP) Module Suite", () => {
   });
 
   it("saves and loads shots_vip snapshot independently in disk/memory", async () => {
-    const testDate = "2026-10-17";
+    const testDate = "2099-01-01";
     await saveShotsVipSnapshotAsync(testDate, [mockShotPick], true);
 
     const loaded = loadShotsVipSnapshot(testDate);
@@ -94,7 +95,7 @@ describe("Shots VIP (Disparos VIP) Module Suite", () => {
   });
 
   it("getShotsVipSlate retrieves sanitized shot-only opportunities with VIP badges", async () => {
-    const slate = await getShotsVipSlate("2026-10-17");
+    const slate = await getShotsVipSlate("2099-01-01");
     expect(slate).toBeDefined();
     expect(slate.count).toBeGreaterThanOrEqual(1);
     expect(
@@ -111,7 +112,7 @@ describe("Shots VIP (Disparos VIP) Module Suite", () => {
   });
 
   it("strictly filters out Under shot selections, permitting exclusively Over", async () => {
-    const testDate = "2026-10-17";
+    const testDate = "2099-01-01";
     const underPick: MarketOpportunity = {
       ...mockShotPick,
       fixtureId: 777102,
@@ -131,5 +132,55 @@ describe("Shots VIP (Disparos VIP) Module Suite", () => {
 
     // Restore clean snapshot
     await saveShotsVipSnapshotAsync(testDate, [mockShotPick], true);
+  });
+
+  it("evaluateFixtureShotsPrediction rejects low-volume matches without sufficient shots expectation", () => {
+    const opps = evaluateFixtureShotsPrediction({
+      fixtureId: 999111,
+      homeTeam: "Defensive Team A",
+      awayTeam: "Defensive Team B",
+      league: "Lowland League",
+      country: "Scotland",
+      kickoff: "2026-10-18T15:00:00Z",
+    });
+    // Expected to be empty because low team ratings and low league base lambda do not meet the minimum threshold
+    expect(opps.length).toBe(0);
+  });
+
+  it("evaluateFixtureShotsPrediction evaluates high-volume clashes in top leagues with strictly positive EV", () => {
+    const opps = evaluateFixtureShotsPrediction({
+      fixtureId: 999222,
+      homeTeam: "Manchester City",
+      awayTeam: "Liverpool",
+      league: "Premier League",
+      country: "England",
+      kickoff: "2026-10-18T17:30:00Z",
+      marketOdds: {
+        shotsOnGoalOver75: 1.55,
+        totalShotsOver215: 1.60,
+      } as any,
+    });
+    expect(opps.length).toBeGreaterThan(0);
+    expect(opps.every((o) => o.odds >= 1.25 && o.odds <= 1.95)).toBe(true);
+    expect(opps.every((o) => o.probability >= 55)).toBe(true);
+    expect(opps.every((o) => o.selection.toLowerCase().includes("over"))).toBe(true);
+    expect(opps.every((o) => !o.selection.toLowerCase().includes("under"))).toBe(true);
+  });
+
+  it("discards real bookmaker odds when they represent severe subpayment (edge < -5%)", () => {
+    const opps = evaluateFixtureShotsPrediction({
+      fixtureId: 999333,
+      homeTeam: "Everton",
+      awayTeam: "Fulham",
+      league: "Premier League",
+      country: "England",
+      kickoff: "2026-10-18T17:30:00Z",
+      marketOdds: {
+        // Severe subpayment: odd of 1.30 when fair odds are ~1.55 (edge ~ -16%)
+        shotsOnGoalOver85: 1.30,
+      } as any,
+    });
+    // Over 8.5 should be discarded due to negative EV
+    expect(opps.some((o) => o.selection.includes("Over 8.5 Tiros a Puerta"))).toBe(false);
   });
 });

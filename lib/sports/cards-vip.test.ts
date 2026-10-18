@@ -41,7 +41,7 @@ describe("Cards VIP (Tarjetas VIP) Module Suite", () => {
   });
 
   it("saves and loads cards_vip snapshot independently in disk/memory", async () => {
-    const testDate = "2026-10-17";
+    const testDate = "2099-01-01";
     await saveCardsVipSnapshotAsync(testDate, [mockCardPick], true);
 
     const loaded = loadCardsVipSnapshot(testDate);
@@ -58,7 +58,7 @@ describe("Cards VIP (Tarjetas VIP) Module Suite", () => {
   });
 
   it("evaluates card market correctly based on real card counts", () => {
-    const evalWon = evaluateMarketResult("Tarjetas", 1, 1, {
+    const evalWon = evaluateMarketResult("Tarjetas", 2, 1, {
       selection: "Over 4.5 Tarjetas",
       homeCards: 3,
       awayCards: 2,
@@ -66,7 +66,7 @@ describe("Cards VIP (Tarjetas VIP) Module Suite", () => {
     expect(evalWon.isWon).toBe(true);
     expect(evalWon.actualScoreText).toContain("5 Tarjetas");
 
-    const evalLost = evaluateMarketResult("Tarjetas", 1, 1, {
+    const evalLost = evaluateMarketResult("Tarjetas", 1, 0, {
       selection: "Over 4.5 Tarjetas",
       homeCards: 2,
       awayCards: 1,
@@ -76,7 +76,7 @@ describe("Cards VIP (Tarjetas VIP) Module Suite", () => {
   });
 
   it("getCardsVipSlate retrieves sanitized card-only opportunities with VIP badges", async () => {
-    const slate = await getCardsVipSlate("2026-10-17");
+    const slate = await getCardsVipSlate("2099-01-01");
     expect(slate).toBeDefined();
     expect(slate.count).toBeGreaterThanOrEqual(1);
     expect(slate.predictions.every((p) => p.market === "Tarjetas" || p.selection.includes("Tarjeta"))).toBe(true);
@@ -85,7 +85,7 @@ describe("Cards VIP (Tarjetas VIP) Module Suite", () => {
   });
 
   it("strictly filters out Under card selections, permitting exclusively Over", async () => {
-    const testDate = "2026-10-17";
+    const testDate = "2099-01-01";
     const underPick: MarketOpportunity = {
       ...mockCardPick,
       fixtureId: 888102,
