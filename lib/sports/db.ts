@@ -560,6 +560,57 @@ export function saveDailySnapshot(
 }
 
 /**
+ * Elimina por completo el snapshot de un deporte/módulo para una fecha determinada (memoria, disco y Supabase).
+ */
+export async function clearDailySnapshotAsync(
+  dateStr: string,
+  sport: string = "football"
+): Promise<void> {
+  const sportKey = (sport || "football").toLowerCase();
+  const memKey = `${sportKey}_${dateStr}`;
+  delete memorySnapshots[memKey];
+  if (sportKey === "football") {
+    delete memorySnapshots[dateStr];
+  }
+
+  const filePath = path.join(SNAPSHOTS_DIR, sportKey, `${dateStr}.json`);
+  if (fs.existsSync(filePath)) {
+    try {
+      fs.unlinkSync(filePath);
+    } catch (e) {
+      console.warn(`[ClearSnapshot] Error unlinking ${filePath}:`, e);
+    }
+  }
+
+  const supabase = getAdminClient();
+  if (supabase) {
+    try {
+      const { data: cloudData } = await supabase
+        .from("daily_snapshots")
+        .select("picks")
+        .eq("date", dateStr)
+        .maybeSingle();
+
+      if (cloudData && Array.isArray(cloudData.picks)) {
+        const remaining = cloudData.picks.filter((p: any) => !isSportMatch(p, sportKey));
+        await supabase
+          .from("daily_snapshots")
+          .upsert(
+            {
+              date: dateStr,
+              picks: remaining,
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: "date" }
+          );
+      }
+    } catch (dbErr) {
+      console.warn(`[Supabase] Error clearing snapshot for ${sportKey}:`, dbErr);
+    }
+  }
+}
+
+/**
  * Auto-liquidación en tiempo real:
  * Al cargar o sincronizar /signals y /dashboard, consultar los marcadores finales de la API (FT, AET, PEN),
  * evaluar el mercado (evaluateMarketResult) y persistir de inmediato status = "won" | "lost" y

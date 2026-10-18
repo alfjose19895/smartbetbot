@@ -161,7 +161,9 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string): Promise
   message: string;
 }> {
   const nowMs = Date.now();
-  const targetDate = dateStr || getEcuadorDateString(nowMs);
+  const todayDateStr = getEcuadorDateString(nowMs);
+  const targetDate = dateStr || todayDateStr;
+  const isTargetToday = targetDate === todayDateStr;
 
   // 1. Auto-liquidar partidos previos finalizados de Corners VIP
   await settleActiveSnapshotWithRealScores(targetDate, "corners_vip").catch(() => []);
@@ -208,11 +210,13 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string): Promise
     const kickoffMs = new Date(item.fixture.date).getTime();
     const shortStatus = item.fixture.status?.short || "NS";
 
-    // Solo evaluar partidos pendientes en el futuro próximo
-    if (["1H", "2H", "HT", "ET", "BT", "P", "LIVE", "INT", "SUSP", "FT", "AET", "PEN"].includes(shortStatus)) {
-      continue;
+    // Solo evaluar partidos pendientes en el futuro próximo si es la fecha de hoy
+    if (isTargetToday) {
+      if (["1H", "2H", "HT", "ET", "BT", "P", "LIVE", "INT", "SUSP", "FT", "AET", "PEN"].includes(shortStatus)) {
+        continue;
+      }
+      if (kickoffMs <= nowMs) continue;
     }
-    if (kickoffMs <= nowMs) continue;
 
     const hNorm = getCanonicalTeamKey(item.teams.home.name);
     const aNorm = getCanonicalTeamKey(item.teams.away.name);
@@ -333,16 +337,66 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string): Promise
     }
   }
 
+  // Ordenar todos los candidatos según la jerarquía estricta:
+  // Tier de Liga (T1 > T2 > T3 > T4) > Badge (Élite > Destacado > Valor > Bomba > Estándar) > Probabilidad > Edge
+  newlyFoundAlerts.sort((a, b) => {
+    const aTier = a.leagueTier || 3;
+    const bTier = b.leagueTier || 3;
+    if (aTier !== bTier) return aTier - bTier;
+
+    const aRank = a.isElite ? 1 : a.isDestacado ? 2 : a.pickBadge === "valor" ? 3 : a.pickBadge === "bomba" ? 4 : 5;
+    const bRank = b.isElite ? 1 : b.isDestacado ? 2 : b.pickBadge === "valor" ? 3 : b.pickBadge === "bomba" ? 4 : 5;
+    if (aRank !== bRank) return aRank - bRank;
+
+    if (b.probability !== a.probability) return b.probability - a.probability;
+    return (b.edge || 0) - (a.edge || 0);
+  });
+
+  // REGLA DE CANTIDADES (10 a 12 iniciales, y al buscar alertas se agregan más):
+  // Si no hay snapshot previo: seleccionar entre 10 y 12 alertas iniciales (máximo 12 de las más calificadas).
+  // Si ya hay cartelera existente y se buscan alertas: agregar un lote adicional de hasta 6 alertas.
+  // REGLA DE CANTIDADES (10 a 12 iniciales, y al buscar alertas se agregan más):
+  // 1) Cartelera inicial (sin snapshot previo): seleccionar entre 10 y 12 alertas de máxima jerarquía.
+  // 2) Búsqueda incremental ("Buscar Alertas"): agregar un lote adicional de hasta 6 alertas calificadas.
+  const isInitial = existingSnapshot.length === 0;
+  const auditPoolSize = isInitial
+    ? Math.min(newlyFoundAlerts.length, 16)
+    : Math.min(newlyFoundAlerts.length, 8);
+
+  const candidatesToAudit = newlyFoundAlerts.slice(0, auditPoolSize);
+
   // 4. Auditoría con Agente IA Google Gemini ("Abogado del Diablo" / Veto Táctico)
-  let approvedNewAlerts = newlyFoundAlerts;
-  if (newlyFoundAlerts.length > 0) {
+  let approvedNewAlerts = candidatesToAudit;
+  if (candidatesToAudit.length > 0) {
     try {
-      const vetoResult = await auditPredictionsWithGeminiVeto(newlyFoundAlerts, "football");
+      const vetoResult = await auditPredictionsWithGeminiVeto(candidatesToAudit, "football");
       if (vetoResult?.approvedPicks && vetoResult.approvedPicks.length > 0) {
         approvedNewAlerts = vetoResult.approvedPicks;
       }
     } catch (vetoErr) {
       console.warn("[Corners VIP] Gemini Veto audit warning:", vetoErr);
+    }
+  }
+
+  // Asegurar rango estricto: 10 a 12 iniciales (o todas las disponibles si hay menos de 10)
+  // Al buscar alertas subsecuentes: hasta 6 adicionales
+  if (isInitial) {
+    if (approvedNewAlerts.length > 12) {
+      approvedNewAlerts = approvedNewAlerts.slice(0, 12);
+    } else if (approvedNewAlerts.length < 10 && newlyFoundAlerts.length >= 10) {
+      const approvedKeys = new Set(approvedNewAlerts.map((p) => getOpportunityKey(p)));
+      for (const cand of newlyFoundAlerts) {
+        if (approvedNewAlerts.length >= 10) break;
+        const key = getOpportunityKey(cand);
+        if (!approvedKeys.has(key)) {
+          approvedNewAlerts.push(cand);
+          approvedKeys.add(key);
+        }
+      }
+    }
+  } else {
+    if (approvedNewAlerts.length > 6) {
+      approvedNewAlerts = approvedNewAlerts.slice(0, 6);
     }
   }
 
@@ -421,6 +475,10 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string): Promise
   // 6. Guardar en disco y Supabase
   await saveCornersVipSnapshotAsync(targetDate, finalPicks, false);
 
+  if (!isTargetToday) {
+    await settleActiveSnapshotWithRealScores(targetDate, "corners_vip").catch(() => []);
+  }
+
   return {
     success: true,
     newAlerts: approvedNewAlerts,
@@ -428,8 +486,10 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string): Promise
     predictions: finalPicks,
     message:
       approvedNewAlerts.length > 0
-        ? `✓ Se descubrieron ${approvedNewAlerts.length} nuevas alertas de Corners VIP para hoy (auditadas por IA Gemini).`
-        : `✓ Panel de Corners VIP al día (${finalPicks.length} alertas auditadas disponibles).`,
+        ? existingSnapshot.length === 0
+          ? `✓ Se generó la cartelera inicial de Corners VIP con ${approvedNewAlerts.length} pronósticos de alta jerarquía.`
+          : `✓ Se agregaron ${approvedNewAlerts.length} nuevas alertas a Corners VIP (Total: ${finalPicks.length}).`
+        : `✓ Panel de Corners VIP al día (${finalPicks.length} alertas disponibles).`,
   };
 }
 
