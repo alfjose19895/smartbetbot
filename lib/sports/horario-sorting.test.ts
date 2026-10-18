@@ -3,7 +3,6 @@ import { sortByKickoff, MarketOpportunity } from "./prediction-engine";
 import { getCornersVipSlate } from "./corners-vip-server";
 import { getCardsVipSlate } from "./cards-vip-server";
 import { getShotsVipSlate } from "./shots-vip-server";
-import { getWeekendExclusiveSlate } from "./weekend-exclusive";
 
 describe("Sort By Kickoff / Horario Suite across all modules", () => {
   it("sorts opportunities chronologically from earliest to latest", () => {
@@ -104,3 +103,4 @@ describe("Sort By Kickoff / Horario Suite across all modules", () => {
     }
   });
 });
+

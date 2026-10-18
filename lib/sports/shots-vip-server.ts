@@ -702,7 +702,8 @@ export async function searchAndAddNewShotsVipAlerts(dateStr?: string): Promise<{
     }
   }
 
-  const finalPicks = Array.from(mergedMap.values()).sort((a, b) => {
+  // 1) Ordenar candidatos por jerarquía estricta de calidad: Tier de Liga > Badge > Probabilidad > Edge
+  const rankedPicks = Array.from(mergedMap.values()).sort((a, b) => {
     const aTier = a.leagueTier || 3;
     const bTier = b.leagueTier || 3;
     if (aTier !== bTier) return aTier - bTier;
@@ -714,6 +715,12 @@ export async function searchAndAddNewShotsVipAlerts(dateStr?: string): Promise<{
     if (b.probability !== a.probability) return b.probability - a.probability;
     return (b.edge || 0) - (a.edge || 0);
   });
+
+  // 2) Limitar estrictamente al rango oficial VIP de 10 a 12 pronósticos
+  const curatedPicks = rankedPicks.length > 12 ? rankedPicks.slice(0, 12) : rankedPicks;
+
+  // 3) Ordenar por horario de inicio (kickoff)
+  const finalPicks = sortByKickoff(curatedPicks, "asc");
 
   // Asegurar auditoría en selecciones previas que aún no tengan nota de IA
   const unaudited = finalPicks.filter(
@@ -855,19 +862,36 @@ export async function getShotsVipSlate(dateStr?: string, forceRefresh = false): 
       return (b.edge || 0) - (a.edge || 0);
     });
 
-  const total = sanitizedPicks.length;
-  const won = sanitizedPicks.filter((p) => p.status === "won" || (p as any).result === "WON").length;
-  const lost = sanitizedPicks.filter((p) => p.status === "lost" || (p as any).result === "LOST").length;
+  // Limitar estrictamente al rango oficial VIP de 10 a 12 pronósticos de más alta jerarquía
+  let curatedPicks = sanitizedPicks;
+  if (curatedPicks.length > 12) {
+    curatedPicks = [...curatedPicks].sort((a, b) => {
+      const aTier = a.leagueTier || 3;
+      const bTier = b.leagueTier || 3;
+      if (aTier !== bTier) return aTier - bTier;
+      const aRank = a.isElite ? 1 : a.isDestacado ? 2 : a.pickBadge === "valor" ? 3 : a.pickBadge === "bomba" ? 4 : 5;
+      const bRank = b.isElite ? 1 : b.isDestacado ? 2 : b.pickBadge === "valor" ? 3 : b.pickBadge === "bomba" ? 4 : 5;
+      if (aRank !== bRank) return aRank - bRank;
+      if (b.probability !== a.probability) return b.probability - a.probability;
+      return (b.edge || 0) - (a.edge || 0);
+    }).slice(0, 12);
+  }
+
+  const finalSlate = sortByKickoff(curatedPicks, "asc");
+
+  const total = finalSlate.length;
+  const won = finalSlate.filter((p) => p.status === "won" || (p as any).result === "WON").length;
+  const lost = finalSlate.filter((p) => p.status === "lost" || (p as any).result === "LOST").length;
   const settled = won + lost;
   const pending = total - settled;
   const winRate = settled > 0 ? Math.round((won / settled) * 100) : 0;
-  const avgProb = total > 0 ? Math.round((sanitizedPicks.reduce((acc, p) => acc + (p.probability || 0), 0) / total) * 10) / 10 : 0;
-  const avgOdds = total > 0 ? Math.round((sanitizedPicks.reduce((acc, p) => acc + (p.odds || 0), 0) / total) * 100) / 100 : 0;
+  const avgProb = total > 0 ? Math.round((finalSlate.reduce((acc, p) => acc + (p.probability || 0), 0) / total) * 10) / 10 : 0;
+  const avgOdds = total > 0 ? Math.round((finalSlate.reduce((acc, p) => acc + (p.odds || 0), 0) / total) * 100) / 100 : 0;
 
   return {
     date: targetDate,
     count: total,
-    predictions: sanitizedPicks,
+    predictions: finalSlate,
     stats: {
       total,
       pending,
