@@ -784,15 +784,29 @@ export function normalizeLeagueInfo(
   const norm = (rawLeagueName || "").toLowerCase().trim();
   const normCountry = (rawCountry || "").toLowerCase().trim();
 
-  // If country is Egypt, Kuwait or other uncurated countries, do NOT classify as England
+  // If country is Egypt, Kuwait, Tunisia, Algeria, Ivory Coast, do NOT classify as England or France
   if (normCountry.includes("egypt") || normCountry.includes("egipto")) {
-    return { canonicalLeague: "Premier League (Egipto)", country: "Egipto", tier: 3 };
+    return { canonicalLeague: "Premier League (Egipto)", country: "Egipto", tier: 4 };
   }
   if (normCountry.includes("kuwait")) {
-    return { canonicalLeague: "Premier League (Kuwait)", country: "Kuwait", tier: 3 };
+    return { canonicalLeague: "Premier League (Kuwait)", country: "Kuwait", tier: 4 };
+  }
+  if (normCountry.includes("tunis") || normCountry.includes("únez") || normCountry.includes("tunez")) {
+    const isL2 = norm.includes("2") || norm.includes("deux") || norm.includes("ligue 2");
+    return { canonicalLeague: isL2 ? "Ligue 2 (Túnez)" : "Ligue 1 (Túnez)", country: "Túnez", tier: 4 };
+  }
+  if (normCountry.includes("alger") || normCountry.includes("argel")) {
+    const isL2 = norm.includes("2") || norm.includes("deux") || norm.includes("ligue 2");
+    return { canonicalLeague: isL2 ? "Ligue 2 (Argelia)" : "Ligue 1 (Argelia)", country: "Argelia", tier: 4 };
+  }
+  if (normCountry.includes("ivory") || normCountry.includes("marfil")) {
+    return { canonicalLeague: "Ligue 1 (Costa de Marfil)", country: "Costa de Marfil", tier: 4 };
   }
 
   // Tier 1: Continental Cups & UEFA Competitions
+  if (norm.includes("afc") && norm.includes("challenge")) {
+    return { canonicalLeague: "AFC Challenge League", country: "Asia", tier: 4 };
+  }
   if (norm.includes("afc") || (norm.includes("champions") && (normCountry.includes("asia") || normCountry.includes("china") || normCountry.includes("japan") || normCountry.includes("korea"))) || leagueId === 17 || leagueId === 18) {
     if (norm.includes("2") || leagueId === 18) return { canonicalLeague: "AFC Champions League Two", country: "Asia", tier: 2 };
     return { canonicalLeague: "AFC Champions League Elite", country: "Asia", tier: 1 };
@@ -800,8 +814,12 @@ export function normalizeLeagueInfo(
   if (norm.includes("concacaf") || normCountry.includes("concacaf")) {
     return { canonicalLeague: "CONCACAF Champions Cup", country: "Norteamérica", tier: 1 };
   }
-  if (norm.includes("caf") || normCountry.includes("africa") || normCountry.includes("áfrica")) {
-    return { canonicalLeague: "CAF Champions League", country: "África", tier: 1 };
+  if (norm.includes("caf") || norm.includes("confederation cup")) {
+    if (norm.includes("confederation") || norm.includes("confederación")) return { canonicalLeague: "CAF Confederation Cup", country: "África", tier: 4 };
+    return { canonicalLeague: "CAF Champions League", country: "África", tier: 3 };
+  }
+  if (normCountry === "africa" || normCountry === "áfrica") {
+    return { canonicalLeague: rawLeagueName || "Competición Africana", country: "África", tier: 4 };
   }
   if (norm.includes("uefa champions league") || norm === "champions league" || norm === "ucl" || leagueId === 2) {
     return { canonicalLeague: "UEFA Champions League", country: "Europa", tier: 1 };
@@ -836,8 +854,9 @@ export function normalizeLeagueInfo(
     if (norm.includes("2")) return { canonicalLeague: "2. Bundesliga", country: "Alemania", tier: 2 };
     return { canonicalLeague: "Bundesliga", country: "Alemania", tier: 1 };
   }
-  if (norm.includes("ligue 1") || norm.includes("francia") || norm.includes("france")) {
-    return { canonicalLeague: "Ligue 1", country: "Francia", tier: 1 };
+  if ((norm.includes("ligue 1") || norm.includes("ligue 2") || norm.includes("francia") || norm.includes("france")) && (normCountry.includes("franc") || normCountry === "francia" || normCountry === "france" || !rawCountry)) {
+    if (norm.includes("2") || norm.includes("ligue 2")) return { canonicalLeague: "Ligue 2", country: "Francia", tier: 3 };
+    return { canonicalLeague: "Ligue 1", country: "Francia", tier: 2 };
   }
 
   // Tier 2: Top Mid European Leagues

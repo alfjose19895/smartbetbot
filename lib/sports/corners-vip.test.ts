@@ -124,4 +124,34 @@ describe("Corners VIP Module Suite", () => {
     // Restore clean snapshot
     await saveCornersVipSnapshotAsync(testDate, [mockCornerPick], true);
   });
+
+  it("enforces league tiers and rejects uncurated leagues like Tunisia or Algeria from Corners VIP", async () => {
+    const { normalizeLeagueInfo } = await import("./prediction-engine");
+    const { isCuratedLeague } = await import("./db");
+
+    // Normalization verification
+    const tunisiaInfo = normalizeLeagueInfo("Ligue 1", "Tunisia");
+    expect(tunisiaInfo.country).toBe("Túnez");
+    expect(tunisiaInfo.tier).toBe(4);
+    expect(tunisiaInfo.country).not.toBe("Francia");
+
+    const algeriaInfo = normalizeLeagueInfo("Ligue 1", "Algeria");
+    expect(algeriaInfo.country).toBe("Argelia");
+    expect(algeriaInfo.tier).toBe(4);
+    expect(algeriaInfo.country).not.toBe("Francia");
+
+    const cafInfo = normalizeLeagueInfo("CAF Champions League", "Africa");
+    expect(cafInfo.tier).toBe(3);
+    expect(cafInfo.tier).not.toBe(1);
+
+    const afcInfo = normalizeLeagueInfo("AFC Challenge League", "Asia");
+    expect(afcInfo.tier).toBe(4);
+
+    // Curated league check
+    expect(isCuratedLeague(202, "Ligue 1", "Tunisia")).toBe(false);
+    expect(isCuratedLeague(186, "Ligue 1", "Algeria")).toBe(false);
+    expect(isCuratedLeague(39, "Premier League", "England")).toBe(true);
+    expect(isCuratedLeague(135, "Serie A", "Italy")).toBe(true);
+    expect(isCuratedLeague(140, "La Liga", "Spain")).toBe(true);
+  });
 });

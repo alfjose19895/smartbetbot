@@ -16,6 +16,7 @@ import {
   saveDailySnapshot,
   saveDailySnapshotAsync,
   settleActiveSnapshotWithRealScores,
+  isCuratedLeague,
   isYouthOrReserveFixture,
   getOpportunityKey,
 } from "./db";
@@ -146,7 +147,8 @@ function isSeniorCompetitiveCornerFixture(item: any): boolean {
   }
 
   if (isExcludedMatch(hName, aName)) return false;
-  // Incluir TODAS las ligas profesionales del mundo con cuotas y telemetría de saques de esquina
+  // Filtrar estrictamente solo ligas curadas con soporte oficial y telemetría de saques de esquina
+  if (!isCuratedLeague(item.league?.id, item.league?.name, item.league?.country)) return false;
   return true;
 }
 
@@ -404,6 +406,7 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string): Promise
   // 5. Fusionar nuevas alertas con el snapshot existente
   const mergedMap = new Map<string, MarketOpportunity>();
   for (const p of existingSnapshot) {
+    if (!isCuratedLeague(p.leagueId, p.league, p.country)) continue;
     const isElite = isElitePick(p);
     const pickBadge = isElite
       ? "elite"
@@ -539,6 +542,7 @@ export async function getCornersVipSlate(dateStr?: string, forceRefresh = false)
   // Filtrar exclusivamente córners en modalidad OVER (estrictamente no under) y asegurar banderas VIP
   const sanitizedPicks = picks
     .filter((p) => {
+      if (!isCuratedLeague(p.leagueId, p.league, p.country)) return false;
       const isCorner = p.market === "Córners" || (p.selection || "").toLowerCase().includes("córner");
       const selLower = (p.selection || "").toLowerCase();
       const mktLower = (p.market || "").toLowerCase();
