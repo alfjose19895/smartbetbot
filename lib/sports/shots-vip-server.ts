@@ -178,6 +178,7 @@ function isSeniorCompetitiveShotsFixture(item: any): boolean {
   }
 
   if (isExcludedMatch(hName, aName)) return false;
+  if (!isCuratedLeague(item.league?.id, item.league?.name, item.league?.country)) return false;
 
   return true;
 }
@@ -307,59 +308,83 @@ export function evaluateFixtureShotsPrediction(params: {
     return [];
   }
 
-  // 3. Evaluar líneas candidatas estrictamente OVER con umbrales rigurosos
-  const candidateLines = [
-    {
-      type: "sog" as const,
-      line: 7.5,
-      threshold: 7,
-      selection: "Over 7.5 Tiros a Puerta",
-      realOdd: marketOdds?.shotsOnGoalOver75,
-      minExpected: 8.6,
-      minProb: 62.0,
-      lambda: expectedSOG,
-    },
-    {
-      type: "sog" as const,
-      line: 8.5,
-      threshold: 8,
-      selection: "Over 8.5 Tiros a Puerta",
-      realOdd: marketOdds?.shotsOnGoalOver85,
-      minExpected: 9.6,
-      minProb: 58.0,
-      lambda: expectedSOG,
-    },
-    {
-      type: "sog" as const,
-      line: 9.5,
-      threshold: 9,
-      selection: "Over 9.5 Tiros a Puerta",
-      realOdd: marketOdds?.shotsOnGoalOver95,
-      minExpected: 10.6,
-      minProb: 55.0,
-      lambda: expectedSOG,
-    },
-    {
-      type: "total" as const,
-      line: 21.5,
-      threshold: 21,
-      selection: "Over 21.5 Disparos Totales",
-      realOdd: marketOdds?.totalShotsOver215,
-      minExpected: 24.2,
-      minProb: 65.0,
-      lambda: expectedTotalShots,
-    },
-    {
-      type: "total" as const,
-      line: 23.5,
-      threshold: 23,
-      selection: "Over 23.5 Disparos Totales",
-      realOdd: marketOdds?.totalShotsOver235,
-      minExpected: 26.2,
-      minProb: 60.0,
-      lambda: expectedTotalShots,
-    },
-  ];
+  // 3. Evaluar líneas reales proporcionadas por las casas de apuestas (Tiros a Puerta y Disparos Totales)
+  const candidateLines: Array<{
+    type: "sog" | "total";
+    line: number;
+    threshold: number;
+    selection: string;
+    realOdd: number;
+    lambda: number;
+    minExpected: number;
+    minProb: number;
+  }> = [];
+
+  // A) Procesar líneas reales de Tiros a Puerta (SOG)
+  if (marketOdds?.shotsOnGoalLines && Object.keys(marketOdds.shotsOnGoalLines).length > 0) {
+    for (const [lineStr, oddsObj] of Object.entries(marketOdds.shotsOnGoalLines)) {
+      const lineNum = parseFloat(lineStr);
+      if (oddsObj.over && oddsObj.over >= 1.25 && oddsObj.over <= 2.25) {
+        candidateLines.push({
+          type: "sog",
+          line: lineNum,
+          threshold: Math.floor(lineNum),
+          selection: `Over ${lineNum} Tiros a Puerta`,
+          realOdd: oddsObj.over,
+          lambda: expectedSOG,
+          minExpected: lineNum * 0.90,
+          minProb: 55.0,
+        });
+      }
+    }
+  } else {
+    // Compatibilidad con cuotas directas legacy
+    if (marketOdds?.shotsOnGoalOver75 && marketOdds.shotsOnGoalOver75 >= 1.25 && marketOdds.shotsOnGoalOver75 <= 2.25) {
+      candidateLines.push({ type: "sog", line: 7.5, threshold: 7, selection: "Over 7.5 Tiros a Puerta", realOdd: marketOdds.shotsOnGoalOver75, lambda: expectedSOG, minExpected: 6.8, minProb: 62.0 });
+    }
+    if (marketOdds?.shotsOnGoalOver85 && marketOdds.shotsOnGoalOver85 >= 1.25 && marketOdds.shotsOnGoalOver85 <= 2.25) {
+      candidateLines.push({ type: "sog", line: 8.5, threshold: 8, selection: "Over 8.5 Tiros a Puerta", realOdd: marketOdds.shotsOnGoalOver85, lambda: expectedSOG, minExpected: 7.7, minProb: 58.0 });
+    }
+    if (marketOdds?.shotsOnGoalOver95 && marketOdds.shotsOnGoalOver95 >= 1.25 && marketOdds.shotsOnGoalOver95 <= 2.25) {
+      candidateLines.push({ type: "sog", line: 9.5, threshold: 9, selection: "Over 9.5 Tiros a Puerta", realOdd: marketOdds.shotsOnGoalOver95, lambda: expectedSOG, minExpected: 8.6, minProb: 55.0 });
+    }
+  }
+
+  // B) Procesar líneas reales de Disparos Totales
+  if (marketOdds?.totalShotsLines && Object.keys(marketOdds.totalShotsLines).length > 0) {
+    for (const [lineStr, oddsObj] of Object.entries(marketOdds.totalShotsLines)) {
+      const lineNum = parseFloat(lineStr);
+      if (oddsObj.over && oddsObj.over >= 1.25 && oddsObj.over <= 2.25) {
+        candidateLines.push({
+          type: "total",
+          line: lineNum,
+          threshold: Math.floor(lineNum),
+          selection: `Over ${lineNum} Disparos Totales`,
+          realOdd: oddsObj.over,
+          lambda: expectedTotalShots,
+          minExpected: lineNum * 0.88,
+          minProb: 55.0,
+        });
+      }
+    }
+  } else {
+    // Compatibilidad con cuotas directas legacy
+    if (marketOdds?.totalShotsOver215 && marketOdds.totalShotsOver215 >= 1.25 && marketOdds.totalShotsOver215 <= 2.25) {
+      candidateLines.push({ type: "total", line: 21.5, threshold: 21, selection: "Over 21.5 Disparos Totales", realOdd: marketOdds.totalShotsOver215, lambda: expectedTotalShots, minExpected: 19.0, minProb: 65.0 });
+    }
+    if (marketOdds?.totalShotsOver235 && marketOdds.totalShotsOver235 >= 1.25 && marketOdds.totalShotsOver235 <= 2.25) {
+      candidateLines.push({ type: "total", line: 23.5, threshold: 23, selection: "Over 23.5 Disparos Totales", realOdd: marketOdds.totalShotsOver235, lambda: expectedTotalShots, minExpected: 21.0, minProb: 60.0 });
+    }
+    if (marketOdds?.totalShotsOver255 && marketOdds.totalShotsOver255 >= 1.25 && marketOdds.totalShotsOver255 <= 2.25) {
+      candidateLines.push({ type: "total", line: 25.5, threshold: 25, selection: "Over 25.5 Disparos Totales", realOdd: marketOdds.totalShotsOver255, lambda: expectedTotalShots, minExpected: 23.0, minProb: 55.0 });
+    }
+  }
+
+  // REGLA ESTRICTA: Exclusivamente pronosticar en base a cuota original real de casas de apuestas
+  // Queda estrictamente prohibido inventar cuotas artificiales o forzar rangos arbitrarios fijos
+  if (candidateLines.length === 0) {
+    return [];
+  }
 
   const opportunities: MarketOpportunity[] = [];
 
@@ -370,20 +395,14 @@ export function evaluateFixtureShotsPrediction(params: {
     const probPercent = Math.round(rawProb * 1000) / 10;
 
     const minTierProb =
-      tier === 1 ? 62.0 : tier === 2 ? 64.0 : tier === 3 ? 68.0 : 72.0;
+      tier === 1 ? 58.0 : tier === 2 ? 60.0 : tier === 3 ? 64.0 : 68.0;
     const effectiveMinProb = Math.max(c.minProb, minTierProb);
     if (probPercent < effectiveMinProb) continue;
 
     const fairOdds = Math.round((1 / rawProb) * 100) / 100;
 
-    // Obtener cuota auténtica o deducir con margen de casa si es liga curada de alta jerarquía
-    let effectiveOdds = c.realOdd;
-    if (!effectiveOdds) {
-      if (isCuratedLeague(leagueId, canonicalLeague, normCountry)) {
-        effectiveOdds = Math.round((fairOdds * 0.94) * 100) / 100;
-      }
-    }
-
+    // Cuota auténtica real obligatoria de la casa de apuestas
+    const effectiveOdds = c.realOdd;
     if (!effectiveOdds || effectiveOdds < 1.25 || effectiveOdds > 2.05) {
       continue;
     }
@@ -391,13 +410,13 @@ export function evaluateFixtureShotsPrediction(params: {
     const edge = Math.round(((effectiveOdds / fairOdds) - 1) * 1000) / 10;
 
     // Si la cuota de la casa representa un subpago severo (-EV > -5%), descartar
-    if (c.realOdd && edge < -5.0) {
+    if (edge < -5.0) {
       continue;
     }
 
     const minTierEdge =
       tier === 1 ? 1.5 : tier === 2 ? 2.0 : tier === 3 ? 2.5 : 3.5;
-    if (c.realOdd && edge < minTierEdge) {
+    if (edge < minTierEdge) {
       continue;
     }
 
@@ -675,6 +694,7 @@ export async function searchAndAddNewShotsVipAlerts(dateStr?: string): Promise<{
   // 5. Fusionar nuevas alertas con el snapshot existente
   const mergedMap = new Map<string, MarketOpportunity>();
   for (const p of existingSnapshot) {
+    if (!isCuratedLeague(p.leagueId, p.league, p.country)) continue;
     const isElite = isElitePick(p);
     const pickBadge = isElite
       ? "elite"
@@ -808,6 +828,7 @@ export async function getShotsVipSlate(dateStr?: string, forceRefresh = false): 
   // Filtrar exclusivamente disparos en modalidad OVER (estrictamente no under) y asegurar banderas VIP
   const sanitizedPicks = picks
     .filter((p) => {
+      if (!isCuratedLeague(p.leagueId, p.league, p.country)) return false;
       const isShot =
         p.market === "Disparos" ||
         (p.selection || "").toLowerCase().includes("disparo") ||

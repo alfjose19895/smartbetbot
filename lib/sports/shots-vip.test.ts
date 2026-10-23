@@ -183,5 +183,93 @@ describe("Shots VIP (Disparos VIP) Module Suite", () => {
     // Over 8.5 should be discarded due to negative EV
     expect(opps.some((o) => o.selection.includes("Over 8.5 Tiros a Puerta"))).toBe(false);
   });
+
+  it("evaluates real dynamic bookmaker lines for total shots and shots on goal instead of fixed 21.5", () => {
+    const opps = evaluateFixtureShotsPrediction({
+      fixtureId: 999444,
+      homeTeam: "Manchester City",
+      awayTeam: "Arsenal",
+      league: "Premier League",
+      country: "England",
+      kickoff: "2026-10-24T16:00:00Z",
+      marketOdds: {
+        totalShotsLines: {
+          25.5: { over: 1.55, under: 2.35 },
+          27.5: { over: 1.95, under: 1.80 },
+          29.5: { over: 2.50, under: 1.50 },
+        },
+        shotsOnGoalLines: {
+          8.5: { over: 1.45, under: 2.60 },
+          9.5: { over: 1.82, under: 1.95 },
+          10.5: { over: 2.30, under: 1.55 },
+        },
+      } as any,
+    });
+
+    expect(opps.length).toBeGreaterThan(0);
+    // Verified that predictions reflect the real bookmaker lines (e.g. 25.5, 27.5, 8.5, 9.5) and NOT forced 21.5
+    expect(opps.some((o) => o.selection.includes("25.5") || o.selection.includes("27.5"))).toBe(true);
+    expect(opps.some((o) => o.selection.includes("8.5") || o.selection.includes("9.5"))).toBe(true);
+    expect(opps.every((o) => !o.selection.includes("21.5"))).toBe(true);
+  });
+
+  it("strictly rejects matches without real bookmaker odds, never fabricating artificial odds", () => {
+    const opps = evaluateFixtureShotsPrediction({
+      fixtureId: 999555,
+      homeTeam: "Real Madrid",
+      awayTeam: "Barcelona",
+      league: "La Liga",
+      country: "Spain",
+      kickoff: "2026-10-24T20:00:00Z",
+      // No market odds provided
+      marketOdds: {} as any,
+    });
+    // Must strictly return empty - no fake fabricated odds or default Over 21.5
+    expect(opps.length).toBe(0);
+  });
+
+  it("extracts real lines dynamically from Bet 87 (Total ShotOnGoal) and Bet 211 (Total Shots)", async () => {
+    const { extractMarketOddsFromBookmaker } = await import("./api-football");
+    const mockOddsItem = {
+      fixture: { id: 888101 },
+      bookmakers: [
+        {
+          id: 6,
+          name: "Bwin",
+          bets: [
+            {
+              id: 87,
+              name: "Total ShotOnGoal",
+              values: [
+                { value: "Over 8.5", odd: "1.45" },
+                { value: "Under 8.5", odd: "2.55" },
+                { value: "Over 9.5", odd: "1.85" },
+                { value: "Under 9.5", odd: "1.90" },
+              ],
+            },
+            {
+              id: 211,
+              name: "Total Shots",
+              values: [
+                { value: "Over 26.5", odd: "1.72" },
+                { value: "Under 26.5", odd: "2.05" },
+                { value: "Over 28.5", odd: "2.20" },
+                { value: "Under 28.5", odd: "1.60" },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    const extracted = extractMarketOddsFromBookmaker(mockOddsItem as any);
+    expect(extracted.shotsOnGoalLines).toBeDefined();
+    expect(extracted.shotsOnGoalLines?.[8.5]?.over).toBe(1.45);
+    expect(extracted.shotsOnGoalLines?.[9.5]?.over).toBe(1.85);
+
+    expect(extracted.totalShotsLines).toBeDefined();
+    expect(extracted.totalShotsLines?.[26.5]?.over).toBe(1.72);
+    expect(extracted.totalShotsLines?.[28.5]?.over).toBe(2.20);
+  });
 });
 
