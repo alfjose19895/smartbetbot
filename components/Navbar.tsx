@@ -44,7 +44,9 @@ const SPORTS_OPTIONS: Array<{
       p === '/weekend' ||
       p === '/corners-vip' ||
       p === '/cards-vip' ||
-      p === '/shots-vip',
+      p === '/shots-vip' ||
+      p === '/over25-vip' ||
+      p === '/btts-vip',
   },
   {
     id: 'nhl',
@@ -188,6 +190,8 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
     if (href === '/corners-vip') return pathname === '/corners-vip';
     if (href === '/cards-vip') return pathname === '/cards-vip';
     if (href === '/shots-vip') return pathname === '/shots-vip';
+    if (href === '/over25-vip') return pathname === '/over25-vip';
+    if (href === '/btts-vip') return pathname === '/btts-vip';
     if (href.includes('?tab=')) {
       const [path, query] = href.split('?tab=');
       return pathname === path && currentTab === query;
@@ -209,6 +213,8 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
     ...(currentRole === 'admin'
       ? [
           { href: '/corners-vip', label: 'Corners VIP 🚩', icon: '🚩' },
+          { href: '/over25-vip', label: 'Over 2.5 VIP ⚽', icon: '⚽' },
+          { href: '/btts-vip', label: 'Ambos Anotan VIP 🥅', icon: '🥅' },
           { href: '/cards-vip', label: 'Tarjetas VIP 🟨', icon: '🟨' },
           { href: '/shots-vip', label: 'Disparos VIP 🎯', icon: '🎯' },
           { href: getSportHref('weekend'), label: 'Finde VIP 💎', icon: '💎' },

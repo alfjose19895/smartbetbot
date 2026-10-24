@@ -492,13 +492,15 @@ export interface MarketOpportunity {
   expectedValue: number;
   confidence: "Muy Alta" | "Alta" | "Media" | "Moderada";
   confidenceScore?: number;
-  pickBadge?: "bomba" | "valor" | "estandar" | "mcp" | "nuevo" | "elite" | "corners_vip" | "cards_vip" | "shots_vip";
+  pickBadge?: "bomba" | "valor" | "estandar" | "mcp" | "nuevo" | "elite" | "corners_vip" | "cards_vip" | "shots_vip" | "over25_vip" | "btts_vip";
   isElite?: boolean;
   isDestacado?: boolean;
   destacadoRule?: string;
   isCornersVip?: boolean;
   isCardsVip?: boolean;
   isShotsVip?: boolean;
+  isOver25Vip?: boolean;
+  isBttsVip?: boolean;
   vipBadge?: string;
   isNew?: boolean;
   isNewlyDiscovered?: boolean;
@@ -506,7 +508,7 @@ export interface MarketOpportunity {
   isMcpPick?: boolean;
   isMcp?: boolean;
   result?: "WON" | "LOST" | "VOID" | string;
-  source?: "algorithm" | "mcp" | "manual" | "corners_vip" | "cards_vip" | "shots_vip";
+  source?: "algorithm" | "mcp" | "manual" | "corners_vip" | "cards_vip" | "shots_vip" | "over25_vip" | "btts_vip";
   matchTiming?: "prematch" | "live" | "finished";
   livePeriod?: "1H" | "HT" | "2H" | "ET";
   liveMinute?: number | string;

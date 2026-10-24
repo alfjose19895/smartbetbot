@@ -101,7 +101,7 @@ function ensureSnapshotsDir(sport?: string) {
     if (!fs.existsSync(SNAPSHOTS_DIR)) {
       fs.mkdirSync(SNAPSHOTS_DIR, { recursive: true });
     }
-    const sports = ["football", "nhl", "nba", "nfl", "ncaaf", "corners_vip", "cards_vip", "shots_vip"];
+    const sports = ["football", "nhl", "nba", "nfl", "ncaaf", "corners_vip", "cards_vip", "shots_vip", "over25_vip", "btts_vip"];
     for (const s of sports) {
       const p = path.join(SNAPSHOTS_DIR, s);
       if (!fs.existsSync(p)) {
@@ -152,6 +152,24 @@ export function isSportMatch(p: any, targetSport: string = "football"): boolean 
       (p.market === "Disparos" && p.pickBadge === "shots_vip")
     );
   }
+  if (tSport === "over25_vip") {
+    return Boolean(
+      p.isOver25Vip ||
+      p.source === "over25_vip" ||
+      p.pickBadge === "over25_vip" ||
+      s === "over25_vip" ||
+      (p.market === "Over 2.5 Goles" && (p.source === "over25_vip" || p.isOver25Vip))
+    );
+  }
+  if (tSport === "btts_vip") {
+    return Boolean(
+      p.isBttsVip ||
+      p.source === "btts_vip" ||
+      p.pickBadge === "btts_vip" ||
+      s === "btts_vip" ||
+      (p.market === "Ambos Equipos Anotan" && (p.source === "btts_vip" || p.isBttsVip))
+    );
+  }
   if (tSport === "football") {
     const isCornersVip = Boolean(
       p.isCornersVip ||
@@ -171,10 +189,22 @@ export function isSportMatch(p: any, targetSport: string = "football"): boolean 
       p.pickBadge === "shots_vip" ||
       s === "shots_vip"
     );
+    const isOver25Vip = Boolean(
+      p.isOver25Vip ||
+      p.source === "over25_vip" ||
+      p.pickBadge === "over25_vip" ||
+      s === "over25_vip"
+    );
+    const isBttsVip = Boolean(
+      p.isBttsVip ||
+      p.source === "btts_vip" ||
+      p.pickBadge === "btts_vip" ||
+      s === "btts_vip"
+    );
     const isNhl = s === "nhl" || c === "NHL" || l.includes("NHL");
     const isNba = s === "nba" || c === "NBA" || l.includes("NBA");
     const isNfl = s === "nfl" || s === "ncaaf" || c === "NFL" || c === "NCAAF" || l.includes("NFL") || l.includes("NCAA");
-    return !isCornersVip && !isCardsVip && !isShotsVip && !isNhl && !isNba && !isNfl;
+    return !isCornersVip && !isCardsVip && !isShotsVip && !isOver25Vip && !isBttsVip && !isNhl && !isNba && !isNfl;
   }
   if (tSport === "nhl") {
     return s === "nhl" || c === "NHL" || l.includes("NHL");
@@ -864,6 +894,26 @@ export async function settleAllSnapshotsWithRealScores(): Promise<{ settledDates
             totalSettled += newlySettled;
           }
         }
+
+        // Auto-settle Over 2.5 VIP dedicated snapshots
+        const settledOver25 = await settleActiveSnapshotWithRealScores(dateStr, "over25_vip");
+        if (settledOver25 && settledOver25.length > 0) {
+          const newlySettled = settledOver25.filter((p) => p.status === "won" || p.status === "lost").length;
+          if (newlySettled > 0) {
+            if (!settledDates.includes(dateStr)) settledDates.push(dateStr);
+            totalSettled += newlySettled;
+          }
+        }
+
+        // Auto-settle Ambos Anotan VIP dedicated snapshots
+        const settledBtts = await settleActiveSnapshotWithRealScores(dateStr, "btts_vip");
+        if (settledBtts && settledBtts.length > 0) {
+          const newlySettled = settledBtts.filter((p) => p.status === "won" || p.status === "lost").length;
+          if (newlySettled > 0) {
+            if (!settledDates.includes(dateStr)) settledDates.push(dateStr);
+            totalSettled += newlySettled;
+          }
+        }
       } catch (err) {
         console.warn(`[Auto-Settle] Error settling snapshot ${dateStr}:`, err);
       }
@@ -1212,7 +1262,7 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string, sport
 
 export async function getAllDailySnapshotsAsync(sportFilter?: string): Promise<Record<string, MarketOpportunity[]>> {
   const result: Record<string, MarketOpportunity[]> = {};
-  const sports = sportFilter ? [sportFilter.toLowerCase()] : ["football", "nhl", "nba", "nfl", "ncaaf", "corners_vip", "cards_vip", "shots_vip"];
+  const sports = sportFilter ? [sportFilter.toLowerCase()] : ["football", "nhl", "nba", "nfl", "ncaaf", "corners_vip", "cards_vip", "shots_vip", "over25_vip", "btts_vip"];
 
   // 1. Memory snapshots
   for (const [key, p] of Object.entries(memorySnapshots)) {
@@ -1299,7 +1349,7 @@ export async function getAllDailySnapshotsAsync(sportFilter?: string): Promise<R
 
 function getAllDailySnapshots(sportFilter?: string): Record<string, MarketOpportunity[]> {
   const result: Record<string, MarketOpportunity[]> = {};
-  const sports = sportFilter ? [sportFilter.toLowerCase()] : ["football", "nhl", "nba", "nfl", "ncaaf", "corners_vip", "cards_vip", "shots_vip"];
+  const sports = sportFilter ? [sportFilter.toLowerCase()] : ["football", "nhl", "nba", "nfl", "ncaaf", "corners_vip", "cards_vip", "shots_vip", "over25_vip", "btts_vip"];
 
   for (const [key, p] of Object.entries(memorySnapshots)) {
     for (const s of sports) {
@@ -1392,17 +1442,19 @@ export interface HistoricalSettledPick {
   edge?: number;
   probability: number;
   confidence: "Muy Alta" | "Alta" | "Media" | "Moderada";
-  pickBadge?: "bomba" | "valor" | "estandar" | "mcp" | "nuevo" | "elite" | "corners_vip" | "cards_vip" | "shots_vip";
+  pickBadge?: "bomba" | "valor" | "estandar" | "mcp" | "nuevo" | "elite" | "corners_vip" | "cards_vip" | "shots_vip" | "over25_vip" | "btts_vip";
   isElite?: boolean;
   isCornersVip?: boolean;
   isCardsVip?: boolean;
   isShotsVip?: boolean;
+  isOver25Vip?: boolean;
+  isBttsVip?: boolean;
   vipBadge?: string;
   matchTiming?: "prematch" | "live";
   isLive?: boolean;
   isMcp?: boolean;
   isMcpPick?: boolean;
-  source?: "algorithm" | "mcp" | "manual" | "corners_vip" | "cards_vip" | "shots_vip";
+  source?: "algorithm" | "mcp" | "manual" | "corners_vip" | "cards_vip" | "shots_vip" | "over25_vip" | "btts_vip";
   livePeriod?: string;
   liveMinute?: string | number;
   result: "WON" | "LOST" | "VOID";
@@ -3169,7 +3221,19 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
         p.pickBadge === "shots_vip" ||
         (p as any).sport === "shots_vip"
       );
-      const isMcpPick = !isCornersVipPick && !isCardsVipPick && !isShotsVipPick && Boolean(p.isMcp || p.isMcpPick || p.source === "mcp" || p.pickBadge === "mcp" || (p.explanation && p.explanation.includes("MCP")) || (p.market && p.market.includes("MCP")));
+      const isOver25VipPick = Boolean(
+        (p as any).isOver25Vip ||
+        p.source === "over25_vip" ||
+        p.pickBadge === "over25_vip" ||
+        (p as any).sport === "over25_vip"
+      );
+      const isBttsVipPick = Boolean(
+        (p as any).isBttsVip ||
+        p.source === "btts_vip" ||
+        p.pickBadge === "btts_vip" ||
+        (p as any).sport === "btts_vip"
+      );
+      const isMcpPick = !isCornersVipPick && !isCardsVipPick && !isShotsVipPick && !isOver25VipPick && !isBttsVipPick && Boolean(p.isMcp || p.isMcpPick || p.source === "mcp" || p.pickBadge === "mcp" || (p.explanation && p.explanation.includes("MCP")) || (p.market && p.market.includes("MCP")));
 
       // Always parse score and dynamically evaluate against market and selection
       let parsedHomeGoals: number | null = null;
@@ -3237,8 +3301,10 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
             isCornersVip: isCornersVipPick,
             isCardsVip: isCardsVipPick,
             isShotsVip: isShotsVipPick,
-            vipBadge: isCardsVipPick ? "Tarjetas VIP" : (isShotsVipPick ? "Disparos VIP" : (isCornersVipPick ? "Corners VIP" : undefined)),
-            source: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")))),
+            isOver25Vip: isOver25VipPick,
+            isBttsVip: isBttsVipPick,
+            vipBadge: isCardsVipPick ? "Tarjetas VIP" : (isShotsVipPick ? "Disparos VIP" : (isOver25VipPick ? "Over 2.5 VIP" : (isBttsVipPick ? "Ambos Anotan VIP" : (isCornersVipPick ? "Corners VIP" : undefined)))),
+            source: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isOver25VipPick ? "over25_vip" : (isBttsVipPick ? "btts_vip" : (isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")))))),
             matchTiming: isLiveMatch ? "live" : "prematch",
             isLive: isLiveMatch,
             isMcp: isMcpPick,
@@ -3289,8 +3355,10 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
             isCornersVip: isCornersVipPick,
             isCardsVip: isCardsVipPick,
             isShotsVip: isShotsVipPick,
-            vipBadge: isCardsVipPick ? "Tarjetas VIP" : (isShotsVipPick ? "Disparos VIP" : (isCornersVipPick ? "Corners VIP" : undefined)),
-            source: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")))),
+            isOver25Vip: isOver25VipPick,
+            isBttsVip: isBttsVipPick,
+            vipBadge: isCardsVipPick ? "Tarjetas VIP" : (isShotsVipPick ? "Disparos VIP" : (isOver25VipPick ? "Over 2.5 VIP" : (isBttsVipPick ? "Ambos Anotan VIP" : (isCornersVipPick ? "Corners VIP" : undefined)))),
+            source: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isOver25VipPick ? "over25_vip" : (isBttsVipPick ? "btts_vip" : (isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")))))),
             matchTiming: isLiveMatch ? "live" : "prematch",
             isLive: isLiveMatch,
             isMcp: isMcpPick,
@@ -3341,8 +3409,10 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
             isCornersVip: isCornersVipPick,
             isCardsVip: isCardsVipPick,
             isShotsVip: isShotsVipPick,
-            vipBadge: isCardsVipPick ? "Tarjetas VIP" : (isShotsVipPick ? "Disparos VIP" : (isCornersVipPick ? "Corners VIP" : undefined)),
-            source: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")))),
+            isOver25Vip: isOver25VipPick,
+            isBttsVip: isBttsVipPick,
+            vipBadge: isCardsVipPick ? "Tarjetas VIP" : (isShotsVipPick ? "Disparos VIP" : (isOver25VipPick ? "Over 2.5 VIP" : (isBttsVipPick ? "Ambos Anotan VIP" : (isCornersVipPick ? "Corners VIP" : undefined)))),
+            source: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isOver25VipPick ? "over25_vip" : (isBttsVipPick ? "btts_vip" : (isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")))))),
             matchTiming: isLiveMatch ? "live" : "prematch",
             isLive: isLiveMatch,
             isMcp: isMcpPick,
@@ -3410,8 +3480,10 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
             isCornersVip: isCornersVipPick,
             isCardsVip: isCardsVipPick,
             isShotsVip: isShotsVipPick,
-            vipBadge: isCardsVipPick ? "Tarjetas VIP" : (isShotsVipPick ? "Disparos VIP" : (isCornersVipPick ? "Corners VIP" : undefined)),
-            source: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")))),
+            isOver25Vip: isOver25VipPick,
+            isBttsVip: isBttsVipPick,
+            vipBadge: isCardsVipPick ? "Tarjetas VIP" : (isShotsVipPick ? "Disparos VIP" : (isOver25VipPick ? "Over 2.5 VIP" : (isBttsVipPick ? "Ambos Anotan VIP" : (isCornersVipPick ? "Corners VIP" : undefined)))),
+            source: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isOver25VipPick ? "over25_vip" : (isBttsVipPick ? "btts_vip" : (isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")))))),
             matchTiming: isLiveMatch ? "live" : "prematch",
             isLive: isLiveMatch,
             isMcp: isMcpPick,

@@ -90,6 +90,18 @@ export async function GET(request: NextRequest) {
       } else if (sport === "corners_vip") {
         filteredHistory = filteredHistory.filter((h) => h.isCornersVip || h.source === "corners_vip" || h.pickBadge === "corners_vip" || ((h as any).sport || "") === "corners_vip");
         filteredParlays = [];
+      } else if (sport === "cards_vip") {
+        filteredHistory = filteredHistory.filter((h) => h.isCardsVip || h.source === "cards_vip" || h.pickBadge === "cards_vip" || ((h as any).sport || "") === "cards_vip");
+        filteredParlays = [];
+      } else if (sport === "shots_vip") {
+        filteredHistory = filteredHistory.filter((h) => h.isShotsVip || h.source === "shots_vip" || h.pickBadge === "shots_vip" || ((h as any).sport || "") === "shots_vip");
+        filteredParlays = [];
+      } else if (sport === "over25_vip") {
+        filteredHistory = filteredHistory.filter((h) => h.isOver25Vip || h.source === "over25_vip" || h.pickBadge === "over25_vip" || ((h as any).sport || "") === "over25_vip");
+        filteredParlays = [];
+      } else if (sport === "btts_vip") {
+        filteredHistory = filteredHistory.filter((h) => h.isBttsVip || h.source === "btts_vip" || h.pickBadge === "btts_vip" || ((h as any).sport || "") === "btts_vip");
+        filteredParlays = [];
       }
     }
 

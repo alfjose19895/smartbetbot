@@ -10,7 +10,7 @@ import { SupportedSport } from "@/lib/sports/types";
 
 type DateFilterMode = "all" | "today" | "yesterday" | "7d" | "30d" | "specific" | "range";
 type ProbFilterMode = "all" | "muy_alta" | "alta" | "media" | "baja" | "custom";
-type ModalityFilter = "all" | "prematch" | "live" | "mcp" | "bomba" | "corners_vip" | "cards_vip" | "shots_vip";
+type ModalityFilter = "all" | "prematch" | "live" | "mcp" | "bomba" | "corners_vip" | "cards_vip" | "shots_vip" | "over25_vip" | "btts_vip";
 
 interface MetricItem {
   name: string;
@@ -199,6 +199,8 @@ function ReportsContent() {
       const isCornersVip = Boolean(item.isCornersVip || item.source === "corners_vip" || item.pickBadge === "corners_vip" || item.vipBadge === "Corners VIP");
       const isCardsVip = Boolean(item.isCardsVip || item.source === "cards_vip" || item.pickBadge === "cards_vip" || item.vipBadge === "Tarjetas VIP");
       const isShotsVip = Boolean(item.isShotsVip || item.source === "shots_vip" || item.pickBadge === "shots_vip" || item.vipBadge === "Disparos VIP");
+      const isOver25Vip = Boolean(item.isOver25Vip || item.source === "over25_vip" || item.pickBadge === "over25_vip" || item.vipBadge === "Over 2.5 VIP");
+      const isBttsVip = Boolean(item.isBttsVip || item.source === "btts_vip" || item.pickBadge === "btts_vip" || item.vipBadge === "Ambos Anotan VIP");
 
       if (modalityFilter === "prematch" && isLive) return false;
       if (modalityFilter === "live" && !isLive) return false;
@@ -207,6 +209,8 @@ function ReportsContent() {
       if (modalityFilter === "corners_vip" && !isCornersVip) return false;
       if (modalityFilter === "cards_vip" && !isCardsVip) return false;
       if (modalityFilter === "shots_vip" && !isShotsVip) return false;
+      if (modalityFilter === "over25_vip" && !isOver25Vip) return false;
+      if (modalityFilter === "btts_vip" && !isBttsVip) return false;
 
       // 4. Market Filter
       if (marketFilter !== "all") {
@@ -258,6 +262,8 @@ function ReportsContent() {
     const cornersVipPicks = filteredItems.filter((h) => h.isCornersVip || h.source === "corners_vip" || h.pickBadge === "corners_vip" || h.vipBadge === "Corners VIP");
     const cardsVipPicks = filteredItems.filter((h) => h.isCardsVip || h.source === "cards_vip" || h.pickBadge === "cards_vip" || h.vipBadge === "Tarjetas VIP");
     const shotsVipPicks = filteredItems.filter((h) => h.isShotsVip || h.source === "shots_vip" || h.pickBadge === "shots_vip" || h.vipBadge === "Disparos VIP");
+    const over25VipPicks = filteredItems.filter((h) => h.isOver25Vip || h.source === "over25_vip" || h.pickBadge === "over25_vip" || h.vipBadge === "Over 2.5 VIP");
+    const bttsVipPicks = filteredItems.filter((h) => h.isBttsVip || h.source === "btts_vip" || h.pickBadge === "btts_vip" || h.vipBadge === "Ambos Anotan VIP");
 
     return {
       prematch: computeStats(prematchPicks),
@@ -267,6 +273,8 @@ function ReportsContent() {
       corners_vip: computeStats(cornersVipPicks),
       cards_vip: computeStats(cardsVipPicks),
       shots_vip: computeStats(shotsVipPicks),
+      over25_vip: computeStats(over25VipPicks),
+      btts_vip: computeStats(bttsVipPicks),
     };
   }, [filteredItems]);
 
@@ -701,6 +709,26 @@ function ReportsContent() {
                   }`}
                 >
                   <span>🎯 Disparos VIP ({comparativeMetrics.shots_vip.total})</span>
+                </button>
+                <button
+                  onClick={() => setModalityFilter("over25_vip")}
+                  className={`rounded-xl px-3 py-1 text-xs font-black transition cursor-pointer flex items-center gap-1 ${
+                    modalityFilter === "over25_vip"
+                      ? "bg-emerald-500 text-slate-950 font-black shadow-md shadow-emerald-500/30"
+                      : "bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/20"
+                  }`}
+                >
+                  <span>⚽ Over 2.5 VIP ({comparativeMetrics.over25_vip?.total || 0})</span>
+                </button>
+                <button
+                  onClick={() => setModalityFilter("btts_vip")}
+                  className={`rounded-xl px-3 py-1 text-xs font-black transition cursor-pointer flex items-center gap-1 ${
+                    modalityFilter === "btts_vip"
+                      ? "bg-blue-500 text-slate-950 font-black shadow-md shadow-blue-500/30"
+                      : "bg-blue-500/10 text-blue-300 border border-blue-500/30 hover:bg-blue-500/20"
+                  }`}
+                >
+                  <span>🥅 Ambos Anotan VIP ({comparativeMetrics.btts_vip?.total || 0})</span>
                 </button>
               </>
             )}
