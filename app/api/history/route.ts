@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getVerifiedIdentity } from "@/features/auth/lib/session";
 import { getHistoricalSettledPredictions, getHistoricalSettledParlays, settleAllSnapshotsWithRealScores } from "@/lib/sports/db";
 
 export const dynamic = "force-dynamic";
@@ -26,6 +27,36 @@ export async function GET(request: NextRequest) {
 
     let filteredHistory = history;
     let filteredParlays = parlays;
+
+    const VIP_SPORTS = ["corners_vip", "cards_vip", "shots_vip", "over25_vip", "btts_vip"];
+    const identity = await getVerifiedIdentity();
+    const isAdmin = Boolean(
+      identity &&
+      (identity.role === "admin" || (identity.email || "").toLowerCase().includes("ajhs1589"))
+    );
+
+    // Guard: VIP histories are strictly forbidden for non-admins
+    if (VIP_SPORTS.includes(sport) && !isAdmin) {
+      return NextResponse.json(
+        { error: "Acceso no autorizado. El historial de los módulos VIP es exclusivo para administradores." },
+        { status: 403 }
+      );
+    }
+
+    // If the caller is not an admin, filter out all VIP picks from general history
+    if (!isAdmin) {
+      filteredHistory = filteredHistory.filter(
+        (h) =>
+          !h.isCornersVip &&
+          !h.isCardsVip &&
+          !h.isShotsVip &&
+          !h.isOver25Vip &&
+          !h.isBttsVip &&
+          !VIP_SPORTS.includes(h.source || "") &&
+          !VIP_SPORTS.includes(h.pickBadge || "") &&
+          !VIP_SPORTS.includes(((h as any).sport || "").toLowerCase())
+      );
+    }
 
     // Strict Sport Isolation
     if (sport) {

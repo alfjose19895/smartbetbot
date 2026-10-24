@@ -94,10 +94,12 @@ export default function BttsVipPage() {
           setIsAdmin(true);
         } else {
           setIsAdmin(false);
+          setLoading(false);
         }
       })
       .catch(() => {
         setIsAdmin(false);
+        setLoading(false);
       });
   }, []);
 

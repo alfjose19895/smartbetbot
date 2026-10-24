@@ -94,10 +94,12 @@ export default function Over25VipPage() {
           setIsAdmin(true);
         } else {
           setIsAdmin(false);
+          setLoading(false);
         }
       })
       .catch(() => {
         setIsAdmin(false);
+        setLoading(false);
       });
   }, []);
 

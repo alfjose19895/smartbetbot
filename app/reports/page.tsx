@@ -57,6 +57,20 @@ function ReportsContent() {
 
   // 1. Strict Sport Isolation State
   const [selectedSport, setSelectedSport] = useState<SupportedSport>("football");
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+
+  useEffect(() => {
+    fetch("/api/auth/profile")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.user?.role === "admin" || (data?.user?.email || "").toLowerCase().includes("ajhs1589")) {
+          setIsAdmin(true);
+        } else {
+          setIsAdmin(false);
+        }
+      })
+      .catch(() => setIsAdmin(false));
+  }, []);
 
   // Read URL query param on mount if present
   useEffect(() => {
@@ -211,6 +225,11 @@ function ReportsContent() {
       if (modalityFilter === "shots_vip" && !isShotsVip) return false;
       if (modalityFilter === "over25_vip" && !isOver25Vip) return false;
       if (modalityFilter === "btts_vip" && !isBttsVip) return false;
+
+      // Restrict VIP picks in reports strictly to administrators
+      if (!isAdmin && (isCornersVip || isCardsVip || isShotsVip || isOver25Vip || isBttsVip)) {
+        return false;
+      }
 
       // 4. Market Filter
       if (marketFilter !== "all") {
@@ -668,7 +687,7 @@ function ReportsContent() {
             >
               <span>🎯 Valor (+EV) ({comparativeMetrics.live.total})</span>
             </button>
-            {selectedSport === "football" && (
+            {isAdmin && selectedSport === "football" && (
               <>
                 <button
                   onClick={() => setModalityFilter("mcp")}

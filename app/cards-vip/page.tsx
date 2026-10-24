@@ -104,14 +104,16 @@ export default function CardsVipPage() {
     fetch("/api/auth/profile")
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (data?.user?.role === "admin") {
+        if (data?.user?.role === "admin" || (data?.user?.email || "").toLowerCase().includes("ajhs1589")) {
           setIsAdmin(true);
         } else {
           setIsAdmin(false);
+          setLoading(false);
         }
       })
       .catch(() => {
         setIsAdmin(false);
+        setLoading(false);
       });
   }, []);
 

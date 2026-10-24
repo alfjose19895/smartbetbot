@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getVerifiedIdentity } from "@/features/auth/lib/session";
 import {
   generatePredictionsForUpcoming,
   getStoredPredictions,
@@ -21,6 +22,21 @@ export async function GET(request: NextRequest) {
     const marketFilter = searchParams.get("market");
     const minProb = parseFloat(searchParams.get("minProb") || "0");
     const forceRefresh = searchParams.get("refresh") === "true";
+
+    // Guard: VIP modules are strictly restricted to administrators
+    const VIP_SPORTS = ["corners_vip", "cards_vip", "shots_vip", "over25_vip", "btts_vip"];
+    if (VIP_SPORTS.includes(sport)) {
+      const identity = await getVerifiedIdentity();
+      const isAdmin =
+        identity &&
+        (identity.role === "admin" || (identity.email || "").toLowerCase().includes("ajhs1589"));
+      if (!isAdmin) {
+        return NextResponse.json(
+          { error: `Acceso no autorizado. El módulo VIP (${sport}) es exclusivo para administradores.` },
+          { status: 403 }
+        );
+      }
+    }
 
     // 1. NHL SPORT SIGNALS
     if (sport === "nhl") {
@@ -89,12 +105,19 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Strict football-only filter
+    // Strict football-only filter (Excludes other sports and all VIP modules)
     predictions = predictions.filter((p) => {
       const c = (p.country || "").toUpperCase();
       const l = (p.league || "").toUpperCase();
       const sp = ((p as any).sport || "").toLowerCase();
-      return c !== "NHL" && !l.includes("NHL") && sp !== "nhl" && c !== "NBA" && !l.includes("NBA") && sp !== "nba" && c !== "NFL" && sp !== "nfl";
+      const isOtherSport = c === "NHL" || l.includes("NHL") || sp === "nhl" || c === "NBA" || l.includes("NBA") || sp === "nba" || c === "NFL" || sp === "nfl";
+      const isVip = Boolean(
+        p.isCornersVip || p.isCardsVip || p.isShotsVip || p.isOver25Vip || p.isBttsVip ||
+        VIP_SPORTS.includes(p.source || "") ||
+        VIP_SPORTS.includes(p.pickBadge || "") ||
+        VIP_SPORTS.includes(sp)
+      );
+      return !isOtherSport && !isVip;
     });
 
     if (leagueFilter) {
