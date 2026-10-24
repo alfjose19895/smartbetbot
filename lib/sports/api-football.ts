@@ -910,384 +910,267 @@ export function extractMarketOddsFromBookmaker(oddsItem?: ApiFootballOddsItem | 
     return null;
   };
 
-  // 1. Extract 1X2 Match Winner across cascade
+  // 1. Extract 1X2 Match Winner (Strictly API-Football Bet ID: 1)
   for (const bm of sortedBookmakers) {
     if (!bm.bets || !Array.isArray(bm.bets)) continue;
-    if (result.homeWin && result.awayWin) break;
+    const bet = bm.bets.find((b) => Number(b.id) === 1 || (!b.id && (b.name || "").toLowerCase().trim() === "match winner"));
+    if (!bet || !Array.isArray(bet.values) || bet.values.length === 0) continue;
 
-    for (const bet of bm.bets) {
-      const betId = Number(bet.id);
-      const betName = (bet.name || "").toLowerCase().trim();
+    let found1X2 = false;
+    for (const val of bet.values) {
+      const v = String(val.value).toLowerCase().trim();
+      const odd = parseOdd(val.odd);
+      if (!odd) continue;
 
-      if (
-        betId === 1 ||
-        (betName.includes("match winner") &&
-          !betName.includes("first half") &&
-          !betName.includes("1st") &&
-          !betName.includes("2nd") &&
-          !betName.includes("corner") &&
-          !betName.includes("card") &&
-          !betName.includes("team"))
-      ) {
-        for (const val of bet.values || []) {
-          const v = String(val.value).toLowerCase().trim();
-          const odd = parseOdd(val.odd);
-          if (!odd) continue;
-
-          if (v === "home" || v === "1" || v === "local") {
-            if (!result.homeWin) result.homeWin = odd;
-          } else if (v === "draw" || v === "x" || v === "empate") {
-            if (!result.draw) result.draw = odd;
-          } else if (v === "away" || v === "2" || v === "visitante") {
-            if (!result.awayWin) result.awayWin = odd;
-          }
-        }
-        if (result.homeWin) {
-          primaryBookmakerName = bm.name;
-        }
+      if (v === "home" || v === "1" || v === "local") {
+        if (!result.homeWin) { result.homeWin = odd; found1X2 = true; }
+      } else if (v === "draw" || v === "x" || v === "empate") {
+        if (!result.draw) { result.draw = odd; found1X2 = true; }
+      } else if (v === "away" || v === "2" || v === "visitante") {
+        if (!result.awayWin) { result.awayWin = odd; found1X2 = true; }
       }
+    }
+    if (found1X2 && result.homeWin) {
+      primaryBookmakerName = bm.name;
+      break;
     }
   }
 
-  // 2. Extract Full Match Goals Over/Under across cascade
+  // 2. Extract Full Match Goals Over/Under (Strictly API-Football Bet ID: 5)
   for (const bm of sortedBookmakers) {
     if (!bm.bets || !Array.isArray(bm.bets)) continue;
-    if (result.over25 && result.under25) break;
+    const bet = bm.bets.find((b) => Number(b.id) === 5 || (!b.id && (b.name || "").toLowerCase().trim() === "goals over/under"));
+    if (!bet || !Array.isArray(bet.values) || bet.values.length === 0) continue;
 
-    for (const bet of bm.bets) {
-      const betId = Number(bet.id);
-      const betName = (bet.name || "").toLowerCase().trim();
+    let foundGoals = false;
+    for (const val of bet.values) {
+      const v = String(val.value).toLowerCase().trim();
+      const odd = parseOdd(val.odd);
+      if (!odd) continue;
 
-      if (
-        betId === 5 ||
-        ((betName === "goals over/under" || betName === "over/under" || betName.includes("total goals") || betName.includes("goals total")) &&
-          !betName.includes("first half") &&
-          !betName.includes("1st") &&
-          !betName.includes("2nd") &&
-          !betName.includes("home") &&
-          !betName.includes("away") &&
-          !betName.includes("corner") &&
-          !betName.includes("card") &&
-          !betName.includes("booking") &&
-          !betName.includes("player"))
-      ) {
-        for (const val of bet.values || []) {
-          const v = String(val.value).toLowerCase().trim();
-          const odd = parseOdd(val.odd);
-          if (!odd) continue;
+      const isOver = v.includes("over") || v.includes(">") || v.includes("+") || v.includes("más") || v.includes("mas");
+      const isUnder = v.includes("under") || v.includes("<") || v.includes("-") || v.includes("menos");
 
-          const isOver = v.includes("over") || v.includes(">") || v.includes("+") || v.includes("más") || v.includes("mas");
-          const isUnder = v.includes("under") || v.includes("<") || v.includes("-") || v.includes("menos");
-
-          if (isOver && v.includes("0.5") && !result.over05) result.over05 = odd;
-          else if (isOver && v.includes("1.5") && !result.over15) result.over15 = odd;
-          else if (isOver && v.includes("2.5") && !result.over25) result.over25 = odd;
-          else if (isUnder && v.includes("2.5") && !result.under25) result.under25 = odd;
-          else if (isOver && v.includes("3.5") && !result.over35) result.over35 = odd;
-          else if (isUnder && v.includes("3.5") && !result.under35) result.under35 = odd;
-        }
-      }
+      if (isOver && v.includes("0.5") && !result.over05) { result.over05 = odd; foundGoals = true; }
+      else if (isOver && v.includes("1.5") && !result.over15) { result.over15 = odd; foundGoals = true; }
+      else if (isOver && v.includes("2.5") && !result.over25) { result.over25 = odd; foundGoals = true; }
+      else if (isUnder && v.includes("2.5") && !result.under25) { result.under25 = odd; foundGoals = true; }
+      else if (isOver && v.includes("3.5") && !result.over35) { result.over35 = odd; foundGoals = true; }
+      else if (isUnder && v.includes("3.5") && !result.under35) { result.under35 = odd; foundGoals = true; }
+    }
+    if (foundGoals && result.over25) {
+      break;
     }
   }
 
-  // 3. Extract Both Teams to Score (BTTS) across cascade
+  // 3. Extract Both Teams to Score (BTTS) (Strictly API-Football Bet ID: 8)
   for (const bm of sortedBookmakers) {
     if (!bm.bets || !Array.isArray(bm.bets)) continue;
-    if (result.bttsYes && result.bttsNo) break;
+    const bet = bm.bets.find((b) => Number(b.id) === 8 || (!b.id && ["both teams score", "both teams to score", "btts"].includes((b.name || "").toLowerCase().trim())));
+    if (!bet || !Array.isArray(bet.values) || bet.values.length === 0) continue;
 
-    for (const bet of bm.bets) {
-      const betId = Number(bet.id);
-      const betName = (bet.name || "").toLowerCase().trim();
+    let foundBtts = false;
+    for (const val of bet.values) {
+      const v = String(val.value).toLowerCase().trim();
+      const odd = parseOdd(val.odd);
+      if (!odd) continue;
 
-      if (
-        betId === 8 ||
-        ((betName.includes("both teams score") || betName.includes("both teams to score") || betName === "btts" || betName.includes("ambos anotan") || betName.includes("ambos marcan")) &&
-          !betName.includes("first half") &&
-          !betName.includes("1st") &&
-          !betName.includes("2nd"))
-      ) {
-        for (const val of bet.values || []) {
-          const v = String(val.value).toLowerCase().trim();
-          const odd = parseOdd(val.odd);
-          if (!odd) continue;
-
-          if (v === "yes" || v === "si" || v === "sí" || v === "1" || v === "gg" || v.includes("yes")) {
-            if (!result.bttsYes) result.bttsYes = odd;
-          } else if (v === "no" || v === "2" || v === "ng" || v.includes("no")) {
-            if (!result.bttsNo) result.bttsNo = odd;
-          }
-        }
+      if (v === "yes" || v === "si" || v === "sí" || v === "1" || v === "gg" || v.includes("yes")) {
+        if (!result.bttsYes) { result.bttsYes = odd; foundBtts = true; }
+      } else if (v === "no" || v === "2" || v === "ng" || v.includes("no")) {
+        if (!result.bttsNo) { result.bttsNo = odd; foundBtts = true; }
       }
+    }
+    if (foundBtts && result.bttsYes) {
+      break;
     }
   }
 
-  // 4. Extract Double Chance across cascade
+  // 4. Extract Double Chance (Strictly API-Football Bet ID: 12)
   for (const bm of sortedBookmakers) {
     if (!bm.bets || !Array.isArray(bm.bets)) continue;
-    if (result.doubleChance1X) break;
+    const bet = bm.bets.find((b) => Number(b.id) === 12 || (!b.id && (b.name || "").toLowerCase().trim() === "double chance"));
+    if (!bet || !Array.isArray(bet.values) || bet.values.length === 0) continue;
 
-    for (const bet of bm.bets) {
-      const betId = Number(bet.id);
-      const betName = (bet.name || "").toLowerCase().trim();
+    let foundDC = false;
+    for (const val of bet.values) {
+      const v = String(val.value).toLowerCase().trim();
+      const odd = parseOdd(val.odd);
+      if (!odd) continue;
 
-      if (
-        betId === 12 ||
-        ((betName.includes("double chance") || betName.includes("doble oportunidad")) &&
-          !betName.includes("first half") &&
-          !betName.includes("1st") &&
-          !betName.includes("2nd"))
-      ) {
-        for (const val of bet.values || []) {
-          const v = String(val.value).toLowerCase().trim();
-          const odd = parseOdd(val.odd);
-          if (!odd) continue;
-
-          if (v.includes("home/draw") || v === "1x" || v.includes("local/empate") || v.includes("1 or x")) {
-            if (!result.doubleChance1X) result.doubleChance1X = odd;
-          } else if (v.includes("draw/away") || v === "x2" || v.includes("empate/visitante") || v.includes("x or 2")) {
-            if (!result.doubleChanceX2) result.doubleChanceX2 = odd;
-          } else if (v.includes("home/away") || v === "12" || v.includes("local/visitante") || v.includes("1 or 2")) {
-            if (!result.doubleChance12) result.doubleChance12 = odd;
-          }
-        }
+      if (v.includes("home/draw") || v === "1x" || v.includes("local/empate") || v.includes("1 or x")) {
+        if (!result.doubleChance1X) { result.doubleChance1X = odd; foundDC = true; }
+      } else if (v.includes("draw/away") || v === "x2" || v.includes("empate/visitante") || v.includes("x or 2")) {
+        if (!result.doubleChanceX2) { result.doubleChanceX2 = odd; foundDC = true; }
+      } else if (v.includes("home/away") || v === "12" || v.includes("local/visitante") || v.includes("1 or 2")) {
+        if (!result.doubleChance12) { result.doubleChance12 = odd; foundDC = true; }
       }
+    }
+    if (foundDC && (result.doubleChance1X || result.doubleChanceX2)) {
+      break;
     }
   }
 
   result.bookmakerName = primaryBookmakerName;
 
-  // 4. Extract Total Corners Over/Under lines across cascade (Strict Full-Match Corners Only)
+  // 5. Extract Total Corners Over/Under lines (Strictly API-Football Bet ID: 45)
+  // Bet ID 45 is the only official full match total corners market in API-Football.
+  // Excludes team corners (48, 49), half corners (46, 47), and vague text matches.
+  // Locks corners strictly to the single offering bookmaker (no cross-bookmaker ghost line mixing).
   for (const bm of sortedBookmakers) {
     if (!bm.bets || !Array.isArray(bm.bets)) continue;
 
-    for (const bet of bm.bets) {
-      const betId = Number(bet.id);
-      const betName = (bet.name || "").toLowerCase().trim();
+    const cornerBet = bm.bets.find((b) => Number(b.id) === 45 || (!b.id && (b.name || "").toLowerCase().trim() === "corners over under"));
+    if (!cornerBet || !Array.isArray(cornerBet.values) || cornerBet.values.length === 0) continue;
 
-      // STRICT EXCLUSIONS: Exclude 1st half, 2nd half, and individual team corners
-      if (
-        betId === 46 ||
-        betId === 47 ||
-        betName.includes("1st") ||
-        betName.includes("2nd") ||
-        betName.includes("half") ||
-        betName.includes("primer") ||
-        betName.includes("segund") ||
-        betName.includes("mitad") ||
-        betName.includes("tiempo") ||
-        betName.includes("home team") ||
-        betName.includes("away team") ||
-        betName.includes("corners home") ||
-        betName.includes("corners away") ||
-        betName.includes("equipo local") ||
-        betName.includes("equipo visitante") ||
-        betName.includes("individual")
-      ) {
-        continue;
-      }
+    let foundCorners = false;
+    for (const val of cornerBet.values) {
+      const vObj = val as Record<string, any>;
+      const rawVal = vObj.value !== undefined ? String(vObj.value) : "";
+      const rawHandicap = vObj.handicap !== undefined ? String(vObj.handicap) : "";
+      const rawTotal = vObj.total !== undefined ? String(vObj.total) : "";
+      const rawLine = vObj.line !== undefined ? String(vObj.line) : "";
+      const rawHeader = vObj.header !== undefined ? String(vObj.header) : "";
+      const fullStr = [rawVal, rawHandicap, rawTotal, rawLine, rawHeader].join(" ").toLowerCase().trim();
 
-      if (
-        betId === 45 ||
-        betId === 28 ||
-        betName.includes("corners over/under") ||
-        betName.includes("total corners") ||
-        betName.includes("corners total") ||
-        betName.includes("corner over under") ||
-        betName.includes("corners over under") ||
-        betName.includes("asian corners") ||
-        betName.includes("asian total corners") ||
-        betName.includes("saques de esquina") ||
-        betName.includes("córners total") ||
-        betName.includes("total córners") ||
-        betName.includes("córners más/menos")
-      ) {
-        for (const val of bet.values || []) {
-          const vObj = val as Record<string, any>;
-          const rawVal = vObj.value !== undefined ? String(vObj.value) : "";
-          const rawHandicap = vObj.handicap !== undefined ? String(vObj.handicap) : "";
-          const rawTotal = vObj.total !== undefined ? String(vObj.total) : "";
-          const rawLine = vObj.line !== undefined ? String(vObj.line) : "";
-          const rawHeader = vObj.header !== undefined ? String(vObj.header) : "";
-          const fullStr = [rawVal, rawHandicap, rawTotal, rawLine, rawHeader].join(" ").toLowerCase().trim();
+      const odd = parseOdd(val.odd);
+      if (!odd) continue;
 
-          const odd = parseOdd(val.odd);
-          if (!odd) continue;
+      const isOver = fullStr.includes("over") || fullStr.includes(">") || fullStr.includes("+") || fullStr.includes("más") || fullStr.includes("mas");
+      const isUnder = fullStr.includes("under") || fullStr.includes("<") || fullStr.includes("-") || fullStr.includes("menos");
 
-          const isOver = fullStr.includes("over") || fullStr.includes(">") || fullStr.includes("+") || fullStr.includes("más") || fullStr.includes("mas");
-          const isUnder = fullStr.includes("under") || fullStr.includes("<") || fullStr.includes("-") || fullStr.includes("menos");
+      if (isOver && fullStr.includes("6.5") && !result.cornersOver65) { result.cornersOver65 = odd; foundCorners = true; }
+      else if (isUnder && fullStr.includes("6.5") && !result.cornersUnder65) { result.cornersUnder65 = odd; foundCorners = true; }
+      else if (isOver && fullStr.includes("7.5") && !result.cornersOver75) { result.cornersOver75 = odd; foundCorners = true; }
+      else if (isUnder && fullStr.includes("7.5") && !result.cornersUnder75) { result.cornersUnder75 = odd; foundCorners = true; }
+      else if (isOver && fullStr.includes("8.5") && !result.cornersOver85) { result.cornersOver85 = odd; foundCorners = true; }
+      else if (isUnder && fullStr.includes("8.5") && !result.cornersUnder85) { result.cornersUnder85 = odd; foundCorners = true; }
+      else if (isOver && fullStr.includes("9.5") && !result.cornersOver95) { result.cornersOver95 = odd; foundCorners = true; }
+      else if (isUnder && fullStr.includes("9.5") && !result.cornersUnder95) { result.cornersUnder95 = odd; foundCorners = true; }
+      else if (isOver && fullStr.includes("10.5") && !result.cornersOver105) { result.cornersOver105 = odd; foundCorners = true; }
+      else if (isUnder && fullStr.includes("10.5") && !result.cornersUnder105) { result.cornersUnder105 = odd; foundCorners = true; }
+    }
 
-          if (isOver && fullStr.includes("6.5") && !result.cornersOver65) result.cornersOver65 = odd;
-          else if (isUnder && fullStr.includes("6.5") && !result.cornersUnder65) result.cornersUnder65 = odd;
-          else if (isOver && fullStr.includes("7.5") && !result.cornersOver75) result.cornersOver75 = odd;
-          else if (isUnder && fullStr.includes("7.5") && !result.cornersUnder75) result.cornersUnder75 = odd;
-          else if (isOver && fullStr.includes("8.5") && !result.cornersOver85) result.cornersOver85 = odd;
-          else if (isUnder && fullStr.includes("8.5") && !result.cornersUnder85) result.cornersUnder85 = odd;
-          else if (isOver && fullStr.includes("9.5") && !result.cornersOver95) result.cornersOver95 = odd;
-          else if (isUnder && fullStr.includes("9.5") && !result.cornersUnder95) result.cornersUnder95 = odd;
-          else if (isOver && fullStr.includes("10.5") && !result.cornersOver105) result.cornersOver105 = odd;
-          else if (isUnder && fullStr.includes("10.5") && !result.cornersUnder105) result.cornersUnder105 = odd;
-        }
-      }
+    if (foundCorners) {
+      break;
     }
   }
 
-  // 5. Extract Total Cards Over/Under lines across cascade
+  // 6. Extract Total Cards Over/Under lines (Strictly API-Football Bet ID: 76)
   for (const bm of sortedBookmakers) {
     if (!bm.bets || !Array.isArray(bm.bets)) continue;
 
-    for (const bet of bm.bets) {
-      const betId = Number(bet.id);
-      const betName = (bet.name || "").toLowerCase().trim();
+    const cardBet = bm.bets.find((b) => Number(b.id) === 76 || (!b.id && (b.name || "").toLowerCase().trim() === "cards over/under"));
+    if (!cardBet || !Array.isArray(cardBet.values) || cardBet.values.length === 0) continue;
 
-      if (
-        betName.includes("1st") ||
-        betName.includes("2nd") ||
-        betName.includes("half") ||
-        betName.includes("primer") ||
-        betName.includes("segund") ||
-        betName.includes("mitad") ||
-        betName.includes("home team") ||
-        betName.includes("away team") ||
-        betName.includes("red card")
-      ) {
-        continue;
-      }
+    let foundCards = false;
+    for (const val of cardBet.values) {
+      const vObj = val as Record<string, any>;
+      const rawVal = vObj.value !== undefined ? String(vObj.value) : "";
+      const rawHandicap = vObj.handicap !== undefined ? String(vObj.handicap) : "";
+      const rawTotal = vObj.total !== undefined ? String(vObj.total) : "";
+      const rawLine = vObj.line !== undefined ? String(vObj.line) : "";
+      const rawHeader = vObj.header !== undefined ? String(vObj.header) : "";
+      const fullStr = [rawVal, rawHandicap, rawTotal, rawLine, rawHeader].join(" ").toLowerCase().trim();
 
-      if (
-        betId === 76 ||
-        betId === 29 ||
-        betName.includes("cards over/under") ||
-        betName.includes("total cards") ||
-        betName.includes("tarjetas total") ||
-        betName.includes("total tarjetas") ||
-        betName.includes("tarjetas más/menos") ||
-        betName.includes("booking points")
-      ) {
-        for (const val of bet.values || []) {
-          const vObj = val as Record<string, any>;
-          const rawVal = vObj.value !== undefined ? String(vObj.value) : "";
-          const rawHandicap = vObj.handicap !== undefined ? String(vObj.handicap) : "";
-          const rawTotal = vObj.total !== undefined ? String(vObj.total) : "";
-          const rawLine = vObj.line !== undefined ? String(vObj.line) : "";
-          const rawHeader = vObj.header !== undefined ? String(vObj.header) : "";
-          const fullStr = [rawVal, rawHandicap, rawTotal, rawLine, rawHeader].join(" ").toLowerCase().trim();
+      const odd = parseOdd(val.odd);
+      if (!odd) continue;
 
-          const odd = parseOdd(val.odd);
-          if (!odd) continue;
+      const isOver = fullStr.includes("over") || fullStr.includes(">") || fullStr.includes("+") || fullStr.includes("más") || fullStr.includes("mas");
+      const isUnder = fullStr.includes("under") || fullStr.includes("<") || fullStr.includes("-") || fullStr.includes("menos");
 
-          const isOver = fullStr.includes("over") || fullStr.includes(">") || fullStr.includes("+") || fullStr.includes("más") || fullStr.includes("mas");
-          const isUnder = fullStr.includes("under") || fullStr.includes("<") || fullStr.includes("-") || fullStr.includes("menos");
-
-          if (isOver && fullStr.includes("3.5") && !result.cardsOver35) result.cardsOver35 = odd;
-          else if (isUnder && fullStr.includes("3.5") && !result.cardsUnder35) result.cardsUnder35 = odd;
-          else if (isOver && fullStr.includes("4.5") && !result.cardsOver45) result.cardsOver45 = odd;
-          else if (isUnder && fullStr.includes("4.5") && !result.cardsUnder45) result.cardsUnder45 = odd;
-          else if (isOver && fullStr.includes("5.5") && !result.cardsOver55) result.cardsOver55 = odd;
-          else if (isUnder && fullStr.includes("5.5") && !result.cardsUnder55) result.cardsUnder55 = odd;
-        }
-      }
+      if (isOver && fullStr.includes("3.5") && !result.cardsOver35) { result.cardsOver35 = odd; foundCards = true; }
+      else if (isUnder && fullStr.includes("3.5") && !result.cardsUnder35) { result.cardsUnder35 = odd; foundCards = true; }
+      else if (isOver && fullStr.includes("4.5") && !result.cardsOver45) { result.cardsOver45 = odd; foundCards = true; }
+      else if (isUnder && fullStr.includes("4.5") && !result.cardsUnder45) { result.cardsUnder45 = odd; foundCards = true; }
+      else if (isOver && fullStr.includes("5.5") && !result.cardsOver55) { result.cardsOver55 = odd; foundCards = true; }
+      else if (isUnder && fullStr.includes("5.5") && !result.cardsUnder55) { result.cardsUnder55 = odd; foundCards = true; }
     }
+    if (foundCards) break;
   }
 
-  // 6. Extract Total Shots & Shots on Target Over/Under lines across cascade
+  // 7. Extract Total Shots & Shots on Target Over/Under lines (Strictly Bet ID 87 for SOG, Bet ID 211 for Total Shots)
   const shotsOnGoalLines: Record<number, { over?: number; under?: number }> = {};
   const totalShotsLines: Record<number, { over?: number; under?: number }> = {};
 
   for (const bm of sortedBookmakers) {
     if (!bm.bets || !Array.isArray(bm.bets)) continue;
 
-    for (const bet of bm.bets) {
-      const betId = Number(bet.id);
-      const betName = (bet.name || "").toLowerCase().trim();
+    const sogBet = bm.bets.find((b) => Number(b.id) === 87 || (!b.id && (b.name || "").toLowerCase().includes("shotongoal")));
+    const shotsBet = bm.bets.find((b) => Number(b.id) === 211 || (!b.id && (b.name || "").toLowerCase().includes("total shot")));
 
-      if (
-        betName.includes("1st") ||
-        betName.includes("2nd") ||
-        betName.includes("half") ||
-        betName.includes("player") ||
-        betName.includes("1x2") ||
-        betName.includes("handicap") ||
-        betName.includes("home") ||
-        betName.includes("away") ||
-        betName.includes("corner") ||
-        betName.includes("card")
-      ) {
-        continue;
+    if (!sogBet && !shotsBet) continue;
+
+    if (sogBet && Array.isArray(sogBet.values)) {
+      for (const val of sogBet.values) {
+        const vObj = val as Record<string, any>;
+        const rawVal = vObj.value !== undefined ? String(vObj.value) : "";
+        const rawHandicap = vObj.handicap !== undefined ? String(vObj.handicap) : "";
+        const rawTotal = vObj.total !== undefined ? String(vObj.total) : "";
+        const rawLine = vObj.line !== undefined ? String(vObj.line) : "";
+        const rawHeader = vObj.header !== undefined ? String(vObj.header) : "";
+        const fullStr = [rawVal, rawHandicap, rawTotal, rawLine, rawHeader].filter(Boolean).join(" ").toLowerCase().trim();
+
+        const odd = parseOdd(val.odd);
+        if (!odd) continue;
+
+        const isOver = fullStr.includes("over") || fullStr.includes(">") || fullStr.includes("+") || fullStr.includes("más") || fullStr.includes("mas");
+        const isUnder = fullStr.includes("under") || fullStr.includes("<") || fullStr.includes("-") || fullStr.includes("menos");
+
+        const match = fullStr.match(/(\d+(?:\.\d+)?)/);
+        if (!match) continue;
+        const line = parseFloat(match[1]);
+        if (isNaN(line) || line < 3.5 || line > 20.5) continue;
+
+        if (!shotsOnGoalLines[line]) shotsOnGoalLines[line] = {};
+        if (isOver && !shotsOnGoalLines[line].over) shotsOnGoalLines[line].over = odd;
+        if (isUnder && !shotsOnGoalLines[line].under) shotsOnGoalLines[line].under = odd;
+
+        if (isOver && line === 7.5 && !result.shotsOnGoalOver75) result.shotsOnGoalOver75 = odd;
+        else if (isUnder && line === 7.5 && !result.shotsOnGoalUnder75) result.shotsOnGoalUnder75 = odd;
+        else if (isOver && line === 8.5 && !result.shotsOnGoalOver85) result.shotsOnGoalOver85 = odd;
+        else if (isUnder && line === 8.5 && !result.shotsOnGoalUnder85) result.shotsOnGoalUnder85 = odd;
+        else if (isOver && line === 9.5 && !result.shotsOnGoalOver95) result.shotsOnGoalOver95 = odd;
+        else if (isUnder && line === 9.5 && !result.shotsOnGoalUnder95) result.shotsOnGoalUnder95 = odd;
       }
+    }
 
-      const isSOG =
-        betId === 87 ||
-        betName.includes("target") ||
-        betName.includes("puerta") ||
-        betName.includes("arco") ||
-        betName.includes("shotongoal") ||
-        betName.includes("shotontarget") ||
-        (betName.includes("shot") && (betName.includes("goal") || betName.includes("target"))) ||
-        betName.includes("tiros a puerta") ||
-        betName.includes("disparos a puerta") ||
-        betName.includes("remates a puerta");
+    if (shotsBet && Array.isArray(shotsBet.values)) {
+      for (const val of shotsBet.values) {
+        const vObj = val as Record<string, any>;
+        const rawVal = vObj.value !== undefined ? String(vObj.value) : "";
+        const rawHandicap = vObj.handicap !== undefined ? String(vObj.handicap) : "";
+        const rawTotal = vObj.total !== undefined ? String(vObj.total) : "";
+        const rawLine = vObj.line !== undefined ? String(vObj.line) : "";
+        const rawHeader = vObj.header !== undefined ? String(vObj.header) : "";
+        const fullStr = [rawVal, rawHandicap, rawTotal, rawLine, rawHeader].filter(Boolean).join(" ").toLowerCase().trim();
 
-      const isTotalShots =
-        betId === 211 ||
-        betName === "total shots" ||
-        betName === "shots total" ||
-        betName.includes("total shots") ||
-        betName.includes("shots total") ||
-        betName.includes("total shot") ||
-        betName.includes("match shots") ||
-        betName.includes("disparos total") ||
-        betName.includes("tiros total") ||
-        betName.includes("remates total") ||
-        betName.includes("total disparos") ||
-        betName.includes("total tiros") ||
-        betName.includes("total remates");
+        const odd = parseOdd(val.odd);
+        if (!odd) continue;
 
-      if (isSOG || isTotalShots) {
-        for (const val of bet.values || []) {
-          const vObj = val as Record<string, any>;
-          const rawVal = vObj.value !== undefined ? String(vObj.value) : "";
-          const rawHandicap = vObj.handicap !== undefined ? String(vObj.handicap) : "";
-          const rawTotal = vObj.total !== undefined ? String(vObj.total) : "";
-          const rawLine = vObj.line !== undefined ? String(vObj.line) : "";
-          const rawHeader = vObj.header !== undefined ? String(vObj.header) : "";
-          const fullStr = [rawVal, rawHandicap, rawTotal, rawLine, rawHeader].filter(Boolean).join(" ").toLowerCase().trim();
+        const isOver = fullStr.includes("over") || fullStr.includes(">") || fullStr.includes("+") || fullStr.includes("más") || fullStr.includes("mas");
+        const isUnder = fullStr.includes("under") || fullStr.includes("<") || fullStr.includes("-") || fullStr.includes("menos");
 
-          const odd = parseOdd(val.odd);
-          if (!odd) continue;
+        const match = fullStr.match(/(\d+(?:\.\d+)?)/);
+        if (!match) continue;
+        const line = parseFloat(match[1]);
+        if (isNaN(line) || line < 15.5 || line > 45.5) continue;
 
-          const isOver = fullStr.includes("over") || fullStr.includes(">") || fullStr.includes("+") || fullStr.includes("más") || fullStr.includes("mas");
-          const isUnder = fullStr.includes("under") || fullStr.includes("<") || fullStr.includes("-") || fullStr.includes("menos");
+        if (!totalShotsLines[line]) totalShotsLines[line] = {};
+        if (isOver && !totalShotsLines[line].over) totalShotsLines[line].over = odd;
+        if (isUnder && !totalShotsLines[line].under) totalShotsLines[line].under = odd;
 
-          const match = fullStr.match(/(\d+(?:\.\d+)?)/);
-          if (!match) continue;
-          const line = parseFloat(match[1]);
-          if (isNaN(line)) continue;
-
-          if (isSOG && line >= 3.5 && line <= 20.5) {
-            if (!shotsOnGoalLines[line]) shotsOnGoalLines[line] = {};
-            if (isOver && !shotsOnGoalLines[line].over) shotsOnGoalLines[line].over = odd;
-            if (isUnder && !shotsOnGoalLines[line].under) shotsOnGoalLines[line].under = odd;
-
-            if (isOver && line === 7.5 && !result.shotsOnGoalOver75) result.shotsOnGoalOver75 = odd;
-            else if (isUnder && line === 7.5 && !result.shotsOnGoalUnder75) result.shotsOnGoalUnder75 = odd;
-            else if (isOver && line === 8.5 && !result.shotsOnGoalOver85) result.shotsOnGoalOver85 = odd;
-            else if (isUnder && line === 8.5 && !result.shotsOnGoalUnder85) result.shotsOnGoalUnder85 = odd;
-            else if (isOver && line === 9.5 && !result.shotsOnGoalOver95) result.shotsOnGoalOver95 = odd;
-            else if (isUnder && line === 9.5 && !result.shotsOnGoalUnder95) result.shotsOnGoalUnder95 = odd;
-          } else if (isTotalShots && line >= 15.5 && line <= 45.5) {
-            if (!totalShotsLines[line]) totalShotsLines[line] = {};
-            if (isOver && !totalShotsLines[line].over) totalShotsLines[line].over = odd;
-            if (isUnder && !totalShotsLines[line].under) totalShotsLines[line].under = odd;
-
-            if (isOver && line === 21.5 && !result.totalShotsOver215) result.totalShotsOver215 = odd;
-            else if (isUnder && line === 21.5 && !result.totalShotsUnder215) result.totalShotsUnder215 = odd;
-            else if (isOver && line === 23.5 && !result.totalShotsOver235) result.totalShotsOver235 = odd;
-            else if (isUnder && line === 23.5 && !result.totalShotsUnder235) result.totalShotsUnder235 = odd;
-            else if (isOver && line === 25.5 && !result.totalShotsOver255) result.totalShotsOver255 = odd;
-            else if (isUnder && line === 25.5 && !result.totalShotsUnder255) result.totalShotsUnder255 = odd;
-          }
-        }
+        if (isOver && line === 21.5 && !result.totalShotsOver215) result.totalShotsOver215 = odd;
+        else if (isUnder && line === 21.5 && !result.totalShotsUnder215) result.totalShotsUnder215 = odd;
+        else if (isOver && line === 23.5 && !result.totalShotsOver235) result.totalShotsOver235 = odd;
+        else if (isUnder && line === 23.5 && !result.totalShotsUnder235) result.totalShotsUnder235 = odd;
+        else if (isOver && line === 25.5 && !result.totalShotsOver255) result.totalShotsOver255 = odd;
+        else if (isUnder && line === 25.5 && !result.totalShotsUnder255) result.totalShotsUnder255 = odd;
       }
+    }
+
+    if (Object.keys(shotsOnGoalLines).length > 0 || Object.keys(totalShotsLines).length > 0) {
+      break;
     }
   }
 
