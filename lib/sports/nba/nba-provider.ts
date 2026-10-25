@@ -1,20 +1,51 @@
+import fs from 'fs';
+import path from 'path';
 import { getCurrentSportSeason } from "../registry";
 import { SportsDataProvider, SportCapability, NormalizedGame, NormalizedOdds } from '../types';
 import { SPORTS_CONFIG } from '../config';
 
-interface ApiNbaGame {
+export interface ApiNbaGame {
   id: number;
   date?: string;
+  time?: string;
+  timestamp?: number;
+  timezone?: string;
   league?: { id?: number | string; name?: string; season?: string };
   teams?: {
     home?: { id?: number; name?: string; logo?: string };
     away?: { id?: number; name?: string; logo?: string };
   };
-  status?: { short?: string };
+  status?: { short?: string; long?: string };
   scores?: {
     home?: { total?: number; quarter_1?: number; quarter_2?: number; quarter_3?: number; quarter_4?: number; over_time?: number };
     away?: { total?: number; quarter_1?: number; quarter_2?: number; quarter_3?: number; quarter_4?: number; over_time?: number };
   };
+}
+
+export interface NBAPlayerGameStat {
+  id: number;
+  name: string;
+  teamId: number;
+  type: 'starters' | 'bench';
+  minutes: string;
+  points: number;
+  assists: number;
+  rebounds: number;
+  threepoints: number;
+}
+
+export function formatNBAPlayerName(rawName: string): string {
+  if (!rawName) return '';
+  const parts = rawName.trim().split(/\s+/);
+  if (parts.length === 2) {
+    // API returns "LastName FirstName" e.g. "Banchero Paolo" -> "Paolo Banchero"
+    return `${parts[1]} ${parts[0]}`;
+  }
+  if (parts.length === 3 && parts[1].includes('-')) {
+    // "Towns Karl-Anthony" -> "Karl-Anthony Towns"
+    return `${parts[1]} ${parts[0]}`;
+  }
+  return rawName;
 }
 
 export class NBAProvider implements SportsDataProvider {
@@ -45,94 +76,135 @@ export class NBAProvider implements SportsDataProvider {
     };
   }
 
-  public async getSchedule(date: string): Promise<NormalizedGame[]> {
-    const config = SPORTS_CONFIG.nba;
-    if (!this.apiKey) {
-      return [];
+  private ensureCacheDir(): string {
+    const cacheDir = path.join(process.cwd(), 'data', 'cache');
+    if (!fs.existsSync(cacheDir)) {
+      try {
+        fs.mkdirSync(cacheDir, { recursive: true });
+      } catch {}
+    }
+    return cacheDir;
+  }
+
+  /**
+   * Fetches real season games from API-Basketball with local disk caching
+   */
+  public async getSeasonGames(season: string = '2024-2025'): Promise<ApiNbaGame[]> {
+    const cacheDir = this.ensureCacheDir();
+    const cacheFile = path.join(cacheDir, `nba_season_games_${season.replace('-', '_')}.json`);
+
+    if (fs.existsSync(cacheFile)) {
+      try {
+        const raw = fs.readFileSync(cacheFile, 'utf-8');
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      } catch {}
     }
 
-    try {
-      const currentSeason = getCurrentSportSeason("nba");
-      let url = `${config.baseUrl}/games?date=${date}&league=12&season=${currentSeason}&timezone=America/New_York`;
-      let res = await fetch(url, { headers: this.headers });
-      let data = res.ok ? ((await res.json()) as { response?: ApiNbaGame[] }) : { response: [] };
-      let games = data.response || [];
+    if (!this.apiKey) return [];
 
-      // If no games found in future calendar season (e.g. 2026-2027), map the corresponding date from the active database season (2024-2025)
-      if (games.length === 0) {
-        const fallbackSeason = '2024-2025';
-        const fallbackDate = date.replace(/^\d{4}/, '2024');
-        const fallbackUrl = `${config.baseUrl}/games?date=${fallbackDate}&league=12&season=${fallbackSeason}&timezone=America/New_York`;
-        const fbRes = await fetch(fallbackUrl, { headers: this.headers });
-        if (fbRes.ok) {
-          const fbData = (await fbRes.json()) as { response?: ApiNbaGame[] };
-          games = (fbData.response || []).map((g) => ({
-            ...g,
-            date: g.date ? g.date.replace('2024', date.substring(0, 4)) : date,
-          }));
+    try {
+      const config = SPORTS_CONFIG.nba;
+      const url = `${config.baseUrl}/games?season=${season}&league=12`;
+      const res = await fetch(url, { headers: this.headers, cache: 'no-store' });
+      if (res.ok) {
+        const data = (await res.json()) as { response?: ApiNbaGame[] };
+        const games = data.response || [];
+        if (games.length > 0) {
+          try {
+            fs.writeFileSync(cacheFile, JSON.stringify(games, null, 2), 'utf-8');
+          } catch {}
+          return games;
         }
       }
+    } catch (err) {
+      console.warn('[NBAProvider] Error fetching season games:', err);
+    }
 
-      // If still empty, provide the 5 core high-profile games for this date
-      if (games.length === 0) {
-        games = [
-          {
-            id: 413888,
-            date: `${date}T19:30:00-04:00`,
-            league: { id: 12, name: 'NBA', season: currentSeason },
-            teams: {
-              home: { id: 139, name: 'Denver Nuggets' },
-              away: { id: 147, name: 'Oklahoma City Thunder' }
-            },
-            status: { short: 'NS' },
-            scores: { home: {}, away: {} }
-          },
-          {
-            id: 413892,
-            date: `${date}T20:00:00-04:00`,
-            league: { id: 12, name: 'NBA', season: currentSeason },
-            teams: {
-              home: { id: 146, name: 'New York Knicks' },
-              away: { id: 140, name: 'Indiana Pacers' }
-            },
-            status: { short: 'NS' },
-            scores: { home: {}, away: {} }
-          },
-          {
-            id: 413889,
-            date: `${date}T22:00:00-04:00`,
-            league: { id: 12, name: 'NBA', season: currentSeason },
-            teams: {
-              home: { id: 153, name: 'Sacramento Kings' },
-              away: { id: 144, name: 'Minnesota Timberwolves' }
-            },
-            status: { short: 'NS' },
-            scores: { home: {}, away: {} }
-          },
-          {
-            id: 413890,
-            date: `${date}T19:00:00-04:00`,
-            league: { id: 12, name: 'NBA', season: currentSeason },
-            teams: {
-              home: { id: 148, name: 'Orlando Magic' },
-              away: { id: 133, name: 'Brooklyn Nets' }
-            },
-            status: { short: 'NS' },
-            scores: { home: {}, away: {} }
-          },
-          {
-            id: 413894,
-            date: `${date}T19:30:00-04:00`,
-            league: { id: 12, name: 'NBA', season: currentSeason },
-            teams: {
-              home: { id: 137, name: 'Cleveland Cavaliers' },
-              away: { id: 138, name: 'Detroit Pistons' }
-            },
-            status: { short: 'NS' },
-            scores: { home: {}, away: {} }
-          }
-        ];
+    return [];
+  }
+
+  /**
+   * Fetches real player game statistics directly from API-Basketball
+   */
+  public async getPlayerStats(gameId: number | string): Promise<NBAPlayerGameStat[]> {
+    const cleanId = String(gameId).replace('nba_', '');
+    const cacheDir = this.ensureCacheDir();
+    const cacheFile = path.join(cacheDir, `nba_players_${cleanId}.json`);
+
+    if (fs.existsSync(cacheFile)) {
+      try {
+        const raw = fs.readFileSync(cacheFile, 'utf-8');
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      } catch {}
+    }
+
+    if (!this.apiKey) return [];
+
+    try {
+      const config = SPORTS_CONFIG.nba;
+      const url = `${config.baseUrl}/games/statistics/players?id=${cleanId}`;
+      const res = await fetch(url, { headers: this.headers, cache: 'no-store' });
+      if (res.ok) {
+        const data = (await res.json()) as { response?: Array<any> };
+        const items = data.response || [];
+        const stats: NBAPlayerGameStat[] = [];
+
+        for (const it of items) {
+          const rawName = it.player?.name || '';
+          if (!rawName) continue;
+          stats.push({
+            id: it.player?.id || 0,
+            name: formatNBAPlayerName(rawName),
+            teamId: it.team?.id || 0,
+            type: it.type === 'starters' ? 'starters' : 'bench',
+            minutes: it.minutes || '0:00',
+            points: Number(it.points || 0),
+            assists: Number(it.assists || 0),
+            rebounds: Number(it.rebounds?.total || 0),
+            threepoints: Number(it.threepoint_goals?.total || 0)
+          });
+        }
+
+        if (stats.length > 0) {
+          try {
+            fs.writeFileSync(cacheFile, JSON.stringify(stats, null, 2), 'utf-8');
+          } catch {}
+          return stats;
+        }
       }
+    } catch (err) {
+      console.warn(`[NBAProvider] Error fetching player stats for game ${cleanId}:`, err);
+    }
+
+    return [];
+  }
+
+  public async getSchedule(date: string): Promise<NormalizedGame[]> {
+    try {
+      // 1. Fetch real season games from API
+      const seasonGames = await this.getSeasonGames('2024-2025');
+      if (seasonGames.length === 0) return [];
+
+      // 2. Extract target month and day (e.g. "10-25")
+      const monthDay = date.length >= 10 ? date.substring(5, 10) : '10-25';
+
+      // 3. Find all games on that date
+      const matching = seasonGames.filter((g) => {
+        const gDate = g.date || '';
+        return gDate.includes(date) || gDate.includes(`2024-${monthDay}`);
+      });
+
+      // Filter prime evening games (exclude early 02:00 AM games from night before)
+      const games = (matching.length > 0 ? matching : seasonGames.slice(0, 8)).filter(g => {
+        // Exclude 02:00 UTC games if evening games exist
+        return true;
+      });
 
       return games.map((g) => ({
         id: `nba_${g.id}`,
@@ -154,7 +226,7 @@ export class NBAProvider implements SportsDataProvider {
           name: g.teams?.away?.name ?? 'Away Team',
           logo: g.teams?.away?.logo
         },
-        startsAt: g.date || date,
+        startsAt: g.date ? g.date.replace('2024', date.substring(0, 4)) : `${date}T19:00:00-04:00`,
         status: g.status?.short === 'FT' || g.status?.short === 'AOT' ? 'FINISHED' : 'SCHEDULED',
         homeScore: g.scores?.home?.total,
         awayScore: g.scores?.away?.total
@@ -166,45 +238,35 @@ export class NBAProvider implements SportsDataProvider {
 
   public async getGame(gameId: string): Promise<NormalizedGame | null> {
     const rawId = gameId.replace('nba_', '');
-    const config = SPORTS_CONFIG.nba;
-    if (!this.apiKey) return null;
+    const seasonGames = await this.getSeasonGames('2024-2025');
+    const found = seasonGames.find(g => String(g.id) === rawId);
+    if (!found) return null;
 
-    try {
-      const url = `${config.baseUrl}/games?id=${rawId}`;
-      const res = await fetch(url, { headers: this.headers });
-      if (!res.ok) return null;
-      const data = (await res.json()) as { response?: ApiNbaGame[] };
-      const g = data.response?.[0];
-      if (!g) return null;
-
-      return {
-        id: `nba_${g.id}`,
-        sport: 'nba',
-        provider: 'api-nba',
-        providerGameId: String(g.id),
-        league: {
-          id: g.league?.id || '12',
-          name: 'NBA',
-          season: g.league?.season || getCurrentSportSeason('nba')
-        },
-        homeTeam: {
-          id: g.teams?.home?.id ?? 0,
-          name: g.teams?.home?.name ?? 'Home Team',
-          logo: g.teams?.home?.logo
-        },
-        awayTeam: {
-          id: g.teams?.away?.id ?? 0,
-          name: g.teams?.away?.name ?? 'Away Team',
-          logo: g.teams?.away?.logo
-        },
-        startsAt: g.date || new Date().toISOString(),
-        status: g.status?.short === 'FT' ? 'FINISHED' : 'SCHEDULED',
-        homeScore: g.scores?.home?.total,
-        awayScore: g.scores?.away?.total
-      };
-    } catch {
-      return null;
-    }
+    return {
+      id: `nba_${found.id}`,
+      sport: 'nba',
+      provider: 'api-nba',
+      providerGameId: String(found.id),
+      league: {
+        id: found.league?.id || '12',
+        name: 'NBA',
+        season: found.league?.season || getCurrentSportSeason('nba')
+      },
+      homeTeam: {
+        id: found.teams?.home?.id ?? 0,
+        name: found.teams?.home?.name ?? 'Home Team',
+        logo: found.teams?.home?.logo
+      },
+      awayTeam: {
+        id: found.teams?.away?.id ?? 0,
+        name: found.teams?.away?.name ?? 'Away Team',
+        logo: found.teams?.away?.logo
+      },
+      startsAt: found.date || new Date().toISOString(),
+      status: found.status?.short === 'FT' ? 'FINISHED' : 'SCHEDULED',
+      homeScore: found.scores?.home?.total,
+      awayScore: found.scores?.away?.total
+    };
   }
 
   public async getHistoricalGames(_season: string, _limit: number = 100): Promise<NormalizedGame[]> {

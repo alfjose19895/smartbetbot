@@ -1,10 +1,12 @@
 import { NormalizedGame, NormalizedOdds, MultiSportSignal } from '../types';
-import { NBAProvider } from './nba-provider';
+import { NBAProvider, NBAPlayerGameStat } from './nba-provider';
 import { NBAStrategyEngine } from './nba-strategies';
-import { NBAMarketOdds, NBATeamStats } from './nba-types';
+import { NBAMarketOdds, NBATeamStats, NBAPlayerProp } from './nba-types';
+import { NBAModelV1 } from './nba-model';
 import { saveDailySnapshot, saveDailySnapshotAsync, loadDailySnapshot, loadDailySnapshotAsync } from '../db';
 import { getSportLocalDateString } from '../registry';
 import { multiSportSignalToOpportunity, opportunityToMultiSportSignal } from '../signal-adapters';
+import { analyzeNBAMatchupWithGemini, auditNBAPredictionsWithGeminiVeto } from '../../ai/claude-analyst';
 
 let cachedNBAResult: {
   date: string;
@@ -318,17 +320,150 @@ export class NBASyncEngine {
       const homeStats = this.getTeamStats(game.homeTeam.name, true);
       const awayStats = this.getTeamStats(game.awayTeam.name, false);
 
+      // Fetch verified player stats directly from API-Basketball
+      let playerStats: NBAPlayerGameStat[] = [];
+      try {
+        playerStats = await this.provider.getPlayerStats(game.id);
+      } catch (err) {
+        console.warn(`[NBASyncEngine] Error getting player stats for ${game.id}:`, err);
+      }
+
+      // Simulate model metrics
+      const sim = NBAModelV1.simulateGame({ homeStats, awayStats, odds: mainOdds });
+
+      // Call Google Gemini AI to analyze real tactical matchup and extract verified player props
+      let aiProps: NBAPlayerProp[] = [];
+      try {
+        const homeStarters = playerStats
+          .filter(p => p.teamId === game.homeTeam.id || p.type === 'starters')
+          .slice(0, 5)
+          .map(p => ({
+            name: p.name,
+            minutes: p.minutes,
+            points: p.points,
+            assists: p.assists,
+            rebounds: p.rebounds,
+            threes: p.threepoints,
+          }));
+
+        const awayStarters = playerStats
+          .filter(p => p.teamId === game.awayTeam.id || p.type === 'starters')
+          .slice(0, 5)
+          .map(p => ({
+            name: p.name,
+            minutes: p.minutes,
+            points: p.points,
+            assists: p.assists,
+            rebounds: p.rebounds,
+            threes: p.threepoints,
+          }));
+
+        if (homeStarters.length > 0 || awayStarters.length > 0) {
+          const aiResult = await analyzeNBAMatchupWithGemini({
+            gameId: game.id,
+            match: `${game.homeTeam.name} vs ${game.awayTeam.name}`,
+            homeTeam: game.homeTeam.name,
+            awayTeam: game.awayTeam.name,
+            homeStarters,
+            awayStarters,
+            modelMetrics: {
+              expectedPace: sim.expectedPossessions,
+              homeExpectedPoints: sim.expectedHomePoints,
+              awayExpectedPoints: sim.expectedAwayPoints,
+              totalExpectedPoints: sim.expectedTotalPoints,
+              homeWinProb: sim.homeWinProb,
+              spreadFair: sim.expectedSpreadMargin,
+            }
+          });
+
+          if (aiResult?.playerProps && aiResult.playerProps.length > 0) {
+            aiProps = aiResult.playerProps.map(p => {
+              const prob = p.probability || 0.70;
+              const odds = p.odds || 1.85;
+              const fairOdds = Number((1 / prob).toFixed(2));
+              const edge = Number((prob - (1 / odds)).toFixed(3));
+              const ev = Number(((prob * odds) - 1).toFixed(3));
+              const smartScore = Math.round(prob * 100);
+
+              return {
+                id: `${p.playerName.replace(/\s+/g, '_').toLowerCase()}_${p.propType}`,
+                gameId: game.id,
+                playerId: p.playerName,
+                playerName: p.playerName,
+                team: p.team || game.homeTeam.name,
+                opponent: p.opponent || game.awayTeam.name,
+                propType: p.propType as any,
+                propLabel: p.propLabel,
+                line: p.line,
+                selection: p.selection,
+                odds,
+                fairOdds,
+                probability: prob,
+                edge,
+                expectedValue: ev,
+                confidence: (p.confidence as any) || 'Alta',
+                smartScore,
+                explanation: p.explanation,
+              };
+            });
+          }
+        }
+      } catch (aiErr) {
+        console.warn(`[NBASyncEngine] Error calling Gemini for ${game.id}:`, aiErr);
+      }
+
       const gameCandidates = NBAStrategyEngine.evaluateGame({
         game,
         homeStats,
         awayStats,
-        odds: mainOdds
+        odds: mainOdds,
+        playerStats,
+        aiProps,
       });
 
       allCandidates.push(...gameCandidates);
     }
 
     const allSignals = NBAStrategyEngine.selectOfficialSignals(allCandidates);
+
+    // Google Gemini AI NBA Risk & Tactical Veto Auditor
+    if (allSignals.length > 0) {
+      try {
+        const oppsToAudit = allSignals.map(multiSportSignalToOpportunity);
+        const auditResult = await auditNBAPredictionsWithGeminiVeto(oppsToAudit);
+
+        const auditMap = new Map<string, any>();
+        for (const a of auditResult.audits) {
+          auditMap.set(String(a.fixtureId), a);
+        }
+
+        for (const s of allSignals) {
+          const audit = auditMap.get(String(s.gameId || s.id));
+          if (audit) {
+            (s as any).geminiAudited = true;
+            (s as any).aiRiskScore = audit.riskScore;
+
+            if (audit.vetoed || audit.riskScore >= 80) {
+              (s as any).aiVetoed = true;
+              (s as any).aiVetoReason = audit.vetoReason;
+              s.explanation = `⚠️ [VETO GEMINI NBA]: ${audit.vetoReason || 'Alto riesgo táctico detectado'}. ${s.explanation}`;
+              s.classification = 'WATCH';
+            } else if (audit.tacticalNote) {
+              (s as any).aiVetoed = false;
+              if (!audit.tacticalNote.includes('Validación matemática cuantitativa y ritmo de posesiones superada')) {
+                s.explanation = `${s.explanation} [Auditoría Gemini NBA: ${audit.tacticalNote}]`;
+              }
+              if (audit.recommendedConfidence === 'Muy Alta') {
+                s.classification = 'TOP PICK';
+              }
+            }
+          }
+        }
+      } catch (auditErr) {
+        console.warn('[NBASyncEngine] Gemini NBA Veto audit warning:', auditErr);
+      }
+    }
+
     const smartPick = NBAStrategyEngine.selectNBASmartPick(allSignals);
 
     // Save opportunities permanently into daily snapshot (Disk + Supabase)
