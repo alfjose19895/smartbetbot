@@ -17,11 +17,13 @@ export async function GET(request: NextRequest) {
     const maxProb = searchParams.get("maxProb");
     const type = searchParams.get("type"); // "picks" | "parlays" | "all"
 
-    // Auto-liquidar todas las alertas finalizadas antes de servir historial
-    await settleAllSnapshotsWithRealScores().catch(() => {});
+    const sync = searchParams.get("sync") === "true";
+    if (sync) {
+      await settleAllSnapshotsWithRealScores().catch(() => {});
+    }
 
     const [history, parlays] = await Promise.all([
-      getHistoricalSettledPredictions(true),
+      getHistoricalSettledPredictions(sync),
       getHistoricalSettledParlays(),
     ]);
 

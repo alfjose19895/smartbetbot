@@ -78,14 +78,13 @@ export async function GET(request: NextRequest) {
     const dateParam = searchParams.get("date") || undefined;
     const targetDateStr = dateParam || getEcuadorDateString(Date.now());
 
-    await settleAllSnapshotsWithRealScores().catch((settleErr) => {
-      console.warn("[API /api/signals] Auto-settlement non-fatal error:", settleErr);
-    });
-
+    // Note: Settlement is decoupled from client GET requests to guarantee fast response (<50ms)
+    // and prevent Serverless Function Timeouts (10s Vercel limit). Settlement runs via Cron or Admin.
     let predictions: MarketOpportunity[] = [];
 
     if (forceRefresh) {
       try {
+        await settleAllSnapshotsWithRealScores().catch(() => {});
         predictions = await generatePredictionsForUpcoming(undefined, true);
       } catch (genErr) {
         console.warn("[API /api/signals] Generation error on force refresh:", genErr);
@@ -95,13 +94,6 @@ export async function GET(request: NextRequest) {
       predictions = (await loadDailySnapshotAsync(targetDateStr, "football")) || [];
       if ((!predictions || predictions.length === 0) && targetDateStr === getEcuadorDateString(Date.now())) {
         predictions = getStoredPredictions("football");
-      }
-      if ((!predictions || predictions.length === 0) && (!dateParam || targetDateStr === getEcuadorDateString(Date.now()))) {
-        try {
-          predictions = await generatePredictionsForUpcoming(undefined, false);
-        } catch {
-          predictions = [];
-        }
       }
     }
 
