@@ -4,7 +4,7 @@ import { NHLStrategyEngine } from './nhl-strategies';
 import { NHLSettlementEngine } from './nhl-settlement';
 import { NHLFeatureEngine } from './nhl-feature-engine';
 import { NHLMarketOdds } from './nhl-types';
-import { saveDailySnapshot, loadDailySnapshot, getEcuadorDateString } from '../db';
+import { saveDailySnapshot, saveDailySnapshotAsync, loadDailySnapshot, loadDailySnapshotAsync, getEcuadorDateString } from '../db';
 import { getSportLocalDateString } from '../registry';
 import { multiSportSignalToOpportunity, opportunityToMultiSportSignal } from '../signal-adapters';
 
@@ -200,52 +200,12 @@ export class NHLSyncEngine {
     }
 
     // 2. Persistent Daily Snapshot Lock (11:00 AM Single Daily Sync):
-    // If an official daily snapshot already exists on disk for today and forceRefresh is false,
+    // If an official daily snapshot already exists on disk/Supabase and forceRefresh is false,
     // lock and return the existing official snapshot to ensure total immutability, preventing pick variations.
+    // Client GET navigation is 100% passive (<10ms) without calling API-Hockey in caliente.
     if (!forceRefresh) {
-      const diskOpps = loadDailySnapshot(date, 'nhl');
+      const diskOpps = (await loadDailySnapshotAsync(date, 'nhl')) || loadDailySnapshot(date, 'nhl');
       if (diskOpps && diskOpps.length > 0) {
-        // Opportunistically check finished/live games to update scores & settlements without touching the predictions
-        try {
-          const games = await this.provider.getSchedule(date);
-          const gamesMap = new Map(games.map(g => [String(g.id), g]));
-          let updatedAny = false;
-
-          for (const opp of diskOpps) {
-            const liveGame = gamesMap.get(String(opp.fixtureId || opp.id));
-            if (liveGame && liveGame.status === 'FINISHED' && typeof liveGame.homeScore === 'number' && typeof liveGame.awayScore === 'number') {
-              if (opp.status !== 'won' && opp.status !== 'lost') {
-                const s = opportunityToMultiSportSignal(opp);
-                const settlement = NHLSettlementEngine.settleSignal(s, {
-                  gameId: liveGame.id,
-                  status: 'FINISHED',
-                  homeScore: liveGame.homeScore,
-                  awayScore: liveGame.awayScore,
-                });
-                const isWon = settlement.status === 'WON';
-                const isLost = settlement.status === 'LOST';
-                opp.status = isWon ? 'won' : isLost ? 'lost' : 'pending';
-                (opp as any).matchTiming = 'finished';
-                opp.result = isWon ? 'WON' : isLost ? 'LOST' : settlement.status;
-                opp.actualScore = `${liveGame.homeScore} - ${liveGame.awayScore}`;
-                (opp as any).profit = isWon ? Number(((opp.odds || 1.85) - 1).toFixed(2)) : -1;
-                updatedAny = true;
-              }
-            } else if (liveGame && liveGame.status === 'IN_PLAY' && typeof liveGame.homeScore === 'number') {
-              (opp as any).status = 'in_play';
-              (opp as any).matchTiming = 'live';
-              opp.currentScore = `${liveGame.homeScore} - ${liveGame.awayScore}`;
-              updatedAny = true;
-            }
-          }
-
-          if (updatedAny) {
-            saveDailySnapshot(date, diskOpps, 'nhl');
-          }
-        } catch {
-          // If live provider schedule check fails, proceed with disk snapshot as-is
-        }
-
         const signals = diskOpps.map(opportunityToMultiSportSignal);
         const smartPick = NHLStrategyEngine.selectNHLSmartPick(signals);
 
@@ -263,6 +223,14 @@ export class NHLSyncEngine {
           gamesCount: signals.length,
         };
       }
+
+      // If not forcing refresh and snapshot does not exist, return empty.
+      // Client GET requests never trigger heavy live scraping or unconfirmed lines.
+      return {
+        signals: [],
+        smartPick: null,
+        gamesCount: 0,
+      };
     }
 
     let games: NormalizedGame[] = [];
@@ -373,10 +341,11 @@ export class NHLSyncEngine {
 
     const smartPick = NHLStrategyEngine.selectNHLSmartPick(allSignals);
 
-    // Save opportunities permanently into daily snapshot
+    // Save opportunities permanently into daily snapshot (both local disk and Supabase cloud)
     try {
       const opps = allSignals.map(multiSportSignalToOpportunity);
       saveDailySnapshot(date, opps, 'nhl');
+      await saveDailySnapshotAsync(date, opps, 'nhl');
     } catch (e) {
       console.warn('[NHLSyncEngine] Error saving snapshot:', e);
     }

@@ -37,9 +37,10 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // 1. NHL SPORT SIGNALS
+    // 1. NHL SPORT SIGNALS (100% passive from immutable daily snapshot)
     if (sport === "nhl") {
-      const nhlData = await NHLSyncEngine.getTodayNHLSignals();
+      const dateParam = searchParams.get("date") || undefined;
+      const nhlData = await NHLSyncEngine.getTodayNHLSignals(dateParam, forceRefresh);
       let signals = (nhlData.signals || []).map(multiSportSignalToOpportunity);
 
       if (leagueFilter) {
