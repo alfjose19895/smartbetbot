@@ -744,6 +744,21 @@ class ApiFootballClient {
       return cached.data;
     }
 
+    // 1. Check persistent disk cache (avoids repeated API calls and 429 rate limit errors)
+    try {
+      const fs = require("fs");
+      const path = require("path");
+      const diskPath = path.join(process.cwd(), "data", "daily_snapshots", `odds_${dateStr}.json`);
+      if (fs.existsSync(diskPath)) {
+        const fileContent = fs.readFileSync(diskPath, "utf-8");
+        const parsed = JSON.parse(fileContent);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          this.oddsByDateCache.set(cacheKey, { timestamp: Date.now(), data: parsed });
+          return parsed;
+        }
+      }
+    } catch {}
+
     const allOdds: ApiFootballOddsItem[] = [];
     try {
       const page1Res = await this.requestWithPaging<ApiFootballOddsItem>("odds", {
@@ -755,25 +770,24 @@ class ApiFootballClient {
       if (page1Res && Array.isArray(page1Res.response) && page1Res.response.length > 0) {
         allOdds.push(...page1Res.response);
 
-        // API-Football devuelve 10 fixtures con cuotas por página.
-        // En fines de semana de alta actividad (sábado/domingo) existen entre 35 y 65 páginas.
-        // Consultar dinámicamente hasta 35 páginas en paralelo (<1.2s total) para garantizar
-        // cobertura total de las ligas curadas (Premier, LaLiga, Serie A, Eliteserien, etc.)
-        const totalPages = Math.min(page1Res.paging?.total || 1, 35);
+        // Fetch up to 15 pages in small safe batches to respect subscription rate limits
+        const totalPages = Math.min(page1Res.paging?.total || 1, 15);
         if (totalPages > 1) {
-          const pages = Array.from({ length: totalPages - 1 }, (_, i) => i + 2);
-          const results = await Promise.all(
-            pages.map((p) =>
-              this.request<ApiFootballOddsItem>("odds", {
-                date: dateStr,
-                timezone,
-                page: p,
-              }).catch(() => [] as ApiFootballOddsItem[])
-            )
-          );
-          for (const res of results) {
-            if (Array.isArray(res) && res.length > 0) {
-              allOdds.push(...res);
+          for (let p = 2; p <= totalPages; p += 3) {
+            const batchPages = [p, p + 1, p + 2].filter((pg) => pg <= totalPages);
+            const results = await Promise.all(
+              batchPages.map((pg) =>
+                this.request<ApiFootballOddsItem>("odds", {
+                  date: dateStr,
+                  timezone,
+                  page: pg,
+                }).catch(() => [] as ApiFootballOddsItem[])
+              )
+            );
+            for (const res of results) {
+              if (Array.isArray(res) && res.length > 0) {
+                allOdds.push(...res);
+              }
             }
           }
         }
@@ -782,6 +796,13 @@ class ApiFootballClient {
 
     if (allOdds.length > 0) {
       this.oddsByDateCache.set(cacheKey, { timestamp: Date.now(), data: allOdds });
+      try {
+        const fs = require("fs");
+        const path = require("path");
+        const diskPath = path.join(process.cwd(), "data", "daily_snapshots", `odds_${dateStr}.json`);
+        fs.mkdirSync(path.dirname(diskPath), { recursive: true });
+        fs.writeFileSync(diskPath, JSON.stringify(allOdds, null, 2), "utf-8");
+      } catch {}
     }
     return allOdds;
   }

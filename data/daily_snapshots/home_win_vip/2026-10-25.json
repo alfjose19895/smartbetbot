@@ -47,11 +47,12 @@
     "sport": "home_win_vip",
     "isHomeWinVip": true,
     "vipBadge": "Ganador Local VIP",
-    "actualScore": "1-0",
+    "actualScore": "1 - 0",
     "profit": 0.7,
     "result": "WON",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-25T12:54:07.343Z"
+    "addedAt": "2026-10-25T12:54:07.343Z",
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1550161,
@@ -87,7 +88,7 @@
     "destacadoRule": "Ganador Local (≥ 58%)",
     "smartScore": 99,
     "explanation": "Inter impone una marcada solvencia como anfitrión (0 triunfos en sus últimos 5 compromisos) y promedia 3.3 xG en casa. Su dominio territorial y solidez defensiva ante un Fiorentina que ha cedido 0 derrotas fuera fundamentan la ventaja local.",
-    "status": "in_play",
+    "status": "pending",
     "isMcpPick": true,
     "isMcp": true,
     "source": "home_win_vip",
@@ -101,9 +102,12 @@
     "sport": "home_win_vip",
     "isHomeWinVip": true,
     "vipBadge": "Ganador Local VIP",
-    "actualScore": "0-0",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-25T12:54:07.726Z"
+    "addedAt": "2026-10-25T12:54:07.726Z",
+    "currentScore": "1 - 1",
+    "matchTiming": "prematch",
+    "livePeriod": "2H",
+    "liveMinute": "90"
   },
   {
     "fixtureId": 1570424,
@@ -154,7 +158,11 @@
     "isHomeWinVip": true,
     "vipBadge": "Ganador Local VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-25T12:54:07.987Z"
+    "addedAt": "2026-10-25T12:54:07.987Z",
+    "currentScore": "1 - 0",
+    "matchTiming": "prematch",
+    "livePeriod": "1H",
+    "liveMinute": "22"
   },
   {
     "fixtureId": 1550157,
@@ -205,7 +213,8 @@
     "isHomeWinVip": true,
     "vipBadge": "Ganador Local VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-25T12:54:08.331Z"
+    "addedAt": "2026-10-25T12:54:08.331Z",
+    "matchTiming": "prematch"
   },
   {
     "fixtureId": 1557444,
@@ -256,7 +265,8 @@
     "isHomeWinVip": true,
     "vipBadge": "Ganador Local VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-25T12:54:08.450Z"
+    "addedAt": "2026-10-25T12:54:08.450Z",
+    "matchTiming": "prematch"
   },
   {
     "fixtureId": 1552796,
@@ -307,7 +317,8 @@
     "isHomeWinVip": true,
     "vipBadge": "Ganador Local VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-25T12:54:09.259Z"
+    "addedAt": "2026-10-25T12:54:09.259Z",
+    "matchTiming": "prematch"
   },
   {
     "fixtureId": 1552799,
@@ -358,7 +369,110 @@
     "isHomeWinVip": true,
     "vipBadge": "Ganador Local VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-25T12:54:09.316Z"
+    "addedAt": "2026-10-25T12:54:09.316Z",
+    "matchTiming": "prematch"
+  },
+  {
+    "fixtureId": 1560261,
+    "match": "Ferencvarosi TC vs MTK Budapest",
+    "homeTeam": "Ferencvarosi TC",
+    "awayTeam": "MTK Budapest",
+    "homeTeamId": 651,
+    "awayTeamId": 2396,
+    "homeLogo": "https://media.api-sports.io/football/teams/651.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/2396.png",
+    "league": "NB I (OTP Bank Liga)",
+    "leagueId": 271,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/271.png",
+    "country": "Hungría",
+    "leagueTier": 4,
+    "kickoff": "2026-10-25T12:00:00-05:00",
+    "market": "Ganador Local",
+    "selection": "1",
+    "pick": "Ferencvarosi TC",
+    "odds": 1.4,
+    "bookmaker": "Bet365",
+    "bookmakerOdds": 1.4,
+    "modelOdds": 1.37,
+    "fairOdds": 1.37,
+    "probability": 72.8,
+    "impliedProbability": 71.4,
+    "edge": 1.3,
+    "expectedValue": 1.9,
+    "confidence": "Muy Alta",
+    "pickBadge": "estandar",
+    "isElite": false,
+    "isDestacado": true,
+    "destacadoRule": "Ganador Local (≥ 58%)",
+    "smartScore": 71,
+    "explanation": "Ferencvarosi TC impone una marcada solvencia como anfitrión (0 triunfos en sus últimos 5 compromisos) y promedia 3.1 xG en casa. Su dominio territorial y solidez defensiva ante un MTK Budapest que ha cedido 0 derrotas fuera fundamentan la ventaja local.",
+    "status": "pending",
+    "isMcpPick": true,
+    "isMcp": true,
+    "source": "home_win_vip",
+    "h2h": [],
+    "homeLast5": [],
+    "awayLast5": [],
+    "homeElo": 1658,
+    "awayElo": 1492,
+    "timeSlot": "afternoon",
+    "isTopPick": false,
+    "sport": "home_win_vip",
+    "isHomeWinVip": true,
+    "vipBadge": "Ganador Local VIP",
+    "isNewlyDiscovered": true,
+    "addedAt": "2026-10-25T13:23:16.564Z"
+  },
+  {
+    "fixtureId": 1560052,
+    "match": "Plzen vs Pardubice",
+    "homeTeam": "Plzen",
+    "awayTeam": "Pardubice",
+    "homeTeamId": 567,
+    "awayTeamId": 3724,
+    "homeLogo": "https://media.api-sports.io/football/teams/567.png",
+    "awayLogo": "https://media.api-sports.io/football/teams/3724.png",
+    "league": "Czech Liga",
+    "leagueId": 345,
+    "leagueLogo": "https://media.api-sports.io/football/leagues/345.png",
+    "country": "República Checa",
+    "leagueTier": 4,
+    "kickoff": "2026-10-25T12:00:00-05:00",
+    "market": "Ganador Local",
+    "selection": "1",
+    "pick": "Plzen",
+    "odds": 1.65,
+    "bookmaker": "Bet365",
+    "bookmakerOdds": 1.65,
+    "modelOdds": 1.58,
+    "fairOdds": 1.58,
+    "probability": 63.5,
+    "impliedProbability": 60.6,
+    "edge": 2.9,
+    "expectedValue": 4.7,
+    "confidence": "Alta",
+    "pickBadge": "valor",
+    "isElite": false,
+    "isDestacado": true,
+    "destacadoRule": "Ganador Local (≥ 58%)",
+    "smartScore": 70,
+    "explanation": "Rendimiento muy fiable de Plzen en su feudo (0 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Pardubice inclina con claridad la balanza estadística hacia el triunfo local.",
+    "status": "pending",
+    "isMcpPick": true,
+    "isMcp": true,
+    "source": "home_win_vip",
+    "h2h": [],
+    "homeLast5": [],
+    "awayLast5": [],
+    "homeElo": 1641,
+    "awayElo": 1491,
+    "timeSlot": "afternoon",
+    "isTopPick": false,
+    "sport": "home_win_vip",
+    "isHomeWinVip": true,
+    "vipBadge": "Ganador Local VIP",
+    "isNewlyDiscovered": true,
+    "addedAt": "2026-10-25T13:23:16.540Z"
   },
   {
     "fixtureId": 1570430,
@@ -409,7 +523,8 @@
     "isHomeWinVip": true,
     "vipBadge": "Ganador Local VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-25T12:54:09.540Z"
+    "addedAt": "2026-10-25T12:54:09.540Z",
+    "matchTiming": "prematch"
   },
   {
     "fixtureId": 1569985,
@@ -460,7 +575,8 @@
     "isHomeWinVip": true,
     "vipBadge": "Ganador Local VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-25T12:54:09.512Z"
+    "addedAt": "2026-10-25T12:54:09.512Z",
+    "matchTiming": "prematch"
   },
   {
     "h2h": [],
@@ -563,7 +679,8 @@
     "isHomeWinVip": true,
     "vipBadge": "Ganador Local VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-25T12:54:09.858Z"
+    "addedAt": "2026-10-25T12:54:09.858Z",
+    "matchTiming": "prematch"
   },
   {
     "fixtureId": 1551707,
@@ -614,7 +731,8 @@
     "isHomeWinVip": true,
     "vipBadge": "Ganador Local VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-25T12:54:09.912Z"
+    "addedAt": "2026-10-25T12:54:09.912Z",
+    "matchTiming": "prematch"
   },
   {
     "h2h": [],
