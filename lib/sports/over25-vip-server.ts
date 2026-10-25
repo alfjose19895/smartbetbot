@@ -87,9 +87,9 @@ export async function saveOver25VipSnapshotAsync(
       pickBadge,
       isElite,
       vipBadge: "Over 2.5 VIP",
-      confidence: (p.probability >= 78 ? "Muy Alta" : "Alta") as "Muy Alta" | "Alta" | "Media",
-      isDestacado: p.probability >= 72,
-      destacadoRule: "Alta de Goles (≥ 72%)",
+      confidence: (p.probability >= 70 ? "Muy Alta" : "Alta") as "Muy Alta" | "Alta" | "Media",
+      isDestacado: p.probability >= 60,
+      destacadoRule: "Alta de Goles (≥ 60%)",
     };
   });
   return saveDailySnapshotAsync(dateStr, taggedPicks, "over25_vip", overwrite);
@@ -154,7 +154,7 @@ function isSeniorCompetitiveOver25Fixture(item: any): boolean {
 
 /**
  * Escanea y descubre nuevas oportunidades exclusivamente de OVER 2.5 GOLES para la jornada de hoy.
- * Aplica modelos predictivos avanzados con la regla estricta de CONVICCIÓN / PROBABILIDAD >= 72%.
+ * Aplica modelos predictivos avanzados con la regla estricta de CONVICCIÓN / PROBABILIDAD >= 60%.
  */
 export async function searchAndAddNewOver25VipAlerts(dateStr?: string): Promise<{
   success: boolean;
@@ -257,11 +257,11 @@ export async function searchAndAddNewOver25VipAlerts(dateStr?: string): Promise<
       marketOdds: realMarketOdds,
     });
 
-    // Filtrar estrictamente solo pronósticos de OVER 2.5 GOLES con regla estricta >= 72% de probabilidad/convicción
+    // Filtrar estrictamente solo pronósticos de OVER 2.5 GOLES con regla estricta >= 60% de probabilidad/convicción
     const over25Opps = opportunities.filter((p) => {
       const isOver25 = p.market === "Over 2.5 Goles" || p.selection === "Over 2.5" || (p.selection || "").toLowerCase().includes("over 2.5");
-      // REGLA ESTRICTA DE CONVICCIÓN: PROBABILIDAD >= 72%
-      const meetsStrictProb = p.probability >= 72.0;
+      // REGLA ESTRICTA DE CONVICCIÓN: PROBABILIDAD >= 60%
+      const meetsStrictProb = p.probability >= 60.0;
       return isOver25 && meetsStrictProb && p.odds >= 1.15 && p.odds <= 2.60;
     });
 
@@ -292,8 +292,8 @@ export async function searchAndAddNewOver25VipAlerts(dateStr?: string): Promise<
         vipBadge: "Over 2.5 VIP",
         status: "pending",
         isDestacado: true,
-        destacadoRule: "Alta de Goles (≥ 72%)",
-        confidence: bestOver25.probability >= 78 ? "Muy Alta" : "Alta",
+        destacadoRule: "Alta de Goles (≥ 60%)",
+        confidence: bestOver25.probability >= 70 ? "Muy Alta" : "Alta",
         isNewlyDiscovered: true,
         addedAt: new Date().toISOString(),
       };
@@ -365,7 +365,7 @@ export async function searchAndAddNewOver25VipAlerts(dateStr?: string): Promise<
   const mergedMap = new Map<string, MarketOpportunity>();
   for (const p of existingSnapshot) {
     if (!isCuratedLeague(p.leagueId, p.league, p.country)) continue;
-    if (p.probability < 72.0) continue; // Garantizar regla estricta >= 72%
+    if (p.probability < 60.0) continue; // Garantizar regla estricta >= 60%
     const isElite = isElitePick(p);
     const pickBadge = isElite
       ? "elite"
@@ -382,9 +382,9 @@ export async function searchAndAddNewOver25VipAlerts(dateStr?: string): Promise<
       pickBadge,
       isElite,
       vipBadge: "Over 2.5 VIP",
-      confidence: p.probability >= 78 ? "Muy Alta" : "Alta",
+      confidence: p.probability >= 70 ? "Muy Alta" : "Alta",
       isDestacado: true,
-      destacadoRule: "Alta de Goles (≥ 72%)",
+      destacadoRule: "Alta de Goles (≥ 60%)",
     });
   }
 
@@ -453,7 +453,7 @@ export async function searchAndAddNewOver25VipAlerts(dateStr?: string): Promise<
     message:
       approvedNewAlerts.length > 0
         ? existingSnapshot.length === 0
-          ? `✓ Se generó la cartelera inicial de Over 2.5 VIP con ${approvedNewAlerts.length} pronósticos de alta jerarquía (≥ 72%).`
+          ? `✓ Se generó la cartelera inicial de Over 2.5 VIP con ${approvedNewAlerts.length} pronósticos de alta jerarquía (≥ 60%).`
           : `✓ Se agregaron ${approvedNewAlerts.length} nuevas alertas a Over 2.5 VIP (Total: ${finalPicks.length}).`
         : `✓ Panel de Over 2.5 VIP al día (${finalPicks.length} alertas disponibles).`,
   };
@@ -495,12 +495,12 @@ export async function getOver25VipSlate(dateStr?: string, forceRefresh = false):
     }
   }
 
-  // Filtrar exclusivamente Over 2.5 y garantizar probabilidad estricta >= 72%
+  // Filtrar exclusivamente Over 2.5 y garantizar probabilidad estricta >= 60%
   const sanitizedPicks = picks
     .filter((p) => {
       if (!isCuratedLeague(p.leagueId, p.league, p.country)) return false;
       const isOver25 = p.market === "Over 2.5 Goles" || p.selection === "Over 2.5" || (p.selection || "").toLowerCase().includes("over 2.5");
-      return isOver25 && p.probability >= 72.0;
+      return isOver25 && p.probability >= 60.0;
     })
     .map((p) => {
       const isElite = isElitePick(p);
@@ -520,9 +520,9 @@ export async function getOver25VipSlate(dateStr?: string, forceRefresh = false):
         pickBadge,
         isElite,
         vipBadge: "Over 2.5 VIP",
-        confidence: (p.probability >= 78 ? "Muy Alta" : "Alta") as "Muy Alta" | "Alta" | "Media",
+        confidence: (p.probability >= 70 ? "Muy Alta" : "Alta") as "Muy Alta" | "Alta" | "Media",
         isDestacado: true,
-        destacadoRule: "Alta de Goles (≥ 72%)",
+        destacadoRule: "Alta de Goles (≥ 60%)",
       };
     })
     .sort((a, b) => {

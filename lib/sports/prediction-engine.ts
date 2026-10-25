@@ -2139,12 +2139,12 @@ export function evaluateFixturePrediction(params: {
       isElite,
       isDestacado: (item.market === "Córners" || item.market === "Over Córners") ? probPercent >= 70 :
                    (item.market === "Ambos Equipos Anotan") ? probPercent >= 58 :
-                   (item.market === "Over 2.5 Goles") ? probPercent >= 72 :
+                   (item.market === "Over 2.5 Goles") ? probPercent >= 60 :
                    (item.market === "Ganador Local") ? probPercent >= 58 :
                    (item.market === "Ganador Visitante") ? probPercent >= 71 : false,
       destacadoRule: (item.market === "Córners" || item.market === "Over Córners") && probPercent >= 70 ? "Alta de Córners (≥ 70%)" :
                      (item.market === "Ambos Equipos Anotan") && probPercent >= 58 ? "Ambos Anotan (≥ 58%)" :
-                     (item.market === "Over 2.5 Goles") && probPercent >= 72 ? "Alta de Goles (≥ 72%)" :
+                     (item.market === "Over 2.5 Goles") && probPercent >= 60 ? "Alta de Goles (≥ 60%)" :
                      (item.market === "Ganador Local") && probPercent >= 58 ? "Ganador Local (≥ 58%)" :
                      (item.market === "Ganador Visitante") && probPercent >= 71 ? "Ganador Visitante (≥ 71%)" : undefined,
       smartScore,

@@ -7,7 +7,7 @@ import {
 import { MarketOpportunity } from "./prediction-engine";
 import { isSportMatch, evaluateMarketResult, isCuratedLeague } from "./db";
 
-describe("Over 2.5 VIP Module Suite (Decoupled, Strict Prob >= 72%)", () => {
+describe("Over 2.5 VIP Module Suite (Decoupled, Strict Prob >= 60%)", () => {
   const mockOver25Pick: MarketOpportunity = {
     fixtureId: 888101,
     match: "Bayern Munich vs Borussia Dortmund",
@@ -55,7 +55,7 @@ describe("Over 2.5 VIP Module Suite (Decoupled, Strict Prob >= 72%)", () => {
     expect(pick.selection).toBe("Over 2.5");
     expect(pick.isOver25Vip).toBe(true);
     expect(pick.vipBadge).toBe("Over 2.5 VIP");
-    expect(pick.probability).toBeGreaterThanOrEqual(72.0);
+    expect(pick.probability).toBeGreaterThanOrEqual(60.0);
   });
 
   it("evaluates Over 2.5 Goles market correctly as won when total goals exceed 2.5", () => {
@@ -75,28 +75,28 @@ describe("Over 2.5 VIP Module Suite (Decoupled, Strict Prob >= 72%)", () => {
     expect(evalWon2.actualScoreText).toContain("3 Goles");
   });
 
-  it("getOver25VipSlate strictly enforces the >= 72% probability threshold", async () => {
+  it("getOver25VipSlate strictly enforces the >= 60% probability threshold", async () => {
     const testDate = "2026-10-24";
-    const sub72Pick: MarketOpportunity = {
+    const sub60Pick: MarketOpportunity = {
       ...mockOver25Pick,
       fixtureId: 888102,
-      probability: 68.0, // Fails strict threshold
+      probability: 56.0, // Fails strict threshold
       match: "Team A vs Team B",
     };
-    const valid72Pick: MarketOpportunity = {
+    const valid60Pick: MarketOpportunity = {
       ...mockOver25Pick,
       fixtureId: 888103,
-      probability: 73.0, // Passes strict threshold
+      probability: 63.0, // Passes strict threshold
       match: "Team C vs Team D",
     };
 
-    await saveOver25VipSnapshotAsync(testDate, [sub72Pick, valid72Pick], true);
+    await saveOver25VipSnapshotAsync(testDate, [sub60Pick, valid60Pick], true);
     const slate = await getOver25VipSlate(testDate);
 
     expect(slate).toBeDefined();
     expect(slate.predictions.some((p) => p.fixtureId === 888102)).toBe(false);
     expect(slate.predictions.some((p) => p.fixtureId === 888103)).toBe(true);
-    expect(slate.predictions.every((p) => p.probability >= 72.0)).toBe(true);
+    expect(slate.predictions.every((p) => p.probability >= 60.0)).toBe(true);
     expect(slate.predictions.every((p) => p.isOver25Vip === true)).toBe(true);
 
     // Restore clean snapshot

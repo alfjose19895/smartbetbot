@@ -83,7 +83,7 @@ export default function Over25VipPage() {
   const [timeSlotFilter, setTimeSlotFilter] = useState<"ALL" | "TOP" | "MORNING" | "AFTERNOON" | "NIGHT">("ALL");
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
-  const [minProbability, setMinProbability] = useState<number>(72);
+  const [minProbability, setMinProbability] = useState<number>(60);
 
   // 1. Verify Admin Access
   useEffect(() => {
@@ -120,7 +120,7 @@ export default function Over25VipPage() {
         const cleanOver25 = deduplicatePicksList(data.predictions).filter(
           (p: MarketOpportunity) =>
             (p.market === "Over 2.5 Goles" || (p.selection || "").toLowerCase().includes("over 2.5")) &&
-            p.probability >= 72.0
+            p.probability >= 60.0
         );
         setPredictions(cleanOver25);
       }
@@ -141,7 +141,7 @@ export default function Over25VipPage() {
   const handleSearchOver25Alerts = async () => {
     try {
       setSearching(true);
-      setSearchMessage("⚡ Escaneando partidos de hoy en busca de cuotas y modelos de Over 2.5 Goles (≥ 72%)...");
+      setSearchMessage("⚡ Escaneando partidos de hoy en busca de cuotas y modelos de Over 2.5 Goles (≥ 60%)...");
       const res = await fetch("/api/over25-vip", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -154,7 +154,7 @@ export default function Over25VipPage() {
           ? deduplicatePicksList(data.predictions).filter(
               (p: MarketOpportunity) =>
                 (p.market === "Over 2.5 Goles" || (p.selection || "").toLowerCase().includes("over 2.5")) &&
-                p.probability >= 72.0
+                p.probability >= 60.0
             )
           : predictions;
         setPredictions(cleanPicks);
@@ -162,7 +162,7 @@ export default function Over25VipPage() {
         if (data.newAlerts && data.newAlerts.length > 0) {
           setNewlyDiscoveredAlerts(sortByKickoff(data.newAlerts, "asc"));
           setNewAlertsModalOpen(true);
-          setSearchMessage(`✓ ¡Se descubrieron ${data.newAlerts.length} nuevas alertas de Over 2.5 VIP (≥ 72%)! Agregadas al panel.`);
+          setSearchMessage(`✓ ¡Se descubrieron ${data.newAlerts.length} nuevas alertas de Over 2.5 VIP (≥ 60%)! Agregadas al panel.`);
         } else {
           setSearchMessage(`✓ Panel de Over 2.5 VIP al día (${cleanPicks.length} alertas disponibles).`);
         }
@@ -293,7 +293,7 @@ export default function Over25VipPage() {
                 Módulo Exclusivo para Administradores
               </h1>
               <p className="text-sm text-slate-400 leading-relaxed max-w-lg mx-auto">
-                La suite cuantitativa de Over 2.5 VIP utiliza modelos Poisson bivariados y umbrales estrictos de convicción (≥ 72%) reservados únicamente para administradores de SmartBetBot.
+                La suite cuantitativa de Over 2.5 VIP utiliza modelos Poisson bivariados y umbrales estrictos de convicción (≥ 60%) reservados únicamente para administradores de SmartBetBot.
               </p>
             </div>
             <div className="pt-2 flex flex-wrap justify-center gap-3">
@@ -321,13 +321,13 @@ export default function Over25VipPage() {
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-black text-emerald-400 border border-emerald-500/30 uppercase tracking-wider mb-2">
                   <span>⚽</span>
-                  <span>OVER 2.5 VIP — SUITE CUANTITATIVA EXCLUSIVA (REGLA STRICTA ≥ 72%)</span>
+                  <span>OVER 2.5 VIP — SUITE CUANTITATIVA EXCLUSIVA (REGLA STRICTA ≥ 60%)</span>
                 </div>
                 <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
                   Módulo de Over 2.5 Goles VIP
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                  Pronósticos algorítmicos exclusivamente de Alta de Goles (+2.5) desacoplados del pre-match con convicción mínima estricta del 72% y cuotas oficiales de casas de apuestas.
+                  Pronósticos algorítmicos exclusivamente de Alta de Goles (+2.5) desacoplados del pre-match con convicción mínima estricta del 60% y cuotas oficiales de casas de apuestas.
                 </p>
               </div>
 
@@ -423,7 +423,7 @@ export default function Over25VipPage() {
                 {(
                   [
                     { id: "ALL", label: "Todos", count: predictions.length },
-                    { id: "DESTACADO", label: "⭐ Destacados (≥72%)", count: predictions.filter((p) => p.probability >= 72).length },
+                    { id: "DESTACADO", label: "⭐ Destacados (≥60%)", count: predictions.filter((p) => p.probability >= 60).length },
                     { id: "ELITE", label: "👑 Élite", count: predictions.filter((p) => isElitePick(p)).length },
                     { id: "VALOR", label: "💎 Valor", count: predictions.filter((p) => p.pickBadge === "valor").length },
                     { id: "BOMBA", label: "💣 Bomba", count: predictions.filter((p) => p.pickBadge === "bomba").length },
@@ -494,7 +494,7 @@ export default function Over25VipPage() {
                   placeholderAll="Toda Confianza"
                 />
 
-                {/* Min probability range slider (Strict rule >= 72%) */}
+                {/* Min probability range slider (Strict rule >= 60%) */}
                 <div className="flex flex-col justify-center px-2">
                   <div className="flex justify-between text-[11px] font-bold text-slate-400 mb-1">
                     <span>Probabilidad Mínima:</span>
@@ -502,7 +502,7 @@ export default function Over25VipPage() {
                   </div>
                   <input
                     type="range"
-                    min="72"
+                    min="60"
                     max="90"
                     step="1"
                     value={minProbability}
@@ -552,7 +552,7 @@ export default function Over25VipPage() {
                 <div className="space-y-1">
                   <h3 className="text-base font-black text-white">No hay alertas de Over 2.5 que cumplan el filtro actual</h3>
                   <p className="text-xs text-slate-400 max-w-md mx-auto">
-                    Los pronósticos en este módulo requieren estrictamente ≥ 72% de probabilidad y cuotas reales de mercado. Puedes buscar nuevas alertas con el botón superior.
+                    Los pronósticos en este módulo requieren estrictamente ≥ 60% de probabilidad y cuotas reales de mercado. Puedes buscar nuevas alertas con el botón superior.
                   </p>
                 </div>
                 <button
