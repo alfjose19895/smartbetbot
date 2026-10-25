@@ -415,6 +415,51 @@ class ApiFootballClient {
     }
   }
 
+  private async requestWithPaging<T>(
+    endpoint: string,
+    params: Record<string, string | number> = {}
+  ): Promise<{ response: T[]; paging?: { current: number; total: number } } | null> {
+    try {
+      const url = new URL(`${this.baseUrl}/${endpoint}`);
+      Object.entries(params).forEach(([key, value]) => {
+        url.searchParams.append(key, String(value));
+      });
+
+      const response = await fetch(url.toString(), {
+        method: "GET",
+        headers: {
+          "x-rapidapi-key": this.apiKey,
+          "x-apisports-key": this.apiKey,
+        },
+        next: { revalidate: 180 },
+      });
+
+      if (!response.ok) {
+        console.error(`[ApiFootball] HTTP error ${response.status} fetching ${endpoint}`);
+        return null;
+      }
+
+      const rawText = await response.text();
+      if (!rawText || rawText.trim().length === 0) {
+        return null;
+      }
+      const json = JSON.parse(rawText);
+
+      if (json.errors && Object.keys(json.errors).length > 0) {
+        console.warn(`[ApiFootball] API returned errors:`, json.errors);
+        return null;
+      }
+
+      return {
+        response: (json.response as T[]) || [],
+        paging: json.paging,
+      };
+    } catch (err) {
+      console.error(`[ApiFootball] Request exception for ${endpoint}:`, err);
+      return null;
+    }
+  }
+
   async queryLeagues(params: Record<string, string | number>): Promise<any[]> {
     return this.request<any>("leagues", params);
   }
@@ -701,18 +746,22 @@ class ApiFootballClient {
 
     const allOdds: ApiFootballOddsItem[] = [];
     try {
-      const page1 = await this.request<ApiFootballOddsItem>("odds", {
+      const page1Res = await this.requestWithPaging<ApiFootballOddsItem>("odds", {
         date: dateStr,
         timezone,
         page: 1,
       });
 
-      if (Array.isArray(page1) && page1.length > 0) {
-        allOdds.push(...page1);
+      if (page1Res && Array.isArray(page1Res.response) && page1Res.response.length > 0) {
+        allOdds.push(...page1Res.response);
 
-        if (page1.length >= 10) {
-          // Parallel fetch pages 2..10 for ultra-fast response (<1s instead of 25s)
-          const pages = [2, 3, 4, 5, 6, 7, 8, 9, 10];
+        // API-Football devuelve 10 fixtures con cuotas por página.
+        // En fines de semana de alta actividad (sábado/domingo) existen entre 35 y 65 páginas.
+        // Consultar dinámicamente hasta 35 páginas en paralelo (<1.2s total) para garantizar
+        // cobertura total de las ligas curadas (Premier, LaLiga, Serie A, Eliteserien, etc.)
+        const totalPages = Math.min(page1Res.paging?.total || 1, 35);
+        if (totalPages > 1) {
+          const pages = Array.from({ length: totalPages - 1 }, (_, i) => i + 2);
           const results = await Promise.all(
             pages.map((p) =>
               this.request<ApiFootballOddsItem>("odds", {
