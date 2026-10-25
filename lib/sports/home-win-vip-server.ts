@@ -420,7 +420,7 @@ export async function getHomeWinVipSlate(dateStr?: string, forceRefresh = false)
     [];
 
   // 3. Generación inicial si no existe snapshot o forzar refresco
-  if (picks.length === 0 || forceRefresh) {
+  if (forceRefresh) {
     try {
       const searchRes = await searchAndAddNewHomeWinVipAlerts(targetDate);
       if (searchRes?.predictions && searchRes.predictions.length > 0) {

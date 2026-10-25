@@ -499,7 +499,7 @@ export async function getOver25VipSlate(dateStr?: string, forceRefresh = false):
     [];
 
   // 3. Si no hay picks o forceRefresh, buscar alertas automáticamente
-  if (picks.length === 0 || forceRefresh) {
+  if (forceRefresh) {
     const searchRes = await searchAndAddNewOver25VipAlerts(targetDate, forceRefresh).catch(() => null);
     if (searchRes && searchRes.predictions.length > 0) {
       picks = searchRes.predictions;

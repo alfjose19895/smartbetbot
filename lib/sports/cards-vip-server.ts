@@ -783,7 +783,7 @@ export async function getCardsVipSlate(dateStr?: string, forceRefresh = false): 
     [];
 
   // 3. Si no hay picks o forceRefresh, buscar alertas automáticamente
-  if (picks.length === 0 || forceRefresh) {
+  if (forceRefresh) {
     const searchRes = await searchAndAddNewCardsVipAlerts(targetDate).catch(() => null);
     if (searchRes && searchRes.predictions.length > 0) {
       picks = searchRes.predictions;
