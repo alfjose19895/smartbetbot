@@ -808,8 +808,11 @@ export async function getShotsVipSlate(dateStr?: string, forceRefresh = false): 
 }> {
   const targetDate = dateStr || getEcuadorDateString();
 
-  // 1. Auto-liquidar partidos finalizados en el snapshot
-  await settleActiveSnapshotWithRealScores(targetDate, "shots_vip").catch(() => []);
+  // 1. Auto-liquidar partidos finalizados en el snapshot SOLO si se solicita explícitamente refresco (forceRefresh).
+  // La navegación de usuario es 100% pasiva desde snapshots/base de datos sin consultar APIs externas en caliente.
+  if (forceRefresh) {
+    await settleActiveSnapshotWithRealScores(targetDate, "shots_vip").catch(() => []);
+  }
 
   // 2. Cargar snapshot
   let picks =
