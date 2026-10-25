@@ -1,3 +1,4 @@
+import { getUserVipPermissions, setUserVipPermissions, ALL_VIP_MODULES } from "@/lib/auth/vip-permissions";
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { getVerifiedIdentity } from "@/features/auth/lib/session";
@@ -67,6 +68,8 @@ export async function GET(request: NextRequest) {
     lastSignInAt?: string | null;
     lastSignInFormatted: string;
     loginCount: number;
+    vipModules: string[];
+    vipAccess: boolean;
   }> = [];
 
   if (supabase) {
@@ -143,6 +146,11 @@ export async function GET(request: NextRequest) {
           const lastLoginIso = u.last_sign_in_at || (userLogins[0] ? userLogins[0].timestamp : null);
           const loginCount = Math.max(u.last_sign_in_at ? 1 : 0, userLogins.length);
 
+          const diskVipMods = getUserVipPermissions(u.id, u.email);
+          const metaVipMods = Array.isArray(meta.vip_modules) ? (meta.vip_modules as string[]) : [];
+          const effectiveVipModules = Array.from(new Set([...diskVipMods, ...metaVipMods]));
+          const hasVipAccess = isAdm || Boolean(meta.vip_access) || effectiveVipModules.length > 0;
+
           return {
             id: u.id,
             email: u.email || "Sin correo",
@@ -155,6 +163,8 @@ export async function GET(request: NextRequest) {
             lastSignInAt: lastLoginIso,
             lastSignInFormatted: formatEcuadorDateString(lastLoginIso),
             loginCount,
+            vipModules: isAdm ? ["*"] : effectiveVipModules,
+            vipAccess: hasVipAccess,
           };
         });
       }
@@ -175,7 +185,7 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const { userId, action, role, status, fullName, email, password } = body;
+    const { userId, action, role, status, fullName, email, password, vipModules, vipAccess } = body;
 
     const supabase = getAdminClient();
     if (!supabase || !userId) {
@@ -297,9 +307,38 @@ export async function POST(request: Request) {
         updatePayload.ban_duration = isPaused ? "876000h" : "none";
       }
 
+      if (vipModules !== undefined) {
+        const mods = Array.isArray(vipModules) ? vipModules : [];
+        updatePayload.user_metadata.vip_modules = mods;
+        updatePayload.user_metadata.vip_access = Boolean(vipAccess);
+        setUserVipPermissions(userId, mods, email);
+      }
+
       await supabase.auth.admin.updateUserById(userId, updatePayload);
 
       return NextResponse.json({ success: true, message: "Datos de usuario actualizados correctamente" });
+    }
+
+    if (action === "updateVipPermissions") {
+      const mods = Array.isArray(vipModules) ? vipModules : [];
+      setUserVipPermissions(userId, mods, email);
+
+      try {
+        await supabase.auth.admin.updateUserById(userId, {
+          user_metadata: {
+            vip_modules: mods,
+            vip_access: Boolean(vipAccess),
+          },
+        });
+      } catch (e) {
+        console.warn("[AdminUsers] Error updating metadata for vip permissions:", e);
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: "Permisos de módulos VIP actualizados correctamente",
+        vipModules: mods,
+      });
     }
 
     if (action === "deleteUser") {

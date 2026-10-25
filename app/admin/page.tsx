@@ -33,7 +33,19 @@ interface UserItem {
   lastSignInAt?: string | null;
   lastSignInFormatted?: string;
   loginCount?: number;
+  vipModules?: string[];
+  vipAccess?: boolean;
 }
+
+const VIP_MODULES_LIST = [
+  { id: "corners_vip", label: "Corners VIP", icon: "🚩" },
+  { id: "over25_vip", label: "Over 2.5 VIP", icon: "⚽" },
+  { id: "btts_vip", label: "Ambos Anotan VIP", icon: "🥅" },
+  { id: "home_win_vip", label: "Gana Local VIP", icon: "🏠" },
+  { id: "away_win_vip", label: "Gana Visitante VIP", icon: "✈️" },
+  { id: "cards_vip", label: "Tarjetas VIP", icon: "🟨" },
+  { id: "shots_vip", label: "Disparos VIP", icon: "🎯" },
+];
 
 interface AuditItem {
   id: string;
@@ -183,6 +195,8 @@ function AdminControlContent() {
   const [editPassword, setEditPassword] = useState("");
   const [editRole, setEditRole] = useState<string>("bettor");
   const [editStatus, setEditStatus] = useState<"approved" | "paused">("approved");
+  const [editVipModules, setEditVipModules] = useState<string[]>([]);
+  const [editVipAccess, setEditVipAccess] = useState<boolean>(false);
   const [savingEdit, setSavingEdit] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [userFilter, setUserFilter] = useState<"all" | "pending" | "approved" | "paused">("all");
@@ -442,6 +456,9 @@ function AdminControlContent() {
     setEditPassword("");
     setEditRole(user.role === "admin" ? "admin" : "bettor");
     setEditStatus(user.status === "paused" ? "paused" : "approved");
+    const isAdm = user.role === "admin" || (user.email || "").toLowerCase().includes("ajhs1589");
+    setEditVipModules(isAdm ? VIP_MODULES_LIST.map((m) => m.id) : (user.vipModules || []));
+    setEditVipAccess(isAdm ? true : Boolean(user.vipAccess));
   };
 
   const handleSaveEdit = async (e: React.FormEvent) => {
@@ -461,6 +478,8 @@ function AdminControlContent() {
           password: editPassword.trim() ? editPassword.trim() : undefined,
           role: editRole,
           status: editStatus,
+          vipModules: editRole === "admin" ? ["*"] : editVipModules,
+          vipAccess: editRole === "admin" ? true : (editVipModules.length > 0 || editVipAccess),
         }),
       });
 
@@ -977,6 +996,7 @@ function AdminControlContent() {
                       <tr>
                         <th className="px-3 py-2">Usuario / Correo</th>
                         <th className="px-3 py-2">Rol Actual</th>
+                        <th className="px-3 py-2">Permisos VIP</th>
                         <th className="px-3 py-2">Último Inicio de Sesión</th>
                         <th className="px-3 py-2 text-center">Conexiones</th>
                         <th className="px-3 py-2 text-center">Estado</th>
@@ -998,6 +1018,33 @@ function AdminControlContent() {
                             ) : (
                               <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-[11px] font-bold text-blue-700 border border-blue-200 dark:bg-blue-950/80 dark:text-blue-300 dark:border-blue-800">
                                 🎯 {u.roleName || "Apostador"}
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-3 py-2">
+                            {u.role === "admin" ? (
+                              <span className="inline-flex items-center gap-1 rounded-md bg-purple-500/10 px-2 py-0.5 text-[10px] font-black text-purple-400 border border-purple-500/30">
+                                👑 Acceso Total
+                              </span>
+                            ) : u.vipModules && u.vipModules.length > 0 ? (
+                              <div className="flex flex-wrap items-center gap-1 max-w-[200px]">
+                                {u.vipModules.map((modId) => {
+                                  const found = VIP_MODULES_LIST.find((m) => m.id === modId);
+                                  return found ? (
+                                    <span
+                                      key={modId}
+                                      title={found.label}
+                                      className="inline-flex items-center gap-0.5 rounded px-1.5 py-0.2 text-[9px] font-black bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                                    >
+                                      <span>{found.icon}</span>
+                                      <span>{found.label.replace(" VIP", "")}</span>
+                                    </span>
+                                  ) : null;
+                                })}
+                              </div>
+                            ) : (
+                              <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500">
+                                Sin permisos VIP
                               </span>
                             )}
                           </td>
@@ -1855,6 +1902,72 @@ function AdminControlContent() {
                     <option value="approved">✓ Aprobado / Activo</option>
                     <option value="paused">⏸️ Pausado (Bloqueado)</option>
                   </select>
+                </div>
+              </div>
+
+              {/* Permisos de Módulos VIP con Checkboxes */}
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/60 space-y-3">
+                <div className="flex items-center justify-between border-b border-slate-200 pb-2 dark:border-slate-800">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-base">🔒</span>
+                    <span className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                      Permisos de Módulos VIP
+                    </span>
+                  </div>
+                  <label className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={editVipModules.length === VIP_MODULES_LIST.length || editRole === "admin"}
+                      disabled={editRole === "admin"}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setEditVipModules(VIP_MODULES_LIST.map((m) => m.id));
+                          setEditVipAccess(true);
+                        } else {
+                          setEditVipModules([]);
+                          setEditVipAccess(false);
+                        }
+                      }}
+                      className="rounded border-slate-700 bg-slate-900 text-emerald-500 focus:ring-0 cursor-pointer"
+                    />
+                    <span>Todos los VIP</span>
+                  </label>
+                </div>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  {editRole === "admin"
+                    ? "Los administradores tienen acceso irrestricto a todos los módulos VIP por defecto."
+                    : "Marca con check los módulos VIP específicos a los que este usuario tendrá acceso exclusivo:"}
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {VIP_MODULES_LIST.map((m) => {
+                    const isChecked = editRole === "admin" || editVipModules.includes(m.id);
+                    return (
+                      <label
+                        key={m.id}
+                        className={`flex items-center gap-2 rounded-xl p-2 text-xs font-bold transition cursor-pointer border ${
+                          isChecked
+                            ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+                            : "border-slate-300 bg-white dark:border-slate-800 dark:bg-slate-900 text-slate-400 hover:text-white"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          disabled={editRole === "admin"}
+                          checked={isChecked}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setEditVipModules((prev: string[]) => Array.from(new Set([...prev, m.id])));
+                            } else {
+                              setEditVipModules((prev: string[]) => prev.filter((id: string) => id !== m.id));
+                            }
+                          }}
+                          className="rounded border-slate-700 bg-slate-900 text-emerald-500 focus:ring-0 cursor-pointer"
+                        />
+                        <span>{m.icon}</span>
+                        <span className="truncate">{m.label}</span>
+                      </label>
+                    );
+                  })}
                 </div>
               </div>
 

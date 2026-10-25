@@ -1,3 +1,4 @@
+import { getUserVipPermissions } from "@/lib/auth/vip-permissions";
 import { isSupabaseConfigured } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 
@@ -11,6 +12,8 @@ export type VerifiedIdentity = {
   isApproved: boolean;
   isPending: boolean;
   isPaused: boolean;
+  vipModules: string[];
+  vipAccess: boolean;
 };
 
 export async function getVerifiedIdentity(): Promise<VerifiedIdentity | null> {
@@ -89,6 +92,11 @@ export async function getVerifiedIdentity(): Promise<VerifiedIdentity | null> {
     const isPending = !isAdm && !isPaused && !isExplicitlyApproved && (status === "pending" || status === "pending_approval" || isApprovedFlag === false || !status);
     const isApproved = isAdm || (!isPaused && isExplicitlyApproved);
 
+    const diskModules = getUserVipPermissions(user.id, user.email);
+    const metaModules = Array.isArray(metadata?.vip_modules) ? (metadata.vip_modules as string[]) : [];
+    const mergedModules = Array.from(new Set([...diskModules, ...metaModules]));
+    const vipAccess = isAdm || Boolean(metadata?.vip_access) || mergedModules.length > 0;
+
     return {
       id: user.id,
       email: user.email || null,
@@ -99,6 +107,8 @@ export async function getVerifiedIdentity(): Promise<VerifiedIdentity | null> {
       isApproved,
       isPending,
       isPaused,
+      vipModules: isAdm ? ["*"] : mergedModules,
+      vipAccess,
     };
   } catch {
     return null;

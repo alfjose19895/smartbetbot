@@ -1,3 +1,4 @@
+import { canAccessVipModule } from "@/lib/auth/vip-permissions";
 import { NextRequest, NextResponse } from "next/server";
 import { getVerifiedIdentity } from "@/features/auth/lib/session";
 import {
@@ -13,13 +14,11 @@ export const dynamic = "force-dynamic";
 export async function GET(request: NextRequest) {
   try {
     const identity = await getVerifiedIdentity();
-    const isAdmin =
-      identity &&
-      (identity.role === "admin" || (identity.email || "").toLowerCase().includes("ajhs1589"));
+    const hasAccess = canAccessVipModule(identity, "over25_vip");
 
-    if (!isAdmin) {
+    if (!hasAccess) {
       return NextResponse.json(
-        { error: "Acceso no autorizado. El módulo Over 2.5 VIP es exclusivo para administradores." },
+        { error: "Acceso no autorizado. Tu cuenta no tiene permiso asignado para el módulo Over 2.5 VIP." },
         { status: 403 }
       );
     }
@@ -53,13 +52,11 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const identity = await getVerifiedIdentity();
-    const isAdmin =
-      identity &&
-      (identity.role === "admin" || (identity.email || "").toLowerCase().includes("ajhs1589"));
+    const hasAccess = canAccessVipModule(identity, "over25_vip");
 
-    if (!isAdmin) {
+    if (!hasAccess) {
       return NextResponse.json(
-        { error: "Acceso no autorizado. El escaneo de Over 2.5 VIP es exclusivo para administradores." },
+        { error: "Acceso no autorizado. Tu cuenta no tiene permiso asignado para el módulo Over 2.5 VIP." },
         { status: 403 }
       );
     }

@@ -65,6 +65,8 @@ export async function GET() {
       role: finalRole,
       roleName: finalRoleName,
       roleId: finalRoleId,
+      vipModules: identity.vipModules || [],
+      vipAccess: identity.vipAccess || false,
     },
   });
 }

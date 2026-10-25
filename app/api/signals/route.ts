@@ -1,3 +1,4 @@
+import { canAccessVipModule } from "@/lib/auth/vip-permissions";
 import { NextRequest, NextResponse } from "next/server";
 import { getVerifiedIdentity } from "@/features/auth/lib/session";
 import {
@@ -23,16 +24,14 @@ export async function GET(request: NextRequest) {
     const minProb = parseFloat(searchParams.get("minProb") || "0");
     const forceRefresh = searchParams.get("refresh") === "true";
 
-    // Guard: VIP modules are strictly restricted to administrators
-    const VIP_SPORTS = ["corners_vip", "cards_vip", "shots_vip", "over25_vip", "btts_vip"];
+    // Guard: VIP modules check permissions (Admin or user with assigned permission)
+    const VIP_SPORTS = ["corners_vip", "cards_vip", "shots_vip", "over25_vip", "btts_vip", "home_win_vip", "away_win_vip"];
     if (VIP_SPORTS.includes(sport)) {
       const identity = await getVerifiedIdentity();
-      const isAdmin =
-        identity &&
-        (identity.role === "admin" || (identity.email || "").toLowerCase().includes("ajhs1589"));
-      if (!isAdmin) {
+      const hasAccess = canAccessVipModule(identity, sport);
+      if (!hasAccess) {
         return NextResponse.json(
-          { error: `Acceso no autorizado. El módulo VIP (${sport}) es exclusivo para administradores.` },
+          { error: `Acceso no autorizado. Tu cuenta no tiene permiso asignado para el módulo VIP (${sport}).` },
           { status: 403 }
         );
       }
@@ -76,7 +75,8 @@ export async function GET(request: NextRequest) {
     }
 
     // 2. FOOTBALL SPORT SIGNALS (STRICTLY ISOLATED)
-    const todayDateStr = getEcuadorDateString(Date.now());
+    const dateParam = searchParams.get("date") || undefined;
+    const targetDateStr = dateParam || getEcuadorDateString(Date.now());
 
     await settleAllSnapshotsWithRealScores().catch((settleErr) => {
       console.warn("[API /api/signals] Auto-settlement non-fatal error:", settleErr);
@@ -92,8 +92,8 @@ export async function GET(request: NextRequest) {
         predictions = getStoredPredictions("football");
       }
     } else {
-      predictions = (await loadDailySnapshotAsync(todayDateStr, "football")) || [];
-      if (!predictions || predictions.length === 0) {
+      predictions = (await loadDailySnapshotAsync(targetDateStr, "football")) || [];
+      if ((!predictions || predictions.length === 0) && targetDateStr === getEcuadorDateString(Date.now())) {
         predictions = getStoredPredictions("football");
       }
       if (!predictions || predictions.length === 0) {
@@ -112,7 +112,7 @@ export async function GET(request: NextRequest) {
       const sp = ((p as any).sport || "").toLowerCase();
       const isOtherSport = c === "NHL" || l.includes("NHL") || sp === "nhl" || c === "NBA" || l.includes("NBA") || sp === "nba" || c === "NFL" || sp === "nfl";
       const isVip = Boolean(
-        p.isCornersVip || p.isCardsVip || p.isShotsVip || p.isOver25Vip || p.isBttsVip ||
+        p.isCornersVip || p.isCardsVip || p.isShotsVip || p.isOver25Vip || p.isBttsVip || p.isHomeWinVip || p.isAwayWinVip ||
         VIP_SPORTS.includes(p.source || "") ||
         VIP_SPORTS.includes(p.pickBadge || "") ||
         VIP_SPORTS.includes(sp)

@@ -1,9 +1,27 @@
+function getEcuadorDate(offsetDays: number = 0): string {
+  try {
+    const target = new Date();
+    target.setDate(target.getDate() + offsetDays);
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone: "America/Guayaquil",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(target);
+  } catch {
+    const target = new Date();
+    target.setDate(target.getDate() + offsetDays);
+    return target.toISOString().split("T")[0];
+  }
+}
+
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { PredictionCard } from "@/components/PredictionCard";
 import { MatchDetailModal } from "@/components/MatchDetailModal";
+import { VipDateFilter } from "@/components/VipDateFilter";
 import { NewAlertsModal } from "@/components/NewAlertsModal";
 import { MultiSelectDropdown, DropdownOption } from "@/components/MultiSelectDropdown";
 import { MarketOpportunity, getTimeSlot, isElitePick,
@@ -132,6 +150,7 @@ export default function SignalsPage() {
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
   const [minProbability, setMinProbability] = useState<number>(35);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [selectedDate, setSelectedDate] = useState<string>(() => getEcuadorDate(0));
   const [syncing, setSyncing] = useState<boolean>(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
 
@@ -155,10 +174,11 @@ export default function SignalsPage() {
       .catch(() => {});
   }, []);
 
-  const loadSignals = async (showLoader = false) => {
+  const loadSignals = async (showLoader = false, targetDate?: string) => {
     try {
       if (showLoader) setLoading(true);
-      const res = await fetch(`/api/signals?sport=football&_t=${Date.now()}`, { cache: "no-store" });
+      const dateToQuery = targetDate || selectedDate;
+      const res = await fetch(`/api/signals?sport=football&date=${dateToQuery}&_t=${Date.now()}`, { cache: "no-store" });
       const json = await res.json();
       const serverSignals: MarketOpportunity[] = Array.isArray(json.signals)
         ? json.signals
@@ -180,9 +200,9 @@ export default function SignalsPage() {
   };
 
   useEffect(() => {
-    loadSignals(true);
+    loadSignals(true, selectedDate);
     const handleUpdated = () => {
-      loadSignals(false);
+      loadSignals(false, selectedDate);
     };
     window.addEventListener("predictions-updated", handleUpdated);
     const handleNewAlertsDiscovered = (e: any) => {
@@ -196,7 +216,7 @@ export default function SignalsPage() {
       window.removeEventListener("predictions-updated", handleUpdated);
       window.removeEventListener("new-alerts-discovered", handleNewAlertsDiscovered);
     };
-  }, []);
+  }, [selectedDate]);
 
   const handleSyncPredictions = async () => {
     try {
@@ -228,7 +248,7 @@ export default function SignalsPage() {
           setPredictions(cleanPicks);
           window.dispatchEvent(new CustomEvent("predictions-updated", { detail: cleanPicks }));
         } else {
-          await loadSignals();
+          await loadSignals(false, selectedDate);
         }
       } else {
         setSyncMessage(`⚠️ ${data.message || "Error al buscar alertas de hoy"}`);
@@ -436,6 +456,22 @@ export default function SignalsPage() {
         {/* UNIFIED FILTER BAR (EXACT NHL / MULTISPORT STRUCTURE)    */}
         {/* ======================================================== */}
         <section className="space-y-4">
+          {/* Selector de Fecha para Cartelera Pre-Match */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900/90 p-2.5 sm:p-3 rounded-2xl border border-slate-800 shadow-sm">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-black uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                📅 Cartelera Pre-Match:
+              </span>
+              <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-lg border border-emerald-500/20">
+                {selectedDate === getEcuadorDate(0) ? `🟢 Hoy (${selectedDate})` : selectedDate === getEcuadorDate(-1) ? `Ayer (${selectedDate})` : selectedDate === getEcuadorDate(1) ? `Mañana (${selectedDate})` : selectedDate}
+              </span>
+            </div>
+            <VipDateFilter
+              selectedDate={selectedDate}
+              onDateChange={(date) => setSelectedDate(date)}
+              loading={loading}
+            />
+          </div>
           {/* Time Slot & High Conviction Segmentation Pills (Franja) */}
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 bg-slate-900/80 p-2 rounded-2xl border border-slate-800">
             <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 px-2 flex items-center gap-1">

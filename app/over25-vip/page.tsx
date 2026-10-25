@@ -78,7 +78,7 @@ function matchesStatusBadgeFilter(
 }
 
 export default function Over25VipPage() {
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
   const [searchMessage, setSearchMessage] = useState<string | null>(null);
@@ -100,20 +100,28 @@ export default function Over25VipPage() {
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
   const [minProbability, setMinProbability] = useState<number>(60);
 
-  // 1. Verify Admin Access
+  // 1. Verify User VIP Permissions (Admin or explicitly granted)
   useEffect(() => {
     fetch("/api/auth/profile")
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (data?.user?.role === "admin" || (data?.user?.email || "").toLowerCase().includes("ajhs1589")) {
-          setIsAdmin(true);
+        const u = data?.user;
+        const isAdm = u?.role === "admin" || (u?.email || "").toLowerCase().includes("ajhs1589");
+        const hasVip =
+          isAdm ||
+          Boolean(u?.vipAccess) ||
+          (u?.vipModules || []).includes("*") ||
+          (u?.vipModules || []).includes("over25_vip");
+
+        if (hasVip) {
+          setHasAccess(true);
         } else {
-          setIsAdmin(false);
+          setHasAccess(false);
           setLoading(false);
         }
       })
       .catch(() => {
-        setIsAdmin(false);
+        setHasAccess(false);
         setLoading(false);
       });
   }, []);
@@ -126,7 +134,7 @@ export default function Over25VipPage() {
       const res = await fetch(`/api/over25-vip?date=${target}&_t=${Date.now()}`, { cache: "no-store" });
       if (!res.ok) {
         if (res.status === 403) {
-          setIsAdmin(false);
+          setHasAccess(false);
           return;
         }
         throw new Error("Error loading VIP slate");
@@ -146,10 +154,10 @@ export default function Over25VipPage() {
   };
 
   useEffect(() => {
-    if (isAdmin === true) {
+    if (hasAccess === true) {
       loadSlate(selectedDate, true);
     }
-  }, [isAdmin, selectedDate]);
+  }, [hasAccess, selectedDate]);
 
   const handleDateChange = (newDate: string) => {
     setSelectedDate(newDate);
@@ -265,27 +273,27 @@ export default function Over25VipPage() {
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-6 space-y-6">
         {/* Loading Spinner */}
-        {isAdmin === null || (loading && predictions.length === 0) ? (
+        {hasAccess === null || (loading && predictions.length === 0) ? (
           <div className="flex flex-col items-center justify-center py-24 space-y-4">
             <div className="h-10 w-10 border-4 border-slate-700 border-t-emerald-400 rounded-full animate-spin" />
             <p className="text-sm font-semibold text-slate-400 animate-pulse">
-              Verificando credenciales de administrador y cargando cartelera...
+              Verificando permisos de acceso VIP y cargando cartelera...
             </p>
           </div>
         ) : null}
 
-        {/* Access Denied (Non-Admin) */}
-        {isAdmin === false && (
-          <div className="rounded-3xl border border-rose-500/20 bg-gradient-to-b from-rose-950/20 via-slate-900/60 to-slate-950 p-8 sm:p-12 text-center max-w-2xl mx-auto shadow-2xl backdrop-blur-xl space-y-5 my-12">
-            <div className="h-16 w-16 mx-auto rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-3xl shadow-inner">
+        {/* Access Denied (No VIP permission) */}
+        {hasAccess === false && (
+          <div className="rounded-3xl border border-amber-500/20 bg-gradient-to-b from-amber-950/20 via-slate-900/60 to-slate-950 p-8 sm:p-12 text-center max-w-2xl mx-auto shadow-2xl backdrop-blur-xl space-y-5 my-12">
+            <div className="h-16 w-16 mx-auto rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-3xl shadow-inner">
               🔒
             </div>
             <div className="space-y-2">
               <h1 className="text-2xl font-black text-white tracking-tight">
-                Módulo Exclusivo para Administradores
+                Módulo Exclusivo VIP
               </h1>
               <p className="text-sm text-slate-400 leading-relaxed max-w-lg mx-auto">
-                La suite cuantitativa de Módulo de Over 2.5 Goles VIP utiliza modelos estadísticos avanzados y umbrales estrictos de convicción reservados únicamente para administradores de SmartBetBot.
+                Tu cuenta no tiene permisos activos para acceder al <strong>Módulo de Over 2.5 Goles VIP</strong>. Un administrador puede asignarte el permiso exclusivo desde el panel de gestión de usuarios.
               </p>
             </div>
             <div className="pt-2 flex flex-wrap justify-center gap-3">
@@ -299,8 +307,8 @@ export default function Over25VipPage() {
           </div>
         )}
 
-        {/* Admin Authorized Content */}
-        {isAdmin === true && (
+        {/* Authorized Content */}
+        {hasAccess === true && (
           <>
             {/* Header with Navigation and Search Action */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">

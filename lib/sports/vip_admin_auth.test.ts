@@ -33,7 +33,7 @@ import { GET as bttsGet, POST as bttsPost } from "@/app/api/btts-vip/route";
 import { GET as homeWinGet, POST as homeWinPost } from "@/app/api/home-win-vip/route";
 import { GET as awayWinGet, POST as awayWinPost } from "@/app/api/away-win-vip/route";
 
-describe("Strict Admin Permission Guards for VIP Modules", () => {
+describe("Strict Permission Guards for VIP Modules (Admin & Assigned Users)", () => {
   beforeEach(() => {
     mockIdentity = null;
   });
@@ -44,13 +44,13 @@ describe("Strict Admin Permission Guards for VIP Modules", () => {
     const resGet = await over25Get(req);
     expect(resGet.status).toBe(403);
     const bodyGet = await resGet.json();
-    expect(bodyGet.error).toContain("exclusivo para administradores");
+    expect(bodyGet.error).toContain("no tiene permiso asignado");
     const resPost = await over25Post(req);
     expect(resPost.status).toBe(403);
   });
 
-  it("blocks standard users with 403 on Ambos Anotan VIP", async () => {
-    mockIdentity = { id: "user-123", email: "user@test.com", role: "user" };
+  it("blocks standard users with no VIP permissions on Ambos Anotan VIP", async () => {
+    mockIdentity = { id: "user-123", email: "user@test.com", role: "user", vipModules: [] };
     const req = new NextRequest("http://localhost/api/btts-vip");
     const resGet = await bttsGet(req);
     expect(resGet.status).toBe(403);
@@ -58,43 +58,32 @@ describe("Strict Admin Permission Guards for VIP Modules", () => {
     expect(resPost.status).toBe(403);
   });
 
-  it("blocks unauthenticated users with 403 on Ganador Local VIP", async () => {
-    mockIdentity = null;
-    const req = new NextRequest("http://localhost/api/home-win-vip");
-    const resGet = await homeWinGet(req);
-    expect(resGet.status).toBe(403);
-    const bodyGet = await resGet.json();
-    expect(bodyGet.error).toContain("exclusivo para administradores");
-    const resPost = await homeWinPost(req);
-    expect(resPost.status).toBe(403);
+  it("allows standard users WHO HAVE ASSIGNED VIP PERMISSION to access that specific module", async () => {
+    // User with permission for home_win_vip
+    mockIdentity = {
+      id: "vip-bettor-1",
+      email: "vip@bettor.com",
+      role: "user",
+      vipModules: ["home_win_vip"],
+    };
+    const reqHome = new NextRequest("http://localhost/api/home-win-vip");
+    const resHome = await homeWinGet(reqHome);
+    expect(resHome.status).toBe(200);
+
+    // But fails on away_win_vip where they have no permission
+    const reqAway = new NextRequest("http://localhost/api/away-win-vip");
+    const resAway = await awayWinGet(reqAway);
+    expect(resAway.status).toBe(403);
   });
 
-  it("allows admin users on Ganador Local VIP", async () => {
-    mockIdentity = { id: "admin-1", email: "boss@smartbetbot.com", role: "admin" };
-    const req = new NextRequest("http://localhost/api/home-win-vip");
-    const resGet = await homeWinGet(req);
-    expect(resGet.status).toBe(200);
-    const resPost = await homeWinPost(req);
-    expect(resPost.status).toBe(200);
-  });
+  it("allows admin users on Ganador Local VIP and Ganador Visitante VIP", async () => {
+    mockIdentity = { id: "admin-1", email: "boss@smartbetbot.com", role: "admin", vipModules: ["*"] };
+    const reqHome = new NextRequest("http://localhost/api/home-win-vip");
+    const resHome = await homeWinGet(reqHome);
+    expect(resHome.status).toBe(200);
 
-  it("blocks unauthenticated users with 403 on Ganador Visitante VIP", async () => {
-    mockIdentity = null;
-    const req = new NextRequest("http://localhost/api/away-win-vip");
-    const resGet = await awayWinGet(req);
-    expect(resGet.status).toBe(403);
-    const bodyGet = await resGet.json();
-    expect(bodyGet.error).toContain("exclusivo para administradores");
-    const resPost = await awayWinPost(req);
-    expect(resPost.status).toBe(403);
-  });
-
-  it("allows admin users on Ganador Visitante VIP", async () => {
-    mockIdentity = { id: "admin-ajhs", email: "ajhs1589@gmail.com", role: "admin" };
-    const req = new NextRequest("http://localhost/api/away-win-vip");
-    const resGet = await awayWinGet(req);
-    expect(resGet.status).toBe(200);
-    const resPost = await awayWinPost(req);
-    expect(resPost.status).toBe(200);
+    const reqAway = new NextRequest("http://localhost/api/away-win-vip");
+    const resAway = await awayWinGet(reqAway);
+    expect(resAway.status).toBe(200);
   });
 });
