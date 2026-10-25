@@ -46,7 +46,9 @@ const SPORTS_OPTIONS: Array<{
       p === '/cards-vip' ||
       p === '/shots-vip' ||
       p === '/over25-vip' ||
-      p === '/btts-vip',
+      p === '/btts-vip' ||
+      p === '/home-win-vip' ||
+      p === '/away-win-vip',
   },
   {
     id: 'nhl',
@@ -192,6 +194,12 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
     if (href === '/shots-vip') return pathname === '/shots-vip';
     if (href === '/over25-vip') return pathname === '/over25-vip';
     if (href === '/btts-vip') return pathname === '/btts-vip';
+    if (href === '/home-win-vip') return pathname === '/home-win-vip';
+    if (href === '/away-win-vip') return pathname === '/away-win-vip';
+    if (href === '/home-win-vip') return pathname === '/home-win-vip';
+    if (href === '/away-win-vip') return pathname === '/away-win-vip';
+    if (href === '/home-win-vip') return pathname === '/home-win-vip';
+    if (href === '/away-win-vip') return pathname === '/away-win-vip';
     if (href.includes('?tab=')) {
       const [path, query] = href.split('?tab=');
       return pathname === path && currentTab === query;
@@ -215,6 +223,12 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
           { href: '/corners-vip', label: 'Corners VIP 🚩', icon: '🚩' },
           { href: '/over25-vip', label: 'Over 2.5 VIP ⚽', icon: '⚽' },
           { href: '/btts-vip', label: 'Ambos Anotan VIP 🥅', icon: '🥅' },
+          { href: '/home-win-vip', label: 'Gana Local VIP 🏠', icon: '🏠' },
+          { href: '/away-win-vip', label: 'Gana Visitante VIP ✈️', icon: '✈️' },
+          { href: '/home-win-vip', label: 'Gana Local VIP 🏠', icon: '🏠' },
+          { href: '/away-win-vip', label: 'Gana Visitante VIP ✈️', icon: '✈️' },
+          { href: '/home-win-vip', label: 'Gana Local VIP 🏠', icon: '🏠' },
+          { href: '/away-win-vip', label: 'Gana Visitante VIP ✈️', icon: '✈️' },
           { href: '/cards-vip', label: 'Tarjetas VIP 🟨', icon: '🟨' },
           { href: '/shots-vip', label: 'Disparos VIP 🎯', icon: '🎯' },
           { href: getSportHref('weekend'), label: 'Finde VIP 💎', icon: '💎' },

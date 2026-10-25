@@ -7,6 +7,7 @@ import { PredictionCard } from "@/components/PredictionCard";
 import { MatchDetailModal } from "@/components/MatchDetailModal";
 import { NewAlertsModal } from "@/components/NewAlertsModal";
 import { MultiSelectDropdown, DropdownOption } from "@/components/MultiSelectDropdown";
+import { VipDateFilter } from "@/components/VipDateFilter";
 import {
   MarketOpportunity,
   getTimeSlot,
@@ -14,6 +15,19 @@ import {
   sortByKickoff,
   isDestacadoPick,
 } from "@/lib/sports/prediction-engine";
+
+function getEcuadorDateString(d: Date | number | string = Date.now()): string {
+  try {
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone: "America/Guayaquil",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date(d));
+  } catch {
+    return new Date().toISOString().split("T")[0];
+  }
+}
 
 function getMatchDeduplicationKey(p: MarketOpportunity): string {
   const fixId = Number(p.fixtureId) || 0;
@@ -63,24 +77,12 @@ function matchesStatusBadgeFilter(
   return true;
 }
 
-function getEcuadorDateString(d: Date | number | string = Date.now()): string {
-  try {
-    return new Intl.DateTimeFormat("en-CA", {
-      timeZone: "America/Guayaquil",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).format(new Date(d));
-  } catch {
-    return new Date().toISOString().split("T")[0];
-  }
-}
-
 export default function CardsVipPage() {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
   const [searchMessage, setSearchMessage] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string>(() => getEcuadorDateString());
 
   // Predictions state
   const [predictions, setPredictions] = useState<MarketOpportunity[]>([]);
@@ -95,7 +97,6 @@ export default function CardsVipPage() {
   >("ALL");
   const [timeSlotFilter, setTimeSlotFilter] = useState<"ALL" | "TOP" | "MORNING" | "AFTERNOON" | "NIGHT">("ALL");
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
-  const [selectedLines, setSelectedLines] = useState<string[]>([]);
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
   const [minProbability, setMinProbability] = useState<number>(50);
 
@@ -117,27 +118,28 @@ export default function CardsVipPage() {
       });
   }, []);
 
-  // 2. Load Cards VIP Snapshot
-  const loadCardsSlate = async (showLoader = false) => {
+  // 2. Load Slate by Date
+  const loadSlate = async (dateStr?: string, showLoader = false) => {
     try {
       if (showLoader) setLoading(true);
-      const res = await fetch(`/api/cards-vip?_t=${Date.now()}`, { cache: "no-store" });
+      const target = dateStr || selectedDate;
+      const res = await fetch(`/api/cards-vip?date=${target}&_t=${Date.now()}`, { cache: "no-store" });
       if (!res.ok) {
         if (res.status === 403) {
           setIsAdmin(false);
           return;
         }
-        throw new Error("Error loading cards VIP slate");
+        throw new Error("Error loading VIP slate");
       }
       const data = await res.json();
       if (Array.isArray(data?.predictions)) {
-        const cleanCards = deduplicatePicksList(data.predictions).filter(
+        const cleanPicks = deduplicatePicksList(data.predictions).filter(
           (p: MarketOpportunity) => p.market === "Tarjetas" || (p.selection || "").toLowerCase().includes("tarjeta")
         );
-        setPredictions(cleanCards);
+        setPredictions(cleanPicks);
       }
     } catch (err) {
-      console.error("[Cards VIP Page] Error loading slate:", err);
+      console.error("[VIP Page] Error loading slate:", err);
     } finally {
       if (showLoader) setLoading(false);
     }
@@ -145,237 +147,153 @@ export default function CardsVipPage() {
 
   useEffect(() => {
     if (isAdmin === true) {
-      loadCardsSlate(true);
+      loadSlate(selectedDate, true);
     }
-  }, [isAdmin]);
+  }, [isAdmin, selectedDate]);
 
-  // 3. Search and Scan New Cards VIP Alerts
-  const handleSearchCardsAlerts = async () => {
+  const handleDateChange = (newDate: string) => {
+    setSelectedDate(newDate);
+    loadSlate(newDate, true);
+  };
+
+  // 3. Search and Scan New Alerts for Selected Date
+  const handleSearchAlerts = async () => {
     try {
       setSearching(true);
-      setSearchMessage("⚡ Escaneando árbitros, tensión y modelos Poisson de Tarjetas (+EV)...");
+      setSearchMessage(`⚡ Escaneando partidos del ${selectedDate} (Tarjetas Oficiales)...`);
       const res = await fetch("/api/cards-vip", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ date: selectedDate }),
       });
 
       const data = await res.json();
       if (data.success) {
         const cleanPicks = Array.isArray(data.predictions)
-          ? deduplicatePicksList(data.predictions)
+          ? deduplicatePicksList(data.predictions).filter(
+              (p: MarketOpportunity) => p.market === "Tarjetas" || (p.selection || "").toLowerCase().includes("tarjeta")
+            )
           : predictions;
         setPredictions(cleanPicks);
 
         if (data.newAlerts && data.newAlerts.length > 0) {
           setNewlyDiscoveredAlerts(sortByKickoff(data.newAlerts, "asc"));
           setNewAlertsModalOpen(true);
-          setSearchMessage(`✓ ¡Se descubrieron ${data.newAlerts.length} nuevas alertas de Tarjetas VIP! Agregadas al panel.`);
+          setSearchMessage(`✓ ¡Se descubrieron ${data.newAlerts.length} nuevas alertas VIP para ${selectedDate}! Agregadas al panel.`);
         } else {
-          const pendingCards = cleanPicks.filter(
-            (p: MarketOpportunity) => p.status === "pending" || (!p.actualScore && p.status !== "won" && p.status !== "lost")
-          );
-          if (pendingCards.length > 0) {
-            setNewlyDiscoveredAlerts(pendingCards);
-            setNewAlertsModalOpen(true);
-          }
-          setSearchMessage(`✓ Mercado de Tarjetas al día (${data.totalAlerts || cleanPicks.length} alertas registradas).`);
+          setSearchMessage(`✓ Panel VIP al día para ${selectedDate} (${cleanPicks.length} alertas disponibles).`);
         }
       } else {
-        setSearchMessage(`⚠️ ${data.message || data.error || "No se encontraron nuevas alertas de tarjetas."}`);
+        setSearchMessage(`⚠️ ${data.error || "No se pudieron obtener nuevas alertas."}`);
       }
-    } catch {
-      setSearchMessage("❌ Error de conexión al buscar alertas de tarjetas.");
+    } catch (err) {
+      setSearchMessage("✕ Error de conexión al escanear nuevas alertas.");
     } finally {
       setSearching(false);
-      setTimeout(() => setSearchMessage(null), 6000);
     }
   };
 
-  const todayDateStr = getEcuadorDateString(Date.now());
-  const activeSignals = useMemo(() => {
-    const list = predictions.filter((p) => {
-      const pDate = p.kickoff ? getEcuadorDateString(p.kickoff) : todayDateStr;
-      return pDate === todayDateStr;
-    });
-    return sortByKickoff(list, "asc");
-  }, [predictions, todayDateStr]);
-
-  // Dropdown Options
+  // Options for Dropdowns
   const leagueDropdownOptions: DropdownOption[] = useMemo(() => {
-    const map = new Map<string, { count: number; group: string }>();
-    for (const s of activeSignals) {
-      if (!s.league) continue;
-      const existing = map.get(s.league);
-      if (existing) {
-        existing.count++;
-      } else {
-        map.set(s.league, {
-          count: 1,
-          group: s.country || "Internacional",
-        });
-      }
-    }
-    return Array.from(map.entries())
-      .map(([league, info]) => ({
-        value: league,
-        label: `${league} (${info.count})`,
-        group: info.group,
-      }))
-      .sort((a, b) => (a.group || "").localeCompare(b.group || "") || a.label.localeCompare(b.label));
-  }, [activeSignals]);
+    const unique = Array.from(new Set(predictions.map((p) => p.league).filter(Boolean))) as string[];
+    return unique.sort().map((l) => ({
+      value: l,
+      label: l,
+      badge: String(predictions.filter((p) => p.league === l).length),
+    }));
+  }, [predictions]);
 
-  const cardLinesDropdownOptions: DropdownOption[] = useMemo(() => {
-    const lines = ["Over 3.5", "Over 4.5", "Over 5.5"];
-    return lines.map((line) => {
-      const count = activeSignals.filter((s) => (s.selection || "").toLowerCase().includes(line.toLowerCase())).length;
-      return {
-        value: line,
-        label: `${line} Tarjetas (${count})`,
-      };
-    });
-  }, [activeSignals]);
+  const confidenceDropdownOptions: DropdownOption[] = useMemo(() => {
+    const confs = ["Muy Alta", "Alta", "Media", "Moderada"];
+    return confs
+      .filter((c) => predictions.some((p) => p.confidence === c))
+      .map((c) => ({
+        value: c,
+        label: c,
+        badge: String(predictions.filter((p) => p.confidence === c).length),
+      }));
+  }, [predictions]);
 
-  const confidenceDropdownOptions: DropdownOption[] = [
-    { value: "muy_alta", label: "⭐⭐⭐ Muy Alta (≥70%)" },
-    { value: "alta", label: "⭐⭐ Alta (58% - 69%)" },
-    { value: "media", label: "⭐ Media (50% - 57%)" },
-  ];
-
-  // Filtering Logic
+  // Filtered Predictions List
   const filteredPredictions = useMemo(() => {
-    const list = activeSignals.filter((p) => {
-      // REGLA ESTRICTA: Exclusivamente Over de Tarjetas (no Under)
-      const selLower = (p.selection || "").toLowerCase();
-      const mktLower = (p.market || "").toLowerCase();
-      if (
-        selLower.includes("under") ||
-        selLower.includes("menos") ||
-        selLower.includes("baja") ||
-        mktLower.includes("under") ||
-        mktLower.includes("menos") ||
-        mktLower.includes("baja")
-      ) {
-        return false;
-      }
-
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
-        const matchTeams =
-          p.homeTeam.toLowerCase().includes(q) ||
-          p.awayTeam.toLowerCase().includes(q) ||
-          (p.match || "").toLowerCase().includes(q);
-        const matchLeague = p.league.toLowerCase().includes(q);
-        const matchSelection = (p.selection || "").toLowerCase().includes(q);
-        if (!matchTeams && !matchLeague && !matchSelection) return false;
-      }
-
+    return predictions.filter((p) => {
+      // Status badge filter
       if (!matchesStatusBadgeFilter(p, matchStatusFilter)) return false;
 
-      if (timeSlotFilter === "TOP") {
-        const isTop = p.isTopPick || p.probability >= 68.0 || p.confidence === "Muy Alta";
-        if (!isTop) return false;
-      } else if (timeSlotFilter !== "ALL") {
-        const pSlot = p.timeSlot || getTimeSlot(p.kickoff);
-        if (pSlot !== timeSlotFilter.toLowerCase()) return false;
+      // Time slot filter
+      if (timeSlotFilter !== "ALL") {
+        const slot = getTimeSlot(p.kickoff);
+        if (timeSlotFilter === "TOP") {
+          if (!isElitePick(p) && p.probability < 75) return false;
+        } else if (slot !== timeSlotFilter.toLowerCase()) {
+          return false;
+        }
       }
 
+      // Leagues multi-select
       if (selectedLeagues.length > 0 && !selectedLeagues.includes(p.league)) {
         return false;
       }
 
-      if (selectedLines.length > 0) {
-        const selNorm = (p.selection || "").toLowerCase();
-        const matchesLine = selectedLines.some((l) => selNorm.includes(l.toLowerCase()));
-        if (!matchesLine) return false;
+      // Confidence multi-select
+      if (selectedConfidence.length > 0 && !selectedConfidence.includes(p.confidence)) {
+        return false;
       }
 
-      if (selectedConfidence.length > 0) {
-        const prob = p.probability || 0;
-        const matches = selectedConfidence.some((c) => {
-          if (c === "muy_alta") return prob >= 70;
-          if (c === "alta") return prob >= 58 && prob < 70;
-          if (c === "media") return prob >= 50 && prob < 58;
-          return true;
-        });
-        if (!matches) return false;
-      }
-
+      // Minimum probability slider
       if (p.probability < minProbability) return false;
+
+      // Text search query
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const m = (p.match || "").toLowerCase();
+        const h = (p.homeTeam || "").toLowerCase();
+        const a = (p.awayTeam || "").toLowerCase();
+        const l = (p.league || "").toLowerCase();
+        if (!m.includes(q) && !h.includes(q) && !a.includes(q) && !l.includes(q)) {
+          return false;
+        }
+      }
 
       return true;
     });
-    return sortByKickoff(list, "asc");
-  }, [
-    activeSignals,
-    searchQuery,
-    matchStatusFilter,
-    timeSlotFilter,
-    selectedLeagues,
-    selectedLines,
-    selectedConfidence,
-    minProbability,
-  ]);
-
-  // Counts for pills
-  const destacadosCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "DESTACADO")).length;
-  const eliteCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "ELITE")).length;
-  const wonCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "WON")).length;
-  const lostCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "LOST")).length;
-  const valorCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "VALOR")).length;
-  const scheduledCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "SCHEDULED")).length;
-  const finishedCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "FINISHED")).length;
-  const settledCount = wonCount + lostCount;
-  const winRate = settledCount > 0 ? Math.round((wonCount / settledCount) * 1000) / 10 : 0;
-  const topPickCount = activeSignals.filter((s) => s.isTopPick || s.probability >= 68.0 || s.confidence === "Muy Alta").length;
-  const morningCount = activeSignals.filter((s) => s.timeSlot === "morning" || getTimeSlot(s.kickoff) === "morning").length;
-  const afternoonCount = activeSignals.filter((s) => s.timeSlot === "afternoon" || getTimeSlot(s.kickoff) === "afternoon").length;
-  const nightCount = activeSignals.filter((s) => s.timeSlot === "night" || getTimeSlot(s.kickoff) === "night").length;
+  }, [predictions, matchStatusFilter, timeSlotFilter, selectedLeagues, selectedConfidence, minProbability, searchQuery]);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-yellow-500 selection:text-slate-950">
-      <Navbar onSync={handleSearchCardsAlerts} syncing={searching} />
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-emerald-500 selection:text-slate-950">
+      <Navbar />
 
-      <main className="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6 flex-1">
-        {/* Verification Loader */}
-        {isAdmin === null && (
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-6 space-y-6">
+        {/* Loading Spinner */}
+        {isAdmin === null || (loading && predictions.length === 0) ? (
           <div className="flex flex-col items-center justify-center py-24 space-y-4">
-            <div className="h-10 w-10 animate-spin rounded-full border-4 border-yellow-500 border-t-transparent"></div>
-            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">
-              Verificando autorización de Administrador VIP...
+            <div className="h-10 w-10 border-4 border-slate-700 border-t-emerald-400 rounded-full animate-spin" />
+            <p className="text-sm font-semibold text-slate-400 animate-pulse">
+              Verificando credenciales de administrador y cargando cartelera...
             </p>
           </div>
-        )}
+        ) : null}
 
-        {/* Access Denied Gate */}
+        {/* Access Denied (Non-Admin) */}
         {isAdmin === false && (
-          <div className="rounded-3xl border border-yellow-500/30 bg-gradient-to-b from-yellow-950/20 via-slate-900 to-slate-950 p-8 sm:p-12 text-center max-w-2xl mx-auto my-12 shadow-2xl space-y-6">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-yellow-500/10 border border-yellow-500/30 text-3xl">
+          <div className="rounded-3xl border border-rose-500/20 bg-gradient-to-b from-rose-950/20 via-slate-900/60 to-slate-950 p-8 sm:p-12 text-center max-w-2xl mx-auto shadow-2xl backdrop-blur-xl space-y-5 my-12">
+            <div className="h-16 w-16 mx-auto rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-3xl shadow-inner">
               🔒
             </div>
             <div className="space-y-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/30 px-3 py-1 text-xs font-black text-yellow-400 uppercase tracking-wider">
-                🟨 Tarjetas VIP — Acceso Restringido
-              </span>
-              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+              <h1 className="text-2xl font-black text-white tracking-tight">
                 Módulo Exclusivo para Administradores
               </h1>
               <p className="text-sm text-slate-400 leading-relaxed max-w-lg mx-auto">
-                La suite cuantitativa de Tarjetas VIP analiza el perfil disciplinario arbitral, el índice de agresividad de ambos equipos y modelos Poisson para líneas Over de tarjetas.
+                La suite cuantitativa de Módulo de Tarjetas VIP utiliza modelos estadísticos avanzados y umbrales estrictos de convicción reservados únicamente para administradores de SmartBetBot.
               </p>
             </div>
             <div className="pt-2 flex flex-wrap justify-center gap-3">
               <Link
                 href="/signals"
-                className="rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 px-5 py-2.5 text-xs font-black text-slate-950 shadow-md hover:brightness-110 transition cursor-pointer"
+                className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white transition border border-slate-700 cursor-pointer"
               >
-                ← Volver a Pronósticos Pre-Match
-              </Link>
-              <Link
-                href="/dashboard"
-                className="rounded-xl border border-slate-700 bg-slate-800 px-5 py-2.5 text-xs font-bold text-slate-200 hover:bg-slate-750 transition cursor-pointer"
-              >
-                Ir al Dashboard
+                Volver a Pre-Match
               </Link>
             </div>
           </div>
@@ -389,46 +307,94 @@ export default function CardsVipPage() {
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full bg-yellow-500/10 px-3 py-1 text-xs font-black text-yellow-400 border border-yellow-500/30 uppercase tracking-wider mb-2">
                   <span>🟨</span>
-                  <span>TARJETAS VIP — SUITE CUANTITATIVA EXCLUSIVA ADMIN</span>
+                  <span>TARJETAS VIP — SUITE CUANTITATIVA EXCLUSIVA</span>
                 </div>
                 <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
                   Módulo de Tarjetas VIP
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                  Pronósticos algorítmicos exclusivamente de tarjetas amarillas y rojas (+EV) con análisis de árbitros y modelos Poisson.
+                  Pronósticos algorítmicos exclusivamente de tarjetas y disciplina arbitral desacoplados del pre-match.
                 </p>
               </div>
 
+              {/* VIP Modules Nav */}
               <div className="flex items-center gap-2 flex-wrap">
                 <Link
-                  href="/shots-vip"
-                  className="flex items-center gap-1.5 rounded-xl border border-cyan-500/40 bg-cyan-500/10 hover:bg-cyan-500/20 px-3.5 py-2 text-xs font-bold text-cyan-300 transition cursor-pointer"
-                  title="Ir al Módulo Disparos VIP"
-                >
-                  <span>🎯</span>
-                  <span>Disparos VIP</span>
-                </Link>
-                <Link
                   href="/corners-vip"
-                  className="flex items-center gap-1.5 rounded-xl border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 px-3.5 py-2 text-xs font-bold text-amber-300 transition cursor-pointer"
-                  title="Ir al Módulo Corners VIP"
+                  className="flex items-center gap-1.5 rounded-xl border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 px-3 py-1.5 text-xs font-bold text-amber-300 transition cursor-pointer"
                 >
                   <span>🚩</span>
                   <span>Corners VIP</span>
                 </Link>
                 <Link
-                  href="/weekend"
-                  className="flex items-center gap-1.5 rounded-xl border border-indigo-500/40 bg-indigo-500/10 hover:bg-indigo-500/20 px-3.5 py-2 text-xs font-bold text-indigo-300 transition cursor-pointer"
-                  title="Ir al Módulo Finde VIP"
+                  href="/over25-vip"
+                  className="flex items-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 px-3 py-1.5 text-xs font-bold text-emerald-300 transition cursor-pointer"
                 >
-                  <span>💎</span>
-                  <span>Finde VIP</span>
+                  <span>⚽</span>
+                  <span>Over 2.5 VIP</span>
                 </Link>
+                <Link
+                  href="/btts-vip"
+                  className="flex items-center gap-1.5 rounded-xl border border-cyan-500/40 bg-cyan-500/10 hover:bg-cyan-500/20 px-3 py-1.5 text-xs font-bold text-cyan-300 transition cursor-pointer"
+                >
+                  <span>🥅</span>
+                  <span>Ambos Anotan VIP</span>
+                </Link>
+                <Link
+                  href="/home-win-vip"
+                  className="flex items-center gap-1.5 rounded-xl border border-blue-500/40 bg-blue-500/10 hover:bg-blue-500/20 px-3 py-1.5 text-xs font-bold text-blue-300 transition cursor-pointer"
+                >
+                  <span>🏠</span>
+                  <span>Gana Local VIP</span>
+                </Link>
+                <Link
+                  href="/away-win-vip"
+                  className="flex items-center gap-1.5 rounded-xl border border-teal-500/40 bg-teal-500/10 hover:bg-teal-500/20 px-3 py-1.5 text-xs font-bold text-teal-300 transition cursor-pointer"
+                >
+                  <span>✈️</span>
+                  <span>Gana Visitante VIP</span>
+                </Link>
+                <Link
+                  href="/cards-vip"
+                  className="flex items-center gap-1.5 rounded-xl border border-yellow-500/40 bg-yellow-500/10 hover:bg-yellow-500/20 px-3 py-1.5 text-xs font-bold text-yellow-300 transition cursor-pointer"
+                >
+                  <span>🟨</span>
+                  <span>Tarjetas VIP</span>
+                </Link>
+                <Link
+                  href="/shots-vip"
+                  className="flex items-center gap-1.5 rounded-xl border border-purple-500/40 bg-purple-500/10 hover:bg-purple-500/20 px-3 py-1.5 text-xs font-bold text-purple-300 transition cursor-pointer"
+                >
+                  <span>🎯</span>
+                  <span>Disparos VIP</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* Date Selector & Action Toolbar */}
+            <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-900/40 p-3 rounded-2xl border border-slate-800">
+              <VipDateFilter
+                selectedDate={selectedDate}
+                onDateChange={handleDateChange}
+                loading={loading || searching}
+              />
+
+              <div className="flex items-center gap-2">
                 <button
-                  onClick={handleSearchCardsAlerts}
+                  onClick={() => loadSlate(selectedDate, true)}
+                  disabled={loading}
+                  className="flex items-center gap-1.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:bg-slate-800 px-3 py-1.5 text-xs font-bold text-slate-300 transition cursor-pointer disabled:opacity-50"
+                  title="Recargar cartelera"
+                >
+                  <span>🔄</span>
+                  <span>Recargar</span>
+                </button>
+
+                <button
+                  onClick={handleSearchAlerts}
                   disabled={searching}
-                  className="flex items-center gap-1.5 rounded-xl border border-yellow-500/50 bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-400 hover:to-amber-400 px-4 py-2 text-xs font-black text-slate-950 shadow-md shadow-yellow-950/40 transition cursor-pointer disabled:opacity-50"
-                  title="Buscar nuevas alertas de tarjetas para hoy (Exclusivo Administrador)"
+                  className="flex items-center gap-1.5 rounded-xl border border-emerald-500/50 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 px-4 py-1.5 text-xs font-black text-slate-950 shadow-md shadow-emerald-950/40 transition cursor-pointer disabled:opacity-50"
+                  title="Escanear y buscar nuevas alertas para esta fecha"
                 >
                   <span className={searching ? "animate-spin" : ""}>⚡</span>
                   <span>{searching ? "Buscando..." : "Buscar Alertas Tarjetas"}</span>
@@ -438,353 +404,232 @@ export default function CardsVipPage() {
 
             {/* Notification Banner */}
             {searchMessage && (
-              <div className="rounded-2xl border border-yellow-500/30 bg-yellow-950/40 p-3.5 text-xs text-yellow-200 text-center animate-fade-in font-bold">
-                {searchMessage}
+              <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-3.5 text-xs font-semibold text-slate-300 flex items-center justify-between shadow-inner">
+                <div className="flex items-center gap-2">
+                  <span>ℹ️</span>
+                  <span>{searchMessage}</span>
+                </div>
+                <button
+                  onClick={() => setSearchMessage(null)}
+                  className="text-slate-500 hover:text-white cursor-pointer ml-3 text-xs"
+                >
+                  ✕
+                </button>
               </div>
             )}
 
-            {/* UNIFIED FILTER BAR */}
-            <section className="space-y-4">
-              {/* Time Slot Segmentation */}
-              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 bg-slate-900/80 p-2 rounded-2xl border border-slate-800">
-                <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 px-2 flex items-center gap-1">
-                  ⏱️ Franja:
+            {/* Stats Summary Bar */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+              <div className="rounded-2xl border border-slate-800/80 bg-slate-900/40 p-3 flex flex-col justify-between">
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Fecha Activa</span>
+                <span className="text-base font-black text-white mt-1">{selectedDate}</span>
+              </div>
+              <div className="rounded-2xl border border-slate-800/80 bg-slate-900/40 p-3 flex flex-col justify-between">
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Alertas</span>
+                <span className="text-xl font-black text-white mt-1">{predictions.length}</span>
+              </div>
+              <div className="rounded-2xl border border-slate-800/80 bg-slate-900/40 p-3 flex flex-col justify-between">
+                <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">Ganadas</span>
+                <span className="text-xl font-black text-emerald-400 mt-1">
+                  {predictions.filter((p) => p.status === "won" || (p as any).result === "WON").length}
                 </span>
-                <button
-                  onClick={() => setTimeSlotFilter("ALL")}
-                  className={`rounded-xl px-3 py-1.5 text-xs font-black transition cursor-pointer ${
-                    timeSlotFilter === "ALL"
-                      ? "bg-slate-100 text-slate-950 shadow-sm"
-                      : "text-slate-400 hover:text-white hover:bg-slate-800"
-                  }`}
-                >
-                  Todas ({activeSignals.length})
-                </button>
-                <button
-                  onClick={() => setTimeSlotFilter("TOP")}
-                  className={`rounded-xl px-3 py-1.5 text-xs font-black transition cursor-pointer ${
-                    timeSlotFilter === "TOP"
-                      ? "bg-yellow-500 text-slate-950 shadow-sm shadow-yellow-500/20"
-                      : "text-yellow-400 hover:bg-yellow-500/10"
-                  }`}
-                >
-                  ⭐ Top Picks ({topPickCount})
-                </button>
-                <button
-                  onClick={() => setTimeSlotFilter("MORNING")}
-                  className={`rounded-xl px-3 py-1.5 text-xs font-black transition cursor-pointer ${
-                    timeSlotFilter === "MORNING"
-                      ? "bg-slate-100 text-slate-950 shadow-sm"
-                      : "text-slate-400 hover:text-white hover:bg-slate-800"
-                  }`}
-                >
-                  🌅 Mañana ({morningCount})
-                </button>
-                <button
-                  onClick={() => setTimeSlotFilter("AFTERNOON")}
-                  className={`rounded-xl px-3 py-1.5 text-xs font-black transition cursor-pointer ${
-                    timeSlotFilter === "AFTERNOON"
-                      ? "bg-slate-100 text-slate-950 shadow-sm"
-                      : "text-slate-400 hover:text-white hover:bg-slate-800"
-                  }`}
-                >
-                  ☀️ Tarde ({afternoonCount})
-                </button>
-                <button
-                  onClick={() => setTimeSlotFilter("NIGHT")}
-                  className={`rounded-xl px-3 py-1.5 text-xs font-black transition cursor-pointer ${
-                    timeSlotFilter === "NIGHT"
-                      ? "bg-slate-100 text-slate-950 shadow-sm"
-                      : "text-slate-400 hover:text-white hover:bg-slate-800"
-                  }`}
-                >
-                  🌙 Noche ({nightCount})
-                </button>
+              </div>
+              <div className="rounded-2xl border border-slate-800/80 bg-slate-900/40 p-3 flex flex-col justify-between">
+                <span className="text-[11px] font-bold text-rose-400 uppercase tracking-wider">Perdidas</span>
+                <span className="text-xl font-black text-rose-400 mt-1">
+                  {predictions.filter((p) => p.status === "lost" || (p as any).result === "LOST").length}
+                </span>
+              </div>
+              <div className="rounded-2xl border border-slate-800/80 bg-slate-900/40 p-3 flex flex-col justify-between">
+                <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider">Pendientes</span>
+                <span className="text-xl font-black text-amber-400 mt-1">
+                  {predictions.filter((p) => p.status !== "won" && p.status !== "lost" && (p as any).result !== "WON" && (p as any).result !== "LOST").length}
+                </span>
+              </div>
+              <div className="rounded-2xl border border-slate-800/80 bg-slate-900/40 p-3 flex flex-col justify-between">
+                <span className="text-[11px] font-bold text-cyan-400 uppercase tracking-wider">Win Rate Real</span>
+                <span className="text-xl font-black text-cyan-400 mt-1">
+                  {(() => {
+                    const w = predictions.filter((p) => p.status === "won" || (p as any).result === "WON").length;
+                    const l = predictions.filter((p) => p.status === "lost" || (p as any).result === "LOST").length;
+                    const tot = w + l;
+                    return tot > 0 ? `${Math.round((w / tot) * 100)}%` : "N/A";
+                  })()}
+                </span>
+              </div>
+            </div>
+
+            {/* Filter Control Card */}
+            <div className="rounded-2xl border border-slate-800/80 bg-slate-900/50 p-4 space-y-4 shadow-xl">
+              {/* Status and Badge Filter Pills */}
+              <div className="flex flex-wrap items-center gap-1.5 pb-3 border-b border-slate-800/70">
+                {[
+                  { id: "ALL", label: "Todos", count: predictions.length },
+                  { id: "DESTACADO", label: "⭐ Destacados (≥50%)", count: predictions.filter((p) => p.probability >= 50).length },
+                  { id: "ELITE", label: "👑 Élite", count: predictions.filter((p) => isElitePick(p)).length },
+                  { id: "VALOR", label: "💎 Valor", count: predictions.filter((p) => p.pickBadge === "valor").length },
+                  { id: "BOMBA", label: "💣 Bomba", count: predictions.filter((p) => p.pickBadge === "bomba").length },
+                  { id: "WON", label: "✓ Ganadas", count: predictions.filter((p) => p.status === "won" || (p as any).result === "WON").length },
+                  { id: "LOST", label: "✕ Perdidas", count: predictions.filter((p) => p.status === "lost" || (p as any).result === "LOST").length },
+                  { id: "SCHEDULED", label: "⏳ Por Jugar", count: predictions.filter((p) => p.status !== "won" && p.status !== "lost" && (p as any).result !== "WON" && (p as any).result !== "LOST").length },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setMatchStatusFilter(tab.id as any)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                      matchStatusFilter === tab.id
+                        ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20 font-black"
+                        : "bg-slate-800/60 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-700/60"
+                    }`}
+                  >
+                    <span>{tab.label}</span>
+                    <span
+                      className={`px-1.5 py-0.2 rounded-md text-[10px] ${
+                        matchStatusFilter === tab.id
+                          ? "bg-slate-950/30 text-slate-950 font-black"
+                          : "bg-slate-900 text-slate-400"
+                      }`}
+                    >
+                      {tab.count}
+                    </span>
+                  </button>
+                ))}
               </div>
 
-              {/* Status and Badges Filters */}
-              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                <button
-                  onClick={() => setMatchStatusFilter("ALL")}
-                  className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
-                    matchStatusFilter === "ALL"
-                      ? "bg-yellow-500 text-slate-950 font-black shadow-sm"
-                      : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"
-                  }`}
-                >
-                  Todos ({activeSignals.length})
-                </button>
-                <button
-                  onClick={() => setMatchStatusFilter("DESTACADO")}
-                  className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
-                    matchStatusFilter === "DESTACADO"
-                      ? "bg-amber-500 text-slate-950 font-black shadow-sm"
-                      : "bg-slate-900 text-amber-400 hover:bg-slate-800 border border-slate-800"
-                  }`}
-                >
-                  ⭐ Destacados ({destacadosCount})
-                </button>
-                <button
-                  onClick={() => setMatchStatusFilter("ELITE")}
-                  className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
-                    matchStatusFilter === "ELITE"
-                      ? "bg-yellow-500 text-slate-950 font-black shadow-sm"
-                      : "bg-slate-900 text-yellow-300 hover:bg-slate-800 border border-slate-800"
-                  }`}
-                >
-                  💎 Elite ({eliteCount})
-                </button>
-                <button
-                  onClick={() => setMatchStatusFilter("VALOR")}
-                  className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
-                    matchStatusFilter === "VALOR"
-                      ? "bg-yellow-400 text-slate-950 font-black shadow-sm"
-                      : "bg-slate-900 text-yellow-300 hover:bg-slate-800 border border-slate-800"
-                  }`}
-                >
-                  💰 Valor (+EV) ({valorCount})
-                </button>
-                <button
-                  onClick={() => setMatchStatusFilter("WON")}
-                  className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
-                    matchStatusFilter === "WON"
-                      ? "bg-emerald-500 text-slate-950 font-black shadow-sm"
-                      : "bg-slate-900 text-emerald-400 hover:bg-slate-800 border border-slate-800"
-                  }`}
-                >
-                  ✅ Ganadas ({wonCount})
-                </button>
-                <button
-                  onClick={() => setMatchStatusFilter("LOST")}
-                  className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
-                    matchStatusFilter === "LOST"
-                      ? "bg-rose-500 text-slate-100 font-black shadow-sm"
-                      : "bg-slate-900 text-rose-400 hover:bg-slate-800 border border-slate-800"
-                  }`}
-                >
-                  ❌ Perdidas ({lostCount})
-                </button>
-                <button
-                  onClick={() => setMatchStatusFilter("SCHEDULED")}
-                  className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
-                    matchStatusFilter === "SCHEDULED"
-                      ? "bg-blue-500 text-slate-950 font-black shadow-sm"
-                      : "bg-slate-900 text-blue-400 hover:bg-slate-800 border border-slate-800"
-                  }`}
-                >
-                  ⏳ Pendientes ({scheduledCount})
-                </button>
-                <button
-                  onClick={() => setMatchStatusFilter("FINISHED")}
-                  className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
-                    matchStatusFilter === "FINISHED"
-                      ? "bg-slate-200 text-slate-950 font-black shadow-sm"
-                      : "bg-slate-900 text-slate-400 hover:bg-slate-800 border border-slate-800"
-                  }`}
-                >
-                  🏁 Finalizados ({finishedCount})
-                </button>
-              </div>
-
-              {/* Advanced Controls Row */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 bg-slate-900/60 p-3.5 rounded-2xl border border-slate-800/80">
-                <div>
-                  <label className="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">
-                    🔍 Buscar Equipo / Liga:
-                  </label>
+              {/* Advanced Dropdowns & Search Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-1">
+                {/* Search Text */}
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500 text-xs">
+                    🔍
+                  </span>
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Ej: Real Madrid, La Liga..."
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500 transition"
+                    placeholder="Buscar equipo o liga..."
+                    className="w-full rounded-xl border border-slate-800 bg-slate-950 pl-8 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-hidden"
                   />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-white text-xs cursor-pointer"
+                    >
+                      ✕
+                    </button>
+                  )}
                 </div>
 
+                {/* Time slot filter */}
                 <div>
-                  <label className="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">
-                    🟨 Línea de Tarjetas (Solo Over):
-                  </label>
-                  <MultiSelectDropdown
-                    label="Líneas de Tarjetas"
-                    options={cardLinesDropdownOptions}
-                    selected={selectedLines}
-                    onChange={setSelectedLines}
-                  />
+                  <select
+                    value={timeSlotFilter}
+                    onChange={(e) => setTimeSlotFilter(e.target.value as any)}
+                    className="w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs font-bold text-slate-300 focus:border-emerald-500 focus:outline-hidden cursor-pointer"
+                  >
+                    <option value="ALL">⏰ Todos los Horarios</option>
+                    <option value="TOP">⭐ TOP Picks (Alta Probabilidad)</option>
+                    <option value="MORNING">🌅 Mañana (00:00 - 12:00)</option>
+                    <option value="AFTERNOON">☀️ Tarde (12:00 - 18:00)</option>
+                    <option value="NIGHT">🌙 Noche (18:00 - 24:00)</option>
+                  </select>
                 </div>
 
-                <div>
-                  <label className="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">
-                    🏆 Liga / Competición:
-                  </label>
-                  <MultiSelectDropdown
-                    label="Competiciones"
-                    options={leagueDropdownOptions}
-                    selected={selectedLeagues}
-                    onChange={setSelectedLeagues}
-                  />
-                </div>
+                {/* Leagues MultiSelect */}
+                <MultiSelectDropdown
+                  label="Ligas"
+                  icon="🏆"
+                  options={leagueDropdownOptions}
+                  selected={selectedLeagues}
+                  onChange={setSelectedLeagues}
+                  placeholderAll="Todas las Ligas"
+                />
 
-                <div>
-                  <label className="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">
-                    📊 Nivel de Confianza:
-                  </label>
-                  <MultiSelectDropdown
-                    label="Confianza"
-                    options={confidenceDropdownOptions}
-                    selected={selectedConfidence}
-                    onChange={setSelectedConfidence}
-                  />
-                </div>
-              </div>
+                {/* Confidence MultiSelect */}
+                <MultiSelectDropdown
+                  label="Confianza"
+                  icon="🎯"
+                  options={confidenceDropdownOptions}
+                  selected={selectedConfidence}
+                  onChange={setSelectedConfidence}
+                  placeholderAll="Toda Confianza"
+                />
 
-              {/* Probability Slider Bar */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900/40 px-4 py-2.5 rounded-xl border border-slate-800/50">
-                <div className="flex items-center gap-3 w-full sm:w-auto">
-                  <span className="text-[11px] font-bold text-slate-400 whitespace-nowrap">
-                    Probabilidad Mínima: <span className="text-yellow-400 font-black">{minProbability}%</span>
-                  </span>
+                {/* Min probability range slider */}
+                <div className="flex flex-col justify-center px-2">
+                  <div className="flex justify-between text-[11px] font-bold text-slate-400 mb-1">
+                    <span>Probabilidad Mínima:</span>
+                    <span className="text-emerald-400 font-black">{minProbability}%</span>
+                  </div>
                   <input
                     type="range"
                     min="50"
-                    max="85"
-                    step="5"
+                    max="90"
+                    step="1"
                     value={minProbability}
                     onChange={(e) => setMinProbability(Number(e.target.value))}
-                    className="w-36 sm:w-48 accent-yellow-500 cursor-pointer"
+                    className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
                   />
                 </div>
+              </div>
+            </div>
 
-                <div className="text-[11px] text-slate-400 font-bold flex items-center gap-2">
-                  <span>Mostrando:</span>
-                  <span className="text-white font-black bg-slate-800 px-2.5 py-0.5 rounded-md border border-slate-700">
-                    {filteredPredictions.length} de {activeSignals.length} alertas
-                  </span>
+            {/* Predictions Slate Grid */}
+            {filteredPredictions.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredPredictions.map((pick) => (
+                  <PredictionCard
+                    key={getMatchDeduplicationKey(pick)}
+                    prediction={pick}
+                    onOpenDetail={(p) => setActiveModalPick(p)}
+                    defaultExpanded={false}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-3xl border border-slate-800/80 bg-slate-900/40 p-12 text-center space-y-4">
+                <div className="h-12 w-12 mx-auto rounded-2xl bg-slate-800/80 flex items-center justify-center text-2xl">
+                  🟨
                 </div>
-              </div>
-            </section>
-
-            {/* STATS SUMMARY BAR */}
-            <section className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
-              <div className="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-center items-center text-center">
-                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Total Alertas</span>
-                <span className="text-xl font-black text-white mt-0.5">{activeSignals.length}</span>
-              </div>
-              <div className="bg-slate-900/90 border border-emerald-900/40 p-3.5 rounded-2xl flex flex-col justify-center items-center text-center bg-emerald-950/10">
-                <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400">Ganadas</span>
-                <span className="text-xl font-black text-emerald-400 mt-0.5">✓ {wonCount}</span>
-              </div>
-              <div className="bg-slate-900/90 border border-rose-900/40 p-3.5 rounded-2xl flex flex-col justify-center items-center text-center bg-rose-950/10">
-                <span className="text-[10px] font-black uppercase tracking-wider text-rose-400">Perdidas</span>
-                <span className="text-xl font-black text-rose-400 mt-0.5">✗ {lostCount}</span>
-              </div>
-              <div className="bg-slate-900/90 border border-amber-500/30 p-3.5 rounded-2xl flex flex-col justify-center items-center text-center bg-amber-950/20 shadow-sm shadow-amber-500/10">
-                <span className="text-[10px] font-black uppercase tracking-wider text-amber-300">Tasa de Acierto</span>
-                <span className={`text-xl font-black mt-0.5 ${
-                  settledCount === 0
-                    ? "text-slate-400"
-                    : winRate >= 70
-                    ? "text-emerald-400"
-                    : winRate >= 50
-                    ? "text-yellow-400"
-                    : "text-rose-400"
-                }`}>
-                  {settledCount > 0 ? `${winRate}%` : "—"}
-                </span>
-                <span className="text-[9px] text-slate-500 font-bold mt-0.5">
-                  {settledCount > 0 ? `(${wonCount}/${settledCount} fin.)` : "Sin finalizar"}
-                </span>
-              </div>
-              <div className="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-center items-center text-center">
-                <span className="text-[10px] font-black uppercase tracking-wider text-blue-400">Pendientes</span>
-                <span className="text-xl font-black text-blue-400 mt-0.5">⏳ {scheduledCount}</span>
-              </div>
-              <div className="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-center items-center text-center">
-                <span className="text-[10px] font-black uppercase tracking-wider text-yellow-400">Prob. Media</span>
-                <span className="text-xl font-black text-yellow-400 mt-0.5">
-                  {activeSignals.length > 0
-                    ? Math.round((activeSignals.reduce((acc, p) => acc + (p.probability || 0), 0) / activeSignals.length) * 10) / 10
-                    : 0}%
-                </span>
-              </div>
-              <div className="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-center items-center text-center">
-                <span className="text-[10px] font-black uppercase tracking-wider text-cyan-400">Cuota Media</span>
-                <span className="text-xl font-black text-cyan-400 mt-0.5">
-                  {activeSignals.length > 0
-                    ? (activeSignals.reduce((acc, p) => acc + (p.odds || 0), 0) / activeSignals.length).toFixed(2)
-                    : "0.00"}
-                </span>
-              </div>
-            </section>
-
-            {/* PREDICTIONS GRID */}
-            <section className="space-y-4">
-              {loading && (
-                <div className="flex flex-col items-center justify-center py-16 space-y-3">
-                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-yellow-500 border-t-transparent"></div>
-                  <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Cargando cartelera de Tarjetas VIP...</p>
+                <div className="space-y-1">
+                  <h3 className="text-base font-black text-white">No hay alertas que cumplan el filtro actual para el {selectedDate}</h3>
+                  <p className="text-xs text-slate-400 max-w-md mx-auto">
+                    Los pronósticos en este módulo requieren estrictamente ≥ 50% de probabilidad y cuotas reales de mercado. Puedes buscar nuevas alertas con el botón superior.
+                  </p>
                 </div>
-              )}
+                <button
+                  onClick={handleSearchAlerts}
+                  disabled={searching}
+                  className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition cursor-pointer"
+                >
+                  ⚡ Escanear Alertas para {selectedDate}
+                </button>
+              </div>
+            )}
 
-              {!loading && filteredPredictions.length === 0 && (
-                <div className="rounded-3xl border border-slate-800 bg-slate-900/50 p-12 text-center space-y-4">
-                  <span className="text-4xl">🟨</span>
-                  <div className="space-y-1">
-                    <h3 className="text-base font-bold text-white">No hay alertas de Tarjetas que coincidan</h3>
-                    <p className="text-xs text-slate-400 max-w-md mx-auto">
-                      Intenta ajustar los filtros seleccionados o haz clic en &quot;Buscar Alertas Tarjetas&quot; para escanear partidos adicionales.
-                    </p>
-                  </div>
-                  <button
-                    onClick={handleSearchCardsAlerts}
-                    disabled={searching}
-                    className="inline-flex items-center gap-2 rounded-xl bg-yellow-500 hover:bg-yellow-400 px-4 py-2 text-xs font-black text-slate-950 transition cursor-pointer"
-                  >
-                    <span>⚡</span>
-                    <span>Buscar Nuevas Alertas</span>
-                  </button>
-                </div>
-              )}
+            {/* Modals */}
+            {activeModalPick && (
+              <MatchDetailModal
+                prediction={activeModalPick}
+                onClose={() => setActiveModalPick(null)}
+              />
+            )}
 
-              {!loading && filteredPredictions.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {filteredPredictions.map((pick) => (
-                    <PredictionCard
-                      key={pick.id || `${pick.fixtureId}-${pick.selection}`}
-                      prediction={{
-                        ...pick,
-                        isCardsVip: true,
-                        vipBadge: "Tarjetas VIP",
-                        pickBadge: "cards_vip",
-                      }}
-                      onOpenDetail={(p) => setActiveModalPick(p)}
-                    />
-                  ))}
-                </div>
-              )}
-            </section>
+            {newAlertsModalOpen && newlyDiscoveredAlerts.length > 0 && (
+              <NewAlertsModal
+                isOpen={newAlertsModalOpen}
+                newAlerts={newlyDiscoveredAlerts}
+                totalCount={newlyDiscoveredAlerts.length}
+                onClose={() => setNewAlertsModalOpen(false)}
+                onOpenDetail={(pick: MarketOpportunity) => {
+                  setNewAlertsModalOpen(false);
+                  setActiveModalPick(pick);
+                }}
+              />
+            )}
           </>
         )}
       </main>
-
-      {/* MATCH DETAIL MODAL */}
-      {activeModalPick && (
-        <MatchDetailModal
-          prediction={activeModalPick}
-          onClose={() => setActiveModalPick(null)}
-        />
-      )}
-
-      {/* NEW ALERTS MODAL */}
-      {newAlertsModalOpen && (
-        <NewAlertsModal
-          isOpen={newAlertsModalOpen}
-          onClose={() => setNewAlertsModalOpen(false)}
-          newAlerts={newlyDiscoveredAlerts}
-          totalCount={newlyDiscoveredAlerts.length}
-          onOpenDetail={(p) => setActiveModalPick(p)}
-        />
-      )}
     </div>
   );
 }

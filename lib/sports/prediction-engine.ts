@@ -492,7 +492,7 @@ export interface MarketOpportunity {
   expectedValue: number;
   confidence: "Muy Alta" | "Alta" | "Media" | "Moderada";
   confidenceScore?: number;
-  pickBadge?: "bomba" | "valor" | "estandar" | "mcp" | "nuevo" | "elite" | "corners_vip" | "cards_vip" | "shots_vip" | "over25_vip" | "btts_vip";
+  pickBadge?: "bomba" | "valor" | "estandar" | "mcp" | "nuevo" | "elite" | "corners_vip" | "cards_vip" | "shots_vip" | "over25_vip" | "btts_vip" | "home_win_vip" | "away_win_vip";
   isElite?: boolean;
   isDestacado?: boolean;
   destacadoRule?: string;
@@ -501,6 +501,8 @@ export interface MarketOpportunity {
   isShotsVip?: boolean;
   isOver25Vip?: boolean;
   isBttsVip?: boolean;
+  isHomeWinVip?: boolean;
+  isAwayWinVip?: boolean;
   vipBadge?: string;
   isNew?: boolean;
   isNewlyDiscovered?: boolean;
@@ -508,7 +510,7 @@ export interface MarketOpportunity {
   isMcpPick?: boolean;
   isMcp?: boolean;
   result?: "WON" | "LOST" | "VOID" | string;
-  source?: "algorithm" | "mcp" | "manual" | "corners_vip" | "cards_vip" | "shots_vip" | "over25_vip" | "btts_vip";
+  source?: "algorithm" | "mcp" | "manual" | "corners_vip" | "cards_vip" | "shots_vip" | "over25_vip" | "btts_vip" | "home_win_vip" | "away_win_vip";
   matchTiming?: "prematch" | "live" | "finished";
   livePeriod?: "1H" | "HT" | "2H" | "ET";
   liveMinute?: number | string;
@@ -2141,12 +2143,12 @@ export function evaluateFixturePrediction(params: {
                    (item.market === "Ambos Equipos Anotan") ? probPercent >= 58 :
                    (item.market === "Over 2.5 Goles") ? probPercent >= 60 :
                    (item.market === "Ganador Local") ? probPercent >= 58 :
-                   (item.market === "Ganador Visitante") ? probPercent >= 71 : false,
+                   (item.market === "Ganador Visitante") ? probPercent >= 65 : false,
       destacadoRule: (item.market === "Córners" || item.market === "Over Córners") && probPercent >= 70 ? "Alta de Córners (≥ 70%)" :
                      (item.market === "Ambos Equipos Anotan") && probPercent >= 58 ? "Ambos Anotan (≥ 58%)" :
                      (item.market === "Over 2.5 Goles") && probPercent >= 60 ? "Alta de Goles (≥ 60%)" :
                      (item.market === "Ganador Local") && probPercent >= 58 ? "Ganador Local (≥ 58%)" :
-                     (item.market === "Ganador Visitante") && probPercent >= 71 ? "Ganador Visitante (≥ 71%)" : undefined,
+                     (item.market === "Ganador Visitante") && probPercent >= 65 ? "Ganador Visitante (≥ 65%)" : undefined,
       smartScore,
       explanation: generateExplanation(
         homeTeam,

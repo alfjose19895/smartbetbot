@@ -101,7 +101,7 @@ function ensureSnapshotsDir(sport?: string) {
     if (!fs.existsSync(SNAPSHOTS_DIR)) {
       fs.mkdirSync(SNAPSHOTS_DIR, { recursive: true });
     }
-    const sports = ["football", "nhl", "nba", "nfl", "ncaaf", "corners_vip", "cards_vip", "shots_vip", "over25_vip", "btts_vip"];
+    const sports = ["football", "nhl", "nba", "nfl", "ncaaf", "corners_vip", "cards_vip", "shots_vip", "over25_vip", "btts_vip", "home_win_vip", "away_win_vip"];
     for (const s of sports) {
       const p = path.join(SNAPSHOTS_DIR, s);
       if (!fs.existsSync(p)) {
@@ -168,6 +168,24 @@ export function isSportMatch(p: any, targetSport: string = "football"): boolean 
       p.pickBadge === "btts_vip" ||
       s === "btts_vip" ||
       (p.market === "Ambos Equipos Anotan" && (p.source === "btts_vip" || p.isBttsVip))
+    );
+  }
+  if (tSport === "home_win_vip") {
+    return Boolean(
+      p.isHomeWinVip ||
+      p.source === "home_win_vip" ||
+      p.pickBadge === "home_win_vip" ||
+      s === "home_win_vip" ||
+      (p.market === "Ganador Local" && (p.source === "home_win_vip" || p.isHomeWinVip))
+    );
+  }
+  if (tSport === "away_win_vip") {
+    return Boolean(
+      p.isAwayWinVip ||
+      p.source === "away_win_vip" ||
+      p.pickBadge === "away_win_vip" ||
+      s === "away_win_vip" ||
+      (p.market === "Ganador Visitante" && (p.source === "away_win_vip" || p.isAwayWinVip))
     );
   }
   if (tSport === "football") {
@@ -914,6 +932,26 @@ export async function settleAllSnapshotsWithRealScores(): Promise<{ settledDates
             totalSettled += newlySettled;
           }
         }
+
+        // Auto-settle Ganador Local VIP dedicated snapshots
+        const settledHomeWin = await settleActiveSnapshotWithRealScores(dateStr, "home_win_vip");
+        if (settledHomeWin && settledHomeWin.length > 0) {
+          const newlySettled = settledHomeWin.filter((p) => p.status === "won" || p.status === "lost").length;
+          if (newlySettled > 0) {
+            if (!settledDates.includes(dateStr)) settledDates.push(dateStr);
+            totalSettled += newlySettled;
+          }
+        }
+
+        // Auto-settle Ganador Visitante VIP dedicated snapshots
+        const settledAwayWin = await settleActiveSnapshotWithRealScores(dateStr, "away_win_vip");
+        if (settledAwayWin && settledAwayWin.length > 0) {
+          const newlySettled = settledAwayWin.filter((p) => p.status === "won" || p.status === "lost").length;
+          if (newlySettled > 0) {
+            if (!settledDates.includes(dateStr)) settledDates.push(dateStr);
+            totalSettled += newlySettled;
+          }
+        }
       } catch (err) {
         console.warn(`[Auto-Settle] Error settling snapshot ${dateStr}:`, err);
       }
@@ -1262,7 +1300,7 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string, sport
 
 export async function getAllDailySnapshotsAsync(sportFilter?: string): Promise<Record<string, MarketOpportunity[]>> {
   const result: Record<string, MarketOpportunity[]> = {};
-  const sports = sportFilter ? [sportFilter.toLowerCase()] : ["football", "nhl", "nba", "nfl", "ncaaf", "corners_vip", "cards_vip", "shots_vip", "over25_vip", "btts_vip"];
+  const sports = sportFilter ? [sportFilter.toLowerCase()] : ["football", "nhl", "nba", "nfl", "ncaaf", "corners_vip", "cards_vip", "shots_vip", "over25_vip", "btts_vip", "home_win_vip", "away_win_vip"];
 
   // 1. Memory snapshots
   for (const [key, p] of Object.entries(memorySnapshots)) {
@@ -1349,7 +1387,7 @@ export async function getAllDailySnapshotsAsync(sportFilter?: string): Promise<R
 
 function getAllDailySnapshots(sportFilter?: string): Record<string, MarketOpportunity[]> {
   const result: Record<string, MarketOpportunity[]> = {};
-  const sports = sportFilter ? [sportFilter.toLowerCase()] : ["football", "nhl", "nba", "nfl", "ncaaf", "corners_vip", "cards_vip", "shots_vip", "over25_vip", "btts_vip"];
+  const sports = sportFilter ? [sportFilter.toLowerCase()] : ["football", "nhl", "nba", "nfl", "ncaaf", "corners_vip", "cards_vip", "shots_vip", "over25_vip", "btts_vip", "home_win_vip", "away_win_vip"];
 
   for (const [key, p] of Object.entries(memorySnapshots)) {
     for (const s of sports) {
@@ -1442,19 +1480,21 @@ export interface HistoricalSettledPick {
   edge?: number;
   probability: number;
   confidence: "Muy Alta" | "Alta" | "Media" | "Moderada";
-  pickBadge?: "bomba" | "valor" | "estandar" | "mcp" | "nuevo" | "elite" | "corners_vip" | "cards_vip" | "shots_vip" | "over25_vip" | "btts_vip";
+  pickBadge?: "bomba" | "valor" | "estandar" | "mcp" | "nuevo" | "elite" | "corners_vip" | "cards_vip" | "shots_vip" | "over25_vip" | "btts_vip" | "home_win_vip" | "away_win_vip";
   isElite?: boolean;
   isCornersVip?: boolean;
   isCardsVip?: boolean;
   isShotsVip?: boolean;
   isOver25Vip?: boolean;
   isBttsVip?: boolean;
+  isHomeWinVip?: boolean;
+  isAwayWinVip?: boolean;
   vipBadge?: string;
   matchTiming?: "prematch" | "live";
   isLive?: boolean;
   isMcp?: boolean;
   isMcpPick?: boolean;
-  source?: "algorithm" | "mcp" | "manual" | "corners_vip" | "cards_vip" | "shots_vip" | "over25_vip" | "btts_vip";
+  source?: "algorithm" | "mcp" | "manual" | "corners_vip" | "cards_vip" | "shots_vip" | "over25_vip" | "btts_vip" | "home_win_vip" | "away_win_vip";
   livePeriod?: string;
   liveMinute?: string | number;
   result: "WON" | "LOST" | "VOID";

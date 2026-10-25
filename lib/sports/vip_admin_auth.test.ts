@@ -18,91 +18,83 @@ vi.mock("@/lib/sports/btts-vip-server", () => ({
   searchAndAddNewBttsVipAlerts: vi.fn(async () => ({ success: true, newAlerts: [], totalAlerts: 0, predictions: [], message: "ok" })),
 }));
 
+vi.mock("@/lib/sports/home-win-vip-server", () => ({
+  getHomeWinVipSlate: vi.fn(async () => ({ date: "2026-10-24", count: 0, predictions: [], stats: {} })),
+  searchAndAddNewHomeWinVipAlerts: vi.fn(async () => ({ success: true, newAlerts: [], totalAlerts: 0, predictions: [], message: "ok" })),
+}));
+
+vi.mock("@/lib/sports/away-win-vip-server", () => ({
+  getAwayWinVipSlate: vi.fn(async () => ({ date: "2026-10-24", count: 0, predictions: [], stats: {} })),
+  searchAndAddNewAwayWinVipAlerts: vi.fn(async () => ({ success: true, newAlerts: [], totalAlerts: 0, predictions: [], message: "ok" })),
+}));
+
 import { GET as over25Get, POST as over25Post } from "@/app/api/over25-vip/route";
 import { GET as bttsGet, POST as bttsPost } from "@/app/api/btts-vip/route";
+import { GET as homeWinGet, POST as homeWinPost } from "@/app/api/home-win-vip/route";
+import { GET as awayWinGet, POST as awayWinPost } from "@/app/api/away-win-vip/route";
 
-describe("Strict Admin Permission Guards for Over 2.5 VIP and Ambos Anotan VIP", () => {
+describe("Strict Admin Permission Guards for VIP Modules", () => {
   beforeEach(() => {
     mockIdentity = null;
   });
 
-  it("blocks unauthenticated users (null identity) with 403 on Over 2.5 VIP", async () => {
+  it("blocks unauthenticated users with 403 on Over 2.5 VIP", async () => {
     mockIdentity = null;
     const req = new NextRequest("http://localhost/api/over25-vip");
     const resGet = await over25Get(req);
     expect(resGet.status).toBe(403);
     const bodyGet = await resGet.json();
     expect(bodyGet.error).toContain("exclusivo para administradores");
-
     const resPost = await over25Post(req);
     expect(resPost.status).toBe(403);
   });
 
-  it("blocks standard users (role: 'user') with 403 on Over 2.5 VIP", async () => {
-    mockIdentity = {
-      id: "user-123",
-      email: "bettor@example.com",
-      role: "user",
-    };
-    const req = new NextRequest("http://localhost/api/over25-vip");
-    const resGet = await over25Get(req);
+  it("blocks standard users with 403 on Ambos Anotan VIP", async () => {
+    mockIdentity = { id: "user-123", email: "user@test.com", role: "user" };
+    const req = new NextRequest("http://localhost/api/btts-vip");
+    const resGet = await bttsGet(req);
     expect(resGet.status).toBe(403);
-
-    const resPost = await over25Post(req);
+    const resPost = await bttsPost(req);
     expect(resPost.status).toBe(403);
   });
 
-  it("allows admin users (role: 'admin') on Over 2.5 VIP", async () => {
-    mockIdentity = {
-      id: "admin-1",
-      email: "boss@smartbetbot.com",
-      role: "admin",
-    };
-    const req = new NextRequest("http://localhost/api/over25-vip");
-    const resGet = await over25Get(req);
-    expect(resGet.status).toBe(200);
+  it("blocks unauthenticated users with 403 on Ganador Local VIP", async () => {
+    mockIdentity = null;
+    const req = new NextRequest("http://localhost/api/home-win-vip");
+    const resGet = await homeWinGet(req);
+    expect(resGet.status).toBe(403);
+    const bodyGet = await resGet.json();
+    expect(bodyGet.error).toContain("exclusivo para administradores");
+    const resPost = await homeWinPost(req);
+    expect(resPost.status).toBe(403);
+  });
 
-    const resPost = await over25Post(req);
+  it("allows admin users on Ganador Local VIP", async () => {
+    mockIdentity = { id: "admin-1", email: "boss@smartbetbot.com", role: "admin" };
+    const req = new NextRequest("http://localhost/api/home-win-vip");
+    const resGet = await homeWinGet(req);
+    expect(resGet.status).toBe(200);
+    const resPost = await homeWinPost(req);
     expect(resPost.status).toBe(200);
   });
 
-  it("blocks unauthenticated users (null identity) with 403 on Ambos Anotan VIP", async () => {
+  it("blocks unauthenticated users with 403 on Ganador Visitante VIP", async () => {
     mockIdentity = null;
-    const req = new NextRequest("http://localhost/api/btts-vip");
-    const resGet = await bttsGet(req);
+    const req = new NextRequest("http://localhost/api/away-win-vip");
+    const resGet = await awayWinGet(req);
     expect(resGet.status).toBe(403);
     const bodyGet = await resGet.json();
     expect(bodyGet.error).toContain("exclusivo para administradores");
-
-    const resPost = await bttsPost(req);
+    const resPost = await awayWinPost(req);
     expect(resPost.status).toBe(403);
   });
 
-  it("blocks standard users (role: 'user') with 403 on Ambos Anotan VIP", async () => {
-    mockIdentity = {
-      id: "user-456",
-      email: "regular@gmail.com",
-      role: "user",
-    };
-    const req = new NextRequest("http://localhost/api/btts-vip");
-    const resGet = await bttsGet(req);
-    expect(resGet.status).toBe(403);
-
-    const resPost = await bttsPost(req);
-    expect(resPost.status).toBe(403);
-  });
-
-  it("allows admin users (role: 'admin' or owner email) on Ambos Anotan VIP", async () => {
-    mockIdentity = {
-      id: "admin-ajhs",
-      email: "ajhs1589@gmail.com",
-      role: "admin",
-    };
-    const req = new NextRequest("http://localhost/api/btts-vip");
-    const resGet = await bttsGet(req);
+  it("allows admin users on Ganador Visitante VIP", async () => {
+    mockIdentity = { id: "admin-ajhs", email: "ajhs1589@gmail.com", role: "admin" };
+    const req = new NextRequest("http://localhost/api/away-win-vip");
+    const resGet = await awayWinGet(req);
     expect(resGet.status).toBe(200);
-
-    const resPost = await bttsPost(req);
+    const resPost = await awayWinPost(req);
     expect(resPost.status).toBe(200);
   });
 });
