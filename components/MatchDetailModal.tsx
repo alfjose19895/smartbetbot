@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { MarketOpportunity, H2HMatch, TeamFormMatch } from "@/lib/sports/prediction-engine";
 import { useLanguage } from "@/context/LanguageContext";

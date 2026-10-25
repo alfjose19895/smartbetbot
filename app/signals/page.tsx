@@ -1,3 +1,19 @@
+"use client";
+
+import React, { useState, useEffect, useMemo } from "react";
+import Link from "next/link";
+import { PredictionCard } from "@/components/PredictionCard";
+import { MatchDetailModal } from "@/components/MatchDetailModal";
+import { VipDateFilter } from "@/components/VipDateFilter";
+import { NewAlertsModal } from "@/components/NewAlertsModal";
+import { MultiSelectDropdown, DropdownOption } from "@/components/MultiSelectDropdown";
+import { MarketOpportunity, getTimeSlot, isElitePick,
+  sortByKickoff, isDestacadoPick } from "@/lib/sports/prediction-engine";
+import { matchesMarketFilter, matchesConfidenceFilter } from "@/lib/sports/registry";
+import { useLanguage } from "@/context/LanguageContext";
+import { Navbar } from "@/components/Navbar";
+import { openPushModal } from "@/components/PushNotificationManager";
+
 function getEcuadorDate(offsetDays: number = 0): string {
   try {
     const target = new Date();
@@ -14,22 +30,6 @@ function getEcuadorDate(offsetDays: number = 0): string {
     return target.toISOString().split("T")[0];
   }
 }
-
-"use client";
-
-import React, { useState, useEffect, useMemo } from "react";
-import Link from "next/link";
-import { PredictionCard } from "@/components/PredictionCard";
-import { MatchDetailModal } from "@/components/MatchDetailModal";
-import { VipDateFilter } from "@/components/VipDateFilter";
-import { NewAlertsModal } from "@/components/NewAlertsModal";
-import { MultiSelectDropdown, DropdownOption } from "@/components/MultiSelectDropdown";
-import { MarketOpportunity, getTimeSlot, isElitePick,
-  sortByKickoff, isDestacadoPick } from "@/lib/sports/prediction-engine";
-import { matchesMarketFilter, matchesConfidenceFilter } from "@/lib/sports/registry";
-import { useLanguage } from "@/context/LanguageContext";
-import { Navbar } from "@/components/Navbar";
-import { openPushModal } from "@/components/PushNotificationManager";
 
 function getMatchDeduplicationKey(p: MarketOpportunity): string {
   const fixId = Number(p.fixtureId) || 0;
