@@ -676,6 +676,9 @@ export interface MarketOpportunity {
   leagueTier?: number;
   timeSlot?: "morning" | "afternoon" | "night";
   isTopPick?: boolean;
+  subModule?: string;
+  playerProp?: any;
+  period?: string;
 }
 
 export const TEAM_STAR_PLAYERS: Record<string, string> = {

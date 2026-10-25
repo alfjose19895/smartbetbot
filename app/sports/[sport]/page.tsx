@@ -51,6 +51,21 @@ export default async function DynamicSportPage({ params }: SportPageProps) {
     }
   }
 
+  // 2. NBA SPORT SUITE (All 8 sub-modules)
+  if (sport === 'nba' && isEnabled) {
+    try {
+      const { NBASyncEngine } = await import('@/lib/sports/nba/nba-sync');
+      const nbaData = await NBASyncEngine.getTodayNBASignals();
+      signals = nbaData.signals || [];
+      smartPick = nbaData.smartPick || null;
+      totalGames = nbaData.gamesCount || 0;
+    } catch {
+      signals = [];
+      smartPick = null;
+      totalGames = 0;
+    }
+  }
+
   return (
     <React.Suspense fallback={
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">

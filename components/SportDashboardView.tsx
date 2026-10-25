@@ -227,6 +227,33 @@ export function SportDashboardView({
       .catch(() => {});
   }, []);
 
+  // NBA Sub-Module States
+  const moduleParam = searchParams.get('module');
+  const [nbaSubModule, setNbaSubModule] = useState<string>(moduleParam || 'all');
+  const [propStatFilter, setPropStatFilter] = useState<'all' | 'points' | 'threes' | 'assists' | 'rebounds' | 'pra'>('all');
+  const [quarterFilter, setQuarterFilter] = useState<'all' | '1Q' | '2Q' | '3Q' | '4Q'>('all');
+
+  useEffect(() => {
+    if (moduleParam) {
+      setNbaSubModule(moduleParam);
+    }
+  }, [moduleParam]);
+
+  const handleNbaSubModuleChange = (modId: string) => {
+    setNbaSubModule(modId);
+    const params = new URLSearchParams(searchParams.toString());
+    if (modId === 'all') {
+      params.delete('module');
+    } else {
+      params.set('module', modId);
+    }
+    if (activeTab === 'dashboard') {
+      params.set('tab', 'signals');
+    }
+    const query = params.toString() ? `?${params.toString()}` : '';
+    router.replace(`${pathname}${query}`, { scroll: false });
+  };
+
   const handleTabChange = (tabId: 'dashboard' | 'signals' | 'featured' | 'parlay' | 'history' | 'reports') => {
     const params = new URLSearchParams(searchParams.toString());
     if (tabId === 'dashboard') {
@@ -434,6 +461,28 @@ export function SportDashboardView({
         if (!match) return false;
       }
 
+      // NBA Sub-Module Filter
+      if (sport === 'nba') {
+        if (nbaSubModule !== 'all') {
+          const sub = (s as any).subModule;
+          if (sub && sub !== nbaSubModule) {
+            return false;
+          }
+        }
+        if (nbaSubModule === 'props' && propStatFilter !== 'all') {
+          const pProp = (s as any).playerProp;
+          if (pProp && pProp.propType !== propStatFilter) {
+            return false;
+          }
+        }
+        if (nbaSubModule === 'overs_cuartos' && quarterFilter !== 'all') {
+          const period = (s as any).period;
+          if (period && period !== quarterFilter) {
+            return false;
+          }
+        }
+      }
+
       // Min Probability
       if (s.probability < minProbability) {
         return false;
@@ -442,7 +491,7 @@ export function SportDashboardView({
       return true;
     });
     return sortByKickoff(list, 'asc');
-  }, [opportunities, timeSlotFilter, searchQuery, matchStatusFilter, selectedLeagues, selectedConfidence, selectedMarkets, minProbability]);
+  }, [opportunities, timeSlotFilter, searchQuery, matchStatusFilter, selectedLeagues, selectedConfidence, selectedMarkets, minProbability, sport, nbaSubModule, propStatFilter, quarterFilter]);
 
   // Curated Parlays
   const curatedParlaySets = useMemo(() => {
@@ -1048,6 +1097,142 @@ export function SportDashboardView({
         {/* ========================================================================= */}
         {activeTab === 'signals' && (
           <div className="space-y-4">
+            {/* NBA Specialized Sub-Modules Switcher */}
+            {sport === 'nba' && (
+              <div className="rounded-3xl border border-orange-500/30 bg-gradient-to-r from-orange-950/40 via-slate-900 to-slate-900 p-4 shadow-xl space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-orange-500/20 pb-3">
+                  <div className="flex items-center gap-2.5">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-orange-500/20 text-orange-400 text-lg font-black border border-orange-500/30">
+                      🏀
+                    </span>
+                    <div>
+                      <h3 className="text-sm font-black text-white flex items-center gap-2">
+                        <span>Módulos Especializados NBA</span>
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-orange-500/20 text-orange-300 border border-orange-500/30">
+                          8 Módulos Activos
+                        </span>
+                      </h3>
+                      <p className="text-[11px] text-slate-400">
+                        Selecciona un submódulo para filtrar selecciones por mercado o props individuales
+                      </p>
+                    </div>
+                  </div>
+
+                  {nbaSubModule !== 'all' && (
+                    <button
+                      onClick={() => handleNbaSubModuleChange('all')}
+                      className="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 transition cursor-pointer"
+                    >
+                      ✕ Ver Todos ({opportunities.length})
+                    </button>
+                  )}
+                </div>
+
+                {/* Sub-Modules Buttons Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 gap-2">
+                  {[
+                    { id: 'all', label: 'Todos', icon: '🏀', sub: 'Slate Completo' },
+                    { id: 'ganador', label: 'Ganador', icon: '🏆', sub: 'Moneyline' },
+                    { id: 'spread', label: 'Spread', icon: '📊', sub: 'Hándicap' },
+                    { id: 'overs', label: 'Overs Totales', icon: '🎯', sub: 'Puntos Partido' },
+                    { id: 'overs_1h', label: '1ª Mitad', icon: '⏱️', sub: 'Overs 1H' },
+                    { id: 'overs_cuartos', label: 'Cuartos', icon: '⚡', sub: '1Q - 4Q' },
+                    { id: 'overs_equipo', label: 'Puntos Equipo', icon: '🏢', sub: 'Team Total' },
+                    { id: 'overs_2h', label: '2ª Mitad', icon: '⏳', sub: 'Overs 2H' },
+                    { id: 'props', label: 'Player Props', icon: '⭐', sub: 'Jugadores' },
+                  ].map((mod) => {
+                    const count = mod.id === 'all'
+                      ? opportunities.length
+                      : opportunities.filter((o: any) => o.subModule === mod.id).length;
+                    const isActive = nbaSubModule === mod.id;
+
+                    return (
+                      <button
+                        key={mod.id}
+                        onClick={() => handleNbaSubModuleChange(mod.id)}
+                        className={`flex flex-col items-center justify-center p-2.5 rounded-2xl text-center transition cursor-pointer border ${
+                          isActive
+                            ? 'bg-gradient-to-b from-orange-500 to-amber-600 text-slate-950 border-orange-300 font-black shadow-lg shadow-orange-500/25 scale-[1.02]'
+                            : 'bg-slate-950/80 hover:bg-slate-900 border-slate-800/80 hover:border-slate-700 text-slate-300 font-bold'
+                        }`}
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-base">{mod.icon}</span>
+                          <span className="text-xs truncate">{mod.label}</span>
+                        </div>
+                        <div className="flex items-center gap-1 mt-1">
+                          <span className={`text-[9px] font-semibold truncate ${isActive ? 'text-slate-950' : 'text-slate-400'}`}>
+                            {mod.sub}
+                          </span>
+                          <span className={`px-1.5 py-0.2 rounded-full text-[9px] font-black ${
+                            isActive ? 'bg-slate-950/30 text-slate-950' : 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                          }`}>
+                            {count}
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Sub-Filters when in Props module */}
+                {nbaSubModule === 'props' && (
+                  <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-orange-500/20">
+                    <span className="text-[11px] font-black text-orange-400 uppercase tracking-wider px-1">
+                      👤 Categoría de Prop:
+                    </span>
+                    {[
+                      { id: 'all', label: 'Todos los Props' },
+                      { id: 'points', label: '🏀 Puntos' },
+                      { id: 'threes', label: '🎯 Triples' },
+                      { id: 'assists', label: '🤝 Asistencias' },
+                      { id: 'rebounds', label: '🛡️ Rebotes' },
+                      { id: 'pra', label: '⚡ P+R+A' },
+                    ].map((pStat) => (
+                      <button
+                        key={pStat.id}
+                        onClick={() => setPropStatFilter(pStat.id as any)}
+                        className={`px-3 py-1 rounded-xl text-xs font-black transition cursor-pointer ${
+                          propStatFilter === pStat.id
+                            ? 'bg-amber-500 text-slate-950 shadow-sm font-black'
+                            : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                        }`}
+                      >
+                        {pStat.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Sub-Filters when in Quarters module */}
+                {nbaSubModule === 'overs_cuartos' && (
+                  <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-orange-500/20">
+                    <span className="text-[11px] font-black text-orange-400 uppercase tracking-wider px-1">
+                      ⚡ Periodo:
+                    </span>
+                    {[
+                      { id: 'all', label: 'Todos los Cuartos' },
+                      { id: '1Q', label: '1Q (Primer Cuarto)' },
+                      { id: '2Q', label: '2Q (Segundo Cuarto)' },
+                      { id: '3Q', label: '3Q (Tercer Cuarto)' },
+                      { id: '4Q', label: '4Q (Último Cuarto)' },
+                    ].map((qF) => (
+                      <button
+                        key={qF.id}
+                        onClick={() => setQuarterFilter(qF.id as any)}
+                        className={`px-3 py-1 rounded-xl text-xs font-black transition cursor-pointer ${
+                          quarterFilter === qF.id
+                            ? 'bg-amber-500 text-slate-950 shadow-sm font-black'
+                            : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                        }`}
+                      >
+                        {qF.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
             {/* Results Banner when finished / evaluated matches exist */}
             {(wonCount > 0 || lostCount > 0) && (
               <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-3.5 text-white shadow-md border border-slate-800">

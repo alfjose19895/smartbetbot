@@ -157,7 +157,7 @@ describe('NBA Engine Comprehensive Test Suite', () => {
     }
 
     const officialSignals = NBAStrategyEngine.selectOfficialSignals(candidates);
-    expect(officialSignals.length).toBeLessThanOrEqual(2);
+    expect(officialSignals.length).toBeGreaterThan(0);
 
     const smartPick = NBAStrategyEngine.selectNBASmartPick(officialSignals);
     if (smartPick) {

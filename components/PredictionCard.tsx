@@ -221,6 +221,12 @@ export function PredictionCard({
       prediction.vipBadge === "Weekend Exclusive"
   );
 
+  const isPlayerProp = Boolean(
+    prediction.market === "PLAYER PROPS" ||
+      (prediction as any).subModule === "props" ||
+      Boolean((prediction as any).playerProp)
+  );
+
   const destacadoMatch = getDestacadoRuleMatch(prediction);
   const isDestacado = Boolean(
     prediction.isDestacado ||
@@ -464,6 +470,12 @@ export function PredictionCard({
                   <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 shrink-0">
                     <span>👑</span>
                     <span>ÉLITE 80%+</span>
+                  </span>
+                )}
+                {isPlayerProp && (
+                  <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black bg-gradient-to-r from-orange-500 to-amber-500 text-slate-950 shadow-xs shrink-0 border border-orange-300">
+                    <span>⭐</span>
+                    <span>PROP JUGADOR</span>
                   </span>
                 )}
                 {isMcp && (

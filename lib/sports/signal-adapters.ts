@@ -102,6 +102,9 @@ export function multiSportSignalToOpportunity(s: MultiSportSignal): MarketOpport
     aiVetoReason: (s as any).aiVetoReason,
     goalieImpact: (s as any).goalieImpact,
     b2bImpact: (s as any).b2bImpact,
+    subModule: (s as any).subModule,
+    playerProp: (s as any).playerProp,
+    period: (s as any).period,
   } as unknown as MarketOpportunity;
 }
 
@@ -224,6 +227,9 @@ export function opportunityToMultiSportSignal(opp: MarketOpportunity): MultiSpor
   (signal as any).aiVetoReason = oppAny.aiVetoReason;
   (signal as any).goalieImpact = oppAny.goalieImpact;
   (signal as any).b2bImpact = oppAny.b2bImpact;
+  (signal as any).subModule = oppAny.subModule;
+  (signal as any).playerProp = oppAny.playerProp;
+  (signal as any).period = oppAny.period;
 
   return signal;
 }

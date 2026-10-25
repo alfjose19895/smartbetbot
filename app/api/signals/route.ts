@@ -37,6 +37,49 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // 1. NBA SPORT SIGNALS (100% passive from immutable daily snapshot across 8 sub-modules)
+    if (sport === "nba") {
+      const { NBASyncEngine } = await import("@/lib/sports/nba/nba-sync");
+      const dateParam = searchParams.get("date") || undefined;
+      const nbaData = await NBASyncEngine.getTodayNBASignals(dateParam, forceRefresh);
+      let signals = (nbaData.signals || []).map(multiSportSignalToOpportunity);
+
+      const moduleFilter = searchParams.get("module");
+      if (moduleFilter && moduleFilter !== "all") {
+        signals = signals.filter((p: any) => p.subModule === moduleFilter);
+      }
+      if (leagueFilter) {
+        signals = signals.filter((p) =>
+          (p.league || "").toLowerCase().includes(leagueFilter.toLowerCase())
+        );
+      }
+      if (marketFilter) {
+        signals = signals.filter((p) =>
+          matchesMarketFilter(marketFilter, p.market, (p as any).selection)
+        );
+      }
+      if (minProb > 0) {
+        signals = signals.filter((p) => p.probability >= minProb);
+      }
+
+      return NextResponse.json(
+        {
+          success: true,
+          count: signals.length,
+          signals,
+          gamesCount: nbaData.gamesCount,
+          smartPick: nbaData.smartPick ? multiSportSignalToOpportunity(nbaData.smartPick) : null,
+        },
+        {
+          headers: {
+            "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+            "CDN-Cache-Control": "no-store",
+            "Vercel-CDN-Cache-Control": "no-store",
+          },
+        }
+      );
+    }
+
     // 1. NHL SPORT SIGNALS (100% passive from immutable daily snapshot)
     if (sport === "nhl") {
       const dateParam = searchParams.get("date") || undefined;

@@ -56,6 +56,17 @@ export async function GET(request: NextRequest) {
         }
       }
 
+      // When running for NBA, generate confirmed daily snapshot across 8 sub-modules
+      if (sport === 'nba') {
+        try {
+          const { NBASyncEngine } = await import('@/lib/sports/nba/nba-sync');
+          const nbaData = await NBASyncEngine.getTodayNBASignals(todayIso, true);
+          signalsGenerated = nbaData.signals?.length || 0;
+        } catch (nbaErr) {
+          console.warn('[sync-multisport] NBA signals generation error:', nbaErr);
+        }
+      }
+
       results[sport] = {
         enabled: true,
         synced: schedule.length,
