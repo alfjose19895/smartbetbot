@@ -47,11 +47,12 @@
     "sport": "btts_vip",
     "isBttsVip": true,
     "vipBadge": "Ambos Anotan VIP",
-    "actualScore": "0-1",
+    "actualScore": "0 - 1 (No)",
     "profit": -1,
     "result": "LOST",
     "isNewlyDiscovered": false,
-    "addedAt": "2026-10-25T02:16:02.950Z"
+    "addedAt": "2026-10-25T02:16:02.950Z",
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1494684,
@@ -101,11 +102,12 @@
     "sport": "btts_vip",
     "isBttsVip": true,
     "vipBadge": "Ambos Anotan VIP",
-    "actualScore": "0-1",
+    "actualScore": "0 - 1 (No)",
     "profit": -1,
     "result": "LOST",
     "isNewlyDiscovered": false,
-    "addedAt": "2026-10-25T02:16:03.101Z"
+    "addedAt": "2026-10-25T02:16:03.101Z",
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1490560,
@@ -155,11 +157,12 @@
     "sport": "btts_vip",
     "isBttsVip": true,
     "vipBadge": "Ambos Anotan VIP",
-    "actualScore": "0-2",
+    "actualScore": "0 - 2 (No)",
     "profit": -1,
     "result": "LOST",
     "isNewlyDiscovered": false,
-    "addedAt": "2026-10-25T02:16:03.626Z"
+    "addedAt": "2026-10-25T02:16:03.626Z",
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1490559,
@@ -209,11 +212,12 @@
     "sport": "btts_vip",
     "isBttsVip": true,
     "vipBadge": "Ambos Anotan VIP",
-    "actualScore": "2-2",
+    "actualScore": "2 - 2 (Ambos Sí)",
     "profit": 0.36,
     "result": "WON",
     "isNewlyDiscovered": false,
-    "addedAt": "2026-10-25T02:16:03.599Z"
+    "addedAt": "2026-10-25T02:16:03.599Z",
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1490564,
@@ -249,7 +253,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 99,
     "explanation": "Tanto FC Dallas como San Jose Earthquakes han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
-    "status": "in_play",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -263,9 +267,12 @@
     "sport": "btts_vip",
     "isBttsVip": true,
     "vipBadge": "Ambos Anotan VIP",
-    "actualScore": "0-0",
     "isNewlyDiscovered": false,
-    "addedAt": "2026-10-25T02:16:03.768Z"
+    "addedAt": "2026-10-25T02:16:03.768Z",
+    "matchTiming": "finished",
+    "actualScore": "3 - 0 (No)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1490563,
@@ -301,7 +308,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 99,
     "explanation": "Eficacia bilateral en ataque: Houston Dynamo anota con regularidad en su estadio (1.8 xG) pero concede ocasiones (0 goles en contra), mientras que Minnesota United FC cuenta con pegada foránea (1.2 xG). El patrón estadístico favorece la anotación mutua.",
-    "status": "in_play",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -315,9 +322,12 @@
     "sport": "btts_vip",
     "isBttsVip": true,
     "vipBadge": "Ambos Anotan VIP",
-    "actualScore": "0-0",
     "isNewlyDiscovered": false,
-    "addedAt": "2026-10-25T02:16:03.738Z"
+    "addedAt": "2026-10-25T02:16:03.738Z",
+    "matchTiming": "finished",
+    "actualScore": "0 - 0 (No)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1490568,
@@ -369,7 +379,10 @@
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T02:16:03.907Z",
-    "matchTiming": "prematch"
+    "matchTiming": "prematch",
+    "currentScore": "0 - 0",
+    "livePeriod": "1H",
+    "liveMinute": "4"
   },
   {
     "fixtureId": 1490567,
@@ -405,7 +418,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 99,
     "explanation": "Tanto Real Salt Lake como St. Louis City han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
-    "status": "in_play",
+    "status": "pending",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -419,8 +432,11 @@
     "sport": "btts_vip",
     "isBttsVip": true,
     "vipBadge": "Ambos Anotan VIP",
-    "actualScore": "0-0",
     "isNewlyDiscovered": false,
-    "addedAt": "2026-10-25T02:16:03.879Z"
+    "addedAt": "2026-10-25T02:16:03.879Z",
+    "currentScore": "1 - 0",
+    "matchTiming": "prematch",
+    "livePeriod": "HT",
+    "liveMinute": "45"
   }
 ]

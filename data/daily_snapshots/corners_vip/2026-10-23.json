@@ -10,7 +10,7 @@
     "league": "Serie A",
     "market": "Córners",
     "source": "corners_vip",
-    "status": "pending",
+    "status": "lost",
     "addedAt": "2026-10-23T10:36:04.419Z",
     "awayElo": 1637,
     "country": "Italia",
@@ -42,7 +42,7 @@
     "smartScore": 99,
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 9.9 córners totales.",
     "isDestacado": false,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 62,
     "isCornersVip": true,
     "bookmakerOdds": 1.83,
@@ -151,7 +151,10 @@
       "expectedTotalCorners": 9.9
     },
     "isNewlyDiscovered": true,
-    "impliedProbability": 54.6
+    "impliedProbability": 54.6,
+    "actualScore": "3 - 4 (7 Córners)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [],
@@ -164,7 +167,7 @@
     "league": "Premier League",
     "market": "Córners",
     "source": "corners_vip",
-    "status": "pending",
+    "status": "lost",
     "addedAt": "2026-10-23T10:36:05.386Z",
     "awayElo": 1640,
     "country": "Inglaterra",
@@ -196,7 +199,7 @@
     "smartScore": 99,
     "explanation": "Volumen constante por las bandas: El cruce táctico entre Ipswich (5.8 córners de media en casa) y Nottingham Forest (4.6 foráneos) proyecta 10.5 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
     "isDestacado": false,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 66.7,
     "isCornersVip": true,
     "bookmakerOdds": 1.6,
@@ -306,7 +309,10 @@
       "expectedTotalCorners": 10.46
     },
     "isNewlyDiscovered": true,
-    "impliedProbability": 62.5
+    "impliedProbability": 62.5,
+    "actualScore": "0 - 5 (5 Córners)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [],
@@ -319,7 +325,7 @@
     "league": "Liga Profesional Argentina",
     "market": "Córners",
     "source": "corners_vip",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-23T10:36:06.163Z",
     "awayElo": 1588,
     "country": "Argentina",
@@ -351,7 +357,7 @@
     "smartScore": 99,
     "explanation": "Patrón de repliegue y rechaces: Gimnasia M. sostiene una alta cadencia de llegadas al último tercio generando tiros de esquina constantes, mientras que Platense concede más de 5.2 córners en promedio cuando juega de visitante.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 75.7,
     "isCornersVip": true,
     "bookmakerOdds": 1.4,
@@ -457,6 +463,9 @@
       "expectedTotalCorners": 10.36
     },
     "isNewlyDiscovered": true,
-    "impliedProbability": 71.4
+    "impliedProbability": 71.4,
+    "actualScore": "2 - 9 (11 Córners)",
+    "result": "WON",
+    "profit": 0.4
   }
 ]

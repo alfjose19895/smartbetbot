@@ -11,7 +11,7 @@
     "league": "Serie A",
     "market": "Córners",
     "source": "corners_vip",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-18T10:07:46.484Z",
     "awayElo": 1518,
     "country": "Italia",
@@ -40,14 +40,11 @@
     "homeTeamId": 502,
     "leagueLogo": "https://media.api-sports.io/football/leagues/135.png",
     "leagueTier": 1,
-    "liveMinute": "70",
-    "livePeriod": "2H",
     "smartScore": 99,
     "explanation": "Patrón de repliegue y rechaces: Fiorentina sostiene una alta cadencia de llegadas al último tercio generando tiros de esquina constantes, mientras que Como concede más de 5.2 córners en promedio cuando juega de visitante.",
     "isDestacado": false,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 63,
-    "currentScore": "1 - 3",
     "isCornersVip": true,
     "bookmakerOdds": 1.8,
     "destacadoRule": "Alta de Córners (≥ 70%)",
@@ -154,7 +151,10 @@
       "expectedTotalCorners": 10.02
     },
     "isNewlyDiscovered": true,
-    "impliedProbability": 55.6
+    "impliedProbability": 55.6,
+    "actualScore": "6 - 4 (10 Córners)",
+    "result": "WON",
+    "profit": 0.8
   },
   {
     "h2h": [],
@@ -168,7 +168,7 @@
     "league": "Premier League",
     "market": "Córners",
     "source": "corners_vip",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-18T10:07:50.258Z",
     "awayElo": 1990,
     "country": "Inglaterra",
@@ -200,7 +200,7 @@
     "smartScore": 99,
     "explanation": "Volumen constante por las bandas: El cruce táctico entre Nottingham Forest (5.3 córners de media en casa) y Arsenal (4.9 foráneos) proyecta 10.2 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
     "isDestacado": false,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 63.9,
     "isCornersVip": true,
     "bookmakerOdds": 1.69,
@@ -311,7 +311,10 @@
       "expectedTotalCorners": 10.18
     },
     "isNewlyDiscovered": true,
-    "impliedProbability": 59.2
+    "impliedProbability": 59.2,
+    "actualScore": "8 - 6 (14 Córners)",
+    "result": "WON",
+    "profit": 0.69
   },
   {
     "h2h": [],
@@ -324,7 +327,7 @@
     "league": "Serie A",
     "market": "Córners",
     "source": "corners_vip",
-    "status": "pending",
+    "status": "lost",
     "addedAt": "2026-10-18T10:07:50.640Z",
     "awayElo": 1880,
     "country": "Italia",
@@ -356,7 +359,7 @@
     "smartScore": 99,
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 9.9 córners totales.",
     "isDestacado": false,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 62,
     "isCornersVip": true,
     "bookmakerOdds": 1.83,
@@ -467,7 +470,10 @@
       "expectedTotalCorners": 9.9
     },
     "isNewlyDiscovered": true,
-    "impliedProbability": 54.6
+    "impliedProbability": 54.6,
+    "actualScore": "2 - 2 (4 Córners)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [],
@@ -480,7 +486,7 @@
     "league": "Liga Profesional Argentina",
     "market": "Córners",
     "source": "corners_vip",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-18T10:07:51.779Z",
     "awayElo": 1640,
     "country": "Argentina",
@@ -512,7 +518,7 @@
     "smartScore": 99,
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.5 córners totales.",
     "isDestacado": false,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 67.4,
     "isCornersVip": true,
     "bookmakerOdds": 1.8,
@@ -618,7 +624,10 @@
       "expectedTotalCorners": 10.5
     },
     "isNewlyDiscovered": true,
-    "impliedProbability": 55.6
+    "impliedProbability": 55.6,
+    "actualScore": "8 - 4 (12 Córners)",
+    "result": "WON",
+    "profit": 0.8
   },
   {
     "h2h": [],
@@ -631,7 +640,7 @@
     "league": "Liga Profesional Argentina",
     "market": "Córners",
     "source": "corners_vip",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-18T10:07:51.841Z",
     "awayElo": 1880,
     "country": "Argentina",
@@ -663,7 +672,7 @@
     "smartScore": 99,
     "explanation": "Volumen constante por las bandas: El cruce táctico entre Deportivo Moron (5.4 córners de media en casa) y Atletico Mitre (4.8 foráneos) proyecta 10.3 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 83.3,
     "isCornersVip": true,
     "bookmakerOdds": 1.29,
@@ -773,7 +782,10 @@
       "expectedTotalCorners": 10.25
     },
     "isNewlyDiscovered": true,
-    "impliedProbability": 77.5
+    "impliedProbability": 77.5,
+    "actualScore": "5 - 5 (10 Córners)",
+    "result": "WON",
+    "profit": 0.29
   },
   {
     "h2h": [],
@@ -786,7 +798,7 @@
     "league": "Liga Profesional Argentina",
     "market": "Córners",
     "source": "corners_vip",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-18T10:07:52.296Z",
     "awayElo": 1486,
     "country": "Argentina",
@@ -818,7 +830,7 @@
     "smartScore": 99,
     "explanation": "Volumen constante por las bandas: El cruce táctico entre Los Andes (6.2 córners de media en casa) y All Boys (4.4 foráneos) proyecta 10.6 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
     "isDestacado": false,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 68,
     "isCornersVip": true,
     "bookmakerOdds": 1.83,
@@ -924,7 +936,10 @@
       "expectedTotalCorners": 10.61
     },
     "isNewlyDiscovered": true,
-    "impliedProbability": 54.6
+    "impliedProbability": 54.6,
+    "actualScore": "6 - 5 (11 Córners)",
+    "result": "WON",
+    "profit": 0.83
   },
   {
     "h2h": [],
@@ -938,7 +953,7 @@
     "league": "Primera A",
     "market": "Córners",
     "source": "corners_vip",
-    "status": "pending",
+    "status": "lost",
     "addedAt": "2026-10-18T10:07:53.074Z",
     "awayElo": 1524,
     "country": "Colombia",
@@ -970,7 +985,7 @@
     "smartScore": 99,
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.6 córners totales.",
     "isDestacado": false,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 68.3,
     "isCornersVip": true,
     "bookmakerOdds": 1.61,
@@ -1078,7 +1093,10 @@
       "expectedTotalCorners": 10.61
     },
     "isNewlyDiscovered": true,
-    "impliedProbability": 62.1
+    "impliedProbability": 62.1,
+    "actualScore": "4 - 3 (7 Córners)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [],
@@ -1091,7 +1109,7 @@
     "league": "Liga Profesional Argentina",
     "market": "Córners",
     "source": "corners_vip",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-18T10:09:02.364Z",
     "awayElo": 1647,
     "country": "Argentina",
@@ -1123,7 +1141,7 @@
     "smartScore": 99,
     "explanation": "Patrón de repliegue y rechaces: Club Atlético Güemes sostiene una alta cadencia de llegadas al último tercio generando tiros de esquina constantes, mientras que Almagro concede más de 5.2 córners en promedio cuando juega de visitante.",
     "isDestacado": false,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 69.6,
     "isCornersVip": true,
     "bookmakerOdds": 1.8,
@@ -1227,7 +1245,10 @@
       "expectedTotalCorners": 10.76
     },
     "isNewlyDiscovered": true,
-    "impliedProbability": 55.6
+    "impliedProbability": 55.6,
+    "actualScore": "7 - 4 (11 Córners)",
+    "result": "WON",
+    "profit": 0.8
   },
   {
     "h2h": [],
@@ -1240,7 +1261,7 @@
     "league": "Primera A",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-18T10:07:53.825Z",
     "awayElo": 1552,
     "country": "Colombia",
@@ -1272,7 +1293,7 @@
     "smartScore": 99,
     "explanation": "Volumen constante por las bandas: El cruce táctico entre Bucaramanga (5.8 córners de media en casa) y America de Cali (4.6 foráneos) proyecta 10.4 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 75.9,
     "isCornersVip": true,
     "bookmakerOdds": 1.42,
@@ -1378,7 +1399,10 @@
       "expectedTotalCorners": 10.45
     },
     "isNewlyDiscovered": true,
-    "impliedProbability": 70.4
+    "impliedProbability": 70.4,
+    "actualScore": "2 - 8 (10 Córners)",
+    "result": "WON",
+    "profit": 0.42
   },
   {
     "h2h": [],
@@ -1391,7 +1415,7 @@
     "league": "Liga Profesional Argentina",
     "market": "Córners",
     "source": "corners_vip",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-18T10:09:02.560Z",
     "awayElo": 1647,
     "country": "Argentina",
@@ -1423,7 +1447,7 @@
     "smartScore": 99,
     "explanation": "Volumen constante por las bandas: El cruce táctico entre Estudiantes L.P. (5.5 córners de media en casa) y San Lorenzo (4.8 foráneos) proyecta 10.3 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 75.5,
     "isCornersVip": true,
     "bookmakerOdds": 1.51,
@@ -1529,7 +1553,10 @@
       "expectedTotalCorners": 10.29
     },
     "isNewlyDiscovered": true,
-    "impliedProbability": 66.2
+    "impliedProbability": 66.2,
+    "actualScore": "5 - 5 (10 Córners)",
+    "result": "WON",
+    "profit": 0.51
   },
   {
     "h2h": [],
@@ -1542,7 +1569,7 @@
     "league": "Liga Profesional Argentina",
     "market": "Córners",
     "source": "corners_vip",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-18T10:07:53.698Z",
     "awayElo": 1531,
     "country": "Argentina",
@@ -1574,7 +1601,7 @@
     "smartScore": 99,
     "explanation": "Patrón de repliegue y rechaces: San Martin S.J. sostiene una alta cadencia de llegadas al último tercio generando tiros de esquina constantes, mientras que Temperley concede más de 5.2 córners en promedio cuando juega de visitante.",
     "isDestacado": false,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 69,
     "isCornersVip": true,
     "bookmakerOdds": 1.83,
@@ -1680,7 +1707,10 @@
       "expectedTotalCorners": 10.66
     },
     "isNewlyDiscovered": true,
-    "impliedProbability": 54.6
+    "impliedProbability": 54.6,
+    "actualScore": "6 - 5 (11 Córners)",
+    "result": "WON",
+    "profit": 0.83
   },
   {
     "h2h": [],
@@ -1693,7 +1723,7 @@
     "league": "Liga Profesional Argentina",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-18T10:07:54.198Z",
     "awayElo": 1634,
     "country": "Argentina",
@@ -1725,7 +1755,7 @@
     "smartScore": 99,
     "explanation": "Patrón de repliegue y rechaces: Belgrano Cordoba sostiene una alta cadencia de llegadas al último tercio generando tiros de esquina constantes, mientras que River Plate concede más de 5.2 córners en promedio cuando juega de visitante.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 75.5,
     "isCornersVip": true,
     "bookmakerOdds": 1.53,
@@ -1831,6 +1861,9 @@
       "expectedTotalCorners": 10.36
     },
     "isNewlyDiscovered": true,
-    "impliedProbability": 65.4
+    "impliedProbability": 65.4,
+    "actualScore": "4 - 7 (11 Córners)",
+    "result": "WON",
+    "profit": 0.53
   }
 ]

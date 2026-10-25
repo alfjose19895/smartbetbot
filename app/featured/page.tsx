@@ -78,7 +78,10 @@ export default function FeaturedPicksPage() {
             </div>
             <VipDateFilter
               selectedDate={selectedDate}
-              onDateChange={(date) => setSelectedDate(date)}
+              onDateChange={(date) => {
+                setSelectedDate(date);
+                fetchSignals(date);
+              }}
               loading={loading}
             />
           </div>

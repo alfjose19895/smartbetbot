@@ -10,7 +10,7 @@
     "league": "K League 1",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1590,
     "country": "Corea del Sur",
     "homeElo": 1600,
@@ -40,7 +40,7 @@
     "smartScore": 99,
     "explanation": "Volumen constante por las bandas: El cruce táctico entre Gangwon FC (5.8 córners de media en casa) y Incheon United (4.6 foráneos) proyecta 10.4 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 75.8,
     "bookmakerOdds": 1.62,
     "destacadoRule": "Alta de Córners (≥ 70%)",
@@ -147,7 +147,10 @@
       "recommendedLine": 7.5,
       "saferLine": 6.5
     },
-    "impliedProbability": 61.7
+    "impliedProbability": 61.7,
+    "actualScore": "7 - 1 (8 Córners)",
+    "result": "WON",
+    "profit": 0.62
   },
   {
     "h2h": [],
@@ -161,7 +164,7 @@
     "league": "La Liga",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "addedAt": "2026-10-18T11:35:17.353Z",
     "awayElo": 1596,
     "country": "España",
@@ -189,18 +192,18 @@
     "homeTeamId": 727,
     "leagueLogo": "https://media.api-sports.io/football/leagues/140.png",
     "leagueTier": 1,
-    "liveMinute": "16",
-    "livePeriod": "1H",
     "smartScore": 99,
     "explanation": "Eficacia bilateral en ataque: Osasuna anota con regularidad en su estadio (1.8 xG) pero concede ocasiones (0 goles en contra), mientras que Racing Santander cuenta con pegada foránea (0.9 xG). El patrón estadístico favorece la anotación mutua.",
     "isDestacado": false,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 55.7,
-    "currentScore": "1 - 0",
     "bookmakerOdds": 1.57,
     "expectedValue": -12.5,
     "isNewlyDiscovered": true,
-    "impliedProbability": 63.7
+    "impliedProbability": 63.7,
+    "actualScore": "2 - 0 (No)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [],
@@ -213,7 +216,7 @@
     "league": "Premier League",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1660,
     "country": "Inglaterra",
     "homeElo": 1740,
@@ -243,12 +246,15 @@
     "smartScore": 99,
     "explanation": "Brighton impone una marcada solvencia como anfitrión (0 triunfos en sus últimos 5 compromisos) y promedia 2.1 xG en casa. Su dominio territorial y solidez defensiva ante un Crystal Palace que ha cedido 0 derrotas fuera fundamentan la ventaja local.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 63,
     "bookmakerOdds": 1.5,
     "destacadoRule": "Ganador Local (≥ 58%)",
     "expectedValue": -5.5,
-    "impliedProbability": 66.7
+    "impliedProbability": 66.7,
+    "actualScore": "5 - 0",
+    "result": "WON",
+    "profit": 0.5
   },
   {
     "h2h": [],
@@ -262,7 +268,7 @@
     "league": "Premier League",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "addedAt": "2026-10-18T11:35:17.353Z",
     "awayElo": 1620,
     "country": "Inglaterra",
@@ -293,12 +299,15 @@
     "smartScore": 99,
     "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
     "isDestacado": false,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 54,
     "bookmakerOdds": 1.75,
     "expectedValue": -5.6,
     "isNewlyDiscovered": true,
-    "impliedProbability": 57.1
+    "impliedProbability": 57.1,
+    "actualScore": "2 - 0 (No)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [],
@@ -311,7 +320,7 @@
     "league": "Bundesliga",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1584,
     "country": "Alemania",
     "homeElo": 1950,
@@ -341,12 +350,15 @@
     "smartScore": 99,
     "explanation": "Rendimiento muy fiable de Bayer Leverkusen en su feudo (0 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante SC Freiburg inclina con claridad la balanza estadística hacia el triunfo local.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 67.9,
     "bookmakerOdds": 1.7,
     "destacadoRule": "Ganador Local (≥ 58%)",
     "expectedValue": 15.4,
-    "impliedProbability": 58.8
+    "impliedProbability": 58.8,
+    "actualScore": "2 - 1",
+    "result": "WON",
+    "profit": 0.7
   },
   {
     "h2h": [],
@@ -360,7 +372,7 @@
     "league": "Eredivisie",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-18T11:35:17.353Z",
     "awayElo": 1780,
     "country": "Países Bajos",
@@ -391,12 +403,15 @@
     "smartScore": 99,
     "explanation": "Propuesta vertical y transiciones dinámicas: Tanto Groningen como Ajax promedian más de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la línea de 2.5 goles.",
     "isDestacado": false,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 71.7,
     "bookmakerOdds": 1.36,
     "expectedValue": -2.5,
     "isNewlyDiscovered": true,
-    "impliedProbability": 73.5
+    "impliedProbability": 73.5,
+    "actualScore": "2 - 5 (7 Goles)",
+    "result": "WON",
+    "profit": 0.36
   },
   {
     "h2h": [],
@@ -410,7 +425,7 @@
     "league": "Ligue 1",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-18T11:35:17.353Z",
     "awayElo": 1559,
     "country": "Francia",
@@ -441,12 +456,15 @@
     "smartScore": 99,
     "explanation": "Tanto Paris FC como Rennes han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
     "isDestacado": false,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 56.5,
     "bookmakerOdds": 1.57,
     "expectedValue": -11.3,
     "isNewlyDiscovered": true,
-    "impliedProbability": 63.7
+    "impliedProbability": 63.7,
+    "actualScore": "4 - 3 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.57
   },
   {
     "h2h": [],
@@ -459,7 +477,7 @@
     "league": "Bundesliga",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1488,
     "country": "Alemania",
     "homeElo": 1485,
@@ -489,12 +507,15 @@
     "smartScore": 99,
     "explanation": "Tanto Borussia Mönchengladbach como 1899 Hoffenheim han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 66.2,
     "bookmakerOdds": 1.36,
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "expectedValue": -10,
-    "impliedProbability": 73.5
+    "impliedProbability": 73.5,
+    "actualScore": "1 - 2 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.36
   },
   {
     "h2h": [],
@@ -508,7 +529,7 @@
     "league": "La Liga",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-18T11:35:17.353Z",
     "awayElo": 1740,
     "country": "España",
@@ -539,12 +560,15 @@
     "smartScore": 99,
     "explanation": "Propuesta vertical y transiciones dinámicas: Tanto Malaga como Real Sociedad promedian más de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la línea de 2.5 goles.",
     "isDestacado": false,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 57.3,
     "bookmakerOdds": 1.67,
     "expectedValue": -4.3,
     "isNewlyDiscovered": true,
-    "impliedProbability": 59.9
+    "impliedProbability": 59.9,
+    "actualScore": "2 - 5 (7 Goles)",
+    "result": "WON",
+    "profit": 0.67
   },
   {
     "h2h": [],
@@ -557,7 +581,7 @@
     "league": "Eredivisie",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1495,
     "country": "Países Bajos",
     "homeElo": 1571,
@@ -587,12 +611,15 @@
     "smartScore": 99,
     "explanation": "Twente impone una marcada solvencia como anfitrión (0 triunfos en sus últimos 5 compromisos) y promedia 2.6 xG en casa. Su dominio territorial y solidez defensiva ante un Utrecht que ha cedido 0 derrotas fuera fundamentan la ventaja local.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 70.9,
     "bookmakerOdds": 1.36,
     "destacadoRule": "Ganador Local (≥ 58%)",
     "expectedValue": -3.6,
-    "impliedProbability": 73.5
+    "impliedProbability": 73.5,
+    "actualScore": "1 - 2",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [],
@@ -605,7 +632,7 @@
     "league": "Eredivisie",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1538,
     "country": "Países Bajos",
     "homeElo": 1639,
@@ -635,12 +662,15 @@
     "smartScore": 99,
     "explanation": "Rendimiento muy fiable de NEC Nijmegen en su feudo (0 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Fortuna Sittard inclina con claridad la balanza estadística hacia el triunfo local.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 64.3,
     "bookmakerOdds": 1.65,
     "destacadoRule": "Ganador Local (≥ 58%)",
     "expectedValue": 6.1,
-    "impliedProbability": 60.6
+    "impliedProbability": 60.6,
+    "actualScore": "2 - 2",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [],
@@ -653,7 +683,7 @@
     "league": "Saudi Pro League",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1571,
     "country": "Arabia Saudita",
     "homeElo": 1646,
@@ -683,12 +713,15 @@
     "smartScore": 99,
     "explanation": "Diferencial cualitativo a favor de Al-Fateh (+75 puntos Elo). Su balance de 2.0 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Al Khaleej Saihat.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 59.6,
     "bookmakerOdds": 1.66,
     "destacadoRule": "Ganador Local (≥ 58%)",
     "expectedValue": -1.1,
-    "impliedProbability": 60.2
+    "impliedProbability": 60.2,
+    "actualScore": "2 - 3",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [],
@@ -701,7 +734,7 @@
     "league": "Ligue 1",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "awayElo": 1503,
     "country": "Francia",
     "homeElo": 1760,
@@ -731,12 +764,15 @@
     "smartScore": 99,
     "explanation": "Diferencial cualitativo a favor de Lyon (+257 puntos Elo). Su balance de 3.4 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Nice.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 68.6,
     "bookmakerOdds": 1.67,
     "destacadoRule": "Ganador Local (≥ 58%)",
     "expectedValue": 14.5,
-    "impliedProbability": 59.9
+    "impliedProbability": 59.9,
+    "actualScore": "2 - 1",
+    "result": "WON",
+    "profit": 0.67
   },
   {
     "h2h": [],
@@ -749,7 +785,7 @@
     "league": "Serie A",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "awayElo": 1770,
     "country": "Italia",
     "homeElo": 1870,
@@ -779,12 +815,15 @@
     "smartScore": 99,
     "explanation": "Solidez posicional y eficacia en área propia: Juventus concede menos de 0.9 xG de local, mientras que Lazio muestra dificultades para generar peligro constante a domicilio (0.7 xG foráneo).",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 62,
     "bookmakerOdds": 1.67,
     "destacadoRule": "Ganador Local (≥ 58%)",
     "expectedValue": 3.5,
-    "impliedProbability": 59.9
+    "impliedProbability": 59.9,
+    "actualScore": "0 - 3",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1549509,
@@ -820,7 +859,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 99,
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.6 córners totales.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -930,7 +969,11 @@
       "saferLine": 7.5,
       "valueLine": 10.5
     },
-    "sport": "football"
+    "sport": "football",
+    "actualScore": "9 - 5 (14 Córners)",
+    "result": "WON",
+    "profit": 0.38,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1549824,
@@ -966,7 +1009,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 99,
     "explanation": "Volumen constante por las bandas: El cruce táctico entre Bucaramanga (5.8 córners de media en casa) y America de Cali (4.6 foráneos) proyecta 10.4 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -1076,7 +1119,11 @@
       "saferLine": 7.5,
       "valueLine": 10.5
     },
-    "sport": "football"
+    "sport": "football",
+    "actualScore": "2 - 8 (10 Córners)",
+    "result": "WON",
+    "profit": 0.42,
+    "matchTiming": "finished"
   },
   {
     "h2h": [],
@@ -1090,7 +1137,7 @@
     "league": "Liga Pro",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "addedAt": "2026-10-18T11:35:17.353Z",
     "awayElo": 1550,
     "country": "Ecuador",
@@ -1121,12 +1168,15 @@
     "smartScore": 99,
     "explanation": "Barcelona SC ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Universidad Catolica acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 3.8 tantos totales con alta actividad en ambas áreas.",
     "isDestacado": false,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 71.5,
     "bookmakerOdds": 1.42,
     "expectedValue": 1.5,
     "isNewlyDiscovered": true,
-    "impliedProbability": 70.4
+    "impliedProbability": 70.4,
+    "actualScore": "1 - 1 (2 Goles)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [],
@@ -1140,7 +1190,7 @@
     "league": "Brasileirão Série A",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "addedAt": "2026-10-18T11:35:17.353Z",
     "awayElo": 1569,
     "country": "Brasil",
@@ -1171,12 +1221,15 @@
     "smartScore": 99,
     "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
     "isDestacado": false,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 56.5,
     "bookmakerOdds": 1.53,
     "expectedValue": -13.5,
     "isNewlyDiscovered": true,
-    "impliedProbability": 65.4
+    "impliedProbability": 65.4,
+    "actualScore": "0 - 3 (No)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1493184,
@@ -1212,7 +1265,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 99,
     "explanation": "Patrón de repliegue y rechaces: Belgrano Cordoba sostiene una alta cadencia de llegadas al último tercio generando tiros de esquina constantes, mientras que River Plate concede más de 5.2 córners en promedio cuando juega de visitante.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -1322,6 +1375,10 @@
       "saferLine": 6.5,
       "valueLine": 10.5
     },
-    "sport": "football"
+    "sport": "football",
+    "actualScore": "4 - 7 (11 Córners)",
+    "result": "WON",
+    "profit": 0.53,
+    "matchTiming": "finished"
   }
 ]

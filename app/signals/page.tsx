@@ -264,11 +264,11 @@ export default function SignalsPage() {
   const todayDateStr = getEcuadorDateString(Date.now());
   const activeSignals = useMemo(() => {
     const list = predictions.filter((p) => {
-      const pDate = p.kickoff ? getEcuadorDateString(p.kickoff) : todayDateStr;
-      return pDate === todayDateStr;
+      const pDate = p.kickoff ? getEcuadorDateString(p.kickoff) : selectedDate;
+      return pDate === selectedDate;
     });
     return sortByKickoff(list, "asc");
-  }, [predictions, todayDateStr]);
+  }, [predictions, selectedDate]);
 
   // Dropdown Options Generation
   const leagueDropdownOptions: DropdownOption[] = useMemo(() => {
@@ -468,7 +468,10 @@ export default function SignalsPage() {
             </div>
             <VipDateFilter
               selectedDate={selectedDate}
-              onDateChange={(date) => setSelectedDate(date)}
+              onDateChange={(date) => {
+                setSelectedDate(date);
+                loadSignals(true, date);
+              }}
               loading={loading}
             />
           </div>
