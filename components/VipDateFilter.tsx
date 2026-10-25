@@ -43,7 +43,7 @@ export function VipDateFilter({
       <div className="flex items-center gap-1">
         <button
           type="button"
-          disabled={loading}
+          /* non-blocking */
           onClick={() => onDateChange(yesterday)}
           className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer disabled:opacity-50 ${
             isYesterday
@@ -57,7 +57,7 @@ export function VipDateFilter({
 
         <button
           type="button"
-          disabled={loading}
+          /* non-blocking */
           onClick={() => onDateChange(today)}
           className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer disabled:opacity-50 ${
             isToday
@@ -71,7 +71,7 @@ export function VipDateFilter({
 
         <button
           type="button"
-          disabled={loading}
+          /* non-blocking */
           onClick={() => onDateChange(tomorrow)}
           className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer disabled:opacity-50 ${
             isTomorrow
@@ -93,7 +93,7 @@ export function VipDateFilter({
         <input
           id="vip-date-picker"
           type="date"
-          disabled={loading}
+          /* non-blocking */
           value={selectedDate}
           onChange={(e) => {
             if (e.target.value) {
@@ -107,7 +107,7 @@ export function VipDateFilter({
       {!isToday && (
         <button
           type="button"
-          disabled={loading}
+          /* non-blocking */
           onClick={() => onDateChange(today)}
           className="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 underline pl-1 cursor-pointer"
         >

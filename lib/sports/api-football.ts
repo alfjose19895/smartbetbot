@@ -317,6 +317,8 @@ class ApiFootballClient {
   private apiKey: string;
   private baseUrl: string = "https://v3.football.api-sports.io";
   private defaultTimezone: string = "America/Guayaquil";
+  private oddsByDateCache: Map<string, { timestamp: number; data: ApiFootballOddsItem[] }> = new Map();
+  private fixturesByDateCache: Map<string, { timestamp: number; data: ApiFootballFixtureItem[] }> = new Map();
 
   constructor() {
     this.apiKey =
@@ -421,7 +423,16 @@ class ApiFootballClient {
   }
 
   async getFixturesByDate(dateStr: string, timezone: string = this.defaultTimezone): Promise<ApiFootballFixtureItem[]> {
-    return this.request<ApiFootballFixtureItem>("fixtures", { date: dateStr, timezone });
+    const cacheKey = `${dateStr}::${timezone}`;
+    const cached = this.fixturesByDateCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < 15 * 60 * 1000) {
+      return cached.data;
+    }
+    const res = await this.request<ApiFootballFixtureItem>("fixtures", { date: dateStr, timezone });
+    if (Array.isArray(res) && res.length > 0) {
+      this.fixturesByDateCache.set(cacheKey, { timestamp: Date.now(), data: res });
+    }
+    return res;
   }
 
   async getFinishedFixturesByDate(dateStr: string, timezone: string = this.defaultTimezone): Promise<ApiFootballFixtureItem[]> {
@@ -638,23 +649,46 @@ class ApiFootballClient {
   }
 
   async getOddsByDate(dateStr: string, timezone: string = this.defaultTimezone): Promise<ApiFootballOddsItem[]> {
+    const cacheKey = `${dateStr}::${timezone}`;
+    const cached = this.oddsByDateCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < 15 * 60 * 1000) {
+      return cached.data;
+    }
+
     const allOdds: ApiFootballOddsItem[] = [];
-    for (let page = 1; page <= 30; page++) {
-      try {
-        const pageData = await this.request<ApiFootballOddsItem>("odds", {
-          date: dateStr,
-          timezone,
-          page,
-        });
-        if (Array.isArray(pageData) && pageData.length > 0) {
-          allOdds.push(...pageData);
-          if (pageData.length < 10) break; // Last page reached
-        } else {
-          break;
+    try {
+      const page1 = await this.request<ApiFootballOddsItem>("odds", {
+        date: dateStr,
+        timezone,
+        page: 1,
+      });
+
+      if (Array.isArray(page1) && page1.length > 0) {
+        allOdds.push(...page1);
+
+        if (page1.length >= 10) {
+          // Parallel fetch pages 2..10 for ultra-fast response (<1s instead of 25s)
+          const pages = [2, 3, 4, 5, 6, 7, 8, 9, 10];
+          const results = await Promise.all(
+            pages.map((p) =>
+              this.request<ApiFootballOddsItem>("odds", {
+                date: dateStr,
+                timezone,
+                page: p,
+              }).catch(() => [] as ApiFootballOddsItem[])
+            )
+          );
+          for (const res of results) {
+            if (Array.isArray(res) && res.length > 0) {
+              allOdds.push(...res);
+            }
+          }
         }
-      } catch {
-        break;
       }
+    } catch { }
+
+    if (allOdds.length > 0) {
+      this.oddsByDateCache.set(cacheKey, { timestamp: Date.now(), data: allOdds });
     }
     return allOdds;
   }

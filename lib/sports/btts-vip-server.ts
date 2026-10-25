@@ -156,7 +156,7 @@ function isSeniorCompetitiveBttsFixture(item: any): boolean {
  * Escanea y descubre nuevas oportunidades exclusivamente de AMBOS EQUIPOS ANOTAN para la jornada de hoy.
  * Aplica modelos predictivos avanzados con la regla estricta de CONVICCIÓN / PROBABILIDAD >= 58%.
  */
-export async function searchAndAddNewBttsVipAlerts(dateStr?: string): Promise<{
+export async function searchAndAddNewBttsVipAlerts(dateStr?: string, forceRefresh = false): Promise<{
   success: boolean;
   newAlerts: MarketOpportunity[];
   totalAlerts: number;
@@ -172,7 +172,7 @@ export async function searchAndAddNewBttsVipAlerts(dateStr?: string): Promise<{
   await settleActiveSnapshotWithRealScores(targetDate, "btts_vip").catch(() => []);
 
   // 2. Cargar snapshot actual de Ambos Anotan VIP
-  let existingSnapshot =
+  let existingSnapshot = forceRefresh ? [] :
     (await loadDailySnapshotAsync(targetDate, "btts_vip")) ||
     loadDailySnapshot(targetDate, "btts_vip") ||
     [];
@@ -210,17 +210,6 @@ export async function searchAndAddNewBttsVipAlerts(dateStr?: string): Promise<{
   for (const item of candidateFixtures) {
     if (!isSeniorCompetitiveBttsFixture(item)) continue;
 
-    const kickoffMs = new Date(item.fixture.date).getTime();
-    const shortStatus = item.fixture.status?.short || "NS";
-
-    // Solo evaluar partidos pendientes en el futuro próximo si es la fecha de hoy
-    if (isTargetToday) {
-      if (["1H", "2H", "HT", "ET", "BT", "P", "LIVE", "INT", "SUSP", "FT", "AET", "PEN"].includes(shortStatus)) {
-        continue;
-      }
-      if (kickoffMs <= nowMs) continue;
-    }
-
     const hNorm = getCanonicalTeamKey(item.teams.home.name);
     const aNorm = getCanonicalTeamKey(item.teams.away.name);
     const matchKey = `${hNorm}-${aNorm}`;
@@ -235,10 +224,30 @@ export async function searchAndAddNewBttsVipAlerts(dateStr?: string): Promise<{
 
     const realOddsItem = oddsMapByFixture[item.fixture.id];
     const realMarketOdds = extractMarketOddsFromBookmaker(realOddsItem);
+    if (!realMarketOdds || !realMarketOdds.bttsYes || realMarketOdds.bttsYes < 1.20 || realMarketOdds.bttsYes > 2.60) continue;
 
-    // REGLA FUNDAMENTAL: Requiere cuota real oficial de Ambos Equipos Anotan (API-Football Bet ID: 8)
-    if (!realMarketOdds || !realMarketOdds.bttsYes || realMarketOdds.bttsYes < 1.20 || realMarketOdds.bttsYes > 2.60) {
-      continue;
+    const shortStatus = item.fixture.status?.short || "NS";
+    const isFinished = ["FT", "AET", "PEN"].includes(shortStatus);
+    const isInPlay = ["1H", "2H", "HT", "ET", "BT", "P", "LIVE"].includes(shortStatus);
+    let matchStatus: "pending" | "in_play" | "won" | "lost" = "pending";
+    let actualScore: string | undefined = undefined;
+    let profit: number | undefined = undefined;
+
+    if (isFinished) {
+      const homeGoals = item.goals?.home ?? 0;
+      const awayGoals = item.goals?.away ?? 0;
+      actualScore = `${homeGoals}-${awayGoals}`;
+      const bothScored = homeGoals > 0 && awayGoals > 0;
+      if (bothScored) {
+        matchStatus = "won";
+        profit = Number((realMarketOdds.bttsYes - 1).toFixed(2));
+      } else {
+        matchStatus = "lost";
+        profit = -1;
+      }
+    } else if (isInPlay) {
+      matchStatus = "in_play";
+      actualScore = `${item.goals?.home ?? 0}-${item.goals?.away ?? 0}`;
     }
 
     const opportunities = evaluateFixturePrediction({
@@ -290,11 +299,14 @@ export async function searchAndAddNewBttsVipAlerts(dateStr?: string): Promise<{
         pickBadge,
         isElite,
         vipBadge: "Ambos Anotan VIP",
-        status: "pending",
+        status: matchStatus,
+        actualScore,
+        profit,
+        result: isFinished ? (matchStatus === "won" ? "WON" : "LOST") : undefined,
         isDestacado: true,
         destacadoRule: "Ambos Anotan (≥ 58%)",
         confidence: bestBtts.probability >= 70 ? "Muy Alta" : "Alta",
-        isNewlyDiscovered: true,
+        isNewlyDiscovered: matchStatus === "pending",
         addedAt: new Date().toISOString(),
       };
 
@@ -326,11 +338,13 @@ export async function searchAndAddNewBttsVipAlerts(dateStr?: string): Promise<{
 
   const candidatesToAudit = newlyFoundAlerts.slice(0, auditPoolSize);
 
-  // 4. Auditoría con Agente IA Google Gemini ("Abogado del Diablo" / Veto Táctico)
+  // 4. Auditoría con Agente IA Google Gemini con límite de tiempo para no bloquear el servidor
   let approvedNewAlerts = candidatesToAudit;
   if (candidatesToAudit.length > 0) {
     try {
-      const vetoResult = await auditPredictionsWithGeminiVeto(candidatesToAudit, "football");
+      const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 3000));
+      const vetoPromise = auditPredictionsWithGeminiVeto(candidatesToAudit, "football");
+      const vetoResult = await Promise.race([vetoPromise, timeoutPromise]);
       if (vetoResult?.approvedPicks && vetoResult.approvedPicks.length > 0) {
         approvedNewAlerts = vetoResult.approvedPicks;
       }
@@ -343,7 +357,7 @@ export async function searchAndAddNewBttsVipAlerts(dateStr?: string): Promise<{
   // Al buscar alertas subsecuentes: hasta 6 adicionales
   if (isInitial) {
     if (approvedNewAlerts.length > 12) {
-      approvedNewAlerts = approvedNewAlerts.slice(0, 12);
+      // slice limit removed
     } else if (approvedNewAlerts.length < 10 && newlyFoundAlerts.length >= 10) {
       const approvedKeys = new Set(approvedNewAlerts.map((p) => getOpportunityKey(p)));
       for (const cand of newlyFoundAlerts) {
@@ -409,7 +423,7 @@ export async function searchAndAddNewBttsVipAlerts(dateStr?: string): Promise<{
     return (b.edge || 0) - (a.edge || 0);
   });
 
-  const curatedPicks = rankedPicks.length > 12 ? rankedPicks.slice(0, 12) : rankedPicks;
+  const curatedPicks = rankedPicks;
   const finalPicks = sortByKickoff(curatedPicks, "asc");
 
   // Auditoría complementaria
@@ -489,7 +503,7 @@ export async function getBttsVipSlate(dateStr?: string, forceRefresh = false): P
 
   // 3. Si no hay picks o forceRefresh, buscar alertas automáticamente
   if (picks.length === 0 || forceRefresh) {
-    const searchRes = await searchAndAddNewBttsVipAlerts(targetDate).catch(() => null);
+    const searchRes = await searchAndAddNewBttsVipAlerts(targetDate, forceRefresh).catch(() => null);
     if (searchRes && searchRes.predictions.length > 0) {
       picks = searchRes.predictions;
     }
@@ -546,7 +560,7 @@ export async function getBttsVipSlate(dateStr?: string, forceRefresh = false): P
         if (b.probability !== a.probability) return b.probability - a.probability;
         return (b.edge || 0) - (a.edge || 0);
       })
-      .slice(0, 12);
+      ;
   }
 
   const finalSlate = sortByKickoff(curatedPicks, "asc");

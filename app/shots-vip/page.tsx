@@ -161,7 +161,6 @@ export default function ShotsVipPage() {
 
   const handleDateChange = (newDate: string) => {
     setSelectedDate(newDate);
-    loadSlate(newDate, true);
   };
 
   // 3. Search and Scan New Alerts for Selected Date

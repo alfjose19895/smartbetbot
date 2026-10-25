@@ -167,7 +167,7 @@ function isSeniorCompetitiveAwayWinFixture(item: any): boolean {
  * Escanea de forma desacoplada todos los partidos disponibles en la fecha solicitada.
  * Aplica modelos predictivos avanzados con la regla estricta de CONVICCIÓN / PROBABILIDAD >= 65%.
  */
-export async function searchAndAddNewAwayWinVipAlerts(dateStr?: string): Promise<{
+export async function searchAndAddNewAwayWinVipAlerts(dateStr?: string, forceRefresh = false): Promise<{
   success: boolean;
   newAlerts: MarketOpportunity[];
   totalAlerts: number;
@@ -183,7 +183,7 @@ export async function searchAndAddNewAwayWinVipAlerts(dateStr?: string): Promise
   await settleActiveSnapshotWithRealScores(targetDate, "away_win_vip").catch(() => []);
 
   // 2. Cargar snapshot actual de Ganador Visitante VIP
-  let existingSnapshot =
+  let existingSnapshot = forceRefresh ? [] :
     (await loadDailySnapshotAsync(targetDate, "away_win_vip")) ||
     loadDailySnapshot(targetDate, "away_win_vip") ||
     [];
@@ -221,17 +221,6 @@ export async function searchAndAddNewAwayWinVipAlerts(dateStr?: string): Promise
   for (const item of candidateFixtures) {
     if (!isSeniorCompetitiveAwayWinFixture(item)) continue;
 
-    const kickoffMs = new Date(item.fixture.date).getTime();
-    const shortStatus = item.fixture.status?.short || "NS";
-
-    // Solo evaluar partidos pendientes en el futuro próximo si es la fecha de hoy
-    if (isTargetToday) {
-      if (["1H", "2H", "HT", "ET", "BT", "P", "LIVE", "INT", "SUSP", "FT", "AET", "PEN"].includes(shortStatus)) {
-        continue;
-      }
-      if (kickoffMs <= nowMs) continue;
-    }
-
     const hNorm = getCanonicalTeamKey(item.teams.home.name);
     const aNorm = getCanonicalTeamKey(item.teams.away.name);
     const matchKey = `${hNorm}-${aNorm}`;
@@ -246,10 +235,30 @@ export async function searchAndAddNewAwayWinVipAlerts(dateStr?: string): Promise
 
     const realOddsItem = oddsMapByFixture[item.fixture.id];
     const realMarketOdds = extractMarketOddsFromBookmaker(realOddsItem);
+    if (!realMarketOdds || !realMarketOdds.awayWin || realMarketOdds.awayWin < 1.15 || realMarketOdds.awayWin > 3.20) continue;
 
-    // REGLA FUNDAMENTAL: Requiere cuota real oficial de 1X2 (Gana Visitante)
-    if (!realMarketOdds || !realMarketOdds.awayWin || realMarketOdds.awayWin < 1.20 || realMarketOdds.awayWin > 4.00) {
-      continue;
+    const shortStatus = item.fixture.status?.short || "NS";
+    const isFinished = ["FT", "AET", "PEN"].includes(shortStatus);
+    const isInPlay = ["1H", "2H", "HT", "ET", "BT", "P", "LIVE"].includes(shortStatus);
+    let matchStatus: "pending" | "in_play" | "won" | "lost" = "pending";
+    let actualScore: string | undefined = undefined;
+    let profit: number | undefined = undefined;
+
+    if (isFinished) {
+      const homeGoals = item.goals?.home ?? 0;
+      const awayGoals = item.goals?.away ?? 0;
+      actualScore = `${homeGoals}-${awayGoals}`;
+      const won = awayGoals > homeGoals;
+      if (won) {
+        matchStatus = "won";
+        profit = Number(((realMarketOdds.awayWin || 1) - 1).toFixed(2));
+      } else {
+        matchStatus = "lost";
+        profit = -1;
+      }
+    } else if (isInPlay) {
+      matchStatus = "in_play";
+      actualScore = `${item.goals?.home ?? 0}-${item.goals?.away ?? 0}`;
     }
 
     const opportunities = evaluateFixturePrediction({
@@ -300,7 +309,10 @@ export async function searchAndAddNewAwayWinVipAlerts(dateStr?: string): Promise
         pickBadge,
         isElite,
         vipBadge: "Ganador Visitante VIP",
-        status: "pending",
+        status: matchStatus,
+        actualScore,
+        profit,
+        result: isFinished ? (matchStatus === "won" ? "WON" : "LOST") : undefined,
         isDestacado: true,
         destacadoRule: "Ganador Visitante (≥ 65%)",
         confidence: bestAwayWin.probability >= 72 ? "Muy Alta" : "Alta",

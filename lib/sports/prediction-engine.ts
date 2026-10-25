@@ -517,7 +517,7 @@ export interface MarketOpportunity {
   currentScore?: string;
   smartScore: number;
   explanation: string;
-  status: "pending" | "won" | "lost" | "void";
+  status: "pending" | "won" | "lost" | "void" | "in_play";
   cornerAnalysis?: {
     expectedTotalCorners: number;
     expectedHomeCorners: number;

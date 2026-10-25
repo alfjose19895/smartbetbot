@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
       if ((!predictions || predictions.length === 0) && targetDateStr === getEcuadorDateString(Date.now())) {
         predictions = getStoredPredictions("football");
       }
-      if (!predictions || predictions.length === 0) {
+      if ((!predictions || predictions.length === 0) && (!dateParam || targetDateStr === getEcuadorDateString(Date.now()))) {
         try {
           predictions = await generatePredictionsForUpcoming(undefined, false);
         } catch {
