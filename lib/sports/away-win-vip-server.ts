@@ -89,7 +89,7 @@ export async function saveAwayWinVipSnapshotAsync(
       vipBadge: "Ganador Visitante VIP",
       confidence: (p.probability >= 72 ? "Muy Alta" : "Alta") as "Muy Alta" | "Alta" | "Media",
       isDestacado: p.probability >= 65,
-      destacadoRule: "Ganador Visitante (≥ 65%)",
+      destacadoRule: "Ganador Visitante (≥ 60%)",
     };
   });
   return saveDailySnapshotAsync(dateStr, taggedPicks, "away_win_vip", overwrite);
@@ -314,7 +314,7 @@ export async function searchAndAddNewAwayWinVipAlerts(dateStr?: string, forceRef
         profit,
         result: isFinished ? (matchStatus === "won" ? "WON" : "LOST") : undefined,
         isDestacado: true,
-        destacadoRule: "Ganador Visitante (≥ 65%)",
+        destacadoRule: "Ganador Visitante (≥ 60%)",
         confidence: bestAwayWin.probability >= 72 ? "Muy Alta" : "Alta",
         isNewlyDiscovered: true,
         addedAt: new Date().toISOString(),
@@ -364,7 +364,7 @@ export async function searchAndAddNewAwayWinVipAlerts(dateStr?: string, forceRef
       vipBadge: "Ganador Visitante VIP",
       confidence: p.probability >= 72 ? "Muy Alta" : "Alta",
       isDestacado: true,
-      destacadoRule: "Ganador Visitante (≥ 65%)",
+      destacadoRule: "Ganador Visitante (≥ 60%)",
     });
   }
 
@@ -458,7 +458,7 @@ export async function getAwayWinVipSlate(dateStr?: string, forceRefresh = false)
         vipBadge: "Ganador Visitante VIP",
         confidence: (p.probability >= 72 ? "Muy Alta" : "Alta") as "Muy Alta" | "Alta" | "Media",
         isDestacado: true,
-        destacadoRule: "Ganador Visitante (≥ 65%)",
+        destacadoRule: "Ganador Visitante (≥ 60%)",
       };
     })
     .sort((a, b) => {

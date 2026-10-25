@@ -8,7 +8,7 @@ import { VipDateFilter } from "@/components/VipDateFilter";
 import { NewAlertsModal } from "@/components/NewAlertsModal";
 import { MultiSelectDropdown, DropdownOption } from "@/components/MultiSelectDropdown";
 import { MarketOpportunity, getTimeSlot, isElitePick,
-  sortByKickoff, isDestacadoPick } from "@/lib/sports/prediction-engine";
+  sortByKickoff, isDestacadoPick , isPreMatchQualified } from "@/lib/sports/prediction-engine";
 import { matchesMarketFilter, matchesConfidenceFilter } from "@/lib/sports/registry";
 import { useLanguage } from "@/context/LanguageContext";
 import { Navbar } from "@/components/Navbar";
@@ -178,7 +178,7 @@ export default function SignalsPage() {
     try {
       if (showLoader) setLoading(true);
       const dateToQuery = targetDate || selectedDate;
-      const res = await fetch(`/api/signals?sport=football&date=${dateToQuery}&_t=${Date.now()}`, { cache: "no-store" });
+      const res = await fetch(`/api/signals?sport=football&date=${dateToQuery}&prematch=true&_t=${Date.now()}`, { cache: "no-store" });
       const json = await res.json();
       const serverSignals: MarketOpportunity[] = Array.isArray(json.signals)
         ? json.signals
@@ -265,7 +265,7 @@ export default function SignalsPage() {
   const activeSignals = useMemo(() => {
     const list = predictions.filter((p) => {
       const pDate = p.kickoff ? getEcuadorDateString(p.kickoff) : selectedDate;
-      return pDate === selectedDate;
+      return pDate === selectedDate && isPreMatchQualified(p);
     });
     return sortByKickoff(list, "asc");
   }, [predictions, selectedDate]);
@@ -389,8 +389,11 @@ export default function SignalsPage() {
             <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
               Señales y Pronósticos de Fútbol
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1">
-              Oportunidades de alto valor (+EV) calculadas algorítmicamente para la jornada de hoy.
+            <p className="text-xs sm:text-sm text-slate-300 mt-1">
+              Filtro estricto basado en las reglas de destacados y catálogo de ligas curadas:
+              <span className="block mt-1 text-[11px] text-emerald-300 font-medium">
+                Alta de Córners (≥70%) · Ambos Anotan (≥58%) · Alta de Goles (≥60%) · Ganador Local (≥60%) · Ganador Visitante (≥60%)
+              </span>
             </p>
           </div>
 

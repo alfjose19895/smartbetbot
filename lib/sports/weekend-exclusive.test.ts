@@ -20,13 +20,13 @@ describe('Módulo Exclusivo Fin de Semana (Weekend Exclusive Engine)', () => {
     expect(btts?.minProb).toBe(58);
 
     const goals = WEEKEND_EXCLUSIVE_RULES.find((r) => r.id === 'goals');
-    expect(goals?.minProb).toBe(72);
+    expect(goals?.minProb).toBe(60);
 
     const local = WEEKEND_EXCLUSIVE_RULES.find((r) => r.id === 'local');
     expect(local?.minProb).toBe(58);
 
     const away = WEEKEND_EXCLUSIVE_RULES.find((r) => r.id === 'away');
-    expect(away?.minProb).toBe(71);
+    expect(away?.minProb).toBe(60);
   });
 
   describe('Cycle unlock timing logic (America/Guayaquil)', () => {

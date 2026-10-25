@@ -192,6 +192,50 @@ export function isPriorityEuropeanLeague(leagueId?: number, leagueName?: string,
   }
   return false;
 }
+
+export function isCuratedLeague(leagueId?: number, leagueName?: string, country?: string): boolean {
+  if (leagueId) {
+    return ALL_LEAGUE_IDS.includes(leagueId);
+  }
+  if (!leagueName) return false;
+  const norm = leagueName.toLowerCase().trim();
+  const normCountry = (country || "").toLowerCase().trim();
+
+  // Strictly reject youth, amateur, regional, reserve leagues
+  if (
+    norm.includes("u19") ||
+    norm.includes("u20") ||
+    norm.includes("u21") ||
+    norm.includes("u23") ||
+    norm.includes("primavera") ||
+    norm.includes("reserve") ||
+    norm.includes("development") ||
+    norm.includes("isthmian") ||
+    norm.includes("girone") ||
+    norm.includes("lowland") ||
+    norm.includes("regional") ||
+    norm.includes("paulista") ||
+    norm.includes("santa catarina") ||
+    norm.includes("leumit") ||
+    norm.includes("cfl")
+  ) {
+    return false;
+  }
+
+  if (normCountry) {
+    return SUPPORTED_LEAGUES.some((sl) => {
+      const matchName = norm.includes(sl.name.toLowerCase()) || sl.name.toLowerCase().includes(norm);
+      const matchCountry =
+        sl.country.toLowerCase() === normCountry ||
+        normCountry.includes(sl.country.toLowerCase()) ||
+        sl.country.toLowerCase().includes(normCountry);
+      return matchName && matchCountry;
+    });
+  }
+
+  return SUPPORTED_LEAGUES.some((sl) => norm === sl.name.toLowerCase());
+}
+
 export const CUPS_LEAGUE_IDS = [2, 3, 848, 5, 13, 11];
 export const AMERICAS_LEAGUE_IDS = [242, 71, 72, 128, 344, 262, 263, 253, 254, 239, 281, 265, 268, 250, 162];
 

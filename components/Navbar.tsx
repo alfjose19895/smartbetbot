@@ -150,6 +150,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sportDropdownOpen, setSportDropdownOpen] = useState(false);
   const [vipDropdownOpen, setVipDropdownOpen] = useState(false);
+  const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
   const [currentRole, setCurrentRole] = useState<string>(userRole || 'user');
   const [vipModules, setVipModules] = useState<string[]>([]);
   const [vipAccess, setVipAccess] = useState<boolean>(false);
@@ -159,6 +160,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
 
   const sportDropdownRef = useRef<HTMLDivElement>(null);
   const vipDropdownRef = useRef<HTMLDivElement>(null);
+  const moreDropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -168,6 +170,9 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
       }
       if (vipDropdownRef.current && !vipDropdownRef.current.contains(event.target as Node)) {
         setVipDropdownOpen(false);
+      }
+      if (moreDropdownRef.current && !moreDropdownRef.current.contains(event.target as Node)) {
+        setMoreDropdownOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -254,6 +259,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
   });
 
   const isCurrentVipRoute = VIP_MODULES_NAV.some((m) => pathname === m.href);
+  const isMoreActive = pathname === '/history' || pathname === '/reports' || pathname === '/settings' || pathname.startsWith('/history') || pathname.startsWith('/reports');
 
   // Dynamic navigation links adapted to current sport context
   const getSportHref = (type: 'dashboard' | 'signals' | 'featured' | 'weekend' | 'parlay' | 'history' | 'reports' | 'settings') => {
@@ -291,7 +297,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
       icon: '📊',
     },
     { href: getSportHref('signals'), label: 'Pre-Match', icon: '📋' },
-    { href: getSportHref('featured'), label: 'Destacados ⭐', icon: '⭐' },
+    { href: getSportHref('featured'), label: 'Destacados', icon: '⭐' },
     { href: getSportHref('parlay'), label: t('navParlay'), icon: '🎲' },
   ];
 
@@ -302,8 +308,8 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
   ];
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950/95 backdrop-blur-md transition-colors">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-3 sm:px-6 py-2.5 sm:py-3 gap-2 sm:gap-4">
+    <header className="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950/95 backdrop-blur-md transition-colors overflow-x-clip">
+      <div className="mx-auto flex max-w-[1600px] w-full items-center justify-between px-3 sm:px-6 py-2.5 sm:py-3 gap-2 sm:gap-4">
         
         {/* Left: Brand Logo & Sport Selector Dropdown */}
         <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
@@ -467,24 +473,52 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
             </div>
           )}
 
-          {/* Secondary Links (Historial, Reportes, Ajustes) */}
-          {secondaryNavLinks.map((link) => {
-            const isActive = checkIsActive(link.href);
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`px-2 xl:px-2.5 py-1.5 rounded-xl text-xs font-black whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 ${
-                  isActive
-                    ? 'bg-emerald-950/70 text-emerald-300 border border-emerald-500/30 shadow-xs'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-900'
-                }`}
-              >
-                <span>{link.icon}</span>
-                <span>{link.label}</span>
-              </Link>
-            );
-          })}
+          {/* Secondary Links Dropdown (Historial, Reportes, Ajustes) */}
+          <div className="relative" ref={moreDropdownRef}>
+            <button
+              type="button"
+              onClick={() => setMoreDropdownOpen(!moreDropdownOpen)}
+              className={`px-2 xl:px-2.5 py-1.5 rounded-xl text-xs font-black whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 border ${
+                isMoreActive
+                  ? 'bg-emerald-950/70 text-emerald-300 border-emerald-500/30 shadow-xs'
+                  : 'border-transparent text-slate-300 hover:text-white hover:bg-slate-900'
+              }`}
+              title="Más herramientas y análisis"
+            >
+              <span>📊</span>
+              <span>Más</span>
+              <span className="text-[10px] text-slate-400">▼</span>
+            </button>
+
+            {moreDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-52 rounded-2xl border border-slate-800 bg-slate-950/98 p-1.5 shadow-2xl backdrop-blur-xl z-50 animate-in fade-in zoom-in-95 duration-100">
+                <div className="px-2.5 py-1.5 text-[10px] font-black uppercase tracking-wider text-slate-400 border-b border-slate-800/60 mb-1">
+                  Análisis & Sistema
+                </div>
+                {secondaryNavLinks.map((link) => {
+                  const isActive = checkIsActive(link.href);
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setMoreDropdownOpen(false)}
+                      className={`flex items-center justify-between rounded-xl px-2.5 py-2 text-xs font-bold transition ${
+                        isActive
+                          ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-black'
+                          : 'text-slate-300 hover:bg-slate-900 hover:text-white'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-base">{link.icon}</span>
+                        <span>{link.label}</span>
+                      </div>
+                      {isActive && <span className="text-xs text-emerald-400">✓</span>}
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
 
           {/* Admin Dashboard shortcut */}
           {isUserAdmin && (
@@ -513,7 +547,7 @@ export function Navbar({ onSync, syncing = false, userRole, userEmail }: NavbarP
               title="Sincronizar y auditar partidos de hoy"
             >
               <span className={isSyncInProgress ? 'animate-spin' : ''}>⚡</span>
-              <span>{isSyncInProgress ? '...' : '⚡ Buscar'}</span>
+              <span>{isSyncInProgress ? '...' : 'Buscar'}</span>
             </button>
           )}
 

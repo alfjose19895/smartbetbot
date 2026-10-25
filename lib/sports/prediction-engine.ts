@@ -1,3 +1,4 @@
+import { isCuratedLeague } from "./api-football";
 import {
   CornerLineSelectionEngine,
   calculateExpectedCorners,
@@ -142,9 +143,9 @@ export const DESTACADOS_5_STARS_RULES: Array<{
 }> = [
   { id: 'corners', name: 'Alta de Córners', minProb: 70, icon: '🚩', description: 'Probabilidad ≥ 70%' },
   { id: 'btts', name: 'Ambos Anotan', minProb: 58, icon: '⚽', description: 'Probabilidad ≥ 58%' },
-  { id: 'goals', name: 'Alta de Goles', minProb: 72, icon: '🥅', description: 'Probabilidad ≥ 72%' },
+  { id: 'goals', name: 'Alta de Goles', minProb: 60, icon: '🥅', description: 'Probabilidad ≥ 60%' },
   { id: 'local', name: 'Ganador Local', minProb: 58, icon: '🏠', description: 'Probabilidad ≥ 58%' },
-  { id: 'away', name: 'Ganador Visitante', minProb: 71, icon: '✈️', description: 'Probabilidad ≥ 71%' },
+  { id: 'away', name: 'Ganador Visitante', minProb: 60, icon: '✈️', description: 'Probabilidad ≥ 60%' },
   { id: 'cards', name: 'Alta de Tarjetas', minProb: 70, icon: '🟨', description: 'Probabilidad ≥ 70%' },
   { id: 'shots', name: 'Alta de Disparos', minProb: 70, icon: '🎯', description: 'Probabilidad ≥ 70%' },
 ];
@@ -161,6 +162,7 @@ export function getDestacadoRuleMatch(p: {
   sport?: string;
   country?: string;
   league?: string;
+  leagueId?: number;
   market?: string;
   selection?: string;
   probability?: number;
@@ -186,6 +188,11 @@ export function getDestacadoRuleMatch(p: {
   ) {
     return null;
   }
+
+  if (p.league && !isCuratedLeague(p.leagueId, p.league, p.country)) {
+    return null;
+  }
+
 
   const rawProb = typeof p.probability === 'number' ? p.probability : 0;
   const prob = rawProb <= 1 && rawProb > 0 ? Math.round(rawProb * 1000) / 10 : rawProb;
@@ -255,13 +262,13 @@ export function getDestacadoRuleMatch(p: {
     !isUnder;
 
   if (isOverGoal) {
-    if (prob >= 72) {
+    if (prob >= 60) {
       return {
         ruleId: 'goals',
         ruleName: 'Alta de Goles',
-        minProbability: 72,
+        minProbability: 60,
         actualProbability: prob,
-        marketDescription: 'Alta de Goles (≥ 72%)',
+        marketDescription: 'Alta de Goles (≥ 60%)',
         icon: '🥅',
       };
     }
@@ -301,13 +308,13 @@ export function getDestacadoRuleMatch(p: {
     !m.includes('local') &&
     !m.includes('home');
   if (isAway) {
-    if (prob >= 71) {
+    if (prob >= 60) {
       return {
         ruleId: 'away',
         ruleName: 'Ganador Visitante',
-        minProbability: 71,
+        minProbability: 60,
         actualProbability: prob,
-        marketDescription: 'Ganador Visitante (≥ 71%)',
+        marketDescription: 'Ganador Visitante (≥ 60%)',
         icon: '✈️',
       };
     }
@@ -355,10 +362,138 @@ export function getDestacadoRuleMatch(p: {
   return null;
 }
 
+
+/**
+ * REGLAS OFICIALES MÓDULO PRE-MATCH:
+ * Solo pronósticos en base a las reglas de destacados con tier de ligas y mercados:
+ * • Alta de Córners (≥ 70%)
+ * • Ambos Anotan (≥ 58%)
+ * • Alta de Goles (≥ 60%)
+ * • Ganador Local (≥ 60%)
+ * • Ganador Visitante (≥ 60%)
+ * • Cumplimiento estricto del Tier de Ligas Curadas y Mercados Autorizados
+ */
+export function isPreMatchQualified(p: {
+  sport?: string;
+  country?: string;
+  league?: string;
+  leagueId?: number;
+  market?: string;
+  selection?: string;
+  probability?: number;
+  leagueTier?: number;
+}): boolean {
+  if (!p) return false;
+
+  // Exclusivo Fútbol
+  const sport = (p.sport || '').toLowerCase();
+  const country = (p.country || '').toUpperCase();
+  const league = (p.league || '').toUpperCase();
+  if (
+    sport === 'nhl' ||
+    sport === 'nba' ||
+    sport === 'nfl' ||
+    sport === 'ncaaf' ||
+    country === 'NHL' ||
+    country === 'NBA' ||
+    country === 'NFL' ||
+    country === 'NCAAF' ||
+    league.includes('NHL') ||
+    league.includes('NBA') ||
+    league.includes('NFL')
+  ) {
+    return false;
+  }
+
+  // Tier de Ligas: Cumplir catálogo curado de ligas
+  if (p.league && !isCuratedLeague(p.leagueId, p.league, p.country)) {
+    return false;
+  }
+
+  const rawProb = typeof p.probability === 'number' ? p.probability : 0;
+  const prob = rawProb <= 1 && rawProb > 0 ? Math.round(rawProb * 1000) / 10 : rawProb;
+  const m = (p.market || '').toLowerCase();
+  const s = (p.selection || '').toLowerCase();
+
+  const isCorner = m.includes('corner') || m.includes('córner') || s.includes('corner') || s.includes('córner');
+  const isUnder = m.includes('under') || m.includes('menos') || s.includes('under') || s.includes('menos');
+
+  // 1. Alta de Córners: Probabilidad >= 70%
+  if (isCorner && !isUnder) {
+    return prob >= 70.0;
+  }
+
+  // 2. Ambos Anotan: Probabilidad >= 58%
+  const isBtts =
+    m.includes('ambos') ||
+    m.includes('btts') ||
+    m.includes('anotan') ||
+    s.includes('ambos') ||
+    s.includes('btts');
+  if (isBtts) {
+    return prob >= 58.0;
+  }
+
+  // 3. Alta de Goles: Probabilidad >= 60%
+  const isGoal =
+    !isCorner &&
+    (m.includes('gol') ||
+      m.includes('goal') ||
+      m.includes('2.5') ||
+      m.includes('1.5') ||
+      m.includes('3.5') ||
+      s.includes('gol') ||
+      s.includes('goal'));
+  const isOverGoal =
+    isGoal &&
+    (m.includes('over') ||
+      m.includes('más') ||
+      m.includes('mas') ||
+      m.includes('total') ||
+      m.includes('alta') ||
+      s.includes('over') ||
+      s.includes('más') ||
+      s.includes('mas')) &&
+    !isUnder;
+  if (isOverGoal) {
+    return prob >= 60.0;
+  }
+
+  // 4. Ganador Local: Probabilidad >= 60% (Pre-Match exige >= 60%)
+  const isLocal =
+    (m.includes('local') ||
+      m.includes('home') ||
+      s === '1' ||
+      s === 'local' ||
+      s.includes('home')) &&
+    !m.includes('visitante') &&
+    !m.includes('away');
+  if (isLocal) {
+    return prob >= 60.0;
+  }
+
+  // 5. Ganador Visitante: Probabilidad >= 60%
+  const isAway =
+    (m.includes('visitante') ||
+      m.includes('away') ||
+      s === '2' ||
+      s === 'visitante' ||
+      s.includes('away')) &&
+    !m.includes('local') &&
+    !m.includes('home');
+  if (isAway) {
+    return prob >= 60.0;
+  }
+
+  return false;
+}
+
+
 export function isDestacadoPick(p: {
   sport?: string;
   country?: string;
   league?: string;
+  leagueId?: number;
   market?: string;
   selection?: string;
   probability?: number;
@@ -2143,12 +2278,12 @@ export function evaluateFixturePrediction(params: {
                    (item.market === "Ambos Equipos Anotan") ? probPercent >= 58 :
                    (item.market === "Over 2.5 Goles") ? probPercent >= 60 :
                    (item.market === "Ganador Local") ? probPercent >= 58 :
-                   (item.market === "Ganador Visitante") ? probPercent >= 65 : false,
+                   (item.market === "Ganador Visitante") ? probPercent >= 60 : false,
       destacadoRule: (item.market === "Córners" || item.market === "Over Córners") && probPercent >= 70 ? "Alta de Córners (≥ 70%)" :
                      (item.market === "Ambos Equipos Anotan") && probPercent >= 58 ? "Ambos Anotan (≥ 58%)" :
                      (item.market === "Over 2.5 Goles") && probPercent >= 60 ? "Alta de Goles (≥ 60%)" :
                      (item.market === "Ganador Local") && probPercent >= 58 ? "Ganador Local (≥ 58%)" :
-                     (item.market === "Ganador Visitante") && probPercent >= 65 ? "Ganador Visitante (≥ 65%)" : undefined,
+                     (item.market === "Ganador Visitante") && probPercent >= 60 ? "Ganador Visitante (≥ 60%)" : undefined,
       smartScore,
       explanation: generateExplanation(
         homeTeam,

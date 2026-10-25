@@ -1509,48 +1509,8 @@ const HISTORY_CACHE_TTL_MS = 3 * 60 * 1000; // 3 minutes
 /**
  * Checks if a fixture's league belongs to our curated supported leagues catalog.
  */
-export function isCuratedLeague(leagueId?: number, leagueName?: string, country?: string): boolean {
-  if (leagueId) {
-    return ALL_LEAGUE_IDS.includes(leagueId);
-  }
-  if (!leagueName) return false;
-  const norm = leagueName.toLowerCase().trim();
-  const normCountry = (country || "").toLowerCase().trim();
-
-  // Strictly reject youth, amateur, regional, reserve leagues
-  if (
-    norm.includes("u19") ||
-    norm.includes("u20") ||
-    norm.includes("u21") ||
-    norm.includes("u23") ||
-    norm.includes("primavera") ||
-    norm.includes("reserve") ||
-    norm.includes("development") ||
-    norm.includes("isthmian") ||
-    norm.includes("girone") ||
-    norm.includes("lowland") ||
-    norm.includes("regional") ||
-    norm.includes("paulista") ||
-    norm.includes("santa catarina") ||
-    norm.includes("leumit") ||
-    norm.includes("cfl")
-  ) {
-    return false;
-  }
-
-  if (normCountry) {
-    return SUPPORTED_LEAGUES.some((sl) => {
-      const matchName = norm.includes(sl.name.toLowerCase()) || sl.name.toLowerCase().includes(norm);
-      const matchCountry =
-        sl.country.toLowerCase() === normCountry ||
-        normCountry.includes(sl.country.toLowerCase()) ||
-        sl.country.toLowerCase().includes(normCountry);
-      return matchName && matchCountry;
-    });
-  }
-
-  return SUPPORTED_LEAGUES.some((sl) => norm === sl.name.toLowerCase());
-}
+import { isCuratedLeague } from "./api-football";
+export { isCuratedLeague };
 
 /**
  * Rigorous and authentic market settlement evaluator for all sports betting markets.

@@ -43,12 +43,7 @@ export const WEEKEND_EXCLUSIVE_RULES: WeekendRuleDefinition[] = [
     badgeText: 'Ambos Anotan (≥ 58%)',
   },
   {
-    id: 'goals',
-    name: 'Alta de Goles',
-    minProb: 72,
-    icon: '🥅',
-    description: 'Probabilidad ≥ 72%',
-    badgeText: 'Alta Goles (≥ 72%)',
+    id: 'goals', name: 'Alta de Goles', minProb: 60, icon: '🥅', description: 'Probabilidad ≥ 60%', badgeText: 'Alta Goles (≥ 60%)',
   },
   {
     id: 'local',
@@ -59,12 +54,7 @@ export const WEEKEND_EXCLUSIVE_RULES: WeekendRuleDefinition[] = [
     badgeText: 'Ganador Local (≥ 58%)',
   },
   {
-    id: 'away',
-    name: 'Ganador Visitante',
-    minProb: 71,
-    icon: '✈️',
-    description: 'Probabilidad ≥ 71%',
-    badgeText: 'Ganador Visitante (≥ 71%)',
+    id: 'away', name: 'Ganador Visitante', minProb: 60, icon: '✈️', description: 'Probabilidad ≥ 60%', badgeText: 'Ganador Visitante (≥ 60%)',
   },
 ];
 

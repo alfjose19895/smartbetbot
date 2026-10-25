@@ -8,7 +8,7 @@ import {
   getEcuadorDateString,
   settleAllSnapshotsWithRealScores,
 } from "@/lib/sports/db";
-import { MarketOpportunity } from "@/lib/sports/prediction-engine";
+import { MarketOpportunity, isPreMatchQualified } from "@/lib/sports/prediction-engine";
 import { NHLSyncEngine } from "@/lib/sports/nhl/nhl-sync";
 import { multiSportSignalToOpportunity } from "@/lib/sports/signal-adapters";
 import { matchesMarketFilter } from "@/lib/sports/registry";
@@ -105,20 +105,19 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Strict football-only filter (Excludes other sports and all VIP modules)
+    // Strict football-only filter (Excludes other sports like NHL, NBA, NFL)
+    const isPreMatchRequest = searchParams.get("prematch") === "true";
     predictions = predictions.filter((p) => {
       const c = (p.country || "").toUpperCase();
       const l = (p.league || "").toUpperCase();
       const sp = ((p as any).sport || "").toLowerCase();
       const isOtherSport = c === "NHL" || l.includes("NHL") || sp === "nhl" || c === "NBA" || l.includes("NBA") || sp === "nba" || c === "NFL" || sp === "nfl";
-      const isVip = Boolean(
-        p.isCornersVip || p.isCardsVip || p.isShotsVip || p.isOver25Vip || p.isBttsVip || p.isHomeWinVip || p.isAwayWinVip ||
-        VIP_SPORTS.includes(p.source || "") ||
-        VIP_SPORTS.includes(p.pickBadge || "") ||
-        VIP_SPORTS.includes(sp)
-      );
-      return !isOtherSport && !isVip;
+      return !isOtherSport;
     });
+
+    if (isPreMatchRequest) {
+      predictions = predictions.filter(isPreMatchQualified);
+    }
 
     if (leagueFilter) {
       predictions = predictions.filter((p) =>

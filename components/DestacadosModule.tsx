@@ -302,8 +302,8 @@ export function DestacadosModule({
               Módulo automatizado exclusivo para <strong>fútbol</strong>. Filtra únicamente
               las apuestas que cumplen a rajatabla los 5 umbrales estadísticos de alta convicción:
               <span className="block mt-1 text-[11px] text-amber-200/90 font-medium">
-                Alta de Córners (≥70%) · Ambos Anotan (≥58%) · Alta de Goles (≥72%) ·
-                Ganador Local (≥58%) · Ganador Visitante (≥71%).
+                Alta de Córners (≥70%) · Ambos Anotan (≥58%) · Alta de Goles (≥60%) ·
+                Ganador Local (≥58%) · Ganador Visitante (≥60%).
               </span>
             </p>
           </div>
@@ -514,8 +514,8 @@ export function DestacadosModule({
             Las reglas del módulo Destacados son de alta exigencia cuantitativa:
             <br />
             <strong>Alta Córners (≥70%)</strong> · <strong>Ambos Anotan (≥58%)</strong> ·{" "}
-            <strong>Alta Goles (≥72%)</strong> · <strong>Ganador Local (≥58%)</strong> ·{" "}
-            <strong>Ganador Visitante (≥71%)</strong>.
+            <strong>Alta Goles (≥60%)</strong> · <strong>Ganador Local (≥58%)</strong> ·{" "}
+            <strong>Ganador Visitante (≥60%)</strong>.
           </p>
           <div className="flex items-center justify-center gap-3 pt-2">
             {onRefresh && (
