@@ -73,9 +73,7 @@ export default function FeaturedPicksPage() {
                   ? `🟢 Hoy (${selectedDate})`
                   : selectedDate === getEcuadorDate(-1)
                   ? `Ayer (${selectedDate})`
-                  : selectedDate === getEcuadorDate(1)
-                  ? `Mañana (${selectedDate})`
-                  : selectedDate}
+                  : `Historial (${selectedDate})`}
               </span>
             </div>
             <VipDateFilter

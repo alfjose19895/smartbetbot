@@ -32,34 +32,39 @@ export function VipDateFilter({
 }: VipDateFilterProps) {
   const today = getEcuadorDate(0);
   const yesterday = getEcuadorDate(-1);
-  const tomorrow = getEcuadorDate(1);
 
   const isToday = selectedDate === today;
   const isYesterday = selectedDate === yesterday;
-  const isTomorrow = selectedDate === tomorrow;
+
+  const handleDateSelect = (date: string) => {
+    // Restringir a hoy o fechas anteriores (no permitir fechas futuras)
+    if (date > today) {
+      onDateChange(today);
+    } else {
+      onDateChange(date);
+    }
+  };
 
   return (
     <div className="flex flex-wrap items-center gap-2 bg-slate-900/80 backdrop-blur-md p-1.5 rounded-2xl border border-slate-800 shadow-sm">
       <div className="flex items-center gap-1">
         <button
           type="button"
-          /* non-blocking */
-          onClick={() => onDateChange(yesterday)}
-          className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer disabled:opacity-50 ${
+          onClick={() => handleDateSelect(yesterday)}
+          className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer ${
             isYesterday
               ? "bg-slate-800 text-white border border-slate-700 shadow-sm"
               : "text-slate-400 hover:text-white hover:bg-slate-800/50"
           }`}
-          title="Ver cartelera de ayer"
+          title="Ver alertas y resultados de ayer"
         >
           📅 Ayer
         </button>
 
         <button
           type="button"
-          /* non-blocking */
-          onClick={() => onDateChange(today)}
-          className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer disabled:opacity-50 ${
+          onClick={() => handleDateSelect(today)}
+          className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer ${
             isToday
               ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-sm font-black"
               : "text-slate-400 hover:text-white hover:bg-slate-800/50"
@@ -68,48 +73,35 @@ export function VipDateFilter({
         >
           🟢 Hoy
         </button>
-
-        <button
-          type="button"
-          /* non-blocking */
-          onClick={() => onDateChange(tomorrow)}
-          className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer disabled:opacity-50 ${
-            isTomorrow
-              ? "bg-sky-500/20 text-sky-400 border border-sky-500/40 shadow-sm font-black"
-              : "text-slate-400 hover:text-white hover:bg-slate-800/50"
-          }`}
-          title="Ver cartelera de mañana"
-        >
-          ⚡ Mañana
-        </button>
       </div>
 
       <div className="h-4 w-px bg-slate-800 hidden sm:block" />
 
       <div className="flex items-center gap-1.5 px-1">
         <label htmlFor="vip-date-picker" className="text-[11px] font-bold text-slate-400">
-          Fecha:
+          Historial:
         </label>
         <input
           id="vip-date-picker"
           type="date"
-          /* non-blocking */
+          max={today}
           value={selectedDate}
           onChange={(e) => {
             if (e.target.value) {
-              onDateChange(e.target.value);
+              handleDateSelect(e.target.value);
             }
           }}
-          className="rounded-xl border border-slate-800 bg-slate-950 px-2.5 py-1 text-xs font-semibold text-white focus:border-emerald-500 focus:outline-hidden cursor-pointer disabled:opacity-50"
+          className="rounded-xl border border-slate-800 bg-slate-950 px-2.5 py-1 text-xs font-semibold text-white focus:border-emerald-500 focus:outline-hidden cursor-pointer"
+          title="Seleccionar fecha previa para revisar resultados"
         />
       </div>
 
       {!isToday && (
         <button
           type="button"
-          /* non-blocking */
-          onClick={() => onDateChange(today)}
+          onClick={() => handleDateSelect(today)}
           className="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 underline pl-1 cursor-pointer"
+          title="Volver a la cartelera de hoy"
         >
           (Volver a Hoy)
         </button>

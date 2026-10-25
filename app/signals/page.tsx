@@ -463,7 +463,7 @@ export default function SignalsPage() {
                 📅 Cartelera Pre-Match:
               </span>
               <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-lg border border-emerald-500/20">
-                {selectedDate === getEcuadorDate(0) ? `🟢 Hoy (${selectedDate})` : selectedDate === getEcuadorDate(-1) ? `Ayer (${selectedDate})` : selectedDate === getEcuadorDate(1) ? `Mañana (${selectedDate})` : selectedDate}
+                {selectedDate === getEcuadorDate(0) ? `🟢 Hoy (${selectedDate})` : selectedDate === getEcuadorDate(-1) ? `Ayer (${selectedDate})` : `Historial (${selectedDate})`}
               </span>
             </div>
             <VipDateFilter
