@@ -7,6 +7,7 @@ import {
   loadDailySnapshotAsync,
   getEcuadorDateString,
   settleAllSnapshotsWithRealScores,
+  searchAndAddNewAlerts,
 } from "@/lib/sports/db";
 import { MarketOpportunity, isPreMatchQualified } from "@/lib/sports/prediction-engine";
 import { NHLSyncEngine } from "@/lib/sports/nhl/nhl-sync";
@@ -137,7 +138,18 @@ export async function GET(request: NextRequest) {
     } else {
       predictions = (await loadDailySnapshotAsync(targetDateStr, "football")) || [];
       if ((!predictions || predictions.length === 0) && targetDateStr === getEcuadorDateString(Date.now())) {
-        predictions = getStoredPredictions("football");
+        try {
+          // Automatic discovery and generation of today's slate upon initial visit without manual clicks
+          const searchRes = await searchAndAddNewAlerts();
+          if (searchRes?.predictions && searchRes.predictions.length > 0) {
+            predictions = searchRes.predictions;
+          } else {
+            predictions = await generatePredictionsForUpcoming(undefined, false);
+          }
+        } catch (genErr) {
+          console.warn("[API /api/signals] Auto-generation error on empty slate:", genErr);
+          predictions = getStoredPredictions("football");
+        }
       }
     }
 

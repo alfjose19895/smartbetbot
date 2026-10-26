@@ -3,6 +3,7 @@ import { searchAndAddNewAlerts, syncUpcomingFixtures, reconcileAndSettleAllSnaps
 import { ALL_LEAGUE_IDS } from "@/lib/sports/api-football";
 import { sendIndividualHighConfidenceAlerts } from "@/lib/push/web-push-sender";
 import { NHLSyncEngine } from "@/lib/sports/nhl/nhl-sync";
+import { NBASyncEngine } from "@/lib/sports/nba/nba-sync";
 import { isSportFeatureEnabled } from "@/lib/sports/config";
 import { SportProviderRouter } from "@/lib/sports/provider-router";
 import { SupportedSport } from "@/lib/sports/types";
@@ -57,8 +58,51 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // 2. NBA / NFL / NCAAF SYNC
-    if (sport === "nba" || sport === "nfl" || sport === "ncaaf") {
+    // 2. NBA SPECIFIC SYNC
+    if (sport === "nba") {
+      const nbaResult = await NBASyncEngine.getTodayNBASignals();
+      const mappedPredictions = nbaResult.signals.map((s) => ({
+        id: `nba-${s.id}`,
+        fixtureId: s.game.id,
+        match: `${s.game.homeTeam.name} vs ${s.game.awayTeam.name}`,
+        homeTeam: s.game.homeTeam.name,
+        awayTeam: s.game.awayTeam.name,
+        league: "NBA",
+        country: "USA / Canadá",
+        market: s.market,
+        selection: s.selection,
+        odds: s.decimalOdds,
+        fairOdds: Number((1 / (s.modelProbability || 0.55)).toFixed(2)),
+        probability: Math.round(s.modelProbability * 100),
+        smartScore: s.smartScore,
+        edge: s.expectedValue,
+        expectedValue: s.expectedValue,
+        confidence: (s.classification === "TOP PICK" ? "Muy Alta" : "Alta") as any,
+        explanation: s.explanation || "Análisis cuantitativo de ratings ofensivos/defensivos y boxscores NBA.",
+        kickoff: s.game.startsAt,
+        status: "pending" as const,
+        bookmaker: "Bet365",
+        bookmakerOdds: s.decimalOdds,
+        pickBadge: (s.classification === "TOP PICK" ? "bomba" : "valor") as any,
+        source: "nba_engine",
+        sport: "nba",
+      }));
+
+      return NextResponse.json({
+        success: true,
+        sport: "nba",
+        message: `Sincronización NBA completada: ${nbaResult.signals.length} señales generadas.`,
+        count: nbaResult.signals.length,
+        newCount: nbaResult.signals.length,
+        smartPick: nbaResult.smartPick,
+        totalGames: nbaResult.gamesCount,
+        signals: nbaResult.signals,
+        predictions: mappedPredictions,
+      });
+    }
+
+    // 3. NFL / NCAAF SYNC
+    if (sport === "nfl" || sport === "ncaaf") {
       const provider = SportProviderRouter.getProvider(sport as SupportedSport);
       const todayIso = new Date().toISOString().split("T")[0];
       const schedule = provider ? await provider.getSchedule(todayIso) : [];
@@ -93,7 +137,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // If 'all' was requested, also include NHL count
+    // If 'all' was requested, also include NHL and NBA counts
     let nhlSignalsCount = 0;
     if (sport === "all" && isSportFeatureEnabled("nhl")) {
       try {
@@ -104,15 +148,25 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    let nbaSignalsCount = 0;
+    if (sport === "all" && isSportFeatureEnabled("nba")) {
+      try {
+        const nbaRes = await NBASyncEngine.getTodayNBASignals();
+        nbaSignalsCount = nbaRes.signals.length;
+      } catch (nbaErr) {
+        console.warn("[API /api/admin/sync/predictions] NBA sync warning:", nbaErr);
+      }
+    }
+
     return NextResponse.json(
       {
         success: true,
         sport,
         message: sport === "all"
-          ? `${result.message} (+ ${nhlSignalsCount} señales NHL)`
+          ? `${result.message} (+ ${nhlSignalsCount} señales NHL, + ${nbaSignalsCount} señales NBA)`
           : result.message,
-        count: result.totalAlerts + nhlSignalsCount,
-        newCount: result.newCount + nhlSignalsCount,
+        count: result.totalAlerts + nhlSignalsCount + nbaSignalsCount,
+        newCount: result.newCount + nhlSignalsCount + nbaSignalsCount,
         newAlerts: result.newAlerts,
         predictions: result.predictions,
       },

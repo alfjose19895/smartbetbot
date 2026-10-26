@@ -219,10 +219,22 @@ export function isSportMatch(p: any, targetSport: string = "football"): boolean 
       p.pickBadge === "btts_vip" ||
       s === "btts_vip"
     );
+    const isHomeWinVip = Boolean(
+      p.isHomeWinVip ||
+      p.source === "home_win_vip" ||
+      p.pickBadge === "home_win_vip" ||
+      s === "home_win_vip"
+    );
+    const isAwayWinVip = Boolean(
+      p.isAwayWinVip ||
+      p.source === "away_win_vip" ||
+      p.pickBadge === "away_win_vip" ||
+      s === "away_win_vip"
+    );
     const isNhl = s === "nhl" || c === "NHL" || l.includes("NHL");
     const isNba = s === "nba" || c === "NBA" || l.includes("NBA");
     const isNfl = s === "nfl" || s === "ncaaf" || c === "NFL" || c === "NCAAF" || l.includes("NFL") || l.includes("NCAA");
-    return !isCornersVip && !isCardsVip && !isShotsVip && !isOver25Vip && !isBttsVip && !isNhl && !isNba && !isNfl;
+    return !isCornersVip && !isCardsVip && !isShotsVip && !isOver25Vip && !isBttsVip && !isHomeWinVip && !isAwayWinVip && !isNhl && !isNba && !isNfl;
   }
   if (tSport === "nhl") {
     return s === "nhl" || c === "NHL" || l.includes("NHL");
@@ -3246,9 +3258,158 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
         p.pickBadge === "btts_vip" ||
         (p as any).sport === "btts_vip"
       );
-      const isMcpPick = !isCornersVipPick && !isCardsVipPick && !isShotsVipPick && !isOver25VipPick && !isBttsVipPick && Boolean(p.isMcp || p.isMcpPick || p.source === "mcp" || p.pickBadge === "mcp" || (p.explanation && p.explanation.includes("MCP")) || (p.market && p.market.includes("MCP")));
+      const isHomeWinVipPick = Boolean(
+        (p as any).isHomeWinVip ||
+        p.source === "home_win_vip" ||
+        p.pickBadge === "home_win_vip" ||
+        (p as any).sport === "home_win_vip"
+      );
+      const isAwayWinVipPick = Boolean(
+        (p as any).isAwayWinVip ||
+        p.source === "away_win_vip" ||
+        p.pickBadge === "away_win_vip" ||
+        (p as any).sport === "away_win_vip"
+      );
+      const isMcpPick =
+        !isCornersVipPick &&
+        !isCardsVipPick &&
+        !isShotsVipPick &&
+        !isOver25VipPick &&
+        !isBttsVipPick &&
+        !isHomeWinVipPick &&
+        !isAwayWinVipPick &&
+        Boolean(
+          p.isMcp ||
+          p.isMcpPick ||
+          p.source === "mcp" ||
+          p.pickBadge === "mcp" ||
+          (p.explanation && p.explanation.includes("MCP")) ||
+          (p.market && p.market.includes("MCP"))
+        );
 
-      // Always parse score and dynamically evaluate against market and selection
+      const vipBadge = isCardsVipPick
+        ? "Tarjetas VIP"
+        : isShotsVipPick
+        ? "Disparos VIP"
+        : isOver25VipPick
+        ? "Over 2.5 VIP"
+        : isBttsVipPick
+        ? "Ambos Anotan VIP"
+        : isCornersVipPick
+        ? "Corners VIP"
+        : isHomeWinVipPick
+        ? "Ganador Local VIP"
+        : isAwayWinVipPick
+        ? "Ganador Visitante VIP"
+        : undefined;
+
+      const sourceKey: any = isCardsVipPick
+        ? "cards_vip"
+        : isShotsVipPick
+        ? "shots_vip"
+        : isOver25VipPick
+        ? "over25_vip"
+        : isBttsVipPick
+        ? "btts_vip"
+        : isCornersVipPick
+        ? "corners_vip"
+        : isHomeWinVipPick
+        ? "home_win_vip"
+        : isAwayWinVipPick
+        ? "away_win_vip"
+        : isMcpPick
+        ? "mcp"
+        : (p.source || ((p as any).sport || "algorithm"));
+
+      const sportKey = (p as any).sport || (
+        isCornersVipPick ? "corners_vip" :
+        isCardsVipPick ? "cards_vip" :
+        isShotsVipPick ? "shots_vip" :
+        isOver25VipPick ? "over25_vip" :
+        isBttsVipPick ? "btts_vip" :
+        isHomeWinVipPick ? "home_win_vip" :
+        isAwayWinVipPick ? "away_win_vip" :
+        undefined
+      );
+
+      const selLower = ((p as any).selection || "").toLowerCase().trim();
+      const mktLower = (p.market || "").toLowerCase().trim();
+      const matchKey = `${hNorm}-${aNorm}-${trueMatchDate}-${mktLower}-${selLower}`;
+
+      // 1. Authoritative Pre-settled Snapshot Result (Highest Priority)
+      const isAlreadySettled =
+        !isLiveMatch &&
+        (p.status === "won" ||
+          p.status === "lost" ||
+          (p as any).result === "WON" ||
+          (p as any).result === "LOST") &&
+        Boolean(p.actualScore);
+
+      if (isAlreadySettled) {
+        const isWon = (p as any).result === "WON" || p.status === "won";
+        const scoreText = p.actualScore || (isWon ? "Ganada" : "Perdida");
+        if (!processedMatchKeys.has(matchKey)) {
+          processedMatchKeys.add(matchKey);
+          settledPicks.push({
+            id: p.id || `snapshot-settled-${hNorm}-${aNorm}-${trueMatchDate}-${p.market}`,
+            date: trueMatchDate,
+            kickoff: p.kickoff,
+            match: p.match,
+            homeTeam: p.homeTeam,
+            awayTeam: p.awayTeam,
+            homeLogo: p.homeLogo,
+            awayLogo: p.awayLogo,
+            score: scoreText,
+            league: p.league,
+            leagueLogo: p.leagueLogo,
+            country: p.country,
+            market: p.market,
+            selection: p.selection || p.market,
+            odds: p.odds,
+            fairOdds: p.fairOdds || Math.max(1.10, Math.round((100 / (p.probability || 60)) * 100) / 100),
+            edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
+            probability: p.probability,
+            confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
+            pickBadge: isElitePick(p as any)
+              ? "elite"
+              : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge)
+                ? p.pickBadge
+                : ((p.edge || 0) >= 4.0 ? "valor" : ((p.odds || 0) >= 2.0 ? "bomba" : "estandar"))),
+            isElite: isElitePick(p as any),
+            isCornersVip: isCornersVipPick,
+            isCardsVip: isCardsVipPick,
+            isShotsVip: isShotsVipPick,
+            isOver25Vip: isOver25VipPick,
+            isBttsVip: isBttsVipPick,
+            isHomeWinVip: isHomeWinVipPick,
+            isAwayWinVip: isAwayWinVipPick,
+            vipBadge,
+            source: sourceKey,
+            sport: sportKey,
+            matchTiming: "prematch",
+            isLive: false,
+            isMcp: isMcpPick,
+            result: isWon ? "WON" : "LOST",
+            profit: typeof (p as any).profit === "number" ? (p as any).profit : (isWon ? Math.round((p.odds - 1) * 100) / 100 : -1),
+            explanation: p.explanation,
+          });
+        }
+        continue;
+      }
+
+      // Multi-sport picks (NBA, NHL, NFL, NCAAF) must only be settled by their dedicated engines
+      const c = (p.country || "").toUpperCase();
+      const l = (p.league || "").toUpperCase();
+      const s = ((p as any).sport || "").toLowerCase();
+      const isOtherSport =
+        c === "NHL" || l.includes("NHL") || s === "nhl" ||
+        c === "NBA" || l.includes("NBA") || s === "nba" ||
+        c === "NFL" || c === "NCAAF" || l.includes("NFL") || l.includes("NCAA") || s === "nfl" || s === "ncaaf";
+      if (isOtherSport) {
+        continue;
+      }
+
+      // 2. Unsettled Football Match: evaluate against realScore or numerical goals
       let parsedHomeGoals: number | null = null;
       let parsedAwayGoals: number | null = null;
 
@@ -3256,7 +3417,7 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
         parsedHomeGoals = realScore.home;
         parsedAwayGoals = realScore.away;
       } else {
-        const scoreRaw = p.actualScore || p.currentScore || "";
+        const scoreRaw = p.actualScore || "";
         const m = scoreRaw.match(/(\d+)\s*-\s*(\d+)/);
         if (m) {
           parsedHomeGoals = parseInt(m[1], 10);
@@ -3264,7 +3425,6 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
         }
       }
 
-      // 1. If match has numerical goals or verified score, evaluate market result with 100% precision
       if (parsedHomeGoals !== null && parsedAwayGoals !== null) {
         const evaluation = evaluateMarketResult(p.market, parsedHomeGoals, parsedAwayGoals, {
           selection: p.selection,
@@ -3280,9 +3440,12 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
           actualScore: p.actualScore || (p as any).score,
         });
 
+        if (evaluation.isPendingStats) {
+          continue;
+        }
+
         const isWon = evaluation.isWon;
         const scoreText = evaluation.actualScoreText || p.actualScore || (isWon ? "Ganada" : "Perdida");
-        const matchKey = `${hNorm}-${aNorm}-${trueMatchDate}-${(p.market || '').toLowerCase().trim()}`;
         if (!processedMatchKeys.has(matchKey)) {
           processedMatchKeys.add(matchKey);
           settledPicks.push({
@@ -3316,267 +3479,18 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
             isShotsVip: isShotsVipPick,
             isOver25Vip: isOver25VipPick,
             isBttsVip: isBttsVipPick,
-            vipBadge: isCardsVipPick ? "Tarjetas VIP" : (isShotsVipPick ? "Disparos VIP" : (isOver25VipPick ? "Over 2.5 VIP" : (isBttsVipPick ? "Ambos Anotan VIP" : (isCornersVipPick ? "Corners VIP" : undefined)))),
-            source: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isOver25VipPick ? "over25_vip" : (isBttsVipPick ? "btts_vip" : (isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")))))),
-            matchTiming: isLiveMatch ? "live" : "prematch",
-            isLive: isLiveMatch,
+            isHomeWinVip: isHomeWinVipPick,
+            isAwayWinVip: isAwayWinVipPick,
+            vipBadge,
+            source: sourceKey,
+            sport: sportKey,
+            matchTiming: "prematch",
+            isLive: false,
             isMcp: isMcpPick,
-            livePeriod: p.livePeriod,
-            liveMinute: p.liveMinute ? String(p.liveMinute) : undefined,
             result: isWon ? "WON" : "LOST",
             profit: isWon ? Math.round((p.odds - 1) * 100) / 100 : -1,
             explanation: p.explanation,
           });
-        }
-        continue;
-      }
-
-      // 2. Pre-settled matches without numerical scores (e.g. multi-sport settled picks)
-      const isPreSettled = !isLiveMatch && (p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST");
-      if (isPreSettled) {
-        const isWon = p.result === "WON" || p.status === "won";
-        const scoreText = p.actualScore || (isWon ? "Ganada" : "Perdida");
-        const matchKey = `${hNorm}-${aNorm}-${trueMatchDate}-${(p.market || '').toLowerCase().trim()}`;
-        if (!processedMatchKeys.has(matchKey)) {
-          processedMatchKeys.add(matchKey);
-          settledPicks.push({
-            id: p.id || `snapshot-settled-${hNorm}-${aNorm}-${trueMatchDate}-${p.market}`,
-            date: trueMatchDate,
-            kickoff: p.kickoff,
-            match: p.match,
-            homeTeam: p.homeTeam,
-            awayTeam: p.awayTeam,
-            homeLogo: p.homeLogo,
-            awayLogo: p.awayLogo,
-            score: scoreText,
-            league: p.league,
-            leagueLogo: p.leagueLogo,
-            country: p.country,
-            market: p.market,
-            selection: p.selection || p.market,
-            odds: p.odds,
-            fairOdds: p.fairOdds || Math.max(1.10, Math.round((100 / (p.probability || 60)) * 100) / 100),
-            edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
-            probability: p.probability,
-            confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
-            pickBadge: isElitePick(p as any)
-              ? "elite"
-              : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge)
-                ? p.pickBadge
-                : ((p.edge || 0) >= 4.0 ? "valor" : ((p.odds || 0) >= 2.0 ? "bomba" : "estandar"))),
-            isElite: isElitePick(p as any),
-            isCornersVip: isCornersVipPick,
-            isCardsVip: isCardsVipPick,
-            isShotsVip: isShotsVipPick,
-            isOver25Vip: isOver25VipPick,
-            isBttsVip: isBttsVipPick,
-            vipBadge: isCardsVipPick ? "Tarjetas VIP" : (isShotsVipPick ? "Disparos VIP" : (isOver25VipPick ? "Over 2.5 VIP" : (isBttsVipPick ? "Ambos Anotan VIP" : (isCornersVipPick ? "Corners VIP" : undefined)))),
-            source: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isOver25VipPick ? "over25_vip" : (isBttsVipPick ? "btts_vip" : (isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")))))),
-            matchTiming: isLiveMatch ? "live" : "prematch",
-            isLive: isLiveMatch,
-            isMcp: isMcpPick,
-            livePeriod: p.livePeriod,
-            liveMinute: p.liveMinute ? String(p.liveMinute) : undefined,
-            result: isWon ? "WON" : "LOST",
-            profit: isWon ? Math.round((p.odds - 1) * 100) / 100 : -1,
-            explanation: p.explanation,
-          });
-        }
-        continue;
-      }
-
-      if (isPreSettled) {
-        const isWon = p.result === "LOST" || p.status === "lost"
-          ? false
-          : p.result === "WON" || p.status === "won";
-        const scoreText = p.actualScore || (isWon ? "Ganada" : "Perdida");
-        const matchKey = `${hNorm}-${aNorm}-${trueMatchDate}-${(p.market || '').toLowerCase().trim()}`;
-        if (!processedMatchKeys.has(matchKey)) {
-          processedMatchKeys.add(matchKey);
-          settledPicks.push({
-            id: p.id || `snapshot-settled-${hNorm}-${aNorm}-${trueMatchDate}-${p.market}`,
-            date: trueMatchDate,
-            kickoff: p.kickoff,
-            match: p.match,
-            homeTeam: p.homeTeam,
-            awayTeam: p.awayTeam,
-            homeLogo: p.homeLogo,
-            awayLogo: p.awayLogo,
-            score: scoreText,
-            league: p.league,
-            leagueLogo: p.leagueLogo,
-            country: p.country,
-            market: p.market,
-            selection: p.selection || p.market,
-            odds: p.odds,
-            fairOdds: p.fairOdds || Math.max(1.10, Math.round((100 / (p.probability || 60)) * 100) / 100),
-            edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
-            probability: p.probability,
-            confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
-            pickBadge: isElitePick(p as any)
-              ? "elite"
-              : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge)
-                ? p.pickBadge
-                : ((p.edge || 0) >= 4.0 ? "valor" : ((p.odds || 0) >= 2.0 ? "bomba" : "estandar"))),
-            isElite: isElitePick(p as any),
-            isCornersVip: isCornersVipPick,
-            isCardsVip: isCardsVipPick,
-            isShotsVip: isShotsVipPick,
-            isOver25Vip: isOver25VipPick,
-            isBttsVip: isBttsVipPick,
-            vipBadge: isCardsVipPick ? "Tarjetas VIP" : (isShotsVipPick ? "Disparos VIP" : (isOver25VipPick ? "Over 2.5 VIP" : (isBttsVipPick ? "Ambos Anotan VIP" : (isCornersVipPick ? "Corners VIP" : undefined)))),
-            source: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isOver25VipPick ? "over25_vip" : (isBttsVipPick ? "btts_vip" : (isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")))))),
-            matchTiming: isLiveMatch ? "live" : "prematch",
-            isLive: isLiveMatch,
-            isMcp: isMcpPick,
-            livePeriod: p.livePeriod,
-            liveMinute: p.liveMinute ? String(p.liveMinute) : undefined,
-            result: isWon ? "WON" : "LOST",
-            profit: isWon ? Math.round((p.odds - 1) * 100) / 100 : -1,
-            explanation: p.explanation,
-          });
-        }
-        continue;
-      }
-
-      // If realScore exists from API-Football/Supabase
-      if (realScore && typeof realScore.home === "number" && typeof realScore.away === "number") {
-        const homeGoals = realScore.home;
-        const awayGoals = realScore.away;
-
-        const evaluation = evaluateMarketResult(p.market, homeGoals, awayGoals, {
-          selection: p.selection,
-          pick: p.pick,
-          line: (p as any).cornerAnalysis?.recommendedLine,
-          league: p.league,
-          country: p.country,
-          homeTeam: p.homeTeam,
-          awayTeam: p.awayTeam,
-          probability: p.probability,
-          cornerAnalysis: (p as any).cornerAnalysis,
-          expectedCorners: (p as any).cornerAnalysis?.expectedTotalCorners,
-          actualScore: p.actualScore || (p as any).score,
-        });
-
-        const isWon = evaluation.isWon;
-        const scoreText = p.actualScore || evaluation.actualScoreText;
-
-        const matchKey = `${hNorm}-${aNorm}-${dateStr}-${p.market}`;
-        if (!processedMatchKeys.has(matchKey)) {
-          processedMatchKeys.add(matchKey);
-          settledPicks.push({
-            id: p.id || `snapshot-settled-${scoreKeyWithDate}-${p.market}`,
-            date: dateStr,
-            kickoff: p.kickoff,
-            match: p.match,
-            homeTeam: p.homeTeam,
-            awayTeam: p.awayTeam,
-            homeLogo: p.homeLogo,
-            awayLogo: p.awayLogo,
-            score: scoreText,
-            league: p.league,
-            leagueLogo: p.leagueLogo,
-            country: p.country,
-            market: p.market,
-            selection: p.selection || p.market,
-            odds: p.odds,
-            fairOdds: p.fairOdds || Math.max(1.10, Math.round((100 / (p.probability || 60)) * 100) / 100),
-            edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
-            probability: p.probability,
-            confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
-            pickBadge: isElitePick(p as any)
-              ? "elite"
-              : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge)
-                ? p.pickBadge
-                : ((p.edge || 0) >= 4.0 ? "valor" : ((p.odds || 0) >= 2.0 ? "bomba" : "estandar"))),
-            isElite: isElitePick(p as any),
-            isCornersVip: isCornersVipPick,
-            isCardsVip: isCardsVipPick,
-            isShotsVip: isShotsVipPick,
-            isOver25Vip: isOver25VipPick,
-            isBttsVip: isBttsVipPick,
-            vipBadge: isCardsVipPick ? "Tarjetas VIP" : (isShotsVipPick ? "Disparos VIP" : (isOver25VipPick ? "Over 2.5 VIP" : (isBttsVipPick ? "Ambos Anotan VIP" : (isCornersVipPick ? "Corners VIP" : undefined)))),
-            source: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isOver25VipPick ? "over25_vip" : (isBttsVipPick ? "btts_vip" : (isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")))))),
-            matchTiming: isLiveMatch ? "live" : "prematch",
-            isLive: isLiveMatch,
-            isMcp: isMcpPick,
-            livePeriod: p.livePeriod,
-            liveMinute: p.liveMinute ? String(p.liveMinute) : undefined,
-            result: isWon ? "WON" : "LOST",
-            profit: isWon ? Math.round((p.odds - 1) * 100) / 100 : -1,
-            explanation: p.explanation,
-          });
-        }
-        continue;
-      }
-
-      // If in-play match has currentScore (e.g. "1 - 0", "2 - 1", "1 - 1", "0 - 1")
-      if (p.currentScore && p.currentScore.includes("-")) {
-        const parts = p.currentScore.split("-").map(s => parseInt(s.trim(), 10));
-        if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-          const homeGoals = parts[0];
-          const awayGoals = parts[1];
-          const evaluation = evaluateMarketResult(p.market, homeGoals, awayGoals, {
-            selection: p.selection,
-            pick: p.pick,
-            line: (p as any).cornerAnalysis?.recommendedLine,
-            league: p.league,
-            country: p.country,
-            homeTeam: p.homeTeam,
-            awayTeam: p.awayTeam,
-            probability: p.probability,
-            cornerAnalysis: (p as any).cornerAnalysis,
-            expectedCorners: (p as any).cornerAnalysis?.expectedTotalCorners,
-            actualScore: p.actualScore || (p as any).score,
-          });
-
-          const isWon = evaluation.isWon;
-          const scoreText = p.actualScore || `${p.currentScore} (${p.liveMinute || p.livePeriod || "En Juego"})`;
-
-          const matchKey = `${hNorm}-${aNorm}-${dateStr}-${p.market}`;
-          if (!processedMatchKeys.has(matchKey)) {
-            processedMatchKeys.add(matchKey);
-            settledPicks.push({
-              id: p.id || `snapshot-settled-${scoreKeyWithDate}-${p.market}`,
-              date: dateStr,
-              kickoff: p.kickoff,
-              match: p.match,
-              homeTeam: p.homeTeam,
-              awayTeam: p.awayTeam,
-              homeLogo: p.homeLogo,
-              awayLogo: p.awayLogo,
-              score: scoreText,
-              league: p.league,
-              leagueLogo: p.leagueLogo,
-              country: p.country,
-              market: p.market,
-              selection: p.selection || p.market,
-              odds: p.odds,
-              fairOdds: p.fairOdds || Math.max(1.10, Math.round((100 / (p.probability || 60)) * 100) / 100),
-              edge: p.edge || Math.max(0, Math.round(((p.odds / (p.fairOdds || 1.5)) - 1) * 1000) / 10),
-              probability: p.probability,
-              confidence: (p.probability >= 70 ? "Muy Alta" : p.probability >= 58 ? "Alta" : p.probability >= 50 ? "Media" : "Moderada"),
-              pickBadge: isElitePick(p as any)
-                ? "elite"
-                : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge)
-                  ? p.pickBadge
-                  : ((p.edge || 0) >= 4.0 ? "valor" : ((p.odds || 0) >= 2.0 ? "bomba" : "estandar"))),
-              isElite: isElitePick(p as any),
-              isCornersVip: isCornersVipPick,
-              isCardsVip: isCardsVipPick,
-              isShotsVip: isShotsVipPick,
-              vipBadge: isCardsVipPick ? "Tarjetas VIP" : (isShotsVipPick ? "Disparos VIP" : (isCornersVipPick ? "Corners VIP" : undefined)),
-              source: isCardsVipPick ? "cards_vip" : (isShotsVipPick ? "shots_vip" : (isCornersVipPick ? "corners_vip" : (isMcpPick ? "mcp" : (p.source || "algorithm")))),
-              matchTiming: "live",
-              isLive: true,
-              isMcp: isMcpPick,
-              livePeriod: p.livePeriod,
-              liveMinute: p.liveMinute ? String(p.liveMinute) : undefined,
-              result: isWon ? "WON" : "LOST",
-              profit: isWon ? Math.round((p.odds - 1) * 100) / 100 : -1,
-              explanation: p.explanation,
-            });
-          }
         }
       }
     }

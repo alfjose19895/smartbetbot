@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     let filteredHistory = history;
     let filteredParlays = parlays;
 
-    const VIP_SPORTS = ["corners_vip", "cards_vip", "shots_vip", "over25_vip", "btts_vip"];
+    const VIP_SPORTS = ["corners_vip", "cards_vip", "shots_vip", "over25_vip", "btts_vip", "home_win_vip", "away_win_vip"];
     const identity = await getVerifiedIdentity();
     const isAdmin = Boolean(
       identity &&
@@ -54,6 +54,8 @@ export async function GET(request: NextRequest) {
           !h.isShotsVip &&
           !h.isOver25Vip &&
           !h.isBttsVip &&
+          !(h as any).isHomeWinVip &&
+          !(h as any).isAwayWinVip &&
           !VIP_SPORTS.includes(h.source || "") &&
           !VIP_SPORTS.includes(h.pickBadge || "") &&
           !VIP_SPORTS.includes(((h as any).sport || "").toLowerCase())
@@ -134,6 +136,12 @@ export async function GET(request: NextRequest) {
         filteredParlays = [];
       } else if (sport === "btts_vip") {
         filteredHistory = filteredHistory.filter((h) => h.isBttsVip || h.source === "btts_vip" || h.pickBadge === "btts_vip" || ((h as any).sport || "") === "btts_vip");
+        filteredParlays = [];
+      } else if (sport === "home_win_vip") {
+        filteredHistory = filteredHistory.filter((h) => (h as any).isHomeWinVip || h.source === "home_win_vip" || h.pickBadge === "home_win_vip" || ((h as any).sport || "") === "home_win_vip");
+        filteredParlays = [];
+      } else if (sport === "away_win_vip") {
+        filteredHistory = filteredHistory.filter((h) => (h as any).isAwayWinVip || h.source === "away_win_vip" || h.pickBadge === "away_win_vip" || ((h as any).sport || "") === "away_win_vip");
         filteredParlays = [];
       }
     }
