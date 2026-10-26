@@ -226,4 +226,61 @@ describe("Módulo Destacados (Filtro 5 Estrellas para Fútbol)", () => {
     expect(isPreMatchQualified(amateurPick)).toBe(false);
   });
 
+  it("Pre-Match Module: rejects below-threshold picks ensuring 100% harmony between search count and front display", () => {
+    // 1. Corners under 70% must be rejected
+    expect(isPreMatchQualified({
+      sport: "football",
+      league: "La Liga",
+      market: "Córners",
+      selection: "Over 8.5",
+      probability: 66.8,
+    })).toBe(false);
+
+    // 2. BTTS under 58% must be rejected
+    expect(isPreMatchQualified({
+      sport: "football",
+      league: "Ligue 1",
+      market: "Ambos Equipos Anotan",
+      selection: "Sí",
+      probability: 56.2,
+    })).toBe(false);
+
+    // 3. Goals under 60% must be rejected
+    expect(isPreMatchQualified({
+      sport: "football",
+      league: "Serie A",
+      market: "Over 2.5 Goles",
+      selection: "Over 2.5",
+      probability: 57.4,
+    })).toBe(false);
+
+    // 4. Local under 60% must be rejected
+    expect(isPreMatchQualified({
+      sport: "football",
+      league: "Segunda Division",
+      market: "Ganador Local",
+      selection: "1",
+      probability: 52.8,
+    })).toBe(false);
+
+    // 5. Qualified 11-pick simulation with 3 unqualified items leaves exactly 8
+    const mixedBatch = [
+      { sport: "football", league: "La Liga", leagueId: 140, market: "Ganador Local", selection: "1", probability: 65 },
+      { sport: "football", league: "Premier League", leagueId: 39, market: "Ambos Equipos Anotan", selection: "Sí", probability: 60 },
+      { sport: "football", league: "Serie A", leagueId: 135, market: "Over 2.5 Goles", selection: "Over 2.5", probability: 62 },
+      { sport: "football", league: "Bundesliga", leagueId: 78, market: "Córners", selection: "Over 8.5", probability: 72 },
+      { sport: "football", league: "Ligue 1", leagueId: 61, market: "Ganador Visitante", selection: "2", probability: 61 },
+      { sport: "football", league: "Primeira Liga", leagueId: 94, market: "Ambos Equipos Anotan", selection: "Sí", probability: 59 },
+      { sport: "football", league: "Eredivisie", leagueId: 88, market: "Over 2.5 Goles", selection: "Over 2.5", probability: 64 },
+      { sport: "football", league: "Brasileirao", leagueId: 71, market: "Ganador Local", selection: "1", probability: 63 },
+      // 3 below-threshold picks that previously caused the 11 vs 8 discrepancy:
+      { sport: "football", league: "La Liga", leagueId: 140, market: "Córners", selection: "Over 8.5", probability: 66.8 },
+      { sport: "football", league: "Ligue 1", leagueId: 61, market: "Ambos Equipos Anotan", selection: "Sí", probability: 56.2 },
+      { sport: "football", league: "Segunda Division", leagueId: 141, market: "Ganador Local", selection: "1", probability: 52.8 },
+    ];
+    expect(mixedBatch.length).toBe(11);
+    const qualified = mixedBatch.filter(isPreMatchQualified);
+    expect(qualified.length).toBe(8);
+  });
+
 });

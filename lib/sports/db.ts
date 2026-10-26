@@ -30,6 +30,7 @@ import {
   isQualifiedOpportunity,
   isElitePick,
   getMarketPriorityRank,
+  isPreMatchQualified,
 } from "./prediction-engine";
 
 export function getEcuadorDateString(d: Date | number | string = Date.now()): string {
@@ -2744,6 +2745,8 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
   // 1. Auto-liquidar marcadores reales de partidos finalizados antes de buscar
   await settleActiveSnapshotWithRealScores(todayDateStr);
   let existingSnapshot = (await loadDailySnapshotAsync(todayDateStr)) || loadDailySnapshot(todayDateStr) || [];
+  // Ensure legacy or unqualified pending picks from previous syncs are pruned so they never pollute the Pre-Match count
+  existingSnapshot = existingSnapshot.filter((p) => p.status !== "pending" || isPreMatchQualified(p));
 
   const existingMatchKeys = new Set(
     existingSnapshot.map((p) => {
@@ -2858,11 +2861,17 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     });
 
     if (opps.length > 0) {
+      let fixtureHadQualified = false;
       for (const opp of opps) {
-        candidateOpportunities.push(opp);
+        if (isPreMatchQualified(opp)) {
+          candidateOpportunities.push(opp);
+          fixtureHadQualified = true;
+        }
       }
-      usedTeams.add(hNorm);
-      usedTeams.add(aNorm);
+      if (fixtureHadQualified) {
+        usedTeams.add(hNorm);
+        usedTeams.add(aNorm);
+      }
     }
   }
 
@@ -2878,8 +2887,10 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     const slot = getTimeSlot(opp.kickoff);
     const topPick = (prob >= 68.0 || conf === "Muy Alta") && (opp.smartScore || 0) >= 88;
 
-    // Filter out unviable high odds (> 2.20) or low probabilities
-    if (opp.odds > 2.20 || prob < 52) continue;
+    // Strict validation: Must qualify for the Pre-Match suite
+    if (!isPreMatchQualified(opp)) continue;
+    // Filter out unviable high odds (> 2.20)
+    if (opp.odds > 2.20) continue;
 
     if (opp.odds >= 1.65) {
       poolValor.push({
@@ -3046,6 +3057,7 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     const retainedExisting = existingSnapshot.filter((p) => {
       const k = `${getCanonicalTeamKey(p.homeTeam)}-${getCanonicalTeamKey(p.awayTeam)}`;
       if (p.status !== "pending") return true;
+      if (!isPreMatchQualified(p)) return false;
       return !newlyAddedKeys.has(k);
     });
 

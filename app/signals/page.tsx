@@ -185,12 +185,14 @@ export default function SignalsPage() {
         : [];
 
       // Client-side pure football guarantee (strictly exclude non-football data)
-      const cleanUniqueSignals = deduplicatePicksList(serverSignals).filter((s) => {
-        const c = (s.country || "").toUpperCase();
-        const l = (s.league || "").toUpperCase();
-        const sp = ((s as any).sport || "").toLowerCase();
-        return c !== "NHL" && !l.includes("NHL") && sp !== "nhl" && c !== "NBA" && !l.includes("NBA") && sp !== "nba" && c !== "NFL" && sp !== "nfl";
-      });
+      const cleanUniqueSignals = deduplicatePicksList(serverSignals)
+        .filter((s) => {
+          const c = (s.country || "").toUpperCase();
+          const l = (s.league || "").toUpperCase();
+          const sp = ((s as any).sport || "").toLowerCase();
+          return c !== "NHL" && !l.includes("NHL") && sp !== "nhl" && c !== "NBA" && !l.includes("NBA") && sp !== "nba" && c !== "NFL" && sp !== "nfl";
+        })
+        .filter(isPreMatchQualified);
       setPredictions(cleanUniqueSignals);
     } catch (err) {
       console.error("Error loading football signals:", err);
@@ -207,8 +209,11 @@ export default function SignalsPage() {
     window.addEventListener("predictions-updated", handleUpdated);
     const handleNewAlertsDiscovered = (e: any) => {
       if (e.detail?.newAlerts && e.detail.newAlerts.length > 0) {
-        setNewlyDiscoveredAlerts(e.detail.newAlerts);
-        setNewAlertsModalOpen(true);
+        const qualified = e.detail.newAlerts.filter(isPreMatchQualified);
+        if (qualified.length > 0) {
+          setNewlyDiscoveredAlerts(qualified);
+          setNewAlertsModalOpen(true);
+        }
       }
     };
     window.addEventListener("new-alerts-discovered", handleNewAlertsDiscovered);
@@ -229,11 +234,17 @@ export default function SignalsPage() {
       });
       const data = await res.json();
       if (data.success) {
-        const cleanPicks = Array.isArray(data.predictions) ? deduplicatePicksList(data.predictions) : predictions;
-        if (data.newAlerts && data.newAlerts.length > 0) {
-          setNewlyDiscoveredAlerts(data.newAlerts);
+        const cleanPicks = Array.isArray(data.predictions)
+          ? deduplicatePicksList(data.predictions).filter(isPreMatchQualified)
+          : predictions.filter(isPreMatchQualified);
+        const cleanNewAlerts = Array.isArray(data.newAlerts)
+          ? data.newAlerts.filter(isPreMatchQualified)
+          : [];
+
+        if (cleanNewAlerts.length > 0) {
+          setNewlyDiscoveredAlerts(cleanNewAlerts);
           setNewAlertsModalOpen(true);
-          setSyncMessage(`✓ ¡Se encontraron ${data.newAlerts.length} nuevas alertas de hoy! Agregadas al panel.`);
+          setSyncMessage(`✓ ¡Se encontraron ${cleanNewAlerts.length} nuevas alertas de hoy! Agregadas al panel.`);
         } else {
           const todayPending = cleanPicks.filter(
             (p: MarketOpportunity) => p.status === "pending" || (!p.actualScore && p.status !== "won" && p.status !== "lost")
@@ -242,7 +253,7 @@ export default function SignalsPage() {
             setNewlyDiscoveredAlerts(sortByKickoff(todayPending, "asc"));
             setNewAlertsModalOpen(true);
           }
-          setSyncMessage(`✓ Mercado de hoy al día (${data.count || cleanPicks.length} alertas activas).`);
+          setSyncMessage(`✓ Mercado de hoy al día (${cleanPicks.length} alertas activas).`);
         }
         if (Array.isArray(data.predictions)) {
           setPredictions(cleanPicks);
