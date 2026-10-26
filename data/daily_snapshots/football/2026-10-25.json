@@ -32,7 +32,7 @@
     "isDestacado": false,
     "smartScore": 99,
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.5 córners totales.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -145,7 +145,11 @@
       "recommendedLine": 8.5,
       "saferLine": 8.5
     },
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "sport": "football",
+    "actualScore": "7 - 3 (10 Córners)",
+    "result": "WON",
+    "profit": 0.67
   },
   {
     "h2h": [],
@@ -235,7 +239,7 @@
     "isDestacado": false,
     "smartScore": 99,
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.4 córners totales.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -349,7 +353,11 @@
       ],
       "recommendedLine": 8.5
     },
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "sport": "football",
+    "actualScore": "7 - 5 (12 Córners)",
+    "result": "WON",
+    "profit": 0.67
   },
   {
     "h2h": [],
@@ -362,7 +370,7 @@
     "league": "Serie A",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-25T12:54:07.726Z",
     "awayElo": 1750,
     "country": "Italia",
@@ -391,20 +399,20 @@
     "homeTeamId": 505,
     "leagueLogo": "https://media.api-sports.io/football/leagues/135.png",
     "leagueTier": 1,
-    "liveMinute": "47",
-    "livePeriod": "2H",
     "smartScore": 99,
     "explanation": "Inter impone una marcada solvencia como anfitrión (0 triunfos en sus últimos 5 compromisos) y promedia 3.3 xG en casa. Su dominio territorial y solidez defensiva ante un Fiorentina que ha cedido 0 derrotas fuera fundamentan la ventaja local.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 75.8,
-    "currentScore": "0 - 0",
     "isHomeWinVip": true,
     "bookmakerOdds": 1.36,
     "destacadoRule": "Ganador Local (≥ 58%)",
     "expectedValue": 3,
     "isNewlyDiscovered": true,
-    "impliedProbability": 73.5
+    "impliedProbability": 73.5,
+    "actualScore": "2 - 1",
+    "result": "WON",
+    "profit": 0.36
   },
   {
     "h2h": [],
@@ -417,7 +425,7 @@
     "league": "La Liga",
     "market": "Ganador Local",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-25T12:54:07.987Z",
     "awayElo": 1580,
     "country": "España",
@@ -449,14 +457,17 @@
     "smartScore": 99,
     "explanation": "Solidez posicional y eficacia en área propia: Athletic Club concede menos de 0.9 xG de local, mientras que Getafe muestra dificultades para generar peligro constante a domicilio (0.5 xG foráneo).",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 68.1,
     "isHomeWinVip": true,
     "bookmakerOdds": 1.6,
     "destacadoRule": "Ganador Local (≥ 58%)",
     "expectedValue": 9,
     "isNewlyDiscovered": true,
-    "impliedProbability": 62.5
+    "impliedProbability": 62.5,
+    "actualScore": "4 - 0",
+    "result": "WON",
+    "profit": 0.6
   },
   {
     "h2h": [],
@@ -470,7 +481,7 @@
     "league": "Premier League",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "addedAt": "2026-10-25T12:59:53.371Z",
     "awayElo": 1544,
     "country": "Bielorrusia",
@@ -491,7 +502,7 @@
     "isMcpPick": true,
     "isTopPick": true,
     "modelOdds": 1.28,
-    "pickBadge": "estandar",
+    "pickBadge": "elite",
     "selection": "Over 7.5",
     "awayTeamId": 386,
     "confidence": "Muy Alta",
@@ -501,7 +512,7 @@
     "smartScore": 91,
     "explanation": "Volumen constante por las bandas: El cruce táctico entre Neman (6.2 córners de media en casa) y Dinamo Brest (4.4 foráneos) proyecta 10.6 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 78,
     "bookmakerOdds": 1.35,
     "destacadoRule": "Alta de Córners (≥ 70%)",
@@ -606,7 +617,10 @@
       "expectedTotalCorners": 10.62
     },
     "isNewlyDiscovered": true,
-    "impliedProbability": 74.1
+    "impliedProbability": 74.1,
+    "actualScore": "0 - 0 (0 Córners)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [],
@@ -619,7 +633,7 @@
     "league": "Serie A",
     "market": "Ganador Local",
     "source": "home_win_vip",
-    "status": "pending",
+    "status": "lost",
     "addedAt": "2026-10-25T12:54:08.331Z",
     "awayElo": 1527,
     "country": "Italia",
@@ -651,14 +665,17 @@
     "smartScore": 99,
     "explanation": "Rendimiento muy fiable de Atalanta en su feudo (0 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Frosinone inclina con claridad la balanza estadística hacia el triunfo local.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 64.7,
     "isHomeWinVip": true,
     "bookmakerOdds": 1.85,
     "destacadoRule": "Ganador Local (≥ 58%)",
     "expectedValue": 19.8,
     "isNewlyDiscovered": true,
-    "impliedProbability": 54.1
+    "impliedProbability": 54.1,
+    "actualScore": "4 - 4",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [],
@@ -671,7 +688,7 @@
     "league": "Premier League",
     "market": "Ganador Local",
     "source": "home_win_vip",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-25T12:54:08.450Z",
     "awayElo": 1740,
     "country": "Inglaterra",
@@ -703,14 +720,17 @@
     "smartScore": 99,
     "explanation": "Rendimiento muy fiable de Liverpool en su feudo (0 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Brighton inclina con claridad la balanza estadística hacia el triunfo local.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 60.3,
     "isHomeWinVip": true,
     "bookmakerOdds": 2.15,
     "destacadoRule": "Ganador Local (≥ 58%)",
     "expectedValue": 29.6,
     "isNewlyDiscovered": true,
-    "impliedProbability": 46.5
+    "impliedProbability": 46.5,
+    "actualScore": "2 - 0",
+    "result": "WON",
+    "profit": 1.15
   },
   {
     "h2h": [],
@@ -724,7 +744,7 @@
     "league": "Premier League",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "addedAt": "2026-10-25T12:59:53.371Z",
     "awayElo": 1670,
     "country": "Inglaterra",
@@ -755,12 +775,15 @@
     "smartScore": 99,
     "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
     "isDestacado": false,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 57.8,
     "bookmakerOdds": 1.53,
     "expectedValue": -11.5,
     "isNewlyDiscovered": true,
-    "impliedProbability": 65.4
+    "impliedProbability": 65.4,
+    "actualScore": "0 - 3 (No)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [],
@@ -774,7 +797,7 @@
     "league": "Serie A",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-25T12:59:53.371Z",
     "awayElo": 1482,
     "country": "Italia",
@@ -805,7 +828,7 @@
     "smartScore": 99,
     "explanation": "Volumen constante por las bandas: El cruce táctico entre Genoa (5.6 córners de media en casa) y Venezia (4.3 foráneos) proyecta 9.9 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
     "isDestacado": false,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 61.5,
     "bookmakerOdds": 1.73,
     "expectedValue": 6.4,
@@ -913,7 +936,10 @@
       "expectedTotalCorners": 9.89
     },
     "isNewlyDiscovered": true,
-    "impliedProbability": 57.8
+    "impliedProbability": 57.8,
+    "actualScore": "2 - 10 (12 Córners)",
+    "result": "WON",
+    "profit": 0.73
   },
   {
     "h2h": [],
@@ -927,7 +953,7 @@
     "league": "Premier League",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-25T12:59:53.371Z",
     "awayElo": 1670,
     "country": "Inglaterra",
@@ -958,12 +984,15 @@
     "smartScore": 99,
     "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
     "isDestacado": false,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 56.2,
     "bookmakerOdds": 1.67,
     "expectedValue": -6.2,
     "isNewlyDiscovered": true,
-    "impliedProbability": 59.9
+    "impliedProbability": 59.9,
+    "actualScore": "1 - 1 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.67
   },
   {
     "h2h": [],
@@ -977,7 +1006,7 @@
     "league": "Bundesliga",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-25T12:59:53.371Z",
     "awayElo": 1950,
     "country": "Alemania",
@@ -1008,13 +1037,16 @@
     "smartScore": 99,
     "explanation": "Propuesta vertical y transiciones dinámicas: Tanto 1899 Hoffenheim como Bayer Leverkusen promedian más de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la línea de 2.5 goles.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 71.5,
     "bookmakerOdds": 1.41,
     "destacadoRule": "Alta de Goles (≥ 60%)",
     "expectedValue": 0.8,
     "isNewlyDiscovered": true,
-    "impliedProbability": 70.9
+    "impliedProbability": 70.9,
+    "actualScore": "3 - 0 (3 Goles)",
+    "result": "WON",
+    "profit": 0.41
   },
   {
     "h2h": [],
@@ -1027,7 +1059,7 @@
     "league": "Ligue 1",
     "market": "Ganador Local",
     "source": "home_win_vip",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-25T12:54:09.259Z",
     "awayElo": 1651,
     "country": "Francia",
@@ -1059,14 +1091,17 @@
     "smartScore": 99,
     "explanation": "Diferencial cualitativo a favor de Marseille (+139 puntos Elo). Su balance de 2.4 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Le Havre.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 67.3,
     "isHomeWinVip": true,
     "bookmakerOdds": 1.48,
     "destacadoRule": "Ganador Local (≥ 58%)",
     "expectedValue": -0.4,
     "isNewlyDiscovered": true,
-    "impliedProbability": 67.6
+    "impliedProbability": 67.6,
+    "actualScore": "4 - 3",
+    "result": "WON",
+    "profit": 0.48
   },
   {
     "h2h": [],
@@ -1079,7 +1114,7 @@
     "league": "Ligue 1",
     "market": "Ganador Local",
     "source": "home_win_vip",
-    "status": "pending",
+    "status": "lost",
     "addedAt": "2026-10-25T12:54:09.316Z",
     "awayElo": 1574,
     "country": "Francia",
@@ -1111,14 +1146,17 @@
     "smartScore": 99,
     "explanation": "Rendimiento muy fiable de Toulouse en su feudo (0 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Estac Troyes inclina con claridad la balanza estadística hacia el triunfo local.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 59.5,
     "isHomeWinVip": true,
     "bookmakerOdds": 1.5,
     "destacadoRule": "Ganador Local (≥ 58%)",
     "expectedValue": -10.7,
     "isNewlyDiscovered": true,
-    "impliedProbability": 66.7
+    "impliedProbability": 66.7,
+    "actualScore": "0 - 0",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [],
@@ -1132,7 +1170,7 @@
     "league": "Ligue 1",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-25T12:59:53.371Z",
     "awayElo": 1548,
     "country": "Francia",
@@ -1163,12 +1201,15 @@
     "smartScore": 99,
     "explanation": "Tanto Auxerre como Le Mans han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
     "isDestacado": false,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 56.4,
     "bookmakerOdds": 1.62,
     "expectedValue": -8.6,
     "isNewlyDiscovered": true,
-    "impliedProbability": 61.7
+    "impliedProbability": 61.7,
+    "actualScore": "1 - 1 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.62
   },
   {
     "h2h": [],
@@ -1182,7 +1223,7 @@
     "league": "Bundesliga",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-25T12:59:53.371Z",
     "awayElo": 2000,
     "country": "Alemania",
@@ -1213,13 +1254,16 @@
     "smartScore": 99,
     "explanation": "SC Freiburg ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Bayern München acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 3.8 tantos totales con alta actividad en ambas áreas.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 71.5,
     "bookmakerOdds": 1.43,
     "destacadoRule": "Alta de Goles (≥ 60%)",
     "expectedValue": 2.2,
     "isNewlyDiscovered": true,
-    "impliedProbability": 69.9
+    "impliedProbability": 69.9,
+    "actualScore": "1 - 3 (4 Goles)",
+    "result": "WON",
+    "profit": 0.43
   },
   {
     "h2h": [],
@@ -1233,7 +1277,7 @@
     "league": "Premier League",
     "market": "Córners",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-25T12:59:53.371Z",
     "awayElo": 1613,
     "country": "Inglaterra",
@@ -1264,7 +1308,7 @@
     "smartScore": 99,
     "explanation": "Patrón de repliegue y rechaces: Sunderland sostiene una alta cadencia de llegadas al último tercio generando tiros de esquina constantes, mientras que Leeds concede más de 5.2 córners en promedio cuando juega de visitante.",
     "isDestacado": false,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 67.8,
     "bookmakerOdds": 1.67,
     "expectedValue": 13.2,
@@ -1371,7 +1415,10 @@
       "expectedTotalCorners": 10.56
     },
     "isNewlyDiscovered": true,
-    "impliedProbability": 59.9
+    "impliedProbability": 59.9,
+    "actualScore": "4 - 5 (9 Córners)",
+    "result": "WON",
+    "profit": 0.67
   },
   {
     "fixtureId": 1575198,
@@ -1407,7 +1454,7 @@
     "destacadoRule": "Ganador Visitante (≥ 60%)",
     "smartScore": 99,
     "explanation": "Bayern München sostiene un rendimiento sobresaliente fuera de su estadio, promediando 3.4 tantos esperados por compromiso frente a un SC Freiburg que sufre ante rivales de bloque alto.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -1418,7 +1465,11 @@
     "awayElo": 2000,
     "timeSlot": "morning",
     "isTopPick": true,
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "sport": "football",
+    "actualScore": "1 - 3",
+    "result": "WON",
+    "profit": 0.48
   },
   {
     "h2h": [],
@@ -1432,7 +1483,7 @@
     "league": "Serie A",
     "market": "Over 2.5 Goles",
     "source": "mcp",
-    "status": "pending",
+    "status": "lost",
     "addedAt": "2026-10-25T12:59:53.371Z",
     "awayElo": 1870,
     "country": "Italia",
@@ -1463,12 +1514,15 @@
     "smartScore": 99,
     "explanation": "Propuesta vertical y transiciones dinámicas: Tanto Lecce como Juventus promedian más de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la línea de 2.5 goles.",
     "isDestacado": false,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 58.8,
     "bookmakerOdds": 1.8,
     "expectedValue": 5.8,
     "isNewlyDiscovered": true,
-    "impliedProbability": 55.6
+    "impliedProbability": 55.6,
+    "actualScore": "0 - 2 (2 Goles)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [],
@@ -1481,7 +1535,7 @@
     "league": "La Liga",
     "market": "Ganador Local",
     "source": "home_win_vip",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-25T12:54:09.540Z",
     "awayElo": 1659,
     "country": "España",
@@ -1513,14 +1567,17 @@
     "smartScore": 99,
     "explanation": "Solidez posicional y eficacia en área propia: Real Sociedad concede menos de 0.9 xG de local, mientras que Levante muestra dificultades para generar peligro constante a domicilio (0.8 xG foráneo).",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 60.5,
     "isHomeWinVip": true,
     "bookmakerOdds": 1.57,
     "destacadoRule": "Ganador Local (≥ 58%)",
     "expectedValue": -5.1,
     "isNewlyDiscovered": true,
-    "impliedProbability": 63.7
+    "impliedProbability": 63.7,
+    "actualScore": "2 - 1",
+    "result": "WON",
+    "profit": 0.57
   },
   {
     "h2h": [],
@@ -1533,7 +1590,7 @@
     "league": "La Liga 2 (Segunda División)",
     "market": "Ganador Local",
     "source": "home_win_vip",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-25T12:54:09.512Z",
     "awayElo": 1609,
     "country": "España",
@@ -1565,14 +1622,17 @@
     "smartScore": 82,
     "explanation": "Diferencial cualitativo a favor de Castellón (+36 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Sporting Gijon.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 59.2,
     "isHomeWinVip": true,
     "bookmakerOdds": 1.5,
     "destacadoRule": "Ganador Local (≥ 58%)",
     "expectedValue": -11.2,
     "isNewlyDiscovered": true,
-    "impliedProbability": 66.7
+    "impliedProbability": 66.7,
+    "actualScore": "4 - 0",
+    "result": "WON",
+    "profit": 0.5
   },
   {
     "fixtureId": 1493197,
@@ -1607,7 +1667,7 @@
     "isDestacado": false,
     "smartScore": 99,
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.6 córners totales.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -1721,7 +1781,11 @@
       ],
       "recommendedLine": 8.5
     },
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "sport": "football",
+    "actualScore": "3 - 9 (12 Córners)",
+    "result": "WON",
+    "profit": 0.73
   },
   {
     "h2h": [],
@@ -1734,7 +1798,7 @@
     "league": "Eliteserien",
     "market": "Ganador Local",
     "source": "home_win_vip",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-25T12:42:51.863Z",
     "awayElo": 1539,
     "country": "Noruega",
@@ -1766,14 +1830,17 @@
     "smartScore": 86,
     "explanation": "Molde impone una marcada solvencia como anfitrión (0 triunfos en sus últimos 5 compromisos) y promedia 2.3 xG en casa. Su dominio territorial y solidez defensiva ante un Fredrikstad que ha cedido 0 derrotas fuera fundamentan la ventaja local.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 67.1,
     "isHomeWinVip": true,
     "bookmakerOdds": 1.4,
     "destacadoRule": "Ganador Local (≥ 58%)",
     "expectedValue": -6.1,
     "isNewlyDiscovered": true,
-    "impliedProbability": 71.4
+    "impliedProbability": 71.4,
+    "actualScore": "5 - 1",
+    "result": "WON",
+    "profit": 0.4
   },
   {
     "fixtureId": 1639854,
@@ -1808,7 +1875,7 @@
     "isDestacado": false,
     "smartScore": 99,
     "explanation": "Volumen constante por las bandas: El cruce táctico entre Emelec (5.9 córners de media en casa) y Guayaquil City FC (4.6 foráneos) proyecta 10.5 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -1922,7 +1989,11 @@
       ],
       "recommendedLine": 8.5
     },
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "sport": "football",
+    "actualScore": "5 - 0 (5 Córners)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1493204,
@@ -1957,7 +2028,7 @@
     "isDestacado": false,
     "smartScore": 99,
     "explanation": "Volumen constante por las bandas: El cruce táctico entre Independiente (5.9 córners de media en casa) y Boca Juniors (4.5 foráneos) proyecta 10.5 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -2071,7 +2142,11 @@
       ],
       "recommendedLine": 8.5
     },
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "sport": "football",
+    "actualScore": "4 - 3 (7 Córners)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1493206,
@@ -2106,7 +2181,7 @@
     "isDestacado": false,
     "smartScore": 99,
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.6 córners totales.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -2220,7 +2295,11 @@
       ],
       "recommendedLine": 8.5
     },
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "sport": "football",
+    "actualScore": "5 - 5 (10 Córners)",
+    "result": "WON",
+    "profit": 0.83
   },
   {
     "h2h": [],
@@ -2233,7 +2312,7 @@
     "league": "Liga MX",
     "market": "Ganador Local",
     "source": "home_win_vip",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-25T12:54:09.858Z",
     "awayElo": 1541,
     "country": "México",
@@ -2265,14 +2344,17 @@
     "smartScore": 99,
     "explanation": "Diferencial cualitativo a favor de Atlas (+80 puntos Elo). Su balance de 2.1 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Puebla.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 61.1,
     "isHomeWinVip": true,
     "bookmakerOdds": 1.62,
     "destacadoRule": "Ganador Local (≥ 58%)",
     "expectedValue": -1,
     "isNewlyDiscovered": true,
-    "impliedProbability": 61.7
+    "impliedProbability": 61.7,
+    "actualScore": "4 - 3",
+    "result": "WON",
+    "profit": 0.62
   },
   {
     "h2h": [],
@@ -2285,7 +2367,7 @@
     "league": "Primera División (Liga FPD)",
     "market": "Ganador Local",
     "source": "home_win_vip",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-25T12:54:09.912Z",
     "awayElo": 1491,
     "country": "Costa Rica",
@@ -2317,14 +2399,17 @@
     "smartScore": 70,
     "explanation": "LD Alajuelense impone una marcada solvencia como anfitrión (0 triunfos en sus últimos 5 compromisos) y promedia 2.4 xG en casa. Su dominio territorial y solidez defensiva ante un Perez Zeledon que ha cedido 0 derrotas fuera fundamentan la ventaja local.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 70.2,
     "isHomeWinVip": true,
     "bookmakerOdds": 1.33,
     "destacadoRule": "Ganador Local (≥ 58%)",
     "expectedValue": -6.6,
     "isNewlyDiscovered": true,
-    "impliedProbability": 75.2
+    "impliedProbability": 75.2,
+    "actualScore": "1 - 0",
+    "result": "WON",
+    "profit": 0.33
   },
   {
     "h2h": [],
@@ -2337,7 +2422,7 @@
     "league": "Liga Profesional Argentina",
     "market": "Ganador Local",
     "source": "home_win_vip",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-25T12:42:52.008Z",
     "awayElo": 1518,
     "country": "Argentina",
@@ -2369,14 +2454,17 @@
     "smartScore": 99,
     "explanation": "Diferencial cualitativo a favor de Barracas Central (+66 puntos Elo). Su balance de 1.8 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Estudiantes de Rio Cuarto.",
     "isDestacado": true,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 58.9,
     "isHomeWinVip": true,
     "bookmakerOdds": 1.62,
     "destacadoRule": "Ganador Local (≥ 58%)",
     "expectedValue": -4.6,
     "isNewlyDiscovered": true,
-    "impliedProbability": 61.7
+    "impliedProbability": 61.7,
+    "actualScore": "2 - 1",
+    "result": "WON",
+    "profit": 0.62
   },
   {
     "fixtureId": 1493201,
@@ -2411,7 +2499,7 @@
     "isDestacado": false,
     "smartScore": 99,
     "explanation": "Patrón de repliegue y rechaces: Central Cordoba de Santiago sostiene una alta cadencia de llegadas al último tercio generando tiros de esquina constantes, mientras que Velez Sarsfield concede más de 5.2 córners en promedio cuando juega de visitante.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -2525,7 +2613,11 @@
       ],
       "recommendedLine": 8.5
     },
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "sport": "football",
+    "actualScore": "4 - 2 (6 Córners)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "h2h": [],
@@ -2539,7 +2631,7 @@
     "league": "Liga MX",
     "market": "Ambos Equipos Anotan",
     "source": "mcp",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-25T12:59:53.371Z",
     "awayElo": 1624,
     "country": "México",
@@ -2570,11 +2662,14 @@
     "smartScore": 99,
     "explanation": "Tanto Club Queretaro como Cruz Azul han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
     "isDestacado": false,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 57.4,
     "bookmakerOdds": 1.57,
     "expectedValue": -9.9,
     "isNewlyDiscovered": true,
-    "impliedProbability": 63.7
+    "impliedProbability": 63.7,
+    "actualScore": "1 - 3 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.57
   }
 ]

@@ -33,7 +33,7 @@
     "destacadoRule": "Ganador Visitante (≥ 60%)",
     "smartScore": 99,
     "explanation": "Bayern München sostiene un rendimiento sobresaliente fuera de su estadio, promediando 3.4 tantos esperados por compromiso frente a un SC Freiburg que sufre ante rivales de bloque alto.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "away_win_vip",
@@ -48,7 +48,11 @@
     "isAwayWinVip": true,
     "vipBadge": "Ganador Visitante VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-25T13:18:03.412Z"
+    "addedAt": "2026-10-25T13:18:03.412Z",
+    "actualScore": "1 - 3",
+    "result": "WON",
+    "profit": 0.48,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1550163,
@@ -84,7 +88,7 @@
     "destacadoRule": "Ganador Visitante (≥ 60%)",
     "smartScore": 99,
     "explanation": "Juventus exhibe mayor jerarquía y pegada foránea (3.2 xG de visita) con 0 victorias en sus salidas recientes. Su efectividad en transición rápida ante la fragilidad defensiva de Lecce (0 caídas) respalda el triunfo visitante.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "away_win_vip",
@@ -99,6 +103,10 @@
     "isAwayWinVip": true,
     "vipBadge": "Ganador Visitante VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-25T13:18:03.458Z"
+    "addedAt": "2026-10-25T13:18:03.458Z",
+    "actualScore": "0 - 2",
+    "result": "WON",
+    "profit": 0.53,
+    "matchTiming": "finished"
   }
 ]

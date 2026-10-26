@@ -88,7 +88,7 @@
     "destacadoRule": "Ganador Local (≥ 58%)",
     "smartScore": 99,
     "explanation": "Inter impone una marcada solvencia como anfitrión (0 triunfos en sus últimos 5 compromisos) y promedia 3.3 xG en casa. Su dominio territorial y solidez defensiva ante un Fiorentina que ha cedido 0 derrotas fuera fundamentan la ventaja local.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "home_win_vip",
@@ -104,10 +104,10 @@
     "vipBadge": "Ganador Local VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T12:54:07.726Z",
-    "currentScore": "1 - 1",
-    "matchTiming": "prematch",
-    "livePeriod": "2H",
-    "liveMinute": "90"
+    "matchTiming": "finished",
+    "actualScore": "2 - 1",
+    "result": "WON",
+    "profit": 0.36
   },
   {
     "fixtureId": 1570424,
@@ -143,7 +143,7 @@
     "destacadoRule": "Ganador Local (≥ 58%)",
     "smartScore": 99,
     "explanation": "Solidez posicional y eficacia en área propia: Athletic Club concede menos de 0.9 xG de local, mientras que Getafe muestra dificultades para generar peligro constante a domicilio (0.5 xG foráneo).",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "home_win_vip",
@@ -159,10 +159,10 @@
     "vipBadge": "Ganador Local VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T12:54:07.987Z",
-    "currentScore": "1 - 0",
-    "matchTiming": "prematch",
-    "livePeriod": "1H",
-    "liveMinute": "22"
+    "matchTiming": "finished",
+    "actualScore": "4 - 0",
+    "result": "WON",
+    "profit": 0.6
   },
   {
     "fixtureId": 1550157,
@@ -198,7 +198,7 @@
     "destacadoRule": "Ganador Local (≥ 58%)",
     "smartScore": 99,
     "explanation": "Rendimiento muy fiable de Atalanta en su feudo (0 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Frosinone inclina con claridad la balanza estadística hacia el triunfo local.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "home_win_vip",
@@ -214,7 +214,10 @@
     "vipBadge": "Ganador Local VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T12:54:08.331Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "4 - 4",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1557444,
@@ -250,7 +253,7 @@
     "destacadoRule": "Ganador Local (≥ 58%)",
     "smartScore": 99,
     "explanation": "Rendimiento muy fiable de Liverpool en su feudo (0 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Brighton inclina con claridad la balanza estadística hacia el triunfo local.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "home_win_vip",
@@ -266,7 +269,10 @@
     "vipBadge": "Ganador Local VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T12:54:08.450Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "2 - 0",
+    "result": "WON",
+    "profit": 1.15
   },
   {
     "fixtureId": 1552796,
@@ -302,7 +308,7 @@
     "destacadoRule": "Ganador Local (≥ 58%)",
     "smartScore": 99,
     "explanation": "Diferencial cualitativo a favor de Marseille (+139 puntos Elo). Su balance de 2.4 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Le Havre.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "home_win_vip",
@@ -318,7 +324,10 @@
     "vipBadge": "Ganador Local VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T12:54:09.259Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "4 - 3",
+    "result": "WON",
+    "profit": 0.48
   },
   {
     "fixtureId": 1552799,
@@ -354,7 +363,7 @@
     "destacadoRule": "Ganador Local (≥ 58%)",
     "smartScore": 99,
     "explanation": "Rendimiento muy fiable de Toulouse en su feudo (0 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Estac Troyes inclina con claridad la balanza estadística hacia el triunfo local.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "home_win_vip",
@@ -370,7 +379,10 @@
     "vipBadge": "Ganador Local VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T12:54:09.316Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "0 - 0",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1560261,
@@ -406,7 +418,7 @@
     "destacadoRule": "Ganador Local (≥ 58%)",
     "smartScore": 71,
     "explanation": "Ferencvarosi TC impone una marcada solvencia como anfitrión (0 triunfos en sus últimos 5 compromisos) y promedia 3.1 xG en casa. Su dominio territorial y solidez defensiva ante un MTK Budapest que ha cedido 0 derrotas fuera fundamentan la ventaja local.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "home_win_vip",
@@ -421,7 +433,11 @@
     "isHomeWinVip": true,
     "vipBadge": "Ganador Local VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-25T13:23:16.564Z"
+    "addedAt": "2026-10-25T13:23:16.564Z",
+    "actualScore": "5 - 0",
+    "result": "WON",
+    "profit": 0.4,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1560052,
@@ -457,7 +473,7 @@
     "destacadoRule": "Ganador Local (≥ 58%)",
     "smartScore": 70,
     "explanation": "Rendimiento muy fiable de Plzen en su feudo (0 partidos sin caer en sus últimas 5 presentaciones). La brecha de generación de ocasiones claras ante Pardubice inclina con claridad la balanza estadística hacia el triunfo local.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "home_win_vip",
@@ -472,7 +488,11 @@
     "isHomeWinVip": true,
     "vipBadge": "Ganador Local VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-25T13:23:16.540Z"
+    "addedAt": "2026-10-25T13:23:16.540Z",
+    "actualScore": "1 - 2",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1570430,
@@ -508,7 +528,7 @@
     "destacadoRule": "Ganador Local (≥ 58%)",
     "smartScore": 99,
     "explanation": "Solidez posicional y eficacia en área propia: Real Sociedad concede menos de 0.9 xG de local, mientras que Levante muestra dificultades para generar peligro constante a domicilio (0.8 xG foráneo).",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "home_win_vip",
@@ -524,7 +544,10 @@
     "vipBadge": "Ganador Local VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T12:54:09.540Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "2 - 1",
+    "result": "WON",
+    "profit": 0.57
   },
   {
     "fixtureId": 1569985,
@@ -560,7 +583,7 @@
     "destacadoRule": "Ganador Local (≥ 58%)",
     "smartScore": 82,
     "explanation": "Diferencial cualitativo a favor de Castellón (+36 puntos Elo). Su balance de 1.6 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Sporting Gijon.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "home_win_vip",
@@ -576,7 +599,10 @@
     "vipBadge": "Ganador Local VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T12:54:09.512Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "4 - 0",
+    "result": "WON",
+    "profit": 0.5
   },
   {
     "h2h": [],
@@ -589,7 +615,7 @@
     "league": "Eliteserien",
     "market": "Ganador Local",
     "source": "home_win_vip",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-25T12:42:51.863Z",
     "awayElo": 1539,
     "country": "Noruega",
@@ -628,7 +654,10 @@
     "expectedValue": -6.1,
     "isNewlyDiscovered": true,
     "impliedProbability": 71.4,
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "5 - 1",
+    "result": "WON",
+    "profit": 0.4
   },
   {
     "fixtureId": 1551016,
@@ -664,7 +693,7 @@
     "destacadoRule": "Ganador Local (≥ 58%)",
     "smartScore": 99,
     "explanation": "Diferencial cualitativo a favor de Atlas (+80 puntos Elo). Su balance de 2.1 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Puebla.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "home_win_vip",
@@ -680,7 +709,10 @@
     "vipBadge": "Ganador Local VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T12:54:09.858Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "4 - 3",
+    "result": "WON",
+    "profit": 0.62
   },
   {
     "fixtureId": 1551707,
@@ -716,7 +748,7 @@
     "destacadoRule": "Ganador Local (≥ 58%)",
     "smartScore": 70,
     "explanation": "LD Alajuelense impone una marcada solvencia como anfitrión (0 triunfos en sus últimos 5 compromisos) y promedia 2.4 xG en casa. Su dominio territorial y solidez defensiva ante un Perez Zeledon que ha cedido 0 derrotas fuera fundamentan la ventaja local.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "home_win_vip",
@@ -732,7 +764,10 @@
     "vipBadge": "Ganador Local VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T12:54:09.912Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "1 - 0",
+    "result": "WON",
+    "profit": 0.33
   },
   {
     "h2h": [],
@@ -745,7 +780,7 @@
     "league": "Liga Profesional Argentina",
     "market": "Ganador Local",
     "source": "home_win_vip",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-25T12:42:52.008Z",
     "awayElo": 1518,
     "country": "Argentina",
@@ -784,6 +819,9 @@
     "expectedValue": -4.6,
     "isNewlyDiscovered": true,
     "impliedProbability": 61.7,
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "2 - 1",
+    "result": "WON",
+    "profit": 0.62
   }
 ]

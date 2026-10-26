@@ -23,16 +23,17 @@
     "explanation": "Protección de línea y margen: La simulación (113.09 vs 114.87 pts) proyecta un diferencial que cubre la línea de +3.5 con 62.6% de probabilidad. [Auditoría Gemini NBA: Enfrentamiento de alto nivel competitivo en la cima del Oeste donde OKC mantiene una rotación profunda, pero la presencia de Nikola Jokic como eje de asistencias y el spread ajustado presentan un +EV real y sólido.]",
     "pickBadge": "estandar",
     "isElite": false,
-    "status": "lost",
+    "status": "won",
     "matchTiming": "finished",
     "smartScore": 70,
     "sport": "nba",
     "subModule": "spread",
-    "result": "LOST",
+    "result": "WON",
     "actualScore": "87 - 102",
     "geminiAudited": true,
     "aiRiskScore": 35,
-    "aiVetoed": false
+    "aiVetoed": false,
+    "profit": 0.9
   },
   {
     "id": "nba_413888_nba_team_total_away",
@@ -58,16 +59,17 @@
     "explanation": "Producción individual de Oklahoma City Thunder: Eficiencia ofensiva proyecta 114.87 puntos, superando su línea particular de 111.5 pts (61.5%). [Auditoría Gemini NBA: Enfrentamiento de alto nivel competitivo en la cima del Oeste donde OKC mantiene una rotación profunda, pero la presencia de Nikola Jokic como eje de asistencias y el spread ajustado presentan un +EV real y sólido.]",
     "pickBadge": "estandar",
     "isElite": false,
-    "status": "won",
+    "status": "lost",
     "matchTiming": "finished",
     "smartScore": 59,
     "sport": "nba",
     "subModule": "overs_equipo",
-    "result": "WON",
+    "result": "LOST",
     "actualScore": "87 - 102",
     "geminiAudited": true,
     "aiRiskScore": 35,
-    "aiVetoed": false
+    "aiVetoed": false,
+    "profit": -1
   },
   {
     "id": "nba_413888_prop_michael_porter_rebounds",
@@ -122,7 +124,8 @@
     "actualScore": "87 - 102",
     "geminiAudited": true,
     "aiRiskScore": 35,
-    "aiVetoed": false
+    "aiVetoed": false,
+    "profit": 0.9
   },
   {
     "id": "nba_413889_nba_spread_away",
@@ -157,7 +160,8 @@
     "actualScore": "115 - 117",
     "geminiAudited": true,
     "aiRiskScore": 40,
-    "aiVetoed": false
+    "aiVetoed": false,
+    "profit": 0.9
   },
   {
     "id": "nba_413889_nba_team_total_away",
@@ -192,7 +196,8 @@
     "actualScore": "115 - 117",
     "geminiAudited": true,
     "aiRiskScore": 40,
-    "aiVetoed": false
+    "aiVetoed": false,
+    "profit": 0.85
   },
   {
     "id": "nba_413889_prop_de&apos;aaron_fox_assists",
@@ -247,7 +252,8 @@
     "actualScore": "115 - 117",
     "geminiAudited": true,
     "aiRiskScore": 40,
-    "aiVetoed": false
+    "aiVetoed": false,
+    "profit": 0.9
   },
   {
     "id": "nba_413889_nba_total_over",
@@ -282,7 +288,8 @@
     "actualScore": "115 - 117",
     "geminiAudited": true,
     "aiRiskScore": 40,
-    "aiVetoed": false
+    "aiVetoed": false,
+    "profit": 0.88
   },
   {
     "id": "nba_413889_nba_quarter_3Q",
@@ -318,7 +325,8 @@
     "actualScore": "115 - 117",
     "geminiAudited": true,
     "aiRiskScore": 40,
-    "aiVetoed": false
+    "aiVetoed": false,
+    "profit": 0.85
   },
   {
     "id": "nba_413890_prop_paolo_banchero_assists",
@@ -345,7 +353,7 @@
     "pickBadge": "estandar",
     "isElite": false,
     "status": "won",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "smartScore": 68,
     "sport": "nba",
     "subModule": "props",
@@ -373,7 +381,8 @@
     "actualScore": "116 - 101",
     "geminiAudited": true,
     "aiRiskScore": 38,
-    "aiVetoed": false
+    "aiVetoed": false,
+    "profit": 0.9
   },
   {
     "id": "nba_413890_nba_ml_home",
@@ -400,7 +409,7 @@
     "pickBadge": "estandar",
     "isElite": false,
     "status": "won",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "smartScore": 49,
     "sport": "nba",
     "subModule": "ganador",
@@ -408,7 +417,8 @@
     "actualScore": "116 - 101",
     "geminiAudited": true,
     "aiRiskScore": 38,
-    "aiVetoed": false
+    "aiVetoed": false,
+    "profit": 0.75
   },
   {
     "id": "nba_413890_nba_total_under",
@@ -435,7 +445,7 @@
     "pickBadge": "estandar",
     "isElite": false,
     "status": "won",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "smartScore": 49,
     "sport": "nba",
     "subModule": "overs",
@@ -443,7 +453,8 @@
     "actualScore": "116 - 101",
     "geminiAudited": true,
     "aiRiskScore": 38,
-    "aiVetoed": false
+    "aiVetoed": false,
+    "profit": 0.92
   },
   {
     "id": "nba_413891_nba_team_total_away",
@@ -469,16 +480,17 @@
     "explanation": "Producción individual de Philadelphia 76ers: Eficiencia ofensiva proyecta 114.24 puntos, superando su línea particular de 111.5 pts (59.3%). [Auditoría Gemini NBA: Partido con tendencia a posesiones largas si Philadelphia controla el ritmo defensivo, sin embargo, el alto uso de Scott Barnes asegura el volumen necesario para superar la línea de puntos.]",
     "pickBadge": "estandar",
     "isElite": false,
-    "status": "won",
-    "result": "WON",
+    "status": "lost",
+    "result": "LOST",
     "actualScore": "115 - 107",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "smartScore": 49,
     "sport": "nba",
     "geminiAudited": true,
     "aiRiskScore": 45,
     "aiVetoed": false,
-    "subModule": "overs_equipo"
+    "subModule": "overs_equipo",
+    "profit": -1
   },
   {
     "id": "nba_413891_prop_jakob_poeltl_rebounds",
@@ -507,7 +519,7 @@
     "status": "won",
     "result": "WON",
     "actualScore": "115 - 107",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "smartScore": 71,
     "sport": "nba",
     "geminiAudited": true,
@@ -533,7 +545,8 @@
       "confidence": "Alta",
       "smartScore": 71,
       "explanation": "Jakob Poeltl domina la zona pintada registrando consistentemente cargas de rebotes sólidos en más de 27 minutos, aprovechando las oportunidades bajo el aro en transición."
-    }
+    },
+    "profit": 0.85
   },
   {
     "id": "nba_413891_nba_total_over",
@@ -562,13 +575,14 @@
     "status": "lost",
     "result": "LOST",
     "actualScore": "115 - 107",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "smartScore": 59,
     "sport": "nba",
     "geminiAudited": true,
     "aiRiskScore": 45,
     "aiVetoed": false,
-    "subModule": "overs"
+    "subModule": "overs",
+    "profit": -1
   },
   {
     "id": "nba_413891_nba_quarter_3Q",
@@ -594,17 +608,18 @@
     "explanation": "Volumen en el 3Q: La rotación y dinámica de posesiones proyecta superar la línea de 56.5 puntos en el periodo con 59.0% de probabilidad. [Auditoría Gemini NBA: Partido con tendencia a posesiones largas si Philadelphia controla el ritmo defensivo, sin embargo, el alto uso de Scott Barnes asegura el volumen necesario para superar la línea de puntos.]",
     "pickBadge": "estandar",
     "isElite": false,
-    "status": "won",
-    "result": "WON",
+    "status": "lost",
+    "result": "LOST",
     "actualScore": "115 - 107",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "smartScore": 48,
     "sport": "nba",
     "geminiAudited": true,
     "aiRiskScore": 45,
     "aiVetoed": false,
     "subModule": "overs_cuartos",
-    "period": "3Q"
+    "period": "3Q",
+    "profit": -1
   },
   {
     "id": "nba_413891_nba_total_1h",
@@ -630,17 +645,18 @@
     "explanation": "Intensidad ofensiva en el arranque: Ambos quintetos promedian alto volumen de lanzamientos en cuartos iniciales, proyectando 116 puntos en la primera mitad (+113.5 pts, 58.4%). [Auditoría Gemini NBA: Partido con tendencia a posesiones largas si Philadelphia controla el ritmo defensivo, sin embargo, el alto uso de Scott Barnes asegura el volumen necesario para superar la línea de puntos.]",
     "pickBadge": "estandar",
     "isElite": false,
-    "status": "won",
-    "result": "WON",
+    "status": "lost",
+    "result": "LOST",
     "actualScore": "115 - 107",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "smartScore": 45,
     "sport": "nba",
     "geminiAudited": true,
     "aiRiskScore": 45,
     "aiVetoed": false,
     "subModule": "overs_1h",
-    "period": "1H"
+    "period": "1H",
+    "profit": -1
   },
   {
     "id": "nba_413891_nba_total_2h",
@@ -666,17 +682,18 @@
     "explanation": "Cierre disputado: En la segunda mitad los tiros libres finales y ajuste de minutos elevan la producción estimada a 115.08 puntos (+112.5 pts, 58.5%). [Auditoría Gemini NBA: Partido con tendencia a posesiones largas si Philadelphia controla el ritmo defensivo, sin embargo, el alto uso de Scott Barnes asegura el volumen necesario para superar la línea de puntos.]",
     "pickBadge": "estandar",
     "isElite": false,
-    "status": "won",
-    "result": "WON",
+    "status": "lost",
+    "result": "LOST",
     "actualScore": "115 - 107",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "smartScore": 46,
     "sport": "nba",
     "geminiAudited": true,
     "aiRiskScore": 45,
     "aiVetoed": false,
     "subModule": "overs_2h",
-    "period": "2H"
+    "period": "2H",
+    "profit": -1
   },
   {
     "id": "nba_413894_nba_spread_home",
@@ -703,7 +720,7 @@
     "pickBadge": "estandar",
     "isElite": false,
     "status": "won",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "smartScore": 59,
     "sport": "nba",
     "subModule": "spread",
@@ -711,7 +728,8 @@
     "actualScore": "113 - 101",
     "geminiAudited": true,
     "aiRiskScore": 30,
-    "aiVetoed": false
+    "aiVetoed": false,
+    "profit": 0.9
   },
   {
     "id": "nba_413894_nba_team_total_home",
@@ -737,16 +755,17 @@
     "explanation": "Producción individual de Cleveland Cavaliers: Eficiencia ofensiva proyecta 118.35 puntos, superando su línea particular de 114.5 pts (63.0%). [Auditoría Gemini NBA: Superioridad clara en la pintura y en la ejecución ofensiva de los Cavaliers frente a un equipo en reconstrucción. El spread corto y el control de los tableros por Jarrett Allen ofrecen alta fiabilidad.]",
     "pickBadge": "estandar",
     "isElite": false,
-    "status": "won",
-    "matchTiming": "prematch",
+    "status": "lost",
+    "matchTiming": "finished",
     "smartScore": 66,
     "sport": "nba",
     "subModule": "overs_equipo",
-    "result": "WON",
+    "result": "LOST",
     "actualScore": "113 - 101",
     "geminiAudited": true,
     "aiRiskScore": 30,
-    "aiVetoed": false
+    "aiVetoed": false,
+    "profit": -1
   },
   {
     "id": "nba_413894_prop_darius_garland_assists",
@@ -773,7 +792,7 @@
     "pickBadge": "estandar",
     "isElite": false,
     "status": "won",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "smartScore": 70,
     "sport": "nba",
     "subModule": "props",
@@ -801,7 +820,8 @@
     "actualScore": "113 - 101",
     "geminiAudited": true,
     "aiRiskScore": 30,
-    "aiVetoed": false
+    "aiVetoed": false,
+    "profit": 0.9
   },
   {
     "id": "nba_413894_nba_ml_home",
@@ -828,7 +848,7 @@
     "pickBadge": "estandar",
     "isElite": false,
     "status": "won",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "smartScore": 77,
     "sport": "nba",
     "subModule": "ganador",
@@ -836,7 +856,8 @@
     "actualScore": "113 - 101",
     "geminiAudited": true,
     "aiRiskScore": 30,
-    "aiVetoed": false
+    "aiVetoed": false,
+    "profit": 0.75
   },
   {
     "id": "nba_413894_nba_total_over",
@@ -863,7 +884,7 @@
     "pickBadge": "estandar",
     "isElite": false,
     "status": "lost",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "smartScore": 37,
     "sport": "nba",
     "subModule": "overs",
@@ -871,7 +892,8 @@
     "actualScore": "113 - 101",
     "geminiAudited": true,
     "aiRiskScore": 30,
-    "aiVetoed": false
+    "aiVetoed": false,
+    "profit": -1
   },
   {
     "id": "nba_413894_nba_quarter_3Q",
@@ -897,17 +919,18 @@
     "explanation": "Volumen en el 3Q: La rotación y dinámica de posesiones proyecta superar la línea de 56.5 puntos en el periodo con 56.5% de probabilidad. [Auditoría Gemini NBA: Superioridad clara en la pintura y en la ejecución ofensiva de los Cavaliers frente a un equipo en reconstrucción. El spread corto y el control de los tableros por Jarrett Allen ofrecen alta fiabilidad.]",
     "pickBadge": "estandar",
     "isElite": false,
-    "status": "won",
-    "matchTiming": "prematch",
+    "status": "lost",
+    "matchTiming": "finished",
     "smartScore": 37,
     "sport": "nba",
     "subModule": "overs_cuartos",
     "period": "3Q",
-    "result": "WON",
+    "result": "LOST",
     "actualScore": "113 - 101",
     "geminiAudited": true,
     "aiRiskScore": 30,
-    "aiVetoed": false
+    "aiVetoed": false,
+    "profit": -1
   },
   {
     "id": "nba_413892_nba_team_total_home",
@@ -934,7 +957,7 @@
     "pickBadge": "estandar",
     "isElite": false,
     "status": "won",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "smartScore": 92,
     "sport": "nba",
     "subModule": "overs_equipo",
@@ -942,7 +965,8 @@
     "actualScore": "123 - 98",
     "geminiAudited": true,
     "aiRiskScore": 25,
-    "aiVetoed": false
+    "aiVetoed": false,
+    "profit": 0.85
   },
   {
     "id": "nba_413892_prop_karl-anthony_towns_rebounds",
@@ -969,7 +993,7 @@
     "pickBadge": "estandar",
     "isElite": false,
     "status": "won",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "smartScore": 71,
     "sport": "nba",
     "subModule": "props",
@@ -997,7 +1021,8 @@
     "actualScore": "123 - 98",
     "geminiAudited": true,
     "aiRiskScore": 25,
-    "aiVetoed": false
+    "aiVetoed": false,
+    "profit": 0.85
   },
   {
     "id": "nba_413892_nba_ml_home",
@@ -1024,7 +1049,7 @@
     "pickBadge": "estandar",
     "isElite": false,
     "status": "won",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "smartScore": 50,
     "sport": "nba",
     "subModule": "ganador",
@@ -1032,7 +1057,8 @@
     "actualScore": "123 - 98",
     "geminiAudited": true,
     "aiRiskScore": 25,
-    "aiVetoed": false
+    "aiVetoed": false,
+    "profit": 0.75
   },
   {
     "id": "nba_413892_nba_total_over",
@@ -1059,7 +1085,7 @@
     "pickBadge": "valor",
     "isElite": false,
     "status": "lost",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "smartScore": 95,
     "sport": "nba",
     "subModule": "overs",
@@ -1067,7 +1093,8 @@
     "actualScore": "123 - 98",
     "geminiAudited": true,
     "aiRiskScore": 25,
-    "aiVetoed": false
+    "aiVetoed": false,
+    "profit": -1
   },
   {
     "id": "nba_413892_nba_total_1h",
@@ -1093,17 +1120,18 @@
     "explanation": "Intensidad ofensiva en el arranque: Ambos quintetos promedian alto volumen de lanzamientos en cuartos iniciales, proyectando 120.56 puntos en la primera mitad (+113.5 pts, 72.7%). [Auditoría Gemini NBA: Ritmo frenético propuesto por Indiana que beneficia directamente el volumen de posesiones de Jalen Brunson y la producción ofensiva global de los Knicks en transición y media distancia.]",
     "pickBadge": "estandar",
     "isElite": false,
-    "status": "won",
-    "matchTiming": "prematch",
+    "status": "lost",
+    "matchTiming": "finished",
     "smartScore": 90,
     "sport": "nba",
     "subModule": "overs_1h",
     "period": "1H",
-    "result": "WON",
+    "result": "LOST",
     "actualScore": "123 - 98",
     "geminiAudited": true,
     "aiRiskScore": 25,
-    "aiVetoed": false
+    "aiVetoed": false,
+    "profit": -1
   },
   {
     "id": "nba_413892_nba_quarter_3Q",
@@ -1129,17 +1157,18 @@
     "explanation": "Volumen en el 3Q: La rotación y dinámica de posesiones proyecta superar la línea de 56.5 puntos en el periodo con 69.5% de probabilidad. [Auditoría Gemini NBA: Ritmo frenético propuesto por Indiana que beneficia directamente el volumen de posesiones de Jalen Brunson y la producción ofensiva global de los Knicks en transición y media distancia.]",
     "pickBadge": "estandar",
     "isElite": false,
-    "status": "won",
-    "matchTiming": "prematch",
+    "status": "lost",
+    "matchTiming": "finished",
     "smartScore": 87,
     "sport": "nba",
     "subModule": "overs_cuartos",
     "period": "3Q",
-    "result": "WON",
+    "result": "LOST",
     "actualScore": "123 - 98",
     "geminiAudited": true,
     "aiRiskScore": 25,
-    "aiVetoed": false
+    "aiVetoed": false,
+    "profit": -1
   },
   {
     "id": "nba_413892_nba_total_2h",
@@ -1165,17 +1194,18 @@
     "explanation": "Cierre disputado: En la segunda mitad los tiros libres finales y ajuste de minutos elevan la producción estimada a 119.59 puntos (+112.5 pts, 72.6%). [Auditoría Gemini NBA: Ritmo frenético propuesto por Indiana que beneficia directamente el volumen de posesiones de Jalen Brunson y la producción ofensiva global de los Knicks en transición y media distancia.]",
     "pickBadge": "estandar",
     "isElite": false,
-    "status": "won",
-    "matchTiming": "prematch",
+    "status": "lost",
+    "matchTiming": "finished",
     "smartScore": 90,
     "sport": "nba",
     "subModule": "overs_2h",
     "period": "2H",
-    "result": "WON",
+    "result": "LOST",
     "actualScore": "123 - 98",
     "geminiAudited": true,
     "aiRiskScore": 25,
-    "aiVetoed": false
+    "aiVetoed": false,
+    "profit": -1
   },
   {
     "id": "nba_413893_nba_team_total_away",
@@ -1204,13 +1234,14 @@
     "status": "won",
     "result": "WON",
     "actualScore": "125 - 120",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "smartScore": 49,
     "sport": "nba",
     "geminiAudited": true,
     "aiRiskScore": 40,
     "aiVetoed": false,
-    "subModule": "overs_equipo"
+    "subModule": "overs_equipo",
+    "profit": 0.85
   },
   {
     "id": "nba_413893_prop_de'andre_hunter_points",
@@ -1239,7 +1270,7 @@
     "status": "won",
     "result": "WON",
     "actualScore": "125 - 120",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "smartScore": 70,
     "sport": "nba",
     "geminiAudited": true,
@@ -1265,7 +1296,8 @@
       "confidence": "Alta",
       "smartScore": 70,
       "explanation": "Aprovechando los espacios generados por las penetraciones y asistencias del perímetro rival, De'Andre Hunter mantiene una alta eficiencia de anotación en más de 33 minutos de juego."
-    }
+    },
+    "profit": 0.9
   },
   {
     "id": "nba_413893_nba_total_over",
@@ -1294,13 +1326,14 @@
     "status": "won",
     "result": "WON",
     "actualScore": "125 - 120",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "smartScore": 59,
     "sport": "nba",
     "geminiAudited": true,
     "aiRiskScore": 40,
     "aiVetoed": false,
-    "subModule": "overs"
+    "subModule": "overs",
+    "profit": 0.88
   },
   {
     "id": "nba_413893_nba_quarter_3Q",
@@ -1329,14 +1362,15 @@
     "status": "won",
     "result": "WON",
     "actualScore": "125 - 120",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "smartScore": 48,
     "sport": "nba",
     "geminiAudited": true,
     "aiRiskScore": 40,
     "aiVetoed": false,
     "subModule": "overs_cuartos",
-    "period": "3Q"
+    "period": "3Q",
+    "profit": 0.85
   },
   {
     "id": "nba_413893_nba_total_1h",
@@ -1365,14 +1399,15 @@
     "status": "won",
     "result": "WON",
     "actualScore": "125 - 120",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "smartScore": 45,
     "sport": "nba",
     "geminiAudited": true,
     "aiRiskScore": 40,
     "aiVetoed": false,
     "subModule": "overs_1h",
-    "period": "1H"
+    "period": "1H",
+    "profit": 0.85
   },
   {
     "id": "nba_413893_nba_total_2h",
@@ -1401,13 +1436,14 @@
     "status": "won",
     "result": "WON",
     "actualScore": "125 - 120",
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "smartScore": 46,
     "sport": "nba",
     "geminiAudited": true,
     "aiRiskScore": 40,
     "aiVetoed": false,
     "subModule": "overs_2h",
-    "period": "2H"
+    "period": "2H",
+    "profit": 0.85
   }
 ]

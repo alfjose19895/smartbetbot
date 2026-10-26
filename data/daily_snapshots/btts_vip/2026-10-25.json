@@ -102,11 +102,12 @@
     "sport": "btts_vip",
     "isBttsVip": true,
     "vipBadge": "Ambos Anotan VIP",
-    "actualScore": "2-0",
+    "actualScore": "2 - 0 (No)",
     "profit": -1,
     "result": "LOST",
     "isNewlyDiscovered": false,
-    "addedAt": "2026-10-25T13:23:12.540Z"
+    "addedAt": "2026-10-25T13:23:12.540Z",
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1576211,
@@ -142,7 +143,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 96,
     "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -158,10 +159,10 @@
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T02:01:29.452Z",
-    "currentScore": "1 - 0",
-    "matchTiming": "prematch",
-    "livePeriod": "HT",
-    "liveMinute": "45"
+    "matchTiming": "finished",
+    "actualScore": "3 - 0 (No)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1576214,
@@ -197,7 +198,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 95,
     "explanation": "Tanto VfL Osnabrück como SpVgg Greuther Fürth han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -213,10 +214,10 @@
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T02:01:29.478Z",
-    "currentScore": "2 - 0",
-    "matchTiming": "prematch",
-    "livePeriod": "HT",
-    "liveMinute": "45"
+    "matchTiming": "finished",
+    "actualScore": "3 - 0 (No)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1558655,
@@ -252,7 +253,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 99,
     "explanation": "Eficacia bilateral en ataque: Genk anota con regularidad en su estadio (1.3 xG) pero concede ocasiones (0 goles en contra), mientras que Standard Liege cuenta con pegada foránea (1.5 xG). El patrón estadístico favorece la anotación mutua.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -268,10 +269,10 @@
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T02:01:29.399Z",
-    "currentScore": "1 - 0",
-    "matchTiming": "prematch",
-    "livePeriod": "1H",
-    "liveMinute": "45"
+    "matchTiming": "finished",
+    "actualScore": "2 - 1 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.57
   },
   {
     "fixtureId": 1555410,
@@ -307,7 +308,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 97,
     "explanation": "Eficacia bilateral en ataque: FC Thun anota con regularidad en su estadio (1.4 xG) pero concede ocasiones (0 goles en contra), mientras que FC Lugano cuenta con pegada foránea (1.3 xG). El patrón estadístico favorece la anotación mutua.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -323,10 +324,10 @@
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T02:01:29.583Z",
-    "currentScore": "0 - 0",
-    "matchTiming": "prematch",
-    "livePeriod": "1H",
-    "liveMinute": "23"
+    "matchTiming": "finished",
+    "actualScore": "2 - 3 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.4
   },
   {
     "fixtureId": 1495995,
@@ -362,7 +363,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 71,
     "explanation": "Tanto Sandnes ULF como Lyn han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -377,7 +378,11 @@
     "isBttsVip": true,
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-25T13:23:12.851Z"
+    "addedAt": "2026-10-25T13:23:12.851Z",
+    "actualScore": "2 - 1 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.44,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1557441,
@@ -413,7 +418,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 99,
     "explanation": "Tanto Crystal Palace como Newcastle han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -429,7 +434,10 @@
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T02:01:30.046Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "0 - 2 (No)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1556685,
@@ -465,7 +473,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 93,
     "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -480,7 +488,11 @@
     "isBttsVip": true,
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-25T13:23:13.140Z"
+    "addedAt": "2026-10-25T13:23:13.140Z",
+    "actualScore": "0 - 2 (No)",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1560264,
@@ -516,7 +528,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 70,
     "explanation": "Eficacia bilateral en ataque: Puskas Academy anota con regularidad en su estadio (1.7 xG) pero concede ocasiones (0 goles en contra), mientras que Nyiregyhaza cuenta con pegada foránea (1.2 xG). El patrón estadístico favorece la anotación mutua.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -531,7 +543,11 @@
     "isBttsVip": true,
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-25T13:23:13.347Z"
+    "addedAt": "2026-10-25T13:23:13.347Z",
+    "actualScore": "1 - 2 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.57,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1561950,
@@ -567,7 +583,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 99,
     "explanation": "Eficacia bilateral en ataque: Lask Linz anota con regularidad en su estadio (1.5 xG) pero concede ocasiones (0 goles en contra), mientras que Red Bull Salzburg cuenta con pegada foránea (1.5 xG). El patrón estadístico favorece la anotación mutua.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -583,7 +599,10 @@
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T02:01:30.833Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "1 - 3 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.4
   },
   {
     "fixtureId": 1494690,
@@ -619,7 +638,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 90,
     "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -634,7 +653,11 @@
     "isBttsVip": true,
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-25T13:23:13.778Z"
+    "addedAt": "2026-10-25T13:23:13.778Z",
+    "actualScore": "1 - 0 (No)",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1552798,
@@ -670,7 +693,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 99,
     "explanation": "Tanto Rennes como Strasbourg han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -686,7 +709,10 @@
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T02:01:30.976Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "3 - 0 (No)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1581456,
@@ -722,7 +748,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 91,
     "explanation": "Tanto Tlaxcala como Correcaminos Uat han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -738,7 +764,10 @@
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T02:01:31.495Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "2 - 0 (No)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1559180,
@@ -774,7 +803,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 94,
     "explanation": "Tanto Liège como Patro Eisden han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -790,7 +819,10 @@
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T02:01:31.634Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "2 - 3 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.53
   },
   {
     "fixtureId": 1505543,
@@ -826,7 +858,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 89,
     "explanation": "Tanto Palestino como Colo Colo han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -841,7 +873,11 @@
     "isBttsVip": true,
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-25T13:23:14.556Z"
+    "addedAt": "2026-10-25T13:23:14.556Z",
+    "actualScore": "1 - 1 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.57,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1581457,
@@ -877,7 +913,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 90,
     "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -893,7 +929,10 @@
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T02:01:31.981Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "1 - 2 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.49
   },
   {
     "fixtureId": 1505545,
@@ -929,7 +968,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 90,
     "explanation": "Eficacia bilateral en ataque: Universidad de Concepcion anota con regularidad en su estadio (1.4 xG) pero concede ocasiones (0 goles en contra), mientras que Deportes Limache cuenta con pegada foránea (1.4 xG). El patrón estadístico favorece la anotación mutua.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -945,6 +984,9 @@
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T02:01:31.899Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "0 - 1 (No)",
+    "result": "LOST",
+    "profit": -1
   }
 ]

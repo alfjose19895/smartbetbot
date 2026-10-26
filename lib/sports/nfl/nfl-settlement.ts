@@ -8,6 +8,24 @@ export interface NFLGameResult {
   isOvertime?: boolean;
 }
 
+function extractLine(sel: string, defaultVal: number): number {
+  const m = sel.match(/(?:\bOVER\b|\bUNDER\b|\bMÁS DE\b|\bMENOS DE\b|\bMAS DE\b)\s+(\d+\.?\d*)/i);
+  if (m && m[1]) return parseFloat(m[1]);
+  const dec = sel.match(/(\d+\.5)/);
+  if (dec && dec[1]) return parseFloat(dec[1]);
+  const num = sel.match(/(\d+\.?\d*)/);
+  if (num && num[1]) return parseFloat(num[1]);
+  return defaultVal;
+}
+
+function extractSpreadLine(sel: string): number {
+  const plusM = sel.match(/\+\s*(\d+\.?\d*)/);
+  const minusM = sel.match(/-\s*(\d+\.?\d*)/);
+  if (plusM && plusM[1]) return parseFloat(plusM[1]);
+  if (minusM && minusM[1]) return -parseFloat(minusM[1]);
+  return 0;
+}
+
 export class NFLSettlementEngine {
   public static settleSignal(signal: MultiSportSignal, result: NFLGameResult): {
     status: SettlementStatus;
@@ -26,10 +44,18 @@ export class NFLSettlementEngine {
     const { homeScore, awayScore } = result;
     const totalScore = homeScore + awayScore;
     const margin = homeScore - awayScore;
+    const marketUpper = (signal.market || '').toUpperCase().trim();
+    const selUpper = (signal.selection || '').toUpperCase().trim();
 
     // 1. MONEYLINE
-    if (signal.market === 'MONEYLINE') {
-      const isHomePick = signal.selection.includes(signal.game.homeTeam.name);
+    if (marketUpper === 'MONEYLINE' || marketUpper.includes('GANADOR') || marketUpper.includes('WINNER')) {
+      const homeName = (signal.game?.homeTeam?.name || '').toUpperCase();
+      const isHomePick =
+        (homeName && selUpper.includes(homeName)) ||
+        selUpper.includes('HOME') ||
+        selUpper.includes('LOCAL') ||
+        selUpper === '1';
+
       if (margin > 0) {
         return { status: isHomePick ? 'WON' : 'LOST', homeScore, awayScore, detail: `Final: ${homeScore} - ${awayScore}` };
       } else if (margin < 0) {
@@ -40,25 +66,31 @@ export class NFLSettlementEngine {
     }
 
     // 2. SPREAD
-    if (signal.market === 'SPREAD') {
-      const line = signal.line ?? 0;
-      const isHomeSpread = signal.selection.includes(signal.game.homeTeam.name);
-      const effectiveMargin = isHomeSpread ? margin : -margin;
-      const targetMargin = -line;
+    if (marketUpper === 'SPREAD' || marketUpper.includes('SPREAD') || marketUpper.includes('HANDICAP') || /\b[+-]\d+(\.5)?\b/.test(selUpper)) {
+      const line = typeof signal.line === 'number' ? signal.line : extractSpreadLine(selUpper);
+      const homeName = (signal.game?.homeTeam?.name || '').toUpperCase();
+      const isHomeSpread =
+        (homeName && selUpper.includes(homeName)) ||
+        selUpper.includes('HOME') ||
+        selUpper.includes('LOCAL');
 
-      if (effectiveMargin > targetMargin) {
-        return { status: 'WON', homeScore, awayScore, detail: `Cubierto: Margen ${margin > 0 ? '+' : ''}${margin} vs ${line}` };
-      } else if (effectiveMargin === targetMargin) {
-        return { status: 'PUSH', homeScore, awayScore, detail: `Push exacto: Margen ${margin} vs ${line}` };
+      const effectiveMargin = isHomeSpread ? margin : -margin;
+      const diffWithSpread = effectiveMargin + line;
+
+      if (diffWithSpread > 0) {
+        return { status: 'WON', homeScore, awayScore, detail: `Cubierto: Margen ${effectiveMargin > 0 ? '+' : ''}${effectiveMargin} con línea ${line > 0 ? '+' : ''}${line}` };
+      } else if (diffWithSpread === 0) {
+        return { status: 'PUSH', homeScore, awayScore, detail: `Push exacto: Margen ${effectiveMargin} con línea ${line}` };
       } else {
-        return { status: 'LOST', homeScore, awayScore, detail: `No cubierto: Margen ${margin > 0 ? '+' : ''}${margin} vs ${line}` };
+        return { status: 'LOST', homeScore, awayScore, detail: `No cubierto: Margen ${effectiveMargin > 0 ? '+' : ''}${effectiveMargin} con línea ${line > 0 ? '+' : ''}${line}` };
       }
     }
 
     // 3. TOTAL POINTS
-    if (signal.market === 'TOTAL POINTS') {
-      const line = signal.line ?? 0;
-      const isOver = String(signal.selection || '').toUpperCase().includes('OVER');
+    if (marketUpper === 'TOTAL POINTS' || marketUpper === 'TOTAL' || marketUpper.includes('TOTAL')) {
+      const line = typeof signal.line === 'number' ? signal.line : extractLine(selUpper, 45.5);
+      const isOver = !/\b(UNDER|MENOS)\b/i.test(selUpper);
+
       if (isOver) {
         if (totalScore > line) return { status: 'WON', homeScore, awayScore, detail: `${totalScore} pts > ${line}` };
         else if (totalScore === line) return { status: 'PUSH', homeScore, awayScore, detail: `${totalScore} pts == ${line}` };

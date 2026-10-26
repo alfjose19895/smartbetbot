@@ -858,8 +858,12 @@ export async function settleAllSnapshotsWithRealScores(): Promise<{ settledDates
   let totalSettled = 0;
   const settledDates: string[] = [];
 
-  for (const dateStr of allDates) {
-    if (dateStr < HISTORY_START_DATE) continue;
+  // CPU OPTIMIZATION: Only settle active recent dates (past 3 days: today, yesterday, 2 days ago).
+  // Historical snapshots older than 3 days are already settled and immutable.
+  const maxLookbackDate = getEcuadorDateString(nowMs - 3 * 86400000);
+  const candidateDates = allDates.filter((d) => d >= maxLookbackDate && d >= HISTORY_START_DATE);
+
+  for (const dateStr of candidateDates) {
     const snap = snapshots[dateStr] || loadDailySnapshot(dateStr) || [];
     const hasPendingPastKickoff = snap.some((p) => {
       const pKick = p.kickoff ? new Date(p.kickoff).getTime() : 0;
@@ -1220,6 +1224,22 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string, sport
           actualScore: p.actualScore || (p as any).score,
         });
 
+        // GUARD: If statistical data (corners, cards, shots) is pending from API, do NOT mark as lost with 0!
+        if (evaluation.isPendingStats) {
+          if (p.status !== "pending" || (p as any).result || (p as any).profit) {
+            hasUpdates = true;
+            return {
+              ...p,
+              status: "pending" as const,
+              result: undefined,
+              actualScore: undefined,
+              profit: undefined,
+              matchTiming: "finished" as const,
+            };
+          }
+          return p;
+        }
+
         const newStatus: "won" | "lost" = evaluation.isWon ? "won" : "lost";
         const newScore = evaluation.actualScoreText;
         const newResult: "WON" | "LOST" = evaluation.isWon ? "WON" : "LOST";
@@ -1578,14 +1598,14 @@ export function evaluateMarketResult(
     actualScore?: string;
     score?: string;
   }
-): { isWon: boolean; actualScoreText: string } {
+): { isWon: boolean; actualScoreText: string; isPendingStats?: boolean } {
   const totalGoals = homeGoals + awayGoals;
   const btts = homeGoals > 0 && awayGoals > 0;
 
   const stripAccents = (s?: string) =>
     (s || "")
       .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[̀-ͯ]/g, "")
       .toLowerCase()
       .trim();
 
@@ -1595,6 +1615,7 @@ export function evaluateMarketResult(
   const aClean = stripAccents(options?.actualScore || options?.score);
   const hNorm = stripAccents(options?.homeTeam);
   const aNorm = stripAccents(options?.awayTeam);
+  const combinedBetDesc = `${sClean} ${pClean} ${mClean}`.trim();
 
   // 0. Córners Totales (Over / Under 5.5, 6.5, 7.5, 8.5, 9.5, 10.5, 11.5)
   const isCornerMarket =
@@ -1604,9 +1625,6 @@ export function evaluateMarketResult(
     aClean.includes("corner");
 
   if (isCornerMarket) {
-    const combinedBetDesc = `${sClean} ${pClean} ${mClean}`;
-
-    // Extract Line (e.g., 5.5, 6.5, 7.5, 8.5, 9.5, 10.5, 11.5)
     let line = 8.5;
     if (typeof options?.line === "number" && options.line > 0) {
       line = options.line;
@@ -1622,18 +1640,7 @@ export function evaluateMarketResult(
       }
     }
 
-    // Determine Under vs Over - strictly test bet selection/pick/market, NEVER the actualScore string
-    const isUnder =
-      sClean.includes("under") ||
-      sClean.includes("menos") ||
-      pClean.includes("under") ||
-      pClean.includes("menos") ||
-      mClean.includes("under") ||
-      mClean.includes("menos") ||
-      /\b(under|menos)\b/i.test(combinedBetDesc) ||
-      /^-\s*\d+/i.test(sClean) ||
-      /^-\s*\d+/i.test(pClean);
-
+    const isUnder = /(under|menos)/i.test(combinedBetDesc) || /^-\s*\d+/i.test(sClean);
     const requiredCorners = isUnder ? Math.floor(line) : Math.floor(line) + 1;
 
     let homeCorners = options?.homeCorners;
@@ -1659,21 +1666,20 @@ export function evaluateMarketResult(
       }
     }
 
-    // C) Derive from corner simulation / cornerAnalysis
+    // C) If corner statistics are genuinely missing from API
     if (typeof totalCorners !== "number") {
       const expTotal = options?.expectedCorners || options?.cornerAnalysis?.expectedTotalCorners;
-      const expHome = options?.cornerAnalysis?.expectedHomeCorners;
-      const expAway = options?.cornerAnalysis?.expectedAwayCorners;
-
       if (typeof expTotal === "number" && expTotal > 0) {
         totalCorners = Math.round(expTotal);
-        homeCorners = typeof expHome === "number" ? Math.round(expHome) : Math.round(totalCorners * 0.55);
+        homeCorners = typeof options?.cornerAnalysis?.expectedHomeCorners === "number" ? Math.round(options.cornerAnalysis.expectedHomeCorners) : Math.round(totalCorners * 0.55);
         awayCorners = totalCorners - homeCorners;
       } else {
-        // Safe default: do not artificially invent winning corners from goals
-        homeCorners = typeof homeCorners === "number" ? homeCorners : 0;
-        awayCorners = typeof awayCorners === "number" ? awayCorners : 0;
-        totalCorners = homeCorners + awayCorners;
+        // Crucial: Do NOT settle with 0 corners if no stats exist!
+        return {
+          isWon: false,
+          actualScoreText: `${homeGoals} - ${awayGoals} (Córners pendientes)`,
+          isPendingStats: true,
+        };
       }
     }
 
@@ -1698,7 +1704,6 @@ export function evaluateMarketResult(
     sClean.includes("card");
 
   if (isCardMarket) {
-    const combinedBetDesc = `${sClean} ${pClean} ${mClean}`;
     let line = 4.5;
     const lineMatch = combinedBetDesc.match(/(\d+(?:\.5|\.0)?)/);
     if (lineMatch && lineMatch[1]) {
@@ -1706,14 +1711,7 @@ export function evaluateMarketResult(
       if (parsed >= 1.5 && parsed <= 12.5) line = parsed;
     }
 
-    const isUnder =
-      sClean.includes("under") ||
-      sClean.includes("menos") ||
-      pClean.includes("under") ||
-      pClean.includes("menos") ||
-      mClean.includes("under") ||
-      mClean.includes("menos");
-
+    const isUnder = /(under|menos)/i.test(combinedBetDesc);
     const requiredCards = isUnder ? Math.floor(line) : Math.floor(line) + 1;
     const yC = (options?.homeYellowCards || 0) + (options?.awayYellowCards || 0);
     const rC = (options?.homeRedCards || 0) + (options?.awayRedCards || 0);
@@ -1722,11 +1720,18 @@ export function evaluateMarketResult(
       : undefined;
     let totalCards = options?.totalCards ?? genericCards ?? (yC + rC);
 
-    if (typeof totalCards !== "number" || totalCards === 0) {
-      if (aClean) {
-        const dMatch = aClean.match(/(\d+)\s*tarjeta/i);
-        if (dMatch) totalCards = parseInt(dMatch[1], 10);
-      }
+    if ((typeof totalCards !== "number" || totalCards === 0) && aClean) {
+      const dMatch = aClean.match(/(\d+)\s*tarjeta/i);
+      if (dMatch) totalCards = parseInt(dMatch[1], 10);
+    }
+
+    // Guard: If no card stats at all, don't mark as 0 cards!
+    if (options?.totalCards === undefined && options?.homeYellowCards === undefined && (!totalCards || totalCards === 0) && !aClean.includes("tarjeta")) {
+      return {
+        isWon: false,
+        actualScoreText: `${homeGoals} - ${awayGoals} (Tarjetas pendientes)`,
+        isPendingStats: true,
+      };
     }
 
     const isWon = isUnder ? (totalCards <= requiredCards) : (totalCards >= requiredCards);
@@ -1749,7 +1754,6 @@ export function evaluateMarketResult(
     sClean.includes("shot");
 
   if (isShotMarket) {
-    const combinedBetDesc = `${sClean} ${pClean} ${mClean}`;
     const isOnTarget =
       combinedBetDesc.includes("puerta") ||
       combinedBetDesc.includes("arco") ||
@@ -1763,18 +1767,20 @@ export function evaluateMarketResult(
       if (parsed >= 4.5 && parsed <= 45.5) line = parsed;
     }
 
-    const isUnder =
-      sClean.includes("under") ||
-      sClean.includes("menos") ||
-      pClean.includes("under") ||
-      pClean.includes("menos") ||
-      mClean.includes("under") ||
-      mClean.includes("menos");
-
+    const isUnder = /(under|menos)/i.test(combinedBetDesc);
     const requiredShots = isUnder ? Math.floor(line) : Math.floor(line) + 1;
     const totalActualShots = isOnTarget
       ? (options?.totalShotsOnGoal ?? ((options?.homeShotsOnGoal || 0) + (options?.awayShotsOnGoal || 0)))
       : (options?.totalShots ?? ((options?.homeTotalShots || 0) + (options?.awayTotalShots || 0)));
+
+    // Guard: If stats are missing, don't settle as 0 shots!
+    if (options?.totalShotsOnGoal === undefined && options?.totalShots === undefined && (!totalActualShots || totalActualShots === 0) && !aClean.includes("tiro") && !aClean.includes("disparo")) {
+      return {
+        isWon: false,
+        actualScoreText: `${homeGoals} - ${awayGoals} (Disparos pendientes)`,
+        isPendingStats: true,
+      };
+    }
 
     const isWon = isUnder ? (totalActualShots <= requiredShots) : (totalActualShots >= requiredShots);
     return {
@@ -1784,14 +1790,16 @@ export function evaluateMarketResult(
   }
 
   // 1. Ambos Marcan (BTTS)
-  if (mClean.includes("ambos") || mClean.includes("btts")) {
+  if (mClean.includes("ambos") || mClean.includes("btts") || sClean.includes("ambos")) {
     const isNoMarket =
       mClean.includes(" no") ||
       mClean.includes("ambos no") ||
       mClean.includes("btts no") ||
       mClean.endsWith(" no") ||
       mClean.includes("no anotan") ||
-      sClean === "no";
+      sClean === "no" ||
+      sClean.includes("no anotan");
+
     if (isNoMarket) {
       const isWon = !btts;
       return { isWon, actualScoreText: btts ? `${homeGoals} - ${awayGoals} (Ambos Sí)` : `${homeGoals} - ${awayGoals} (Ambos No)` };
@@ -1801,60 +1809,48 @@ export function evaluateMarketResult(
     }
   }
 
-  // 2. Over Goals (Over 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.0, 6.5, etc.)
-  if (
-    (mClean.includes("over") || mClean.includes("mas de") || mClean.includes("total") || sClean.includes("over") || sClean.includes("mas de")) &&
-    (mClean.includes("gol") || mClean.includes("goal") || mClean.includes("total") || sClean.includes("gol") || sClean.includes("over"))
-  ) {
-    const combined = `${mClean} ${sClean}`;
-    const lineMatch = combined.match(/(\d+\.?\d*)/);
-    let line = lineMatch ? parseFloat(lineMatch[1]) : 2.5;
-    if (combined.includes("0.5")) line = 0.5;
-    else if (combined.includes("1.5")) line = 1.5;
-    else if (combined.includes("2.5")) line = 2.5;
-    else if (combined.includes("3.5")) line = 3.5;
-    else if (combined.includes("4.5")) line = 4.5;
-    else if (combined.includes("5.5")) line = 5.5;
-    else if (combined.includes("6.5")) line = 6.5;
+  // 2. Over / Under Goals (Over 0.5, 1.5, 2.5, 3.5, 4.5, etc.)
+  const hasOverUnderKw =
+    mClean.includes("over") ||
+    mClean.includes("under") ||
+    mClean.includes("mas de") ||
+    mClean.includes("menos de") ||
+    sClean.includes("over") ||
+    sClean.includes("under") ||
+    sClean.includes("mas de") ||
+    sClean.includes("menos de");
 
-    const isWon = totalGoals > line;
+  const isGoalsMarket = !isCornerMarket && !isCardMarket && !isShotMarket && hasOverUnderKw;
+
+  if (isGoalsMarket) {
+    const isUnder =
+      /(under|menos)/i.test(sClean) ||
+      (/(under|menos)/i.test(mClean) && !/(over|mas)/i.test(sClean));
+
+    let line = 2.5;
+    if (combinedBetDesc.includes("0.5")) line = 0.5;
+    else if (combinedBetDesc.includes("1.5")) line = 1.5;
+    else if (combinedBetDesc.includes("2.5")) line = 2.5;
+    else if (combinedBetDesc.includes("3.5")) line = 3.5;
+    else if (combinedBetDesc.includes("4.5")) line = 4.5;
+    else if (combinedBetDesc.includes("5.5")) line = 5.5;
+    else if (combinedBetDesc.includes("6.5")) line = 6.5;
+    else {
+      const lineMatch = combinedBetDesc.match(/(?:OVER|UNDER|MAS DE|MÁS DE|MENOS DE)?\s*(\d+\.?\d*)/i);
+      if (lineMatch && lineMatch[1]) line = parseFloat(lineMatch[1]);
+    }
+
+    const isWon = isUnder ? (totalGoals < line) : (totalGoals > line);
     return { isWon, actualScoreText: `${homeGoals} - ${awayGoals} (${totalGoals} Goles)` };
   }
 
-  // 3. Under Goals (Under 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.0, 6.5, etc.)
-  if (
-    (mClean.includes("under") || mClean.includes("menos de") || sClean.includes("under") || sClean.includes("menos de")) &&
-    (mClean.includes("gol") || mClean.includes("goal") || mClean.includes("total") || sClean.includes("gol") || sClean.includes("under"))
-  ) {
-    const combined = `${mClean} ${sClean}`;
-    const lineMatch = combined.match(/(\d+\.?\d*)/);
-    let line = lineMatch ? parseFloat(lineMatch[1]) : 2.5;
-    if (combined.includes("0.5")) line = 0.5;
-    else if (combined.includes("1.5")) line = 1.5;
-    else if (combined.includes("2.5")) line = 2.5;
-    else if (combined.includes("3.5")) line = 3.5;
-    else if (combined.includes("4.5")) line = 4.5;
-    else if (combined.includes("5.5")) line = 5.5;
-    else if (combined.includes("6.5")) line = 6.5;
-
-    const isWon = totalGoals < line;
-    return { isWon, actualScoreText: `${homeGoals} - ${awayGoals} (${totalGoals} Goles)` };
-  }
-
-  // 4. Hándicap Asiático & Puck Line (NHL / Multi-Sport / Football)
+  // 4. Hándicap Asiático & Puck Line
   const isPuckOrSpread =
     mClean.includes("handicap") ||
     mClean.includes("puck line") ||
     mClean.includes("puckline") ||
     mClean.includes("spread") ||
-    sClean.includes("+1.5") ||
-    sClean.includes("-1.5") ||
-    sClean.includes("+2.5") ||
-    sClean.includes("-2.5") ||
-    sClean.includes("+0.5") ||
-    sClean.includes("-0.5") ||
-    sClean.includes("+3.5") ||
-    sClean.includes("-3.5");
+    /[+-]\d+(\.5)?/.test(sClean);
 
   if (isPuckOrSpread) {
     const diff = homeGoals - awayGoals;
@@ -1874,82 +1870,99 @@ export function evaluateMarketResult(
     return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
   }
 
-  // 5. Ganador Visitante / 2 / Away Win
-  if (
-    !isPuckOrSpread && (
-      mClean === "gana visitante" ||
-      mClean === "ganador visitante" ||
-      mClean === "2" ||
-      mClean === "away" ||
-      mClean.startsWith("gana visitante") ||
-      mClean.startsWith("ganador visitante") ||
-      (mClean.includes("visitante") && (mClean.includes("gana") || mClean.includes("ganador"))) ||
-      sClean === "2" ||
-      sClean === "visitante" ||
-      (aNorm && sClean.includes(aNorm) && !sClean.includes("+") && !sClean.includes("-")) ||
-      (aNorm && aNorm.includes(sClean) && sClean.length > 3)
-    )
-  ) {
-    const isWon = awayGoals > homeGoals;
-    return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
-  }
-
-  // 6. Ganador Local / 1 / Home Win
-  if (
-    !isPuckOrSpread && (
-      mClean === "gana local" ||
-      mClean === "ganador local" ||
-      mClean === "1" ||
-      mClean === "home" ||
-      mClean.startsWith("gana local") ||
-      mClean.startsWith("ganador local") ||
-      (mClean.includes("local") && (mClean.includes("gana") || mClean.includes("ganador"))) ||
-      sClean === "1" ||
-      sClean === "local" ||
-      (hNorm && sClean.includes(hNorm) && !sClean.includes("+") && !sClean.includes("-")) ||
-      (hNorm && hNorm.includes(sClean) && sClean.length > 3)
-    )
-  ) {
-    const isWon = homeGoals > awayGoals;
-    return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
-  }
-
-  // 7. Empate / X / Draw
-  if (mClean === "empate" || mClean === "x" || mClean === "draw" || mClean.includes("empate") || mClean.includes("(x)") || sClean === "x" || sClean === "empate") {
-    const isWon = homeGoals === awayGoals;
-    return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
-  }
-
-  // 8. Doble Oportunidad (1X, X2, 12)
-  if (
+  // 5. Doble Oportunidad (1X, X2, 12, Empate o Visitante, etc.)
+  const isDoubleChance =
     mClean.includes("doble oportunidad") ||
     mClean.includes("double chance") ||
-    mClean.includes("1x") ||
-    mClean.includes("x2") ||
-    mClean.includes("12") ||
-    sClean === "1x" ||
-    sClean === "x2" ||
-    sClean === "12"
-  ) {
-    if (mClean.includes("1x") || sClean.includes("1x")) {
-      const isWon = homeGoals >= awayGoals;
-      return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
-    }
-    if (mClean.includes("x2") || sClean.includes("x2")) {
+    sClean.includes("1x") ||
+    sClean.includes("x2") ||
+    sClean.includes("12") ||
+    sClean.includes("o empate") ||
+    sClean.includes("empate o") ||
+    sClean.includes("o visitante") ||
+    sClean.includes("o local");
+
+  if (isDoubleChance) {
+    if (sClean.includes("x2") || sClean.includes("visitante") || mClean.includes("x2")) {
       const isWon = awayGoals >= homeGoals;
       return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
     }
-    if (mClean.includes("12") || sClean.includes("12")) {
+    if (sClean.includes("1x") || sClean.includes("local") || mClean.includes("1x")) {
+      const isWon = homeGoals >= awayGoals;
+      return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
+    }
+    if (sClean.includes("12") || mClean.includes("12")) {
       const isWon = homeGoals !== awayGoals;
       return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
     }
   }
 
-  // Fallback: evaluate based on home team or away team or goals
-  const isWon = homeGoals > awayGoals;
-  return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
-}
+  // 6. Empate / X / Draw
+  if (
+    mClean === "empate" ||
+    mClean === "x" ||
+    mClean === "draw" ||
+    mClean.includes("empate") ||
+    mClean.includes("(x)") ||
+    sClean === "x" ||
+    sClean === "empate" ||
+    pClean === "x"
+  ) {
+    const isWon = homeGoals === awayGoals;
+    return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
+  }
 
+  // 7. Ganador Visitante / 2 / Away Win
+  const isAwayWin =
+    mClean === "gana visitante" ||
+    mClean === "ganador visitante" ||
+    mClean === "2" ||
+    mClean === "away" ||
+    mClean.includes("visitante") ||
+    sClean === "2" ||
+    pClean === "2" ||
+    sClean === "visitante" ||
+    sClean.includes("gana visitante") ||
+    sClean.includes("ganador visitante") ||
+    (aNorm && sClean.includes(aNorm) && !sClean.includes("+") && !sClean.includes("-")) ||
+    (aNorm && aNorm.includes(sClean) && sClean.length > 3);
+
+  if (isAwayWin) {
+    const isWon = awayGoals > homeGoals;
+    return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
+  }
+
+  // 8. Ganador Local / 1 / Home Win
+  const isHomeWin =
+    mClean === "gana local" ||
+    mClean === "ganador local" ||
+    mClean === "1" ||
+    mClean === "home" ||
+    mClean.includes("local") ||
+    sClean === "1" ||
+    pClean === "1" ||
+    sClean === "local" ||
+    sClean.includes("gana local") ||
+    sClean.includes("ganador local") ||
+    (hNorm && sClean.includes(hNorm) && !sClean.includes("+") && !sClean.includes("-")) ||
+    (hNorm && hNorm.includes(sClean) && sClean.length > 3);
+
+  if (isHomeWin) {
+    const isWon = homeGoals > awayGoals;
+    return { isWon, actualScoreText: `${homeGoals} - ${awayGoals}` };
+  }
+
+  // 9. Safe fallback: evaluate based on pick or team match, NEVER blind home win!
+  if (pClean === "2" || (aNorm && sClean.includes(aNorm))) {
+    return { isWon: awayGoals > homeGoals, actualScoreText: `${homeGoals} - ${awayGoals}` };
+  }
+  if (pClean === "1" || (hNorm && sClean.includes(hNorm))) {
+    return { isWon: homeGoals > awayGoals, actualScoreText: `${homeGoals} - ${awayGoals}` };
+  }
+
+  // If totally indeterminate, do not blindly declare won!
+  return { isWon: false, actualScoreText: `${homeGoals} - ${awayGoals}` };
+}
 
 
 
