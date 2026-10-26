@@ -408,10 +408,11 @@ export async function getHomeWinVipSlate(dateStr?: string, forceRefresh = false)
     avgOdds: number;
   };
 }> {
-  const targetDate = dateStr || getEcuadorDateString();
+  const todayDateStr = getEcuadorDateString();
+  const targetDate = dateStr || todayDateStr;
+  const isTargetToday = targetDate === todayDateStr;
 
   // 1. Auto-liquidar partidos finalizados en el snapshot SOLO si se solicita explícitamente refresco (forceRefresh).
-  // La navegación de usuario es 100% pasiva desde snapshots/base de datos sin consultar APIs externas en caliente.
   if (forceRefresh) {
     await settleActiveSnapshotWithRealScores(targetDate, "home_win_vip").catch(() => []);
   }
@@ -422,8 +423,8 @@ export async function getHomeWinVipSlate(dateStr?: string, forceRefresh = false)
     loadDailySnapshot(targetDate, "home_win_vip") ||
     [];
 
-  // 3. Generación inicial si no existe snapshot o forzar refresco
-  if (forceRefresh) {
+  // 3. Generación inicial automática si no existen alertas para hoy, o forzar refresco
+  if ((isTargetToday && picks.length === 0) || forceRefresh) {
     try {
       const searchRes = await searchAndAddNewHomeWinVipAlerts(targetDate);
       if (searchRes?.predictions && searchRes.predictions.length > 0) {

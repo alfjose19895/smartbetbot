@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    console.log("[CRON /api/cron/sync] Executing 2-hour automatic synchronization...");
+    console.log("[CRON /api/cron/sync] Executing automatic synchronization...");
 
     // 1. Sync upcoming fixtures across all active leagues
     const fixturesResult = await syncUpcomingFixtures(ALL_LEAGUE_IDS, 7);
@@ -21,7 +21,20 @@ export async function GET(request: NextRequest) {
     // 2. Generate curated high-precision predictions
     const predictions = await generatePredictionsForUpcoming(ALL_LEAGUE_IDS);
 
-    // 3. Master immutable settlement and dual persistence
+    // 3. Sincronización y generación automática de todos los módulos VIP
+    const vipResults = await Promise.allSettled([
+      import("@/lib/sports/corners-vip-server").then((m) => m.getCornersVipSlate(undefined, true)),
+      import("@/lib/sports/cards-vip-server").then((m) => m.getCardsVipSlate(undefined, true)),
+      import("@/lib/sports/shots-vip-server").then((m) => m.getShotsVipSlate(undefined, true)),
+      import("@/lib/sports/home-win-vip-server").then((m) => m.getHomeWinVipSlate(undefined, true)),
+      import("@/lib/sports/away-win-vip-server").then((m) => m.getAwayWinVipSlate(undefined, true)),
+      import("@/lib/sports/btts-vip-server").then((m) => m.getBttsVipSlate(undefined, true)),
+      import("@/lib/sports/over25-vip-server").then((m) => m.getOver25VipSlate(undefined, true)),
+    ]);
+
+    const vipSuccessCount = vipResults.filter((r) => r.status === "fulfilled").length;
+
+    // 4. Master immutable settlement and dual persistence
     const settlement = await reconcileAndSettleAllSnapshots();
     const history = await getHistoricalSettledPredictions();
 
@@ -30,6 +43,7 @@ export async function GET(request: NextRequest) {
       timestamp: new Date().toISOString(),
       fixturesSaved: fixturesResult.fixturesSaved,
       predictionsGenerated: predictions.length,
+      vipModulesSynced: vipSuccessCount,
       historySettled: history.length,
     });
   } catch (error: unknown) {

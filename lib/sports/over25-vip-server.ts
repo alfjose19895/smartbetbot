@@ -487,10 +487,11 @@ export async function getOver25VipSlate(dateStr?: string, forceRefresh = false):
     avgOdds: number;
   };
 }> {
-  const targetDate = dateStr || getEcuadorDateString();
+  const todayDateStr = getEcuadorDateString();
+  const targetDate = dateStr || todayDateStr;
+  const isTargetToday = targetDate === todayDateStr;
 
   // 1. Auto-liquidar partidos finalizados en el snapshot SOLO si se solicita explícitamente refresco (forceRefresh).
-  // La navegación de usuario es 100% pasiva desde snapshots/base de datos sin consultar APIs externas en caliente.
   if (forceRefresh) {
     await settleActiveSnapshotWithRealScores(targetDate, "over25_vip").catch(() => []);
   }
@@ -501,8 +502,8 @@ export async function getOver25VipSlate(dateStr?: string, forceRefresh = false):
     loadDailySnapshot(targetDate, "over25_vip") ||
     [];
 
-  // 3. Si no hay picks o forceRefresh, buscar alertas automáticamente
-  if (forceRefresh) {
+  // 3. Generación inicial automática si no existen alertas para hoy, o forzar refresco
+  if ((isTargetToday && picks.length === 0) || forceRefresh) {
     const searchRes = await searchAndAddNewOver25VipAlerts(targetDate, forceRefresh).catch(() => null);
     if (searchRes && searchRes.predictions.length > 0) {
       picks = searchRes.predictions;
