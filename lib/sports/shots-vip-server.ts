@@ -437,6 +437,7 @@ export function evaluateFixtureShotsPrediction(params: {
       kickoff,
       market: "Disparos",
       selection: c.selection,
+      pick: c.selection,
       odds: effectiveOdds,
       fairOdds,
       probability: probPercent,
@@ -476,7 +477,7 @@ export function evaluateFixtureShotsPrediction(params: {
 /**
  * Escanea y descubre nuevas oportunidades exclusivamente de DISPAROS (solo Over) para la jornada.
  */
-export async function searchAndAddNewShotsVipAlerts(dateStr?: string): Promise<{
+export async function searchAndAddNewShotsVipAlerts(dateStr?: string, forceRefresh = false): Promise<{
   success: boolean;
   newAlerts: MarketOpportunity[];
   totalAlerts: number;
@@ -492,7 +493,7 @@ export async function searchAndAddNewShotsVipAlerts(dateStr?: string): Promise<{
   await settleActiveSnapshotWithRealScores(targetDate, "shots_vip").catch(() => []);
 
   // 2. Cargar snapshot actual de Disparos VIP
-  let existingSnapshot =
+  let existingSnapshot = forceRefresh ? [] :
     (await loadDailySnapshotAsync(targetDate, "shots_vip")) ||
     loadDailySnapshot(targetDate, "shots_vip") ||
     [];
@@ -582,8 +583,8 @@ export async function searchAndAddNewShotsVipAlerts(dateStr?: string): Promise<{
       const isUnder = selLower.includes("under") || selLower.includes("menos") || selLower.includes("baja");
       const isOver = selLower.includes("over") || selLower.includes("más") || selLower.includes("+");
       const tier = p.leagueTier || 3;
-      const minTierProb = tier === 1 ? 62.0 : tier === 2 ? 64.0 : tier === 3 ? 68.0 : 72.0;
-      return isShot && !isUnder && isOver && p.probability >= minTierProb && p.odds >= 1.25 && p.odds <= 2.05;
+      const minTierProb = tier === 1 ? 60.0 : tier === 2 ? 62.0 : tier === 3 ? 64.0 : 66.0;
+      return isShot && !isUnder && isOver && p.probability >= minTierProb && p.odds >= 1.25 && p.odds <= 2.20;
     });
 
     if (validOpps.length > 0) {

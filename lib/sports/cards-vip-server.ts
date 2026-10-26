@@ -405,6 +405,7 @@ export function evaluateFixtureCardsPrediction(params: {
       kickoff,
       market: "Tarjetas",
       selection: c.selection,
+      pick: c.selection,
       odds: effectiveOdds,
       fairOdds,
       probability: probPercent,
@@ -444,7 +445,7 @@ export function evaluateFixtureCardsPrediction(params: {
 /**
  * Escanea y descubre nuevas oportunidades exclusivamente de TARJETAS (solo Over) para la jornada.
  */
-export async function searchAndAddNewCardsVipAlerts(dateStr?: string): Promise<{
+export async function searchAndAddNewCardsVipAlerts(dateStr?: string, forceRefresh = false): Promise<{
   success: boolean;
   newAlerts: MarketOpportunity[];
   totalAlerts: number;
@@ -460,7 +461,7 @@ export async function searchAndAddNewCardsVipAlerts(dateStr?: string): Promise<{
   await settleActiveSnapshotWithRealScores(targetDate, "cards_vip").catch(() => []);
 
   // 2. Cargar snapshot actual de Tarjetas VIP
-  let existingSnapshot =
+  let existingSnapshot = forceRefresh ? [] :
     (await loadDailySnapshotAsync(targetDate, "cards_vip")) ||
     loadDailySnapshot(targetDate, "cards_vip") ||
     [];

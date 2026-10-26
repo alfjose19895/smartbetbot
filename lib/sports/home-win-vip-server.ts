@@ -275,6 +275,7 @@ export async function searchAndAddNewHomeWinVipAlerts(dateStr?: string, forceRef
       leagueLogo: item.league.logo,
       kickoff: item.fixture.date,
       marketOdds: realMarketOdds,
+      targetMarket: "Ganador Local",
     });
 
     // Filtrar estrictamente solo pronósticos de GANADOR LOCAL con regla estricta >= 58% de probabilidad/convicción

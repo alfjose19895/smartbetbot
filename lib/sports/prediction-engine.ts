@@ -2182,6 +2182,20 @@ export function evaluateFixturePrediction(params: {
   ]);
   candidates = candidates.filter((c) => ALLOWED_MARKET_NAMES.has(c.market));
 
+  // If a specific targetMarket was requested (e.g. VIP module search), filter strictly to that market
+  if (targetMarket) {
+    const tmNorm = targetMarket.toLowerCase();
+    candidates = candidates.filter((c) => {
+      const mNorm = c.market.toLowerCase();
+      if (tmNorm.includes("córner") || tmNorm.includes("corner")) return mNorm.includes("córner") || mNorm.includes("corner");
+      if (tmNorm.includes("ambos") || tmNorm.includes("btts")) return mNorm.includes("ambos") || mNorm.includes("btts");
+      if (tmNorm.includes("2.5") || tmNorm.includes("over 2.5") || tmNorm.includes("gol")) return mNorm.includes("2.5") || mNorm.includes("gol");
+      if (tmNorm.includes("local")) return mNorm.includes("local");
+      if (tmNorm.includes("visitante")) return mNorm.includes("visitante");
+      return mNorm === tmNorm;
+    });
+  }
+
   const opportunities: MarketOpportunity[] = [];
 
   const buildOpportunity = (item: { market: string; selection: string; prob: number; odds: number; cornerAnalysis?: any }): MarketOpportunity => {
@@ -2332,26 +2346,27 @@ export function evaluateFixturePrediction(params: {
     // Riesgo asimétrico negativo: beneficio marginal frente a riesgo catastrófico
     if (item.odds < 1.25) continue;
 
-    // Cuotas entre 1.25 y 1.35 deben tener probabilidad >= 78% y EV positivo (>= 2.5%)
+    // Cuotas entre 1.25 y 1.35 deben tener probabilidad >= 70% y EV positivo (>= 1.0%)
     if (item.odds < 1.35) {
       const evCheck = (item.prob * item.odds - 1) * 100;
-      if (item.prob < 0.78 || evCheck < 2.5) continue;
+      if (item.prob < 0.70 || evCheck < 1.0) continue;
     }
 
     // VETO ANTI-TRAMPA 2: Ganador Visitante ("Away Win Trap")
-    // a) En ligas Tier 3 y Tier 4: veto total por extrema volatilidad (histórico 57.1% o menor)
-    if (tier >= 3 && item.market === "Ganador Visitante") continue;
-    // b) En cualquier liga: vetar Ganador Visitante si probabilidad < 70%
-    if (item.market === "Ganador Visitante" && item.prob < 0.70) continue;
+    // a) En ligas Tier 4: veto total por extrema volatilidad (histórico menor a 55%)
+    if (tier >= 4 && item.market === "Ganador Visitante") continue;
+    // b) En ligas Tier 1, 2 y 3: exigir convicción sólida (probabilidad >= 58.0% o >= 55.0% si targetMarket es Ganador Visitante)
+    const minAwayProb = targetMarket?.toLowerCase().includes("visitante") ? 0.55 : 0.58;
+    if (item.market === "Ganador Visitante" && item.prob < minAwayProb) continue;
 
     // VETO ANTI-TRAMPA 3: Ligas volátiles Tier 4 para mercados frágiles
     if (tier >= 4) {
-      // Vetar 1X2 frágiles en ligas menores (salvo favoritismo aplastante >= 75%)
-      if ((item.market === "Ganador Local" || item.market === "Ganador Visitante") && item.prob < 0.75) {
+      // Vetar 1X2 frágiles en ligas menores (salvo favoritismo aplastante >= 65%)
+      if ((item.market === "Ganador Local" || item.market === "Ganador Visitante") && item.prob < 0.65) {
         continue;
       }
-      // Vetar Over 2.5 en ligas menores a menos que la probabilidad sea >= 70%
-      if (item.market === "Over 2.5 Goles" && item.prob < 0.70) {
+      // Vetar Over 2.5 en ligas menores a menos que la probabilidad sea >= 65%
+      if (item.market === "Over 2.5 Goles" && item.prob < 0.65) {
         continue;
       }
     }
@@ -2375,9 +2390,10 @@ export function evaluateFixturePrediction(params: {
     // Tier safety margin check
     if (edgePercent < minRequiredEdge && evPercent < 0) continue;
 
-    // Calibrated quality filter: Only >= 58.0% probability (prioritizing high conviction)
+    // Calibrated quality filter: Only >= 55.0% for targeted away win, >= 58.0% general
+    const minProbFilter = targetMarket?.toLowerCase().includes("visitante") ? 55.0 : 58.0;
     const probPercentForFilter = Math.round(item.prob * 1000) / 10;
-    if (probPercentForFilter < 58.0) continue;
+    if (probPercentForFilter < minProbFilter) continue;
 
     opportunities.push(buildOpportunity(item));
   }
@@ -2386,10 +2402,10 @@ export function evaluateFixturePrediction(params: {
   if (opportunities.length === 0) {
     const sortedCandidates = [...candidates]
       .filter((c) => {
-        // En fallback, no forzar picks con cuotas exageradas (> 2.15) o probabilidades bajas (< 52%)
-        if (c.odds < 1.20 || c.odds > 2.15 || c.prob < 0.52) return false;
-        if (tier >= 3 && c.market === "Ganador Visitante") return false;
-        if (c.market === "Ganador Visitante" && c.prob < 0.70) return false;
+        // En fallback, no forzar picks con cuotas exageradas (> 2.20) o probabilidades bajas (< 52%)
+        if (c.odds < 1.20 || c.odds > 2.20 || c.prob < 0.52) return false;
+        if (tier >= 4 && c.market === "Ganador Visitante") return false;
+        if (c.market === "Ganador Visitante" && c.prob < 0.55) return false;
         return true;
       })
       .sort((a, b) => b.prob - a.prob);

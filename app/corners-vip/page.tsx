@@ -172,7 +172,7 @@ export default function CornersVipPage() {
       const res = await fetch("/api/corners-vip", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date: selectedDate }),
+        body: JSON.stringify({ date: selectedDate, forceRefresh: true }),
       });
 
       const data = await res.json();

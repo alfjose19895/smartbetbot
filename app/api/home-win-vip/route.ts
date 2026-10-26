@@ -62,14 +62,16 @@ export async function POST(request: NextRequest) {
     }
 
     let date: string | undefined = undefined;
+    let forceRefresh = false;
     try {
       const body = await request.json();
       if (body?.date) date = String(body.date);
+      if (body?.forceRefresh || body?.refresh) forceRefresh = true;
     } catch {
       // Body vacío o no-json es aceptable
     }
 
-    const result = await searchAndAddNewHomeWinVipAlerts(date);
+    const result = await searchAndAddNewHomeWinVipAlerts(date, forceRefresh);
 
     return NextResponse.json(result);
   } catch (err: any) {

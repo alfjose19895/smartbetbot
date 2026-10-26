@@ -172,7 +172,7 @@ export default function CardsVipPage() {
       const res = await fetch("/api/cards-vip", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date: selectedDate }),
+        body: JSON.stringify({ date: selectedDate, forceRefresh: true }),
       });
 
       const data = await res.json();

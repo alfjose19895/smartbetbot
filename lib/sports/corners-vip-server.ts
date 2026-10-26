@@ -156,7 +156,7 @@ function isSeniorCompetitiveCornerFixture(item: any): boolean {
  * Escanea y descubre nuevas oportunidades exclusivamente de CÓRNERS para la jornada de hoy.
  * Aplica modelos cuantitativos avanzados (Poisson y Bivariada) respaldados por cuotas reales de casas de apuestas.
  */
-export async function searchAndAddNewCornersVipAlerts(dateStr?: string): Promise<{
+export async function searchAndAddNewCornersVipAlerts(dateStr?: string, forceRefresh = false): Promise<{
   success: boolean;
   newAlerts: MarketOpportunity[];
   totalAlerts: number;
@@ -172,7 +172,7 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string): Promise
   await settleActiveSnapshotWithRealScores(targetDate, "corners_vip").catch(() => []);
 
   // 2. Cargar snapshot actual de Corners VIP
-  let existingSnapshot =
+  let existingSnapshot = forceRefresh ? [] :
     (await loadDailySnapshotAsync(targetDate, "corners_vip")) ||
     loadDailySnapshot(targetDate, "corners_vip") ||
     [];
@@ -269,6 +269,7 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string): Promise
       leagueLogo: item.league.logo,
       kickoff: item.fixture.date,
       marketOdds: realMarketOdds,
+      targetMarket: "Córners",
     });
 
     // Filtrar estrictamente solo oportunidades de córners en modalidad OVER respetando Tiers de Ligas
@@ -291,14 +292,14 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string): Promise
         mktLower.includes("alta");
 
       const tier = p.leagueTier || 3;
-      // Umbrales calibrados por Tier de Liga
+      // Umbrales calibrados por Tier de Liga para máxima precisión y cobertura
       const meetsTierThreshold =
-        tier === 1 ? (p.probability >= 62 && (p.edge || 0) >= 1.5) :
-        tier === 2 ? (p.probability >= 64 && (p.edge || 0) >= 2.0) :
-        tier === 3 ? (p.probability >= 68 && (p.edge || 0) >= 2.5) :
-        (p.probability >= 72 && (p.edge || 0) >= 3.5);
+        tier === 1 ? (p.probability >= 60 && (p.edge || 0) >= 1.0) :
+        tier === 2 ? (p.probability >= 62 && (p.edge || 0) >= 1.0) :
+        tier === 3 ? (p.probability >= 64 && (p.edge || 0) >= 1.5) :
+        (p.probability >= 65 && (p.edge || 0) >= 1.5);
 
-      return isCorner && !isUnder && isOver && meetsTierThreshold && p.odds >= 1.25 && p.odds <= 2.05;
+      return isCorner && !isUnder && isOver && meetsTierThreshold && p.odds >= 1.25 && p.odds <= 2.25;
     });
 
     if (cornerOpps.length > 0) {

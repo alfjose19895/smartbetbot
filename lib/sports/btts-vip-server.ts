@@ -264,13 +264,13 @@ export async function searchAndAddNewBttsVipAlerts(dateStr?: string, forceRefres
       leagueLogo: item.league.logo,
       kickoff: item.fixture.date,
       marketOdds: realMarketOdds,
+      targetMarket: "Ambos Equipos Anotan",
     });
 
-    // Filtrar estrictamente solo pronósticos de AMBOS EQUIPOS ANOTAN con regla estricta >= 58% de probabilidad/convicción
+    // Filtrar estrictamente solo pronósticos de AMBOS EQUIPOS ANOTAN con regla calibrada >= 56% de probabilidad/convicción (>= 58% Destacado)
     const bttsOpps = opportunities.filter((p) => {
       const isBtts = p.market === "Ambos Equipos Anotan" || (p.selection || "").toLowerCase().includes("ambos") || (p.selection || "").toLowerCase().includes("sí") || (p.selection || "").toLowerCase().includes("si");
-      // REGLA ESTRICTA DE CONVICCIÓN: PROBABILIDAD >= 58%
-      const meetsStrictProb = p.probability >= 58.0;
+      const meetsStrictProb = p.probability >= 56.0;
       return isBtts && meetsStrictProb && p.odds >= 1.20 && p.odds <= 2.60;
     });
 

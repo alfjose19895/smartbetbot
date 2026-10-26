@@ -275,13 +275,13 @@ export async function searchAndAddNewAwayWinVipAlerts(dateStr?: string, forceRef
       leagueLogo: item.league.logo,
       kickoff: item.fixture.date,
       marketOdds: realMarketOdds,
+      targetMarket: "Ganador Visitante",
     });
 
-    // Filtrar estrictamente solo pronósticos de GANADOR VISITANTE con regla estricta >= 65% de probabilidad/convicción
+    // Filtrar estrictamente solo pronósticos de GANADOR VISITANTE con regla calibrada >= 58% de probabilidad/convicción (>= 60% Destacado)
     const awayWinOpps = opportunities.filter((p) => {
       const isAwayWin = p.market === "Ganador Visitante" || (p.selection || "").toLowerCase() === "2" || (p.selection || "").toLowerCase() === (p.awayTeam || "").toLowerCase();
-      // REGLA ESTRICTA DE CONVICCIÓN: PROBABILIDAD >= 65%
-      const meetsStrictProb = p.probability >= 65.0;
+      const meetsStrictProb = p.probability >= 58.0;
       return isAwayWin && meetsStrictProb && p.odds >= 1.20 && p.odds <= 4.00;
     });
 

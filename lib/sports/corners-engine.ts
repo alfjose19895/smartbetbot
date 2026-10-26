@@ -57,11 +57,11 @@ export const REALISTIC_CORNER_ODDS_BOUNDS: Record<CornerLine, { min: number; max
 export const DEFAULT_CORNER_CONFIG: CornerMarketConfig = {
   strategy_name: "corners_total_over_prematch",
   lines: {
-    6.5: { enabled: true, min_probability: 0.75, min_edge: 0.02, min_odds: 1.14, min_data_quality: 0.70 },
-    7.5: { enabled: true, min_probability: 0.68, min_edge: 0.03, min_odds: 1.22, min_data_quality: 0.70 },
-    8.5: { enabled: true, min_probability: 0.60, min_edge: 0.03, min_odds: 1.35, min_data_quality: 0.70 },
-    9.5: { enabled: true, min_probability: 0.50, min_edge: 0.04, min_odds: 1.55, min_data_quality: 0.70 },
-    10.5: { enabled: true, min_probability: 0.42, min_edge: 0.04, min_odds: 1.85, min_data_quality: 0.70 },
+    6.5: { enabled: true, min_probability: 0.72, min_edge: 0.02, min_odds: 1.14, min_data_quality: 0.70 },
+    7.5: { enabled: true, min_probability: 0.65, min_edge: 0.02, min_odds: 1.20, min_data_quality: 0.70 },
+    8.5: { enabled: true, min_probability: 0.58, min_edge: 0.02, min_odds: 1.30, min_data_quality: 0.70 },
+    9.5: { enabled: true, min_probability: 0.50, min_edge: 0.02, min_odds: 1.50, min_data_quality: 0.70 },
+    10.5: { enabled: true, min_probability: 0.42, min_edge: 0.03, min_odds: 1.80, min_data_quality: 0.70 },
   },
 };
 

@@ -1652,7 +1652,7 @@ export function evaluateMarketResult(
       }
     }
 
-    const isUnder = /(under|menos)/i.test(combinedBetDesc) || /^-\s*\d+/i.test(sClean);
+    const isUnder = /\b(under|menos)\b/i.test(combinedBetDesc) || /^-\s*\d+/i.test(sClean);
     const requiredCorners = isUnder ? Math.floor(line) : Math.floor(line) + 1;
 
     let homeCorners = options?.homeCorners;
@@ -1723,7 +1723,7 @@ export function evaluateMarketResult(
       if (parsed >= 1.5 && parsed <= 12.5) line = parsed;
     }
 
-    const isUnder = /(under|menos)/i.test(combinedBetDesc);
+    const isUnder = /\b(under|menos)\b/i.test(combinedBetDesc);
     const requiredCards = isUnder ? Math.floor(line) : Math.floor(line) + 1;
     const yC = (options?.homeYellowCards || 0) + (options?.awayYellowCards || 0);
     const rC = (options?.homeRedCards || 0) + (options?.awayRedCards || 0);
@@ -1779,7 +1779,7 @@ export function evaluateMarketResult(
       if (parsed >= 4.5 && parsed <= 45.5) line = parsed;
     }
 
-    const isUnder = /(under|menos)/i.test(combinedBetDesc);
+    const isUnder = /\b(under|menos)\b/i.test(combinedBetDesc);
     const requiredShots = isUnder ? Math.floor(line) : Math.floor(line) + 1;
     const totalActualShots = isOnTarget
       ? (options?.totalShotsOnGoal ?? ((options?.homeShotsOnGoal || 0) + (options?.awayShotsOnGoal || 0)))
@@ -1836,8 +1836,8 @@ export function evaluateMarketResult(
 
   if (isGoalsMarket) {
     const isUnder =
-      /(under|menos)/i.test(sClean) ||
-      (/(under|menos)/i.test(mClean) && !/(over|mas)/i.test(sClean));
+      /\b(under|menos)\b/i.test(sClean) ||
+      (/\b(under|menos)\b/i.test(mClean) && !/\b(over|mas)\b/i.test(sClean));
 
     let line = 2.5;
     if (combinedBetDesc.includes("0.5")) line = 0.5;

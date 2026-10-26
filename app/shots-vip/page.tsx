@@ -172,7 +172,7 @@ export default function ShotsVipPage() {
       const res = await fetch("/api/shots-vip", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date: selectedDate }),
+        body: JSON.stringify({ date: selectedDate, forceRefresh: true }),
       });
 
       const data = await res.json();

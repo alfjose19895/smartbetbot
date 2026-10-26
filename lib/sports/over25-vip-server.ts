@@ -264,13 +264,13 @@ export async function searchAndAddNewOver25VipAlerts(dateStr?: string, forceRefr
       leagueLogo: item.league.logo,
       kickoff: item.fixture.date,
       marketOdds: realMarketOdds,
+      targetMarket: "Over 2.5 Goles",
     });
 
-    // Filtrar estrictamente solo pronósticos de OVER 2.5 GOLES con regla estricta >= 60% de probabilidad/convicción
+    // Filtrar estrictamente solo pronósticos de OVER 2.5 GOLES con regla calibrada >= 58% de probabilidad/convicción (>= 60% Destacado)
     const over25Opps = opportunities.filter((p) => {
       const isOver25 = p.market === "Over 2.5 Goles" || p.selection === "Over 2.5" || (p.selection || "").toLowerCase().includes("over 2.5");
-      // REGLA ESTRICTA DE CONVICCIÓN: PROBABILIDAD >= 60%
-      const meetsStrictProb = p.probability >= 60.0;
+      const meetsStrictProb = p.probability >= 58.0;
       return isOver25 && meetsStrictProb && p.odds >= 1.15 && p.odds <= 2.60;
     });
 
