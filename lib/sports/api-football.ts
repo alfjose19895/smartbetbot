@@ -754,10 +754,10 @@ class ApiFootballClient {
     // 1. Verificar caché persistente en disco
     let existingOnDisk: ApiFootballOddsItem[] = [];
     try {
-      const fs = require("fs");
-      const path = require("path");
+      const fs = typeof window === "undefined" ? eval("require")("fs") : null;
+      const path = typeof window === "undefined" ? eval("require")("path") : null;
       const diskPath = path.join(process.cwd(), "data", "daily_snapshots", `odds_${dateStr}.json`);
-      if (fs.existsSync(diskPath)) {
+      if (fs && path && fs.existsSync(diskPath)) {
         const stat = fs.statSync(diskPath);
         const fileContent = fs.readFileSync(diskPath, "utf-8");
         const parsed = JSON.parse(fileContent);
@@ -820,11 +820,13 @@ class ApiFootballClient {
     if (combinedOdds.length > 0) {
       this.oddsByDateCache.set(cacheKey, { timestamp: nowMs, data: combinedOdds });
       try {
-        const fs = require("fs");
-        const path = require("path");
+        const fs = typeof window === "undefined" ? eval("require")("fs") : null;
+        const path = typeof window === "undefined" ? eval("require")("path") : null;
         const diskPath = path.join(process.cwd(), "data", "daily_snapshots", `odds_${dateStr}.json`);
-        fs.mkdirSync(path.dirname(diskPath), { recursive: true });
-        fs.writeFileSync(diskPath, JSON.stringify(combinedOdds, null, 2), "utf-8");
+        if (fs && path) {
+          fs.mkdirSync(path.dirname(diskPath), { recursive: true });
+          fs.writeFileSync(diskPath, JSON.stringify(combinedOdds, null, 2), "utf-8");
+        }
       } catch {}
     }
     return combinedOdds.length > 0 ? combinedOdds : existingOnDisk;
