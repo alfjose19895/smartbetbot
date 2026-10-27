@@ -156,7 +156,18 @@ export function normalizeMarketFilterString(str?: string | null): string {
 export function matchesMarketFilter(
   selectedFilter: string,
   itemMarket?: string | null,
-  itemSelection?: string | null
+  itemSelection?: string | null,
+  itemMeta?: {
+    source?: string;
+    vipBadge?: string;
+    isCornersVip?: boolean;
+    isCardsVip?: boolean;
+    isShotsVip?: boolean;
+    isOver25Vip?: boolean;
+    isBttsVip?: boolean;
+    isHomeWinVip?: boolean;
+    isAwayWinVip?: boolean;
+  } | null
 ): boolean {
   if (!selectedFilter || selectedFilter === 'ALL' || selectedFilter === 'all') return true;
 
@@ -164,12 +175,122 @@ export function matchesMarketFilter(
   const normActual = normalizeMarketFilterString(itemMarket);
   const normSel = normalizeMarketFilterString(itemSelection);
 
+  // VIP Module shortcuts / normalized IDs
+  if (
+    selectedFilter === 'corners_vip' ||
+    normSelected === 'cornersvip' ||
+    normSelected.includes('cornersvip') ||
+    normSelected.includes('crnersvip')
+  ) {
+    if (
+      itemMeta?.isCornersVip ||
+      itemMeta?.source === 'corners_vip' ||
+      itemMeta?.vipBadge === 'Corners VIP'
+    ) {
+      return true;
+    }
+  }
+
+  if (
+    selectedFilter === 'cards_vip' ||
+    normSelected === 'cardsvip' ||
+    normSelected.includes('tarjetasvip') ||
+    normSelected.includes('cardsvip')
+  ) {
+    if (
+      itemMeta?.isCardsVip ||
+      itemMeta?.source === 'cards_vip' ||
+      itemMeta?.vipBadge === 'Tarjetas VIP'
+    ) {
+      return true;
+    }
+  }
+
+  if (
+    selectedFilter === 'shots_vip' ||
+    normSelected === 'shotsvip' ||
+    normSelected.includes('disparosvip') ||
+    normSelected.includes('shotsvip')
+  ) {
+    if (
+      itemMeta?.isShotsVip ||
+      itemMeta?.source === 'shots_vip' ||
+      itemMeta?.vipBadge === 'Disparos VIP'
+    ) {
+      return true;
+    }
+  }
+
+  if (
+    selectedFilter === 'over25_vip' ||
+    normSelected === 'over25vip' ||
+    normSelected.includes('over25vip')
+  ) {
+    if (
+      itemMeta?.isOver25Vip ||
+      itemMeta?.source === 'over25_vip' ||
+      itemMeta?.vipBadge === 'Over 2.5 VIP'
+    ) {
+      return true;
+    }
+  }
+
+  if (
+    selectedFilter === 'btts_vip' ||
+    normSelected === 'bttsvip' ||
+    normSelected.includes('ambosanotanvip') ||
+    normSelected.includes('bttsvip')
+  ) {
+    if (
+      itemMeta?.isBttsVip ||
+      itemMeta?.source === 'btts_vip' ||
+      itemMeta?.vipBadge === 'Ambos Anotan VIP'
+    ) {
+      return true;
+    }
+  }
+
+  if (
+    selectedFilter === 'home_win_vip' ||
+    normSelected === 'homewinvip' ||
+    normSelected.includes('ganalocalvip')
+  ) {
+    if (
+      itemMeta?.isHomeWinVip ||
+      itemMeta?.source === 'home_win_vip' ||
+      itemMeta?.vipBadge === 'Ganador Local VIP'
+    ) {
+      return true;
+    }
+  }
+
+  if (
+    selectedFilter === 'away_win_vip' ||
+    normSelected === 'awaywinvip' ||
+    normSelected.includes('ganavisitantevip')
+  ) {
+    if (
+      itemMeta?.isAwayWinVip ||
+      itemMeta?.source === 'away_win_vip' ||
+      itemMeta?.vipBadge === 'Ganador Visitante VIP'
+    ) {
+      return true;
+    }
+  }
+
   // 1. CORNERS MARKET (Over Córners, Córners, Corners, Corner Lines)
   const isSelectedCorner =
     normSelected.includes('corner') ||
     normSelected.includes('crner');
 
   if (isSelectedCorner) {
+    if (
+      itemMeta?.isCornersVip ||
+      itemMeta?.source === 'corners_vip' ||
+      itemMeta?.vipBadge === 'Corners VIP'
+    ) {
+      return true;
+    }
     const isUnderFilter = normSelected.includes('under') || normSelected.includes('menos');
     const isActualCorner =
       normActual.includes('corner') ||
@@ -187,7 +308,6 @@ export function matchesMarketFilter(
         normSel.includes('menos')
       );
     }
-    // Over Corners: Ensure it does not match Under corner picks
     return (
       !normActual.includes('under') &&
       !normSel.includes('under') &&
@@ -203,6 +323,13 @@ export function matchesMarketFilter(
     normSelected.includes('anotan');
 
   if (isSelectedBtts) {
+    if (
+      itemMeta?.isBttsVip ||
+      itemMeta?.source === 'btts_vip' ||
+      itemMeta?.vipBadge === 'Ambos Anotan VIP'
+    ) {
+      return true;
+    }
     return (
       normActual.includes('ambos') ||
       normActual.includes('btts') ||
@@ -212,8 +339,54 @@ export function matchesMarketFilter(
     );
   }
 
-  // 3. OVER GOALS (Over 2.5 Goles, Over 1.5 Goles, Over Goles, Total Goles, Over)
-  // Must strictly reject corner picks, American sport points/spreads, etc.
+  // 3. TARJETAS / CARDS (Tarjetas VIP, Tarjetas, Cards)
+  const isSelectedCards =
+    normSelected.includes('tarjeta') ||
+    normSelected.includes('card');
+
+  if (isSelectedCards) {
+    if (
+      itemMeta?.isCardsVip ||
+      itemMeta?.source === 'cards_vip' ||
+      itemMeta?.vipBadge === 'Tarjetas VIP'
+    ) {
+      return true;
+    }
+    return (
+      normActual.includes('tarjeta') ||
+      normActual.includes('card') ||
+      normSel.includes('tarjeta') ||
+      normSel.includes('card')
+    );
+  }
+
+  // 4. DISPAROS / SHOTS (Disparos VIP, Disparos, Remates, Tiros a Puerta, Shots)
+  const isSelectedShots =
+    normSelected.includes('disparo') ||
+    normSelected.includes('shot') ||
+    normSelected.includes('tiro') ||
+    normSelected.includes('remate');
+
+  if (isSelectedShots) {
+    if (
+      itemMeta?.isShotsVip ||
+      itemMeta?.source === 'shots_vip' ||
+      itemMeta?.vipBadge === 'Disparos VIP'
+    ) {
+      return true;
+    }
+    return (
+      normActual.includes('disparo') ||
+      normActual.includes('shot') ||
+      normActual.includes('tiro') ||
+      normActual.includes('remate') ||
+      normSel.includes('disparo') ||
+      normSel.includes('tiro') ||
+      normSel.includes('shot')
+    );
+  }
+
+  // 5. OVER GOALS (Over 2.5 Goles, Over 1.5 Goles, Over Goles, Total Goles, Over)
   const isSelectedOverGoals =
     normSelected.includes('overgol') ||
     normSelected.includes('over25') ||
@@ -224,18 +397,34 @@ export function matchesMarketFilter(
     (normSelected.includes('over') &&
       !normSelected.includes('corner') &&
       !normSelected.includes('crner') &&
+      !normSelected.includes('tarjeta') &&
+      !normSelected.includes('card') &&
+      !normSelected.includes('disparo') &&
+      !normSelected.includes('shot') &&
+      !normSelected.includes('tiro') &&
       !normSelected.includes('point') &&
       !normSelected.includes('total') &&
       !normSelected.includes('kuck') &&
       !normSelected.includes('spread'));
 
   if (isSelectedOverGoals) {
-    // Strictly NOT a corner pick
+    if (
+      itemMeta?.isOver25Vip ||
+      itemMeta?.source === 'over25_vip' ||
+      itemMeta?.vipBadge === 'Over 2.5 VIP'
+    ) {
+      return true;
+    }
     if (
       normActual.includes('corner') ||
       normActual.includes('crner') ||
       normSel.includes('corner') ||
-      normSel.includes('crner')
+      normSel.includes('crner') ||
+      normActual.includes('tarjeta') ||
+      normActual.includes('card') ||
+      normActual.includes('disparo') ||
+      normActual.includes('shot') ||
+      normActual.includes('tiro')
     ) {
       return false;
     }
@@ -259,7 +448,7 @@ export function matchesMarketFilter(
     return Boolean(isGoalKeyword && !isUnder);
   }
 
-  // 4. GANADOR LOCAL / MONEYLINE HOME (1)
+  // 6. GANADOR LOCAL / MONEYLINE HOME (1)
   const isSelectedLocal =
     normSelected.includes('local') ||
     normSelected === '1' ||
@@ -267,6 +456,13 @@ export function matchesMarketFilter(
     normSelected.includes('ganalocal');
 
   if (isSelectedLocal) {
+    if (
+      itemMeta?.isHomeWinVip ||
+      itemMeta?.source === 'home_win_vip' ||
+      itemMeta?.vipBadge === 'Ganador Local VIP'
+    ) {
+      return true;
+    }
     if (normActual.includes('visitante') || normActual.includes('away')) return false;
     return (
       normActual.includes('local') ||
@@ -277,7 +473,7 @@ export function matchesMarketFilter(
     );
   }
 
-  // 5. GANADOR VISITANTE / MONEYLINE AWAY (2)
+  // 7. GANADOR VISITANTE / MONEYLINE AWAY (2)
   const isSelectedAway =
     normSelected.includes('visitante') ||
     normSelected === '2' ||
@@ -285,6 +481,13 @@ export function matchesMarketFilter(
     normSelected.includes('ganavisitante');
 
   if (isSelectedAway) {
+    if (
+      itemMeta?.isAwayWinVip ||
+      itemMeta?.source === 'away_win_vip' ||
+      itemMeta?.vipBadge === 'Ganador Visitante VIP'
+    ) {
+      return true;
+    }
     if (normActual.includes('local') || normActual.includes('home')) return false;
     return (
       normActual.includes('visitante') ||
@@ -295,7 +498,7 @@ export function matchesMarketFilter(
     );
   }
 
-  // 6. AMERICAN SPORTS MARKETS
+  // 8. AMERICAN SPORTS MARKETS
   if (normSelected.includes('puckline')) return normActual.includes('puckline');
   if (normSelected.includes('spread')) return normActual.includes('spread');
   if (normSelected.includes('moneyline')) return normActual.includes('moneyline');
@@ -310,7 +513,7 @@ export function matchesMarketFilter(
     );
   }
 
-  // 7. DIRECT OR SUBSTRING MATCH FALLBACK
+  // 9. DIRECT OR SUBSTRING MATCH FALLBACK
   return normActual.includes(normSelected) || normSelected.includes(normActual);
 }
 

@@ -1519,6 +1519,10 @@ export interface HistoricalSettledPick {
   isBttsVip?: boolean;
   isHomeWinVip?: boolean;
   isAwayWinVip?: boolean;
+  isFindeVip?: boolean;
+  isWeekend?: boolean;
+  isDestacado?: boolean;
+  destacadoRule?: string;
   vipBadge?: string;
   matchTiming?: "prematch" | "live";
   isLive?: boolean;
@@ -3108,6 +3112,30 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
 
   const realScoresMap: Record<string, { home: number; away: number; date: string }> = {};
 
+  // Index Weekend Exclusives (Finde VIP) for historical tracking
+  const weekendFixtureIds = new Set<number>();
+  const weekendTeamMatchKeys = new Set<string>();
+  try {
+    const weekendDir = path.join(process.cwd(), 'data', 'weekend_exclusives');
+    if (fs.existsSync(weekendDir)) {
+      const wFiles = fs.readdirSync(weekendDir).filter((f) => f.endsWith('.json'));
+      for (const wf of wFiles) {
+        const fileContent = JSON.parse(fs.readFileSync(path.join(weekendDir, wf), 'utf-8'));
+        const wPicks = fileContent?.picks || [];
+        for (const wp of wPicks) {
+          if (wp.fixtureId) weekendFixtureIds.add(Number(wp.fixtureId));
+          if (wp.homeTeam && wp.awayTeam) {
+            const h = getCanonicalTeamKey(wp.homeTeam);
+            const a = getCanonicalTeamKey(wp.awayTeam);
+            weekendTeamMatchKeys.add(`${h}-${a}`);
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('[History] Error indexing weekend exclusives:', err);
+  }
+
   const registerRealScore = (homeName: string, awayName: string, dateStr: string, homeGoals: number, awayGoals: number, fixtureId?: number) => {
     if (dateStr < HISTORY_START_DATE) return;
     const hNorm = getCanonicalTeamKey(homeName);
@@ -3287,6 +3315,14 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
         p.pickBadge === "away_win_vip" ||
         (p as any).sport === "away_win_vip"
       );
+      const isFindeVipPick = Boolean(
+        (p as any).isFindeVip ||
+        (p as any).isWeekend ||
+        (p as any).isDestacado ||
+        Boolean((p as any).destacadoRule) ||
+        (p.fixtureId && weekendFixtureIds.has(Number(p.fixtureId))) ||
+        weekendTeamMatchKeys.has(`${hNorm}-${aNorm}`)
+      );
       const isMcpPick =
         !isCornersVipPick &&
         !isCardsVipPick &&
@@ -3318,6 +3354,8 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
         ? "Ganador Local VIP"
         : isAwayWinVipPick
         ? "Ganador Visitante VIP"
+        : isFindeVipPick
+        ? "Finde VIP"
         : undefined;
 
       const sourceKey: any = isCardsVipPick
@@ -3400,6 +3438,10 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
             isBttsVip: isBttsVipPick,
             isHomeWinVip: isHomeWinVipPick,
             isAwayWinVip: isAwayWinVipPick,
+            isFindeVip: isFindeVipPick,
+            isWeekend: isFindeVipPick,
+            isDestacado: isFindeVipPick,
+            destacadoRule: (p as any).destacadoRule || undefined,
             vipBadge,
             source: sourceKey,
             sport: sportKey,
@@ -3503,6 +3545,10 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
             isBttsVip: isBttsVipPick,
             isHomeWinVip: isHomeWinVipPick,
             isAwayWinVip: isAwayWinVipPick,
+            isFindeVip: isFindeVipPick,
+            isWeekend: isFindeVipPick,
+            isDestacado: isFindeVipPick,
+            destacadoRule: (p as any).destacadoRule || undefined,
             vipBadge,
             source: sourceKey,
             sport: sportKey,

@@ -68,7 +68,7 @@ export default function HistoryPage() {
   const [selectedPickForModal, setSelectedPickForModal] = useState<HistoricalSettledPick | null>(null);
 
   // Filters
-  const [timingFilter, setTimingFilter] = useState<"ALL" | "PREMATCH" | "MCP" | "BOMBA">("ALL");
+  const [timingFilter, setTimingFilter] = useState<"ALL" | "PREMATCH" | "FINDE" | "MCP" | "BOMBA">("ALL");
   const [filterResult, setFilterResult] = useState<"ALL" | "WON" | "LOST">("ALL");
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
@@ -243,15 +243,22 @@ export default function HistoryPage() {
     let defaultMarkets: string[] = [];
 
     if (selectedSport === "football") {
-      defaultMarkets = [
-        "Over Córners",
-        "Ambos Equipos Anotan",
-        "Over 2.5 Goles",
-        "Over 1.5 Goles",
-        "Ganador Local",
-        "Ganador Visitante",
-        "Doble Oportunidad",
+      const vipFootballMarkets = [
+        { id: "corners_vip", label: "🚩 Corners VIP (Córners +EV ≥ 70%)" },
+        { id: "over25_vip", label: "⚽ Over 2.5 VIP (Goles Totales ≥ 60%)" },
+        { id: "btts_vip", label: "🥅 Ambos Anotan VIP (BTTS ≥ 58%)" },
+        { id: "home_win_vip", label: "🏠 Gana Local VIP (Local ≥ 58%)" },
+        { id: "away_win_vip", label: "✈️ Gana Visitante VIP (Visitante ≥ 65%)" },
+        { id: "cards_vip", label: "🟨 Tarjetas VIP (Cuantitativo)" },
+        { id: "shots_vip", label: "🎯 Disparos VIP (Cuantitativo)" },
       ];
+      return vipFootballMarkets.map((m) => {
+        const count = historyItems.filter((h) => matchesMarketFilter(m.id, h.market, h.selection, h)).length;
+        return {
+          value: m.id,
+          label: `${m.label} (${count})`,
+        };
+      });
     } else if (selectedSport === "nhl") {
       defaultMarkets = [
         "MONEYLINE",
@@ -319,7 +326,7 @@ export default function HistoryPage() {
     };
 
     return allAvailable.map((m) => {
-      const count = historyItems.filter((h) => matchesMarketFilter(m, h.market, h.selection)).length;
+      const count = historyItems.filter((h) => matchesMarketFilter(m, h.market, h.selection, h)).length;
       return {
         value: m,
         label: `${getFriendlyMarketLabel(m)} (${count})`,
@@ -344,6 +351,15 @@ export default function HistoryPage() {
 
   const sevenDaysAgoMs = now.getTime() - 7 * 86400000;
   const thirtyDaysAgoMs = now.getTime() - 30 * 86400000;
+
+  const isFindeItem = (item: HistoricalSettledPick) =>
+    Boolean(
+      item.isFindeVip ||
+      item.isWeekend ||
+      item.isDestacado ||
+      item.vipBadge === "Finde VIP" ||
+      (item as any).destacadoRule
+    );
 
   const isMcpItem = (item: HistoricalSettledPick) =>
     Boolean(
@@ -393,6 +409,8 @@ export default function HistoryPage() {
 
       if (timingFilter === "PREMATCH") {
         if (item.isLive || item.matchTiming === "live") return false;
+      } else if (timingFilter === "FINDE") {
+        if (!isFindeItem(item)) return false;
       } else if (timingFilter === "MCP") {
         if (!isMcpItem(item)) return false;
       } else if (timingFilter === "BOMBA") {
@@ -418,7 +436,7 @@ export default function HistoryPage() {
       }
 
       if (selectedMarkets.length > 0) {
-        const match = selectedMarkets.some((m) => matchesMarketFilter(m, item.market, item.selection));
+        const match = selectedMarkets.some((m) => matchesMarketFilter(m, item.market, item.selection, item));
         if (!match) return false;
       }
 
@@ -480,6 +498,7 @@ export default function HistoryPage() {
   }, [parlayItems, filterResult, searchQuery]);
 
   const prematchCount = historyItems.filter((h) => !h.isLive && h.matchTiming !== "live").length;
+  const findeVipCount = historyItems.filter(isFindeItem).length;
   const mcpCount = historyItems.filter((h) => isMcpItem(h)).length;
   const bombaCount = historyItems.filter((h) => h.pickBadge === "bomba" || h.odds >= 2.05).length;
   const wonCount = historyItems.filter(isWonItem).length;
@@ -688,6 +707,17 @@ export default function HistoryPage() {
               }`}
             >
               📋 Pre-Match ({prematchCount})
+            </button>
+
+            <button
+              onClick={() => setTimingFilter(timingFilter === "FINDE" ? "ALL" : "FINDE")}
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1 ${
+                timingFilter === "FINDE"
+                  ? "bg-cyan-600 text-white shadow-sm"
+                  : "bg-cyan-50 text-cyan-800 border border-cyan-200 hover:bg-cyan-100 dark:bg-cyan-950/60 dark:text-cyan-300 dark:border-cyan-800"
+              }`}
+            >
+              <span>💎 Finde VIP ({findeVipCount})</span>
             </button>
 
             <button

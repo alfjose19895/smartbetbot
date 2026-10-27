@@ -10,7 +10,7 @@ import { SupportedSport } from "@/lib/sports/types";
 
 type DateFilterMode = "all" | "today" | "yesterday" | "7d" | "30d" | "specific" | "range";
 type ProbFilterMode = "all" | "muy_alta" | "alta" | "media" | "baja" | "custom";
-type ModalityFilter = "all" | "prematch" | "live" | "mcp" | "bomba" | "corners_vip" | "cards_vip" | "shots_vip" | "over25_vip" | "btts_vip";
+type ModalityFilter = "all" | "prematch" | "finde_vip" | "mcp" | "bomba";
 
 interface MetricItem {
   name: string;
@@ -207,24 +207,20 @@ function ReportsContent() {
       }
 
       // 3. Modality Filter
-      const isLive = item.isLive || item.matchTiming === "live";
-      const isMcp = item.isMcp || item.pickBadge === "mcp";
-      const isBomba = item.pickBadge === "bomba" || item.odds >= 2.05;
+      const isLive = Boolean(item.isLive || item.matchTiming === "live");
+      const isMcp = Boolean(item.isMcp || item.source === "mcp" || item.pickBadge === "mcp" || (item.explanation && item.explanation.includes("MCP")));
+      const isBomba = Boolean(item.pickBadge === "bomba" || (item.odds && item.odds >= 2.05));
       const isCornersVip = Boolean(item.isCornersVip || item.source === "corners_vip" || item.pickBadge === "corners_vip" || item.vipBadge === "Corners VIP");
       const isCardsVip = Boolean(item.isCardsVip || item.source === "cards_vip" || item.pickBadge === "cards_vip" || item.vipBadge === "Tarjetas VIP");
       const isShotsVip = Boolean(item.isShotsVip || item.source === "shots_vip" || item.pickBadge === "shots_vip" || item.vipBadge === "Disparos VIP");
       const isOver25Vip = Boolean(item.isOver25Vip || item.source === "over25_vip" || item.pickBadge === "over25_vip" || item.vipBadge === "Over 2.5 VIP");
       const isBttsVip = Boolean(item.isBttsVip || item.source === "btts_vip" || item.pickBadge === "btts_vip" || item.vipBadge === "Ambos Anotan VIP");
+      const isFindeVip = Boolean(item.isFindeVip || item.isWeekend || item.isDestacado || item.vipBadge === "Finde VIP" || (item as any).destacadoRule);
 
       if (modalityFilter === "prematch" && isLive) return false;
-      if (modalityFilter === "live" && !isLive) return false;
+      if (modalityFilter === "finde_vip" && !isFindeVip) return false;
       if (modalityFilter === "mcp" && !isMcp) return false;
       if (modalityFilter === "bomba" && !isBomba) return false;
-      if (modalityFilter === "corners_vip" && !isCornersVip) return false;
-      if (modalityFilter === "cards_vip" && !isCardsVip) return false;
-      if (modalityFilter === "shots_vip" && !isShotsVip) return false;
-      if (modalityFilter === "over25_vip" && !isOver25Vip) return false;
-      if (modalityFilter === "btts_vip" && !isBttsVip) return false;
 
       // Restrict VIP picks in reports strictly to administrators
       if (!isAdmin && (isCornersVip || isCardsVip || isShotsVip || isOver25Vip || isBttsVip)) {
@@ -233,7 +229,7 @@ function ReportsContent() {
 
       // 4. Market Filter
       if (marketFilter !== "all") {
-        if (!matchesMarketFilter(marketFilter, item.market, item.selection)) {
+        if (!matchesMarketFilter(marketFilter, item.market, item.selection, item)) {
           return false;
         }
       }
@@ -275,25 +271,15 @@ function ReportsContent() {
     };
 
     const prematchPicks = filteredItems.filter((h) => !h.isLive && h.matchTiming !== "live");
-    const livePicks = filteredItems.filter((h) => h.isLive || h.matchTiming === "live");
+    const findeVipPicks = filteredItems.filter((h) => h.isFindeVip || h.isWeekend || h.isDestacado || h.vipBadge === "Finde VIP" || (h as any).destacadoRule);
     const mcpPicks = filteredItems.filter((h) => h.isMcp || h.pickBadge === "mcp");
     const bombaPicks = filteredItems.filter((h) => h.pickBadge === "bomba" || h.odds >= 2.05);
-    const cornersVipPicks = filteredItems.filter((h) => h.isCornersVip || h.source === "corners_vip" || h.pickBadge === "corners_vip" || h.vipBadge === "Corners VIP");
-    const cardsVipPicks = filteredItems.filter((h) => h.isCardsVip || h.source === "cards_vip" || h.pickBadge === "cards_vip" || h.vipBadge === "Tarjetas VIP");
-    const shotsVipPicks = filteredItems.filter((h) => h.isShotsVip || h.source === "shots_vip" || h.pickBadge === "shots_vip" || h.vipBadge === "Disparos VIP");
-    const over25VipPicks = filteredItems.filter((h) => h.isOver25Vip || h.source === "over25_vip" || h.pickBadge === "over25_vip" || h.vipBadge === "Over 2.5 VIP");
-    const bttsVipPicks = filteredItems.filter((h) => h.isBttsVip || h.source === "btts_vip" || h.pickBadge === "btts_vip" || h.vipBadge === "Ambos Anotan VIP");
 
     return {
       prematch: computeStats(prematchPicks),
-      live: computeStats(livePicks),
+      finde_vip: computeStats(findeVipPicks),
       mcp: computeStats(mcpPicks),
       bomba: computeStats(bombaPicks),
-      corners_vip: computeStats(cornersVipPicks),
-      cards_vip: computeStats(cardsVipPicks),
-      shots_vip: computeStats(shotsVipPicks),
-      over25_vip: computeStats(over25VipPicks),
-      btts_vip: computeStats(bttsVipPicks),
     };
   }, [filteredItems]);
 
@@ -350,12 +336,23 @@ function ReportsContent() {
       const mLower = canonicalMarket.toLowerCase();
 
       if (selectedSport === "football") {
-        if (mLower.includes("córner") || mLower.includes("corner")) canonicalMarket = "Córners";
-        else if (mLower.includes("over 2.5")) canonicalMarket = "Over 2.5 Goles";
-        else if (mLower.includes("over 1.5")) canonicalMarket = "Over 1.5 Goles";
-        else if (mLower.includes("ganador local") || mLower.includes("gana local")) canonicalMarket = "Ganador Local";
-        else if (mLower.includes("ganador visitante") || mLower.includes("gana visitante")) canonicalMarket = "Ganador Visitante";
-        else if (mLower.includes("ambos")) canonicalMarket = "Ambos Equipos Anotan";
+        if (i.isCornersVip || i.source === "corners_vip" || i.vipBadge === "Corners VIP" || mLower.includes("córner") || mLower.includes("corner")) {
+          canonicalMarket = "🚩 Corners VIP (≥70%)";
+        } else if (i.isOver25Vip || i.source === "over25_vip" || i.vipBadge === "Over 2.5 VIP" || mLower.includes("over 2.5")) {
+          canonicalMarket = "⚽ Over 2.5 VIP (≥60%)";
+        } else if (i.isBttsVip || i.source === "btts_vip" || i.vipBadge === "Ambos Anotan VIP" || mLower.includes("ambos") || mLower.includes("btts")) {
+          canonicalMarket = "🥅 Ambos Anotan VIP (≥58%)";
+        } else if (i.isHomeWinVip || i.source === "home_win_vip" || i.vipBadge === "Ganador Local VIP" || mLower.includes("ganador local") || mLower.includes("gana local")) {
+          canonicalMarket = "🏠 Gana Local VIP (≥58%)";
+        } else if (i.isAwayWinVip || i.source === "away_win_vip" || i.vipBadge === "Ganador Visitante VIP" || mLower.includes("ganador visitante") || mLower.includes("gana visitante")) {
+          canonicalMarket = "✈️ Gana Visitante VIP (≥65%)";
+        } else if (i.isCardsVip || i.source === "cards_vip" || i.vipBadge === "Tarjetas VIP" || mLower.includes("tarjeta") || mLower.includes("card")) {
+          canonicalMarket = "🟨 Tarjetas VIP";
+        } else if (i.isShotsVip || i.source === "shots_vip" || i.vipBadge === "Disparos VIP" || mLower.includes("disparo") || mLower.includes("shot") || mLower.includes("remate")) {
+          canonicalMarket = "🎯 Disparos VIP";
+        } else if (mLower.includes("over 1.5")) {
+          canonicalMarket = "Over 1.5 Goles";
+        }
       } else if (selectedSport === "nhl") {
         if (mLower.includes("puck")) canonicalMarket = "Puck Line (-1.5 / +1.5)";
         else if (mLower.includes("total") || mLower.includes("over") || mLower.includes("under")) canonicalMarket = "Total Goles (Over/Under)";
@@ -426,11 +423,13 @@ function ReportsContent() {
     if (selectedSport === "football") {
       return [
         { id: "all", label: "🌐 Todos los Mercados" },
-        { id: "Ganador Local", label: "⚽ Ganador Local" },
-        { id: "Ganador Visitante", label: "🚀 Ganador Visitante" },
-        { id: "Over 2.5 Goles", label: "🔥 Over 2.5 Goles" },
-        { id: "Ambos Equipos Anotan", label: "⚡ Ambos Anotan" },
-        { id: "Córners", label: "🚩 Córners" },
+        { id: "corners_vip", label: "🚩 Corners VIP (Córners +EV ≥ 70%)" },
+        { id: "over25_vip", label: "⚽ Over 2.5 VIP (Goles Totales ≥ 60%)" },
+        { id: "btts_vip", label: "🥅 Ambos Anotan VIP (BTTS ≥ 58%)" },
+        { id: "home_win_vip", label: "🏠 Gana Local VIP (Local ≥ 58%)" },
+        { id: "away_win_vip", label: "✈️ Gana Visitante VIP (Visitante ≥ 65%)" },
+        { id: "cards_vip", label: "🟨 Tarjetas VIP (Cuantitativo)" },
+        { id: "shots_vip", label: "🎯 Disparos VIP (Cuantitativo)" },
       ];
     }
     if (selectedSport === "nhl") {
@@ -678,78 +677,26 @@ function ReportsContent() {
               📋 Pre-Match ({comparativeMetrics.prematch.total})
             </button>
             <button
-              onClick={() => setModalityFilter("live")}
+              onClick={() => setModalityFilter("finde_vip")}
               className={`rounded-xl px-3 py-1 text-xs font-black transition cursor-pointer flex items-center gap-1 ${
-                modalityFilter === "live"
-                  ? "bg-rose-600 text-white"
-                  : "bg-rose-50 text-rose-800 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-rose-300"
+                modalityFilter === "finde_vip"
+                  ? "bg-cyan-600 text-white shadow-md shadow-cyan-600/30"
+                  : "bg-cyan-50 text-cyan-800 hover:bg-cyan-100 dark:bg-cyan-950/60 dark:text-cyan-300"
               }`}
             >
-              <span>🎯 Valor (+EV) ({comparativeMetrics.live.total})</span>
+              <span>💎 Finde VIP ({comparativeMetrics.finde_vip.total})</span>
             </button>
             {isAdmin && selectedSport === "football" && (
-              <>
-                <button
-                  onClick={() => setModalityFilter("mcp")}
-                  className={`rounded-xl px-3 py-1 text-xs font-black transition cursor-pointer ${
-                    modalityFilter === "mcp"
-                      ? "bg-purple-600 text-white"
-                      : "bg-purple-50 text-purple-800 hover:bg-purple-100 dark:bg-purple-950/60 dark:text-purple-300"
-                  }`}
-                >
-                  🤖 Agente MCP ({comparativeMetrics.mcp.total})
-                </button>
-                <button
-                  onClick={() => setModalityFilter("corners_vip")}
-                  className={`rounded-xl px-3 py-1 text-xs font-black transition cursor-pointer flex items-center gap-1 ${
-                    modalityFilter === "corners_vip"
-                      ? "bg-amber-500 text-slate-950 font-black shadow-md shadow-amber-500/30"
-                      : "bg-amber-500/10 text-amber-300 border border-amber-500/30 hover:bg-amber-500/20"
-                  }`}
-                >
-                  <span>🚩 Corners VIP ({comparativeMetrics.corners_vip.total})</span>
-                </button>
-                <button
-                  onClick={() => setModalityFilter("cards_vip")}
-                  className={`rounded-xl px-3 py-1 text-xs font-black transition cursor-pointer flex items-center gap-1 ${
-                    modalityFilter === "cards_vip"
-                      ? "bg-yellow-500 text-slate-950 font-black shadow-md shadow-yellow-500/30"
-                      : "bg-yellow-500/10 text-yellow-300 border border-yellow-500/30 hover:bg-yellow-500/20"
-                  }`}
-                >
-                  <span>🟨 Tarjetas VIP ({comparativeMetrics.cards_vip.total})</span>
-                </button>
-                <button
-                  onClick={() => setModalityFilter("shots_vip")}
-                  className={`rounded-xl px-3 py-1 text-xs font-black transition cursor-pointer flex items-center gap-1 ${
-                    modalityFilter === "shots_vip"
-                      ? "bg-cyan-500 text-slate-950 font-black shadow-md shadow-cyan-500/30"
-                      : "bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/20"
-                  }`}
-                >
-                  <span>🎯 Disparos VIP ({comparativeMetrics.shots_vip.total})</span>
-                </button>
-                <button
-                  onClick={() => setModalityFilter("over25_vip")}
-                  className={`rounded-xl px-3 py-1 text-xs font-black transition cursor-pointer flex items-center gap-1 ${
-                    modalityFilter === "over25_vip"
-                      ? "bg-emerald-500 text-slate-950 font-black shadow-md shadow-emerald-500/30"
-                      : "bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/20"
-                  }`}
-                >
-                  <span>⚽ Over 2.5 VIP ({comparativeMetrics.over25_vip?.total || 0})</span>
-                </button>
-                <button
-                  onClick={() => setModalityFilter("btts_vip")}
-                  className={`rounded-xl px-3 py-1 text-xs font-black transition cursor-pointer flex items-center gap-1 ${
-                    modalityFilter === "btts_vip"
-                      ? "bg-blue-500 text-slate-950 font-black shadow-md shadow-blue-500/30"
-                      : "bg-blue-500/10 text-blue-300 border border-blue-500/30 hover:bg-blue-500/20"
-                  }`}
-                >
-                  <span>🥅 Ambos Anotan VIP ({comparativeMetrics.btts_vip?.total || 0})</span>
-                </button>
-              </>
+              <button
+                onClick={() => setModalityFilter("mcp")}
+                className={`rounded-xl px-3 py-1 text-xs font-black transition cursor-pointer ${
+                  modalityFilter === "mcp"
+                    ? "bg-purple-600 text-white"
+                    : "bg-purple-50 text-purple-800 hover:bg-purple-100 dark:bg-purple-950/60 dark:text-purple-300"
+                }`}
+              >
+                🤖 Agente MCP ({comparativeMetrics.mcp.total})
+              </button>
             )}
           </div>
 
