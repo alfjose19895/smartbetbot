@@ -3237,7 +3237,14 @@ export async function getHistoricalSettledPredictions(forceRefresh = false): Pro
         ? realScoresMap[fixKey]
         : (realScoresMap[scoreKeyWithDate] || realScoresMap[scoreKeyGeneric]);
 
-      const isLiveMatch = p.matchTiming === "live" || Boolean(p.currentScore) || Boolean(p.livePeriod);
+      const isLiveMatch =
+        (p.matchTiming === "live" || Boolean(p.livePeriod)) &&
+        p.matchTiming !== "finished" &&
+        p.status !== "won" &&
+        p.status !== "lost" &&
+        (p as any).result !== "WON" &&
+        (p as any).result !== "LOST" &&
+        !Boolean(p.actualScore);
       const isCornersVipPick = Boolean(
         (p as any).isCornersVip ||
         p.source === "corners_vip" ||
