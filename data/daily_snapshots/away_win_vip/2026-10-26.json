@@ -33,7 +33,7 @@
     "destacadoRule": "Ganador Visitante (≥ 60%)",
     "smartScore": 99,
     "explanation": "Benfica sostiene un rendimiento sobresaliente fuera de su estadio, promediando 3.0 tantos esperados por compromiso frente a un Santa Clara que sufre ante rivales de bloque alto.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "away_win_vip",
@@ -48,6 +48,10 @@
     "isAwayWinVip": true,
     "vipBadge": "Ganador Visitante VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-26T14:38:26.129Z"
+    "addedAt": "2026-10-26T14:38:26.129Z",
+    "actualScore": "1 - 2",
+    "result": "WON",
+    "profit": 0.33,
+    "matchTiming": "finished"
   }
 ]

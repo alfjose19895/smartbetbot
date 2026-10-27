@@ -11,6 +11,14 @@
     {
       "path": "/api/cron/sync-multisport",
       "schedule": "0 16 * * *"
+    },
+    {
+      "path": "/api/cron/sync",
+      "schedule": "0 22 * * *"
+    },
+    {
+      "path": "/api/cron/sync",
+      "schedule": "0 3 * * *"
     }
   ]
 }

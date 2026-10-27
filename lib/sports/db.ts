@@ -853,7 +853,6 @@ export async function settleMultiSportSnapshot(dateStr: string, sport: Supported
 export async function settleAllSnapshotsWithRealScores(): Promise<{ settledDates: string[]; totalSettled: number }> {
   const nowMs = Date.now();
   const todayDateStr = getEcuadorDateString(nowMs);
-  const sports: SupportedSport[] = ["football", "nhl", "nba", "nfl", "ncaaf"];
 
   // Auto-settle NHL multi-sport snapshot for today
   try {
@@ -871,26 +870,38 @@ export async function settleAllSnapshotsWithRealScores(): Promise<{ settledDates
   let totalSettled = 0;
   const settledDates: string[] = [];
 
-  // CPU OPTIMIZATION: Only settle active recent dates (past 3 days: today, yesterday, 2 days ago).
-  // Historical snapshots older than 3 days are already settled and immutable.
+  // Helper delay between markets to strictly avoid API rate limiting
+  const marketDelay = (ms: number = 200) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  // CPU & API OPTIMIZATION: Only settle active recent dates (past 3 days: today, yesterday, 2 days ago).
   const maxLookbackDate = getEcuadorDateString(nowMs - 3 * 86400000);
   const candidateDates = allDates.filter((d) => d >= maxLookbackDate && d >= HISTORY_START_DATE);
 
+  // Dedicated VIP & football markets ordered strictly by market
+  const marketsToSettle: { key: string; name: string }[] = [
+    { key: "football", name: "Fútbol General" },
+    { key: "corners_vip", name: "Corners VIP" },
+    { key: "cards_vip", name: "Tarjetas VIP" },
+    { key: "shots_vip", name: "Disparos VIP" },
+    { key: "over25_vip", name: "Over 2.5 VIP" },
+    { key: "btts_vip", name: "Ambos Anotan VIP" },
+    { key: "home_win_vip", name: "Ganador Local VIP" },
+    { key: "away_win_vip", name: "Ganador Visitante VIP" },
+  ];
+
   for (const dateStr of candidateDates) {
-    const snap = snapshots[dateStr] || loadDailySnapshot(dateStr) || [];
-    const hasPendingPastKickoff = snap.some((p) => {
-      const pKick = p.kickoff ? new Date(p.kickoff).getTime() : 0;
-      return (p.status === "pending" || !p.status || (p as any).status === "in_play") && pKick <= nowMs;
-    });
-
-    if (hasPendingPastKickoff || dateStr === todayDateStr) {
+    // 1. Process football and VIP modules strictly market-by-market
+    for (const mkt of marketsToSettle) {
       try {
-        for (const sport of sports) {
-          const settled =
-            sport === "football"
-              ? await settleActiveSnapshotWithRealScores(dateStr)
-              : await settleMultiSportSnapshot(dateStr, sport);
+        const snap = (await loadDailySnapshotAsync(dateStr, mkt.key)) || loadDailySnapshot(dateStr, mkt.key) || [];
+        const needsSettlement = snap.some((p) => {
+          const isSettled = (p.status === "won" || p.status === "lost") && Boolean(p.actualScore);
+          const pKick = p.kickoff ? new Date(p.kickoff).getTime() : 0;
+          return (!isSettled && pKick > 0 && nowMs >= pKick) || p.matchTiming === "live" || Boolean(p.currentScore);
+        });
 
+        if (needsSettlement || dateStr === todayDateStr) {
+          const settled = await settleActiveSnapshotWithRealScores(dateStr, mkt.key);
           if (settled && settled.length > 0) {
             const newlySettled = settled.filter((p) => p.status === "won" || p.status === "lost").length;
             if (newlySettled > 0) {
@@ -898,79 +909,28 @@ export async function settleAllSnapshotsWithRealScores(): Promise<{ settledDates
               totalSettled += newlySettled;
             }
           }
-        }
-
-        // Auto-settle Corners VIP dedicated snapshots
-        const settledCorners = await settleActiveSnapshotWithRealScores(dateStr, "corners_vip");
-        if (settledCorners && settledCorners.length > 0) {
-          const newlySettled = settledCorners.filter((p) => p.status === "won" || p.status === "lost").length;
-          if (newlySettled > 0) {
-            if (!settledDates.includes(dateStr)) settledDates.push(dateStr);
-            totalSettled += newlySettled;
-          }
-        }
-
-        // Auto-settle Tarjetas VIP dedicated snapshots
-        const settledCards = await settleActiveSnapshotWithRealScores(dateStr, "cards_vip");
-        if (settledCards && settledCards.length > 0) {
-          const newlySettled = settledCards.filter((p) => p.status === "won" || p.status === "lost").length;
-          if (newlySettled > 0) {
-            if (!settledDates.includes(dateStr)) settledDates.push(dateStr);
-            totalSettled += newlySettled;
-          }
-        }
-
-        // Auto-settle Disparos VIP dedicated snapshots
-        const settledShots = await settleActiveSnapshotWithRealScores(dateStr, "shots_vip");
-        if (settledShots && settledShots.length > 0) {
-          const newlySettled = settledShots.filter((p) => p.status === "won" || p.status === "lost").length;
-          if (newlySettled > 0) {
-            if (!settledDates.includes(dateStr)) settledDates.push(dateStr);
-            totalSettled += newlySettled;
-          }
-        }
-
-        // Auto-settle Over 2.5 VIP dedicated snapshots
-        const settledOver25 = await settleActiveSnapshotWithRealScores(dateStr, "over25_vip");
-        if (settledOver25 && settledOver25.length > 0) {
-          const newlySettled = settledOver25.filter((p) => p.status === "won" || p.status === "lost").length;
-          if (newlySettled > 0) {
-            if (!settledDates.includes(dateStr)) settledDates.push(dateStr);
-            totalSettled += newlySettled;
-          }
-        }
-
-        // Auto-settle Ambos Anotan VIP dedicated snapshots
-        const settledBtts = await settleActiveSnapshotWithRealScores(dateStr, "btts_vip");
-        if (settledBtts && settledBtts.length > 0) {
-          const newlySettled = settledBtts.filter((p) => p.status === "won" || p.status === "lost").length;
-          if (newlySettled > 0) {
-            if (!settledDates.includes(dateStr)) settledDates.push(dateStr);
-            totalSettled += newlySettled;
-          }
-        }
-
-        // Auto-settle Ganador Local VIP dedicated snapshots
-        const settledHomeWin = await settleActiveSnapshotWithRealScores(dateStr, "home_win_vip");
-        if (settledHomeWin && settledHomeWin.length > 0) {
-          const newlySettled = settledHomeWin.filter((p) => p.status === "won" || p.status === "lost").length;
-          if (newlySettled > 0) {
-            if (!settledDates.includes(dateStr)) settledDates.push(dateStr);
-            totalSettled += newlySettled;
-          }
-        }
-
-        // Auto-settle Ganador Visitante VIP dedicated snapshots
-        const settledAwayWin = await settleActiveSnapshotWithRealScores(dateStr, "away_win_vip");
-        if (settledAwayWin && settledAwayWin.length > 0) {
-          const newlySettled = settledAwayWin.filter((p) => p.status === "won" || p.status === "lost").length;
-          if (newlySettled > 0) {
-            if (!settledDates.includes(dateStr)) settledDates.push(dateStr);
-            totalSettled += newlySettled;
-          }
+          await marketDelay(200);
         }
       } catch (err) {
-        console.warn(`[Auto-Settle] Error settling snapshot ${dateStr}:`, err);
+        console.warn(`[Auto-Settle] Error settling ${mkt.name} for ${dateStr}:`, err);
+      }
+    }
+
+    // 2. Process other sports sequentially (NHL, NBA, NFL, NCAAF)
+    const otherSports: SupportedSport[] = ["nhl", "nba", "nfl", "ncaaf"];
+    for (const sport of otherSports) {
+      try {
+        const settled = await settleMultiSportSnapshot(dateStr, sport);
+        if (settled && settled.length > 0) {
+          const newlySettled = settled.filter((p) => p.status === "won" || p.status === "lost").length;
+          if (newlySettled > 0) {
+            if (!settledDates.includes(dateStr)) settledDates.push(dateStr);
+            totalSettled += newlySettled;
+          }
+        }
+        await marketDelay(200);
+      } catch (sportErr) {
+        console.warn(`[Auto-Settle] Error settling ${sport} for ${dateStr}:`, sportErr);
       }
     }
   }
@@ -988,6 +948,16 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string, sport
   }
 
   if (process.env.VITEST || process.env.NODE_ENV === "test") {
+    return snapshot;
+  }
+
+  // Early return: If all picks in snapshot are already settled and no live/pending past kickoff exists
+  const needsSettlement = snapshot.some((p) => {
+    const isSettled = (p.status === "won" || p.status === "lost") && Boolean(p.actualScore);
+    const pKickoffMs = p.kickoff ? new Date(p.kickoff).getTime() : 0;
+    return (!isSettled && pKickoffMs > 0 && nowMs >= pKickoffMs) || p.matchTiming === "live" || Boolean(p.currentScore);
+  });
+  if (!needsSettlement) {
     return snapshot;
   }
 
@@ -1107,23 +1077,22 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string, sport
     });
 
     if (finishedSpecialPicks.length > 0) {
-      await Promise.all(
-        finishedSpecialPicks.map(async (p) => {
-          const fixId = Number(p.fixtureId);
-          if (!fixId || statsDetailsMap[fixId]) return;
-          try {
-            const stats = await apiFootball.getFixtureStatistics(fixId);
-            if (stats && Array.isArray(stats) && stats.length >= 2) {
-              const details = extractMatchDetails(stats);
-              if (details.hasStats) {
-                statsDetailsMap[fixId] = details;
-              }
+      for (const p of finishedSpecialPicks) {
+        const fixId = Number(p.fixtureId);
+        if (!fixId || statsDetailsMap[fixId]) continue;
+        try {
+          const stats = await apiFootball.getFixtureStatistics(fixId);
+          if (stats && Array.isArray(stats) && stats.length >= 2) {
+            const details = extractMatchDetails(stats);
+            if (details.hasStats) {
+              statsDetailsMap[fixId] = details;
             }
-          } catch (err) {
-            console.warn(`[Settlement] Could not fetch stats for fixture ${fixId}:`, err);
           }
-        })
-      );
+          await new Promise((resolve) => setTimeout(resolve, 150));
+        } catch (err) {
+          console.warn(`[Settlement] Could not fetch stats for fixture ${fixId}:`, err);
+        }
+      }
     }
 
     let hasUpdates = false;
@@ -4084,6 +4053,9 @@ export async function reconcileAndSettleAllSnapshots(): Promise<{
   snapshotsProcessed: number;
 }> {
   console.log("[Reconciliation Engine] Running immutable history settlement and snapshot sync...");
+  await settleAllSnapshotsWithRealScores().catch((err) => {
+    console.warn("[Reconciliation Engine] settleAllSnapshotsWithRealScores non-fatal warning:", err);
+  });
   const settledHistory = await getHistoricalSettledPredictions(true);
   const parlays = await getHistoricalSettledParlays();
 

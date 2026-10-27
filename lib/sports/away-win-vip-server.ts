@@ -412,16 +412,26 @@ export async function getAwayWinVipSlate(dateStr?: string, forceRefresh = false)
   const targetDate = dateStr || todayDateStr;
   const isTargetToday = targetDate === todayDateStr;
 
-  // 1. Auto-liquidar partidos finalizados en el snapshot SOLO si se solicita explícitamente refresco (forceRefresh).
-  if (forceRefresh) {
-    await settleActiveSnapshotWithRealScores(targetDate, "away_win_vip").catch(() => []);
-  }
-
-  // 2. Cargar snapshot
+  // 1. Cargar snapshot
   let picks =
     (await loadDailySnapshotAsync(targetDate, "away_win_vip")) ||
     loadDailySnapshot(targetDate, "away_win_vip") ||
     [];
+
+  // 2. Auto-liquidar partidos finalizados en el snapshot si se solicita refresco o si hay partidos que ya iniciaron o están en vivo
+  const nowMs = Date.now();
+  const needsSettlement = forceRefresh || (Array.isArray(picks) && picks.some((p) => {
+    const isSettled = (p.status === "won" || p.status === "lost") && Boolean(p.actualScore);
+    const pKick = p.kickoff ? new Date(p.kickoff).getTime() : 0;
+    return (!isSettled && pKick > 0 && nowMs >= pKick) || p.matchTiming === "live" || Boolean(p.currentScore);
+  }));
+
+  if (needsSettlement) {
+    const settled = await settleActiveSnapshotWithRealScores(targetDate, "away_win_vip").catch(() => []);
+    if (settled && settled.length > 0) {
+      picks = settled;
+    }
+  }
 
   // 3. Generación inicial automática si no existen alertas para hoy, o forzar refresco
   if ((isTargetToday && picks.length === 0) || forceRefresh) {

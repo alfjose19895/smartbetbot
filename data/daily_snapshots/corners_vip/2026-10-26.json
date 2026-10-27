@@ -33,7 +33,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 82,
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.5 córners totales.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "corners_vip",
@@ -151,7 +151,11 @@
     "isCornersVip": true,
     "vipBadge": "Corners VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-26T14:38:25.108Z"
+    "addedAt": "2026-10-26T14:38:25.108Z",
+    "actualScore": "4 - 4 (8 Córners)",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1585804,
@@ -187,7 +191,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 82,
     "explanation": "Volumen constante por las bandas: El cruce táctico entre Mardin 1969 (5.8 córners de media en casa) y Manisa F.K. (4.6 foráneos) proyecta 10.4 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "corners_vip",
@@ -305,7 +309,11 @@
     "isCornersVip": true,
     "vipBadge": "Corners VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-26T14:38:25.175Z"
+    "addedAt": "2026-10-26T14:38:25.175Z",
+    "actualScore": "4 - 5 (9 Córners)",
+    "result": "WON",
+    "profit": 0.8,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1555533,
@@ -341,7 +349,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 81,
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.4 córners totales.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "corners_vip",
@@ -459,7 +467,11 @@
     "isCornersVip": true,
     "vipBadge": "Corners VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-26T14:38:25.136Z"
+    "addedAt": "2026-10-26T14:38:25.136Z",
+    "actualScore": "9 - 7 (16 Córners)",
+    "result": "WON",
+    "profit": 0.67,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1552504,
@@ -495,7 +507,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 99,
     "explanation": "Volumen constante por las bandas: El cruce táctico entre Boulogne (5.7 córners de media en casa) y Reims (4.7 foráneos) proyecta 10.4 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "corners_vip",
@@ -613,7 +625,11 @@
     "isCornersVip": true,
     "vipBadge": "Corners VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-26T14:38:25.438Z"
+    "addedAt": "2026-10-26T14:38:25.438Z",
+    "actualScore": "5 - 5 (10 Córners)",
+    "result": "WON",
+    "profit": 0.9,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1493205,
@@ -649,7 +665,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 99,
     "explanation": "Volumen constante por las bandas: El cruce táctico entre Instituto Cordoba (5.9 córners de media en casa) y Deportivo Riestra (4.6 foráneos) proyecta 10.5 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "corners_vip",
@@ -768,7 +784,10 @@
     "vipBadge": "Corners VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-26T14:38:25.905Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "13 - 1 (14 Córners)",
+    "result": "WON",
+    "profit": 0.82
   },
   {
     "fixtureId": 1549822,
@@ -804,7 +823,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 99,
     "explanation": "Patrón de repliegue y rechaces: Santa Fe sostiene una alta cadencia de llegadas al último tercio generando tiros de esquina constantes, mientras que Bucaramanga concede más de 5.2 córners en promedio cuando juega de visitante.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "corners_vip",
@@ -922,6 +941,10 @@
     "isCornersVip": true,
     "vipBadge": "Corners VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-26T14:38:25.937Z"
+    "addedAt": "2026-10-26T14:38:25.937Z",
+    "actualScore": "4 - 3 (7 Córners)",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   }
 ]

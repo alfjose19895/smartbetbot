@@ -363,6 +363,26 @@ class ApiFootballClient {
   private defaultTimezone: string = "America/Guayaquil";
   private oddsByDateCache: Map<string, { timestamp: number; data: ApiFootballOddsItem[] }> = new Map();
   private fixturesByDateCache: Map<string, { timestamp: number; data: ApiFootballFixtureItem[] }> = new Map();
+  private fixtureStatsCache: Map<number, { timestamp: number; data: ApiFootballFixtureStatistics[] }> = new Map();
+  private lastRequestTime: number = 0;
+  private readonly minRequestIntervalMs: number = 250;
+  private queue: Promise<any> = Promise.resolve();
+
+  private async enqueueRequest<T>(fn: () => Promise<T>): Promise<T> {
+    const run = async () => {
+      const now = Date.now();
+      const elapsed = now - this.lastRequestTime;
+      if (elapsed < this.minRequestIntervalMs) {
+        await new Promise((resolve) => setTimeout(resolve, this.minRequestIntervalMs - elapsed));
+      }
+      this.lastRequestTime = Date.now();
+      return fn();
+    };
+
+    const resultPromise = this.queue.then(run, run);
+    this.queue = resultPromise.then(() => {}, () => {});
+    return resultPromise;
+  }
 
   constructor() {
     this.apiKey =
@@ -371,48 +391,55 @@ class ApiFootballClient {
       "01de09ba37a81c948be7aebcaf154c61";
   }
 
-  public async request<T>(endpoint: string, params: Record<string, string | number> = {}): Promise<T[]> {
+  public async request<T>(endpoint: string, params: Record<string, string | number> = {}, retryCount = 0): Promise<T[]> {
     if (!this.apiKey) {
       console.warn(`[ApiFootball] API Key is missing. Skipping request to ${endpoint}`);
       return [];
     }
 
-    try {
-      const url = new URL(`${this.baseUrl}/${endpoint}`);
-      Object.entries(params).forEach(([key, value]) => {
-        url.searchParams.append(key, String(value));
-      });
+    return this.enqueueRequest(async () => {
+      try {
+        const url = new URL(`${this.baseUrl}/${endpoint}`);
+        Object.entries(params).forEach(([key, value]) => {
+          url.searchParams.append(key, String(value));
+        });
 
-      const response = await fetch(url.toString(), {
-        method: "GET",
-        headers: {
-          "x-rapidapi-key": this.apiKey,
-          "x-apisports-key": this.apiKey,
-        },
-        next: { revalidate: 180 },
-      });
+        const response = await fetch(url.toString(), {
+          method: "GET",
+          headers: {
+            "x-rapidapi-key": this.apiKey,
+            "x-apisports-key": this.apiKey,
+          },
+          next: { revalidate: 180 },
+        });
 
-      if (!response.ok) {
-        console.error(`[ApiFootball] HTTP error ${response.status} fetching ${endpoint}`);
+        if (!response.ok) {
+          console.error(`[ApiFootball] HTTP error ${response.status} fetching ${endpoint}`);
+          return [];
+        }
+
+        const rawText = await response.text();
+        if (!rawText || rawText.trim().length === 0) {
+          return [];
+        }
+        const json = JSON.parse(rawText);
+
+        if (json.errors && Object.keys(json.errors).length > 0) {
+          if (json.errors.rateLimit && retryCount < 2) {
+            console.warn(`[ApiFootball] Rate limit exceeded on ${endpoint}. Backing off 2.5s and retrying (attempt ${retryCount + 1})...`);
+            await new Promise((r) => setTimeout(r, 2500));
+            return this.request<T>(endpoint, params, retryCount + 1);
+          }
+          console.warn(`[ApiFootball] API returned errors:`, json.errors);
+          return [];
+        }
+
+        return (json.response as T[]) || [];
+      } catch (err) {
+        console.error(`[ApiFootball] Request exception for ${endpoint}:`, err);
         return [];
       }
-
-      const rawText = await response.text();
-      if (!rawText || rawText.trim().length === 0) {
-        return [];
-      }
-      const json = JSON.parse(rawText);
-
-      if (json.errors && Object.keys(json.errors).length > 0) {
-        console.warn(`[ApiFootball] API returned errors:`, json.errors);
-        return [];
-      }
-
-      return (json.response as T[]) || [];
-    } catch (err) {
-      console.error(`[ApiFootball] Request exception for ${endpoint}:`, err);
-      return [];
-    }
+    });
   }
 
   private async requestWithPaging<T>(
@@ -833,9 +860,18 @@ class ApiFootballClient {
   }
 
   async getFixtureStatistics(fixtureId: number): Promise<ApiFootballFixtureStatistics[]> {
-    return this.request<ApiFootballFixtureStatistics>("fixtures/statistics", {
+    if (!fixtureId) return [];
+    const cached = this.fixtureStatsCache.get(fixtureId);
+    if (cached && Date.now() - cached.timestamp < 24 * 60 * 60 * 1000) {
+      return cached.data;
+    }
+    const res = await this.request<ApiFootballFixtureStatistics>("fixtures/statistics", {
       fixture: fixtureId,
     });
+    if (Array.isArray(res) && res.length >= 2) {
+      this.fixtureStatsCache.set(fixtureId, { timestamp: Date.now(), data: res });
+    }
+    return res;
   }
 }
 

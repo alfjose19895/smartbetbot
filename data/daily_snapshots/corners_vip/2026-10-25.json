@@ -33,7 +33,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 90,
     "explanation": "Volumen constante por las bandas: El cruce táctico entre Neman (6.2 córners de media en casa) y Dinamo Brest (4.4 foráneos) proyecta 10.6 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "corners_vip",
@@ -147,7 +147,10 @@
     "vipBadge": "Corners VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T13:22:40.503Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "0 - 0 (0 Córners)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1549519,
@@ -183,7 +186,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 99,
     "explanation": "Patrón de repliegue y rechaces: Comerciantes Unidos sostiene una alta cadencia de llegadas al último tercio generando tiros de esquina constantes, mientras que Cienciano concede más de 5.2 córners en promedio cuando juega de visitante.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "corners_vip",
@@ -302,7 +305,10 @@
     "vipBadge": "Corners VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T13:22:41.627Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "6 - 1 (7 Córners)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1557446,
@@ -338,7 +344,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 99,
     "explanation": "Patrón de repliegue y rechaces: Sunderland sostiene una alta cadencia de llegadas al último tercio generando tiros de esquina constantes, mientras que Leeds concede más de 5.2 córners en promedio cuando juega de visitante.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "corners_vip",
@@ -456,7 +462,10 @@
     "vipBadge": "Corners VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T13:17:56.852Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "6 - 5 (11 Córners)",
+    "result": "WON",
+    "profit": 0.67
   },
   {
     "fixtureId": 1493197,
@@ -492,7 +501,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 99,
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.6 córners totales.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "corners_vip",
@@ -611,7 +620,10 @@
     "vipBadge": "Corners VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T13:17:57.209Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "3 - 9 (12 Córners)",
+    "result": "WON",
+    "profit": 0.73
   },
   {
     "fixtureId": 1549523,
@@ -647,7 +659,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 99,
     "explanation": "Volumen constante por las bandas: El cruce táctico entre UCV Moquegua (6.0 córners de media en casa) y Alianza Lima (4.5 foráneos) proyecta 10.5 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "corners_vip",
@@ -765,7 +777,11 @@
     "isCornersVip": true,
     "vipBadge": "Corners VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-25T13:23:08.830Z"
+    "addedAt": "2026-10-25T13:23:08.830Z",
+    "actualScore": "3 - 9 (12 Córners)",
+    "result": "WON",
+    "profit": 0.83,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1549838,
@@ -801,7 +817,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 99,
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.5 córners totales.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "corners_vip",
@@ -920,7 +936,10 @@
     "vipBadge": "Corners VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T13:17:57.478Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "6 - 2 (8 Córners)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1493204,
@@ -956,7 +975,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 99,
     "explanation": "Patrón de repliegue y rechaces: Independiente sostiene una alta cadencia de llegadas al último tercio generando tiros de esquina constantes, mientras que Boca Juniors concede más de 5.2 córners en promedio cuando juega de visitante.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "corners_vip",
@@ -1075,7 +1094,10 @@
     "vipBadge": "Corners VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T13:17:57.582Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "4 - 3 (7 Córners)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1493206,
@@ -1111,7 +1133,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 99,
     "explanation": "Patrón de repliegue y rechaces: River Plate sostiene una alta cadencia de llegadas al último tercio generando tiros de esquina constantes, mientras que Racing Club concede más de 5.2 córners en promedio cuando juega de visitante.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "corners_vip",
@@ -1230,7 +1252,10 @@
     "vipBadge": "Corners VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T13:17:57.719Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "6 - 5 (11 Córners)",
+    "result": "WON",
+    "profit": 0.83
   },
   {
     "fixtureId": 1493201,
@@ -1266,7 +1291,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 99,
     "explanation": "Patrón de repliegue y rechaces: Central Cordoba de Santiago sostiene una alta cadencia de llegadas al último tercio generando tiros de esquina constantes, mientras que Velez Sarsfield concede más de 5.2 córners en promedio cuando juega de visitante.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "corners_vip",
@@ -1385,7 +1410,10 @@
     "vipBadge": "Corners VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T13:17:57.928Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "4 - 2 (6 Córners)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1549837,
@@ -1421,7 +1449,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 99,
     "explanation": "Volumen constante por las bandas: El cruce táctico entre Deportes Tolima (5.7 córners de media en casa) y Deportivo Pasto (4.7 foráneos) proyecta 10.4 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "corners_vip",
@@ -1540,6 +1568,9 @@
     "vipBadge": "Corners VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T13:22:42.774Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "6 - 4 (10 Córners)",
+    "result": "WON",
+    "profit": 0.83
   }
 ]

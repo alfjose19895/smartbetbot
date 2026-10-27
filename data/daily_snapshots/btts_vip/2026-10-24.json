@@ -363,7 +363,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 99,
     "explanation": "Eficacia bilateral en ataque: San Diego anota con regularidad en su estadio (1.3 xG) pero concede ocasiones (0 goles en contra), mientras que Seattle Sounders cuenta con pegada foránea (1.7 xG). El patrón estadístico favorece la anotación mutua.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -379,10 +379,10 @@
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T02:16:03.907Z",
-    "matchTiming": "prematch",
-    "currentScore": "0 - 0",
-    "livePeriod": "1H",
-    "liveMinute": "4"
+    "matchTiming": "finished",
+    "actualScore": "2 - 2 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.36
   },
   {
     "fixtureId": 1490567,
@@ -418,7 +418,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 99,
     "explanation": "Tanto Real Salt Lake como St. Louis City han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -434,9 +434,9 @@
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": false,
     "addedAt": "2026-10-25T02:16:03.879Z",
-    "currentScore": "1 - 0",
-    "matchTiming": "prematch",
-    "livePeriod": "HT",
-    "liveMinute": "45"
+    "matchTiming": "finished",
+    "actualScore": "3 - 0 (No)",
+    "result": "LOST",
+    "profit": -1
   }
 ]

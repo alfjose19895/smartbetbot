@@ -21,7 +21,7 @@
     "expectedValue": 0.5,
     "confidence": "Muy Alta",
     "smartScore": 86,
-    "status": "pending",
+    "status": "won",
     "explanation": "Proyección disciplinaria calibrada de 5.1 tarjetas totales en Süper Lig (Tier 3). Árbitro designado: H. U. Meler.",
     "isCardsVip": true,
     "vipBadge": "Tarjetas VIP",
@@ -33,8 +33,11 @@
     "source": "cards_vip",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-26T14:47:08.334Z",
-    "matchTiming": "prematch",
-    "pick": "Over 3.5 Tarjetas"
+    "matchTiming": "finished",
+    "pick": "Over 3.5 Tarjetas",
+    "actualScore": "4 Tarjetas (4 Amarillas, 0 Rojas)",
+    "result": "WON",
+    "profit": 0.26
   },
   {
     "fixtureId": 1575524,
@@ -58,7 +61,7 @@
     "expectedValue": 0.5,
     "confidence": "Muy Alta",
     "smartScore": 86,
-    "status": "pending",
+    "status": "won",
     "explanation": "Proyección disciplinaria calibrada de 5.1 tarjetas totales en Primeira Liga (Tier 2). Árbitro designado: Claudio Pereira.",
     "isCardsVip": true,
     "vipBadge": "Tarjetas VIP",
@@ -70,8 +73,11 @@
     "source": "cards_vip",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-26T14:47:08.343Z",
-    "matchTiming": "prematch",
-    "pick": "Over 3.5 Tarjetas"
+    "matchTiming": "finished",
+    "pick": "Over 3.5 Tarjetas",
+    "actualScore": "10 Tarjetas (9 Amarillas, 1 Rojas)",
+    "result": "WON",
+    "profit": 0.26
   },
   {
     "fixtureId": 1569983,
@@ -95,7 +101,7 @@
     "expectedValue": 0.5,
     "confidence": "Muy Alta",
     "smartScore": 86,
-    "status": "pending",
+    "status": "lost",
     "explanation": "Proyección disciplinaria calibrada de 5.1 tarjetas totales en La Liga 2 (Segunda División) (Tier 3). Árbitro designado: Miranda Bolano Daniel.",
     "isCardsVip": true,
     "vipBadge": "Tarjetas VIP",
@@ -107,8 +113,11 @@
     "source": "cards_vip",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-26T14:47:08.344Z",
-    "matchTiming": "prematch",
-    "pick": "Over 3.5 Tarjetas"
+    "matchTiming": "finished",
+    "pick": "Over 3.5 Tarjetas",
+    "actualScore": "2 Tarjetas (0 Amarillas, 0 Rojas)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1570431,
@@ -132,7 +141,7 @@
     "expectedValue": 0.5,
     "confidence": "Muy Alta",
     "smartScore": 86,
-    "status": "pending",
+    "status": "lost",
     "explanation": "Proyección disciplinaria calibrada de 5.1 tarjetas totales en La Liga (Tier 1). Árbitro designado: Miguel Angel Ortiz Arias.",
     "isCardsVip": true,
     "vipBadge": "Tarjetas VIP",
@@ -144,8 +153,11 @@
     "source": "cards_vip",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-26T14:47:08.347Z",
-    "matchTiming": "prematch",
-    "pick": "Over 3.5 Tarjetas"
+    "matchTiming": "finished",
+    "pick": "Over 3.5 Tarjetas",
+    "actualScore": "3 Tarjetas (0 Amarillas, 0 Rojas)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1639829,
@@ -169,7 +181,7 @@
     "expectedValue": 0.5,
     "confidence": "Alta",
     "smartScore": 77,
-    "status": "pending",
+    "status": "lost",
     "explanation": "Proyección disciplinaria calibrada de 4.6 tarjetas totales en Liga Pro (Tier 2). Árbitro designado: Anthony Diaz.",
     "isCardsVip": true,
     "vipBadge": "Tarjetas VIP",
@@ -181,8 +193,11 @@
     "source": "cards_vip",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-26T14:47:08.347Z",
-    "matchTiming": "prematch",
-    "pick": "Over 3.5 Tarjetas"
+    "matchTiming": "finished",
+    "pick": "Over 3.5 Tarjetas",
+    "actualScore": "3 Tarjetas (0 Amarillas, 0 Rojas)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1576511,
@@ -206,7 +221,7 @@
     "expectedValue": 0.5,
     "confidence": "Muy Alta",
     "smartScore": 86,
-    "status": "pending",
+    "status": "won",
     "explanation": "Proyección disciplinaria calibrada de 5.1 tarjetas totales en Liga Portugal 2 (Tier 3). Árbitro designado: Miguel Andre Monteiro Fonseca.",
     "isCardsVip": true,
     "vipBadge": "Tarjetas VIP",
@@ -218,8 +233,11 @@
     "source": "cards_vip",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-26T14:47:08.348Z",
-    "matchTiming": "prematch",
-    "pick": "Over 3.5 Tarjetas"
+    "matchTiming": "finished",
+    "pick": "Over 3.5 Tarjetas",
+    "actualScore": "6 Tarjetas (6 Amarillas, 0 Rojas)",
+    "result": "WON",
+    "profit": 0.26
   },
   {
     "fixtureId": 1520940,
@@ -243,7 +261,7 @@
     "expectedValue": 0.5,
     "confidence": "Muy Alta",
     "smartScore": 85,
-    "status": "pending",
+    "status": "lost",
     "explanation": "Proyección disciplinaria calibrada de 5.0 tarjetas totales en Brasileirão Série B (Tier 3). Árbitro designado: Nascimento de Souza, Jodis.",
     "isCardsVip": true,
     "vipBadge": "Tarjetas VIP",
@@ -255,8 +273,11 @@
     "source": "cards_vip",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-26T14:47:08.350Z",
-    "matchTiming": "prematch",
-    "pick": "Over 3.5 Tarjetas"
+    "matchTiming": "finished",
+    "pick": "Over 3.5 Tarjetas",
+    "actualScore": "3 Tarjetas (3 Amarillas, 0 Rojas)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1492423,
@@ -280,7 +301,7 @@
     "expectedValue": 0.5,
     "confidence": "Muy Alta",
     "smartScore": 85,
-    "status": "pending",
+    "status": "lost",
     "explanation": "Proyección disciplinaria calibrada de 5.0 tarjetas totales en Brasileirão Série A (Tier 2). Árbitro designado: Rodrigo Jose Pereira de Lima.",
     "isCardsVip": true,
     "vipBadge": "Tarjetas VIP",
@@ -292,8 +313,11 @@
     "source": "cards_vip",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-26T14:47:08.350Z",
-    "matchTiming": "prematch",
-    "pick": "Over 3.5 Tarjetas"
+    "matchTiming": "finished",
+    "pick": "Over 3.5 Tarjetas",
+    "actualScore": "3 Tarjetas (0 Amarillas, 0 Rojas)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1549839,
@@ -317,7 +341,7 @@
     "expectedValue": 0.5,
     "confidence": "Alta",
     "smartScore": 78,
-    "status": "pending",
+    "status": "won",
     "explanation": "Proyección disciplinaria calibrada de 5.7 tarjetas totales en Primera A (Tier 2).",
     "isCardsVip": true,
     "vipBadge": "Tarjetas VIP",
@@ -329,8 +353,11 @@
     "source": "cards_vip",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-26T14:47:08.350Z",
-    "matchTiming": "prematch",
-    "pick": "Over 4.5 Tarjetas"
+    "matchTiming": "finished",
+    "pick": "Over 4.5 Tarjetas",
+    "actualScore": "10 Tarjetas (0 Amarillas, 0 Rojas)",
+    "result": "WON",
+    "profit": 0.39
   },
   {
     "fixtureId": 1493205,
@@ -354,7 +381,7 @@
     "expectedValue": 0.5,
     "confidence": "Alta",
     "smartScore": 78,
-    "status": "pending",
+    "status": "won",
     "explanation": "Proyección disciplinaria calibrada de 5.7 tarjetas totales en Liga Profesional Argentina (Tier 2). Árbitro designado: Andres Gariano.",
     "isCardsVip": true,
     "vipBadge": "Tarjetas VIP",
@@ -366,7 +393,10 @@
     "source": "cards_vip",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-26T14:47:08.351Z",
-    "matchTiming": "prematch",
-    "pick": "Over 4.5 Tarjetas"
+    "matchTiming": "finished",
+    "pick": "Over 4.5 Tarjetas",
+    "actualScore": "6 Tarjetas (0 Amarillas, 0 Rojas)",
+    "result": "WON",
+    "profit": 0.39
   }
 ]

@@ -33,7 +33,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 94,
     "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -49,7 +49,10 @@
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-26T14:38:27.413Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "3 - 4 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.5
   },
   {
     "fixtureId": 1584440,
@@ -85,7 +88,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 92,
     "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -100,7 +103,11 @@
     "isBttsVip": true,
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-26T14:38:27.379Z"
+    "addedAt": "2026-10-26T14:38:27.379Z",
+    "actualScore": "2 - 0 (No)",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1555533,
@@ -136,7 +143,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 71,
     "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -151,7 +158,11 @@
     "isBttsVip": true,
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-26T14:38:27.479Z"
+    "addedAt": "2026-10-26T14:38:27.479Z",
+    "actualScore": "2 - 5 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.44,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1548549,
@@ -187,7 +198,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 70,
     "explanation": "Tanto Istra 1961 como HNK Hajduk Split han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -202,7 +213,11 @@
     "isBttsVip": true,
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-26T14:38:27.445Z"
+    "addedAt": "2026-10-26T14:38:27.445Z",
+    "actualScore": "2 - 2 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.57,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1551127,
@@ -238,7 +253,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 70,
     "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -253,7 +268,11 @@
     "isBttsVip": true,
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-26T14:38:27.546Z"
+    "addedAt": "2026-10-26T14:38:27.546Z",
+    "actualScore": "2 - 0 (No)",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1584442,
@@ -289,7 +308,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 95,
     "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -305,7 +324,10 @@
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-26T14:38:27.641Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "2 - 1 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.44
   },
   {
     "fixtureId": 1552508,
@@ -341,7 +363,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 91,
     "explanation": "Eficacia bilateral en ataque: Montpellier anota con regularidad en su estadio (1.6 xG) pero concede ocasiones (0 goles en contra), mientras que RED Star FC 93 cuenta con pegada foránea (1.2 xG). El patrón estadístico favorece la anotación mutua.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -356,7 +378,11 @@
     "isBttsVip": true,
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-26T14:38:27.794Z"
+    "addedAt": "2026-10-26T14:38:27.794Z",
+    "actualScore": "2 - 1 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.67,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1563837,
@@ -392,7 +418,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 70,
     "explanation": "Tanto Walsall como Salford City han visto puerta en 4 de sus últimos 5 partidos oficiales, configurando un escenario ideal para que ambas escuadras festejen.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -407,7 +433,11 @@
     "isBttsVip": true,
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-26T14:38:27.823Z"
+    "addedAt": "2026-10-26T14:38:27.823Z",
+    "actualScore": "2 - 4 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.62,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1505544,
@@ -443,7 +473,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 87,
     "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "btts_vip",
@@ -458,6 +488,10 @@
     "isBttsVip": true,
     "vipBadge": "Ambos Anotan VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-26T14:38:27.928Z"
+    "addedAt": "2026-10-26T14:38:27.928Z",
+    "actualScore": "4 - 1 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.67,
+    "matchTiming": "finished"
   }
 ]

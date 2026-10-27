@@ -33,7 +33,7 @@
     "destacadoRule": "Alta de Goles (≥ 60%)",
     "smartScore": 70,
     "explanation": "Persija ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Persik Kediri acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.8 tantos totales con alta actividad en ambas áreas.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "over25_vip",
@@ -49,7 +49,10 @@
     "vipBadge": "Over 2.5 VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-26T14:38:28.326Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "2 - 1 (3 Goles)",
+    "result": "WON",
+    "profit": 0.44
   },
   {
     "fixtureId": 1584440,
@@ -85,7 +88,7 @@
     "destacadoRule": "Alta de Goles (≥ 60%)",
     "smartScore": 90,
     "explanation": "Alta expectativa anotadora: Beşiktaş genera 1.5 xG en casa y Başakşehir promedia 1.2 xG fuera, proyectando 2.7 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "over25_vip",
@@ -101,7 +104,10 @@
     "vipBadge": "Over 2.5 VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-26T14:38:28.383Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "2 - 0 (2 Goles)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1555533,
@@ -137,7 +143,7 @@
     "destacadoRule": "Alta de Goles (≥ 60%)",
     "smartScore": 70,
     "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 2.8 tantos respaldan un desarrollo con múltiples celebraciones.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "over25_vip",
@@ -152,7 +158,11 @@
     "isOver25Vip": true,
     "vipBadge": "Over 2.5 VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-26T14:38:28.478Z"
+    "addedAt": "2026-10-26T14:38:28.478Z",
+    "actualScore": "2 - 5 (7 Goles)",
+    "result": "WON",
+    "profit": 0.48,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1548549,
@@ -188,7 +198,7 @@
     "destacadoRule": "Alta de Goles (≥ 60%)",
     "smartScore": 70,
     "explanation": "Istra 1961 ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras HNK Hajduk Split acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.9 tantos totales con alta actividad en ambas áreas.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "over25_vip",
@@ -203,7 +213,11 @@
     "isOver25Vip": true,
     "vipBadge": "Over 2.5 VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-26T14:38:28.449Z"
+    "addedAt": "2026-10-26T14:38:28.449Z",
+    "actualScore": "2 - 2 (4 Goles)",
+    "result": "WON",
+    "profit": 0.57,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1549041,
@@ -239,7 +253,7 @@
     "destacadoRule": "Alta de Goles (≥ 60%)",
     "smartScore": 83,
     "explanation": "Alta expectativa anotadora: FC Copenhagen genera 1.8 xG en casa y Odense promedia 1.1 xG fuera, proyectando 2.9 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "over25_vip",
@@ -254,7 +268,11 @@
     "isOver25Vip": true,
     "vipBadge": "Over 2.5 VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-26T14:38:28.573Z"
+    "addedAt": "2026-10-26T14:38:28.573Z",
+    "actualScore": "1 - 1 (2 Goles)",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1584442,
@@ -290,7 +308,7 @@
     "destacadoRule": "Alta de Goles (≥ 60%)",
     "smartScore": 88,
     "explanation": "Galatasaray ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Fenerbahçe acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 2.7 tantos totales con alta actividad en ambas áreas.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "over25_vip",
@@ -305,7 +323,11 @@
     "isOver25Vip": true,
     "vipBadge": "Over 2.5 VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-26T14:38:28.644Z"
+    "addedAt": "2026-10-26T14:38:28.644Z",
+    "actualScore": "2 - 1 (3 Goles)",
+    "result": "WON",
+    "profit": 0.48,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1575524,
@@ -341,7 +363,7 @@
     "destacadoRule": "Alta de Goles (≥ 60%)",
     "smartScore": 99,
     "explanation": "Alta expectativa anotadora: Santa Clara genera 0.6 xG en casa y Benfica promedia 3.0 xG fuera, proyectando 3.6 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "over25_vip",
@@ -357,7 +379,10 @@
     "vipBadge": "Over 2.5 VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-26T14:38:28.671Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "1 - 2 (3 Goles)",
+    "result": "WON",
+    "profit": 0.67
   },
   {
     "fixtureId": 1552800,
@@ -393,7 +418,7 @@
     "destacadoRule": "Alta de Goles (≥ 60%)",
     "smartScore": 99,
     "explanation": "Paris Saint Germain ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Lyon acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 3.9 tantos totales con alta actividad en ambas áreas.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "over25_vip",
@@ -408,7 +433,11 @@
     "isOver25Vip": true,
     "vipBadge": "Over 2.5 VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-26T14:38:28.699Z"
+    "addedAt": "2026-10-26T14:38:28.699Z",
+    "actualScore": "2 - 0 (2 Goles)",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1645524,
@@ -444,7 +473,7 @@
     "destacadoRule": "Alta de Goles (≥ 60%)",
     "smartScore": 70,
     "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 3.0 tantos respaldan un desarrollo con múltiples celebraciones.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "over25_vip",
@@ -459,7 +488,11 @@
     "isOver25Vip": true,
     "vipBadge": "Over 2.5 VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-26T14:38:28.994Z"
+    "addedAt": "2026-10-26T14:38:28.994Z",
+    "actualScore": "3 - 0 (3 Goles)",
+    "result": "WON",
+    "profit": 0.44,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1492423,
@@ -495,7 +528,7 @@
     "destacadoRule": "Alta de Goles (≥ 60%)",
     "smartScore": 99,
     "explanation": "Propuesta vertical y transiciones dinámicas: Tanto Flamengo como Atletico-MG promedian más de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la línea de 2.5 goles.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "over25_vip",
@@ -511,6 +544,9 @@
     "vipBadge": "Over 2.5 VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-26T14:38:29.079Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "3 - 2 (5 Goles)",
+    "result": "WON",
+    "profit": 0.57
   }
 ]

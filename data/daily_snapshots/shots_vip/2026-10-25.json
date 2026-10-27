@@ -21,7 +21,7 @@
     "expectedValue": 45.2,
     "confidence": "Muy Alta",
     "smartScore": 88,
-    "status": "pending",
+    "status": "won",
     "explanation": "Proyección ofensiva calibrada de 31.1 disparos totales en Premier League (Tier 1). Ritmo dinámico de llegadas.",
     "isShotsVip": true,
     "vipBadge": "Disparos VIP",
@@ -33,7 +33,10 @@
     "source": "shots_vip",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T13:17:58.197Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "30 Disparos Totales",
+    "result": "WON",
+    "profit": 0.83
   },
   {
     "fixtureId": 1557442,
@@ -57,7 +60,7 @@
     "expectedValue": 23.2,
     "confidence": "Alta",
     "smartScore": 76,
-    "status": "pending",
+    "status": "lost",
     "explanation": "Proyección ofensiva calibrada de 9.8 tiros a puerta en Premier League (Tier 1). Ritmo dinámico de llegadas.",
     "isShotsVip": true,
     "vipBadge": "Disparos VIP",
@@ -69,7 +72,10 @@
     "source": "shots_vip",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T13:17:58.196Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "8 Tiros a Puerta",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1557445,
@@ -129,7 +135,7 @@
     "expectedValue": 27.5,
     "confidence": "Muy Alta",
     "smartScore": 88,
-    "status": "pending",
+    "status": "won",
     "explanation": "Proyección ofensiva calibrada de 9.8 tiros a puerta en Premier League (Tier 1). Ritmo dinámico de llegadas.",
     "isShotsVip": true,
     "vipBadge": "Disparos VIP",
@@ -141,6 +147,9 @@
     "source": "shots_vip",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T13:17:58.208Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "8 Tiros a Puerta",
+    "result": "WON",
+    "profit": 0.67
   }
 ]

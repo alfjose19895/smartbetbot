@@ -21,7 +21,7 @@
     "expectedValue": 5,
     "confidence": "Alta",
     "smartScore": 74,
-    "status": "pending",
+    "status": "won",
     "explanation": "Proyección ofensiva calibrada de 8.6 tiros a puerta en La Liga (Tier 1). Ritmo dinámico de llegadas.",
     "isShotsVip": true,
     "vipBadge": "Disparos VIP",
@@ -33,8 +33,11 @@
     "source": "shots_vip",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-26T14:47:08.364Z",
-    "matchTiming": "prematch",
-    "pick": "Over 7.5 Tiros a Puerta"
+    "matchTiming": "finished",
+    "pick": "Over 7.5 Tiros a Puerta",
+    "actualScore": "9 Tiros a Puerta",
+    "result": "WON",
+    "profit": 0.67
   },
   {
     "fixtureId": 1493205,
@@ -58,7 +61,7 @@
     "expectedValue": 16.9,
     "confidence": "Alta",
     "smartScore": 79,
-    "status": "pending",
+    "status": "lost",
     "explanation": "Proyección ofensiva calibrada de 9.0 tiros a puerta en Liga Profesional Argentina (Tier 2). Ritmo dinámico de llegadas.",
     "isShotsVip": true,
     "vipBadge": "Disparos VIP",
@@ -70,7 +73,10 @@
     "source": "shots_vip",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-26T14:47:08.367Z",
-    "matchTiming": "prematch",
-    "pick": "Over 7.5 Tiros a Puerta"
+    "matchTiming": "finished",
+    "pick": "Over 7.5 Tiros a Puerta",
+    "actualScore": "6 Tiros a Puerta",
+    "result": "LOST",
+    "profit": -1
   }
 ]
