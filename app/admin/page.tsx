@@ -273,44 +273,48 @@ function AdminControlContent() {
   const handlePublishMcpPicks = async (picksToPublish: MarketOpportunity[]) => {
     if (!picksToPublish || picksToPublish.length === 0) return;
     try {
-      if (typeof window !== "undefined") {
-        const todayDateStr = getEcuadorDateString(Date.now());
-        const localRaw = localStorage.getItem("smartbetbot_published_picks");
-        const existing: MarketOpportunity[] = localRaw ? JSON.parse(localRaw) : [];
-        const map = new Map<string, MarketOpportunity>();
-        for (const p of [...existing, ...picksToPublish]) {
-          const pDate = p.kickoff ? getEcuadorDateString(p.kickoff) : todayDateStr;
-          if (pDate === todayDateStr) {
-            const key = `${p.fixtureId || 0}-${p.homeTeam}-${p.awayTeam}-${p.market}`;
-            map.set(key, { ...p, isMcpPick: true, pickBadge: p.pickBadge || "mcp" });
+      setPublishingMcp(true);
+      const res = await fetch("/api/mcp/publish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ predictions: picksToPublish }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setPublishedFixtureKeys((prev) => {
+          const next = new Set(prev);
+          for (const p of picksToPublish) {
+            if (p.fixtureId) next.add(String(p.fixtureId));
+            next.add(`${p.homeTeam}-${p.awayTeam}`);
           }
+          return next;
+        });
+
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("predictions-updated", { detail: data.predictions }));
         }
-        localStorage.setItem("smartbetbot_published_picks", JSON.stringify(Array.from(map.values())));
-        window.dispatchEvent(new CustomEvent("predictions-updated"));
-        window.dispatchEvent(new Event("storage"));
+
+        setPublishFeedback({
+          type: "success",
+          text: `✓ ${picksToPublish.length} pronóstico(s) publicados y guardados en Dashboard y Alertas Pre-Match.`,
+        });
+      } else {
+        setPublishFeedback({
+          type: "error",
+          text: `⚠️ Error al publicar pronósticos: ${data.error || "No se pudo guardar en el servidor."}`,
+        });
       }
-
-      setPublishedFixtureKeys((prev) => {
-        const next = new Set(prev);
-        for (const p of picksToPublish) {
-          if (p.fixtureId) next.add(String(p.fixtureId));
-          next.add(`${p.homeTeam}-${p.awayTeam}`);
-        }
-        return next;
-      });
-
-      setPublishFeedback({
-        type: "success",
-        text: `✓ ${picksToPublish.length} pronóstico(s) publicados en vivo en Dashboard y Alertas.`,
-      });
       setTimeout(() => setPublishFeedback(null), 6000);
     } catch (err) {
       console.error("Error publishing MCP picks:", err);
       setPublishFeedback({
         type: "error",
-        text: "Error al publicar pronósticos localmente.",
+        text: "Error de conexión al publicar pronósticos en el servidor.",
       });
       setTimeout(() => setPublishFeedback(null), 6000);
+    } finally {
+      setPublishingMcp(false);
     }
   };
 

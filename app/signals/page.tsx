@@ -226,11 +226,11 @@ export default function SignalsPage() {
   const handleSyncPredictions = async () => {
     try {
       setSyncing(true);
-      setSyncMessage("⚡ Buscando nuevas alertas de hoy con modelos cuantitativos...");
+      setSyncMessage(`⚡ Buscando nuevas alertas para ${selectedDate} con modelos cuantitativos...`);
       const res = await fetch("/api/admin/sync/predictions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sport: "football" }),
+        body: JSON.stringify({ sport: "football", date: selectedDate }),
       });
       const data = await res.json();
       if (data.success) {
@@ -244,16 +244,11 @@ export default function SignalsPage() {
         if (cleanNewAlerts.length > 0) {
           setNewlyDiscoveredAlerts(cleanNewAlerts);
           setNewAlertsModalOpen(true);
-          setSyncMessage(`✓ ¡Se encontraron ${cleanNewAlerts.length} nuevas alertas de hoy! Agregadas al panel.`);
+          setSyncMessage(`✓ ¡Se encontraron ${cleanNewAlerts.length} nuevas alertas! Agregadas al panel.`);
         } else {
-          const todayPending = cleanPicks.filter(
-            (p: MarketOpportunity) => p.status === "pending" || (!p.actualScore && p.status !== "won" && p.status !== "lost")
-          );
-          if (todayPending.length > 0) {
-            setNewlyDiscoveredAlerts(sortByKickoff(todayPending, "asc"));
-            setNewAlertsModalOpen(true);
-          }
-          setSyncMessage(`✓ Mercado de hoy al día (${cleanPicks.length} alertas activas).`);
+          setNewAlertsModalOpen(false);
+          setNewlyDiscoveredAlerts([]);
+          setSyncMessage(`✓ Mercado al día (${cleanPicks.length} alertas disponibles). No se detectaron alertas nuevas adicionales.`);
         }
         if (Array.isArray(data.predictions)) {
           setPredictions(cleanPicks);
@@ -262,10 +257,10 @@ export default function SignalsPage() {
           await loadSignals(false, selectedDate);
         }
       } else {
-        setSyncMessage(`⚠️ ${data.message || "Error al buscar alertas de hoy"}`);
+        setSyncMessage(`⚠️ ${data.message || "Error al buscar alertas"}`);
       }
     } catch {
-      setSyncMessage("❌ Error de conexión al buscar alertas de hoy");
+      setSyncMessage("❌ Error de conexión al buscar alertas");
     } finally {
       setSyncing(false);
       setTimeout(() => setSyncMessage(null), 5000);

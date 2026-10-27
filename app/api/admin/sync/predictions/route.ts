@@ -14,6 +14,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json().catch(() => ({}));
     const sport = (body.sport || "all").toLowerCase();
+    const date = body.date ? String(body.date) : undefined;
     const leagueIds = body.leagueIds || ALL_LEAGUE_IDS;
 
     // 1. NHL SPECIFIC SYNC
@@ -125,7 +126,7 @@ export async function POST(request: NextRequest) {
     });
 
     // 2. Search and append new alerts into daily snapshot preserving all existing picks
-    const result = await searchAndAddNewAlerts(leagueIds);
+    const result = await searchAndAddNewAlerts(leagueIds, date);
 
     // 3. Reconcile and settle finished matches into immutable history
     await reconcileAndSettleAllSnapshots().catch(() => ({ settledCount: 0 }));

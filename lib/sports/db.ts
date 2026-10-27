@@ -2684,7 +2684,7 @@ export async function addPredictionsToDailySnapshotAsync(newPicks: MarketOpportu
   finalPicks.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
 
   if (addedCount > 0 || finalPicks.length > 0) {
-    saveDailySnapshot(activeDateStr, finalPicks);
+    await saveDailySnapshotAsync(activeDateStr, finalPicks, "football", false);
 
     for (const [dateStr, datePicks] of picksByDate.entries()) {
       if (dateStr !== activeDateStr && dateStr >= HISTORY_START_DATE) {
@@ -2699,7 +2699,7 @@ export async function addPredictionsToDailySnapshotAsync(newPicks: MarketOpportu
         const mergedDate = Array.from(dateMap.values()).sort(
           (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
         );
-        saveDailySnapshot(dateStr, mergedDate);
+        await saveDailySnapshotAsync(dateStr, mergedDate, "football", false);
       }
     }
 
@@ -2826,7 +2826,7 @@ export function addPredictionsToDailySnapshot(newPicks: MarketOpportunity[]): {
   };
 }
 
-export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise<{
+export async function searchAndAddNewAlerts(targetLeagueIds?: number[], dateStr?: string): Promise<{
   success: boolean;
   count: number;
   newCount: number;
@@ -2837,10 +2837,12 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
 }> {
   const nowMs = Date.now();
   const todayDateStr = getEcuadorDateString(nowMs);
+  const targetDateStr = dateStr || todayDateStr;
+  const isTargetToday = targetDateStr === todayDateStr;
 
   // 1. Auto-liquidar marcadores reales de partidos finalizados antes de buscar
-  await settleActiveSnapshotWithRealScores(todayDateStr);
-  let existingSnapshot = (await loadDailySnapshotAsync(todayDateStr)) || loadDailySnapshot(todayDateStr) || [];
+  await settleActiveSnapshotWithRealScores(targetDateStr);
+  let existingSnapshot = (await loadDailySnapshotAsync(targetDateStr)) || loadDailySnapshot(targetDateStr) || [];
   // Ensure legacy or unqualified pending picks from previous syncs are pruned so they never pollute the Pre-Match count
   existingSnapshot = existingSnapshot.filter((p) => p.status !== "pending" || isPreMatchQualified(p));
 
@@ -2855,10 +2857,10 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     existingSnapshot.map((p) => Number(p.fixtureId)).filter(Boolean)
   );
 
-  // 2. Fetch upcoming fixtures and bulk odds STRICTLY FOR TODAY (afternoon/evening/night) in Ecuador timezone (America/Guayaquil)
+  // 2. Fetch upcoming fixtures and bulk odds FOR target date in Ecuador timezone (America/Guayaquil)
   const [todayFixtures, todayOddsList] = await Promise.all([
-    apiFootball.getFixturesByDate(todayDateStr, "America/Guayaquil").catch(() => []),
-    apiFootball.getOddsByDate(todayDateStr, "America/Guayaquil").catch(() => [] as ApiFootballOddsItem[]),
+    apiFootball.getFixturesByDate(targetDateStr, "America/Guayaquil").catch(() => []),
+    apiFootball.getOddsByDate(targetDateStr, "America/Guayaquil").catch(() => [] as ApiFootballOddsItem[]),
   ]);
 
   const candidateFixtures = Array.isArray(todayFixtures) ? todayFixtures : [];
@@ -2881,12 +2883,12 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     const kickoffMs = new Date(kickoff).getTime();
     const shortStatus = item.fixture.status?.short || "NS";
     if (["1H", "2H", "HT", "ET", "BT", "P", "LIVE", "INT", "SUSP", "FT", "AET", "PEN", "PST", "CANC", "ABD", "AWD", "WO", "POST"].includes(shortStatus)) continue;
-    if (kickoffMs <= nowMs) continue;
+    if (isTargetToday && kickoffMs <= nowMs) continue;
     if (shortStatus !== "NS" && shortStatus !== "TBD") continue;
 
-    // Strict validation: must belong to today's date in Ecuador
+    // Strict validation: must belong to target's date in Ecuador
     const fixDateStr = getEcuadorDateString(kickoffMs);
-    if (fixDateStr !== todayDateStr) continue;
+    if (fixDateStr !== targetDateStr) continue;
 
     const hNorm = getCanonicalTeamKey(item.teams.home.name);
     const aNorm = getCanonicalTeamKey(item.teams.away.name);
@@ -3163,13 +3165,15 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
   }
 
   if (newlyAdded.length > 0) {
-    await saveDailySnapshotAsync(todayDateStr, merged, "football", false);
-    cachedLivePredictions = merged;
-    cacheTimestamp = nowMs;
+    await saveDailySnapshotAsync(targetDateStr, merged, "football", false);
+    if (isTargetToday) {
+      cachedLivePredictions = merged;
+      cacheTimestamp = nowMs;
+    }
     cachedSettledHistory = [];
 
     try {
-      getImmutableDailyParlays(merged, todayDateStr);
+      getImmutableDailyParlays(merged, targetDateStr);
     } catch (parlayErr) {
       console.warn("Could not generate parlays on sync:", parlayErr);
     }
@@ -3187,7 +3191,7 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[]): Promise
     predictions: merged,
     message: newlyAdded.length > 0
       ? `✓ ¡Búsqueda inteligente completada! Se descubrieron ${newlyAdded.length} nuevas alertas (+EV > 5%): ${segurasCount} Seguras y ${valorCount} de Valor.`
-      : `✓ El mercado de hoy está completamente al día con ${merged.length} alertas activas.`,
+      : `✓ El mercado de ${isTargetToday ? "hoy" : targetDateStr} está completamente al día con ${merged.length} alertas activas.`,
   };
 }
 

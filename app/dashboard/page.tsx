@@ -189,14 +189,9 @@ export default function DashboardPage() {
           setNewAlertsModalOpen(true);
           setSyncMessage(`✓ ¡Se encontraron ${data.newAlerts.length} nuevas alertas de hoy! Agregadas al panel.`);
         } else {
-          const todayPending = cleanPicks.filter(
-            (p: MarketOpportunity) => p.status === "pending" || (!p.actualScore && p.status !== "won" && p.status !== "lost")
-          );
-          if (todayPending.length > 0) {
-            setNewlyDiscoveredAlerts(todayPending);
-            setNewAlertsModalOpen(true);
-          }
-          setSyncMessage(`✓ Mercado de hoy al día (${data.count || cleanPicks.length} alertas activas).`);
+          setNewAlertsModalOpen(false);
+          setNewlyDiscoveredAlerts([]);
+          setSyncMessage(`✓ Mercado de hoy al día (${data.count || cleanPicks.length} alertas activas). No se detectaron alertas nuevas adicionales.`);
         }
         await loadSignals(false);
       } else {
