@@ -257,7 +257,7 @@ export default function CardsVipPage() {
       }
 
       // Minimum probability slider
-      if (p.probability < minProbability) return false;
+      if (minProbability > 50 && p.probability < minProbability) return false;
 
       // Text search query
       if (searchQuery.trim()) {

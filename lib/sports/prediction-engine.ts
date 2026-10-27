@@ -1,3 +1,14 @@
+export function applyTier4QuotaProtection<T extends MarketOpportunity>(picks: T[], maxTier4 = 2): T[] {
+  let tier4Count = 0;
+  return picks.filter((p) => {
+    const tier = p.leagueTier || 3;
+    if (tier >= 4) {
+      if (tier4Count >= maxTier4) return false;
+      tier4Count++;
+    }
+    return true;
+  });
+}
 import { isCuratedLeague } from "./api-football";
 import {
   CornerLineSelectionEngine,

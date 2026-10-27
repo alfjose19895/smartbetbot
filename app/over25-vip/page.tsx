@@ -98,7 +98,7 @@ export default function Over25VipPage() {
   const [timeSlotFilter, setTimeSlotFilter] = useState<"ALL" | "TOP" | "MORNING" | "AFTERNOON" | "NIGHT">("ALL");
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
-  const [minProbability, setMinProbability] = useState<number>(60);
+  const [minProbability, setMinProbability] = useState<number>(50);
 
   // 1. Verify User VIP Permissions (Admin or explicitly granted)
   useEffect(() => {
@@ -145,7 +145,7 @@ export default function Over25VipPage() {
           (p: MarketOpportunity) => {
             const isSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST";
             if (isSettled) return true;
-            return (p.market === "Over 2.5 Goles" || (p.selection || "").toLowerCase().includes("over 2.5")) && p.probability >= 60.0;
+            return (p.market === "Over 2.5 Goles" || (p.selection || "").toLowerCase().includes("over 2.5")) && p.probability >= 55.0;
           }
         );
         setPredictions(cleanPicks);
@@ -257,7 +257,7 @@ export default function Over25VipPage() {
       }
 
       // Minimum probability slider
-      if (p.probability < minProbability) return false;
+      if (minProbability > 50 && p.probability < minProbability) return false;
 
       // Text search query
       if (searchQuery.trim()) {
@@ -579,7 +579,7 @@ export default function Over25VipPage() {
                   </div>
                   <input
                     type="range"
-                    min="60"
+                    min="50"
                     max="90"
                     step="1"
                     value={minProbability}

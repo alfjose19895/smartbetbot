@@ -98,7 +98,7 @@ export default function BttsVipPage() {
   const [timeSlotFilter, setTimeSlotFilter] = useState<"ALL" | "TOP" | "MORNING" | "AFTERNOON" | "NIGHT">("ALL");
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
-  const [minProbability, setMinProbability] = useState<number>(58);
+  const [minProbability, setMinProbability] = useState<number>(50);
 
   // 1. Verify User VIP Permissions (Admin or explicitly granted)
   useEffect(() => {
@@ -145,7 +145,7 @@ export default function BttsVipPage() {
           (p: MarketOpportunity) => {
             const isSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST";
             if (isSettled) return true;
-            return (p.market === "Ambos Equipos Anotan" || (p.selection || "").toLowerCase().includes("ambos") || (p.selection || "").toLowerCase().includes("sí") || (p.selection || "").toLowerCase().includes("si")) && p.probability >= 58.0;
+            return (p.market === "Ambos Equipos Anotan" || (p.selection || "").toLowerCase().includes("ambos") || (p.selection || "").toLowerCase().includes("sí") || (p.selection || "").toLowerCase().includes("si")) && p.probability >= 55.0;
           }
         );
         setPredictions(cleanPicks);
@@ -257,7 +257,7 @@ export default function BttsVipPage() {
       }
 
       // Minimum probability slider
-      if (p.probability < minProbability) return false;
+      if (minProbability > 50 && p.probability < minProbability) return false;
 
       // Text search query
       if (searchQuery.trim()) {
@@ -579,7 +579,7 @@ export default function BttsVipPage() {
                   </div>
                   <input
                     type="range"
-                    min="58"
+                    min="50"
                     max="90"
                     step="1"
                     value={minProbability}

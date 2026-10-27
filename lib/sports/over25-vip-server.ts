@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import {
+  applyTier4QuotaProtection,
   MarketOpportunity,
   evaluateFixturePrediction,
   isExcludedMatch,
@@ -222,7 +223,16 @@ export async function searchAndAddNewOver25VipAlerts(dateStr?: string, forceRefr
       continue;
     }
 
-    const realOddsItem = oddsMapByFixture[item.fixture.id];
+    let realOddsItem = oddsMapByFixture[item.fixture.id];
+    if (!realOddsItem) {
+      try {
+        const direct = await apiFootball.getOddsByFixture(item.fixture.id);
+        if (direct) {
+          realOddsItem = direct;
+          oddsMapByFixture[item.fixture.id] = direct;
+        }
+      } catch { }
+    }
     const realMarketOdds = extractMarketOddsFromBookmaker(realOddsItem);
     if (!realMarketOdds || !realMarketOdds.over25 || realMarketOdds.over25 < 1.15 || realMarketOdds.over25 > 2.60) continue;
 
@@ -423,7 +433,7 @@ export async function searchAndAddNewOver25VipAlerts(dateStr?: string, forceRefr
     return (b.edge || 0) - (a.edge || 0);
   });
 
-  const curatedPicks = rankedPicks;
+  const curatedPicks = applyTier4QuotaProtection(rankedPicks, 2);
   const finalPicks = sortByKickoff(curatedPicks, "asc");
 
   // Auditoría complementaria
@@ -530,7 +540,7 @@ export async function getOver25VipSlate(dateStr?: string, forceRefresh = false):
       if (isSettled) return true;
       if (!isCuratedLeague(p.leagueId, p.league, p.country)) return false;
       const isOver25 = p.market === "Over 2.5 Goles" || p.selection === "Over 2.5" || (p.selection || "").toLowerCase().includes("over 2.5");
-      return isOver25 && p.probability >= 60.0;
+      return isOver25 && p.probability >= 58.0;
     })
     .map((p) => {
       const isElite = isElitePick(p);
@@ -579,7 +589,7 @@ export async function getOver25VipSlate(dateStr?: string, forceRefresh = false):
       ;
   }
 
-  const finalSlate = sortByKickoff(curatedPicks, "asc");
+  const finalSlate = sortByKickoff(applyTier4QuotaProtection(curatedPicks, 2), "asc");
 
   const total = finalSlate.length;
   const won = finalSlate.filter((p) => p.status === "won" || (p as any).result === "WON").length;

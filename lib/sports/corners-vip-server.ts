@@ -1,6 +1,7 @@
 ﻿import fs from "fs";
 import path from "path";
 import {
+  applyTier4QuotaProtection,
   MarketOpportunity,
   evaluateFixturePrediction,
   isExcludedMatch,
@@ -233,7 +234,16 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string, forceRef
       continue;
     }
 
-    const realOddsItem = oddsMapByFixture[item.fixture.id];
+    let realOddsItem = oddsMapByFixture[item.fixture.id];
+    if (!realOddsItem) {
+      try {
+        const direct = await apiFootball.getOddsByFixture(item.fixture.id);
+        if (direct) {
+          realOddsItem = direct;
+          oddsMapByFixture[item.fixture.id] = direct;
+        }
+      } catch { }
+    }
     const realMarketOdds = extractMarketOddsFromBookmaker(realOddsItem);
 
     // REGLA FUNDAMENTAL: Requiere telemetría de saques de esquina y cuotas reales de córners

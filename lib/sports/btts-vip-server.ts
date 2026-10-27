@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import {
+  applyTier4QuotaProtection,
   MarketOpportunity,
   evaluateFixturePrediction,
   isExcludedMatch,
@@ -222,7 +223,16 @@ export async function searchAndAddNewBttsVipAlerts(dateStr?: string, forceRefres
       continue;
     }
 
-    const realOddsItem = oddsMapByFixture[item.fixture.id];
+    let realOddsItem = oddsMapByFixture[item.fixture.id];
+    if (!realOddsItem) {
+      try {
+        const direct = await apiFootball.getOddsByFixture(item.fixture.id);
+        if (direct) {
+          realOddsItem = direct;
+          oddsMapByFixture[item.fixture.id] = direct;
+        }
+      } catch { }
+    }
     const realMarketOdds = extractMarketOddsFromBookmaker(realOddsItem);
     if (!realMarketOdds || !realMarketOdds.bttsYes || realMarketOdds.bttsYes < 1.20 || realMarketOdds.bttsYes > 2.60) continue;
 
@@ -426,7 +436,7 @@ export async function searchAndAddNewBttsVipAlerts(dateStr?: string, forceRefres
     return (b.edge || 0) - (a.edge || 0);
   });
 
-  const curatedPicks = rankedPicks;
+  const curatedPicks = applyTier4QuotaProtection(rankedPicks, 2);
   const finalPicks = sortByKickoff(curatedPicks, "asc");
 
   // Auditoría complementaria

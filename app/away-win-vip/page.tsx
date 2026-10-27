@@ -98,7 +98,7 @@ export default function AwayWinVipPage() {
   const [timeSlotFilter, setTimeSlotFilter] = useState<"ALL" | "TOP" | "MORNING" | "AFTERNOON" | "NIGHT">("ALL");
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
   const [selectedConfidence, setSelectedConfidence] = useState<string[]>([]);
-  const [minProbability, setMinProbability] = useState<number>(65);
+  const [minProbability, setMinProbability] = useState<number>(50);
 
   // 1. Verify User VIP Permissions (Admin or explicitly granted)
   useEffect(() => {
@@ -257,7 +257,7 @@ export default function AwayWinVipPage() {
       }
 
       // Minimum probability slider
-      if (p.probability < minProbability) return false;
+      if (minProbability > 50 && p.probability < minProbability) return false;
 
       // Text search query
       if (searchQuery.trim()) {
@@ -579,7 +579,7 @@ export default function AwayWinVipPage() {
                   </div>
                   <input
                     type="range"
-                    min="65"
+                    min="50"
                     max="90"
                     step="1"
                     value={minProbability}
