@@ -172,7 +172,7 @@ export async function searchAndAddNewOver25VipAlerts(dateStr?: string, forceRefr
   await settleActiveSnapshotWithRealScores(targetDate, "over25_vip").catch(() => []);
 
   // 2. Cargar snapshot actual de Over 2.5 VIP
-  let existingSnapshot = forceRefresh ? [] :
+  let existingSnapshot =
     (await loadDailySnapshotAsync(targetDate, "over25_vip")) ||
     loadDailySnapshot(targetDate, "over25_vip") ||
     [];
@@ -375,8 +375,11 @@ export async function searchAndAddNewOver25VipAlerts(dateStr?: string, forceRefr
   // 5. Fusionar nuevas alertas con snapshot existente
   const mergedMap = new Map<string, MarketOpportunity>();
   for (const p of existingSnapshot) {
-    if (!isCuratedLeague(p.leagueId, p.league, p.country)) continue;
-    if (p.probability < 60.0) continue; // Garantizar regla estricta >= 60%
+    const isSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore) || p.matchTiming === "finished";
+    if (!isSettled) {
+      if (!isCuratedLeague(p.leagueId, p.league, p.country)) continue;
+      if (p.probability < 60.0) continue; // Garantizar regla estricta >= 60%
+    }
     const isElite = isElitePick(p);
     const pickBadge = isElite
       ? "elite"
@@ -523,6 +526,8 @@ export async function getOver25VipSlate(dateStr?: string, forceRefresh = false):
   // Filtrar exclusivamente Over 2.5 y garantizar probabilidad estricta >= 60%
   const sanitizedPicks = picks
     .filter((p) => {
+      const isSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore) || p.matchTiming === "finished";
+      if (isSettled) return true;
       if (!isCuratedLeague(p.leagueId, p.league, p.country)) return false;
       const isOver25 = p.market === "Over 2.5 Goles" || p.selection === "Over 2.5" || (p.selection || "").toLowerCase().includes("over 2.5");
       return isOver25 && p.probability >= 60.0;

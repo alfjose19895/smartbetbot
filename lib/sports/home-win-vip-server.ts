@@ -183,7 +183,7 @@ export async function searchAndAddNewHomeWinVipAlerts(dateStr?: string, forceRef
   await settleActiveSnapshotWithRealScores(targetDate, "home_win_vip").catch(() => []);
 
   // 2. Cargar snapshot actual de Ganador Local VIP
-  let existingSnapshot = forceRefresh ? [] :
+  let existingSnapshot =
     (await loadDailySnapshotAsync(targetDate, "home_win_vip")) ||
     loadDailySnapshot(targetDate, "home_win_vip") ||
     [];
@@ -343,8 +343,11 @@ export async function searchAndAddNewHomeWinVipAlerts(dateStr?: string, forceRef
   // 5. Fusionar preservando unicidad absoluta
   const mergedMap = new Map<string, MarketOpportunity>();
   for (const p of existingSnapshot) {
-    if (!isCuratedLeague(p.leagueId, p.league, p.country)) continue;
-    if (p.probability < 58.0) continue; // Garantizar regla estricta >= 58%
+    const isSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore) || p.matchTiming === "finished";
+    if (!isSettled) {
+      if (!isCuratedLeague(p.leagueId, p.league, p.country)) continue;
+      if (p.probability < 58.0) continue; // Garantizar regla estricta >= 58%
+    }
     const isElite = isElitePick(p);
     const pickBadge = isElite
       ? "elite"
@@ -449,6 +452,8 @@ export async function getHomeWinVipSlate(dateStr?: string, forceRefresh = false)
   // Filtrar exclusivamente Ganador Local y garantizar probabilidad estricta >= 58%
   const sanitizedPicks = picks
     .filter((p) => {
+      const isSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore) || p.matchTiming === "finished";
+      if (isSettled) return true;
       if (!isCuratedLeague(p.leagueId, p.league, p.country)) return false;
       const isHomeWin = p.market === "Ganador Local" || (p.selection || "").toLowerCase() === "1" || (p.selection || "").toLowerCase() === (p.homeTeam || "").toLowerCase();
       return isHomeWin && p.probability >= 58.0;

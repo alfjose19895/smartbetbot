@@ -410,6 +410,17 @@ export function isPreMatchQualified(p: {
     return false;
   }
 
+  // Preserve already settled matches so they are never removed from the module
+  const isSettled =
+    (p as any).status === "won" ||
+    (p as any).status === "lost" ||
+    (p as any).result === "WON" ||
+    (p as any).result === "LOST" ||
+    Boolean((p as any).actualScore);
+  if (isSettled) {
+    return true;
+  }
+
   const rawProb = typeof p.probability === 'number' ? p.probability : 0;
   const prob = rawProb <= 1 && rawProb > 0 ? Math.round(rawProb * 1000) / 10 : rawProb;
   const m = (p.market || '').toLowerCase();

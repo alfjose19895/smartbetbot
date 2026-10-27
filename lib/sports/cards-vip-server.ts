@@ -461,7 +461,7 @@ export async function searchAndAddNewCardsVipAlerts(dateStr?: string, forceRefre
   await settleActiveSnapshotWithRealScores(targetDate, "cards_vip").catch(() => []);
 
   // 2. Cargar snapshot actual de Tarjetas VIP
-  let existingSnapshot = forceRefresh ? [] :
+  let existingSnapshot =
     (await loadDailySnapshotAsync(targetDate, "cards_vip")) ||
     loadDailySnapshot(targetDate, "cards_vip") ||
     [];
@@ -661,6 +661,8 @@ export async function searchAndAddNewCardsVipAlerts(dateStr?: string, forceRefre
   // 5. Fusionar nuevas alertas con el snapshot existente
   const mergedMap = new Map<string, MarketOpportunity>();
   for (const p of existingSnapshot) {
+    const isSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore) || p.matchTiming === "finished";
+    if (!isSettled && !isCuratedLeague(p.leagueId, p.league, p.country)) continue;
     const isElite = isElitePick(p);
     const pickBadge = isElite
       ? "elite"
@@ -808,6 +810,9 @@ export async function getCardsVipSlate(dateStr?: string, forceRefresh = false): 
   // Filtrar exclusivamente tarjetas en modalidad OVER (estrictamente no under) y asegurar banderas VIP
   const sanitizedPicks = picks
     .filter((p) => {
+      const isSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore) || p.matchTiming === "finished";
+      if (isSettled) return true;
+      if (!isCuratedLeague(p.leagueId, p.league, p.country)) return false;
       const isCard = p.market === "Tarjetas" || (p.selection || "").toLowerCase().includes("tarjeta");
       const selLower = (p.selection || "").toLowerCase();
       const mktLower = (p.market || "").toLowerCase();
@@ -859,20 +864,8 @@ export async function getCardsVipSlate(dateStr?: string, forceRefresh = false): 
       return (b.edge || 0) - (a.edge || 0);
     });
 
-  // Limitar estrictamente al rango oficial VIP de 10 a 12 pronósticos de más alta jerarquía
-  let curatedPicks = sanitizedPicks;
-  if (curatedPicks.length > 12) {
-    curatedPicks = [...curatedPicks].sort((a, b) => {
-      const aTier = a.leagueTier || 3;
-      const bTier = b.leagueTier || 3;
-      if (aTier !== bTier) return aTier - bTier;
-      const aRank = a.isElite ? 1 : a.isDestacado ? 2 : a.pickBadge === "valor" ? 3 : a.pickBadge === "bomba" ? 4 : 5;
-      const bRank = b.isElite ? 1 : b.isDestacado ? 2 : b.pickBadge === "valor" ? 3 : b.pickBadge === "bomba" ? 4 : 5;
-      if (aRank !== bRank) return aRank - bRank;
-      if (b.probability !== a.probability) return b.probability - a.probability;
-      return (b.edge || 0) - (a.edge || 0);
-    }).slice(0, 12);
-  }
+  // Retener todas las alertas válidas y partidos finalizados
+  const curatedPicks = sanitizedPicks;
 
   const finalSlate = sortByKickoff(curatedPicks, "asc");
 

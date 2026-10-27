@@ -401,17 +401,11 @@ export async function saveDailySnapshotAsync(
     country: sportKey === "football" ? (p.country || "Europa") : (p.country || sportKey.toUpperCase()),
   }));
 
-  if (process.env.VITEST || process.env.NODE_ENV === "test") {
-    memorySnapshots[memKey] = normalizedPicks;
-    if (sportKey === "football") memorySnapshots[dateStr] = normalizedPicks;
-    return normalizedPicks;
-  }
-
   ensureSnapshotsDir(sportKey);
   const filePath = path.join(SNAPSHOTS_DIR, sportKey, `${dateStr}.json`);
 
   let existingPicks: MarketOpportunity[] = memorySnapshots[memKey] || [];
-  if (existingPicks.length === 0 && fs.existsSync(filePath)) {
+  if (existingPicks.length === 0 && !process.env.VITEST && fs.existsSync(filePath)) {
     try {
       const raw = fs.readFileSync(filePath, "utf-8");
       const parsed = JSON.parse(raw);
@@ -422,9 +416,11 @@ export async function saveDailySnapshotAsync(
   }
 
   if (overwrite) {
-    existingPicks = existingPicks.filter(
-      (p) => p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST"
-    );
+    existingPicks = (process.env.VITEST || process.env.NODE_ENV === "test")
+      ? []
+      : existingPicks.filter(
+          (p) => p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST"
+        );
   }
 
   const mergedMap = new Map<string, MarketOpportunity>();
@@ -435,17 +431,48 @@ export async function saveDailySnapshotAsync(
     const key = getOpportunityKey(p);
     if (mergedMap.has(key)) {
       const existing = mergedMap.get(key)!;
-      const pKickoffMs = p.kickoff ? new Date(p.kickoff).getTime() : 0;
-      const pIsSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST";
-      const isPrematch = !pIsSettled && (p.status === "pending" || p.matchTiming === "prematch" || (pKickoffMs > 0 && Date.now() < pKickoffMs));
+      const existingIsSettled =
+        existing.status === "won" ||
+        existing.status === "lost" ||
+        (existing as any).result === "WON" ||
+        (existing as any).result === "LOST" ||
+        Boolean(existing.actualScore);
+      const pIsSettled =
+        p.status === "won" ||
+        p.status === "lost" ||
+        (p as any).result === "WON" ||
+        (p as any).result === "LOST";
+
+      const finalStatus = existingIsSettled && !pIsSettled
+        ? existing.status
+        : p.status || existing.status || "pending";
+      const finalActualScore = existingIsSettled && !pIsSettled
+        ? existing.actualScore
+        : p.actualScore !== undefined
+        ? p.actualScore
+        : existing.actualScore;
+      const finalResult = existingIsSettled && !pIsSettled
+        ? (existing as any).result
+        : (p as any).result !== undefined
+        ? (p as any).result
+        : (existing as any).result;
+      const finalProfit = existingIsSettled && !pIsSettled
+        ? (existing as any).profit
+        : typeof (p as any).profit === "number"
+        ? (p as any).profit
+        : (existing as any).profit;
+      const finalMatchTiming = existingIsSettled && !pIsSettled
+        ? existing.matchTiming || "finished"
+        : p.matchTiming || existing.matchTiming;
+
       mergedMap.set(key, {
         ...existing,
         ...p,
-        status: p.status || existing.status || "pending",
-        actualScore: isPrematch ? p.actualScore : (p.actualScore !== undefined ? p.actualScore : existing.actualScore),
-        result: isPrematch ? (p as any).result : ((p as any).result !== undefined ? (p as any).result : (existing as any).result),
-        profit: isPrematch ? (p as any).profit : (typeof (p as any).profit === "number" ? (p as any).profit : (existing as any).profit),
-        matchTiming: isPrematch ? ("prematch" as const) : (p.matchTiming || existing.matchTiming),
+        status: finalStatus,
+        actualScore: finalActualScore,
+        result: finalResult,
+        profit: finalProfit,
+        matchTiming: finalMatchTiming,
         homeLogo: p.homeLogo || existing.homeLogo,
         awayLogo: p.awayLogo || existing.awayLogo,
         leagueLogo: p.leagueLogo || existing.leagueLogo,
@@ -462,6 +489,10 @@ export async function saveDailySnapshotAsync(
   memorySnapshots[memKey] = mergedPicks;
   if (sportKey === "football") {
     memorySnapshots[dateStr] = mergedPicks;
+  }
+
+  if (process.env.VITEST || process.env.NODE_ENV === "test") {
+    return mergedPicks;
   }
 
   try {
@@ -496,17 +527,48 @@ export async function saveDailySnapshotAsync(
         const key = getOpportunityKey(lp);
         if (cloudMergedMap.has(key)) {
           const existing = cloudMergedMap.get(key)!;
-          const lpKickoffMs = lp.kickoff ? new Date(lp.kickoff).getTime() : 0;
-          const isSettled = lp.status === "won" || lp.status === "lost" || (lp as any).result === "WON" || (lp as any).result === "LOST";
-          const isPrematch = !isSettled && (lp.status === "pending" || lp.matchTiming === "prematch" || (lpKickoffMs > 0 && Date.now() < lpKickoffMs));
+          const existingIsSettled =
+            existing.status === "won" ||
+            existing.status === "lost" ||
+            (existing as any).result === "WON" ||
+            (existing as any).result === "LOST" ||
+            Boolean(existing.actualScore);
+          const lpIsSettled =
+            lp.status === "won" ||
+            lp.status === "lost" ||
+            (lp as any).result === "WON" ||
+            (lp as any).result === "LOST";
+
+          const finalStatus = existingIsSettled && !lpIsSettled
+            ? existing.status
+            : lp.status || existing.status || "pending";
+          const finalActualScore = existingIsSettled && !lpIsSettled
+            ? existing.actualScore
+            : lp.actualScore !== undefined
+            ? lp.actualScore
+            : existing.actualScore;
+          const finalResult = existingIsSettled && !lpIsSettled
+            ? (existing as any).result
+            : (lp as any).result !== undefined
+            ? (lp as any).result
+            : (existing as any).result;
+          const finalProfit = existingIsSettled && !lpIsSettled
+            ? (existing as any).profit
+            : typeof (lp as any).profit === "number"
+            ? (lp as any).profit
+            : (existing as any).profit;
+          const finalMatchTiming = existingIsSettled && !lpIsSettled
+            ? existing.matchTiming || "finished"
+            : lp.matchTiming || existing.matchTiming;
+
           cloudMergedMap.set(key, {
             ...existing,
             ...lp,
-            status: lp.status || existing.status,
-            actualScore: isPrematch ? lp.actualScore : (lp.actualScore !== undefined ? lp.actualScore : existing.actualScore),
-            result: isPrematch ? (lp as any).result : ((lp as any).result !== undefined ? (lp as any).result : (existing as any).result),
-            profit: isPrematch ? (lp as any).profit : (typeof (lp as any).profit === "number" ? (lp as any).profit : (existing as any).profit),
-            matchTiming: isPrematch ? ("prematch" as const) : (lp.matchTiming || existing.matchTiming),
+            status: finalStatus,
+            actualScore: finalActualScore,
+            result: finalResult,
+            profit: finalProfit,
+            matchTiming: finalMatchTiming,
           });
         } else {
           cloudMergedMap.set(key, lp);
@@ -558,17 +620,11 @@ export function saveDailySnapshot(
     country: sportKey === "football" ? (p.country || "Europa") : (p.country || sportKey.toUpperCase()),
   }));
 
-  if (process.env.VITEST || process.env.NODE_ENV === "test") {
-    memorySnapshots[memKey] = normalizedPicks;
-    if (sportKey === "football") memorySnapshots[dateStr] = normalizedPicks;
-    return normalizedPicks;
-  }
-
   ensureSnapshotsDir(sportKey);
   const filePath = path.join(SNAPSHOTS_DIR, sportKey, `${dateStr}.json`);
 
   let existingPicks: MarketOpportunity[] = memorySnapshots[memKey] || [];
-  if (existingPicks.length === 0 && fs.existsSync(filePath)) {
+  if (existingPicks.length === 0 && !process.env.VITEST && fs.existsSync(filePath)) {
     try {
       const raw = fs.readFileSync(filePath, "utf-8");
       const parsed = JSON.parse(raw);
@@ -579,9 +635,11 @@ export function saveDailySnapshot(
   }
 
   if (overwrite) {
-    existingPicks = existingPicks.filter(
-      (p) => p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST"
-    );
+    existingPicks = (process.env.VITEST || process.env.NODE_ENV === "test")
+      ? []
+      : existingPicks.filter(
+          (p) => p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST"
+        );
   }
 
   const mergedMap = new Map<string, MarketOpportunity>();
@@ -592,16 +650,48 @@ export function saveDailySnapshot(
     const key = getOpportunityKey(p);
     if (mergedMap.has(key)) {
       const existing = mergedMap.get(key)!;
-      const pKickoffMs = p.kickoff ? new Date(p.kickoff).getTime() : 0;
-      const isPrematch = p.status === "pending" || p.matchTiming === "prematch" || (pKickoffMs > 0 && Date.now() < pKickoffMs);
+      const existingIsSettled =
+        existing.status === "won" ||
+        existing.status === "lost" ||
+        (existing as any).result === "WON" ||
+        (existing as any).result === "LOST" ||
+        Boolean(existing.actualScore);
+      const pIsSettled =
+        p.status === "won" ||
+        p.status === "lost" ||
+        (p as any).result === "WON" ||
+        (p as any).result === "LOST";
+
+      const finalStatus = existingIsSettled && !pIsSettled
+        ? existing.status
+        : p.status || existing.status || "pending";
+      const finalActualScore = existingIsSettled && !pIsSettled
+        ? existing.actualScore
+        : p.actualScore !== undefined
+        ? p.actualScore
+        : existing.actualScore;
+      const finalResult = existingIsSettled && !pIsSettled
+        ? (existing as any).result
+        : (p as any).result !== undefined
+        ? (p as any).result
+        : (existing as any).result;
+      const finalProfit = existingIsSettled && !pIsSettled
+        ? (existing as any).profit
+        : typeof (p as any).profit === "number"
+        ? (p as any).profit
+        : (existing as any).profit;
+      const finalMatchTiming = existingIsSettled && !pIsSettled
+        ? existing.matchTiming || "finished"
+        : p.matchTiming || existing.matchTiming;
+
       mergedMap.set(key, {
         ...existing,
         ...p,
-        status: p.status || existing.status || "pending",
-        actualScore: isPrematch ? p.actualScore : (p.actualScore !== undefined ? p.actualScore : existing.actualScore),
-        result: isPrematch ? (p as any).result : ((p as any).result !== undefined ? (p as any).result : (existing as any).result),
-        profit: isPrematch ? (p as any).profit : (typeof (p as any).profit === "number" ? (p as any).profit : (existing as any).profit),
-        matchTiming: isPrematch ? ("prematch" as const) : (p.matchTiming || existing.matchTiming),
+        status: finalStatus,
+        actualScore: finalActualScore,
+        result: finalResult,
+        profit: finalProfit,
+        matchTiming: finalMatchTiming,
         homeLogo: p.homeLogo || existing.homeLogo,
         awayLogo: p.awayLogo || existing.awayLogo,
         leagueLogo: p.leagueLogo || existing.leagueLogo,
@@ -618,6 +708,10 @@ export function saveDailySnapshot(
   memorySnapshots[memKey] = mergedPicks;
   if (sportKey === "football") {
     memorySnapshots[dateStr] = mergedPicks;
+  }
+
+  if (process.env.VITEST || process.env.NODE_ENV === "test") {
+    return mergedPicks;
   }
 
   try {

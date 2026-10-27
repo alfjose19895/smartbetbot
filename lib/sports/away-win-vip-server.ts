@@ -183,7 +183,7 @@ export async function searchAndAddNewAwayWinVipAlerts(dateStr?: string, forceRef
   await settleActiveSnapshotWithRealScores(targetDate, "away_win_vip").catch(() => []);
 
   // 2. Cargar snapshot actual de Ganador Visitante VIP
-  let existingSnapshot = forceRefresh ? [] :
+  let existingSnapshot =
     (await loadDailySnapshotAsync(targetDate, "away_win_vip")) ||
     loadDailySnapshot(targetDate, "away_win_vip") ||
     [];
@@ -342,8 +342,11 @@ export async function searchAndAddNewAwayWinVipAlerts(dateStr?: string, forceRef
   // 5. Fusionar preservando unicidad absoluta
   const mergedMap = new Map<string, MarketOpportunity>();
   for (const p of existingSnapshot) {
-    if (!isCuratedLeague(p.leagueId, p.league, p.country)) continue;
-    if (p.probability < 65.0) continue; // Garantizar regla estricta >= 65%
+    const isSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore) || p.matchTiming === "finished";
+    if (!isSettled) {
+      if (!isCuratedLeague(p.leagueId, p.league, p.country)) continue;
+      if (p.probability < 65.0) continue; // Garantizar regla estricta >= 65%
+    }
     const isElite = isElitePick(p);
     const pickBadge = isElite
       ? "elite"
@@ -448,6 +451,8 @@ export async function getAwayWinVipSlate(dateStr?: string, forceRefresh = false)
   // Filtrar exclusivamente Ganador Visitante y garantizar probabilidad estricta >= 65%
   const sanitizedPicks = picks
     .filter((p) => {
+      const isSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore) || p.matchTiming === "finished";
+      if (isSettled) return true;
       if (!isCuratedLeague(p.leagueId, p.league, p.country)) return false;
       const isAwayWin = p.market === "Ganador Visitante" || (p.selection || "").toLowerCase() === "2" || (p.selection || "").toLowerCase() === (p.awayTeam || "").toLowerCase();
       return isAwayWin && p.probability >= 65.0;

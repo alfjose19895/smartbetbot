@@ -142,7 +142,11 @@ export default function HomeWinVipPage() {
       const data = await res.json();
       if (Array.isArray(data?.predictions)) {
         const cleanPicks = deduplicatePicksList(data.predictions).filter(
-          (p: MarketOpportunity) => (p.market === "Ganador Local" || (p.selection || "").toLowerCase() === "1" || (p.selection || "").toLowerCase() === (p.homeTeam || "").toLowerCase()) && p.probability >= 58.0
+          (p: MarketOpportunity) => {
+            const isSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST";
+            if (isSettled) return true;
+            return (p.market === "Ganador Local" || (p.selection || "").toLowerCase() === "1" || (p.selection || "").toLowerCase() === (p.homeTeam || "").toLowerCase()) && p.probability >= 58.0;
+          }
         );
         setPredictions(cleanPicks);
       }
@@ -179,7 +183,11 @@ export default function HomeWinVipPage() {
       if (data.success) {
         const cleanPicks = Array.isArray(data.predictions)
           ? deduplicatePicksList(data.predictions).filter(
-              (p: MarketOpportunity) => (p.market === "Ganador Local" || (p.selection || "").toLowerCase() === "1" || (p.selection || "").toLowerCase() === (p.homeTeam || "").toLowerCase()) && p.probability >= 58.0
+              (p: MarketOpportunity) => {
+                const isSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST";
+                if (isSettled) return true;
+                return (p.market === "Ganador Local" || (p.selection || "").toLowerCase() === "1" || (p.selection || "").toLowerCase() === (p.homeTeam || "").toLowerCase()) && p.probability >= 58.0;
+              }
             )
           : predictions;
         setPredictions(cleanPicks);
@@ -583,7 +591,12 @@ export default function HomeWinVipPage() {
             </div>
 
             {/* Predictions Slate Grid */}
-            {filteredPredictions.length > 0 ? (
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-16 text-center space-y-3">
+                <div className="h-10 w-10 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent" />
+                <span className="text-xs font-bold text-slate-400">Cargando cartelera oficial VIP...</span>
+              </div>
+            ) : filteredPredictions.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredPredictions.map((pick) => (
                   <PredictionCard

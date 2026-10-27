@@ -142,7 +142,11 @@ export default function ShotsVipPage() {
       const data = await res.json();
       if (Array.isArray(data?.predictions)) {
         const cleanPicks = deduplicatePicksList(data.predictions).filter(
-          (p: MarketOpportunity) => p.market === "Disparos" || (p.selection || "").toLowerCase().includes("disparo")
+          (p: MarketOpportunity) => {
+            const isSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST";
+            if (isSettled) return true;
+            return p.market === "Disparos" || (p.selection || "").toLowerCase().includes("disparo");
+          }
         );
         setPredictions(cleanPicks);
       }
@@ -179,7 +183,11 @@ export default function ShotsVipPage() {
       if (data.success) {
         const cleanPicks = Array.isArray(data.predictions)
           ? deduplicatePicksList(data.predictions).filter(
-              (p: MarketOpportunity) => p.market === "Disparos" || (p.selection || "").toLowerCase().includes("disparo")
+              (p: MarketOpportunity) => {
+                const isSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST";
+                if (isSettled) return true;
+                return p.market === "Disparos" || (p.selection || "").toLowerCase().includes("disparo");
+              }
             )
           : predictions;
         setPredictions(cleanPicks);
@@ -583,7 +591,12 @@ export default function ShotsVipPage() {
             </div>
 
             {/* Predictions Slate Grid */}
-            {filteredPredictions.length > 0 ? (
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-16 text-center space-y-3">
+                <div className="h-10 w-10 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent" />
+                <span className="text-xs font-bold text-slate-400">Cargando cartelera oficial VIP...</span>
+              </div>
+            ) : filteredPredictions.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredPredictions.map((pick) => (
                   <PredictionCard

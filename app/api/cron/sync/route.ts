@@ -23,13 +23,13 @@ export async function GET(request: NextRequest) {
 
     // 3. Sincronización y generación automática de todos los módulos VIP
     const vipResults = await Promise.allSettled([
-      import("@/lib/sports/corners-vip-server").then((m) => m.getCornersVipSlate(undefined, true)),
-      import("@/lib/sports/cards-vip-server").then((m) => m.getCardsVipSlate(undefined, true)),
-      import("@/lib/sports/shots-vip-server").then((m) => m.getShotsVipSlate(undefined, true)),
-      import("@/lib/sports/home-win-vip-server").then((m) => m.getHomeWinVipSlate(undefined, true)),
-      import("@/lib/sports/away-win-vip-server").then((m) => m.getAwayWinVipSlate(undefined, true)),
-      import("@/lib/sports/btts-vip-server").then((m) => m.getBttsVipSlate(undefined, true)),
-      import("@/lib/sports/over25-vip-server").then((m) => m.getOver25VipSlate(undefined, true)),
+      import("@/lib/sports/corners-vip-server").then((m) => m.getCornersVipSlate(undefined, false)),
+      import("@/lib/sports/cards-vip-server").then((m) => m.getCardsVipSlate(undefined, false)),
+      import("@/lib/sports/shots-vip-server").then((m) => m.getShotsVipSlate(undefined, false)),
+      import("@/lib/sports/home-win-vip-server").then((m) => m.getHomeWinVipSlate(undefined, false)),
+      import("@/lib/sports/away-win-vip-server").then((m) => m.getAwayWinVipSlate(undefined, false)),
+      import("@/lib/sports/btts-vip-server").then((m) => m.getBttsVipSlate(undefined, false)),
+      import("@/lib/sports/over25-vip-server").then((m) => m.getOver25VipSlate(undefined, false)),
     ]);
 
     const vipSuccessCount = vipResults.filter((r) => r.status === "fulfilled").length;

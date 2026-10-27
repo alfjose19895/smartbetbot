@@ -172,7 +172,7 @@ export async function searchAndAddNewBttsVipAlerts(dateStr?: string, forceRefres
   await settleActiveSnapshotWithRealScores(targetDate, "btts_vip").catch(() => []);
 
   // 2. Cargar snapshot actual de Ambos Anotan VIP
-  let existingSnapshot = forceRefresh ? [] :
+  let existingSnapshot =
     (await loadDailySnapshotAsync(targetDate, "btts_vip")) ||
     loadDailySnapshot(targetDate, "btts_vip") ||
     [];
@@ -378,8 +378,11 @@ export async function searchAndAddNewBttsVipAlerts(dateStr?: string, forceRefres
   // 5. Fusionar nuevas alertas con snapshot existente
   const mergedMap = new Map<string, MarketOpportunity>();
   for (const p of existingSnapshot) {
-    if (!isCuratedLeague(p.leagueId, p.league, p.country)) continue;
-    if (p.probability < 58.0) continue; // Garantizar regla estricta >= 58%
+    const isSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore) || p.matchTiming === "finished";
+    if (!isSettled) {
+      if (!isCuratedLeague(p.leagueId, p.league, p.country)) continue;
+      if (p.probability < 58.0) continue; // Garantizar regla estricta >= 58%
+    }
     const isElite = isElitePick(p);
     const pickBadge = isElite
       ? "elite"
@@ -526,6 +529,8 @@ export async function getBttsVipSlate(dateStr?: string, forceRefresh = false): P
   // Filtrar exclusivamente Ambos Equipos Anotan y garantizar probabilidad estricta >= 58%
   const sanitizedPicks = picks
     .filter((p) => {
+      const isSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore) || p.matchTiming === "finished";
+      if (isSettled) return true;
       if (!isCuratedLeague(p.leagueId, p.league, p.country)) return false;
       const isBtts = p.market === "Ambos Equipos Anotan" || (p.selection || "").toLowerCase().includes("ambos") || (p.selection || "").toLowerCase().includes("sí") || (p.selection || "").toLowerCase().includes("si");
       return isBtts && p.probability >= 58.0;
