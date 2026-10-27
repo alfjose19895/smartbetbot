@@ -66,6 +66,14 @@ export const SUPPORTED_LEAGUES: SupportedLeague[] = [
   { id: 525, name: "UEFA Champions League Women", country: "Europa", category: "cups", tier: 1 },
   { id: 13, name: "Copa Libertadores", country: "Sudamérica", category: "cups", tier: 1 },
   { id: 11, name: "Copa Sudamericana", country: "Sudamérica", category: "cups", tier: 1 },
+  { id: 45, name: "FA Cup", country: "Inglaterra", category: "cups", tier: 1 },
+  { id: 48, name: "Carabao Cup", country: "Inglaterra", category: "cups", tier: 2 },
+  { id: 143, name: "Copa del Rey", country: "España", category: "cups", tier: 1 },
+  { id: 81, name: "DFB-Pokal", country: "Alemania", category: "cups", tier: 1 },
+  { id: 137, name: "Coppa Italia", country: "Italia", category: "cups", tier: 1 },
+  { id: 66, name: "Coupe de France", country: "Francia", category: "cups", tier: 1 },
+  { id: 90, name: "KNVB Beker", country: "Países Bajos", category: "cups", tier: 2 },
+  { id: 96, name: "Taça de Portugal", country: "Portugal", category: "cups", tier: 2 },
 
   // --- TIER 2: LIGAS PRINCIPALES / FUERTES & COPAS CONTINENTALES ---
   { id: 61, name: "Ligue 1", country: "Francia", category: "top5", tier: 2 },
@@ -236,7 +244,7 @@ export function isCuratedLeague(leagueId?: number, leagueName?: string, country?
   return SUPPORTED_LEAGUES.some((sl) => norm === sl.name.toLowerCase());
 }
 
-export const CUPS_LEAGUE_IDS = [2, 3, 848, 5, 13, 11];
+export const CUPS_LEAGUE_IDS = [2, 3, 848, 5, 13, 11, 45, 48, 143, 81, 137, 66, 90, 96];
 export const AMERICAS_LEAGUE_IDS = [242, 71, 72, 128, 344, 262, 263, 253, 254, 239, 281, 265, 268, 250, 162];
 
 export interface ApiFootballLeague {

@@ -140,12 +140,13 @@ export async function GET(request: NextRequest) {
       predictions = (await loadDailySnapshotAsync(targetDateStr, "football")) || [];
       if ((!predictions || predictions.length === 0) && targetDateStr === getEcuadorDateString(Date.now())) {
         try {
-          // Automatic discovery and generation of today's slate upon initial visit without manual clicks
-          const searchRes = await searchAndAddNewAlerts();
-          if (searchRes?.predictions && searchRes.predictions.length > 0) {
-            predictions = searchRes.predictions;
-          } else {
-            predictions = await generatePredictionsForUpcoming(undefined, false);
+          // Automatic discovery and generation of today's slate using full quantitative engine and Gemini AI audit
+          predictions = await generatePredictionsForUpcoming(undefined, false);
+          if (!predictions || predictions.length === 0) {
+            const searchRes = await searchAndAddNewAlerts();
+            if (searchRes?.predictions && searchRes.predictions.length > 0) {
+              predictions = searchRes.predictions;
+            }
           }
         } catch (genErr) {
           console.warn("[API /api/signals] Auto-generation error on empty slate:", genErr);

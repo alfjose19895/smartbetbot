@@ -2482,15 +2482,16 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
   const qualifiedPicks = rankedPicks.filter(isQualifiedOpportunity);
   const basePool = qualifiedPicks.length >= 10 ? qualifiedPicks : rankedPicks;
 
-  // Quota Protection: Cap Tier 4 leagues to max 2 picks when Tier 1 or Tier 2 matches are present
-  const hasEliteTiers = basePool.some((p) => (p.leagueTier || 3) <= 2);
+  // Quota Protection: Hard cap Tier 4/5 leagues to max 2 picks regardless of whether elite matches exist
   let tier4Count = 0;
   const filteredCandidates = basePool.filter((p) => {
     const pTier = p.leagueTier || 3;
-    if (hasEliteTiers && pTier >= 4) {
+    if (pTier >= 4) {
       if (tier4Count >= 2) return false;
       tier4Count++;
     }
+    const isBtts = p.market === "Ambos Equipos Anotan" || (p.market || '').toLowerCase().includes("btts");
+    if (isBtts && typeof p.odds === 'number' && p.odds < 1.48) return false;
     return true;
   });
 
@@ -3068,7 +3069,6 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[], dateStr?
     const targetLocal = Math.max(0, Math.round(totalTarget * 0.06));
     const targetAway = Math.max(0, Math.round(totalTarget * 0.04));
 
-    const hasEliteInPool = pool.some((p) => (p.leagueTier || 3) <= 2);
     let tier4TakenCount = 0;
 
     const takeFromList = (list: MarketOpportunity[], maxCount: number) => {
@@ -3076,7 +3076,11 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[], dateStr?
       for (const p of list) {
         if (taken >= maxCount || selected.length >= totalTarget) break;
         const pTier = p.leagueTier || 3;
-        if (hasEliteInPool && pTier >= 4 && tier4TakenCount >= 2) {
+        if (pTier >= 4 && tier4TakenCount >= 2) {
+          continue;
+        }
+        const isBtts = p.market === "Ambos Equipos Anotan" || (p.market || '').toLowerCase().includes("btts");
+        if (isBtts && typeof p.odds === 'number' && p.odds < 1.48) {
           continue;
         }
 
@@ -3100,7 +3104,7 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[], dateStr?
         chosenTeams.add(aNorm);
         selected.push(p);
         taken++;
-        if (hasEliteInPool && pTier >= 4) {
+        if (pTier >= 4) {
           tier4TakenCount++;
         }
       }
@@ -3162,6 +3166,20 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[], dateStr?
     merged = [...retainedExisting, ...newlyAdded].sort(
       (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
     );
+  }
+
+  // RECOMENDACIÓN 4: Auditor de Veto Táctico con Google Gemini ("Abogado del Diablo")
+  if (newlyAdded.length > 0) {
+    try {
+      const vetoResult = await auditPredictionsWithGeminiVeto(newlyAdded, "football");
+      if (vetoResult && Array.isArray(vetoResult.approvedPicks) && vetoResult.approvedPicks.length > 0) {
+        const approvedKeys = new Set(vetoResult.approvedPicks.map((p) => getOpportunityKey(p)));
+        newlyAdded = newlyAdded.filter((p) => approvedKeys.has(getOpportunityKey(p)));
+        merged = merged.filter((p) => p.status !== "pending" || approvedKeys.has(getOpportunityKey(p)));
+      }
+    } catch (vetoErr) {
+      console.warn("[searchAndAddNewAlerts] Gemini Veto audit warning:", vetoErr);
+    }
   }
 
   if (newlyAdded.length > 0) {

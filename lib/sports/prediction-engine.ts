@@ -434,7 +434,7 @@ export function isPreMatchQualified(p: {
     return prob >= 70.0;
   }
 
-  // 2. Ambos Anotan: Probabilidad >= 58%
+  // 2. Ambos Anotan: Probabilidad >= 58% y cuota mínima 1.48 (evitar trampas -EV)
   const isBtts =
     m.includes('ambos') ||
     m.includes('btts') ||
@@ -442,6 +442,9 @@ export function isPreMatchQualified(p: {
     s.includes('ambos') ||
     s.includes('btts');
   if (isBtts) {
+    if (typeof (p as any).odds === 'number' && (p as any).odds < 1.48) {
+      return false;
+    }
     return prob >= 58.0;
   }
 
@@ -2125,15 +2128,15 @@ export function evaluateFixturePrediction(params: {
       }
     } // End if hasCornerTelemetry && hasRealCornerOdds
 
-    // 2. PRIORIDAD #2: Ambos Equipos Anotan (BTTS) - Efectividad histórica superior
-    if (effBtts && effBtts >= 1.15 && pBttsYes >= 0.45 && hXg >= 0.85 && aXg >= 0.80) {
+    // 2. PRIORIDAD #2: Ambos Equipos Anotan (BTTS) - Efectividad histórica superior (Mínimo cuota 1.50 para valor esperado positivo)
+    if (effBtts && effBtts >= 1.50 && pBttsYes >= 0.52 && hXg >= 0.85 && aXg >= 0.80) {
       candidates.push({
         market: "Ambos Equipos Anotan",
         selection: "Sí",
         prob: pBttsYes,
         odds: effBtts,
-        minOddsThreshold: 1.25,
-        minProbThreshold: 0.48,
+        minOddsThreshold: 1.50,
+        minProbThreshold: 0.52,
       });
     }
 

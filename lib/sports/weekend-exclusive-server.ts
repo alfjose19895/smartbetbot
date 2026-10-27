@@ -73,11 +73,10 @@ export function sortMatchesByTierAndMarket<T extends MarketOpportunity>(picks: T
  * Cuando existen ligas de primer nivel (Tier 1 o Tier 2), se limita Tier 4 a máximo 2 selecciones.
  */
 export function applyTier4QuotaProtection<T extends MarketOpportunity>(picks: T[], maxTier4 = 2): T[] {
-  const hasElite = picks.some((p) => (p.leagueTier || 3) <= 2);
   let tier4Count = 0;
   return picks.filter((p) => {
     const tier = p.leagueTier || 3;
-    if (hasElite && tier >= 4) {
+    if (tier >= 4) {
       if (tier4Count >= maxTier4) return false;
       tier4Count++;
     }
