@@ -99,7 +99,7 @@
     "expectedValue": 0.5,
     "confidence": "Muy Alta",
     "smartScore": 86,
-    "status": "pending",
+    "status": "lost",
     "explanation": "Proyección disciplinaria calibrada de 5.1 tarjetas totales en La Liga (Tier 1). Árbitro designado: Isidro Diaz de Mera Escuderos.",
     "isCardsVip": true,
     "vipBadge": "Tarjetas VIP",
@@ -111,7 +111,10 @@
     "source": "cards_vip",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T13:17:58.141Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "3 Tarjetas (3 Amarillas, 0 Rojas)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1575519,
@@ -174,7 +177,7 @@
     "expectedValue": 0.5,
     "confidence": "Alta",
     "smartScore": 77,
-    "status": "pending",
+    "status": "lost",
     "explanation": "Proyección disciplinaria calibrada de 4.6 tarjetas totales en Liga Pro (Tier 2). Árbitro designado: Russell Macario Teran Leon.",
     "isCardsVip": true,
     "vipBadge": "Tarjetas VIP",
@@ -186,7 +189,10 @@
     "source": "cards_vip",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T13:17:58.157Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "3 Tarjetas (3 Amarillas, 0 Rojas)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1550163,
@@ -210,7 +216,7 @@
     "expectedValue": 0.5,
     "confidence": "Muy Alta",
     "smartScore": 82,
-    "status": "pending",
+    "status": "lost",
     "explanation": "Proyección disciplinaria calibrada de 4.8 tarjetas totales en Serie A (Tier 1). Árbitro designado: Fabio Maresca.",
     "isCardsVip": true,
     "vipBadge": "Tarjetas VIP",
@@ -222,7 +228,10 @@
     "source": "cards_vip",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T13:17:58.159Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "2 Tarjetas (1 Amarillas, 1 Rojas)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1570430,
@@ -363,7 +372,7 @@
     "expectedValue": 0.5,
     "confidence": "Muy Alta",
     "smartScore": 86,
-    "status": "pending",
+    "status": "lost",
     "explanation": "Proyección disciplinaria calibrada de 5.1 tarjetas totales en Primeira Liga (Tier 2). Árbitro designado: Helder Carvalho.",
     "isCardsVip": true,
     "vipBadge": "Tarjetas VIP",
@@ -375,7 +384,10 @@
     "source": "cards_vip",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T13:23:09.402Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "3 Tarjetas (3 Amarillas, 0 Rojas)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1550166,
@@ -399,7 +411,7 @@
     "expectedValue": 0.5,
     "confidence": "Muy Alta",
     "smartScore": 82,
-    "status": "pending",
+    "status": "lost",
     "explanation": "Proyección disciplinaria calibrada de 4.8 tarjetas totales en Serie A (Tier 1). Árbitro designado: Matteo Marcenaro.",
     "isCardsVip": true,
     "vipBadge": "Tarjetas VIP",
@@ -411,7 +423,10 @@
     "source": "cards_vip",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T13:17:58.168Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "3 Tarjetas (3 Amarillas, 0 Rojas)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1570426,
@@ -435,7 +450,7 @@
     "expectedValue": 0.5,
     "confidence": "Muy Alta",
     "smartScore": 86,
-    "status": "pending",
+    "status": "won",
     "explanation": "Proyección disciplinaria calibrada de 5.1 tarjetas totales en La Liga (Tier 1). Árbitro designado: Juan Martinez Munuera.",
     "isCardsVip": true,
     "vipBadge": "Tarjetas VIP",
@@ -447,7 +462,10 @@
     "source": "cards_vip",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-25T13:23:09.408Z",
-    "matchTiming": "prematch"
+    "matchTiming": "finished",
+    "actualScore": "6 Tarjetas (6 Amarillas, 0 Rojas)",
+    "result": "WON",
+    "profit": 0.26
   },
   {
     "fixtureId": 1575525,
