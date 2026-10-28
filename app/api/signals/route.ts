@@ -124,11 +124,6 @@ export async function GET(request: NextRequest) {
     const dateParam = searchParams.get("date") || undefined;
     const targetDateStr = dateParam || getEcuadorDateString(Date.now());
 
-        // 1. Auto-liquidar marcadores y estados en vivo en caliente antes de responder
-    await settleAllSnapshotsWithRealScores().catch((settleErr) => {
-      console.warn("[API /api/signals] Auto-settlement non-fatal error:", settleErr);
-    });
-
     let predictions: MarketOpportunity[] = [];
 
     if (forceRefresh) {
@@ -155,6 +150,22 @@ export async function GET(request: NextRequest) {
         } catch (genErr) {
           console.warn("[API /api/signals] Auto-generation error on empty slate:", genErr);
           predictions = getStoredPredictions("football");
+        }
+      }
+    }
+
+    // Auto-settle finished matches fast & targeted if there are pending picks past kickoff or live matches
+    if (predictions && predictions.length > 0) {
+      const nowMs = Date.now();
+      const needsSettlement = predictions.some((p) => {
+        const isSettled = (p.status === "won" || p.status === "lost") && Boolean(p.actualScore);
+        const pKick = p.kickoff ? new Date(p.kickoff).getTime() : 0;
+        return (!isSettled && pKick > 0 && nowMs >= pKick) || p.matchTiming === "live" || Boolean(p.currentScore);
+      });
+      if (needsSettlement) {
+        const settled = await settleActiveSnapshotWithRealScores(targetDateStr, "football").catch(() => []);
+        if (settled && settled.length > 0) {
+          predictions = settled;
         }
       }
     }

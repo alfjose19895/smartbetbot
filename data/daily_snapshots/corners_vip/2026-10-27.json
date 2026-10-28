@@ -642,7 +642,7 @@
     "league": "Primera A",
     "market": "Córners",
     "source": "corners_vip",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-27T17:45:48.871Z",
     "awayElo": 1612,
     "country": "Colombia",
@@ -671,14 +671,11 @@
     "homeTeamId": 1470,
     "leagueLogo": "https://media.api-sports.io/football/leagues/239.png",
     "leagueTier": 2,
-    "liveMinute": "87",
-    "livePeriod": "2H",
     "smartScore": 99,
     "explanation": "Patrón de repliegue y rechaces: Cucuta sostiene una alta cadencia de llegadas al último tercio generando tiros de esquina constantes, mientras que Águilas Doradas concede más de 5.2 córners en promedio cuando juega de visitante.",
     "isDestacado": false,
-    "matchTiming": "live",
+    "matchTiming": "finished",
     "probability": 65.5,
-    "currentScore": "0 - 2",
     "isCornersVip": true,
     "bookmakerOdds": 1.73,
     "destacadoRule": "Alta de Córners (≥ 70%)",
@@ -787,7 +784,10 @@
       "recommendedLine": 8.5
     },
     "isNewlyDiscovered": true,
-    "impliedProbability": 57.8
+    "impliedProbability": 57.8,
+    "actualScore": "12 - 2 (14 Córners)",
+    "result": "WON",
+    "profit": 0.73
   },
   {
     "h2h": [],
@@ -800,7 +800,7 @@
     "league": "Primera A",
     "market": "Córners",
     "source": "corners_vip",
-    "status": "pending",
+    "status": "won",
     "addedAt": "2026-10-27T17:45:48.902Z",
     "awayElo": 1571,
     "country": "Colombia",
@@ -832,7 +832,7 @@
     "smartScore": 99,
     "explanation": "Patrón de repliegue y rechaces: Chico sostiene una alta cadencia de llegadas al último tercio generando tiros de esquina constantes, mientras que Junior concede más de 5.2 córners en promedio cuando juega de visitante.",
     "isDestacado": false,
-    "matchTiming": "prematch",
+    "matchTiming": "finished",
     "probability": 66.7,
     "isCornersVip": true,
     "bookmakerOdds": 1.73,
@@ -942,6 +942,9 @@
       "recommendedLine": 8.5
     },
     "isNewlyDiscovered": true,
-    "impliedProbability": 57.8
+    "impliedProbability": 57.8,
+    "actualScore": "10 - 4 (14 Córners)",
+    "result": "WON",
+    "profit": 0.73
   }
 ]

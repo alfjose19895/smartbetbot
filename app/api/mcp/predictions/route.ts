@@ -10,7 +10,8 @@ export async function GET(req: Request) {
     const minOdds = url.searchParams.get("minOdds") ? parseFloat(url.searchParams.get("minOdds")!) : undefined;
     const maxOdds = url.searchParams.get("maxOdds") ? parseFloat(url.searchParams.get("maxOdds")!) : undefined;
     const minProb = url.searchParams.get("minProb") ? parseFloat(url.searchParams.get("minProb")!) : undefined;
-    const autoPublish = url.searchParams.get("autoPublish") === "true" || url.searchParams.get("publish") === "true";
+    const autoPublishParam = url.searchParams.get("autoPublish") || url.searchParams.get("publish");
+    const autoPublish = autoPublishParam !== null ? (autoPublishParam === "true") : true;
 
     const fakeReq = new Request(req.url, {
       method: "POST",
@@ -416,27 +417,7 @@ export async function POST(req: Request) {
     }
 
     const nowMs = Date.now();
-    pool = pool.filter((p) => {
-      // REGLA ESTRICTA 1: Solo partidos que NO hayan iniciado aún (kickoff estrictamente en el futuro)
-      const kMs = new Date(p.kickoff).getTime();
-      if (isNaN(kMs) || kMs <= nowMs) return false;
-
-      // REGLA ESTRICTA 2: Excluir totalmente jugadas finalizadas o en juego
-      if (
-        p.status === "won" ||
-        p.status === "lost" ||
-        p.status === "void" ||
-        (p.status as string) === "WON" ||
-        (p.status as string) === "LOST" ||
-        (p as any).result === "WON" ||
-        (p as any).result === "LOST"
-      ) {
-        return false;
-      }
-      if (p.actualScore || p.currentScore || p.matchTiming === "live" || p.livePeriod || p.liveMinute) {
-        return false;
-      }
-
+    const cleanPool = pool.filter((p) => {
       const h = (p.homeTeam || "").toLowerCase();
       const a = (p.awayTeam || "").toLowerCase();
       const leg = (p.league || "").toLowerCase();
@@ -451,6 +432,29 @@ export async function POST(req: Request) {
 
       return true;
     });
+
+    // Priority 1: Unstarted future matches
+    const unstartedPool = cleanPool.filter((p) => {
+      const kMs = new Date(p.kickoff).getTime();
+      if (isNaN(kMs) || kMs <= nowMs) return false;
+      if (
+        p.status === "won" ||
+        p.status === "lost" ||
+        p.status === "void" ||
+        (p.status as string) === "WON" ||
+        (p.status as string) === "LOST" ||
+        (p as any).result === "WON" ||
+        (p as any).result === "LOST"
+      ) {
+        return false;
+      }
+      if (p.actualScore || p.currentScore || p.matchTiming === "live" || p.livePeriod || p.liveMinute) {
+        return false;
+      }
+      return true;
+    });
+
+    pool = unstartedPool.length > 0 ? unstartedPool : cleanPool;
 
     let filtered = pool;
 

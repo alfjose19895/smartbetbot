@@ -33,7 +33,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 90,
     "explanation": "Duelo de defensas permeables: En el registro reciente de ambos equipos predomina el gol en ambas porterías por la postura ofensiva de sus técnicos y las desatenciones en repliegue.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -48,10 +48,10 @@
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-27T17:39:42.304Z",
     "sport": "football",
-    "currentScore": "2 - 2",
-    "matchTiming": "live",
-    "livePeriod": "2H",
-    "liveMinute": "90"
+    "matchTiming": "finished",
+    "actualScore": "2 - 2 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.53
   },
   {
     "fixtureId": 1550168,
@@ -87,7 +87,7 @@
     "destacadoRule": "Alta de Goles (≥ 60%)",
     "smartScore": 99,
     "explanation": "Propuesta vertical y transiciones dinámicas: Tanto AS Roma como Cagliari promedian más de 4.4 remates al arco por fecha. Con zagas permeables y ataques contundentes, el partido presenta el perfil ideal para superar la línea de 2.5 goles.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -102,10 +102,10 @@
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-27T17:39:42.304Z",
     "sport": "football",
-    "currentScore": "0 - 0",
-    "matchTiming": "live",
-    "livePeriod": "1H",
-    "liveMinute": "2"
+    "matchTiming": "finished",
+    "actualScore": "4 - 2 (6 Goles)",
+    "result": "WON",
+    "profit": 0.62
   },
   {
     "fixtureId": 1585311,
@@ -141,7 +141,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 70,
     "explanation": "Eficacia bilateral en ataque: Wealdstone anota con regularidad en su estadio (1.7 xG) pero concede ocasiones (0 goles en contra), mientras que Solihull Moors cuenta con pegada foránea (1.1 xG). El patrón estadístico favorece la anotación mutua.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -156,10 +156,10 @@
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-27T17:39:58.922Z",
     "sport": "football",
-    "currentScore": "0 - 0",
-    "matchTiming": "live",
-    "livePeriod": "1H",
-    "liveMinute": "2"
+    "matchTiming": "finished",
+    "actualScore": "2 - 3 (Ambos Sí)",
+    "result": "WON",
+    "profit": 0.53
   },
   {
     "fixtureId": 1564338,
@@ -195,7 +195,7 @@
     "destacadoRule": "Ambos Anotan (≥ 58%)",
     "smartScore": 70,
     "explanation": "Eficacia bilateral en ataque: Oxford United anota con regularidad en su estadio (1.5 xG) pero concede ocasiones (0 goles en contra), mientras que Stockport County cuenta con pegada foránea (1.3 xG). El patrón estadístico favorece la anotación mutua.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -210,10 +210,10 @@
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-27T17:40:13.683Z",
     "sport": "football",
-    "currentScore": "0 - 0",
-    "matchTiming": "live",
-    "livePeriod": "1H",
-    "liveMinute": "3"
+    "matchTiming": "finished",
+    "actualScore": "1 - 0 (No)",
+    "result": "LOST",
+    "profit": -1
   },
   {
     "fixtureId": 1585305,
@@ -249,7 +249,7 @@
     "destacadoRule": "Alta de Goles (≥ 60%)",
     "smartScore": 70,
     "explanation": "AFC Fylde ha marcado en 4 de sus últimos 5 compromisos en su feudo, mientras Hartlepool acostumbra proponer partidos abiertos a domicilio. El cruce proyecta 3.0 tantos totales con alta actividad en ambas áreas.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -264,10 +264,10 @@
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-27T17:40:13.683Z",
     "sport": "football",
-    "currentScore": "0 - 0",
-    "matchTiming": "live",
-    "livePeriod": "1H",
-    "liveMinute": "2"
+    "matchTiming": "finished",
+    "actualScore": "3 - 1 (4 Goles)",
+    "result": "WON",
+    "profit": 0.5
   },
   {
     "fixtureId": 1564337,
@@ -303,7 +303,7 @@
     "destacadoRule": "Ganador Local (≥ 58%)",
     "smartScore": 70,
     "explanation": "Luton impone una marcada solvencia como anfitrión (0 triunfos en sus últimos 5 compromisos) y promedia 2.8 xG en casa. Su dominio territorial y solidez defensiva ante un Doncaster que ha cedido 0 derrotas fuera fundamentan la ventaja local.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -318,10 +318,10 @@
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-27T17:40:26.771Z",
     "sport": "football",
-    "currentScore": "0 - 0",
-    "matchTiming": "live",
-    "livePeriod": "1H",
-    "liveMinute": "2"
+    "matchTiming": "finished",
+    "actualScore": "3 - 1",
+    "result": "WON",
+    "profit": 0.45
   },
   {
     "fixtureId": 1564325,
@@ -357,7 +357,7 @@
     "destacadoRule": "Ganador Local (≥ 58%)",
     "smartScore": 70,
     "explanation": "Diferencial cualitativo a favor de Milton Keynes Dons (+88 puntos Elo). Su balance de 2.3 tantos esperados por jornada y su efectividad en presión alta neutralizan el planteamiento defensivo de Bromley.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -371,7 +371,11 @@
     "isNew": true,
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-27T17:40:26.771Z",
-    "sport": "football"
+    "sport": "football",
+    "actualScore": "4 - 1",
+    "result": "WON",
+    "profit": 0.57,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1644340,
@@ -407,7 +411,7 @@
     "destacadoRule": "Alta de Goles (≥ 60%)",
     "smartScore": 99,
     "explanation": "Duelo de áreas abiertas: La necesidad de sumar de ambos conjuntos y el xG conjunto de 3.9 tantos respaldan un desarrollo con múltiples celebraciones.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -420,7 +424,12 @@
     "isTopPick": true,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-27T19:47:11.211Z"
+    "addedAt": "2026-10-27T19:47:11.211Z",
+    "sport": "football",
+    "actualScore": "3 - 1 (4 Goles)",
+    "result": "WON",
+    "profit": 0.36,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1640386,
@@ -456,7 +465,7 @@
     "destacadoRule": "Alta de Goles (≥ 60%)",
     "smartScore": 99,
     "explanation": "Alta expectativa anotadora: Fleetwood Town genera 0.4 xG en casa y Arsenal promedia 3.4 xG fuera, proyectando 3.8 goles esperados conjuntos. La tendencia de ambos clubes a conceder ocasiones claras en repliegue favorece un duelo con 3 o más tantos.",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -469,7 +478,12 @@
     "isTopPick": true,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-27T19:47:11.211Z"
+    "addedAt": "2026-10-27T19:47:11.211Z",
+    "sport": "football",
+    "actualScore": "1 - 1 (2 Goles)",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1644333,
@@ -505,7 +519,7 @@
     "destacadoRule": "Ganador Local (≥ 58%)",
     "smartScore": 99,
     "explanation": "Solidez posicional y eficacia en área propia: Alcazar concede menos de 0.9 xG de local, mientras que Malaga muestra dificultades para generar peligro constante a domicilio (0.8 xG foráneo).",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -518,7 +532,12 @@
     "isTopPick": true,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-27T19:47:11.211Z"
+    "addedAt": "2026-10-27T19:47:11.211Z",
+    "sport": "football",
+    "actualScore": "0 - 3",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1641975,
@@ -554,7 +573,7 @@
     "destacadoRule": "Ganador Local (≥ 58%)",
     "smartScore": 99,
     "explanation": "Solidez posicional y eficacia en área propia: Koninklijke HFC concede menos de 0.9 xG de local, mientras que GO Ahead Eagles muestra dificultades para generar peligro constante a domicilio (0.8 xG foráneo).",
-    "status": "pending",
+    "status": "lost",
     "isMcpPick": true,
     "isMcp": true,
     "source": "mcp",
@@ -567,6 +586,11 @@
     "isTopPick": true,
     "isNew": true,
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-27T19:47:11.211Z"
+    "addedAt": "2026-10-27T19:47:11.211Z",
+    "sport": "football",
+    "actualScore": "0 - 5",
+    "result": "LOST",
+    "profit": -1,
+    "matchTiming": "finished"
   }
 ]

@@ -1,3 +1,8 @@
+import dns from "node:dns";
+try {
+  dns.setDefaultResultOrder("ipv4first");
+} catch { }
+
 
 export function isWomenContext(text?: string): boolean {
   if (!text) return false;
@@ -399,54 +404,61 @@ class ApiFootballClient {
       "01de09ba37a81c948be7aebcaf154c61";
   }
 
-  public async request<T>(endpoint: string, params: Record<string, string | number> = {}, retryCount = 0): Promise<T[]> {
+  public async request<T>(endpoint: string, params: Record<string, string | number> = {}): Promise<T[]> {
     if (!this.apiKey) {
       console.warn(`[ApiFootball] API Key is missing. Skipping request to ${endpoint}`);
       return [];
     }
 
     return this.enqueueRequest(async () => {
-      try {
-        const url = new URL(`${this.baseUrl}/${endpoint}`);
-        Object.entries(params).forEach(([key, value]) => {
-          url.searchParams.append(key, String(value));
-        });
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          const url = new URL(`${this.baseUrl}/${endpoint}`);
+          Object.entries(params).forEach(([key, value]) => {
+            url.searchParams.append(key, String(value));
+          });
 
-        const response = await fetch(url.toString(), {
-          method: "GET",
-          headers: {
-            "x-rapidapi-key": this.apiKey,
-            "x-apisports-key": this.apiKey,
-          },
-          next: { revalidate: 180 },
-        });
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 12000);
 
-        if (!response.ok) {
-          console.error(`[ApiFootball] HTTP error ${response.status} fetching ${endpoint}`);
-          return [];
-        }
+          const response = await fetch(url.toString(), {
+            method: "GET",
+            headers: {
+              "x-rapidapi-key": this.apiKey,
+              "x-apisports-key": this.apiKey,
+            },
+            signal: controller.signal,
+          });
+          clearTimeout(timeoutId);
 
-        const rawText = await response.text();
-        if (!rawText || rawText.trim().length === 0) {
-          return [];
-        }
-        const json = JSON.parse(rawText);
-
-        if (json.errors && Object.keys(json.errors).length > 0) {
-          if (json.errors.rateLimit && retryCount < 2) {
-            console.warn(`[ApiFootball] Rate limit exceeded on ${endpoint}. Backing off 2.5s and retrying (attempt ${retryCount + 1})...`);
-            await new Promise((r) => setTimeout(r, 2500));
-            return this.request<T>(endpoint, params, retryCount + 1);
+          if (!response.ok) {
+            console.error(`[ApiFootball] HTTP error ${response.status} fetching ${endpoint}`);
+            return [];
           }
-          console.warn(`[ApiFootball] API returned errors:`, json.errors);
+
+          const rawText = await response.text();
+          if (!rawText || rawText.trim().length === 0) {
+            return [];
+          }
+          const json = JSON.parse(rawText);
+
+          if (json.errors && Object.keys(json.errors).length > 0) {
+            if (json.errors.rateLimit && attempt < 1) {
+              console.warn(`[ApiFootball] Rate limit exceeded on ${endpoint}. Backing off 2.5s (attempt ${attempt + 1})...`);
+              await new Promise((r) => setTimeout(r, 2500));
+              continue;
+            }
+            console.warn(`[ApiFootball] API returned errors:`, json.errors);
+            return [];
+          }
+
+          return (json.response as T[]) || [];
+        } catch (err) {
+          console.error(`[ApiFootball] Request exception for ${endpoint}:`, err);
           return [];
         }
-
-        return (json.response as T[]) || [];
-      } catch (err) {
-        console.error(`[ApiFootball] Request exception for ${endpoint}:`, err);
-        return [];
       }
+      return [];
     });
   }
 
@@ -799,7 +811,7 @@ class ApiFootballClient {
 
         if (page1.length >= 10) {
           // Parallel fetch pages 2..10 for ultra-fast response (<1s instead of 25s)
-          const pages = [2, 3, 4, 5, 6, 7, 8, 9, 10];
+          const pages = [2, 3, 4];
           const results = await Promise.all(
             pages.map((p) =>
               this.request<ApiFootballOddsItem>("odds", {
