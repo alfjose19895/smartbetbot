@@ -385,8 +385,8 @@ export class NHLSyncEngine {
     // Save opportunities permanently into daily snapshot (both local disk and Supabase cloud)
     try {
       const opps = allSignals.map(multiSportSignalToOpportunity);
-      saveDailySnapshot(date, opps, 'nhl');
-      await saveDailySnapshotAsync(date, opps, 'nhl');
+      saveDailySnapshot(date, opps, 'nhl', true);
+      await saveDailySnapshotAsync(date, opps, 'nhl', true);
     } catch (e) {
       console.warn('[NHLSyncEngine] Error saving snapshot:', e);
     }

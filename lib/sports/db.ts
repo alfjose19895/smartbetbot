@@ -77,9 +77,23 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const SNAPSHOTS_DIR = path.join(process.cwd(), "data", "daily_snapshots");
 const memorySnapshots: Record<string, MarketOpportunity[]> = {};
 
-export function getOpportunityKey(p: { fixtureId?: number | string; match?: string; fixtureName?: string; homeTeam?: string; awayTeam?: string; market?: string }): string {
+export function getOpportunityKey(p: { fixtureId?: number | string; match?: string; fixtureName?: string; homeTeam?: string; awayTeam?: string; market?: string; sport?: string }, sportKey?: string): string {
+  const sp = ((p as any).sport || sportKey || '').toLowerCase();
   const fixId = p.fixtureId || '0';
   const mkt = (p.market || '').toLowerCase().trim();
+
+  // In NHL, each match must strictly have AT MOST ONE definitive pick (never conflicting opposite bets)
+  if (sp === 'nhl') {
+    if (fixId && fixId !== '0' && fixId !== 0) {
+      return `nhl-${fixId}`;
+    }
+    const h = getCanonicalTeamKey(p.homeTeam || '');
+    const a = getCanonicalTeamKey(p.awayTeam || '');
+    if (h && a) {
+      return `nhl-${h}-${a}`;
+    }
+  }
+
   if (fixId && fixId !== '0' && fixId !== 0) {
     return `fix-${fixId}-${mkt}`;
   }
