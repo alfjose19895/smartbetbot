@@ -404,6 +404,11 @@ export function PredictionCard({
                   <span className="inline-flex items-center gap-1 rounded-xl px-2.5 py-0.5 text-[10px] font-black bg-rose-600 text-white shadow-xs border border-rose-400 shrink-0">
                     ✗ Perdida {finalScoreText ? `(${finalScoreText})` : ""}
                   </span>
+                ) : (prediction.status as string) === "in_play" || prediction.matchTiming === "live" ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-xl px-2.5 py-0.5 text-[10px] font-black bg-rose-500/20 text-rose-400 border border-rose-500/40 shrink-0 animate-pulse">
+                    <span className="h-1.5 w-1.5 rounded-full bg-rose-500 inline-block animate-ping"></span>
+                    <span>🔴 En Juego {finalScoreText ? `(${finalScoreText})` : ""}</span>
+                  </span>
                 ) : statusBadge ? (
                   <span className={`inline-flex items-center rounded-xl px-2 py-0.5 text-[9px] font-black border shrink-0 ${statusBadge.cls}`}>
                     {statusBadge.label}

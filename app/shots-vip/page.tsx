@@ -143,8 +143,8 @@ export default function ShotsVipPage() {
       if (Array.isArray(data?.predictions)) {
         const cleanPicks = deduplicatePicksList(data.predictions).filter(
           (p: MarketOpportunity) => {
-            const isSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST";
-            if (isSettled) return true;
+            const isSettledOrInPlay = p.status === "won" || p.status === "lost" || (p.status as string) === "in_play" || (p as any).result === "WON" || (p as any).result === "LOST" || p.matchTiming === "live" || p.matchTiming === "finished" || Boolean(p.actualScore) || Boolean(p.currentScore);
+            if (isSettledOrInPlay) return true;
             return p.market === "Disparos" || (p.selection || "").toLowerCase().includes("disparo");
           }
         );
@@ -184,8 +184,8 @@ export default function ShotsVipPage() {
         const cleanPicks = Array.isArray(data.predictions)
           ? deduplicatePicksList(data.predictions).filter(
               (p: MarketOpportunity) => {
-                const isSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST";
-                if (isSettled) return true;
+                const isSettledOrInPlay = p.status === "won" || p.status === "lost" || (p.status as string) === "in_play" || (p as any).result === "WON" || (p as any).result === "LOST" || p.matchTiming === "live" || p.matchTiming === "finished" || Boolean(p.actualScore) || Boolean(p.currentScore);
+            if (isSettledOrInPlay) return true;
                 return p.market === "Disparos" || (p.selection || "").toLowerCase().includes("disparo");
               }
             )
@@ -481,6 +481,7 @@ export default function ShotsVipPage() {
               <div className="flex flex-wrap items-center gap-1.5 pb-3 border-b border-slate-800/70">
                 {[
                   { id: "ALL", label: "Todos", count: predictions.length },
+                  { id: "IN_PLAY", label: "🔴 En Juego", count: predictions.filter((p) => (p.status as string) === "in_play" || p.matchTiming === "live").length },
                   { id: "DESTACADO", label: "⭐ Destacados (≥50%)", count: predictions.filter((p) => p.probability >= 50).length },
                   { id: "ELITE", label: "👑 Élite", count: predictions.filter((p) => isElitePick(p)).length },
                   { id: "VALOR", label: "💎 Valor", count: predictions.filter((p) => p.pickBadge === "valor").length },

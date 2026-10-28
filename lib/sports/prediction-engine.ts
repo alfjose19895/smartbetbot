@@ -526,7 +526,9 @@ export function isDestacadoPick(p: {
   market?: string;
   selection?: string;
   probability?: number;
+  isDestacado?: boolean;
 }): boolean {
+  if (p && ((p as any).isDestacado || (p as any).destacadoRule)) return true;
   return getDestacadoRuleMatch(p) !== null;
 }
 

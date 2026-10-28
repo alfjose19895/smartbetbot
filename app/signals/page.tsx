@@ -373,6 +373,7 @@ export default function SignalsPage() {
   const valorCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "VALOR")).length;
   const bombaCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "BOMBA")).length;
   const mcpCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "MCP")).length;
+  const inPlayCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "IN_PLAY")).length;
   const scheduledCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "SCHEDULED")).length;
   const finishedCount = activeSignals.filter((s) => matchesStatusBadgeFilter(s, "FINISHED")).length;
   const topPickCount = activeSignals.filter((s) => s.isTopPick || s.probability >= 68.0 || s.confidence === "Muy Alta").length;
@@ -575,6 +576,22 @@ export default function SignalsPage() {
               <span>👑</span>
               <span>Élite 80%+ ({eliteCount})</span>
             </button>
+            {inPlayCount > 0 && (
+              <button
+                onClick={() => setMatchStatusFilter(matchStatusFilter === "IN_PLAY" ? "ALL" : "IN_PLAY")}
+                className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
+                  matchStatusFilter === "IN_PLAY"
+                    ? "bg-rose-600 text-white shadow-md shadow-rose-600/40 border border-rose-400 scale-105"
+                    : "bg-rose-950/60 text-rose-300 border border-rose-800/80 hover:bg-rose-900/70"
+                }`}
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                </span>
+                <span>🔴 En Juego ({inPlayCount})</span>
+              </button>
+            )}
             <button
               onClick={() => setMatchStatusFilter("SCHEDULED")}
               className={`rounded-xl px-3.5 py-1.5 text-xs font-black transition cursor-pointer ${
