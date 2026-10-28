@@ -234,16 +234,8 @@ export async function searchAndAddNewHomeWinVipAlerts(dateStr?: string, forceRef
       continue;
     }
 
-    let realOddsItem = oddsMapByFixture[item.fixture.id];
-    if (!realOddsItem) {
-      try {
-        const direct = await apiFootball.getOddsByFixture(item.fixture.id);
-        if (direct) {
-          realOddsItem = direct;
-          oddsMapByFixture[item.fixture.id] = direct;
-        }
-      } catch { }
-    }
+    const realOddsItem = oddsMapByFixture[item.fixture.id];
+    if (!realOddsItem) continue;
     const realMarketOdds = extractMarketOddsFromBookmaker(realOddsItem);
     if (!realMarketOdds || !realMarketOdds.homeWin || realMarketOdds.homeWin < 1.15 || realMarketOdds.homeWin > 3.00) continue;
 

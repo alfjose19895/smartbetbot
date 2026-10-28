@@ -523,16 +523,8 @@ export async function searchAndAddNewCardsVipAlerts(dateStr?: string, forceRefre
       continue;
     }
 
-    let realOddsItem = oddsMapByFixture[item.fixture.id];
-    if (!realOddsItem) {
-      try {
-        const direct = await apiFootball.getOddsByFixture(item.fixture.id);
-        if (direct) {
-          realOddsItem = direct;
-          oddsMapByFixture[item.fixture.id] = direct;
-        }
-      } catch { }
-    }
+    const realOddsItem = oddsMapByFixture[item.fixture.id];
+    if (!realOddsItem) continue;
     const realMarketOdds = extractMarketOddsFromBookmaker(realOddsItem);
 
     const cardOpps = evaluateFixtureCardsPrediction({
