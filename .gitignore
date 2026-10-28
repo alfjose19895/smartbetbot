@@ -44,3 +44,4 @@ data/h2h_raw_cache/
 data/team_fixtures_cache/
 data/team_search_cache/
 data/cache/
+data/daily_snapshots/odds_*.json

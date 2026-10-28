@@ -111,6 +111,42 @@ describe("Preservation of Settled Matches & Snapshot Persistence", () => {
   });
 
   it("VIP servers do not crash and preserve settled slates", async () => {
+    const sports = ["btts_vip", "corners_vip", "cards_vip", "shots_vip", "home_win_vip", "away_win_vip", "over25_vip"] as const;
+    for (const s of sports) {
+      saveDailySnapshot(testDate, [{
+        id: `test-${s}-1`,
+        fixtureId: 999100,
+        match: "Arsenal vs Chelsea",
+        homeTeam: "Arsenal",
+        awayTeam: "Chelsea",
+        league: "Premier League",
+        leagueId: 39,
+        country: "England",
+        market: s === "home_win_vip" ? "Ganador Local" : s === "away_win_vip" ? "Ganador Visitante" : s === "btts_vip" ? "Ambos Equipos Anotan" : s === "over25_vip" ? "Más de 2.5 Goles" : s === "corners_vip" ? "Córners" : s === "cards_vip" ? "Tarjetas" : "Disparos",
+        selection: s === "home_win_vip" ? "Arsenal" : s === "away_win_vip" ? "Chelsea" : "Sí",
+        odds: 1.85,
+        probability: 68.0,
+        confidence: "Alta",
+        edge: 3.5,
+        kickoff: `${testDate}T12:00:00Z`,
+        status: "won",
+        actualScore: "2 - 1",
+        result: "WON",
+        profit: 0.85,
+        matchTiming: "finished",
+        sport: s as any,
+        source: s as any,
+        pickBadge: s as any,
+        isBttsVip: s === "btts_vip",
+        isCornersVip: s === "corners_vip",
+        isCardsVip: s === "cards_vip",
+        isShotsVip: s === "shots_vip",
+        isHomeWinVip: s === "home_win_vip",
+        isAwayWinVip: s === "away_win_vip",
+        isOver25Vip: s === "over25_vip",
+      }], s, false);
+    }
+
     const slates = await Promise.all([
       getBttsVipSlate(testDate, false),
       getCornersVipSlate(testDate, false),

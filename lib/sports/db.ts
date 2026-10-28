@@ -1250,7 +1250,7 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string, sport
           hasUpdates = true;
           return {
             ...p,
-            status: "pending" as const,
+            status: "in_play" as const,
             result: undefined,
             actualScore: undefined,
             profit: undefined,
@@ -1261,7 +1261,21 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string, sport
           };
         }
 
-        // 3. Match in play or unconfirmed without live score: keep strictly pending prematch without actualScore
+        // 3. Match in play or unconfirmed: if kickoff has started, mark as in_play live
+        if (isPastKickoff) {
+          hasUpdates = true;
+          return {
+            ...p,
+            status: "in_play" as const,
+            result: undefined,
+            actualScore: undefined,
+            profit: undefined,
+            matchTiming: "live" as const,
+            currentScore: p.currentScore || undefined,
+            livePeriod: p.livePeriod || undefined,
+            liveMinute: p.liveMinute || undefined,
+          };
+        }
         if (p.status !== "pending" || p.actualScore || (p as any).result || (p as any).profit) {
           hasUpdates = true;
           return {
@@ -3144,6 +3158,7 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[], dateStr?
 
   let newlyAdded: MarketOpportunity[] = [];
   let merged: MarketOpportunity[] = [];
+  let retainedExisting: MarketOpportunity[] = [];
 
   if (existingSnapshot.length === 0) {
     const selSeguras = pickPrioritizedAlerts(poolSeguras, 7);
@@ -3170,7 +3185,7 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[], dateStr?
 
     // Keep existing finished/settled/live picks and any non-replaced pending picks
     const newlyAddedKeys = new Set(newlyAdded.map((p) => `${getCanonicalTeamKey(p.homeTeam)}-${getCanonicalTeamKey(p.awayTeam)}`));
-    const retainedExisting = existingSnapshot.filter((p) => {
+    retainedExisting = existingSnapshot.filter((p) => {
       const k = `${getCanonicalTeamKey(p.homeTeam)}-${getCanonicalTeamKey(p.awayTeam)}`;
       if (p.status !== "pending") return true;
       if (!isPreMatchQualified(p)) return false;
@@ -3189,7 +3204,9 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[], dateStr?
       if (vetoResult && Array.isArray(vetoResult.approvedPicks) && vetoResult.approvedPicks.length > 0) {
         const approvedKeys = new Set(vetoResult.approvedPicks.map((p) => getOpportunityKey(p)));
         newlyAdded = newlyAdded.filter((p) => approvedKeys.has(getOpportunityKey(p)));
-        merged = merged.filter((p) => p.status !== "pending" || approvedKeys.has(getOpportunityKey(p)));
+        merged = [...retainedExisting, ...newlyAdded].sort(
+          (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
+        );
       }
     } catch (vetoErr) {
       console.warn("[searchAndAddNewAlerts] Gemini Veto audit warning:", vetoErr);

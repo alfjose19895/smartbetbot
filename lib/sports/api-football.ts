@@ -780,91 +780,48 @@ class ApiFootballClient {
     const cacheKey = `${dateStr}::${timezone}`;
     const cached = this.oddsByDateCache.get(cacheKey);
     const nowMs = Date.now();
-    const TTL_MS = 45 * 60 * 1000; // 45 minutos de TTL inteligente para actualizar cuotas dinámicamente
+    const TTL_MS = 15 * 60 * 1000; // 15 minutos en memoria rapida sin lecturas/escrituras masivas a disco
 
     if (!forceRefresh && cached && nowMs - cached.timestamp < TTL_MS) {
       return cached.data;
     }
 
-    // 1. Verificar caché persistente en disco
-    let existingOnDisk: ApiFootballOddsItem[] = [];
+    const allOdds: ApiFootballOddsItem[] = [];
     try {
-      const fs = typeof window === "undefined" ? eval("require")("fs") : null;
-      const path = typeof window === "undefined" ? eval("require")("path") : null;
-      const diskPath = path.join(process.cwd(), "data", "daily_snapshots", `odds_${dateStr}.json`);
-      if (fs && path && fs.existsSync(diskPath)) {
-        const stat = fs.statSync(diskPath);
-        const fileContent = fs.readFileSync(diskPath, "utf-8");
-        const parsed = JSON.parse(fileContent);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          existingOnDisk = parsed;
-          const isFresh = !forceRefresh && nowMs - stat.mtimeMs < TTL_MS;
-          if (isFresh) {
-            this.oddsByDateCache.set(cacheKey, { timestamp: stat.mtimeMs, data: existingOnDisk });
-            return existingOnDisk;
-          }
-        }
-      }
-    } catch {}
-
-    const newlyFetchedOdds: ApiFootballOddsItem[] = [];
-    try {
-      const page1Res = await this.requestWithPaging<ApiFootballOddsItem>("odds", {
+      const page1 = await this.request<ApiFootballOddsItem>("odds", {
         date: dateStr,
         timezone,
         page: 1,
       });
 
-      if (page1Res && Array.isArray(page1Res.response) && page1Res.response.length > 0) {
-        newlyFetchedOdds.push(...page1Res.response);
+      if (Array.isArray(page1) && page1.length > 0) {
+        allOdds.push(...page1);
 
-        // Consultar páginas en micro-lotes espaciados para no saturar cuota por minuto de API-Football
-        const totalPages = Math.min(page1Res.paging?.total || 1, 15);
-        if (totalPages > 1) {
-          for (let p = 2; p <= totalPages; p += 3) {
-            const batchPages = [p, p + 1, p + 2].filter((pg) => pg <= totalPages);
-            const results = await Promise.all(
-              batchPages.map((pg) =>
-                this.request<ApiFootballOddsItem>("odds", {
-                  date: dateStr,
-                  timezone,
-                  page: pg,
-                }).catch(() => [] as ApiFootballOddsItem[])
-              )
-            );
-            for (const res of results) {
-              if (Array.isArray(res) && res.length > 0) {
-                newlyFetchedOdds.push(...res);
-              }
+        if (page1.length >= 10) {
+          // Parallel fetch pages 2..10 for ultra-fast response (<1s instead of 25s)
+          const pages = [2, 3, 4, 5, 6, 7, 8, 9, 10];
+          const results = await Promise.all(
+            pages.map((p) =>
+              this.request<ApiFootballOddsItem>("odds", {
+                date: dateStr,
+                timezone,
+                page: p,
+              }).catch(() => [] as ApiFootballOddsItem[])
+            )
+          );
+          for (const res of results) {
+            if (Array.isArray(res) && res.length > 0) {
+              allOdds.push(...res);
             }
           }
         }
       }
     } catch { }
 
-    // Fusionar cuotas nuevas con existentes por ID de fixture (NUNCA se pierden cuotas previas)
-    const oddsMap = new Map<number, ApiFootballOddsItem>();
-    for (const item of existingOnDisk) {
-      if (item.fixture?.id) oddsMap.set(item.fixture.id, item);
+    if (allOdds.length > 0) {
+      this.oddsByDateCache.set(cacheKey, { timestamp: nowMs, data: allOdds });
     }
-    for (const item of newlyFetchedOdds) {
-      if (item.fixture?.id) oddsMap.set(item.fixture.id, item);
-    }
-    const combinedOdds = Array.from(oddsMap.values());
-
-    if (combinedOdds.length > 0) {
-      this.oddsByDateCache.set(cacheKey, { timestamp: nowMs, data: combinedOdds });
-      try {
-        const fs = typeof window === "undefined" ? eval("require")("fs") : null;
-        const path = typeof window === "undefined" ? eval("require")("path") : null;
-        const diskPath = path.join(process.cwd(), "data", "daily_snapshots", `odds_${dateStr}.json`);
-        if (fs && path) {
-          fs.mkdirSync(path.dirname(diskPath), { recursive: true });
-          fs.writeFileSync(diskPath, JSON.stringify(combinedOdds, null, 2), "utf-8");
-        }
-      } catch {}
-    }
-    return combinedOdds.length > 0 ? combinedOdds : existingOnDisk;
+    return allOdds.length > 0 ? allOdds : (cached?.data || []);
   }
 
   async getFixtureStatistics(fixtureId: number): Promise<ApiFootballFixtureStatistics[]> {

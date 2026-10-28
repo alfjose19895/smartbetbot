@@ -421,14 +421,18 @@ export function isPreMatchQualified(p: {
     return false;
   }
 
-  // Preserve already settled matches so they are never removed from the module
-  const isSettled =
+  // Preserve matches that are already in play, finished or settled so they are never removed from the module when a match starts!
+  const isSettledOrInPlay =
     (p as any).status === "won" ||
     (p as any).status === "lost" ||
+    (p as any).status === "in_play" ||
     (p as any).result === "WON" ||
     (p as any).result === "LOST" ||
-    Boolean((p as any).actualScore);
-  if (isSettled) {
+    (p as any).matchTiming === "live" ||
+    (p as any).matchTiming === "finished" ||
+    Boolean((p as any).actualScore) ||
+    Boolean((p as any).currentScore);
+  if (isSettledOrInPlay) {
     return true;
   }
 
@@ -2378,20 +2382,19 @@ export function evaluateFixturePrediction(params: {
     }
 
     // VETO ANTI-TRAMPA 2: Ganador Visitante ("Away Win Trap")
-    // a) En ligas Tier 4: veto total por extrema volatilidad (histórico menor a 55%)
-    if (tier >= 4 && item.market === "Ganador Visitante") continue;
-    // b) En ligas Tier 1, 2 y 3: exigir convicción sólida (probabilidad >= 58.0% o >= 55.0% si targetMarket es Ganador Visitante)
-    const minAwayProb = targetMarket?.toLowerCase().includes("visitante") ? 0.55 : 0.58;
-    if (item.market === "Ganador Visitante" && item.prob < minAwayProb) continue;
+    // a) En ligas Tier 3 y Tier 4: veto total por extrema volatilidad (histórico 57.1% o menor)
+    if (tier >= 3 && item.market === "Ganador Visitante") continue;
+    // b) En cualquier liga: vetar Ganador Visitante si probabilidad < 70%
+    if (item.market === "Ganador Visitante" && item.prob < 0.70) continue;
 
     // VETO ANTI-TRAMPA 3: Ligas volátiles Tier 4 para mercados frágiles
     if (tier >= 4) {
-      // Vetar 1X2 frágiles en ligas menores (salvo favoritismo aplastante >= 65%)
-      if ((item.market === "Ganador Local" || item.market === "Ganador Visitante") && item.prob < 0.65) {
+      // Vetar 1X2 frágiles en ligas menores (salvo favoritismo aplastante >= 75%)
+      if ((item.market === "Ganador Local" || item.market === "Ganador Visitante") && item.prob < 0.75) {
         continue;
       }
-      // Vetar Over 2.5 en ligas menores a menos que la probabilidad sea >= 65%
-      if (item.market === "Over 2.5 Goles" && item.prob < 0.65) {
+      // Vetar Over 2.5 en ligas menores a menos que la probabilidad sea >= 70%
+      if (item.market === "Over 2.5 Goles" && item.prob < 0.70) {
         continue;
       }
     }
@@ -2415,10 +2418,9 @@ export function evaluateFixturePrediction(params: {
     // Tier safety margin check
     if (edgePercent < minRequiredEdge && evPercent < 0) continue;
 
-    // Calibrated quality filter: Only >= 55.0% for targeted away win, >= 58.0% general
-    const minProbFilter = targetMarket?.toLowerCase().includes("visitante") ? 55.0 : 58.0;
+    // Calibrated quality filter: Only >= 58.0% probability (prioritizing high conviction)
     const probPercentForFilter = Math.round(item.prob * 1000) / 10;
-    if (probPercentForFilter < minProbFilter) continue;
+    if (probPercentForFilter < 58.0) continue;
 
     opportunities.push(buildOpportunity(item));
   }
@@ -2429,8 +2431,8 @@ export function evaluateFixturePrediction(params: {
       .filter((c) => {
         // En fallback, no forzar picks con cuotas exageradas (> 2.20) o probabilidades bajas (< 52%)
         if (c.odds < 1.20 || c.odds > 2.20 || c.prob < 0.52) return false;
-        if (tier >= 4 && c.market === "Ganador Visitante") return false;
-        if (c.market === "Ganador Visitante" && c.prob < 0.55) return false;
+        if (tier >= 3 && c.market === "Ganador Visitante") return false;
+        if (c.market === "Ganador Visitante" && c.prob < 0.70) return false;
         return true;
       })
       .sort((a, b) => b.prob - a.prob);

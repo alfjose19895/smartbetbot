@@ -695,7 +695,8 @@ export async function POST(req: Request) {
     };
 
     // Auto-publish discovered picks if requested or by default on search so they immediately show in Dashboard & Pre-Match
-    const shouldAutoPublish = autoPublish === true || publish === true;
+    // Default autoPublish to true so discovered picks appear in Dashboard & Pre-Match
+    const shouldAutoPublish = autoPublish !== false && publish !== false;
     let publishedCount = 0;
     if (shouldAutoPublish && filtered.length > 0) {
       const pubResult = await addPredictionsToDailySnapshotAsync(filtered);

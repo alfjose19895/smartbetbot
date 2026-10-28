@@ -124,13 +124,15 @@ export async function GET(request: NextRequest) {
     const dateParam = searchParams.get("date") || undefined;
     const targetDateStr = dateParam || getEcuadorDateString(Date.now());
 
-    // Note: Settlement is decoupled from client GET requests to guarantee fast response (<50ms)
-    // and prevent Serverless Function Timeouts (10s Vercel limit). Settlement runs via Cron or Admin.
+        // 1. Auto-liquidar marcadores y estados en vivo en caliente antes de responder
+    await settleAllSnapshotsWithRealScores().catch((settleErr) => {
+      console.warn("[API /api/signals] Auto-settlement non-fatal error:", settleErr);
+    });
+
     let predictions: MarketOpportunity[] = [];
 
     if (forceRefresh) {
       try {
-        await settleAllSnapshotsWithRealScores().catch(() => {});
         predictions = await generatePredictionsForUpcoming(undefined, true);
       } catch (genErr) {
         console.warn("[API /api/signals] Generation error on force refresh:", genErr);
@@ -139,11 +141,13 @@ export async function GET(request: NextRequest) {
     } else {
       predictions = (await loadDailySnapshotAsync(targetDateStr, "football")) || [];
       if ((!predictions || predictions.length === 0) && targetDateStr === getEcuadorDateString(Date.now())) {
+        predictions = getStoredPredictions("football");
+      }
+      if ((!predictions || predictions.length === 0) && (!dateParam || targetDateStr === getEcuadorDateString(Date.now()))) {
         try {
-          // Automatic discovery and generation of today's slate using full quantitative engine and Gemini AI audit
           predictions = await generatePredictionsForUpcoming(undefined, false);
           if (!predictions || predictions.length === 0) {
-            const searchRes = await searchAndAddNewAlerts();
+            const searchRes = await searchAndAddNewAlerts(undefined, targetDateStr);
             if (searchRes?.predictions && searchRes.predictions.length > 0) {
               predictions = searchRes.predictions;
             }
@@ -151,22 +155,6 @@ export async function GET(request: NextRequest) {
         } catch (genErr) {
           console.warn("[API /api/signals] Auto-generation error on empty slate:", genErr);
           predictions = getStoredPredictions("football");
-        }
-      }
-
-      // Auto-settle finished matches if there are pending picks past kickoff or live matches
-      if (predictions && predictions.length > 0) {
-        const nowMs = Date.now();
-        const needsSettlement = predictions.some((p) => {
-          const isSettled = (p.status === "won" || p.status === "lost") && Boolean(p.actualScore);
-          const pKick = p.kickoff ? new Date(p.kickoff).getTime() : 0;
-          return (!isSettled && pKick > 0 && nowMs >= pKick) || p.matchTiming === "live" || Boolean(p.currentScore);
-        });
-        if (needsSettlement) {
-          const settled = await settleActiveSnapshotWithRealScores(targetDateStr, "football").catch(() => []);
-          if (settled && settled.length > 0) {
-            predictions = settled;
-          }
         }
       }
     }

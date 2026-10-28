@@ -542,23 +542,14 @@ export async function getCornersVipSlate(dateStr?: string, forceRefresh = false)
     loadDailySnapshot(targetDate, "corners_vip") ||
     [];
 
-  // 2. Auto-liquidar partidos finalizados en el snapshot si se solicita refresco o si hay partidos que ya iniciaron o están en vivo
-  const nowMs = Date.now();
-  const needsSettlement = forceRefresh || (Array.isArray(picks) && picks.some((p) => {
-    const isSettled = (p.status === "won" || p.status === "lost") && Boolean(p.actualScore);
-    const pKick = p.kickoff ? new Date(p.kickoff).getTime() : 0;
-    return (!isSettled && pKick > 0 && nowMs >= pKick) || p.matchTiming === "live" || Boolean(p.currentScore);
-  }));
-
-  if (needsSettlement) {
-    const settled = await settleActiveSnapshotWithRealScores(targetDate, "corners_vip").catch(() => []);
-    if (settled && settled.length > 0) {
-      picks = settled;
-    }
+  // 2. Auto-liquidar partidos finalizados y actualizar marcadores en vivo en caliente
+  const settledPicks = await settleActiveSnapshotWithRealScores(targetDate, "corners_vip").catch(() => []);
+  if (settledPicks && settledPicks.length > 0) {
+    picks = settledPicks;
   }
 
-  // 3. Generación inicial automática si no existen alertas para hoy, o forzar refresco
-  if ((isTargetToday && picks.length === 0) || forceRefresh) {
+  // 3. Generación inicial si no existe snapshot o forzar refresco
+  if (picks.length === 0 || forceRefresh) {
     const searchRes = await searchAndAddNewCornersVipAlerts(targetDate).catch(() => null);
     if (searchRes && searchRes.predictions.length > 0) {
       picks = searchRes.predictions;
@@ -568,8 +559,8 @@ export async function getCornersVipSlate(dateStr?: string, forceRefresh = false)
   // Filtrar exclusivamente córners en modalidad OVER (estrictamente no under) y asegurar banderas VIP
   const sanitizedPicks = picks
     .filter((p) => {
-      const isSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore) || p.matchTiming === "finished";
-      if (isSettled) return true;
+      const isSettledOrInPlay = p.status === "won" || p.status === "lost" || p.status === "in_play" || (p as any).result === "WON" || (p as any).result === "LOST" || p.matchTiming === "live" || p.matchTiming === "finished" || Boolean(p.actualScore) || Boolean(p.currentScore);
+      if (isSettledOrInPlay) return true;
       if (!isCuratedLeague(p.leagueId, p.league, p.country)) return false;
       const isCorner = p.market === "Córners" || (p.selection || "").toLowerCase().includes("córner");
       const selLower = (p.selection || "").toLowerCase();
