@@ -285,12 +285,7 @@ export class NBASyncEngine {
         };
       }
 
-      // If no snapshot exists yet and not forcing refresh, return empty immediately
-      return {
-        signals: [],
-        smartPick: null,
-        gamesCount: 0,
-      };
+
     }
 
     // 3. Force Refresh (11:00 AM Cron Generation)

@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
 
     // 1. NHL SPECIFIC SYNC
     if (sport === "nhl") {
-      const nhlResult = await NHLSyncEngine.getTodayNHLSignals();
+      const nhlResult = await NHLSyncEngine.getTodayNHLSignals(date, true);
       const mappedPredictions = nhlResult.signals.map((s) => ({
         id: `nhl-${s.id}`,
         fixtureId: s.game.id,
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
 
     // 2. NBA SPECIFIC SYNC
     if (sport === "nba") {
-      const nbaResult = await NBASyncEngine.getTodayNBASignals();
+      const nbaResult = await NBASyncEngine.getTodayNBASignals(date, true);
       const mappedPredictions = nbaResult.signals.map((s) => ({
         id: `nba-${s.id}`,
         fixtureId: s.game.id,

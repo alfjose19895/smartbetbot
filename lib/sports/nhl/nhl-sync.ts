@@ -206,6 +206,55 @@ export class NHLSyncEngine {
     if (!forceRefresh) {
       const diskOpps = (await loadDailySnapshotAsync(date, 'nhl')) || loadDailySnapshot(date, 'nhl');
       if (diskOpps && diskOpps.length > 0) {
+        // Check live/finished scores if any games are past kickoff or live
+        const hasActiveOrFinished = diskOpps.some((p) => {
+          const k = p.kickoff ? new Date(p.kickoff).getTime() : 0;
+          return (k > 0 && nowMs >= k) || p.matchTiming === 'live' || p.status === 'in_play';
+        });
+
+        if (hasActiveOrFinished) {
+          try {
+            const games = await this.provider.getSchedule(date);
+            const gamesMap = new Map(games.map(g => [String(g.id), g]));
+            let updatedAny = false;
+
+            for (const opp of diskOpps) {
+              const liveGame = gamesMap.get(String(opp.fixtureId || opp.id));
+              if (liveGame && liveGame.status === 'FINISHED' && typeof liveGame.homeScore === 'number' && typeof liveGame.awayScore === 'number') {
+                if (opp.status !== 'won' && opp.status !== 'lost') {
+                  const s = opportunityToMultiSportSignal(opp);
+                  const settlement = NHLSettlementEngine.settleSignal(s, {
+                    gameId: liveGame.id,
+                    status: 'FINISHED',
+                    homeScore: liveGame.homeScore,
+                    awayScore: liveGame.awayScore,
+                  });
+                  const isWon = settlement.status === 'WON';
+                  const isLost = settlement.status === 'LOST';
+                  opp.status = isWon ? 'won' : isLost ? 'lost' : 'pending';
+                  (opp as any).matchTiming = 'finished';
+                  opp.result = isWon ? 'WON' : isLost ? 'LOST' : settlement.status;
+                  opp.actualScore = `${liveGame.homeScore} - ${liveGame.awayScore}`;
+                  (opp as any).profit = isWon ? Number(((opp.odds || 1.85) - 1).toFixed(2)) : -1;
+                  updatedAny = true;
+                }
+              } else if (liveGame && liveGame.status === 'IN_PLAY' && typeof liveGame.homeScore === 'number') {
+                (opp as any).status = 'in_play';
+                (opp as any).matchTiming = 'live';
+                opp.currentScore = `${liveGame.homeScore} - ${liveGame.awayScore}`;
+                updatedAny = true;
+              }
+            }
+
+            if (updatedAny) {
+              saveDailySnapshot(date, diskOpps, 'nhl');
+              await saveDailySnapshotAsync(date, diskOpps, 'nhl');
+            }
+          } catch {
+            // Non-fatal if schedule check fails
+          }
+        }
+
         const signals = diskOpps.map(opportunityToMultiSportSignal);
         const smartPick = NHLStrategyEngine.selectNHLSmartPick(signals);
 
@@ -223,14 +272,6 @@ export class NHLSyncEngine {
           gamesCount: signals.length,
         };
       }
-
-      // If not forcing refresh and snapshot does not exist, return empty.
-      // Client GET requests never trigger heavy live scraping or unconfirmed lines.
-      return {
-        signals: [],
-        smartPick: null,
-        gamesCount: 0,
-      };
     }
 
     let games: NormalizedGame[] = [];
