@@ -371,26 +371,20 @@ class ApiFootballClient {
   private baseUrl: string = "https://v3.football.api-sports.io";
   private defaultTimezone: string = "America/Guayaquil";
   private oddsByDateCache: Map<string, { timestamp: number; data: ApiFootballOddsItem[] }> = new Map();
+  private oddsByFixtureCache: Map<number, { timestamp: number; data: ApiFootballOddsItem | null }> = new Map();
   private fixturesByDateCache: Map<string, { timestamp: number; data: ApiFootballFixtureItem[] }> = new Map();
   private fixtureStatsCache: Map<number, { timestamp: number; data: ApiFootballFixtureStatistics[] }> = new Map();
-  private lastRequestTime: number = 0;
+  private nextAllowedRequestTime: number = 0;
   private readonly minRequestIntervalMs: number = 250;
-  private queue: Promise<any> = Promise.resolve();
 
-  private async enqueueRequest<T>(fn: () => Promise<T>): Promise<T> {
-    const run = async () => {
-      const now = Date.now();
-      const elapsed = now - this.lastRequestTime;
-      if (elapsed < this.minRequestIntervalMs) {
-        await new Promise((resolve) => setTimeout(resolve, this.minRequestIntervalMs - elapsed));
-      }
-      this.lastRequestTime = Date.now();
-      return fn();
-    };
-
-    const resultPromise = this.queue.then(run, run);
-    this.queue = resultPromise.then(() => {}, () => {});
-    return resultPromise;
+  private async waitForRateLimit(): Promise<void> {
+    const now = Date.now();
+    const scheduleTime = Math.max(now, this.nextAllowedRequestTime);
+    this.nextAllowedRequestTime = scheduleTime + this.minRequestIntervalMs;
+    const delay = scheduleTime - now;
+    if (delay > 0) {
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
   }
 
   constructor() {
@@ -406,56 +400,59 @@ class ApiFootballClient {
       return [];
     }
 
-    return this.enqueueRequest(async () => {
-      for (let attempt = 0; attempt < 2; attempt++) {
-        try {
-          const url = new URL(`${this.baseUrl}/${endpoint}`);
-          Object.entries(params).forEach(([key, value]) => {
-            url.searchParams.append(key, String(value));
-          });
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        await this.waitForRateLimit();
+        const url = new URL(`${this.baseUrl}/${endpoint}`);
+        Object.entries(params).forEach(([key, value]) => {
+          url.searchParams.append(key, String(value));
+        });
 
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 12000);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 12000);
 
-          const response = await fetch(url.toString(), {
-            method: "GET",
-            headers: {
-              "x-rapidapi-key": this.apiKey,
-              "x-apisports-key": this.apiKey,
-            },
-            signal: controller.signal,
-          });
-          clearTimeout(timeoutId);
+        const response = await fetch(url.toString(), {
+          method: "GET",
+          headers: {
+            "x-rapidapi-key": this.apiKey,
+            "x-apisports-key": this.apiKey,
+          },
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
 
-          if (!response.ok) {
-            console.error(`[ApiFootball] HTTP error ${response.status} fetching ${endpoint}`);
-            return [];
-          }
-
-          const rawText = await response.text();
-          if (!rawText || rawText.trim().length === 0) {
-            return [];
-          }
-          const json = JSON.parse(rawText);
-
-          if (json.errors && Object.keys(json.errors).length > 0) {
-            if (json.errors.rateLimit && attempt < 1) {
-              console.warn(`[ApiFootball] Rate limit exceeded on ${endpoint}. Backing off 2.5s (attempt ${attempt + 1})...`);
-              await new Promise((r) => setTimeout(r, 2500));
-              continue;
-            }
-            console.warn(`[ApiFootball] API returned errors:`, json.errors);
-            return [];
-          }
-
-          return (json.response as T[]) || [];
-        } catch (err) {
-          console.error(`[ApiFootball] Request exception for ${endpoint}:`, err);
+        if (!response.ok) {
+          console.error(`[ApiFootball] HTTP error ${response.status} fetching ${endpoint}`);
           return [];
         }
+
+        const rawText = await response.text();
+        if (!rawText || rawText.trim().length === 0) {
+          return [];
+        }
+        const json = JSON.parse(rawText);
+
+        if (json.errors && Object.keys(json.errors).length > 0) {
+          if (json.errors.rateLimit && attempt < 1) {
+            console.warn(`[ApiFootball] Rate limit exceeded on ${endpoint}. Backing off 2.5s (attempt ${attempt + 1})...`);
+            await new Promise((r) => setTimeout(r, 2500));
+            continue;
+          }
+          console.warn(`[ApiFootball] API returned errors:`, json.errors);
+          return [];
+        }
+
+        return (json.response as T[]) || [];
+      } catch (err: any) {
+        if (err?.name === "AbortError" || err?.code === "ETIMEDOUT" || err?.cause?.code === "ETIMEDOUT") {
+          console.warn(`[ApiFootball] Timeout fetching ${endpoint} (${params.fixture ? `fixture ${params.fixture}` : params.page ? `page ${params.page}` : ""}). Continuing with available data.`);
+        } else {
+          console.error(`[ApiFootball] Request exception for ${endpoint}:`, err);
+        }
+        return [];
       }
-      return [];
-    });
+    }
+    return [];
   }
 
   private async requestWithPaging<T>(
@@ -554,10 +551,14 @@ class ApiFootballClient {
     });
   }
 
-  async getFixturesByDate(dateStr: string, timezone: string = this.defaultTimezone): Promise<ApiFootballFixtureItem[]> {
+  async getFixturesByDate(
+    dateStr: string,
+    timezone: string = this.defaultTimezone,
+    forceRefresh: boolean = false
+  ): Promise<ApiFootballFixtureItem[]> {
     const cacheKey = `${dateStr}::${timezone}`;
     const cached = this.fixturesByDateCache.get(cacheKey);
-    if (cached && Date.now() - cached.timestamp < 15 * 60 * 1000) {
+    if (!forceRefresh && cached && Date.now() - cached.timestamp < 15 * 60 * 1000) {
       return cached.data;
     }
     const res = await this.request<ApiFootballFixtureItem>("fixtures", { date: dateStr, timezone });
@@ -773,11 +774,20 @@ class ApiFootballClient {
     return this.getOddsByFixture(fixtureId);
   }
 
-  async getOddsByFixture(fixtureId: number): Promise<ApiFootballOddsItem | null> {
+  async getOddsByFixture(fixtureId: number, forceRefresh: boolean = false): Promise<ApiFootballOddsItem | null> {
+    if (!fixtureId) return null;
+    const cached = this.oddsByFixtureCache.get(fixtureId);
+    const nowMs = Date.now();
+    if (!forceRefresh && cached && nowMs - cached.timestamp < 15 * 60 * 1000) {
+      return cached.data;
+    }
+
     const data = await this.request<ApiFootballOddsItem>("odds", {
       fixture: fixtureId,
     });
-    return data.length > 0 ? data[0] : null;
+    const result = data.length > 0 ? data[0] : null;
+    this.oddsByFixtureCache.set(fixtureId, { timestamp: nowMs, data: result });
+    return result;
   }
 
   async getOddsByDate(
@@ -806,8 +816,8 @@ class ApiFootballClient {
         allOdds.push(...page1);
 
         if (page1.length >= 10) {
-          // Parallel fetch pages 2..10 for ultra-fast response (<1s instead of 25s)
-          const pages = [2, 3, 4];
+          // Parallel fetch pages 2..6 for broad coverage of slate (~60 matches)
+          const pages = [2, 3, 4, 5, 6];
           const results = await Promise.all(
             pages.map((p) =>
               this.request<ApiFootballOddsItem>("odds", {
@@ -828,6 +838,11 @@ class ApiFootballClient {
 
     if (allOdds.length > 0) {
       this.oddsByDateCache.set(cacheKey, { timestamp: nowMs, data: allOdds });
+      for (const item of allOdds) {
+        if (item.fixture?.id) {
+          this.oddsByFixtureCache.set(item.fixture.id, { timestamp: nowMs, data: item });
+        }
+      }
     }
     return allOdds.length > 0 ? allOdds : (cached?.data || []);
   }

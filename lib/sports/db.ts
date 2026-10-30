@@ -2339,33 +2339,35 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
       });
 
       // Enrich candidate matches with real bookmaker odds directly from API-Football
-      // Paginated getOddsByDate already loaded all real bookmaker odds for all fixtures without hitting rate limits
-
-      // Prioritize fetching real bookmaker odds for Champions League, European and Tier 1 leagues
-      const priorityLeagues = candidates.filter((f) => {
-        const lName = (f.league?.name || "").toLowerCase();
-        return (
-          lName.includes("champions") ||
-          lName.includes("europa") ||
-          lName.includes("libertadores") ||
-          lName.includes("sudamericana") ||
-          lName.includes("premier") ||
-          lName.includes("la liga") ||
-          lName.includes("serie a") ||
-          lName.includes("bundesliga") ||
-          lName.includes("ligue 1") ||
-          lName.includes("championship") ||
-          lName.includes("eredivisie") ||
-          lName.includes("k league") ||
-          lName.includes("veikkausliiga") ||
-          lName.includes("saudi") ||
-          lName.includes("brasileir") ||
-          lName.includes("liga profesional") ||
-          lName.includes("concacaf")
-        );
+      const missingOddsCandidates = candidates.filter((item) => {
+        const kickoffMs = new Date(item.fixture.date).getTime();
+        const fixtureDateStr = getEcuadorDateString(kickoffMs);
+        if (fixtureDateStr !== todayDateStr) return false;
+        const shortStatus = item.fixture.status?.short || "NS";
+        if (["PST", "CANC", "ABD", "AWD", "WO", "POST"].includes(shortStatus)) return false;
+        return !oddsMapByFixture[item.fixture.id];
       });
 
-      // Single batch getOddsByDate already loads all available odds without hitting rate limits
+      if (missingOddsCandidates.length > 0) {
+        missingOddsCandidates.sort((a, b) => {
+          const aTarget = targetLeagueIds && targetLeagueIds.includes(a.league?.id) ? 1 : 0;
+          const bTarget = targetLeagueIds && targetLeagueIds.includes(b.league?.id) ? 1 : 0;
+          if (aTarget !== bTarget) return bTarget - aTarget;
+          const aTier = normalizeLeagueInfo(a.league.name, a.league.country, a.league.id).tier;
+          const bTier = normalizeLeagueInfo(b.league.name, b.league.country, b.league.id).tier;
+          return aTier - bTier;
+        });
+
+        const toEnrich = missingOddsCandidates.slice(0, 8);
+        const enriched = await Promise.all(
+          toEnrich.map((item) => apiFootball.getOddsByFixture(item.fixture.id).catch(() => null))
+        );
+        for (const res of enriched) {
+          if (res && res.fixture?.id) {
+            oddsMapByFixture[res.fixture.id] = res;
+          }
+        }
+      }
 
       for (const item of todayFixtures) {
         if (!item.fixture?.id || !item.teams?.home?.name || !item.teams?.away?.name) continue;
@@ -2384,16 +2386,7 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
         if (legName.includes("primavera") || legName.includes("u19") || legName.includes("u20")) continue;
         if (!isCuratedLeague(item.league?.id, item.league?.name, item.league?.country)) continue;
 
-        let oddsItem = oddsMapByFixture[item.fixture.id];
-        if (!oddsItem) {
-          try {
-            const direct = await apiFootball.getOddsByFixture(item.fixture.id);
-            if (direct) {
-              oddsItem = direct;
-              oddsMapByFixture[item.fixture.id] = direct;
-            }
-          } catch { }
-        }
+        const oddsItem = oddsMapByFixture[item.fixture.id];
         const realMarketOdds = (oddsItem && oddsItem.bookmakers && oddsItem.bookmakers.length > 0)
           ? extractMarketOddsFromBookmaker(oddsItem)
           : undefined;

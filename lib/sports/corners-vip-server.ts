@@ -1,4 +1,4 @@
-﻿import fs from "fs";
+import fs from "fs";
 import path from "path";
 import {
   applyTier4QuotaProtection,
@@ -191,8 +191,8 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string, forceRef
 
   // 3. Consultar partidos de hoy y cuotas oficiales de casas de apuestas
   const [fixtures, oddsList] = await Promise.all([
-    apiFootball.getFixturesByDate(targetDate, "America/Guayaquil").catch(() => []),
-    apiFootball.getOddsByDate(targetDate, "America/Guayaquil").catch(() => [] as ApiFootballOddsItem[]),
+    apiFootball.getFixturesByDate(targetDate, "America/Guayaquil", forceRefresh).catch(() => []),
+    apiFootball.getOddsByDate(targetDate, "America/Guayaquil", forceRefresh).catch(() => [] as ApiFootballOddsItem[]),
   ]);
 
   const candidateFixtures = Array.isArray(fixtures) ? fixtures : [];
@@ -202,6 +202,43 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string, forceRef
   for (const item of allOdds) {
     if (item.fixture?.id) {
       oddsMapByFixture[item.fixture.id] = item;
+    }
+  }
+
+  // Identificar candidatos prioritarios con telemetría que no tengan cuotas en el lote masivo
+  const candidatesNeedingOdds = candidateFixtures.filter((item) => {
+    if (!isSeniorCompetitiveCornerFixture(item)) return false;
+    const kickoffMs = new Date(item.fixture.date).getTime();
+    const shortStatus = item.fixture.status?.short || "NS";
+    if (isTargetToday) {
+      if (["1H", "2H", "HT", "ET", "BT", "P", "LIVE", "INT", "SUSP", "FT", "AET", "PEN"].includes(shortStatus)) return false;
+      if (kickoffMs <= nowMs) return false;
+    }
+    const hNorm = getCanonicalTeamKey(item.teams.home.name);
+    const aNorm = getCanonicalTeamKey(item.teams.away.name);
+    const matchKey = `${hNorm}-${aNorm}`;
+    const fixId = Number(item.fixture.id);
+    if (existingMatchKeys.has(matchKey) || (fixId && existingFixIds.has(fixId))) return false;
+    if (!isCompetitionWithCornerTelemetry(item.league.name, item.league.country, item.teams.home.name, item.teams.away.name)) return false;
+    return !oddsMapByFixture[item.fixture.id];
+  });
+
+  if (candidatesNeedingOdds.length > 0) {
+    // Priorizar ligas de mayor jerarquía (Tier 1 > Tier 2 > Tier 3)
+    candidatesNeedingOdds.sort((a, b) => {
+      const aTier = normalizeLeagueInfo(a.league.name, a.league.country, a.league.id).tier;
+      const bTier = normalizeLeagueInfo(b.league.name, b.league.country, b.league.id).tier;
+      return aTier - bTier;
+    });
+
+    const toEnrich = candidatesNeedingOdds.slice(0, 6);
+    const enrichedResults = await Promise.all(
+      toEnrich.map((item) => apiFootball.getOddsByFixture(item.fixture.id).catch(() => null))
+    );
+    for (const res of enrichedResults) {
+      if (res && res.fixture?.id) {
+        oddsMapByFixture[res.fixture.id] = res;
+      }
     }
   }
 
@@ -542,7 +579,7 @@ export async function getCornersVipSlate(dateStr?: string, forceRefresh = false)
 
   // 3. Generación inicial si no existe snapshot o forzar refresco
   if (picks.length === 0 || forceRefresh) {
-    const searchRes = await searchAndAddNewCornersVipAlerts(targetDate).catch(() => null);
+    const searchRes = await searchAndAddNewCornersVipAlerts(targetDate, forceRefresh).catch(() => null);
     if (searchRes && searchRes.predictions.length > 0) {
       picks = searchRes.predictions;
     }

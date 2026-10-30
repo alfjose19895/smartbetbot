@@ -16,6 +16,7 @@ import {
   isExcludedMatch,
   getMarketPriorityRank,
   getCanonicalTeamKey,
+  normalizeLeagueInfo,
 } from './prediction-engine';
 import {
   loadDailySnapshot,
@@ -193,6 +194,24 @@ export async function fetchAndEvaluateDayFixtures(dateStr: string): Promise<Mark
     const usedTeams = new Set<string>();
 
     const seniorFixtures = fixtures.filter(isSeniorCompetitiveFixture);
+
+    const missingOdds = seniorFixtures.filter((f) => !oddsMapByFixture[f.fixture.id]);
+    if (missingOdds.length > 0) {
+      missingOdds.sort((a, b) => {
+        const aTier = normalizeLeagueInfo(a.league.name, a.league.country, a.league.id).tier;
+        const bTier = normalizeLeagueInfo(b.league.name, b.league.country, b.league.id).tier;
+        return aTier - bTier;
+      });
+      const toEnrich = missingOdds.slice(0, 6);
+      const enrichedResults = await Promise.all(
+        toEnrich.map((item) => apiFootball.getOddsByFixture(item.fixture.id).catch(() => null))
+      );
+      for (const res of enrichedResults) {
+        if (res && res.fixture?.id) {
+          oddsMapByFixture[res.fixture.id] = res;
+        }
+      }
+    }
 
     for (const item of seniorFixtures) {
       const hNorm = item.teams.home.name.toLowerCase();

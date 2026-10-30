@@ -43,7 +43,7 @@ describe("Prediction Engine (TypeScript MVP)", () => {
       expect(p.odds).toBeGreaterThanOrEqual(1.10);
     }
     expect(predictions.length).toBeGreaterThanOrEqual(0);
-  }, 25000);
+  }, 60000);
 
   it("does NOT generate corner predictions with ghost odds when no corner odds are provided", () => {
     const picks = evaluateFixturePrediction({
