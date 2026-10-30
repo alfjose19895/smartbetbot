@@ -35,6 +35,7 @@ interface UserItem {
   loginCount?: number;
   vipModules?: string[];
   vipAccess?: boolean;
+  canManageUsers?: boolean;
 }
 
 const VIP_MODULES_LIST = [
@@ -162,17 +163,39 @@ function AdminControlContent() {
     tabParam === "mcp" ? "mcp" : tabParam === "audit" ? "audit" : tabParam === "users" ? "users" : "sports"
   );
 
+  const [currentCanManageUsers, setCurrentCanManageUsers] = useState<boolean>(true);
+  const [editCanManageUsers, setEditCanManageUsers] = useState<boolean>(true);
+
+  // Sync profile to know if current user can manage users
+  useEffect(() => {
+    fetch("/api/auth/profile")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.user && typeof data.user.canManageUsers === "boolean") {
+          setCurrentCanManageUsers(data.user.canManageUsers);
+          if (!data.user.canManageUsers && activeTab === "users") {
+            setActiveTab("sports");
+          }
+        }
+      })
+      .catch(() => {});
+  }, [activeTab]);
+
   useEffect(() => {
     if (tabParam === "mcp") {
       setActiveTab("mcp");
     } else if (tabParam === "audit") {
       setActiveTab("audit");
     } else if (tabParam === "users") {
-      setActiveTab("users");
+      if (currentCanManageUsers) {
+        setActiveTab("users");
+      } else {
+        setActiveTab("sports");
+      }
     } else if (tabParam === "sports") {
       setActiveTab("sports");
     }
-  }, [tabParam]);
+  }, [tabParam, currentCanManageUsers]);
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
   const [logs, setLogs] = useState<string[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<"all" | "top5" | "cups" | "americas">("all");
@@ -463,6 +486,45 @@ function AdminControlContent() {
     const isAdm = user.role === "admin" || (user.email || "").toLowerCase().includes("ajhs1589");
     setEditVipModules(isAdm ? VIP_MODULES_LIST.map((m) => m.id) : (user.vipModules || []));
     setEditVipAccess(isAdm ? true : Boolean(user.vipAccess));
+    // Por defecto activo para todos a menos que esté en false explícito
+    setEditCanManageUsers(user.canManageUsers !== false);
+  };
+
+  const handleTogglePanelPermission = async (user: UserItem) => {
+    const nextAllowed = user.canManageUsers === false ? true : false;
+    try {
+      setUserMsg({
+        text: `${nextAllowed ? "Activando" : "Revocando"} permiso de panel para ${user.email}...`,
+        type: "success",
+      });
+      const res = await fetch("/api/admin/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user.id,
+          action: "toggleUserManagementPermission",
+          canManageUsers: nextAllowed,
+        }),
+      });
+      if (res.ok) {
+        setUsers((prev) =>
+          prev.map((u) => (u.id === user.id ? { ...u, canManageUsers: nextAllowed } : u))
+        );
+        addLog(
+          `✓ Permiso de gestión de panel para ${user.email}: ${
+            nextAllowed ? "PERMITIDO (ACTIVO)" : "REVOCADO (SIN PERMISO)"
+          }`
+        );
+        setUserMsg({
+          text: `✓ Permiso de panel ${nextAllowed ? "activado" : "revocado"} para ${user.email}`,
+          type: "success",
+        });
+      }
+    } catch {
+      addLog(`✗ Error al actualizar permiso de panel para ${user.email}`);
+    } finally {
+      setTimeout(() => setUserMsg(null), 3000);
+    }
   };
 
   const handleSaveEdit = async (e: React.FormEvent) => {
@@ -484,6 +546,7 @@ function AdminControlContent() {
           status: editStatus,
           vipModules: editRole === "admin" ? ["*"] : editVipModules,
           vipAccess: editRole === "admin" ? true : (editVipModules.length > 0 || editVipAccess),
+          canManageUsers: editCanManageUsers,
         }),
       });
 
@@ -722,17 +785,19 @@ function AdminControlContent() {
             <span>⚽</span>
             <span>Sincronización Deportiva & Cuotas</span>
           </button>
-          <button
-            onClick={() => setActiveTab("users")}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer ${
-              activeTab === "users"
-                ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20 font-black"
-                : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-300 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800"
-            }`}
-          >
-            <span>👥</span>
-            <span>Gestión de Usuarios & Aprobaciones ({users.length || "..."})</span>
-          </button>
+          {currentCanManageUsers && (
+            <button
+              onClick={() => setActiveTab("users")}
+              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer ${
+                activeTab === "users"
+                  ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20 font-black"
+                  : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-300 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800"
+              }`}
+            >
+              <span>👥</span>
+              <span>Gestión de Usuarios & Aprobaciones ({users.length || "..."})</span>
+            </button>
+          )}
           <button
             onClick={() => setActiveTab("audit")}
             className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer ${
@@ -890,8 +955,19 @@ function AdminControlContent() {
           </div>
         )}
 
+        {/* TAB 2: USER MANAGEMENT RESTRICTED NOTICE */}
+        {activeTab === "users" && !currentCanManageUsers && (
+          <div className="mt-8 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-6 text-center text-rose-300">
+            <div className="text-3xl mb-2">🔒</div>
+            <h3 className="text-base font-bold text-rose-200">Acceso Restringido a Gestión de Usuarios</h3>
+            <p className="mt-1 text-xs text-rose-400">
+              Tu cuenta no tiene asignado el permiso para visualizar ni gestionar el panel de usuarios.
+            </p>
+          </div>
+        )}
+
         {/* TAB 2: USER MANAGEMENT */}
-        {activeTab === "users" && (
+        {activeTab === "users" && currentCanManageUsers && (
           <div className="mt-6 space-y-6">
             {/* KPI Summary Cards */}
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -1001,6 +1077,7 @@ function AdminControlContent() {
                         <th className="px-3 py-2">Usuario / Correo</th>
                         <th className="px-3 py-2">Rol Actual</th>
                         <th className="px-3 py-2">Permisos VIP</th>
+                        <th className="px-3 py-2 text-center">Panel Usuarios</th>
                         <th className="px-3 py-2">Último Inicio de Sesión</th>
                         <th className="px-3 py-2 text-center">Conexiones</th>
                         <th className="px-3 py-2 text-center">Estado</th>
@@ -1051,6 +1128,21 @@ function AdminControlContent() {
                                 Sin permisos VIP
                               </span>
                             )}
+                          </td>
+                          <td className="px-3 py-2 text-center">
+                            <button
+                              type="button"
+                              onClick={() => handleTogglePanelPermission(u)}
+                              className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-bold border transition cursor-pointer ${
+                                u.canManageUsers !== false
+                                  ? "bg-purple-50 text-purple-700 border-purple-300 hover:bg-purple-100 dark:bg-purple-950/80 dark:text-purple-300 dark:border-purple-800"
+                                  : "bg-slate-100 text-slate-500 border-slate-300 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
+                              }`}
+                              title="Haz clic para activar o revocar permiso de ver panel de usuarios"
+                            >
+                              <span>{u.canManageUsers !== false ? "✓" : "✗"}</span>
+                              <span>{u.canManageUsers !== false ? "Permitido" : "Sin acceso"}</span>
+                            </button>
                           </td>
                           <td className="px-3 py-2">
                             <div className="font-semibold text-slate-800 dark:text-slate-200 text-xs">
@@ -1906,6 +1998,34 @@ function AdminControlContent() {
                     <option value="approved">✓ Aprobado / Activo</option>
                     <option value="paused">⏸️ Pausado (Bloqueado)</option>
                   </select>
+                </div>
+              </div>
+
+              {/* Permiso de Gestión de Panel de Usuarios */}
+              <div className="rounded-2xl border border-purple-200 bg-purple-50/50 p-4 dark:border-purple-800/60 dark:bg-purple-950/20 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">👥</span>
+                    <div>
+                      <div className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-purple-200">
+                        Permiso: Gestión de Panel de Usuarios
+                      </div>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                        Permite ver y acceder a la pestaña de gestión de usuarios y aprobaciones.
+                      </p>
+                    </div>
+                  </div>
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={editCanManageUsers}
+                      onChange={(e) => setEditCanManageUsers(e.target.checked)}
+                      className="h-4 w-4 rounded border-slate-700 bg-slate-900 text-purple-600 focus:ring-0 cursor-pointer"
+                    />
+                    <span className={`text-xs font-black ${editCanManageUsers ? "text-purple-700 dark:text-purple-300" : "text-slate-400 dark:text-slate-500"}`}>
+                      {editCanManageUsers ? "✓ Permitido (Activo)" : "✗ Revocado (Sin permiso)"}
+                    </span>
+                  </label>
                 </div>
               </div>
 

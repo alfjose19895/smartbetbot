@@ -141,3 +141,114 @@ export function canAccessVipModule(
 
   return false;
 }
+
+const PANEL_PERMISSIONS_FILE = path.join(process.cwd(), "data", "user_panel_permissions.json");
+
+function ensurePanelStorage(): void {
+  try {
+    const dir = path.dirname(PANEL_PERMISSIONS_FILE);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    if (!fs.existsSync(PANEL_PERMISSIONS_FILE)) {
+      fs.writeFileSync(PANEL_PERMISSIONS_FILE, JSON.stringify({}, null, 2), "utf-8");
+    }
+  } catch (err) {
+    console.warn("[PanelPermissions] Error ensuring storage:", err);
+  }
+}
+
+function readAllPanelPermissions(): Record<string, boolean> {
+  try {
+    ensurePanelStorage();
+    if (fs.existsSync(PANEL_PERMISSIONS_FILE)) {
+      const raw = fs.readFileSync(PANEL_PERMISSIONS_FILE, "utf-8");
+      return JSON.parse(raw) || {};
+    }
+  } catch (err) {
+    console.warn("[PanelPermissions] Error reading permissions file:", err);
+  }
+  return {};
+}
+
+function writeAllPanelPermissions(data: Record<string, boolean>): boolean {
+  try {
+    ensurePanelStorage();
+    fs.writeFileSync(PANEL_PERMISSIONS_FILE, JSON.stringify(data, null, 2), "utf-8");
+    return true;
+  } catch (err) {
+    console.error("[PanelPermissions] Error writing permissions file:", err);
+    return false;
+  }
+}
+
+/**
+ * Retorna si un usuario tiene permiso para ver y acceder a la gestión del panel de usuarios.
+ * REGLA: Activo (true) para todos por defecto.
+ * Si se deselecciona explícitamente (false), ya no tiene permiso.
+ */
+export function getUserPanelPermission(userId?: string | null, email?: string | null): boolean {
+  if (!userId && !email) return true;
+
+  const store = readAllPanelPermissions();
+
+  if (userId && typeof store[userId] === "boolean") {
+    return store[userId];
+  }
+
+  if (email) {
+    const emailNorm = email.toLowerCase().trim();
+    if (typeof store[emailNorm] === "boolean") {
+      return store[emailNorm];
+    }
+  }
+
+  // Activo por defecto para todos
+  return true;
+}
+
+/**
+ * Guarda y actualiza el permiso de gestión del panel de usuarios para un usuario.
+ */
+export function setUserPanelPermission(userId: string, allowed: boolean, email?: string | null): boolean {
+  if (!userId) return false;
+  const store = readAllPanelPermissions();
+  store[userId] = allowed;
+  if (email) {
+    store[email.toLowerCase().trim()] = allowed;
+  }
+  return writeAllPanelPermissions(store);
+}
+
+/**
+ * Evalúa si una identidad tiene autorización para ver y gestionar el panel de usuarios.
+ */
+export function canAccessUserManagement(
+  identity: {
+    id?: string;
+    role?: string;
+    email?: string | null;
+    canManageUsers?: boolean;
+    user_metadata?: any;
+  } | null | undefined
+): boolean {
+  if (!identity) return false;
+
+  const email = (identity.email || "").toLowerCase();
+  // Superadministrador maestro siempre tiene acceso
+  if (email.includes("ajhs1589")) return true;
+
+  // 1. Si está explícitamente deseleccionado en la identidad/sesión
+  if (identity.canManageUsers === false || identity.user_metadata?.can_manage_users === false) {
+    return false;
+  }
+
+  // 2. Si está en true explícito en la identidad/sesión
+  if (identity.canManageUsers === true || identity.user_metadata?.can_manage_users === true) {
+    return true;
+  }
+
+  // 3. Consultar persistencia en disco (default: true)
+  return getUserPanelPermission(identity.id, identity.email);
+}
+

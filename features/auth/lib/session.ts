@@ -1,4 +1,4 @@
-import { getUserVipPermissions } from "@/lib/auth/vip-permissions";
+import { getUserVipPermissions, getUserPanelPermission } from "@/lib/auth/vip-permissions";
 import { isSupabaseConfigured } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 
@@ -14,6 +14,7 @@ export type VerifiedIdentity = {
   isPaused: boolean;
   vipModules: string[];
   vipAccess: boolean;
+  canManageUsers: boolean;
 };
 
 export async function getVerifiedIdentity(): Promise<VerifiedIdentity | null> {
@@ -97,6 +98,20 @@ export async function getVerifiedIdentity(): Promise<VerifiedIdentity | null> {
     const mergedModules = Array.from(new Set([...diskModules, ...metaModules]));
     const vipAccess = isAdm || Boolean(metadata?.vip_access) || mergedModules.length > 0;
 
+    const diskPanelPermission = getUserPanelPermission(user.id, user.email);
+    const metaPanelPermission =
+      metadata && typeof metadata.can_manage_users === "boolean"
+        ? (metadata.can_manage_users as boolean)
+        : undefined;
+
+    // Regla: Por defecto activo (true) para todos. Si se deselecciona (false), ya no tiene permiso.
+    let canManageUsers = true;
+    if (metaPanelPermission !== undefined) {
+      canManageUsers = metaPanelPermission;
+    } else if (diskPanelPermission !== undefined) {
+      canManageUsers = diskPanelPermission;
+    }
+
     return {
       id: user.id,
       email: user.email || null,
@@ -109,6 +124,7 @@ export async function getVerifiedIdentity(): Promise<VerifiedIdentity | null> {
       isPaused,
       vipModules: isAdm ? ["*"] : mergedModules,
       vipAccess,
+      canManageUsers,
     };
   } catch {
     return null;

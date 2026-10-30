@@ -1,4 +1,4 @@
-import { getUserVipPermissions, setUserVipPermissions, ALL_VIP_MODULES } from "@/lib/auth/vip-permissions";
+import { getUserVipPermissions, setUserVipPermissions, ALL_VIP_MODULES, getUserPanelPermission, setUserPanelPermission } from "@/lib/auth/vip-permissions";
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { getVerifiedIdentity } from "@/features/auth/lib/session";
@@ -41,8 +41,13 @@ function formatEcuadorDateString(isoString?: string | null): string {
 
 export async function GET(request: NextRequest) {
   const identity = await getVerifiedIdentity();
-  if (identity && identity.role !== "admin") {
-    return NextResponse.json({ error: "No autorizado. Requiere rol de administrador." }, { status: 403 });
+  if (identity) {
+    if (identity.canManageUsers === false) {
+      return NextResponse.json({ error: "No autorizado. El permiso de acceso a la gestión de panel de usuarios está revocado." }, { status: 403 });
+    }
+    if (identity.role !== "admin" && !identity.canManageUsers) {
+      return NextResponse.json({ error: "No autorizado. Requiere rol de administrador o permiso de gestión." }, { status: 403 });
+    }
   }
 
   const { searchParams } = new URL(request.url);
@@ -70,6 +75,7 @@ export async function GET(request: NextRequest) {
     loginCount: number;
     vipModules: string[];
     vipAccess: boolean;
+    canManageUsers: boolean;
   }> = [];
 
   if (supabase) {
@@ -151,6 +157,10 @@ export async function GET(request: NextRequest) {
           const effectiveVipModules = Array.from(new Set([...diskVipMods, ...metaVipMods]));
           const hasVipAccess = isAdm || Boolean(meta.vip_access) || effectiveVipModules.length > 0;
 
+          const diskPanel = getUserPanelPermission(u.id, u.email);
+          const metaPanel = typeof meta.can_manage_users === "boolean" ? meta.can_manage_users : undefined;
+          const userCanManage = metaPanel !== undefined ? metaPanel : diskPanel;
+
           return {
             id: u.id,
             email: u.email || "Sin correo",
@@ -165,6 +175,7 @@ export async function GET(request: NextRequest) {
             loginCount,
             vipModules: isAdm ? ["*"] : effectiveVipModules,
             vipAccess: hasVipAccess,
+            canManageUsers: userCanManage,
           };
         });
       }
@@ -179,13 +190,18 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: Request) {
   const identity = await getVerifiedIdentity();
-  if (identity && identity.role !== "admin") {
-    return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+  if (identity) {
+    if (identity.role !== "admin" && !identity.canManageUsers) {
+      return NextResponse.json({ error: "No autorizado. Requiere rol de administrador o permiso de gestión." }, { status: 403 });
+    }
+    if (identity.canManageUsers === false) {
+      return NextResponse.json({ error: "No autorizado. El permiso de acceso a la gestión de panel de usuarios está revocado." }, { status: 403 });
+    }
   }
 
   try {
     const body = await request.json();
-    const { userId, action, role, status, fullName, email, password, vipModules, vipAccess } = body;
+    const { userId, action, role, status, fullName, email, password, vipModules, vipAccess, canManageUsers } = body;
 
     const supabase = getAdminClient();
     if (!supabase || !userId) {
@@ -314,9 +330,38 @@ export async function POST(request: Request) {
         setUserVipPermissions(userId, mods, email);
       }
 
+      if (canManageUsers !== undefined) {
+        const allowed = Boolean(canManageUsers);
+        updatePayload.user_metadata.can_manage_users = allowed;
+        setUserPanelPermission(userId, allowed, email);
+      }
+
       await supabase.auth.admin.updateUserById(userId, updatePayload);
 
       return NextResponse.json({ success: true, message: "Datos de usuario actualizados correctamente" });
+    }
+
+    if (action === "toggleUserManagementPermission" || action === "updatePanelPermission") {
+      const allowed = canManageUsers !== undefined ? Boolean(canManageUsers) : true;
+      setUserPanelPermission(userId, allowed, email);
+
+      try {
+        await supabase.auth.admin.updateUserById(userId, {
+          user_metadata: {
+            can_manage_users: allowed,
+          },
+        });
+      } catch (e) {
+        console.warn("[AdminUsers] Error updating metadata for panel permission:", e);
+      }
+
+      return NextResponse.json({
+        success: true,
+        canManageUsers: allowed,
+        message: allowed
+          ? "Permiso de gestión de panel de usuarios activado correctamente"
+          : "Permiso de gestión de panel de usuarios revocado correctamente",
+      });
     }
 
     if (action === "updateVipPermissions") {
