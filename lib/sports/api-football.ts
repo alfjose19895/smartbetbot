@@ -231,15 +231,56 @@ export function isCuratedLeague(leagueId?: number, leagueName?: string, country?
     return false;
   }
 
+  const COUNTRY_SYNONYMS_MAP: Record<string, string[]> = {
+    "españa": ["spain", "espana"],
+    "spain": ["españa", "espana"],
+    "inglaterra": ["england", "uk", "reino unido"],
+    "england": ["inglaterra", "uk", "reino unido"],
+    "italia": ["italy"],
+    "italy": ["italia"],
+    "alemania": ["germany"],
+    "germany": ["alemania"],
+    "francia": ["france"],
+    "france": ["francia"],
+    "países bajos": ["netherlands", "holland", "holanda"],
+    "netherlands": ["países bajos", "paises bajos", "holland", "holanda"],
+    "portugal": ["portugal"],
+    "bélgica": ["belgium", "belgica"],
+    "belgium": ["bélgica", "belgica"],
+    "escocia": ["scotland"],
+    "scotland": ["escocia"],
+    "suiza": ["switzerland"],
+    "switzerland": ["suiza"],
+    "austria": ["austria"],
+    "turquía": ["turkey", "turquia"],
+    "turkey": ["turquía", "turquia"],
+    "polonia": ["poland"],
+    "poland": ["polonia"],
+    "brasil": ["brazil"],
+    "brazil": ["brasil"],
+    "estados unidos": ["usa", "united states"],
+    "usa": ["estados unidos", "united states"],
+    "méxico": ["mexico"],
+    "mexico": ["méxico"],
+    "perú": ["peru"],
+    "peru": ["perú"],
+    "república checa": ["czech republic", "czechia"],
+    "czech republic": ["república checa", "republica checa", "czechia"],
+  };
+
   if (normCountry) {
-    return SUPPORTED_LEAGUES.some((sl) => {
+    const synonyms = COUNTRY_SYNONYMS_MAP[normCountry] || [];
+    const matched = SUPPORTED_LEAGUES.some((sl) => {
       const matchName = norm.includes(sl.name.toLowerCase()) || sl.name.toLowerCase().includes(norm);
+      const slCountry = sl.country.toLowerCase();
       const matchCountry =
-        sl.country.toLowerCase() === normCountry ||
-        normCountry.includes(sl.country.toLowerCase()) ||
-        sl.country.toLowerCase().includes(normCountry);
+        slCountry === normCountry ||
+        normCountry.includes(slCountry) ||
+        slCountry.includes(normCountry) ||
+        synonyms.some((s) => s === slCountry || slCountry.includes(s) || s.includes(slCountry));
       return matchName && matchCountry;
     });
+    if (matched) return true;
   }
 
   return SUPPORTED_LEAGUES.some((sl) => norm === sl.name.toLowerCase());

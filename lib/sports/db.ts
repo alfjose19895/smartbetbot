@@ -433,7 +433,12 @@ export async function saveDailySnapshotAsync(
     existingPicks = (process.env.VITEST || process.env.NODE_ENV === "test")
       ? []
       : existingPicks.filter(
-          (p) => p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST"
+          (p) =>
+            !isSportMatch(p, sportKey) ||
+            p.status === "won" ||
+            p.status === "lost" ||
+            (p as any).result === "WON" ||
+            (p as any).result === "LOST"
         );
   }
 
@@ -529,7 +534,12 @@ export async function saveDailySnapshotAsync(
 
       if (overwrite) {
         cloudPicks = cloudPicks.filter(
-          (p) => p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST"
+          (p) =>
+            !isSportMatch(p, sportKey) ||
+            p.status === "won" ||
+            p.status === "lost" ||
+            (p as any).result === "WON" ||
+            (p as any).result === "LOST"
         );
       }
 
@@ -2333,9 +2343,11 @@ export async function generatePredictionsForUpcoming(targetLeagueIds?: number[],
         const aName = (item.teams?.away?.name || "").toLowerCase();
         if (legName.includes("primavera") || legName.includes("u19") || legName.includes("u20") || legName.includes("u21") || legName.includes("next pro") || legName.includes("reserve")) return false;
         if (hName.endsWith(" ii") || hName.endsWith(" 2") || hName.endsWith(" b") || aName.endsWith(" ii") || aName.endsWith(" 2") || aName.endsWith(" b")) return false;
-        if (hName.includes("the town") || aName.includes("the town") || hName.includes("tacoma defiance") || aName.includes("tacoma defiance")) return false;
         if (isExcludedMatch(hName, aName)) return false;
-        return isCuratedLeague(item.league?.id, item.league?.name, item.league?.country);
+        if (!isCuratedLeague(item.league?.id, item.league?.name, item.league?.country)) return false;
+        const norm = normalizeLeagueInfo(item.league?.name, item.league?.country, item.league?.id);
+        if (norm.tier && norm.tier > 3) return false;
+        return true;
       });
 
       // Enrich candidate matches with real bookmaker odds directly from API-Football
@@ -2961,8 +2973,9 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[], dateStr?
       aName.includes(" u21")
     ) continue;
     if (isExcludedMatch(hName, aName)) continue;
-    if (hName.endsWith(" ii") || hName.endsWith(" 2") || aName.endsWith(" ii") || aName.endsWith(" 2")) continue;
     if (!isCuratedLeague(item.league?.id, item.league?.name, item.league?.country)) continue;
+    const norm = normalizeLeagueInfo(item.league?.name, item.league?.country, item.league?.id);
+    if (norm.tier && norm.tier > 3) continue;
 
     const realMarketOdds = extractMarketOddsFromBookmaker(oddsMapByFixture[item.fixture.id]);
     const opps = evaluateFixturePrediction({
@@ -4196,7 +4209,10 @@ export async function searchLiveMarketDynamic(params: {
         return countryName.includes(cLower) || cLower.includes(countryName);
       }
 
-      return isCuratedLeague(f.league?.id, f.league?.name, f.league?.country);
+      if (!isCuratedLeague(f.league?.id, f.league?.name, f.league?.country)) return false;
+      const norm = normalizeLeagueInfo(f.league?.name, f.league?.country, f.league?.id);
+      if (norm.tier && norm.tier > 3) return false;
+      return true;
     });
 
     // Priority 1: Candidates that have NOT started yet
@@ -4286,6 +4302,9 @@ export async function searchLiveMarketDynamic(params: {
 
         if (Array.isArray(opps) && opps.length > 0) {
           for (const op of opps) {
+            // UPSTREAM PRE-MATCH QUALIFICATION GUARANTEE
+            if (!isPreMatchQualified(op)) continue;
+
             op.bookmaker = realMarketOdds.bookmakerName || "Bet365";
             op.bookmakerOdds = op.odds;
             op.source = "mcp";

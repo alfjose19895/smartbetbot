@@ -497,9 +497,10 @@ export class NHLStrategyEngine {
   public static selectNHLSmartPick(signals: MultiSportSignal[]): MultiSportSignal | null {
     if (!signals || signals.length === 0) return null;
     const candidates = [...signals];
-    // Filter out Gemini-vetoed signals if non-vetoed candidates exist
+    // Filter out Gemini-vetoed signals: a Smart Pick must never be an AI-vetoed pick
     const nonVetoed = candidates.filter(s => !(s as any).aiVetoed);
-    const pool = nonVetoed.length > 0 ? nonVetoed : candidates;
+    if (nonVetoed.length === 0) return null;
+    const pool = nonVetoed;
 
     pool.sort((a, b) => {
       const aRisk = (a as any).aiRiskScore || 20;

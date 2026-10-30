@@ -160,6 +160,10 @@ function isSeniorCompetitiveAwayWinFixture(item: any): boolean {
   if (!isCuratedLeague(item.league?.id, item.league?.name, item.league?.country)) {
     return false;
   }
+  const norm = normalizeLeagueInfo(item.league?.name, item.league?.country, item.league?.id);
+  if (norm.tier && norm.tier > 3) {
+    return false;
+  }
 
   return true;
 }

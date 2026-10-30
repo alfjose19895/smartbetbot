@@ -37,7 +37,7 @@ export async function GET(req: Request) {
 }
 
 
-import { isExcludedMatch } from "@/lib/sports/prediction-engine";
+import { isExcludedMatch, isPreMatchQualified } from "@/lib/sports/prediction-engine";
 import { NextResponse } from "next/server";
 import {
   searchLiveMarketDynamic,
@@ -429,6 +429,9 @@ export async function POST(req: Request) {
       if (FORBIDDEN_RESERVE_TEAMS.some((t) => h.includes(t) || a.includes(t))) return false;
       if (leg.includes("next pro") || leg.includes("primavera") || leg.includes("reserve")) return false;
       if (h.endsWith(" ii") || h.endsWith(" 2") || a.endsWith(" ii") || a.endsWith(" 2")) return false;
+
+      // STRICT UPSTREAM HARMONY: Every football pick in MCP must be 100% Pre-Match Qualified
+      if (!isPreMatchQualified(p)) return false;
 
       return true;
     });

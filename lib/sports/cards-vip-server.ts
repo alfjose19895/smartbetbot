@@ -178,6 +178,9 @@ function isSeniorCompetitiveCardsFixture(item: any): boolean {
   }
 
   if (isExcludedMatch(hName, aName)) return false;
+  if (!isCuratedLeague(item.league?.id, item.league?.name, item.league?.country)) return false;
+  const norm = normalizeLeagueInfo(item.league?.name, item.league?.country, item.league?.id);
+  if (norm.tier && norm.tier > 3) return false;
 
   return true;
 }

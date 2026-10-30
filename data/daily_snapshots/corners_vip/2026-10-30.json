@@ -149,7 +149,11 @@
     "isCornersVip": true,
     "vipBadge": "Corners VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-30T14:09:09.010Z"
+    "addedAt": "2026-10-30T14:09:09.010Z",
+    "currentScore": "1 - 0",
+    "matchTiming": "live",
+    "livePeriod": "2H",
+    "liveMinute": "81"
   },
   {
     "fixtureId": 1555073,
