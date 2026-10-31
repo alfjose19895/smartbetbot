@@ -263,15 +263,18 @@ export async function searchAndAddNewOver25VipAlerts(dateStr?: string, forceRefr
 
     const shortStatus = item.fixture.status?.short || "NS";
     const isFinished = ["FT", "AET", "PEN"].includes(shortStatus);
-    const isInPlay = ["1H", "2H", "HT", "ET", "BT", "P", "LIVE"].includes(shortStatus);
+    const isInPlay = ["1H", "2H", "HT", "ET", "BT", "P", "LIVE", "INT", "SUSP"].includes(shortStatus);
     let matchStatus: "pending" | "in_play" | "won" | "lost" = "pending";
     let actualScore: string | undefined = undefined;
+    let currentScore: string | undefined = undefined;
+    let matchTiming: "prematch" | "live" | "finished" = "prematch";
     let profit: number | undefined = undefined;
 
     if (isFinished) {
       const homeGoals = item.goals?.home ?? 0;
       const awayGoals = item.goals?.away ?? 0;
-      actualScore = `${homeGoals}-${awayGoals}`;
+      actualScore = `${homeGoals} - ${awayGoals}`;
+      matchTiming = "finished";
       const overHit = (homeGoals + awayGoals) >= 3;
       if (overHit) {
         matchStatus = "won";
@@ -282,7 +285,8 @@ export async function searchAndAddNewOver25VipAlerts(dateStr?: string, forceRefr
       }
     } else if (isInPlay) {
       matchStatus = "in_play";
-      actualScore = `${item.goals?.home ?? 0}-${item.goals?.away ?? 0}`;
+      matchTiming = "live";
+      currentScore = `${item.goals?.home ?? 0} - ${item.goals?.away ?? 0}`;
     }
 
     const opportunities = evaluateFixturePrediction({
@@ -334,11 +338,16 @@ export async function searchAndAddNewOver25VipAlerts(dateStr?: string, forceRefr
         pickBadge,
         isElite,
         vipBadge: "Over 2.5 VIP",
-        status: "pending",
+        status: matchStatus,
+        actualScore,
+        currentScore,
+        matchTiming,
+        profit,
+        result: isFinished ? (matchStatus === "won" ? "WON" : "LOST") : undefined,
         isDestacado: true,
         destacadoRule: "Alta de Goles (≥ 60%)",
         confidence: bestOver25.probability >= 70 ? "Muy Alta" : "Alta",
-        isNewlyDiscovered: true,
+        isNewlyDiscovered: matchStatus === "pending",
         addedAt: new Date().toISOString(),
       };
 
@@ -410,10 +419,10 @@ export async function searchAndAddNewOver25VipAlerts(dateStr?: string, forceRefr
   // 5. Fusionar nuevas alertas con snapshot existente
   const mergedMap = new Map<string, MarketOpportunity>();
   for (const p of existingSnapshot) {
-    const isSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore) || p.matchTiming === "finished";
-    if (!isSettled) {
+    const isSettledOrInPlay = p.status === "won" || p.status === "lost" || p.status === "in_play" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore) || Boolean(p.currentScore) || p.matchTiming === "live" || p.matchTiming === "finished";
+    if (!isSettledOrInPlay) {
       if (!isCuratedLeague(p.leagueId, p.league, p.country)) continue;
-      if (p.probability < 60.0) continue; // Garantizar regla estricta >= 60%
+      if (p.probability < 58.0) continue; // Garantizar regla estricta >= 58%
     }
     const isElite = isElitePick(p);
     const pickBadge = isElite
@@ -459,7 +468,7 @@ export async function searchAndAddNewOver25VipAlerts(dateStr?: string, forceRefr
   });
 
   const curatedPicks = applyTier4QuotaProtection(rankedPicks, 2);
-  const finalPicks = sortByKickoff(curatedPicks, "asc");
+  let finalPicks = sortByKickoff(curatedPicks, "asc");
 
   // Auditoría complementaria
   const unaudited = finalPicks.filter(
@@ -487,11 +496,12 @@ export async function searchAndAddNewOver25VipAlerts(dateStr?: string, forceRefr
     }
   }
 
-  // 6. Guardar en disco y Supabase
+  // 6. Guardar en disco y Supabase y liquidar estados en vivo/finalizados
   await saveOver25VipSnapshotAsync(targetDate, finalPicks, false);
 
-  if (!isTargetToday) {
-    await settleActiveSnapshotWithRealScores(targetDate, "over25_vip").catch(() => []);
+  const settledAfterSave = await settleActiveSnapshotWithRealScores(targetDate, "over25_vip").catch(() => []);
+  if (settledAfterSave && settledAfterSave.length > 0) {
+    finalPicks = settledAfterSave;
   }
 
   return {

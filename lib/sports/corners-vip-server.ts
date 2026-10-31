@@ -213,7 +213,7 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string, forceRef
     if (!isSeniorCompetitiveCornerFixture(item)) return false;
     const kickoffMs = new Date(item.fixture.date).getTime();
     const shortStatus = item.fixture.status?.short || "NS";
-    if (isTargetToday) {
+    if (isTargetToday && existingSnapshot.length >= 10) {
       if (["1H", "2H", "HT", "ET", "BT", "P", "LIVE", "INT", "SUSP", "FT", "AET", "PEN"].includes(shortStatus)) return false;
       if (kickoffMs <= nowMs) return false;
     }
@@ -254,8 +254,8 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string, forceRef
     const kickoffMs = new Date(item.fixture.date).getTime();
     const shortStatus = item.fixture.status?.short || "NS";
 
-    // Solo evaluar partidos pendientes en el futuro próximo si es la fecha de hoy
-    if (isTargetToday) {
+    // Solo saltar partidos iniciados/finalizados de hoy cuando ya existe una cartelera completa (>= 10 alertas)
+    if (isTargetToday && existingSnapshot.length >= 10) {
       if (["1H", "2H", "HT", "ET", "BT", "P", "LIVE", "INT", "SUSP", "FT", "AET", "PEN"].includes(shortStatus)) {
         continue;
       }
@@ -361,6 +361,12 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string, forceRef
         pickBadge = "valor";
       }
 
+      const isInPlay = ["1H", "2H", "HT", "ET", "BT", "P", "LIVE", "INT", "SUSP"].includes(shortStatus);
+      const isFinished = ["FT", "AET", "PEN"].includes(shortStatus);
+      const liveOrFtScore = (isInPlay || isFinished) && typeof item.goals?.home === "number" && typeof item.goals?.away === "number"
+        ? `${item.goals.home} - ${item.goals.away}`
+        : undefined;
+
       const taggedPick: MarketOpportunity = {
         ...bestCorner,
         sport: "corners_vip" as any,
@@ -369,11 +375,13 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string, forceRef
         pickBadge,
         isElite,
         vipBadge: "Corners VIP",
-        status: "pending",
+        status: isInPlay ? "in_play" : "pending",
+        matchTiming: isFinished ? "finished" : isInPlay ? "live" : "prematch",
+        currentScore: liveOrFtScore,
         isDestacado: bestCorner.probability >= 70,
         destacadoRule: "Alta de Córners (≥ 70%)",
         confidence: bestCorner.probability >= 70 ? "Muy Alta" : bestCorner.probability >= 58 ? "Alta" : "Media",
-        isNewlyDiscovered: true,
+        isNewlyDiscovered: !isFinished && !isInPlay,
         addedAt: new Date().toISOString(),
       };
 
@@ -449,8 +457,8 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string, forceRef
   // 5. Fusionar nuevas alertas con el snapshot existente
   const mergedMap = new Map<string, MarketOpportunity>();
   for (const p of existingSnapshot) {
-    const isSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore) || p.matchTiming === "finished";
-    if (!isSettled && !isCuratedLeague(p.leagueId, p.league, p.country)) continue;
+    const isSettledOrInPlay = p.status === "won" || p.status === "lost" || p.status === "in_play" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore) || Boolean(p.currentScore) || p.matchTiming === "live" || p.matchTiming === "finished";
+    if (!isSettledOrInPlay && !isCuratedLeague(p.leagueId, p.league, p.country)) continue;
     const isElite = isElitePick(p);
     const pickBadge = isElite
       ? "elite"
@@ -498,7 +506,7 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string, forceRef
   const curatedPicks = isInitial && rankedPicks.length > 12 ? rankedPicks.slice(0, 12) : rankedPicks;
 
   // 3) Ordenar por horario de inicio (kickoff)
-  const finalPicks = sortByKickoff(curatedPicks, "asc");
+  let finalPicks = sortByKickoff(curatedPicks, "asc");
 
   // Asegurar auditoría en selecciones previas que aún no tengan nota de IA
   const unaudited = finalPicks.filter(
@@ -526,11 +534,12 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string, forceRef
     }
   }
 
-  // 6. Guardar en disco y Supabase
+  // 6. Guardar en disco y Supabase y liquidar estados en vivo/finalizados
   await saveCornersVipSnapshotAsync(targetDate, finalPicks, false);
 
-  if (!isTargetToday) {
-    await settleActiveSnapshotWithRealScores(targetDate, "corners_vip").catch(() => []);
+  const settledAfterSave = await settleActiveSnapshotWithRealScores(targetDate, "corners_vip").catch(() => []);
+  if (settledAfterSave && settledAfterSave.length > 0) {
+    finalPicks = settledAfterSave;
   }
 
   return {

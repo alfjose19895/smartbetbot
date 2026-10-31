@@ -416,11 +416,6 @@ export function isPreMatchQualified(p: {
     return false;
   }
 
-  // Tier de Ligas: Cumplir catálogo curado de ligas
-  if (p.league && !isCuratedLeague(p.leagueId, p.league, p.country)) {
-    return false;
-  }
-
   // Preserve matches that are already in play, finished or settled so they are never removed from the module when a match starts!
   const isSettledOrInPlay =
     (p as any).status === "won" ||
@@ -434,6 +429,11 @@ export function isPreMatchQualified(p: {
     Boolean((p as any).currentScore);
   if (isSettledOrInPlay) {
     return true;
+  }
+
+  // Tier de Ligas: Cumplir catálogo curado de ligas
+  if (p.league && !isCuratedLeague(p.leagueId, p.league, p.country)) {
+    return false;
   }
 
   const rawProb = typeof p.probability === 'number' ? p.probability : 0;
@@ -1893,9 +1893,11 @@ export function evaluateFixturePrediction(params: {
     const mDrawProb = (1 / marketOdds.draw) / margin1X2;
     const mAwayProb = (1 / marketOdds.awayWin) / margin1X2;
 
-    pHome = 0.65 * mHomeProb + 0.35 * pHome;
+    const blendedHome = 0.65 * mHomeProb + 0.35 * pHome;
+    const blendedAway = 0.65 * mAwayProb + 0.35 * pAway;
+    pHome = mHomeProb >= 0.52 ? Math.max(blendedHome, Math.min(0.88, mHomeProb + 0.035)) : blendedHome;
     pDraw = 0.65 * mDrawProb + 0.35 * pDraw;
-    pAway = 0.65 * mAwayProb + 0.35 * pAway;
+    pAway = mAwayProb >= 0.50 ? Math.max(blendedAway, Math.min(0.86, mAwayProb + 0.04)) : blendedAway;
   }
 
   if (marketOdds.over25 && marketOdds.under25) {
@@ -2187,7 +2189,7 @@ export function evaluateFixturePrediction(params: {
     }
 
     // 4. PRIORIDAD #4: Ganador Local (1) - Mínimo 58% prob y cuota >= 1.25
-    if (effHomeWin && effHomeWin >= 1.25 && effHomeWin <= 2.20 && pHome >= 0.58 && diff >= 6) {
+    if (effHomeWin && effHomeWin >= 1.25 && effHomeWin <= 2.20 && pHome >= 0.58) {
       candidates.push({
         market: "Ganador Local",
         selection: "1",
@@ -2198,14 +2200,14 @@ export function evaluateFixturePrediction(params: {
       });
     }
 
-    // 5. PRIORIDAD #5: Ganador Visitante (2) - Mínimo 58% prob y cuota >= 1.35
-    if (effAwayWin && effAwayWin >= 1.35 && effAwayWin <= 2.25 && pAway >= 0.58 && -diff >= 8) {
+    // 5. PRIORIDAD #5: Ganador Visitante (2) - Mínimo 58% prob y cuota >= 1.25
+    if (effAwayWin && effAwayWin >= 1.25 && effAwayWin <= 2.25 && pAway >= 0.58) {
       candidates.push({
         market: "Ganador Visitante",
         selection: "2",
         prob: pAway,
         odds: effAwayWin,
-        minOddsThreshold: 1.35,
+        minOddsThreshold: 1.25,
         minProbThreshold: 0.58,
       });
     }

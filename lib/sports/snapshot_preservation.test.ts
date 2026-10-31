@@ -110,6 +110,55 @@ describe("Preservation of Settled Matches & Snapshot Persistence", () => {
     expect(merged[0].profit).toBe(-1);
   });
 
+  it("preserves in_play / live status and currentScore when incoming pick is pending", async () => {
+    const livePick: MarketOpportunity = {
+      id: "test-match-live-1",
+      fixtureId: 999003,
+      match: "Puebla vs U.N.A.M. - Pumas",
+      homeTeam: "Puebla",
+      awayTeam: "U.N.A.M. - Pumas",
+      league: "Liga MX",
+      leagueId: 262,
+      country: "Mexico",
+      market: "Over 2.5 Goles",
+      selection: "Over 2.5",
+      odds: 1.80,
+      fairOdds: 1.65,
+      expectedValue: 9.0,
+      smartScore: 89,
+      explanation: "Auditoría táctica",
+      probability: 64.0,
+      confidence: "Alta",
+      edge: 3.8,
+      kickoff: `${testDate}T20:00:00Z`,
+      status: "in_play",
+      currentScore: "1 - 1",
+      matchTiming: "live",
+      livePeriod: "2H",
+      liveMinute: "67",
+    };
+
+    await saveDailySnapshotAsync(testDate, [livePick], "football", false);
+
+    const pendingIncoming: MarketOpportunity = {
+      ...livePick,
+      status: "pending",
+      currentScore: undefined,
+      matchTiming: "prematch",
+      livePeriod: undefined,
+      liveMinute: undefined,
+    };
+
+    const merged = await saveDailySnapshotAsync(testDate, [pendingIncoming], "football", false);
+    const liveSaved = merged.find((p) => p.fixtureId === 999003);
+    expect(liveSaved).toBeDefined();
+    expect(liveSaved?.status).toBe("in_play");
+    expect(liveSaved?.matchTiming).toBe("live");
+    expect(liveSaved?.currentScore).toBe("1 - 1");
+    expect(liveSaved?.livePeriod).toBe("2H");
+    expect(liveSaved?.liveMinute).toBe("67");
+  });
+
   it("VIP servers do not crash and preserve settled slates", async () => {
     const sports = ["btts_vip", "corners_vip", "cards_vip", "shots_vip", "home_win_vip", "away_win_vip", "over25_vip"] as const;
     for (const s of sports) {

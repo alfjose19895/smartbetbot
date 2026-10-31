@@ -33,7 +33,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 84,
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.8 córners totales.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "corners_vip",
@@ -150,10 +150,10 @@
     "vipBadge": "Corners VIP",
     "isNewlyDiscovered": true,
     "addedAt": "2026-10-30T14:09:09.010Z",
-    "currentScore": "1 - 0",
-    "matchTiming": "live",
-    "livePeriod": "2H",
-    "liveMinute": "81"
+    "matchTiming": "finished",
+    "actualScore": "3 - 6 (9 Córners)",
+    "result": "WON",
+    "profit": 0.55
   },
   {
     "fixtureId": 1555073,
@@ -189,7 +189,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 83,
     "explanation": "Patrón de repliegue y rechaces: Stade Lausanne-Ouchy sostiene una alta cadencia de llegadas al último tercio generando tiros de esquina constantes, mientras que Yverdon Sport concede más de 5.2 córners en promedio cuando juega de visitante.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "corners_vip",
@@ -307,7 +307,11 @@
     "isCornersVip": true,
     "vipBadge": "Corners VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-30T14:22:25.718Z"
+    "addedAt": "2026-10-30T14:22:25.718Z",
+    "actualScore": "6 - 5 (11 Córners)",
+    "result": "WON",
+    "profit": 0.73,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1552514,
@@ -343,7 +347,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 99,
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.5 córners totales.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "corners_vip",
@@ -461,7 +465,11 @@
     "isCornersVip": true,
     "vipBadge": "Corners VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-30T14:22:25.927Z"
+    "addedAt": "2026-10-30T14:22:25.927Z",
+    "actualScore": "7 - 2 (9 Córners)",
+    "result": "WON",
+    "profit": 0.73,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1552517,
@@ -497,7 +505,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 99,
     "explanation": "Volumen constante por las bandas: El cruce táctico entre Metz (5.8 córners de media en casa) y PAU (4.6 foráneos) proyecta 10.4 saques de esquina combinados, favorecido por el promedio superior a 12 centros y remates tapados por fecha.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "corners_vip",
@@ -615,7 +623,11 @@
     "isCornersVip": true,
     "vipBadge": "Corners VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-30T14:22:25.993Z"
+    "addedAt": "2026-10-30T14:22:25.993Z",
+    "actualScore": "8 - 4 (12 Córners)",
+    "result": "WON",
+    "profit": 0.67,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1555076,
@@ -651,7 +663,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 81,
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.3 córners totales.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "corners_vip",
@@ -769,7 +781,11 @@
     "isCornersVip": true,
     "vipBadge": "Corners VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-30T14:22:26.150Z"
+    "addedAt": "2026-10-30T14:22:26.150Z",
+    "actualScore": "6 - 4 (10 Córners)",
+    "result": "WON",
+    "profit": 0.67,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1549732,
@@ -805,7 +821,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 99,
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.4 córners totales.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "corners_vip",
@@ -923,7 +939,11 @@
     "isCornersVip": true,
     "vipBadge": "Corners VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-30T14:09:09.399Z"
+    "addedAt": "2026-10-30T14:09:09.399Z",
+    "actualScore": "7 - 12 (19 Córners)",
+    "result": "WON",
+    "profit": 0.73,
+    "matchTiming": "finished"
   },
   {
     "fixtureId": 1493219,
@@ -959,7 +979,7 @@
     "destacadoRule": "Alta de Córners (≥ 70%)",
     "smartScore": 99,
     "explanation": "Presión ofensiva y juego exterior: Ambos conjuntos basan su profundidad en transiciones abiertas por los costados. La simulación cuantitativa respalda la línea de Córners con una media esperada de 10.5 córners totales.",
-    "status": "pending",
+    "status": "won",
     "isMcpPick": true,
     "isMcp": true,
     "source": "corners_vip",
@@ -1077,6 +1097,10 @@
     "isCornersVip": true,
     "vipBadge": "Corners VIP",
     "isNewlyDiscovered": true,
-    "addedAt": "2026-10-30T14:09:09.470Z"
+    "addedAt": "2026-10-30T14:09:09.470Z",
+    "actualScore": "9 - 2 (11 Córners)",
+    "result": "WON",
+    "profit": 0.83,
+    "matchTiming": "finished"
   }
 ]

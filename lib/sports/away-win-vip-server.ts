@@ -275,15 +275,18 @@ export async function searchAndAddNewAwayWinVipAlerts(dateStr?: string, forceRef
 
     const shortStatus = item.fixture.status?.short || "NS";
     const isFinished = ["FT", "AET", "PEN"].includes(shortStatus);
-    const isInPlay = ["1H", "2H", "HT", "ET", "BT", "P", "LIVE"].includes(shortStatus);
+    const isInPlay = ["1H", "2H", "HT", "ET", "BT", "P", "LIVE", "INT", "SUSP"].includes(shortStatus);
     let matchStatus: "pending" | "in_play" | "won" | "lost" = "pending";
     let actualScore: string | undefined = undefined;
+    let currentScore: string | undefined = undefined;
+    let matchTiming: "prematch" | "live" | "finished" = "prematch";
     let profit: number | undefined = undefined;
 
     if (isFinished) {
       const homeGoals = item.goals?.home ?? 0;
       const awayGoals = item.goals?.away ?? 0;
-      actualScore = `${homeGoals}-${awayGoals}`;
+      actualScore = `${homeGoals} - ${awayGoals}`;
+      matchTiming = "finished";
       const won = awayGoals > homeGoals;
       if (won) {
         matchStatus = "won";
@@ -294,7 +297,8 @@ export async function searchAndAddNewAwayWinVipAlerts(dateStr?: string, forceRef
       }
     } else if (isInPlay) {
       matchStatus = "in_play";
-      actualScore = `${item.goals?.home ?? 0}-${item.goals?.away ?? 0}`;
+      matchTiming = "live";
+      currentScore = `${item.goals?.home ?? 0} - ${item.goals?.away ?? 0}`;
     }
 
     const opportunities = evaluateFixturePrediction({
@@ -347,12 +351,14 @@ export async function searchAndAddNewAwayWinVipAlerts(dateStr?: string, forceRef
         vipBadge: "Ganador Visitante VIP",
         status: matchStatus,
         actualScore,
+        currentScore,
+        matchTiming,
         profit,
         result: isFinished ? (matchStatus === "won" ? "WON" : "LOST") : undefined,
         isDestacado: true,
         destacadoRule: "Ganador Visitante (≥ 60%)",
         confidence: bestAwayWin.probability >= 72 ? "Muy Alta" : "Alta",
-        isNewlyDiscovered: true,
+        isNewlyDiscovered: matchStatus === "pending",
         addedAt: new Date().toISOString(),
       };
 
@@ -378,10 +384,10 @@ export async function searchAndAddNewAwayWinVipAlerts(dateStr?: string, forceRef
   // 5. Fusionar preservando unicidad absoluta
   const mergedMap = new Map<string, MarketOpportunity>();
   for (const p of existingSnapshot) {
-    const isSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore) || p.matchTiming === "finished";
-    if (!isSettled) {
+    const isSettledOrInPlay = p.status === "won" || p.status === "lost" || p.status === "in_play" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore) || Boolean(p.currentScore) || p.matchTiming === "live" || p.matchTiming === "finished";
+    if (!isSettledOrInPlay) {
       if (!isCuratedLeague(p.leagueId, p.league, p.country)) continue;
-      if (p.probability < 65.0) continue; // Garantizar regla estricta >= 65%
+      if (p.probability < 58.0) continue; // Garantizar regla calibrada >= 58%
     }
     const isElite = isElitePick(p);
     const pickBadge = isElite
@@ -414,8 +420,13 @@ export async function searchAndAddNewAwayWinVipAlerts(dateStr?: string, forceRef
     }
   }
 
-  const finalPicks = sortByKickoff(Array.from(mergedMap.values()), "asc");
-  await saveAwayWinVipSnapshotAsync(targetDate, finalPicks, true);
+  let finalPicks = sortByKickoff(Array.from(mergedMap.values()), "asc");
+  await saveAwayWinVipSnapshotAsync(targetDate, finalPicks, false);
+
+  const settledAfterSave = await settleActiveSnapshotWithRealScores(targetDate, "away_win_vip").catch(() => []);
+  if (settledAfterSave && settledAfterSave.length > 0) {
+    finalPicks = settledAfterSave;
+  }
 
   return {
     success: true,
@@ -482,7 +493,7 @@ export async function getAwayWinVipSlate(dateStr?: string, forceRefresh = false)
       if (isSettledOrInPlay) return true;
       if (!isCuratedLeague(p.leagueId, p.league, p.country)) return false;
       const isAwayWin = p.market === "Ganador Visitante" || (p.selection || "").toLowerCase() === "2" || (p.selection || "").toLowerCase() === (p.awayTeam || "").toLowerCase();
-      return isAwayWin && p.probability >= 65.0;
+      return isAwayWin && p.probability >= 58.0;
     })
     .map((p) => {
       const isElite = isElitePick(p);

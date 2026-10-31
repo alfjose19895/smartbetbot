@@ -75,10 +75,10 @@ export async function saveBttsVipSnapshotAsync(
     const pickBadge = isElite
       ? "elite"
       : p.odds >= 2.0 && (p.edge || 0) >= 2.0
-      ? "bomba"
-      : (p.probability >= 62.0 && (p.edge || 0) >= 2.0) || (p.odds >= 1.65 && (p.edge || 0) >= 1.5)
-      ? "valor"
-      : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge) ? p.pickBadge : "estandar");
+        ? "bomba"
+        : (p.probability >= 62.0 && (p.edge || 0) >= 2.0) || (p.odds >= 1.65 && (p.edge || 0) >= 1.5)
+          ? "valor"
+          : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge) ? p.pickBadge : "estandar");
 
     return {
       ...p,
@@ -263,15 +263,18 @@ export async function searchAndAddNewBttsVipAlerts(dateStr?: string, forceRefres
 
     const shortStatus = item.fixture.status?.short || "NS";
     const isFinished = ["FT", "AET", "PEN"].includes(shortStatus);
-    const isInPlay = ["1H", "2H", "HT", "ET", "BT", "P", "LIVE"].includes(shortStatus);
+    const isInPlay = ["1H", "2H", "HT", "ET", "BT", "P", "LIVE", "INT", "SUSP"].includes(shortStatus);
     let matchStatus: "pending" | "in_play" | "won" | "lost" = "pending";
     let actualScore: string | undefined = undefined;
+    let currentScore: string | undefined = undefined;
+    let matchTiming: "prematch" | "live" | "finished" = "prematch";
     let profit: number | undefined = undefined;
 
     if (isFinished) {
       const homeGoals = item.goals?.home ?? 0;
       const awayGoals = item.goals?.away ?? 0;
-      actualScore = `${homeGoals}-${awayGoals}`;
+      actualScore = `${homeGoals} - ${awayGoals}`;
+      matchTiming = "finished";
       const bothScored = homeGoals > 0 && awayGoals > 0;
       if (bothScored) {
         matchStatus = "won";
@@ -282,7 +285,8 @@ export async function searchAndAddNewBttsVipAlerts(dateStr?: string, forceRefres
       }
     } else if (isInPlay) {
       matchStatus = "in_play";
-      actualScore = `${item.goals?.home ?? 0}-${item.goals?.away ?? 0}`;
+      matchTiming = "live";
+      currentScore = `${item.goals?.home ?? 0} - ${item.goals?.away ?? 0}`;
     }
 
     const opportunities = evaluateFixturePrediction({
@@ -336,6 +340,8 @@ export async function searchAndAddNewBttsVipAlerts(dateStr?: string, forceRefres
         vipBadge: "Ambos Anotan VIP",
         status: matchStatus,
         actualScore,
+        currentScore,
+        matchTiming,
         profit,
         result: isFinished ? (matchStatus === "won" ? "WON" : "LOST") : undefined,
         isDestacado: true,
@@ -413,19 +419,19 @@ export async function searchAndAddNewBttsVipAlerts(dateStr?: string, forceRefres
   // 5. Fusionar nuevas alertas con snapshot existente
   const mergedMap = new Map<string, MarketOpportunity>();
   for (const p of existingSnapshot) {
-    const isSettled = p.status === "won" || p.status === "lost" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore) || p.matchTiming === "finished";
-    if (!isSettled) {
+    const isSettledOrInPlay = p.status === "won" || p.status === "lost" || p.status === "in_play" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore) || Boolean(p.currentScore) || p.matchTiming === "live" || p.matchTiming === "finished";
+    if (!isSettledOrInPlay) {
       if (!isCuratedLeague(p.leagueId, p.league, p.country)) continue;
-      if (p.probability < 58.0) continue; // Garantizar regla estricta >= 58%
+      if (p.probability < 56.0) continue; // Garantizar regla calibrada >= 56%
     }
     const isElite = isElitePick(p);
     const pickBadge = isElite
       ? "elite"
       : p.odds >= 2.0 && (p.edge || 0) >= 2.0
-      ? "bomba"
-      : (p.probability >= 62.0 && (p.edge || 0) >= 2.0) || (p.odds >= 1.65 && (p.edge || 0) >= 1.5)
-      ? "valor"
-      : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge) ? p.pickBadge : "estandar");
+        ? "bomba"
+        : (p.probability >= 62.0 && (p.edge || 0) >= 2.0) || (p.odds >= 1.65 && (p.edge || 0) >= 1.5)
+          ? "valor"
+          : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge) ? p.pickBadge : "estandar");
 
     mergedMap.set(getOpportunityKey(p), {
       ...p,
@@ -462,7 +468,7 @@ export async function searchAndAddNewBttsVipAlerts(dateStr?: string, forceRefres
   });
 
   const curatedPicks = applyTier4QuotaProtection(rankedPicks, 2);
-  const finalPicks = sortByKickoff(curatedPicks, "asc");
+  let finalPicks = sortByKickoff(curatedPicks, "asc");
 
   // Auditoría complementaria
   const unaudited = finalPicks.filter(
@@ -490,11 +496,12 @@ export async function searchAndAddNewBttsVipAlerts(dateStr?: string, forceRefres
     }
   }
 
-  // 6. Guardar en disco y Supabase
+  // 6. Guardar en disco y Supabase y liquidar estados en vivo/finalizados
   await saveBttsVipSnapshotAsync(targetDate, finalPicks, false);
 
-  if (!isTargetToday) {
-    await settleActiveSnapshotWithRealScores(targetDate, "btts_vip").catch(() => []);
+  const settledAfterSave = await settleActiveSnapshotWithRealScores(targetDate, "btts_vip").catch(() => []);
+  if (settledAfterSave && settledAfterSave.length > 0) {
+    finalPicks = settledAfterSave;
   }
 
   return {
@@ -559,17 +566,17 @@ export async function getBttsVipSlate(dateStr?: string, forceRefresh = false): P
       if (isSettledOrInPlay) return true;
       if (!isCuratedLeague(p.leagueId, p.league, p.country)) return false;
       const isBtts = p.market === "Ambos Equipos Anotan" || (p.selection || "").toLowerCase().includes("ambos") || (p.selection || "").toLowerCase().includes("sí") || (p.selection || "").toLowerCase().includes("si");
-      return isBtts && p.probability >= 58.0;
+      return isBtts && p.probability >= 56.0;
     })
     .map((p) => {
       const isElite = isElitePick(p);
       const pickBadge = isElite
         ? "elite"
         : p.odds >= 2.0 && (p.edge || 0) >= 2.0
-        ? "bomba"
-        : (p.probability >= 62.0 && (p.edge || 0) >= 2.0) || (p.odds >= 1.65 && (p.edge || 0) >= 1.5)
-        ? "valor"
-        : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge) ? p.pickBadge : "estandar");
+          ? "bomba"
+          : (p.probability >= 62.0 && (p.edge || 0) >= 2.0) || (p.odds >= 1.65 && (p.edge || 0) >= 1.5)
+            ? "valor"
+            : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge) ? p.pickBadge : "estandar");
 
       return {
         ...p,

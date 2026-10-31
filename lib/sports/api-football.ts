@@ -599,7 +599,7 @@ class ApiFootballClient {
   ): Promise<ApiFootballFixtureItem[]> {
     const cacheKey = `${dateStr}::${timezone}`;
     const cached = this.fixturesByDateCache.get(cacheKey);
-    if (!forceRefresh && cached && Date.now() - cached.timestamp < 15 * 60 * 1000) {
+    if (!forceRefresh && cached && Date.now() - cached.timestamp < 2 * 60 * 1000) {
       return cached.data;
     }
     const res = await this.request<ApiFootballFixtureItem>("fixtures", { date: dateStr, timezone });
