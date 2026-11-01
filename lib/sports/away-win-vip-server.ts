@@ -21,6 +21,7 @@ import {
 } from "./db";
 import { apiFootball, extractMarketOddsFromBookmaker, ApiFootballOddsItem } from "./api-football";
 import { auditPredictionsWithGeminiVeto } from "@/lib/ai/claude-analyst";
+import { enrichMatchRealStats, calculateUnifiedQualityScore } from "./team-stats-enricher";
 
 function getEcuadorDateString(d: Date | number | string = Date.now()): string {
   try {
@@ -252,6 +253,7 @@ export async function searchAndAddNewAwayWinVipAlerts(dateStr?: string, forceRef
 
   const newlyFoundAlerts: MarketOpportunity[] = [];
   const usedTeams = new Set<string>();
+  let enrichedCount = 0;
 
   for (const item of candidateFixtures) {
     if (!isSeniorCompetitiveAwayWinFixture(item)) continue;
@@ -271,7 +273,8 @@ export async function searchAndAddNewAwayWinVipAlerts(dateStr?: string, forceRef
     const realOddsItem = oddsMapByFixture[item.fixture.id];
     if (!realOddsItem) continue;
     const realMarketOdds = extractMarketOddsFromBookmaker(realOddsItem);
-    if (!realMarketOdds || !realMarketOdds.awayWin || realMarketOdds.awayWin < 1.15 || realMarketOdds.awayWin > 3.20) continue;
+    // RANGO COMERCIAL RENTABLE Y ALTA PROBABILIDAD: 1.40 a 1.96 (descarta micro-cuotas y visitantes especulativos > 1.96)
+    if (!realMarketOdds || !realMarketOdds.awayWin || realMarketOdds.awayWin < 1.40 || realMarketOdds.awayWin > 1.96) continue;
 
     const shortStatus = item.fixture.status?.short || "NS";
     const isFinished = ["FT", "AET", "PEN"].includes(shortStatus);
@@ -318,31 +321,65 @@ export async function searchAndAddNewAwayWinVipAlerts(dateStr?: string, forceRef
       targetMarket: "Ganador Visitante",
     });
 
-    // Filtrar estrictamente solo pronósticos de GANADOR VISITANTE con regla calibrada >= 58% de probabilidad/convicción (>= 60% Destacado)
+    // Filtrar estrictamente solo pronósticos de GANADOR VISITANTE con probabilidad >= 65.0% y cuota rentable 1.40 - 1.96
     const awayWinOpps = opportunities.filter((p) => {
       const isAwayWin = p.market === "Ganador Visitante" || (p.selection || "").toLowerCase() === "2" || (p.selection || "").toLowerCase() === (p.awayTeam || "").toLowerCase();
-      const meetsStrictProb = p.probability >= 58.0;
-      return isAwayWin && meetsStrictProb && p.odds >= 1.20 && p.odds <= 4.00;
+      const meetsStrictProb = p.probability >= 65.0;
+      return isAwayWin && meetsStrictProb && p.odds >= 1.40 && p.odds <= 1.96;
     });
 
     if (awayWinOpps.length > 0) {
       awayWinOpps.sort((a, b) => b.probability - a.probability || b.edge - a.edge);
       const bestAwayWin = awayWinOpps[0];
 
-      const isElite = isElitePick(bestAwayWin);
+      // Validación de Racha Real (Regla 4/5 de invicto/victoria visitante y fragilidad local)
+      let realConsistencyRate = 0.74;
+      let probAdjustment = 0;
+      let formTag = "";
+
+      if (enrichedCount < 14 && item.teams?.home?.id && item.teams?.away?.id) {
+        enrichedCount++;
+        const realStats = await enrichMatchRealStats(item.teams.home.id, item.teams.away.id, false, 2800).catch(() => ({ home: null, away: null }));
+        if (realStats.home && realStats.away && realStats.home.matchesAnalyzed >= 3 && realStats.away.matchesAnalyzed >= 3) {
+          if (
+            realStats.away.winRate < 0.40 ||
+            realStats.away.drawRate >= 0.60 ||
+            (realStats.home.unbeatenRate >= 0.85 && realStats.home.winRate >= 0.60)
+          ) {
+            continue;
+          }
+          realConsistencyRate = (realStats.away.winRate * 0.55 + realStats.away.unbeatenRate * 0.25 + realStats.home.lossRate * 0.20);
+          if (realStats.away.winRate >= 0.60 && realStats.away.unbeatenRate >= 0.80) {
+            probAdjustment = 2.0;
+            formTag = ` | Racha Visitante Real: ${Math.round(realStats.away.winRate * 5)}/5 victorias (${Math.round(realStats.away.unbeatenRate * 5)}/5 invicto)`;
+          }
+        }
+      }
+
+      const finalProb = Number(Math.min(79.0, bestAwayWin.probability + probAdjustment).toFixed(1));
+      const unifiedScore = calculateUnifiedQualityScore({
+        probability: finalProb,
+        odds: bestAwayWin.odds,
+        edge: bestAwayWin.edge || 0,
+        consistencyRate: realConsistencyRate,
+        leagueTier: bestAwayWin.leagueTier || 3,
+      });
+
+      const isElite = isElitePick(bestAwayWin) || unifiedScore >= 78;
       let pickBadge: "elite" | "valor" | "bomba" | "estandar" = "estandar";
       if (isElite) {
         pickBadge = "elite";
-      } else if (bestAwayWin.odds >= 2.00 && (bestAwayWin.edge || 0) >= 2.0) {
-        pickBadge = "bomba";
-      } else if (bestAwayWin.probability >= 70.0 && (bestAwayWin.edge || 0) >= 2.0) {
+      } else if (finalProb >= 64.0 && (bestAwayWin.edge || 0) >= 2.0) {
         pickBadge = "valor";
-      } else if (bestAwayWin.odds >= 1.65 && (bestAwayWin.edge || 0) >= 1.5) {
+      } else if (bestAwayWin.odds >= 1.55 && (bestAwayWin.edge || 0) >= 1.5) {
         pickBadge = "valor";
       }
 
       const taggedPick: MarketOpportunity = {
         ...bestAwayWin,
+        probability: finalProb,
+        smartScore: unifiedScore,
+        explanation: formTag ? `${bestAwayWin.explanation}${formTag}` : bestAwayWin.explanation,
         sport: "away_win_vip" as any,
         source: "away_win_vip",
         isAwayWinVip: true,
@@ -356,8 +393,8 @@ export async function searchAndAddNewAwayWinVipAlerts(dateStr?: string, forceRef
         profit,
         result: isFinished ? (matchStatus === "won" ? "WON" : "LOST") : undefined,
         isDestacado: true,
-        destacadoRule: "Ganador Visitante (≥ 60%)",
-        confidence: bestAwayWin.probability >= 72 ? "Muy Alta" : "Alta",
+        destacadoRule: "Ganador Visitante Rentable (≥ 62%)",
+        confidence: finalProb >= 70 ? "Muy Alta" : "Alta",
         isNewlyDiscovered: matchStatus === "pending",
         addedAt: new Date().toISOString(),
       };
@@ -387,7 +424,7 @@ export async function searchAndAddNewAwayWinVipAlerts(dateStr?: string, forceRef
     const isSettledOrInPlay = p.status === "won" || p.status === "lost" || p.status === "in_play" || (p as any).result === "WON" || (p as any).result === "LOST" || Boolean(p.actualScore) || Boolean(p.currentScore) || p.matchTiming === "live" || p.matchTiming === "finished";
     if (!isSettledOrInPlay) {
       if (!isCuratedLeague(p.leagueId, p.league, p.country)) continue;
-      if (p.probability < 58.0) continue; // Garantizar regla calibrada >= 58%
+      if (p.probability < 65.0) continue; // Garantizar regla estricta >= 65%
     }
     const isElite = isElitePick(p);
     const pickBadge = isElite
@@ -493,7 +530,7 @@ export async function getAwayWinVipSlate(dateStr?: string, forceRefresh = false)
       if (isSettledOrInPlay) return true;
       if (!isCuratedLeague(p.leagueId, p.league, p.country)) return false;
       const isAwayWin = p.market === "Ganador Visitante" || (p.selection || "").toLowerCase() === "2" || (p.selection || "").toLowerCase() === (p.awayTeam || "").toLowerCase();
-      return isAwayWin && p.probability >= 58.0;
+      return isAwayWin && p.probability >= 65.0;
     })
     .map((p) => {
       const isElite = isElitePick(p);

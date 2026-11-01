@@ -23,6 +23,7 @@ import {
 } from "./db";
 import { apiFootball, extractMarketOddsFromBookmaker, ApiFootballOddsItem } from "./api-football";
 import { auditPredictionsWithGeminiVeto } from "@/lib/ai/claude-analyst";
+import { enrichMatchRealStats, calculateUnifiedQualityScore } from "./team-stats-enricher";
 
 function getEcuadorDateString(d: Date | number | string = Date.now()): string {
   try {
@@ -148,6 +149,17 @@ function isSeniorCompetitiveCornerFixture(item: any): boolean {
   }
 
   if (isExcludedMatch(hName, aName)) return false;
+  // Excluir segundas divisiones defensivas y ligas de ritmo lento donde el promedio de córners cae por debajo de 8.5
+  if (
+    legName.includes("ligue 2") ||
+    legName.includes("serie b") ||
+    legName.includes("segunda división") ||
+    legName.includes("la liga 2") ||
+    legName.includes("primera a") ||
+    legName.includes("categoría primera a")
+  ) {
+    return false;
+  }
   // Filtrar estrictamente solo ligas curadas con soporte oficial y telemetría de saques de esquina
   if (!isCuratedLeague(item.league?.id, item.league?.name, item.league?.country)) return false;
   const norm = normalizeLeagueInfo(item.league?.name, item.league?.country, item.league?.id);
@@ -247,6 +259,7 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string, forceRef
 
   const newlyFoundAlerts: MarketOpportunity[] = [];
   const usedTeams = new Set<string>();
+  let enrichedCount = 0;
 
   for (const item of candidateFixtures) {
     if (!isSeniorCompetitiveCornerFixture(item)) continue;
@@ -278,16 +291,16 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string, forceRef
     if (!realOddsItem) continue;
     const realMarketOdds = extractMarketOddsFromBookmaker(realOddsItem);
 
-    // REGLA FUNDAMENTAL: Requiere telemetría de saques de esquina y cuotas reales de córners
+    // REGLA FUNDAMENTAL: Requiere telemetría y LÍNEAS COMERCIALES REALES (>= 7.5 córners)
     const hasTelemetry = isCompetitionWithCornerTelemetry(
       item.league.name,
       item.league.country,
       item.teams.home.name,
       item.teams.away.name
     );
-    const hasRealOdds = Boolean(
+    const hasCommercialRealOdds = Boolean(
       realMarketOdds && (
-        realMarketOdds.cornersOver65 ||
+        (realMarketOdds.cornersOver65 && realMarketOdds.cornersOver65 >= 1.48) ||
         realMarketOdds.cornersOver75 ||
         realMarketOdds.cornersOver85 ||
         realMarketOdds.cornersOver95 ||
@@ -295,7 +308,50 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string, forceRef
       )
     );
 
-    if (!hasTelemetry || !hasRealOdds) continue;
+    if (!hasTelemetry || !hasCommercialRealOdds) continue;
+
+    // VETO ANTI-GOLEADA TEMPRANA: Si hay un favorito extremo (< 1.28), suele liquidar el partido en el 1T y dormir la posesión
+    if (
+      (realMarketOdds?.homeWin && realMarketOdds.homeWin < 1.28) ||
+      (realMarketOdds?.awayWin && realMarketOdds.awayWin < 1.28)
+    ) {
+      continue;
+    }
+
+    // Enriquecer con estadísticas reales por equipo (córners a favor/en contra últimos 5 partidos)
+    let historicalCornerData: {
+      homeCornersFor: number;
+      awayCornersFor: number;
+      homeCornersAgainst?: number;
+      awayCornersAgainst?: number;
+      sampleSize?: number;
+    } | undefined = undefined;
+    let realCornerConsistency = 0.72;
+
+    if (enrichedCount < 14 && item.teams?.home?.id && item.teams?.away?.id) {
+      enrichedCount++;
+      const realStats = await enrichMatchRealStats(item.teams.home.id, item.teams.away.id, true, 3000).catch(() => ({ home: null, away: null }));
+      if (
+        realStats.home?.cornersForAvg !== undefined &&
+        realStats.away?.cornersForAvg !== undefined
+      ) {
+        const combinedRealCorners =
+          (realStats.home.cornersForAvg + (realStats.away.cornersAgainstAvg ?? realStats.home.cornersForAvg)) / 2 +
+          (realStats.away.cornersForAvg + (realStats.home.cornersAgainstAvg ?? realStats.away.cornersForAvg)) / 2;
+        // Si ambos equipos promedian combinados menos de 7.8 córners reales, descartar trampa
+        if (combinedRealCorners < 7.8) {
+          continue;
+        }
+        historicalCornerData = {
+          homeCornersFor: realStats.home.cornersForAvg,
+          awayCornersFor: realStats.away.cornersForAvg,
+          homeCornersAgainst: realStats.home.cornersAgainstAvg,
+          awayCornersAgainst: realStats.away.cornersAgainstAvg,
+          sampleSize: Math.min(realStats.home.matchesAnalyzed, realStats.away.matchesAnalyzed),
+        };
+        realCornerConsistency = combinedRealCorners >= 10.2 ? 0.90 : combinedRealCorners >= 9.2 ? 0.82 : 0.75;
+      }
+    }
 
     const opportunities = evaluateFixturePrediction({
       fixtureId: item.fixture.id,
@@ -312,13 +368,16 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string, forceRef
       kickoff: item.fixture.date,
       marketOdds: realMarketOdds,
       targetMarket: "Córners",
+      historicalCornerData,
     });
 
-    // Filtrar estrictamente solo oportunidades de córners en modalidad OVER respetando Tiers de Ligas
+    // Filtrar estrictamente LÍNEAS COMERCIALES REALES (7.5, 8.5, 9.5, 10.5; y 6.5 SOLO cuando es la línea original principal con cuota >= 1.48 y prob >= 68%)
     const cornerOpps = opportunities.filter((p) => {
       const isCorner = p.market === "Córners" || (p.selection || "").toLowerCase().includes("córner");
       const selLower = (p.selection || "").toLowerCase();
       const mktLower = (p.market || "").toLowerCase();
+      const isLine65 = selLower.includes("6.5") || mktLower.includes("6.5");
+      if (isLine65 && (p.odds < 1.48 || p.probability < 68.0)) return false;
       const isUnder =
         selLower.includes("under") ||
         selLower.includes("menos") ||
@@ -334,30 +393,49 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string, forceRef
         mktLower.includes("alta");
 
       const tier = p.leagueTier || 3;
-      // Umbrales calibrados por Tier de Liga para máxima precisión y cobertura
       const meetsTierThreshold =
-        tier === 1 ? (p.probability >= 60 && (p.edge || 0) >= 1.0) :
-        tier === 2 ? (p.probability >= 62 && (p.edge || 0) >= 1.0) :
-        tier === 3 ? (p.probability >= 64 && (p.edge || 0) >= 1.5) :
-        (p.probability >= 65 && (p.edge || 0) >= 1.5);
+        tier === 1 ? (p.probability >= 61.5 && (p.edge || 0) >= 1.5) :
+        tier === 2 ? (p.probability >= 63.0 && (p.edge || 0) >= 1.8) :
+        (p.probability >= 64.5 && (p.edge || 0) >= 2.0);
 
-      return isCorner && !isUnder && isOver && meetsTierThreshold && p.odds >= 1.25 && p.odds <= 2.25;
+      return isCorner && !isUnder && isOver && meetsTierThreshold && p.odds >= 1.44 && p.odds <= 1.98;
     });
 
     if (cornerOpps.length > 0) {
-      // Elegir la opción de mayor probabilidad y mejor edge
-      cornerOpps.sort((a, b) => b.probability - a.probability || b.edge - a.edge);
+      // Elegir la línea comercial más rentable y segura según el Quality Score unificado
+      cornerOpps.sort((a, b) => {
+        const scoreA = calculateUnifiedQualityScore({
+          probability: a.probability,
+          odds: a.odds,
+          edge: a.edge || 0,
+          consistencyRate: realCornerConsistency,
+          leagueTier: a.leagueTier || 3,
+        });
+        const scoreB = calculateUnifiedQualityScore({
+          probability: b.probability,
+          odds: b.odds,
+          edge: b.edge || 0,
+          consistencyRate: realCornerConsistency,
+          leagueTier: b.leagueTier || 3,
+        });
+        return scoreB - scoreA || b.probability - a.probability;
+      });
       const bestCorner = cornerOpps[0];
+      const unifiedScore = calculateUnifiedQualityScore({
+        probability: bestCorner.probability,
+        odds: bestCorner.odds,
+        edge: bestCorner.edge || 0,
+        consistencyRate: realCornerConsistency,
+        leagueTier: bestCorner.leagueTier || 3,
+      });
 
-      const isElite = isElitePick(bestCorner);
+      const isElite = isElitePick(bestCorner) || unifiedScore >= 78;
       let pickBadge: "elite" | "valor" | "bomba" | "estandar" = "estandar";
       if (isElite) {
         pickBadge = "elite";
-      } else if (bestCorner.odds >= 2.00 && (bestCorner.edge || 0) >= 2.0) {
-        pickBadge = "bomba";
-      } else if (bestCorner.probability >= 62.0 && (bestCorner.edge || 0) >= 2.0) {
+      } else if (bestCorner.probability >= 63.0 && (bestCorner.edge || 0) >= 2.0) {
         pickBadge = "valor";
-      } else if (bestCorner.odds >= 1.65 && (bestCorner.edge || 0) >= 1.5) {
+      } else if (bestCorner.odds >= 1.58 && (bestCorner.edge || 0) >= 1.5) {
         pickBadge = "valor";
       }
 
@@ -369,6 +447,7 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string, forceRef
 
       const taggedPick: MarketOpportunity = {
         ...bestCorner,
+        smartScore: unifiedScore,
         sport: "corners_vip" as any,
         source: "corners_vip",
         isCornersVip: true,
@@ -378,9 +457,9 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string, forceRef
         status: isInPlay ? "in_play" : "pending",
         matchTiming: isFinished ? "finished" : isInPlay ? "live" : "prematch",
         currentScore: liveOrFtScore,
-        isDestacado: bestCorner.probability >= 70,
-        destacadoRule: "Alta de Córners (≥ 70%)",
-        confidence: bestCorner.probability >= 70 ? "Muy Alta" : bestCorner.probability >= 58 ? "Alta" : "Media",
+        isDestacado: bestCorner.probability >= 66,
+        destacadoRule: "Línea Comercial Rentable (≥ 66%)",
+        confidence: bestCorner.probability >= 68 ? "Muy Alta" : "Alta",
         isNewlyDiscovered: !isFinished && !isInPlay,
         addedAt: new Date().toISOString(),
       };
@@ -406,18 +485,9 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string, forceRef
     return (b.edge || 0) - (a.edge || 0);
   });
 
-  // REGLA DE CANTIDADES (10 a 12 iniciales, y al buscar alertas se agregan más):
-  // Si no hay snapshot previo: seleccionar entre 10 y 12 alertas iniciales (máximo 12 de las más calificadas).
-  // Si ya hay cartelera existente y se buscan alertas: agregar un lote adicional de hasta 6 alertas.
-  // REGLA DE CANTIDADES (10 a 12 iniciales, y al buscar alertas se agregan más):
-  // 1) Cartelera inicial (sin snapshot previo): seleccionar entre 10 y 12 alertas de máxima jerarquía.
-  // 2) Búsqueda incremental ("Buscar Alertas"): agregar un lote adicional de hasta 6 alertas calificadas.
-  const isInitial = existingSnapshot.length === 0;
-  const auditPoolSize = isInitial
-    ? Math.min(newlyFoundAlerts.length, 16)
-    : Math.min(newlyFoundAlerts.length, 8);
-
-  const candidatesToAudit = newlyFoundAlerts.slice(0, auditPoolSize);
+  // REGLA DE CALIDAD PURA SIN FORZAR CANTIDAD:
+  // Evaluar todos los candidatos genuinos calificados por Tier de Liga y respetar estrictamente el Veto de IA (sin rellenar con picks vetados).
+  const candidatesToAudit = newlyFoundAlerts;
 
   // 4. Auditoría con Agente IA Google Gemini ("Abogado del Diablo" / Veto Táctico)
   let approvedNewAlerts = candidatesToAudit;
@@ -429,28 +499,6 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string, forceRef
       }
     } catch (vetoErr) {
       console.warn("[Corners VIP] Gemini Veto audit warning:", vetoErr);
-    }
-  }
-
-  // Asegurar rango estricto: 10 a 12 iniciales (o todas las disponibles si hay menos de 10)
-  // Al buscar alertas subsecuentes: hasta 6 adicionales
-  if (isInitial) {
-    if (approvedNewAlerts.length > 12) {
-      approvedNewAlerts = approvedNewAlerts.slice(0, 12);
-    } else if (approvedNewAlerts.length < 10 && newlyFoundAlerts.length >= 10) {
-      const approvedKeys = new Set(approvedNewAlerts.map((p) => getOpportunityKey(p)));
-      for (const cand of newlyFoundAlerts) {
-        if (approvedNewAlerts.length >= 10) break;
-        const key = getOpportunityKey(cand);
-        if (!approvedKeys.has(key)) {
-          approvedNewAlerts.push(cand);
-          approvedKeys.add(key);
-        }
-      }
-    }
-  } else {
-    if (approvedNewAlerts.length > 6) {
-      approvedNewAlerts = approvedNewAlerts.slice(0, 6);
     }
   }
 
@@ -502,8 +550,8 @@ export async function searchAndAddNewCornersVipAlerts(dateStr?: string, forceRef
     return (b.edge || 0) - (a.edge || 0);
   });
 
-  // 2) Limitar estrictamente al rango oficial VIP de 10 a 12 pronósticos
-  const curatedPicks = isInitial && rankedPicks.length > 12 ? rankedPicks.slice(0, 12) : rankedPicks;
+  // 2) Aplicar protección de cuota Tier 4 sin forzar ni recortar artificialmente la cantidad de alertas de alta calidad
+  const curatedPicks = applyTier4QuotaProtection(rankedPicks, 2);
 
   // 3) Ordenar por horario de inicio (kickoff)
   let finalPicks = sortByKickoff(curatedPicks, "asc");
@@ -606,6 +654,8 @@ export async function getCornersVipSlate(dateStr?: string, forceRefresh = false)
       const isCorner = p.market === "Córners" || (p.selection || "").toLowerCase().includes("córner");
       const selLower = (p.selection || "").toLowerCase();
       const mktLower = (p.market || "").toLowerCase();
+      const isLine65 = selLower.includes("6.5") || mktLower.includes("6.5");
+      if (isLine65 && (p.odds < 1.48 || p.probability < 68.0)) return false;
       const isUnder =
         selLower.includes("under") ||
         selLower.includes("menos") ||

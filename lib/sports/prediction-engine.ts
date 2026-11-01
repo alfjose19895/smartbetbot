@@ -152,14 +152,14 @@ export const DESTACADOS_5_STARS_RULES: Array<{
   icon: string;
   description: string;
 }> = [
-  { id: 'corners', name: 'Alta de Córners', minProb: 70, icon: '🚩', description: 'Probabilidad ≥ 70%' },
-  { id: 'btts', name: 'Ambos Anotan', minProb: 58, icon: '⚽', description: 'Probabilidad ≥ 58%' },
-  { id: 'goals', name: 'Alta de Goles', minProb: 60, icon: '🥅', description: 'Probabilidad ≥ 60%' },
-  { id: 'local', name: 'Ganador Local', minProb: 58, icon: '🏠', description: 'Probabilidad ≥ 58%' },
-  { id: 'away', name: 'Ganador Visitante', minProb: 60, icon: '✈️', description: 'Probabilidad ≥ 60%' },
-  { id: 'cards', name: 'Alta de Tarjetas', minProb: 70, icon: '🟨', description: 'Probabilidad ≥ 70%' },
-  { id: 'shots', name: 'Alta de Disparos', minProb: 70, icon: '🎯', description: 'Probabilidad ≥ 70%' },
-];
+    { id: 'corners', name: 'Alta de Córners', minProb: 70, icon: '🚩', description: 'Probabilidad ≥ 70%' },
+    { id: 'btts', name: 'Ambos Anotan', minProb: 58, icon: '⚽', description: 'Probabilidad ≥ 58%' },
+    { id: 'goals', name: 'Alta de Goles', minProb: 60, icon: '🥅', description: 'Probabilidad ≥ 60%' },
+    { id: 'local', name: 'Ganador Local', minProb: 58, icon: '🏠', description: 'Probabilidad ≥ 58%' },
+    { id: 'away', name: 'Ganador Visitante', minProb: 60, icon: '✈️', description: 'Probabilidad ≥ 60%' },
+    { id: 'cards', name: 'Alta de Tarjetas', minProb: 70, icon: '🟨', description: 'Probabilidad ≥ 70%' },
+    { id: 'shots', name: 'Alta de Disparos', minProb: 70, icon: '🎯', description: 'Probabilidad ≥ 70%' },
+  ];
 
 /**
  * REGLAS OFICIALES MÓDULO DESTACADOS 5 ESTRELLAS (EXCLUSIVAS PARA FÚTBOL):
@@ -1735,6 +1735,13 @@ export function evaluateFixturePrediction(params: {
   };
   liveContext?: LiveMatchContext;
   targetMarket?: string;
+  historicalCornerData?: {
+    homeCornersFor?: number;
+    awayCornersFor?: number;
+    homeCornersAgainst?: number;
+    awayCornersAgainst?: number;
+    sampleSize?: number;
+  };
 }): MarketOpportunity[] {
   const {
     fixtureId,
@@ -1752,6 +1759,7 @@ export function evaluateFixturePrediction(params: {
     marketOdds = {},
     liveContext,
     targetMarket,
+    historicalCornerData,
   } = params;
 
   if (isExcludedMatch(homeTeam, awayTeam, `${homeTeam} vs ${awayTeam}`, kickoff)) {
@@ -1940,7 +1948,7 @@ export function evaluateFixturePrediction(params: {
     cornerAnalysis?: any;
   }[] = [];
 
-      if (isLive) {
+  if (isLive) {
     // === DYNAMIC LIVE IN-PLAY STRATEGY (Minute >= 50', Original Bookmaker Odds >= 1.50) ===
     // If the match has not reached minute 50 yet, hold until 2H / 50'+
     if (elapsed < 50) {
@@ -2081,7 +2089,7 @@ export function evaluateFixturePrediction(params: {
     const effBtts = marketOdds.bttsYes || resolvedBttsOdds;
 
     // ENFOQUE DE ALTO RENDIMIENTO CALIBRADO (Ganador Local, BTTS y Over 2.5 Calibrado)
-// isCupOrKnockout defined above
+    // isCupOrKnockout defined above
     const totalXg = hXg + aXg;
 
     // === MERCADOS CON MÁXIMA PRIORIDAD Y RENTABILIDAD DEMOSTRADA ===
@@ -2111,6 +2119,7 @@ export function evaluateFixturePrediction(params: {
         homeElo: rHomeBase,
         awayElo: rAway,
         oddsByLine: cornerOddsMap,
+        historicalData: historicalCornerData,
       });
 
       if (
@@ -2119,26 +2128,27 @@ export function evaluateFixturePrediction(params: {
         typeof cornerResult.recommended_candidate.decimal_odds === "number" &&
         cornerResult.recommended_candidate.decimal_odds >= 1.25
       ) {
-        // PRIORIZAR CANDIDATO SEGURO (HIGH WIN RATE >= 70%):
-        // Usar línea segura si el recomendado tiene probabilidad < 70% o cuota > 1.95
+        // PRIORIZAR LÍNEAS COMERCIALES RENTABLES (Over 7.5 / 8.5 / 9.5 con cuota >= 1.45):
+        // Solo usar safer_candidate si sigue siendo una línea comercial real (>= 7.5) con cuota rentable (>= 1.42)
         const effectiveCandidate = (
-          (cornerResult.recommended_candidate.model_probability < 0.70 || cornerResult.recommended_candidate.decimal_odds > 1.95) &&
+          (cornerResult.recommended_candidate.model_probability < 0.64 || cornerResult.recommended_candidate.decimal_odds > 1.98) &&
           cornerResult.safer_candidate &&
-          cornerResult.safer_candidate.model_probability >= 0.70 &&
-          Number(cornerResult.safer_candidate.decimal_odds) >= 1.25
+          cornerResult.safer_candidate.line >= 7.5 &&
+          cornerResult.safer_candidate.model_probability >= 0.66 &&
+          Number(cornerResult.safer_candidate.decimal_odds) >= 1.42
         ) ? cornerResult.safer_candidate : cornerResult.recommended_candidate;
 
         const rec = effectiveCandidate;
         const finalOdds = rec.decimal_odds as number;
-        // UPSTREAM VALIDATION: Córners requiere probabilidad sólida >= 68% y cuota real >= 1.25
-        if (rec.model_probability >= 0.68) {
+        const minCornerProb = rec.line >= 8.5 ? 0.63 : 0.68;
+        if (rec.model_probability >= minCornerProb) {
           candidates.push({
             market: "Córners",
             selection: rec.selection,
             prob: rec.model_probability,
             odds: finalOdds,
             minOddsThreshold: 1.25,
-            minProbThreshold: 0.68,
+            minProbThreshold: minCornerProb,
             cornerAnalysis: {
               expectedTotalCorners: cornerResult.expected_total_corners,
               expectedHomeCorners: cornerResult.expected_home_corners,
@@ -2155,26 +2165,39 @@ export function evaluateFixturePrediction(params: {
       }
     } // End if hasCornerTelemetry && hasRealCornerOdds
 
-    // 2. PRIORIDAD #2: Ambos Equipos Anotan (BTTS) - Mínimo 55% prob y cuota >= 1.48
-    if (effBtts && effBtts >= 1.48 && effBtts <= 2.20 && pBttsYes >= 0.55 && hXg >= 0.85 && aXg >= 0.80) {
+    // 2. PRIORIDAD #2: Ambos Equipos Anotan (BTTS) - Paridad competitiva, sin ligas ultradefensivas ni cuotas lotería
+    const hasHeavyBlowoutFavorite =
+      (marketOdds.homeWin !== undefined && marketOdds.homeWin < 1.38) ||
+      (marketOdds.awayWin !== undefined && marketOdds.awayWin < 1.38);
+    const minBttsProb = isDefensiveLeague || isCupOrKnockout ? 0.63 : 0.57;
+
+    if (
+      !hasHeavyBlowoutFavorite &&
+      effBtts &&
+      effBtts >= 1.48 &&
+      effBtts <= 1.98 &&
+      pBttsYes >= minBttsProb &&
+      hXg >= 0.90 &&
+      aXg >= 0.85
+    ) {
       candidates.push({
         market: "Ambos Equipos Anotan",
         selection: "Sí",
         prob: pBttsYes,
         odds: effBtts,
         minOddsThreshold: 1.48,
-        minProbThreshold: 0.55,
+        minProbThreshold: minBttsProb,
       });
     }
 
-    // 3. PRIORIDAD #3: Over 2.5 Goles - Mínimo 55% prob y cuota >= 1.25
-    const minOverProb = isCupOrKnockout ? 0.58 : 0.55;
-    const minOverXg = isCupOrKnockout ? 2.60 : 2.45;
+    // 3. PRIORIDAD #3: Over 2.5 Goles - Exigir potencial ofensivo real y cuota <= 2.02
+    const minOverProb = isCupOrKnockout || isDefensiveLeague ? 0.60 : 0.56;
+    const minOverXg = isCupOrKnockout || isDefensiveLeague ? 2.65 : 2.50;
 
     if (
       effOver25 &&
       effOver25 >= 1.25 &&
-      effOver25 <= 2.20 &&
+      effOver25 <= 2.02 &&
       pOver25 >= minOverProb &&
       totalXg >= minOverXg
     ) {
@@ -2188,8 +2211,8 @@ export function evaluateFixturePrediction(params: {
       });
     }
 
-    // 4. PRIORIDAD #4: Ganador Local (1) - Mínimo 58% prob y cuota >= 1.25
-    if (effHomeWin && effHomeWin >= 1.25 && effHomeWin <= 2.20 && pHome >= 0.58) {
+    // 4. PRIORIDAD #4: Ganador Local (1) - Evitar cuotas > 1.98 de baja tasa de acierto
+    if (effHomeWin && effHomeWin >= 1.25 && effHomeWin <= 1.98 && pHome >= 0.58) {
       candidates.push({
         market: "Ganador Local",
         selection: "1",
@@ -2200,8 +2223,8 @@ export function evaluateFixturePrediction(params: {
       });
     }
 
-    // 5. PRIORIDAD #5: Ganador Visitante (2) - Mínimo 58% prob y cuota >= 1.25
-    if (effAwayWin && effAwayWin >= 1.25 && effAwayWin <= 2.25 && pAway >= 0.58) {
+    // 5. PRIORIDAD #5: Ganador Visitante (2) - Evitar cuotas > 1.98 de baja tasa de acierto
+    if (effAwayWin && effAwayWin >= 1.25 && effAwayWin <= 1.98 && pAway >= 0.58) {
       candidates.push({
         market: "Ganador Visitante",
         selection: "2",
@@ -2270,12 +2293,12 @@ export function evaluateFixturePrediction(params: {
     const mRank = getMarketPriorityRank(item.market, item.selection);
     const marketPriorityBonus =
       mRank === 1 ? 35 :
-      mRank === 2 ? 28 :
-      mRank === 3 ? 22 :
-      mRank === 4 ? 16 :
-      mRank === 5 ? 12 :
-      mRank === 6 ? 6 :
-      mRank === 7 ? 4 : 0;
+        mRank === 2 ? 28 :
+          mRank === 3 ? 22 :
+            mRank === 4 ? 16 :
+              mRank === 5 ? 12 :
+                mRank === 6 ? 6 :
+                  mRank === 7 ? 4 : 0;
 
     const tierMultiplier = tier === 1 ? 1.30 : tier === 2 ? 1.10 : tier === 3 ? 0.95 : 0.80;
 
@@ -2287,7 +2310,7 @@ export function evaluateFixturePrediction(params: {
     // CALIBRACIÓN ESTRICTA ÉLITE 80%:
     // Solo califica como ÉLITE si la probabilidad es de verdad >= 75.0% y la cuota está en la zona segura (1.25 a 1.80)
     const isElite = (probPercent >= 75.0 && item.odds <= 1.80 && item.odds >= 1.25) ||
-                    (probPercent >= 72.0 && smartScore >= 90 && item.odds <= 1.60 && item.odds >= 1.25);
+      (probPercent >= 72.0 && smartScore >= 90 && item.odds <= 1.60 && item.odds >= 1.25);
 
     let pickBadge: "bomba" | "valor" | "estandar" | "elite" = "estandar";
 
@@ -2334,15 +2357,15 @@ export function evaluateFixturePrediction(params: {
       pickBadge,
       isElite,
       isDestacado: (item.market === "Córners" || item.market === "Over Córners") ? probPercent >= 70 :
-                   (item.market === "Ambos Equipos Anotan") ? probPercent >= 58 :
-                   (item.market === "Over 2.5 Goles") ? probPercent >= 60 :
-                   (item.market === "Ganador Local") ? probPercent >= 58 :
-                   (item.market === "Ganador Visitante") ? probPercent >= 60 : false,
+        (item.market === "Ambos Equipos Anotan") ? probPercent >= 58 :
+          (item.market === "Over 2.5 Goles") ? probPercent >= 60 :
+            (item.market === "Ganador Local") ? probPercent >= 58 :
+              (item.market === "Ganador Visitante") ? probPercent >= 60 : false,
       destacadoRule: (item.market === "Córners" || item.market === "Over Córners") && probPercent >= 70 ? "Alta de Córners (≥ 70%)" :
-                     (item.market === "Ambos Equipos Anotan") && probPercent >= 58 ? "Ambos Anotan (≥ 58%)" :
-                     (item.market === "Over 2.5 Goles") && probPercent >= 60 ? "Alta de Goles (≥ 60%)" :
-                     (item.market === "Ganador Local") && probPercent >= 58 ? "Ganador Local (≥ 58%)" :
-                     (item.market === "Ganador Visitante") && probPercent >= 60 ? "Ganador Visitante (≥ 60%)" : undefined,
+        (item.market === "Ambos Equipos Anotan") && probPercent >= 58 ? "Ambos Anotan (≥ 58%)" :
+          (item.market === "Over 2.5 Goles") && probPercent >= 60 ? "Alta de Goles (≥ 60%)" :
+            (item.market === "Ganador Local") && probPercent >= 58 ? "Ganador Local (≥ 58%)" :
+              (item.market === "Ganador Visitante") && probPercent >= 60 ? "Ganador Visitante (≥ 60%)" : undefined,
       smartScore,
       explanation: generateExplanation(
         homeTeam,
@@ -2542,13 +2565,13 @@ export function getFeaturedDailyPicks(predictions: MarketOpportunity[]): {
 
   const smartPick = smartPickCandidates.length > 0
     ? {
-        ...smartPickCandidates[0],
-        confidence: (smartPickCandidates[0].probability >= 70
-          ? "Muy Alta"
-          : smartPickCandidates[0].probability >= 58
+      ...smartPickCandidates[0],
+      confidence: (smartPickCandidates[0].probability >= 70
+        ? "Muy Alta"
+        : smartPickCandidates[0].probability >= 58
           ? "Alta"
           : "Media") as "Muy Alta" | "Alta" | "Media" | "Moderada",
-      }
+    }
     : null;
 
   // 2. Valor del Día (Highest +EV with solid conviction, distinct from SmartPick match)

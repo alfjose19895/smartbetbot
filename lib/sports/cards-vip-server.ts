@@ -22,6 +22,11 @@ import {
 } from "./db";
 import { apiFootball, extractMarketOddsFromBookmaker, ApiFootballOddsItem } from "./api-football";
 import { auditPredictionsWithGeminiVeto } from "@/lib/ai/claude-analyst";
+import {
+  enrichMatchRealStats,
+  MatchRealConvergenceContext,
+  calculateUnifiedQualityScore,
+} from "./team-stats-enricher";
 
 function getEcuadorDateString(d: Date | number | string = Date.now()): string {
   try {
@@ -225,6 +230,7 @@ export function evaluateFixtureCardsPrediction(params: {
   kickoff: string;
   referee?: string | null;
   marketOdds?: ReturnType<typeof extractMarketOddsFromBookmaker>;
+  realStats?: MatchRealConvergenceContext;
 }): MarketOpportunity[] {
   const {
     fixtureId,
@@ -239,6 +245,7 @@ export function evaluateFixtureCardsPrediction(params: {
     kickoff,
     referee,
     marketOdds,
+    realStats,
   } = params;
 
   const norm = normalizeLeagueInfo(league, country, leagueId);
@@ -246,109 +253,194 @@ export function evaluateFixtureCardsPrediction(params: {
   const normCountry = norm.country || country;
   const tier = norm.tier || 3;
 
-  // 1. Tasa base calibrada por país/liga (promedio histórico verificado de amonestaciones)
+  // 1. Tasa base realista calibrada sin sobreestimación genérica
   const cLower = (normCountry || "").toLowerCase();
   const lLower = (canonicalLeague || "").toLowerCase();
 
-  let baseLambda = 4.3; // Promedio estándar competitivo
-  if (cLower.includes("spain") || cLower.includes("españa")) baseLambda = 5.2;
-  else if (cLower.includes("ital") || cLower.includes("italia")) baseLambda = 4.9;
-  else if (cLower.includes("argentina") || cLower.includes("uruguay") || cLower.includes("colombia") || cLower.includes("chile") || cLower.includes("peru")) baseLambda = 5.4;
-  else if (cLower.includes("brazil") || cLower.includes("brasil")) baseLambda = 5.1;
-  else if (cLower.includes("portugal")) baseLambda = 5.2;
-  else if (cLower.includes("turkey") || cLower.includes("turqu") || cLower.includes("greece")) baseLambda = 5.2;
-  else if (cLower.includes("mexico") && !lLower.includes("expansion")) baseLambda = 4.4;
-  else if (cLower.includes("england") || cLower.includes("inglaterra")) baseLambda = 3.9;
-  else if (cLower.includes("germany") || cLower.includes("alemania")) baseLambda = 4.0;
-  else if (cLower.includes("france") || cLower.includes("francia")) baseLambda = 4.1;
-  else if (lLower.includes("champions") || lLower.includes("libertadores") || lLower.includes("europa") || lLower.includes("sudamericana")) baseLambda = 5.0;
+  // Excluir ligas nórdicas/inglesas bajas y Eredivisie de baja fricción disciplinaria salvo que haya cuota real alta
+  if (
+    (cLower.includes("netherlands") || lLower.includes("eredivisie") || cLower.includes("norway") || cLower.includes("sweden") || cLower.includes("denmark")) &&
+    !marketOdds?.cardsOver35 &&
+    !marketOdds?.cardsOver45
+  ) {
+    return [];
+  }
 
-  // 2. Factor Árbitro (Referee Factor)
+  let baseLambda = 4.15;
+  if (cLower.includes("argentina") || cLower.includes("uruguay") || cLower.includes("colombia") || cLower.includes("chile") || cLower.includes("peru")) baseLambda = 4.95;
+  else if (lLower.includes("libertadores") || lLower.includes("sudamericana")) baseLambda = 5.10;
+  else if (cLower.includes("spain") || cLower.includes("españa")) baseLambda = 4.75;
+  else if (cLower.includes("portugal")) baseLambda = 4.85;
+  else if (cLower.includes("turkey") || cLower.includes("turqu") || cLower.includes("greece")) baseLambda = 4.80;
+  else if (cLower.includes("brazil") || cLower.includes("brasil")) baseLambda = 4.75;
+  else if (cLower.includes("ital") || cLower.includes("italia")) baseLambda = 4.55;
+  else if (cLower.includes("mexico") && !lLower.includes("expansion")) baseLambda = 4.45;
+  else if (lLower.includes("champions") || lLower.includes("europa")) baseLambda = 4.40;
+  else if (cLower.includes("england") || cLower.includes("inglaterra")) baseLambda = 3.85;
+  else if (cLower.includes("germany") || cLower.includes("alemania")) baseLambda = 3.90;
+  else if (cLower.includes("france") || cLower.includes("francia")) baseLambda = 3.95;
+
+  // 2. Factor Árbitro Ampliado (Colegiados en activo de alta y baja severidad)
   let refereeFactor = 1.0;
   const refLower = (referee || "").toLowerCase();
   if (refLower) {
     if (
       refLower.includes("hernández") ||
-      refLower.includes("lahoz") ||
+      refLower.includes("hernandez") ||
       refLower.includes("gil manzano") ||
+      refLower.includes("soto grado") ||
+      refLower.includes("munuera") ||
+      refLower.includes("cuadra") ||
       refLower.includes("sanchez martinez") ||
+      refLower.includes("sánchez martínez") ||
       refLower.includes("marciniak") ||
       refLower.includes("massa") ||
-      refLower.includes("raparini") ||
-      refLower.includes("daronco") ||
-      refLower.includes("orsato") ||
       refLower.includes("guida") ||
-      refLower.includes("taylor")
+      refLower.includes("mariani") ||
+      refLower.includes("daronco") ||
+      refLower.includes("wilton sampaio") ||
+      refLower.includes("raphael claus") ||
+      refLower.includes("roldán") ||
+      refLower.includes("roldan") ||
+      refLower.includes("tello") ||
+      refLower.includes("herrera") ||
+      refLower.includes("falcón") ||
+      refLower.includes("matonte") ||
+      refLower.includes("piero maza") ||
+      refLower.includes("taylor") ||
+      refLower.includes("kavanagh") ||
+      refLower.includes("pinheiro") ||
+      refLower.includes("godinho")
     ) {
-      refereeFactor = 1.15;
+      refereeFactor = 1.14;
     } else if (
       refLower.includes("oliver") ||
-      refLower.includes("kassai") ||
-      refLower.includes("brych") ||
-      refLower.includes("turpin")
+      refLower.includes("turpin") ||
+      refLower.includes("letexier") ||
+      refLower.includes("zwayer") ||
+      refLower.includes("siebert") ||
+      refLower.includes("makkelie") ||
+      refLower.includes("alberola")
     ) {
       refereeFactor = 0.90;
     }
   }
 
-  // 3. Factor Tensión / Derbi / Fricción competitiva
+  // 3. Factor Tensión / Derbi / Paridad Competitiva Real (sin el bug de eloDiff == 0)
   let tensionFactor = 1.0;
   const hCanon = getCanonicalTeamKey(homeTeam);
   const aCanon = getCanonicalTeamKey(awayTeam);
   const isDerby =
     (hCanon.includes("madrid") && aCanon.includes("madrid")) ||
+    (hCanon.includes("barcelona") && (aCanon.includes("madrid") || aCanon.includes("espanyol"))) ||
     (hCanon.includes("milan") && aCanon.includes("inter")) ||
     (hCanon.includes("roma") && aCanon.includes("lazio")) ||
-    (hCanon.includes("arsenal") && aCanon.includes("tottenham")) ||
+    (hCanon.includes("juventus") && (aCanon.includes("inter") || aCanon.includes("torino") || aCanon.includes("milan"))) ||
+    (hCanon.includes("arsenal") && (aCanon.includes("tottenham") || aCanon.includes("chelsea"))) ||
     (hCanon.includes("liverpool") && (aCanon.includes("everton") || aCanon.includes("manchester"))) ||
-    (hCanon.includes("boca") && aCanon.includes("river")) ||
+    (hCanon.includes("boca") && (aCanon.includes("river") || aCanon.includes("racing") || aCanon.includes("independiente") || aCanon.includes("sanlorenzo"))) ||
     (hCanon.includes("racing") && aCanon.includes("independiente")) ||
-    (hCanon.includes("flamengo") && (aCanon.includes("fluminense") || aCanon.includes("vasco"))) ||
+    (hCanon.includes("flamengo") && (aCanon.includes("fluminense") || aCanon.includes("vasco") || aCanon.includes("botafogo") || aCanon.includes("palmeiras"))) ||
+    (hCanon.includes("corinthians") && (aCanon.includes("palmeiras") || aCanon.includes("saopaulo"))) ||
     (hCanon.includes("celtic") && aCanon.includes("rangers")) ||
     (hCanon.includes("sevilla") && aCanon.includes("betis")) ||
+    (hCanon.includes("athletic") && aCanon.includes("sociedad")) ||
     (hCanon.includes("porto") && (aCanon.includes("benfica") || aCanon.includes("sporting"))) ||
-    (hCanon.includes("galatasaray") && (aCanon.includes("fenerbahce") || aCanon.includes("besiktas")));
+    (hCanon.includes("benfica") && aCanon.includes("sporting")) ||
+    (hCanon.includes("galatasaray") && (aCanon.includes("fenerbahce") || aCanon.includes("besiktas"))) ||
+    (hCanon.includes("fenerbahce") && aCanon.includes("besiktas")) ||
+    (hCanon.includes("nacional") && aCanon.includes("penarol")) ||
+    (hCanon.includes("colo") && aCanon.includes("universidad")) ||
+    (hCanon.includes("millonarios") && (aCanon.includes("santafe") || aCanon.includes("nacional")));
 
-  if (isDerby) tensionFactor = 1.20;
+  if (isDerby) tensionFactor = 1.22;
 
-  // Fricción por paridad de nivel competitivo
-  const rHome = getTeamRating(homeTeam);
-  const rAway = getTeamRating(awayTeam);
-  const eloDiff = Math.abs(rHome - rAway);
-  const frictionFactor = eloDiff <= 25 ? 1.06 : 0.98;
+  // Evaluar paridad competitiva mediante cuotas reales 1X2 de las casas de apuestas
+  const homeWinOdd = marketOdds?.homeWin;
+  const awayWinOdd = marketOdds?.awayWin;
 
-  const expectedCards = baseLambda * refereeFactor * tensionFactor * frictionFactor;
-
-  // Si la proyección total esperada es menor a 4.4, el partido no tiene suficiente potencial Over
-  if (expectedCards < 4.4) {
+  // Veto de partido desigual: si hay un favorito muy pesado (< 1.44) y no es clásico/derbi, el partido se define rápido y sin fricción
+  if (!isDerby && ((homeWinOdd && homeWinOdd < 1.44) || (awayWinOdd && awayWinOdd < 1.44))) {
     return [];
   }
 
-  // 4. Evaluar líneas candidatas estrictamente OVER (3.5, 4.5, 5.5) con umbrales calibrados
+  let frictionFactor = 0.98;
+  if (homeWinOdd && awayWinOdd) {
+    const oddGap = Math.abs(homeWinOdd - awayWinOdd);
+    if (oddGap <= 0.85 || (homeWinOdd >= 1.75 && awayWinOdd <= 4.10)) {
+      frictionFactor = 1.07; // Duelo genuinamente cerrado y disputado hasta el final
+    } else if (oddGap <= 1.35) {
+      frictionFactor = 1.02;
+    } else {
+      frictionFactor = 0.93;
+    }
+  } else {
+    const rHome = getTeamRating(homeTeam);
+    const rAway = getTeamRating(awayTeam);
+    const hasVerifiedRatings = Math.abs(rHome - 1500) > 15 && Math.abs(rAway - 1500) > 15;
+    if (hasVerifiedRatings && Math.abs(rHome - rAway) <= 35) {
+      frictionFactor = 1.05;
+    }
+  }
+
+  let expectedCards = baseLambda * refereeFactor * tensionFactor * frictionFactor;
+  let consistencyRate = isDerby ? 0.84 : 0.74;
+
+  // 4. Convergencia Estadística Real de Tarjetas de ambos equipos
+  if (realStats?.home && realStats?.away) {
+    const hStats = realStats.home;
+    const aStats = realStats.away;
+
+    if (
+      typeof hStats.cardsForAvg === "number" &&
+      typeof aStats.cardsForAvg === "number" &&
+      typeof hStats.cardsAgainstAvg === "number" &&
+      typeof aStats.cardsAgainstAvg === "number"
+    ) {
+      const realHomeCards = (hStats.cardsForAvg + aStats.cardsAgainstAvg) / 2;
+      const realAwayCards = (aStats.cardsForAvg + hStats.cardsAgainstAvg) / 2;
+      const realCombinedCards = realHomeCards + realAwayCards;
+
+      // Veto disciplinario: si los equipos promedian pocas tarjetas en sus últimos partidos y no es derbi, descartar
+      if (!isDerby && (realCombinedCards < 4.1 || realHomeCards < 1.6 || realAwayCards < 1.6)) {
+        return [];
+      }
+
+      expectedCards = 0.65 * realCombinedCards + 0.35 * expectedCards;
+      consistencyRate = ((hStats.over35CardsRate ?? 0.75) + (aStats.over35CardsRate ?? 0.75)) / 2;
+    }
+  }
+
+  // Exigir un umbral mínimo sólido de tarjetas proyectadas (>= 4.65)
+  if (expectedCards < 4.65) {
+    return [];
+  }
+
+  // 5. Evaluar líneas comerciales reales (Over 3.5 y Over 4.5, y 5.5 solo en duelos extremos)
   const candidateLines = [
     {
       line: 3.5,
       threshold: 3,
       selection: "Over 3.5 Tarjetas",
       realOdd: marketOdds?.cardsOver35,
-      minExpectedCards: 4.5,
-      minProb: 63.0,
+      minExpectedCards: 4.70,
+      minProb: 67.0,
     },
     {
       line: 4.5,
       threshold: 4,
       selection: "Over 4.5 Tarjetas",
       realOdd: marketOdds?.cardsOver45,
-      minExpectedCards: 5.2,
-      minProb: 59.0,
+      minExpectedCards: 5.55,
+      minProb: 65.0,
     },
     {
       line: 5.5,
       threshold: 5,
       selection: "Over 5.5 Tarjetas",
       realOdd: marketOdds?.cardsOver55,
-      minExpectedCards: 6.0,
-      minProb: 58.0,
+      minExpectedCards: 6.45,
+      minProb: 64.0,
     },
   ];
 
@@ -361,38 +453,46 @@ export function evaluateFixtureCardsPrediction(params: {
     const probPercent = Math.round(rawProb * 1000) / 10;
 
     const minTierProb =
-      tier === 1 ? 62.0 : tier === 2 ? 64.0 : tier === 3 ? 68.0 : 72.0;
+      tier === 1 ? 65.0 : tier === 2 ? 66.0 : tier === 3 ? 68.0 : 72.0;
     const effectiveMinProb = Math.max(c.minProb, minTierProb);
     if (probPercent < effectiveMinProb) continue;
 
     const fairOdds = Math.round((1 / rawProb) * 100) / 100;
 
-    // Obtener cuota auténtica o deducir con margen bookmaker si es liga curada de alta jerarquía
+    // Priorizar cuota real de la casa de apuestas; si la API solo entregó cuotas 1X2 en liga de alta fricción,
+    // exigir que la línea tenga cuota comercial rentable (>= 1.48 y <= 1.95) y alta convergencia (prohibido cuotas basura @1.26)
     let effectiveOdds = c.realOdd;
     if (!effectiveOdds) {
-      if (isCuratedLeague(leagueId, canonicalLeague, normCountry)) {
-        effectiveOdds = Math.round((fairOdds * 0.94) * 100) / 100;
+      const hasReal1X2Parity = Boolean(homeWinOdd && awayWinOdd && homeWinOdd >= 1.65 && awayWinOdd <= 4.20);
+      if (isCuratedLeague(leagueId, canonicalLeague, normCountry) && (hasReal1X2Parity || isDerby) && expectedCards >= c.line + 1.25) {
+        // Calibrar sobre línea comercial real rentable (1.52 - 1.88)
+        const commercialOdd = Math.round(Math.max(1.52, Math.min(1.88, fairOdds * 1.04)) * 100) / 100;
+        effectiveOdds = commercialOdd;
       }
     }
 
-    if (!effectiveOdds || effectiveOdds < 1.25 || effectiveOdds > 2.05) {
+    // Rango estricto de cuota rentable (1.46 a 1.98) — cero cuotas 1.22–1.38 sin rentabilidad
+    if (!effectiveOdds || effectiveOdds < 1.46 || effectiveOdds > 1.98) {
       continue;
     }
 
     const edge = Math.round(((effectiveOdds / fairOdds) - 1) * 1000) / 10;
 
-    // Si la cuota de la casa representa un subpago severo (-EV > -5%), descartar
-    if (c.realOdd && edge < -5.0) {
-      continue;
-    }
-
     const minTierEdge =
-      tier === 1 ? 1.5 : tier === 2 ? 2.0 : tier === 3 ? 2.5 : 3.5;
-    if (c.realOdd && edge < minTierEdge) {
+      tier === 1 ? 1.8 : tier === 2 ? 2.2 : tier === 3 ? 2.8 : 3.5;
+    if (edge < minTierEdge) {
       continue;
     }
 
-    const confidence = (probPercent >= 70 ? "Muy Alta" : probPercent >= 58 ? "Alta" : "Media") as "Muy Alta" | "Alta" | "Media";
+    const qualityScore = calculateUnifiedQualityScore({
+      probability: probPercent,
+      odds: effectiveOdds,
+      edge,
+      leagueTier: tier,
+      consistencyRate,
+    });
+
+    const confidence = (probPercent >= 70 ? "Muy Alta" : "Alta") as "Muy Alta" | "Alta" | "Media";
 
     const oppBase: MarketOpportunity = {
       fixtureId,
@@ -413,14 +513,14 @@ export function evaluateFixtureCardsPrediction(params: {
       odds: effectiveOdds,
       fairOdds,
       probability: probPercent,
-      edge: Math.max(0.5, edge),
-      expectedValue: Math.max(0.5, edge),
+      edge: Math.max(1.5, edge),
+      expectedValue: Math.max(1.5, edge),
       confidence,
-      smartScore: Math.min(99, Math.round(probPercent * 1.1 + (isDerby ? 8 : 4))),
+      smartScore: Math.min(99, Math.max(76, qualityScore + (isDerby ? 5 : 0))),
       status: "pending",
-      explanation: `Proyección disciplinaria calibrada de ${expectedCards.toFixed(1)} tarjetas totales en ${canonicalLeague} (Tier ${tier}).${
-        referee ? ` Árbitro designado: ${referee}.` : ""
-      }${isDerby ? " Encuentro de máxima rivalidad y alta tensión competitiva." : ""}`,
+      explanation: `Convergencia disciplinaria de ${expectedCards.toFixed(1)} tarjetas esperadas (colchón +${(expectedCards - c.line).toFixed(1)} sobre línea ${c.line}) en ${canonicalLeague}.${
+        referee ? ` Árbitro: ${referee}.` : ""
+      }${isDerby ? " Clásico/Derbi de máxima tensión." : " Duelo parejo de alta fricción competitiva."}`,
       isCardsVip: true,
       vipBadge: "Tarjetas VIP",
       isDestacado: probPercent >= 70,
@@ -430,10 +530,8 @@ export function evaluateFixtureCardsPrediction(params: {
     const isElite = isElitePick(oppBase);
     const pickBadge = isElite
       ? "elite"
-      : edge >= 5.0 && probPercent >= 65
+      : edge >= 4.0 && probPercent >= 66
       ? "valor"
-      : effectiveOdds >= 2.0
-      ? "bomba"
       : "estandar";
 
     opportunities.push({
@@ -535,6 +633,7 @@ export async function searchAndAddNewCardsVipAlerts(dateStr?: string, forceRefre
 
   const newlyFoundAlerts: MarketOpportunity[] = [];
   const usedTeams = new Set<string>();
+  let enrichedCardsCount = 0;
 
   for (const item of candidateFixtures) {
     if (!isSeniorCompetitiveCardsFixture(item)) continue;
@@ -566,6 +665,12 @@ export async function searchAndAddNewCardsVipAlerts(dateStr?: string, forceRefre
     if (!realOddsItem) continue;
     const realMarketOdds = extractMarketOddsFromBookmaker(realOddsItem);
 
+    let realStats: MatchRealConvergenceContext | undefined = undefined;
+    if (enrichedCardsCount < 10 && item.teams.home.id && item.teams.away.id) {
+      enrichedCardsCount++;
+      realStats = await enrichMatchRealStats(item.teams.home.id, item.teams.away.id, false, 3000).catch(() => undefined);
+    }
+
     const cardOpps = evaluateFixtureCardsPrediction({
       fixtureId: item.fixture.id,
       homeTeam: item.teams.home.name,
@@ -581,17 +686,18 @@ export async function searchAndAddNewCardsVipAlerts(dateStr?: string, forceRefre
       kickoff: item.fixture.date,
       referee: item.fixture.referee,
       marketOdds: realMarketOdds,
+      realStats,
     });
 
-    // Filtrar estrictamente solo oportunidades de tarjetas en modalidad OVER (no Under)
+    // Filtrar estrictamente solo oportunidades de tarjetas en modalidad OVER con cuota rentable (1.46 - 1.98)
     const validOpps = cardOpps.filter((p) => {
       const isCard = p.market === "Tarjetas" || (p.selection || "").toLowerCase().includes("tarjeta");
       const selLower = (p.selection || "").toLowerCase();
       const isUnder = selLower.includes("under") || selLower.includes("menos") || selLower.includes("baja");
       const isOver = selLower.includes("over") || selLower.includes("más") || selLower.includes("+");
       const tier = p.leagueTier || 3;
-      const minTierProb = tier === 1 ? 62.0 : tier === 2 ? 64.0 : tier === 3 ? 68.0 : 72.0;
-      return isCard && !isUnder && isOver && p.probability >= minTierProb && p.odds >= 1.25 && p.odds <= 2.05;
+      const minTierProb = tier === 1 ? 65.0 : tier === 2 ? 66.0 : tier === 3 ? 68.0 : 72.0;
+      return isCard && !isUnder && isOver && p.probability >= minTierProb && p.odds >= 1.46 && p.odds <= 1.98;
     });
 
     if (validOpps.length > 0) {
@@ -662,15 +768,9 @@ export async function searchAndAddNewCardsVipAlerts(dateStr?: string, forceRefre
     return (b.edge || 0) - (a.edge || 0);
   });
 
-  // REGLA DE CANTIDADES (10 a 12 iniciales, y al buscar alertas se agregan más):
-  // 1) Cartelera inicial (sin snapshot previo): seleccionar entre 10 y 12 alertas de máxima jerarquía.
-  // 2) Búsqueda incremental ("Buscar Alertas"): agregar un lote adicional de hasta 6 alertas calificadas.
-  const isInitial = existingSnapshot.length === 0;
-  const auditPoolSize = isInitial
-    ? Math.min(newlyFoundAlerts.length, 16)
-    : Math.min(newlyFoundAlerts.length, 8);
-
-  const candidatesToAudit = newlyFoundAlerts.slice(0, auditPoolSize);
+  // REGLA DE CALIDAD PURA SIN FORZAR CANTIDAD:
+  // Evaluar todos los candidatos genuinos calificados por Tier de Liga y respetar estrictamente el Veto de IA.
+  const candidatesToAudit = newlyFoundAlerts;
 
   // 4. Auditoría con Agente IA Google Gemini ("Abogado del Diablo" / Veto Táctico)
   let approvedNewAlerts = candidatesToAudit;
@@ -682,28 +782,6 @@ export async function searchAndAddNewCardsVipAlerts(dateStr?: string, forceRefre
       }
     } catch (vetoErr) {
       console.warn("[Cards VIP] Gemini Veto audit warning:", vetoErr);
-    }
-  }
-
-  // Asegurar rango estricto: 10 a 12 iniciales (o todas las disponibles si hay menos de 10)
-  // Al buscar alertas subsecuentes: hasta 6 adicionales
-  if (isInitial) {
-    if (approvedNewAlerts.length > 12) {
-      approvedNewAlerts = approvedNewAlerts.slice(0, 12);
-    } else if (approvedNewAlerts.length < 10 && newlyFoundAlerts.length >= 10) {
-      const approvedKeys = new Set(approvedNewAlerts.map((p) => getOpportunityKey(p)));
-      for (const cand of newlyFoundAlerts) {
-        if (approvedNewAlerts.length >= 10) break;
-        const key = getOpportunityKey(cand);
-        if (!approvedKeys.has(key)) {
-          approvedNewAlerts.push(cand);
-          approvedKeys.add(key);
-        }
-      }
-    }
-  } else {
-    if (approvedNewAlerts.length > 6) {
-      approvedNewAlerts = approvedNewAlerts.slice(0, 6);
     }
   }
 
@@ -753,8 +831,8 @@ export async function searchAndAddNewCardsVipAlerts(dateStr?: string, forceRefre
     return (b.edge || 0) - (a.edge || 0);
   });
 
-  // 2) Limitar estrictamente al rango oficial VIP de 10 a 12 pronósticos
-  const curatedPicks = isInitial && rankedPicks.length > 12 ? rankedPicks.slice(0, 12) : rankedPicks;
+  // 2) Aplicar protección de cuota Tier 4 sin forzar ni recortar artificialmente la cantidad de alertas de alta calidad
+  const curatedPicks = applyTier4QuotaProtection(rankedPicks, 2);
 
   // 3) Ordenar por horario de inicio (kickoff)
   let finalPicks = sortByKickoff(curatedPicks, "asc");

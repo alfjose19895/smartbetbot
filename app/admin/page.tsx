@@ -373,7 +373,7 @@ function AdminControlContent() {
           oddsRanges: selectedMcpOddsRanges.length > 0 ? selectedMcpOddsRanges : undefined,
           market: selectedMcpMarkets.length === 1 ? selectedMcpMarkets[0] : undefined,
           confidence: selectedMcpOddsRanges.length === 1 ? selectedMcpOddsRanges[0] : undefined,
-          autoPublish: true,
+          autoPublish: false,
         }),
       });
 
@@ -383,15 +383,6 @@ function AdminControlContent() {
         setMcpResults(predictions);
         setMcpMetrics(data.metrics || null);
         setSelectedPickKeys(new Set(predictions.map((p: MarketOpportunity) => p.id || `${p.fixtureId || 0}-${p.homeTeam}-${p.awayTeam}-${p.market}`)));
-
-        if (predictions.length > 0) {
-          await handlePublishMcpPicks(predictions);
-          setPublishFeedback({
-            type: "success",
-            text: `✓ ${predictions.length} pronósticos encontrados y sincronizados en Dashboard y Alertas Pre-Match con etiqueta 🤖 Agente MCP.`,
-          });
-          setTimeout(() => setPublishFeedback(null), 8000);
-        }
       }
     } catch (err) {
       console.error("MCP Admin search error:", err);

@@ -21,6 +21,7 @@ import {
 } from "./db";
 import { apiFootball, extractMarketOddsFromBookmaker, ApiFootballOddsItem } from "./api-football";
 import { auditPredictionsWithGeminiVeto } from "@/lib/ai/claude-analyst";
+import { enrichMatchRealStats, calculateUnifiedQualityScore } from "./team-stats-enricher";
 
 function getEcuadorDateString(d: Date | number | string = Date.now()): string {
   try {
@@ -75,10 +76,10 @@ export async function saveHomeWinVipSnapshotAsync(
     const pickBadge = isElite
       ? "elite"
       : p.odds >= 2.0 && (p.edge || 0) >= 2.0
-      ? "bomba"
-      : (p.probability >= 65.0 && (p.edge || 0) >= 2.0) || (p.odds >= 1.65 && (p.edge || 0) >= 1.5)
-      ? "valor"
-      : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge) ? p.pickBadge : "estandar");
+        ? "bomba"
+        : (p.probability >= 65.0 && (p.edge || 0) >= 2.0) || (p.odds >= 1.65 && (p.edge || 0) >= 1.5)
+          ? "valor"
+          : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge) ? p.pickBadge : "estandar");
 
     return {
       ...p,
@@ -252,6 +253,7 @@ export async function searchAndAddNewHomeWinVipAlerts(dateStr?: string, forceRef
 
   const newlyFoundAlerts: MarketOpportunity[] = [];
   const usedTeams = new Set<string>();
+  let enrichedCount = 0;
 
   for (const item of candidateFixtures) {
     if (!isSeniorCompetitiveHomeWinFixture(item)) continue;
@@ -271,7 +273,8 @@ export async function searchAndAddNewHomeWinVipAlerts(dateStr?: string, forceRef
     const realOddsItem = oddsMapByFixture[item.fixture.id];
     if (!realOddsItem) continue;
     const realMarketOdds = extractMarketOddsFromBookmaker(realOddsItem);
-    if (!realMarketOdds || !realMarketOdds.homeWin || realMarketOdds.homeWin < 1.15 || realMarketOdds.homeWin > 3.00) continue;
+    // RANGO COMERCIAL RENTABLE Y ALTA PROBABILIDAD: 1.40 a 1.95 (descarta micro-cuotas @1.22 y apuestas volátiles > 1.95)
+    if (!realMarketOdds || !realMarketOdds.homeWin || realMarketOdds.homeWin < 1.40 || realMarketOdds.homeWin > 1.95) continue;
 
     const shortStatus = item.fixture.status?.short || "NS";
     const isFinished = ["FT", "AET", "PEN"].includes(shortStatus);
@@ -318,32 +321,66 @@ export async function searchAndAddNewHomeWinVipAlerts(dateStr?: string, forceRef
       targetMarket: "Ganador Local",
     });
 
-    // Filtrar estrictamente solo pronósticos de GANADOR LOCAL con regla estricta >= 58% de probabilidad/convicción
+    // Filtrar estrictamente solo pronósticos de GANADOR LOCAL con probabilidad >= 61.5% y cuota rentable 1.40 - 1.95
     const homeWinOpps = opportunities.filter((p) => {
       const isHomeWin = p.market === "Ganador Local" || (p.selection || "").toLowerCase() === "1" || (p.selection || "").toLowerCase() === (p.homeTeam || "").toLowerCase();
-      // REGLA ESTRICTA DE CONVICCIÓN: PROBABILIDAD >= 58%
-      const meetsStrictProb = p.probability >= 58.0;
-      return isHomeWin && meetsStrictProb && p.odds >= 1.15 && p.odds <= 3.50;
+      const meetsStrictProb = p.probability >= 61.5;
+      return isHomeWin && meetsStrictProb && p.odds >= 1.40 && p.odds <= 1.95;
     });
 
     if (homeWinOpps.length > 0) {
       homeWinOpps.sort((a, b) => b.probability - a.probability || b.edge - a.edge);
       const bestHomeWin = homeWinOpps[0];
 
-      const isElite = isElitePick(bestHomeWin);
+      // Validación de Racha Real (Regla 4/5 de invicto/victoria local y debilidad visitante)
+      let realConsistencyRate = 0.74;
+      let probAdjustment = 0;
+      let formTag = "";
+
+      if (enrichedCount < 14 && item.teams?.home?.id && item.teams?.away?.id) {
+        enrichedCount++;
+        const realStats = await enrichMatchRealStats(item.teams.home.id, item.teams.away.id, false, 2800).catch(() => ({ home: null, away: null }));
+        if (realStats.home && realStats.away && realStats.home.matchesAnalyzed >= 3 && realStats.away.matchesAnalyzed >= 3) {
+          // Descartar locales en mala racha (< 40% victorias o >= 60% empates) o visitantes invictos (>= 80% unbeaten)
+          if (
+            realStats.home.winRate < 0.40 ||
+            realStats.home.drawRate >= 0.60 ||
+            (realStats.away.unbeatenRate >= 0.85 && realStats.away.winRate >= 0.60)
+          ) {
+            continue;
+          }
+          realConsistencyRate = (realStats.home.winRate * 0.55 + realStats.home.unbeatenRate * 0.25 + realStats.away.lossRate * 0.20);
+          if (realStats.home.winRate >= 0.60 && realStats.home.unbeatenRate >= 0.80) {
+            probAdjustment = 2.0;
+            formTag = ` | Racha Local Real: ${Math.round(realStats.home.winRate * 5)}/5 victorias (${Math.round(realStats.home.unbeatenRate * 5)}/5 invicto)`;
+          }
+        }
+      }
+
+      const finalProb = Number(Math.min(79.0, bestHomeWin.probability + probAdjustment).toFixed(1));
+      const unifiedScore = calculateUnifiedQualityScore({
+        probability: finalProb,
+        odds: bestHomeWin.odds,
+        edge: bestHomeWin.edge || 0,
+        consistencyRate: realConsistencyRate,
+        leagueTier: bestHomeWin.leagueTier || 3,
+      });
+
+      const isElite = isElitePick(bestHomeWin) || unifiedScore >= 78;
       let pickBadge: "elite" | "valor" | "bomba" | "estandar" = "estandar";
       if (isElite) {
         pickBadge = "elite";
-      } else if (bestHomeWin.odds >= 2.00 && (bestHomeWin.edge || 0) >= 2.0) {
-        pickBadge = "bomba";
-      } else if (bestHomeWin.probability >= 65.0 && (bestHomeWin.edge || 0) >= 2.0) {
+      } else if (finalProb >= 64.0 && (bestHomeWin.edge || 0) >= 2.0) {
         pickBadge = "valor";
-      } else if (bestHomeWin.odds >= 1.65 && (bestHomeWin.edge || 0) >= 1.5) {
+      } else if (bestHomeWin.odds >= 1.55 && (bestHomeWin.edge || 0) >= 1.5) {
         pickBadge = "valor";
       }
 
       const taggedPick: MarketOpportunity = {
         ...bestHomeWin,
+        probability: finalProb,
+        smartScore: unifiedScore,
+        explanation: formTag ? `${bestHomeWin.explanation}${formTag}` : bestHomeWin.explanation,
         sport: "home_win_vip" as any,
         source: "home_win_vip",
         isHomeWinVip: true,
@@ -357,8 +394,8 @@ export async function searchAndAddNewHomeWinVipAlerts(dateStr?: string, forceRef
         profit,
         result: isFinished ? (matchStatus === "won" ? "WON" : "LOST") : undefined,
         isDestacado: true,
-        destacadoRule: "Ganador Local (≥ 58%)",
-        confidence: bestHomeWin.probability >= 68 ? "Muy Alta" : "Alta",
+        destacadoRule: "Ganador Local Rentable (≥ 62%)",
+        confidence: finalProb >= 68 ? "Muy Alta" : "Alta",
         isNewlyDiscovered: matchStatus === "pending",
         addedAt: new Date().toISOString(),
       };
@@ -394,10 +431,10 @@ export async function searchAndAddNewHomeWinVipAlerts(dateStr?: string, forceRef
     const pickBadge = isElite
       ? "elite"
       : p.odds >= 2.0 && (p.edge || 0) >= 2.0
-      ? "bomba"
-      : (p.probability >= 65.0 && (p.edge || 0) >= 2.0) || (p.odds >= 1.65 && (p.edge || 0) >= 1.5)
-      ? "valor"
-      : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge) ? p.pickBadge : "estandar");
+        ? "bomba"
+        : (p.probability >= 65.0 && (p.edge || 0) >= 2.0) || (p.odds >= 1.65 && (p.edge || 0) >= 1.5)
+          ? "valor"
+          : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge) ? p.pickBadge : "estandar");
 
     const key = getOpportunityKey(p);
     mergedMap.set(key, {
@@ -501,10 +538,10 @@ export async function getHomeWinVipSlate(dateStr?: string, forceRefresh = false)
       const pickBadge = isElite
         ? "elite"
         : p.odds >= 2.0 && (p.edge || 0) >= 2.0
-        ? "bomba"
-        : (p.probability >= 65.0 && (p.edge || 0) >= 2.0) || (p.odds >= 1.65 && (p.edge || 0) >= 1.5)
-        ? "valor"
-        : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge) ? p.pickBadge : "estandar");
+          ? "bomba"
+          : (p.probability >= 65.0 && (p.edge || 0) >= 2.0) || (p.odds >= 1.65 && (p.edge || 0) >= 1.5)
+            ? "valor"
+            : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge) ? p.pickBadge : "estandar");
 
       return {
         ...p,

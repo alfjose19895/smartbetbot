@@ -513,7 +513,15 @@ export class CornerLineSelectionEngine {
         const marginComponent = Math.min(10, Math.max(0, (expectedMargin + 1.0) * 3.0)); // 0-10 pts
         const dqComponent = dist.data_quality * 5; // 0-5 pts
 
-        smartScore = Math.round(probComponent + evComponent + edgeComponent + marginComponent + dqComponent);
+        // Commercial Profitability Bonus: strongly reward standard playable bookmaker lines (7.5, 8.5, 9.5) in profitable odds range (1.45 - 1.95)
+        const commercialBonus =
+          line >= 7.5 && line <= 9.5 && decimalOdds >= 1.45 && decimalOdds <= 1.95 && expectedMargin >= 0.8
+            ? 10
+            : line === 6.5
+            ? -8
+            : 0;
+
+        smartScore = Math.round(probComponent + evComponent + edgeComponent + marginComponent + dqComponent + commercialBonus);
         smartScore = Math.min(99, Math.max(65, smartScore));
       }
 
@@ -559,16 +567,23 @@ export class CornerLineSelectionEngine {
       };
     }
 
-    // Sort qualified by SmartScore descending (best balance)
-    qualified.sort((a, b) => b.smart_score - a.smart_score || (b.expected_value || 0) - (a.expected_value || 0));
+    // Sort qualified by SmartScore descending (best balance):
+    // - Prefer commercial lines (>= 7.5 with odds >= 1.42)
+    // - Allow Over 6.5 ONLY if it is the authentic main commercial line (odds >= 1.48 and high probability >= 0.68) or the sole line available
+    const hasCommercial75Plus = qualified.some((c) => c.line >= 7.5 && typeof c.decimal_odds === "number" && c.decimal_odds >= 1.42 && c.decimal_odds <= 1.92);
+    const poolForRecommendation = hasCommercial75Plus
+      ? qualified.filter((c) => c.line >= 7.5 || (c.line === 6.5 && typeof c.decimal_odds === "number" && c.decimal_odds >= 1.52 && c.model_probability >= 0.70))
+      : qualified;
 
-    const recommended = qualified[0];
+    poolForRecommendation.sort((a, b) => b.smart_score - a.smart_score || (b.expected_value || 0) - (a.expected_value || 0));
 
-    // Safer candidate: highest probability among qualified
-    const safer = [...qualified].sort((a, b) => b.model_probability - a.model_probability)[0];
+    const recommended = poolForRecommendation[0];
 
-    // Value candidate: highest EV among qualified
-    const value = [...qualified].sort((a, b) => (b.expected_value || 0) - (a.expected_value || 0))[0];
+    // Safer candidate: highest probability among commercial qualified (or all qualified if only 6.5 exists)
+    const safer = [...poolForRecommendation].sort((a, b) => b.model_probability - a.model_probability)[0];
+
+    // Value candidate: highest EV among commercial qualified
+    const value = [...poolForRecommendation].sort((a, b) => (b.expected_value || 0) - (a.expected_value || 0))[0];
 
     return {
       strategy: this.config.strategy_name,

@@ -415,6 +415,7 @@ class ApiFootballClient {
   private oddsByFixtureCache: Map<number, { timestamp: number; data: ApiFootballOddsItem | null }> = new Map();
   private fixturesByDateCache: Map<string, { timestamp: number; data: ApiFootballFixtureItem[] }> = new Map();
   private fixtureStatsCache: Map<number, { timestamp: number; data: ApiFootballFixtureStatistics[] }> = new Map();
+  private teamRecentFixturesCache: Map<string, { timestamp: number; data: ApiFootballFixtureItem[] }> = new Map();
   private nextAllowedRequestTime: number = 0;
   private readonly minRequestIntervalMs: number = 250;
 
@@ -630,12 +631,23 @@ class ApiFootballClient {
   }
 
   async getTeamRecentFixtures(teamId: number, last: number = 5, timezone: string = this.defaultTimezone): Promise<ApiFootballFixtureItem[]> {
-    return this.request<ApiFootballFixtureItem>("fixtures", {
+    if (!teamId) return [];
+    const cacheKey = `${teamId}::${last}::${timezone}`;
+    const cached = this.teamRecentFixturesCache.get(cacheKey);
+    const nowMs = Date.now();
+    if (cached && nowMs - cached.timestamp < 6 * 60 * 60 * 1000) {
+      return cached.data;
+    }
+    const res = await this.request<ApiFootballFixtureItem>("fixtures", {
       team: teamId,
       last,
       status: "FT",
       timezone,
     });
+    if (Array.isArray(res) && res.length > 0) {
+      this.teamRecentFixturesCache.set(cacheKey, { timestamp: nowMs, data: res });
+    }
+    return res;
   }
 
   async getTeamLastFixtures(teamId: number, last: number = 5, timezone: string = this.defaultTimezone): Promise<ApiFootballFixtureItem[]> {

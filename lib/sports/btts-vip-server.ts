@@ -21,6 +21,11 @@ import {
 } from "./db";
 import { apiFootball, extractMarketOddsFromBookmaker, ApiFootballOddsItem } from "./api-football";
 import { auditPredictionsWithGeminiVeto } from "@/lib/ai/claude-analyst";
+import {
+  enrichMatchRealStats,
+  MatchRealConvergenceContext,
+  calculateUnifiedQualityScore,
+} from "./team-stats-enricher";
 
 function getEcuadorDateString(d: Date | number | string = Date.now()): string {
   try {
@@ -153,6 +158,28 @@ function isSeniorCompetitiveBttsFixture(item: any): boolean {
   const norm = normalizeLeagueInfo(item.league?.name, item.league?.country, item.league?.id);
   if (norm.tier && norm.tier > 3) return false;
 
+  // VETO ANTI-COPAS DOMÉSTICAS Y LIGAS DEFENSIVAS (Donde BTTS tiene alta tasa de marcadores en cero)
+  const domesticKnockoutCupIds = new Set([45, 48, 143, 81, 137, 66, 90, 96, 101, 102, 294]);
+  if (item.league?.id && domesticKnockoutCupIds.has(Number(item.league.id))) return false;
+  if (
+    legName.includes("pokal") ||
+    legName.includes("fa cup") ||
+    legName.includes("carabao") ||
+    legName.includes("copa del rey") ||
+    legName.includes("coppa italia") ||
+    legName.includes("coupe de france") ||
+    legName.includes("beker") ||
+    legName.includes("taça") ||
+    legName.includes("ligue 2") ||
+    legName.includes("serie b") ||
+    legName.includes("la liga 2") ||
+    legName.includes("segunda") ||
+    legName.includes("primera a") ||
+    legName.includes("profesional argentina")
+  ) {
+    return false;
+  }
+
   return true;
 }
 
@@ -240,6 +267,7 @@ export async function searchAndAddNewBttsVipAlerts(dateStr?: string, forceRefres
 
   const newlyFoundAlerts: MarketOpportunity[] = [];
   const usedTeams = new Set<string>();
+  let enrichedBttsCount = 0;
 
   for (const item of candidateFixtures) {
     if (!isSeniorCompetitiveBttsFixture(item)) continue;
@@ -259,7 +287,17 @@ export async function searchAndAddNewBttsVipAlerts(dateStr?: string, forceRefres
     const realOddsItem = oddsMapByFixture[item.fixture.id];
     if (!realOddsItem) continue;
     const realMarketOdds = extractMarketOddsFromBookmaker(realOddsItem);
-    if (!realMarketOdds || !realMarketOdds.bttsYes || realMarketOdds.bttsYes < 1.20 || realMarketOdds.bttsYes > 2.60) continue;
+    // Rango de cuota comercial rentable (1.48 a 1.96)
+    if (!realMarketOdds || !realMarketOdds.bttsYes || realMarketOdds.bttsYes < 1.48 || realMarketOdds.bttsYes > 1.96) continue;
+
+    // Veto de asimetría de súper favorito: Si hay un favorito extremo (< 1.42), suele ganar 2-0 o 3-0 sin recibir gol
+    if ((realMarketOdds.homeWin && realMarketOdds.homeWin < 1.42) || (realMarketOdds.awayWin && realMarketOdds.awayWin < 1.42)) {
+      continue;
+    }
+    // Veto de partido cerrado Under: Si el Over 2.5 se paga > 2.02, el mercado proyecta escasez de goles
+    if (realMarketOdds.over25 && realMarketOdds.over25 > 2.02) {
+      continue;
+    }
 
     const shortStatus = item.fixture.status?.short || "NS";
     const isFinished = ["FT", "AET", "PEN"].includes(shortStatus);
@@ -289,6 +327,38 @@ export async function searchAndAddNewBttsVipAlerts(dateStr?: string, forceRefres
       currentScore = `${item.goals?.home ?? 0} - ${item.goals?.away ?? 0}`;
     }
 
+    // Convergencia real de goles (Regla 4/5): verificar que ambos equipos anoten con regularidad reciente
+    let realStats: MatchRealConvergenceContext | undefined = undefined;
+    if (enrichedBttsCount < 14 && item.teams.home.id && item.teams.away.id) {
+      enrichedBttsCount++;
+      realStats = await enrichMatchRealStats(item.teams.home.id, item.teams.away.id, false, 3000).catch(() => undefined);
+    }
+
+    let consistencyRate = 0.72;
+    let realProbBonus = 0;
+    if (realStats?.hasGoalsTelemetry && realStats.home && realStats.away) {
+      const hStats = realStats.home;
+      const aStats = realStats.away;
+
+      // Veto inmediato si alguno de los dos equipos no logra anotar con frecuencia (< 60%) o acumula múltiples 0-0
+      if (hStats.scoredRate < 0.60 || aStats.scoredRate < 0.60) {
+        continue;
+      }
+      if (hStats.recentZeroZeroCount >= 2 || aStats.recentZeroZeroCount >= 2) {
+        continue;
+      }
+      if (hStats.goalsForAvg < 1.0 || aStats.goalsForAvg < 0.95) {
+        continue;
+      }
+
+      consistencyRate = (hStats.scoredRate + aStats.scoredRate + hStats.bttsRate + aStats.bttsRate) / 4;
+      if (hStats.scoredRate >= 0.80 && aStats.scoredRate >= 0.80) {
+        realProbBonus = 3.5; // Ambos anotaron en >= 4 de sus últimos 5 partidos (Regla 4/5 cumplida)
+      } else if (consistencyRate >= 0.70) {
+        realProbBonus = 1.8;
+      }
+    }
+
     const opportunities = evaluateFixturePrediction({
       fixtureId: item.fixture.id,
       homeTeam: item.teams.home.name,
@@ -306,12 +376,33 @@ export async function searchAndAddNewBttsVipAlerts(dateStr?: string, forceRefres
       targetMarket: "Ambos Equipos Anotan",
     });
 
-    // Filtrar estrictamente solo pronósticos de AMBOS EQUIPOS ANOTAN con regla calibrada >= 56% de probabilidad/convicción (>= 58% Destacado)
-    const bttsOpps = opportunities.filter((p) => {
-      const isBtts = p.market === "Ambos Equipos Anotan" || (p.selection || "").toLowerCase().includes("ambos") || (p.selection || "").toLowerCase().includes("sí") || (p.selection || "").toLowerCase().includes("si");
-      const meetsStrictProb = p.probability >= 56.0;
-      return isBtts && meetsStrictProb && p.odds >= 1.20 && p.odds <= 2.60;
-    });
+    // Filtrar estrictamente solo pronósticos de AMBOS EQUIPOS ANOTAN con regla calibrada >= 60% de probabilidad y cuota rentable (1.48 - 1.96)
+    const bttsOpps = opportunities
+      .map((p) => {
+        if (realProbBonus > 0) {
+          const adjProb = Math.min(82.0, Math.round((p.probability + realProbBonus) * 10) / 10);
+          const adjEdge = Math.round(((adjProb / 100 - 1 / p.odds) * 100) * 10) / 10;
+          const qScore = calculateUnifiedQualityScore({
+            probability: adjProb,
+            odds: p.odds,
+            edge: Math.max(1.5, adjEdge),
+            leagueTier: p.leagueTier,
+            consistencyRate,
+          });
+          return {
+            ...p,
+            probability: adjProb,
+            edge: Math.max(p.edge, adjEdge),
+            smartScore: Math.max(p.smartScore || 80, qScore),
+          };
+        }
+        return p;
+      })
+      .filter((p) => {
+        const isBtts = p.market === "Ambos Equipos Anotan" || (p.selection || "").toLowerCase().includes("ambos") || (p.selection || "").toLowerCase().includes("sí") || (p.selection || "").toLowerCase().includes("si");
+        const meetsStrictProb = p.probability >= 60.0;
+        return isBtts && meetsStrictProb && p.odds >= 1.48 && p.odds <= 1.96;
+      });
 
     if (bttsOpps.length > 0) {
       // Ordenar por probabilidad descendente y mayor edge
@@ -372,12 +463,7 @@ export async function searchAndAddNewBttsVipAlerts(dateStr?: string, forceRefres
     return (b.edge || 0) - (a.edge || 0);
   });
 
-  const isInitial = existingSnapshot.length === 0;
-  const auditPoolSize = isInitial
-    ? Math.min(newlyFoundAlerts.length, 16)
-    : Math.min(newlyFoundAlerts.length, 8);
-
-  const candidatesToAudit = newlyFoundAlerts.slice(0, auditPoolSize);
+  const candidatesToAudit = newlyFoundAlerts;
 
   // 4. Auditoría con Agente IA Google Gemini con límite de tiempo para no bloquear el servidor
   let approvedNewAlerts = candidatesToAudit;
@@ -391,28 +477,6 @@ export async function searchAndAddNewBttsVipAlerts(dateStr?: string, forceRefres
       }
     } catch (vetoErr) {
       console.warn("[Ambos Anotan VIP] Gemini Veto audit warning:", vetoErr);
-    }
-  }
-
-  // Asegurar rango estricto: 10 a 12 iniciales (o todas las disponibles si hay menos de 10)
-  // Al buscar alertas subsecuentes: hasta 6 adicionales
-  if (isInitial) {
-    if (approvedNewAlerts.length > 12) {
-      // slice limit removed
-    } else if (approvedNewAlerts.length < 10 && newlyFoundAlerts.length >= 10) {
-      const approvedKeys = new Set(approvedNewAlerts.map((p) => getOpportunityKey(p)));
-      for (const cand of newlyFoundAlerts) {
-        if (approvedNewAlerts.length >= 10) break;
-        const key = getOpportunityKey(cand);
-        if (!approvedKeys.has(key)) {
-          approvedNewAlerts.push(cand);
-          approvedKeys.add(key);
-        }
-      }
-    }
-  } else {
-    if (approvedNewAlerts.length > 6) {
-      approvedNewAlerts = approvedNewAlerts.slice(0, 6);
     }
   }
 

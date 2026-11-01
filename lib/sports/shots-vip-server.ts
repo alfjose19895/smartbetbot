@@ -22,6 +22,11 @@ import {
 } from "./db";
 import { apiFootball, extractMarketOddsFromBookmaker, ApiFootballOddsItem } from "./api-football";
 import { auditPredictionsWithGeminiVeto } from "@/lib/ai/claude-analyst";
+import {
+  enrichMatchRealStats,
+  MatchRealConvergenceContext,
+  calculateUnifiedQualityScore,
+} from "./team-stats-enricher";
 
 function getEcuadorDateString(d: Date | number | string = Date.now()): string {
   try {
@@ -86,10 +91,10 @@ export async function saveShotsVipSnapshotAsync(
       : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge)
         ? p.pickBadge
         : (p.edge || 0) >= 4.0
-        ? "valor"
-        : (p.odds || 0) >= 2.0
-        ? "bomba"
-        : "estandar");
+          ? "valor"
+          : (p.odds || 0) >= 2.0
+            ? "bomba"
+            : "estandar");
     return {
       ...p,
       sport: "shots_vip" as any,
@@ -225,6 +230,7 @@ export function evaluateFixtureShotsPrediction(params: {
   leagueLogo?: string;
   kickoff: string;
   marketOdds?: ReturnType<typeof extractMarketOddsFromBookmaker>;
+  realStats?: MatchRealConvergenceContext;
 }): MarketOpportunity[] {
   const {
     fixtureId,
@@ -238,6 +244,7 @@ export function evaluateFixtureShotsPrediction(params: {
     leagueLogo,
     kickoff,
     marketOdds,
+    realStats,
   } = params;
 
   const norm = normalizeLeagueInfo(league, country, leagueId);
@@ -248,45 +255,64 @@ export function evaluateFixtureShotsPrediction(params: {
   const cLower = (normCountry || "").toLowerCase();
   const lLower = (canonicalLeague || "").toLowerCase();
 
-  // 1. Tasa base calibrada por liga/país para Tiros al Arco (SOG) y Disparos Totales
-  let baseSOG = 8.6;
+  // Excluir ligas de ritmo lento / ultradefensivas para Disparos VIP
+  if (
+    lLower.includes("ligue 2") ||
+    lLower.includes("serie b") ||
+    lLower.includes("la liga 2") ||
+    lLower.includes("segunda") ||
+    lLower.includes("primera a")
+  ) {
+    return [];
+  }
+
+  // 1. Tasa base realista calibrada sin inflación artificial
+  let baseSOG = 8.4;
   let baseTotalShots = 22.8;
 
   if (cLower.includes("england") || lLower.includes("premier")) {
-    baseSOG = 9.8;
-    baseTotalShots = 25.5;
-  } else if (cLower.includes("germany") || lLower.includes("bundesliga")) {
-    baseSOG = 9.6;
-    baseTotalShots = 25.0;
-  } else if (lLower.includes("champions") || lLower.includes("europa") || lLower.includes("libertadores")) {
-    baseSOG = 9.5;
+    baseSOG = 9.2;
     baseTotalShots = 24.8;
-  } else if (cLower.includes("spain") || lLower.includes("laliga")) {
-    baseSOG = 8.8;
-    baseTotalShots = 23.4;
-  } else if (cLower.includes("ital") || lLower.includes("serie a")) {
-    baseSOG = 8.9;
-    baseTotalShots = 23.6;
-  } else if (cLower.includes("argentina") || cLower.includes("brazil")) {
-    baseSOG = 9.0;
-    baseTotalShots = 23.8;
-  } else if (cLower.includes("netherlands") || lLower.includes("eredivisie") || cLower.includes("belgium")) {
-    baseSOG = 9.4;
+  } else if (cLower.includes("germany") || lLower.includes("bundesliga")) {
+    baseSOG = 9.3;
+    baseTotalShots = 24.9;
+  } else if (lLower.includes("champions") || lLower.includes("europa")) {
+    baseSOG = 9.1;
     baseTotalShots = 24.5;
+  } else if (cLower.includes("netherlands") || lLower.includes("eredivisie") || cLower.includes("belgium")) {
+    baseSOG = 9.2;
+    baseTotalShots = 24.6;
+  } else if (cLower.includes("spain") || lLower.includes("laliga")) {
+    baseSOG = 8.5;
+    baseTotalShots = 23.2;
+  } else if (cLower.includes("ital") || lLower.includes("serie a")) {
+    baseSOG = 8.6;
+    baseTotalShots = 23.4;
+  } else if (cLower.includes("brazil")) {
+    baseSOG = 8.8;
+    baseTotalShots = 23.8;
+  } else if (cLower.includes("argentina")) {
+    baseSOG = 8.1;
+    baseTotalShots = 22.2;
   }
 
-  // 2. Factor ofensivo dinámico basado en ratings ELO y clubes de alto volumen
+  // 2. Factor ofensivo moderado y penalización por asimetría extrema (goleada temprana que mata el ritmo)
   const rHome = getTeamRating(homeTeam);
   const rAway = getTeamRating(awayTeam);
   const avgRating = (rHome + rAway) / 2;
 
   let qualityMultiplier = 1.0;
   if (avgRating >= 1830) {
-    qualityMultiplier = 1.14; // Élite europea ofensiva
+    qualityMultiplier = 1.06;
   } else if (avgRating >= 1740) {
-    qualityMultiplier = 1.07; // Ritmo competitivo alto
+    qualityMultiplier = 1.03;
   } else if (avgRating < 1560) {
-    qualityMultiplier = 0.88; // Clubes de bajo promedio ofensivo / ligas menores
+    qualityMultiplier = 0.90;
+  }
+
+  // Filtro táctico anti-posesión estéril: si hay súper favorito (< 1.30), suele anotar rápido y dormir el partido
+  if ((marketOdds?.homeWin && marketOdds.homeWin < 1.30) || (marketOdds?.awayWin && marketOdds.awayWin < 1.30)) {
+    qualityMultiplier *= 0.92;
   }
 
   const hCanon = getCanonicalTeamKey(homeTeam);
@@ -295,23 +321,82 @@ export function evaluateFixtureShotsPrediction(params: {
   const highVolumeTeams = [
     "manchestercity", "liverpool", "arsenal", "realmadrid", "barcelona",
     "bayernmunchen", "bayerleverkusen", "borussiadortmund", "psg",
-    "inter", "atalanta", "napoli", "juventus", "riverplate", "bocajuniors",
-    "flamengo", "palmeiras", "chelsea", "tottenham", "astonvilla"
+    "inter", "atalanta", "napoli", "chelsea", "tottenham", "astonvilla"
   ];
 
   let volumeMultiplier = qualityMultiplier;
-  if (highVolumeTeams.some((t) => hCanon.includes(t))) volumeMultiplier += 0.08;
-  if (highVolumeTeams.some((t) => aCanon.includes(t))) volumeMultiplier += 0.05;
+  if (highVolumeTeams.some((t) => hCanon.includes(t))) volumeMultiplier += 0.04;
+  if (highVolumeTeams.some((t) => aCanon.includes(t))) volumeMultiplier += 0.03;
 
-  const expectedSOG = baseSOG * volumeMultiplier;
-  const expectedTotalShots = baseTotalShots * volumeMultiplier;
+  let expectedSOG = baseSOG * volumeMultiplier;
+  let expectedTotalShots = baseTotalShots * volumeMultiplier;
+  let consistencyRate = 0.72;
 
-  // Si no hay suficiente volumen proyectado en el duelo, descartar
-  if (expectedSOG < 8.2 && expectedTotalShots < 22.5) {
+  // 3. Convergencia Estadística Real de los últimos partidos de ambos equipos
+  if (realStats?.home && realStats?.away) {
+    const hStats = realStats.home;
+    const aStats = realStats.away;
+
+    // Veto inmediato si alguno de los dos equipos viene de >= 2 empates 0-0 recientes o nula producción ofensiva
+    if (hStats.recentZeroZeroCount >= 2 || aStats.recentZeroZeroCount >= 2) {
+      return [];
+    }
+    if (hStats.goalsForAvg < 0.85 && aStats.goalsForAvg < 0.85) {
+      return [];
+    }
+
+    // A) Si tenemos telemetría real de disparos en sus últimos partidos
+    if (
+      typeof hStats.shotsOnGoalForAvg === "number" &&
+      typeof aStats.shotsOnGoalForAvg === "number" &&
+      typeof hStats.shotsOnGoalAgainstAvg === "number" &&
+      typeof aStats.shotsOnGoalAgainstAvg === "number"
+    ) {
+      const realHomeSog = (hStats.shotsOnGoalForAvg + aStats.shotsOnGoalAgainstAvg) / 2;
+      const realAwaySog = (aStats.shotsOnGoalForAvg + hStats.shotsOnGoalAgainstAvg) / 2;
+      const realCombinedSog = realHomeSog + realAwaySog;
+
+      // Veto de convergencia: Ambos equipos deben aportar volumen real al arco (mínimo 3.4 cada uno y 8.6 combinado)
+      if (realCombinedSog < 8.4 || realHomeSog < 3.5 || realAwaySog < 3.2) {
+        return [];
+      }
+
+      expectedSOG = 0.68 * realCombinedSog + 0.32 * expectedSOG;
+      consistencyRate = ((hStats.over75SogRate ?? 0.75) + (aStats.over75SogRate ?? 0.75)) / 2;
+    } else if (realStats.hasGoalsTelemetry) {
+      // B) Ajuste por caudal real de goles recientes (correlación directa con volumen de remates)
+      const combinedGoalsAvg = (hStats.totalGoalsAvg + aStats.totalGoalsAvg) / 2;
+      if (combinedGoalsAvg < 2.2) {
+        return [];
+      }
+      const goalsPaceFactor = Math.max(0.90, Math.min(1.12, combinedGoalsAvg / 2.75));
+      expectedSOG *= goalsPaceFactor;
+      expectedTotalShots *= goalsPaceFactor;
+      consistencyRate = (hStats.over25Rate + aStats.over25Rate) / 2;
+    }
+
+    if (
+      typeof hStats.totalShotsForAvg === "number" &&
+      typeof aStats.totalShotsForAvg === "number" &&
+      typeof hStats.totalShotsAgainstAvg === "number" &&
+      typeof aStats.totalShotsAgainstAvg === "number"
+    ) {
+      const realHomeShots = (hStats.totalShotsForAvg + aStats.totalShotsAgainstAvg) / 2;
+      const realAwayShots = (aStats.totalShotsForAvg + hStats.totalShotsAgainstAvg) / 2;
+      const realCombinedShots = realHomeShots + realAwayShots;
+      if (realCombinedShots < 22.0) {
+        return [];
+      }
+      expectedTotalShots = 0.68 * realCombinedShots + 0.32 * expectedTotalShots;
+    }
+  }
+
+  // Si no hay suficiente volumen proyectado real en el duelo, descartar
+  if (expectedSOG < 8.8 && expectedTotalShots < 23.5) {
     return [];
   }
 
-  // 3. Evaluar líneas reales proporcionadas por las casas de apuestas (Tiros a Puerta y Disparos Totales)
+  // 4. Evaluar líneas comerciales reales de las casas de apuestas con colchón de seguridad estricto
   const candidateLines: Array<{
     type: "sog" | "total";
     line: number;
@@ -323,11 +408,13 @@ export function evaluateFixtureShotsPrediction(params: {
     minProb: number;
   }> = [];
 
-  // A) Procesar líneas reales de Tiros a Puerta (SOG)
+  // A) Procesar líneas reales de Tiros a Puerta (SOG: idealmente 7.5 y 8.5, máximo 9.5 si el volumen es altísimo)
   if (marketOdds?.shotsOnGoalLines && Object.keys(marketOdds.shotsOnGoalLines).length > 0) {
     for (const [lineStr, oddsObj] of Object.entries(marketOdds.shotsOnGoalLines)) {
       const lineNum = parseFloat(lineStr);
-      if (oddsObj.over && oddsObj.over >= 1.25 && oddsObj.over <= 2.25) {
+      // Descartar líneas extremas de alta varianza (> 9.5 tiros a puerta)
+      if (lineNum > 9.5 || lineNum < 6.5) continue;
+      if (oddsObj.over && oddsObj.over >= 1.42 && oddsObj.over <= 1.98) {
         candidateLines.push({
           type: "sog",
           line: lineNum,
@@ -335,29 +422,30 @@ export function evaluateFixtureShotsPrediction(params: {
           selection: `Over ${lineNum} Tiros a Puerta`,
           realOdd: oddsObj.over,
           lambda: expectedSOG,
-          minExpected: lineNum * 0.90,
-          minProb: 55.0,
+          // Colchón de seguridad real: exigir al menos +1.05 tiros esperados por encima de la línea
+          minExpected: lineNum + 1.05,
+          minProb: lineNum >= 9.5 ? 66.0 : 64.0,
         });
       }
     }
   } else {
-    // Compatibilidad con cuotas directas legacy
-    if (marketOdds?.shotsOnGoalOver75 && marketOdds.shotsOnGoalOver75 >= 1.25 && marketOdds.shotsOnGoalOver75 <= 2.25) {
-      candidateLines.push({ type: "sog", line: 7.5, threshold: 7, selection: "Over 7.5 Tiros a Puerta", realOdd: marketOdds.shotsOnGoalOver75, lambda: expectedSOG, minExpected: 6.8, minProb: 62.0 });
+    if (marketOdds?.shotsOnGoalOver75 && marketOdds.shotsOnGoalOver75 >= 1.42 && marketOdds.shotsOnGoalOver75 <= 1.98) {
+      candidateLines.push({ type: "sog", line: 7.5, threshold: 7, selection: "Over 7.5 Tiros a Puerta", realOdd: marketOdds.shotsOnGoalOver75, lambda: expectedSOG, minExpected: 8.6, minProb: 65.0 });
     }
-    if (marketOdds?.shotsOnGoalOver85 && marketOdds.shotsOnGoalOver85 >= 1.25 && marketOdds.shotsOnGoalOver85 <= 2.25) {
-      candidateLines.push({ type: "sog", line: 8.5, threshold: 8, selection: "Over 8.5 Tiros a Puerta", realOdd: marketOdds.shotsOnGoalOver85, lambda: expectedSOG, minExpected: 7.7, minProb: 58.0 });
+    if (marketOdds?.shotsOnGoalOver85 && marketOdds.shotsOnGoalOver85 >= 1.42 && marketOdds.shotsOnGoalOver85 <= 1.98) {
+      candidateLines.push({ type: "sog", line: 8.5, threshold: 8, selection: "Over 8.5 Tiros a Puerta", realOdd: marketOdds.shotsOnGoalOver85, lambda: expectedSOG, minExpected: 9.6, minProb: 64.0 });
     }
-    if (marketOdds?.shotsOnGoalOver95 && marketOdds.shotsOnGoalOver95 >= 1.25 && marketOdds.shotsOnGoalOver95 <= 2.25) {
-      candidateLines.push({ type: "sog", line: 9.5, threshold: 9, selection: "Over 9.5 Tiros a Puerta", realOdd: marketOdds.shotsOnGoalOver95, lambda: expectedSOG, minExpected: 8.6, minProb: 55.0 });
+    if (marketOdds?.shotsOnGoalOver95 && marketOdds.shotsOnGoalOver95 >= 1.48 && marketOdds.shotsOnGoalOver95 <= 1.95) {
+      candidateLines.push({ type: "sog", line: 9.5, threshold: 9, selection: "Over 9.5 Tiros a Puerta", realOdd: marketOdds.shotsOnGoalOver95, lambda: expectedSOG, minExpected: 10.7, minProb: 66.0 });
     }
   }
 
-  // B) Procesar líneas reales de Disparos Totales
+  // B) Procesar líneas reales de Disparos Totales (máximo 25.5 con colchón real de +2.0 disparos)
   if (marketOdds?.totalShotsLines && Object.keys(marketOdds.totalShotsLines).length > 0) {
     for (const [lineStr, oddsObj] of Object.entries(marketOdds.totalShotsLines)) {
       const lineNum = parseFloat(lineStr);
-      if (oddsObj.over && oddsObj.over >= 1.25 && oddsObj.over <= 2.25) {
+      if (lineNum > 25.5 || lineNum < 19.5) continue;
+      if (oddsObj.over && oddsObj.over >= 1.42 && oddsObj.over <= 1.98) {
         candidateLines.push({
           type: "total",
           line: lineNum,
@@ -365,26 +453,24 @@ export function evaluateFixtureShotsPrediction(params: {
           selection: `Over ${lineNum} Disparos Totales`,
           realOdd: oddsObj.over,
           lambda: expectedTotalShots,
-          minExpected: lineNum * 0.88,
-          minProb: 55.0,
+          minExpected: lineNum + 2.0,
+          minProb: 64.0,
         });
       }
     }
   } else {
-    // Compatibilidad con cuotas directas legacy
-    if (marketOdds?.totalShotsOver215 && marketOdds.totalShotsOver215 >= 1.25 && marketOdds.totalShotsOver215 <= 2.25) {
-      candidateLines.push({ type: "total", line: 21.5, threshold: 21, selection: "Over 21.5 Disparos Totales", realOdd: marketOdds.totalShotsOver215, lambda: expectedTotalShots, minExpected: 19.0, minProb: 65.0 });
+    if (marketOdds?.totalShotsOver215 && marketOdds.totalShotsOver215 >= 1.42 && marketOdds.totalShotsOver215 <= 1.98) {
+      candidateLines.push({ type: "total", line: 21.5, threshold: 21, selection: "Over 21.5 Disparos Totales", realOdd: marketOdds.totalShotsOver215, lambda: expectedTotalShots, minExpected: 23.6, minProb: 65.0 });
     }
-    if (marketOdds?.totalShotsOver235 && marketOdds.totalShotsOver235 >= 1.25 && marketOdds.totalShotsOver235 <= 2.25) {
-      candidateLines.push({ type: "total", line: 23.5, threshold: 23, selection: "Over 23.5 Disparos Totales", realOdd: marketOdds.totalShotsOver235, lambda: expectedTotalShots, minExpected: 21.0, minProb: 60.0 });
+    if (marketOdds?.totalShotsOver235 && marketOdds.totalShotsOver235 >= 1.42 && marketOdds.totalShotsOver235 <= 1.98) {
+      candidateLines.push({ type: "total", line: 23.5, threshold: 23, selection: "Over 23.5 Disparos Totales", realOdd: marketOdds.totalShotsOver235, lambda: expectedTotalShots, minExpected: 25.6, minProb: 64.0 });
     }
-    if (marketOdds?.totalShotsOver255 && marketOdds.totalShotsOver255 >= 1.25 && marketOdds.totalShotsOver255 <= 2.25) {
-      candidateLines.push({ type: "total", line: 25.5, threshold: 25, selection: "Over 25.5 Disparos Totales", realOdd: marketOdds.totalShotsOver255, lambda: expectedTotalShots, minExpected: 23.0, minProb: 55.0 });
+    if (marketOdds?.totalShotsOver255 && marketOdds.totalShotsOver255 >= 1.48 && marketOdds.totalShotsOver255 <= 1.95) {
+      candidateLines.push({ type: "total", line: 25.5, threshold: 25, selection: "Over 25.5 Disparos Totales", realOdd: marketOdds.totalShotsOver255, lambda: expectedTotalShots, minExpected: 27.8, minProb: 66.0 });
     }
   }
 
   // REGLA ESTRICTA: Exclusivamente pronosticar en base a cuota original real de casas de apuestas
-  // Queda estrictamente prohibido inventar cuotas artificiales o forzar rangos arbitrarios fijos
   if (candidateLines.length === 0) {
     return [];
   }
@@ -398,32 +484,35 @@ export function evaluateFixtureShotsPrediction(params: {
     const probPercent = Math.round(rawProb * 1000) / 10;
 
     const minTierProb =
-      tier === 1 ? 58.0 : tier === 2 ? 60.0 : tier === 3 ? 64.0 : 68.0;
+      tier === 1 ? 64.0 : tier === 2 ? 65.0 : tier === 3 ? 67.0 : 70.0;
     const effectiveMinProb = Math.max(c.minProb, minTierProb);
     if (probPercent < effectiveMinProb) continue;
 
     const fairOdds = Math.round((1 / rawProb) * 100) / 100;
 
-    // Cuota auténtica real obligatoria de la casa de apuestas
+    // Cuota auténtica real obligatoria en zona rentable (1.42 a 1.98)
     const effectiveOdds = c.realOdd;
-    if (!effectiveOdds || effectiveOdds < 1.25 || effectiveOdds > 2.05) {
+    if (!effectiveOdds || effectiveOdds < 1.42 || effectiveOdds > 1.98) {
       continue;
     }
 
     const edge = Math.round(((effectiveOdds / fairOdds) - 1) * 1000) / 10;
 
-    // Si la cuota de la casa representa un subpago severo (-EV > -5%), descartar
-    if (edge < -5.0) {
-      continue;
-    }
-
     const minTierEdge =
-      tier === 1 ? 1.5 : tier === 2 ? 2.0 : tier === 3 ? 2.5 : 3.5;
+      tier === 1 ? 2.0 : tier === 2 ? 2.5 : tier === 3 ? 3.5 : 4.5;
     if (edge < minTierEdge) {
       continue;
     }
 
-    const confidence = (probPercent >= 70 ? "Muy Alta" : probPercent >= 58 ? "Alta" : "Media") as "Muy Alta" | "Alta" | "Media";
+    const qualityScore = calculateUnifiedQualityScore({
+      probability: probPercent,
+      odds: effectiveOdds,
+      edge,
+      leagueTier: tier,
+      consistencyRate,
+    });
+
+    const confidence = (probPercent >= 70 ? "Muy Alta" : "Alta") as "Muy Alta" | "Alta" | "Media";
 
     const oppBase: MarketOpportunity = {
       fixtureId,
@@ -447,11 +536,10 @@ export function evaluateFixtureShotsPrediction(params: {
       edge: Math.max(0.5, edge),
       expectedValue: Math.max(0.5, edge),
       confidence,
-      smartScore: Math.min(99, Math.round(probPercent * 1.08 + (c.type === "sog" ? 6 : 2))),
+      smartScore: Math.min(99, Math.max(75, qualityScore)),
       status: "pending",
-      explanation: `Proyección ofensiva calibrada de ${c.lambda.toFixed(1)} ${
-        c.type === "sog" ? "tiros a puerta" : "disparos totales"
-      } en ${canonicalLeague} (Tier ${tier}). Ritmo dinámico de llegadas.`,
+      explanation: `Convergencia ofensiva real de ${c.lambda.toFixed(1)} ${c.type === "sog" ? "tiros a puerta" : "disparos totales"
+        } esperados (colchón +${(c.lambda - c.line).toFixed(1)} sobre línea ${c.line}) en ${canonicalLeague}. Cuota rentable @${effectiveOdds.toFixed(2)} con valor +${edge.toFixed(1)}%.`,
       isShotsVip: true,
       vipBadge: "Disparos VIP",
       isDestacado: probPercent >= 70,
@@ -461,11 +549,9 @@ export function evaluateFixtureShotsPrediction(params: {
     const isElite = isElitePick(oppBase);
     const pickBadge = isElite
       ? "elite"
-      : edge >= 5.0 && probPercent >= 65
-      ? "valor"
-      : effectiveOdds >= 2.0
-      ? "bomba"
-      : "estandar";
+      : edge >= 4.0 && probPercent >= 66
+        ? "valor"
+        : "estandar";
 
     opportunities.push({
       ...oppBase,
@@ -566,6 +652,7 @@ export async function searchAndAddNewShotsVipAlerts(dateStr?: string, forceRefre
 
   const newlyFoundAlerts: MarketOpportunity[] = [];
   const usedTeams = new Set<string>();
+  let enrichedShotsCount = 0;
 
   for (const item of candidateFixtures) {
     if (!isSeniorCompetitiveShotsFixture(item)) continue;
@@ -596,6 +683,23 @@ export async function searchAndAddNewShotsVipAlerts(dateStr?: string, forceRefre
     const realOddsItem = oddsMapByFixture[item.fixture.id];
     if (!realOddsItem) continue;
     const realMarketOdds = extractMarketOddsFromBookmaker(realOddsItem);
+    const hasShotOdds = Boolean(
+      (realMarketOdds.shotsOnGoalLines && Object.keys(realMarketOdds.shotsOnGoalLines).length > 0) ||
+      (realMarketOdds.totalShotsLines && Object.keys(realMarketOdds.totalShotsLines).length > 0) ||
+      realMarketOdds.shotsOnGoalOver75 ||
+      realMarketOdds.shotsOnGoalOver85 ||
+      realMarketOdds.shotsOnGoalOver95 ||
+      realMarketOdds.totalShotsOver215 ||
+      realMarketOdds.totalShotsOver235 ||
+      realMarketOdds.totalShotsOver255
+    );
+    if (!hasShotOdds) continue;
+
+    let realStats: MatchRealConvergenceContext | undefined = undefined;
+    if (enrichedShotsCount < 10 && item.teams.home.id && item.teams.away.id) {
+      enrichedShotsCount++;
+      realStats = await enrichMatchRealStats(item.teams.home.id, item.teams.away.id, false, 3000).catch(() => undefined);
+    }
 
     const shotOpps = evaluateFixtureShotsPrediction({
       fixtureId: item.fixture.id,
@@ -611,9 +715,10 @@ export async function searchAndAddNewShotsVipAlerts(dateStr?: string, forceRefre
       leagueLogo: item.league.logo,
       kickoff: item.fixture.date,
       marketOdds: realMarketOdds,
+      realStats,
     });
 
-    // Filtrar estrictamente solo oportunidades de disparos en modalidad OVER (no Under)
+    // Filtrar estrictamente solo oportunidades de disparos en modalidad OVER (no Under) con cuota rentable
     const validOpps = shotOpps.filter((p) => {
       const isShot =
         p.market === "Disparos" ||
@@ -623,8 +728,8 @@ export async function searchAndAddNewShotsVipAlerts(dateStr?: string, forceRefre
       const isUnder = selLower.includes("under") || selLower.includes("menos") || selLower.includes("baja");
       const isOver = selLower.includes("over") || selLower.includes("más") || selLower.includes("+");
       const tier = p.leagueTier || 3;
-      const minTierProb = tier === 1 ? 60.0 : tier === 2 ? 62.0 : tier === 3 ? 64.0 : 66.0;
-      return isShot && !isUnder && isOver && p.probability >= minTierProb && p.odds >= 1.25 && p.odds <= 2.20;
+      const minTierProb = tier === 1 ? 64.0 : tier === 2 ? 65.0 : tier === 3 ? 67.0 : 70.0;
+      return isShot && !isUnder && isOver && p.probability >= minTierProb && p.odds >= 1.42 && p.odds <= 1.98;
     });
 
     if (validOpps.length > 0) {
@@ -645,10 +750,10 @@ export async function searchAndAddNewShotsVipAlerts(dateStr?: string, forceRefre
         : (bestShot.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(bestShot.pickBadge)
           ? bestShot.pickBadge
           : (bestShot.edge || 0) >= 4.0
-          ? "valor"
-          : (bestShot.odds || 0) >= 2.0
-          ? "bomba"
-          : "estandar");
+            ? "valor"
+            : (bestShot.odds || 0) >= 2.0
+              ? "bomba"
+              : "estandar");
 
       const isInPlay = ["1H", "2H", "HT", "ET", "BT", "P", "LIVE", "INT", "SUSP"].includes(shortStatus);
       const isFinished = ["FT", "AET", "PEN"].includes(shortStatus);
@@ -695,15 +800,9 @@ export async function searchAndAddNewShotsVipAlerts(dateStr?: string, forceRefre
     return (b.edge || 0) - (a.edge || 0);
   });
 
-  // REGLA DE CANTIDADES (10 a 12 iniciales, y al buscar alertas se agregan más):
-  // 1) Cartelera inicial (sin snapshot previo): seleccionar entre 10 y 12 alertas de máxima jerarquía.
-  // 2) Búsqueda incremental ("Buscar Alertas"): agregar un lote adicional de hasta 6 alertas calificadas.
-  const isInitial = existingSnapshot.length === 0;
-  const auditPoolSize = isInitial
-    ? Math.min(newlyFoundAlerts.length, 16)
-    : Math.min(newlyFoundAlerts.length, 8);
-
-  const candidatesToAudit = newlyFoundAlerts.slice(0, auditPoolSize);
+  // REGLA DE CALIDAD PURA SIN FORZAR CANTIDAD:
+  // Evaluar todos los candidatos genuinos calificados por Tier de Liga y respetar estrictamente el Veto de IA.
+  const candidatesToAudit = newlyFoundAlerts;
 
   // 4. Auditoría con Agente IA Google Gemini ("Abogado del Diablo" / Veto Táctico)
   let approvedNewAlerts = candidatesToAudit;
@@ -718,28 +817,6 @@ export async function searchAndAddNewShotsVipAlerts(dateStr?: string, forceRefre
     }
   }
 
-  // Asegurar rango estricto: 10 a 12 iniciales (o todas las disponibles si hay menos de 10)
-  // Al buscar alertas subsecuentes: hasta 6 adicionales
-  if (isInitial) {
-    if (approvedNewAlerts.length > 12) {
-      approvedNewAlerts = approvedNewAlerts.slice(0, 12);
-    } else if (approvedNewAlerts.length < 10 && newlyFoundAlerts.length >= 10) {
-      const approvedKeys = new Set(approvedNewAlerts.map((p) => getOpportunityKey(p)));
-      for (const cand of newlyFoundAlerts) {
-        if (approvedNewAlerts.length >= 10) break;
-        const key = getOpportunityKey(cand);
-        if (!approvedKeys.has(key)) {
-          approvedNewAlerts.push(cand);
-          approvedKeys.add(key);
-        }
-      }
-    }
-  } else {
-    if (approvedNewAlerts.length > 6) {
-      approvedNewAlerts = approvedNewAlerts.slice(0, 6);
-    }
-  }
-
   // 5. Fusionar nuevas alertas con el snapshot existente
   const mergedMap = new Map<string, MarketOpportunity>();
   for (const p of existingSnapshot) {
@@ -751,10 +828,10 @@ export async function searchAndAddNewShotsVipAlerts(dateStr?: string, forceRefre
       : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge)
         ? p.pickBadge
         : (p.edge || 0) >= 4.0
-        ? "valor"
-        : (p.odds || 0) >= 2.0
-        ? "bomba"
-        : "estandar");
+          ? "valor"
+          : (p.odds || 0) >= 2.0
+            ? "bomba"
+            : "estandar");
     mergedMap.set(getOpportunityKey(p), {
       ...p,
       isShotsVip: true,
@@ -786,8 +863,8 @@ export async function searchAndAddNewShotsVipAlerts(dateStr?: string, forceRefre
     return (b.edge || 0) - (a.edge || 0);
   });
 
-  // 2) Limitar estrictamente al rango oficial VIP de 10 a 12 pronósticos
-  const curatedPicks = isInitial && rankedPicks.length > 12 ? rankedPicks.slice(0, 12) : rankedPicks;
+  // 2) Aplicar protección de cuota Tier 4 sin forzar ni recortar artificialmente la cantidad de alertas de alta calidad
+  const curatedPicks = applyTier4QuotaProtection(rankedPicks, 2);
 
   // 3) Ordenar por horario de inicio (kickoff)
   let finalPicks = sortByKickoff(curatedPicks, "asc");
@@ -915,10 +992,10 @@ export async function getShotsVipSlate(dateStr?: string, forceRefresh = false): 
         : (p.pickBadge && ["elite", "valor", "bomba", "estandar"].includes(p.pickBadge)
           ? p.pickBadge
           : (p.edge || 0) >= 4.0
-          ? "valor"
-          : (p.odds || 0) >= 2.0
-          ? "bomba"
-          : "estandar");
+            ? "valor"
+            : (p.odds || 0) >= 2.0
+              ? "bomba"
+              : "estandar");
 
       return {
         ...p,

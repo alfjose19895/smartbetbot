@@ -199,17 +199,20 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction, spor
     try {
       const taggedPicks = picksToPublish.map((p) => ({
         ...p,
-        explanation: `${p.explanation} [Agente MCP: ${aiAnalysis?.intent || "Análisis IA"}]`,
+        isMcp: true,
+        isMcpPick: true,
+        source: "mcp" as const,
+        pickBadge: (p.pickBadge || "mcp") as any,
+        explanation: p.explanation?.includes("[Agente MCP")
+          ? p.explanation
+          : `${p.explanation} [Agente MCP: ${aiAnalysis?.intent || "Análisis IA"}]`,
       }));
 
-      const res = await fetch("/api/cron/daily-alerts", {
+      const res = await fetch("/api/mcp/publish", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           predictions: taggedPicks,
-          targetDate: getEcuadorDateString(),
-          forceOverwrite: true,
-          includeInParlay: isParlay,
         }),
       });
 
@@ -218,6 +221,9 @@ export function McpCountryAgentModal({ isOpen, onClose, onSelectPrediction, spor
         const newPublished = new Set(publishedIds);
         picksToPublish.forEach((p) => { if (p.id) newPublished.add(p.id); });
         setPublishedIds(newPublished);
+        if (typeof window !== "undefined" && data.predictions) {
+          window.dispatchEvent(new CustomEvent("predictions-updated", { detail: data.predictions }));
+        }
         setPublishSuccessMessage(successMsg || data.message || `✓ ¡${taggedPicks.length} pronósticos publicados con éxito en el Dashboard!`);
       } else {
         setPublishSuccessMessage(data.error || "No se pudo guardar la publicación");

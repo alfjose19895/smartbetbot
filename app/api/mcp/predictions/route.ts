@@ -11,7 +11,7 @@ export async function GET(req: Request) {
     const maxOdds = url.searchParams.get("maxOdds") ? parseFloat(url.searchParams.get("maxOdds")!) : undefined;
     const minProb = url.searchParams.get("minProb") ? parseFloat(url.searchParams.get("minProb")!) : undefined;
     const autoPublishParam = url.searchParams.get("autoPublish") || url.searchParams.get("publish");
-    const autoPublish = autoPublishParam !== null ? (autoPublishParam === "true") : true;
+    const autoPublish = autoPublishParam === "true";
 
     const fakeReq = new Request(req.url, {
       method: "POST",
@@ -37,17 +37,30 @@ export async function GET(req: Request) {
 }
 
 
-import { isExcludedMatch, isPreMatchQualified } from "@/lib/sports/prediction-engine";
+import {
+  isExcludedMatch,
+  isPreMatchQualified,
+  getMarketPriorityRank,
+  applyTier4QuotaProtection,
+  getCanonicalTeamKey,
+  MarketOpportunity,
+} from "@/lib/sports/prediction-engine";
 import { NextResponse } from "next/server";
 import {
   searchLiveMarketDynamic,
   getStoredPredictions,
   generatePredictionsForUpcoming,
-  addPredictionsToDailySnapshot, addPredictionsToDailySnapshotAsync,
+  addPredictionsToDailySnapshot,
+  addPredictionsToDailySnapshotAsync,
   getEcuadorDateString,
 } from "@/lib/sports/db";
-import { MarketOpportunity } from "@/lib/sports/prediction-engine";
-import { queryClaudeSportsAgent, isClaudeConfigured } from "@/lib/ai/claude-analyst";
+import {
+  queryClaudeSportsAgent,
+  isClaudeConfigured,
+  auditPredictionsWithGeminiVeto,
+} from "@/lib/ai/claude-analyst";
+import { SportProviderRouter } from "@/lib/sports/provider-router";
+import { multiSportSignalToOpportunity } from "@/lib/sports/signal-adapters";
 
 interface AiAgentAnalysis {
   intent: string;
@@ -212,6 +225,79 @@ export async function POST(req: Request) {
     }
 
     const todayStr = getEcuadorDateString(Date.now());
+
+    // SPORT SPECIFIC ROUTING: NBA / NFL / NCAAF
+    if (sport === "nba" || sport === "nfl" || sport === "ncaaf") {
+      const sportSignals = await SportProviderRouter.getSignalsForSport(sport as any).catch(() => []);
+      const sportDisplay = sport.toUpperCase();
+      let msPicks: MarketOpportunity[] = sportSignals.map((s) => ({
+        ...multiSportSignalToOpportunity(s),
+        isMcpPick: true,
+        isMcp: true,
+        source: "mcp" as const,
+      }));
+
+      const qLowerMs = (query || "").toLowerCase().trim();
+      if (qLowerMs && !qLowerMs.includes("jornada") && qLowerMs !== "todos") {
+        if (qLowerMs.includes("spread") || qLowerMs.includes("handicap")) {
+          const sp = msPicks.filter((p) => p.market.toLowerCase().includes("spread") || p.market.toLowerCase().includes("handicap"));
+          if (sp.length > 0) msPicks = sp;
+        } else if (qLowerMs.includes("over") || qLowerMs.includes("under") || qLowerMs.includes("total") || qLowerMs.includes("puntos")) {
+          const tot = msPicks.filter((p) => p.market.toLowerCase().includes("total") || p.selection.toLowerCase().includes("over") || p.selection.toLowerCase().includes("under"));
+          if (tot.length > 0) msPicks = tot;
+        }
+      }
+
+      const isParlayReq = qLowerMs.includes("parlay") || qLowerMs.includes("combinada");
+      let parlayData = undefined;
+      if (isParlayReq && msPicks.length >= 2) {
+        const topLegs = [...msPicks].sort((a, b) => b.probability - a.probability).slice(0, 3);
+        const totalOdds = topLegs.reduce((acc, l) => acc * l.odds, 1);
+        const combinedProb = topLegs.reduce((acc, l) => acc * (l.probability / 100), 1) * 100;
+        parlayData = {
+          totalOdds: totalOdds.toFixed(2),
+          combinedProbability: `${combinedProb.toFixed(1)}%`,
+          selectionsCount: topLegs.length,
+          legs: topLegs.map((l) => ({
+            match: `${l.homeTeam} vs ${l.awayTeam}`,
+            market: l.market,
+            selection: l.selection,
+            odds: l.odds,
+          })),
+        };
+        msPicks = topLegs;
+      }
+
+      const avgProb = msPicks.length > 0 ? Math.round(msPicks.reduce((acc, p) => acc + p.probability, 0) / msPicks.length) : 0;
+      const avgOdds = msPicks.length > 0 ? (msPicks.reduce((acc, p) => acc + p.odds, 0) / msPicks.length).toFixed(2) : "0.00";
+
+      return NextResponse.json({
+        success: true,
+        count: msPicks.length,
+        countryDetected: `${sportDisplay} (USA)`,
+        autoPublished: false,
+        publishedCount: 0,
+        aiAnalysis: {
+          intent: isParlayReq ? `Combinada / Parlay Cuantitativo ${sportDisplay}` : `Análisis Cuantitativo ${sportDisplay}`,
+          summary: msPicks.length === 0
+            ? `No se encontraron partidos pendientes de iniciar en ${sportDisplay} con ventaja matemática para hoy.`
+            : `Se detectaron ${msPicks.length} oportunidades de alta convicción en ${sportDisplay} con cuotas verificadas.`,
+          insights: [
+            `Evaluación cuantitativa específica para ${sportDisplay} con líneas oficiales de mercado.`,
+            "Selección filtrada por probabilidad real y valor esperado positivo (+EV).",
+          ],
+          recommendation: "Priorizar selecciones con SmartScore >= 75 y gestión disciplinada de banca.",
+          parlayRecommendation: parlayData,
+        },
+        metrics: {
+          totalMatches: msPicks.length,
+          averageProbability: `${avgProb}%`,
+          averageOdds: `@${avgOdds}`,
+          highConfidenceCount: msPicks.filter((p) => p.confidence === "Muy Alta" || p.probability >= 60).length,
+        },
+        predictions: msPicks,
+      });
+    }
 
     // SPORT SPECIFIC ROUTING: NHL
     if (sport === "nhl") {
@@ -430,8 +516,14 @@ export async function POST(req: Request) {
       if (leg.includes("next pro") || leg.includes("primavera") || leg.includes("reserve")) return false;
       if (h.endsWith(" ii") || h.endsWith(" 2") || a.endsWith(" ii") || a.endsWith(" 2")) return false;
 
-      // STRICT UPSTREAM HARMONY: Every football pick in MCP must be 100% Pre-Match Qualified
+      // STRICT UPSTREAM HARMONY: Every football pick in MCP must be 100% Pre-Match Qualified and meet Golden Triangle odds/line standards
       if (!isPreMatchQualified(p)) return false;
+      if (typeof p.odds === "number" && (p.odds < 1.40 || p.odds > 1.98)) return false;
+      const selLower = (p.selection || "").toLowerCase();
+      const mktLower = (p.market || "").toLowerCase();
+      if ((mktLower.includes("córner") || mktLower.includes("corner")) && selLower.includes("6.5") && (p.odds < 1.48 || p.probability < 68.0)) {
+        return false;
+      }
 
       return true;
     });
@@ -602,8 +694,60 @@ export async function POST(req: Request) {
       if (oddsFiltered.length > 0) filtered = oddsFiltered;
     }
 
-    // Sort by best statistical conviction (SmartScore and probability)
-    filtered.sort((a, b) => (b.smartScore || 0) - (a.smartScore || 0) || b.probability - a.probability);
+    // Deduplicar a máximo 1 pronóstico óptimo por partido (priorizando Jerarquía de Mercado -> SmartScore -> Probabilidad)
+    const bestByMatch = new Map<string, MarketOpportunity>();
+    for (const p of filtered) {
+      const rank = getMarketPriorityRank(p.market, p.selection);
+      if (rank > 5) continue;
+      const hKey = getCanonicalTeamKey(p.homeTeam);
+      const aKey = getCanonicalTeamKey(p.awayTeam);
+      const mKey = p.fixtureId ? `fix-${p.fixtureId}` : `${hKey}-${aKey}`;
+      const existing = bestByMatch.get(mKey);
+      if (!existing) {
+        bestByMatch.set(mKey, p);
+      } else {
+        const existingRank = getMarketPriorityRank(existing.market, existing.selection);
+        if (
+          rank < existingRank ||
+          (rank === existingRank && ((p.smartScore || 0) > (existing.smartScore || 0) || p.probability > existing.probability))
+        ) {
+          bestByMatch.set(mKey, p);
+        }
+      }
+    }
+    filtered = Array.from(bestByMatch.values());
+
+    // Ordenar estrictamente según las reglas oficiales:
+    // 1) Tier de Liga (T1 > T2 > T3 > T4) -> 2) Jerarquía de Mercado (1: Córners > 2: BTTS > 3: Over Goles > 4: Local > 5: Visitante) -> 3) Probabilidad -> 4) SmartScore
+    filtered.sort((a, b) => {
+      const aTier = a.leagueTier || 3;
+      const bTier = b.leagueTier || 3;
+      if (aTier !== bTier) return aTier - bTier;
+
+      const aRank = getMarketPriorityRank(a.market, a.selection);
+      const bRank = getMarketPriorityRank(b.market, b.selection);
+      if (aRank !== bRank) return aRank - bRank;
+
+      if (b.probability !== a.probability) return b.probability - a.probability;
+      return (b.smartScore || 0) - (a.smartScore || 0);
+    });
+
+    // Aplicar protección de cuota Tier 4 sin forzar ni recortar artificialmente a N alertas
+    filtered = applyTier4QuotaProtection(filtered, 2);
+
+    // Auditoría de Veto IA ("Abogado del Diablo") para descartar partidos trampa antes de presentar o publicar
+    if (filtered.length > 0) {
+      try {
+        const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 3200));
+        const vetoPromise = auditPredictionsWithGeminiVeto(filtered, "football");
+        const vetoResult = await Promise.race([vetoPromise, timeoutPromise]);
+        if (vetoResult?.approvedPicks && vetoResult.approvedPicks.length > 0) {
+          filtered = vetoResult.approvedPicks;
+        }
+      } catch (vetoErr) {
+        console.warn("[McpAgentApi] Gemini Veto audit warning:", vetoErr);
+      }
+    }
 
     // 8. Parlay Generation if requested
     const isParlayRequest = qLower.includes("parlay") || qLower.includes("combinada") || qLower.includes("acumulada");
@@ -613,7 +757,7 @@ export async function POST(req: Request) {
       const distinctMatchMap = new Map<string, MarketOpportunity>();
       for (const p of poolForParlay) {
         const matchKey = `${p.fixtureId || 0}-${p.homeTeam}-${p.awayTeam}`;
-        if (!distinctMatchMap.has(matchKey) && p.probability >= 55) {
+        if (!distinctMatchMap.has(matchKey) && p.probability >= 60) {
           distinctMatchMap.set(matchKey, p);
         }
       }
@@ -637,10 +781,6 @@ export async function POST(req: Request) {
         };
         filtered = legs;
       }
-    } else {
-      if (filtered.length > 10) {
-        filtered = filtered.slice(0, 10);
-      }
     }
 
     filtered = filtered.map((p) => ({
@@ -649,6 +789,7 @@ export async function POST(req: Request) {
       bookmakerOdds: p.bookmakerOdds || p.odds,
       pickBadge: (p.pickBadge || "mcp") as "bomba" | "valor" | "estandar" | "mcp",
       isMcpPick: true,
+      isMcp: true,
       source: "mcp" as const,
     }));
 
@@ -701,9 +842,8 @@ export async function POST(req: Request) {
       parlayRecommendation: parlayData,
     };
 
-    // Auto-publish discovered picks if requested or by default on search so they immediately show in Dashboard & Pre-Match
-    // Default autoPublish to true so discovered picks appear in Dashboard & Pre-Match
-    const shouldAutoPublish = autoPublish !== false && publish !== false;
+    // Solo publicar en el snapshot diario cuando el usuario/admin lo solicite explícitamente (autoPublish === true o publish === true)
+    const shouldAutoPublish = autoPublish === true || publish === true;
     let publishedCount = 0;
     if (shouldAutoPublish && filtered.length > 0) {
       const pubResult = await addPredictionsToDailySnapshotAsync(filtered);

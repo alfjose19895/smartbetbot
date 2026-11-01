@@ -8,7 +8,7 @@ import { MarketOpportunity } from "@/lib/sports/prediction-engine";
  * Includes a resilient fallback analyst engine that executes deep statistical evaluation if the AI API is rate-limited.
  */
 
-const GEMINI_MODELS = ["gemini-3.5-flash-lite", "gemini-3.6-flash", "gemini-flash-latest"];
+const GEMINI_MODELS = ["gemini-3.8-flash", "gemini-flash-latest"];
 const CLAUDE_PRIMARY_MODEL = "claude-3-5-sonnet-latest";
 
 export type AiProvider = "gemini" | "claude" | "none";
@@ -860,18 +860,24 @@ Devuelve estrictamente un array JSON con el formato:
     let vetoReason: string | undefined = undefined;
     let riskScore = 20;
 
-    // Rule 1: High odds with low edge (negative EV trap)
-    if (p.odds >= 2.20 && (p.expectedValue || 0) < 1.0) {
+    // Rule 1: High-volatility lottery odds (> 2.02) or high odds with insufficient EV
+    if (p.odds > 2.02 || (p.odds >= 1.92 && (p.expectedValue || 0) < 1.5)) {
       vetoed = true;
-      vetoReason = "Cuota alta con valor esperado insuficiente (< +1.0% EV)";
+      vetoReason = "Cuota de alta volatilidad (> 2.00) o con valor esperado insuficiente para el estándar de precisión 80%+";
       riskScore = 85;
     }
 
-    // Rule 2: Ultra-low odds trap (< 1.30) with edge < 2%
-    if (p.odds < 1.30 && (p.edge || 0) < 2.0) {
+    // Rule 2: Ultra-low non-profitable odds (< 1.38) or non-commercial Over 6.5 Corners line
+    const selLower = (p.selection || "").toLowerCase();
+    const mktLower = (p.market || "").toLowerCase();
+    if (p.odds < 1.38 && (p.edge || 0) < 3.0) {
       vetoed = true;
-      vetoReason = "Cuota trampa baja sin ventaja de valor suficiente";
+      vetoReason = "Cuota sub-rentable (< 1.38) que destruye el ROI a largo plazo";
       riskScore = 80;
+    } else if ((mktLower.includes("córner") || mktLower.includes("corner")) && selLower.includes("6.5") && (p.odds < 1.48 || p.probability < 68.0)) {
+      vetoed = true;
+      vetoReason = "Sub-línea Over 6.5 Córners no comercial (cuota < 1.48); solo se admite 6.5 cuando es la línea principal de la casa";
+      riskScore = 82;
     }
 
     const audit: GeminiVetoAuditResult = {

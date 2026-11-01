@@ -21,6 +21,7 @@ import {
 } from "./db";
 import { apiFootball, extractMarketOddsFromBookmaker, ApiFootballOddsItem } from "./api-football";
 import { auditPredictionsWithGeminiVeto } from "@/lib/ai/claude-analyst";
+import { enrichMatchRealStats, calculateUnifiedQualityScore } from "./team-stats-enricher";
 
 function getEcuadorDateString(d: Date | number | string = Date.now()): string {
   try {
@@ -149,6 +150,33 @@ function isSeniorCompetitiveOver25Fixture(item: any): boolean {
   }
 
   if (isExcludedMatch(hName, aName)) return false;
+
+  // VETO ANTI-COPAS DOMÉSTICAS Y LIGAS DEFENSIVAS: Evitar rotación de copas y ligas de bajo promedio goleador
+  if (
+    legName.includes("dfb-pokal") ||
+    legName.includes("dfb pokal") ||
+    legName.includes("fa cup") ||
+    legName.includes("carabao cup") ||
+    legName.includes("efl cup") ||
+    legName.includes("copa del rey") ||
+    legName.includes("coppa italia") ||
+    legName.includes("coupe de france") ||
+    legName.includes("knvb beker") ||
+    legName.includes("taça de portugal") ||
+    legName.includes("taca de portugal") ||
+    legName.includes("copa argentina") ||
+    legName.includes("copa do brasil") ||
+    legName.includes("copa betplay") ||
+    legName.includes("ligue 2") ||
+    legName.includes("serie b") ||
+    legName.includes("segunda división") ||
+    legName.includes("la liga 2") ||
+    legName.includes("primera a") ||
+    legName.includes("liga profesional argentina")
+  ) {
+    return false;
+  }
+
   if (!isCuratedLeague(item.league?.id, item.league?.name, item.league?.country)) return false;
   const norm = normalizeLeagueInfo(item.league?.name, item.league?.country, item.league?.id);
   if (norm.tier && norm.tier > 3) return false;
@@ -240,6 +268,7 @@ export async function searchAndAddNewOver25VipAlerts(dateStr?: string, forceRefr
 
   const newlyFoundAlerts: MarketOpportunity[] = [];
   const usedTeams = new Set<string>();
+  let enrichedCount = 0;
 
   for (const item of candidateFixtures) {
     if (!isSeniorCompetitiveOver25Fixture(item)) continue;
@@ -259,7 +288,8 @@ export async function searchAndAddNewOver25VipAlerts(dateStr?: string, forceRefr
     const realOddsItem = oddsMapByFixture[item.fixture.id];
     if (!realOddsItem) continue;
     const realMarketOdds = extractMarketOddsFromBookmaker(realOddsItem);
-    if (!realMarketOdds || !realMarketOdds.over25 || realMarketOdds.over25 < 1.15 || realMarketOdds.over25 > 2.60) continue;
+    // RANGO COMERCIAL RENTABLE Y SEGURO: 1.44 a 1.98 (descarta micro-cuotas @1.22 y loterías > 2.00)
+    if (!realMarketOdds || !realMarketOdds.over25 || realMarketOdds.over25 < 1.44 || realMarketOdds.over25 > 1.98) continue;
 
     const shortStatus = item.fixture.status?.short || "NS";
     const isFinished = ["FT", "AET", "PEN"].includes(shortStatus);
@@ -306,32 +336,64 @@ export async function searchAndAddNewOver25VipAlerts(dateStr?: string, forceRefr
       targetMarket: "Over 2.5 Goles",
     });
 
-    // Filtrar estrictamente solo pronósticos de OVER 2.5 GOLES con regla calibrada >= 58% de probabilidad/convicción (>= 60% Destacado)
+    // Filtrar estrictamente solo pronósticos de OVER 2.5 GOLES con regla de alta precisión >= 60.5% y cuota 1.44 - 1.98
     const over25Opps = opportunities.filter((p) => {
       const isOver25 = p.market === "Over 2.5 Goles" || p.selection === "Over 2.5" || (p.selection || "").toLowerCase().includes("over 2.5");
-      const meetsStrictProb = p.probability >= 58.0;
-      return isOver25 && meetsStrictProb && p.odds >= 1.15 && p.odds <= 2.60;
+      const meetsStrictProb = p.probability >= 60.5;
+      return isOver25 && meetsStrictProb && p.odds >= 1.44 && p.odds <= 1.98;
     });
 
     if (over25Opps.length > 0) {
-      // Ordenar por probabilidad descendente y mayor edge
       over25Opps.sort((a, b) => b.probability - a.probability || b.edge - a.edge);
       const bestOver25 = over25Opps[0];
 
-      const isElite = isElitePick(bestOver25);
+      // Validación Estadística Real por Equipo (Regla de Consistencia 4/5)
+      let realConsistencyRate = 0.72;
+      let probAdjustment = 0;
+      let formTag = "";
+
+      if (enrichedCount < 14 && item.teams?.home?.id && item.teams?.away?.id) {
+        enrichedCount++;
+        const realStats = await enrichMatchRealStats(item.teams.home.id, item.teams.away.id, false, 2800).catch(() => ({ home: null, away: null }));
+        if (realStats.home && realStats.away && realStats.home.matchesAnalyzed >= 3 && realStats.away.matchesAnalyzed >= 3) {
+          const totalZeroZeros = realStats.home.recentZeroZeroCount + realStats.away.recentZeroZeroCount;
+          const avgTotalGoals = (realStats.home.totalGoalsAvg + realStats.away.totalGoalsAvg) / 2;
+          // Veto si acumulan >= 2 empates 0-0 recientes o promedio real < 2.35 goles
+          if (totalZeroZeros >= 2 || avgTotalGoals < 2.35) {
+            continue;
+          }
+          realConsistencyRate = (realStats.home.over25Rate + realStats.away.over25Rate + realStats.home.over15Rate * 0.5 + realStats.away.over15Rate * 0.5) / 3;
+          if (realStats.home.over25Rate >= 0.60 && realStats.away.over25Rate >= 0.60) {
+            probAdjustment = 2.2;
+            formTag = ` | Racha Real: ${avgTotalGoals.toFixed(1)} goles/partido (${Math.round(realStats.home.over25Rate * 5)}/5 y ${Math.round(realStats.away.over25Rate * 5)}/5 Over 2.5)`;
+          }
+        }
+      }
+
+      const finalProb = Number(Math.min(78.5, bestOver25.probability + probAdjustment).toFixed(1));
+      const unifiedScore = calculateUnifiedQualityScore({
+        probability: finalProb,
+        odds: bestOver25.odds,
+        edge: bestOver25.edge || 0,
+        consistencyRate: realConsistencyRate,
+        leagueTier: bestOver25.leagueTier || 3,
+      });
+
+      const isElite = isElitePick(bestOver25) || unifiedScore >= 78;
       let pickBadge: "elite" | "valor" | "bomba" | "estandar" = "estandar";
       if (isElite) {
         pickBadge = "elite";
-      } else if (bestOver25.odds >= 2.00 && (bestOver25.edge || 0) >= 2.0) {
-        pickBadge = "bomba";
-      } else if (bestOver25.probability >= 62.0 && (bestOver25.edge || 0) >= 2.0) {
+      } else if (finalProb >= 62.5 && (bestOver25.edge || 0) >= 2.0) {
         pickBadge = "valor";
-      } else if (bestOver25.odds >= 1.65 && (bestOver25.edge || 0) >= 1.5) {
+      } else if (bestOver25.odds >= 1.60 && (bestOver25.edge || 0) >= 1.5) {
         pickBadge = "valor";
       }
 
       const taggedPick: MarketOpportunity = {
         ...bestOver25,
+        probability: finalProb,
+        smartScore: unifiedScore,
+        explanation: formTag ? `${bestOver25.explanation}${formTag}` : bestOver25.explanation,
         sport: "over25_vip" as any,
         source: "over25_vip",
         isOver25Vip: true,
@@ -345,8 +407,8 @@ export async function searchAndAddNewOver25VipAlerts(dateStr?: string, forceRefr
         profit,
         result: isFinished ? (matchStatus === "won" ? "WON" : "LOST") : undefined,
         isDestacado: true,
-        destacadoRule: "Alta de Goles (≥ 60%)",
-        confidence: bestOver25.probability >= 70 ? "Muy Alta" : "Alta",
+        destacadoRule: "Alta de Goles Rentable (≥ 61%)",
+        confidence: finalProb >= 68 ? "Muy Alta" : "Alta",
         isNewlyDiscovered: matchStatus === "pending",
         addedAt: new Date().toISOString(),
       };
@@ -372,12 +434,7 @@ export async function searchAndAddNewOver25VipAlerts(dateStr?: string, forceRefr
     return (b.edge || 0) - (a.edge || 0);
   });
 
-  const isInitial = existingSnapshot.length === 0;
-  const auditPoolSize = isInitial
-    ? Math.min(newlyFoundAlerts.length, 16)
-    : Math.min(newlyFoundAlerts.length, 8);
-
-  const candidatesToAudit = newlyFoundAlerts.slice(0, auditPoolSize);
+  const candidatesToAudit = newlyFoundAlerts;
 
   // 4. Auditoría con Agente IA Google Gemini con límite de tiempo para no bloquear el servidor
   let approvedNewAlerts = candidatesToAudit;
@@ -391,28 +448,6 @@ export async function searchAndAddNewOver25VipAlerts(dateStr?: string, forceRefr
       }
     } catch (vetoErr) {
       console.warn("[Over 2.5 VIP] Gemini Veto audit warning:", vetoErr);
-    }
-  }
-
-  // Asegurar rango estricto: 10 a 12 iniciales (o todas las disponibles si hay menos de 10)
-  // Al buscar alertas subsecuentes: hasta 6 adicionales
-  if (isInitial) {
-    if (approvedNewAlerts.length > 12) {
-      // slice limit removed
-    } else if (approvedNewAlerts.length < 10 && newlyFoundAlerts.length >= 10) {
-      const approvedKeys = new Set(approvedNewAlerts.map((p) => getOpportunityKey(p)));
-      for (const cand of newlyFoundAlerts) {
-        if (approvedNewAlerts.length >= 10) break;
-        const key = getOpportunityKey(cand);
-        if (!approvedKeys.has(key)) {
-          approvedNewAlerts.push(cand);
-          approvedKeys.add(key);
-        }
-      }
-    }
-  } else {
-    if (approvedNewAlerts.length > 6) {
-      approvedNewAlerts = approvedNewAlerts.slice(0, 6);
     }
   }
 

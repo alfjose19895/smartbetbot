@@ -9,6 +9,7 @@ import { isExcludedMatch } from "./prediction-engine";
 import { getImmutableDailyParlays } from "./parlay-generator";
 import { auditPredictionsWithGeminiVeto } from "@/lib/ai/claude-analyst";
 import { auditPredictionsBatchWithClaude, isClaudeConfigured } from "../ai/claude-analyst";
+import { enrichMatchRealStats, calculateUnifiedQualityScore } from "./team-stats-enricher";
 /**
  * Direct Supabase persistence and real-time live API-Football prediction service.
  * Strictly 100% real fixtures from API-Football aligned with Ecuador (America/Guayaquil, UTC-5) timezone.
@@ -1484,20 +1485,20 @@ export async function settleActiveSnapshotWithRealScores(dateStr?: string, sport
           league: p.league,
           country: p.country,
           probability: p.probability,
-          homeCorners: fixDetails?.homeCorners,
-          awayCorners: fixDetails?.awayCorners,
-          totalCorners: fixDetails?.totalCorners,
+          homeCorners: fixDetails?.hasCornerStats ? fixDetails.homeCorners : undefined,
+          awayCorners: fixDetails?.hasCornerStats ? fixDetails.awayCorners : undefined,
+          totalCorners: fixDetails?.hasCornerStats ? fixDetails.totalCorners : undefined,
           homeYellowCards: fixDetails?.homeYellowCards,
           awayYellowCards: fixDetails?.awayYellowCards,
           homeRedCards: fixDetails?.homeRedCards,
           awayRedCards: fixDetails?.awayRedCards,
           totalCards: fixDetails?.totalCards,
-          homeShotsOnGoal: fixDetails?.homeShotsOnGoal,
-          awayShotsOnGoal: fixDetails?.awayShotsOnGoal,
-          totalShotsOnGoal: fixDetails?.totalShotsOnGoal,
-          homeTotalShots: fixDetails?.homeTotalShots,
-          awayTotalShots: fixDetails?.awayTotalShots,
-          totalShots: fixDetails?.totalShots,
+          homeShotsOnGoal: fixDetails?.hasShotStats && (fixDetails.totalShotsOnGoal > 0 || fixDetails.totalShots > 0) ? fixDetails.homeShotsOnGoal : undefined,
+          awayShotsOnGoal: fixDetails?.hasShotStats && (fixDetails.totalShotsOnGoal > 0 || fixDetails.totalShots > 0) ? fixDetails.awayShotsOnGoal : undefined,
+          totalShotsOnGoal: fixDetails?.hasShotStats && (fixDetails.totalShotsOnGoal > 0 || fixDetails.totalShots > 0) ? fixDetails.totalShotsOnGoal : undefined,
+          homeTotalShots: fixDetails?.hasShotStats && (fixDetails.totalShotsOnGoal > 0 || fixDetails.totalShots > 0) ? fixDetails.homeTotalShots : undefined,
+          awayTotalShots: fixDetails?.hasShotStats && (fixDetails.totalShotsOnGoal > 0 || fixDetails.totalShots > 0) ? fixDetails.awayTotalShots : undefined,
+          totalShots: fixDetails?.hasShotStats && (fixDetails.totalShotsOnGoal > 0 || fixDetails.totalShots > 0) ? fixDetails.totalShots : undefined,
           cornerAnalysis: (p as any).cornerAnalysis,
           expectedCorners: (p as any).cornerAnalysis?.expectedTotalCorners,
           cardAnalysis: (p as any).cardAnalysis,
@@ -2119,8 +2120,8 @@ export function evaluateMarketResult(
       ? (options?.totalShotsOnGoal ?? ((options?.homeShotsOnGoal || 0) + (options?.awayShotsOnGoal || 0)))
       : (options?.totalShots ?? ((options?.homeTotalShots || 0) + (options?.awayTotalShots || 0)));
 
-    // Guard: If stats are missing, don't settle as 0 shots!
-    if (options?.totalShotsOnGoal === undefined && options?.totalShots === undefined && (!totalActualShots || totalActualShots === 0) && !aClean.includes("tiro") && !aClean.includes("disparo")) {
+    // Guard: If stats are missing or zero (no professional match has 0 total shots), don't settle as 0 shots!
+    if ((!totalActualShots || totalActualShots === 0) && !aClean.includes("tiro") && !aClean.includes("disparo")) {
       const expShots = isOnTarget
         ? (options as any)?.shotAnalysis?.expectedShotsOnGoal
         : (options as any)?.shotAnalysis?.expectedTotalShots;
@@ -3143,29 +3144,28 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[], dateStr?
 
     // Strict validation: Must qualify for the Pre-Match suite
     if (!isPreMatchQualified(opp)) continue;
-    // Filter out unviable high odds (> 2.20)
-    if (opp.odds > 2.20) continue;
+    // Excluir sub-líneas 6.5 de córners no comerciales (< 1.48 o prob < 68%), permitiendo 6.5 solo si es la línea original principal rentable
+    const selLower = (opp.selection || "").toLowerCase();
+    const mktLower = (opp.market || "").toLowerCase();
+    if ((mktLower.includes("córner") || mktLower.includes("corner")) && selLower.includes("6.5") && (opp.odds < 1.48 || opp.probability < 68.0)) continue;
+    if (opp.odds < 1.40 || opp.odds > 1.98) continue;
 
     if (opp.odds >= 1.65) {
       poolValor.push({
         ...opp,
         confidence: conf,
         pickBadge: "valor",
-        isMcpPick: true,
-        isMcp: true,
-        source: "mcp",
+        source: "prematch",
         status: "pending",
         timeSlot: slot,
         isTopPick: topPick,
       });
-    } else if (opp.odds >= 1.25 && opp.odds < 1.65) {
+    } else if (opp.odds >= 1.40 && opp.odds < 1.65) {
       poolSeguras.push({
         ...opp,
         confidence: conf,
         pickBadge: "estandar",
-        isMcpPick: true,
-        isMcp: true,
-        source: "mcp",
+        source: "prematch",
         status: "pending",
         timeSlot: slot,
         isTopPick: topPick,
@@ -3201,83 +3201,60 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[], dateStr?
   const chosenMatchKeys = new Set<string>();
   const chosenTeams = new Set<string>();
 
-  // STRICT USER HIERARCHY ALLOCATION ENGINE (5 MARKETS):
-  // 1: Over Córners (Quota: 38%)
-  // 2: Ambos Equipos Anotan (Quota: 32%)
-  // 3: Over Goles (Quota: 20%)
-  // 4: Ganador Local (Quota: 6%)
-  // 5: Ganador Visitante (Quota: 4%)
-  const pickPrioritizedAlerts = (pool: MarketOpportunity[], totalTarget: number): MarketOpportunity[] => {
+  // JERARQUÍA ESTRICTA DE CALIDAD PURA (SIN FORZAR N CANTIDAD DE ALERTAS):
+  // Prioridad absoluta: Tier de Liga (T1 > T2 > T3 > T4) -> Jerarquía de Mercado (1: Over Córners > 2: Ambos Anotan > 3: Over Goles > 4: Ganador Local > 5: Ganador Visitante) -> Probabilidad -> SmartScore
+  const pickPrioritizedAlerts = (pool: MarketOpportunity[]): MarketOpportunity[] => {
     const selected: MarketOpportunity[] = [];
-    const sortListByTierAndProb = (list: MarketOpportunity[]) =>
-      [...list].sort((a, b) => ((a.leagueTier || 3) - (b.leagueTier || 3)) || (b.probability - a.probability));
+    const sortedPool = [...pool].sort((a, b) => {
+      const aTier = a.leagueTier || 3;
+      const bTier = b.leagueTier || 3;
+      if (aTier !== bTier) return aTier - bTier;
 
-    const overCorners = sortListByTierAndProb(pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 1));
-    const btts = sortListByTierAndProb(pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 2));
-    const overGoals = sortListByTierAndProb(pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 3));
-    const local = sortListByTierAndProb(pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 4));
-    const away = sortListByTierAndProb(pool.filter((p) => getMarketPriorityRank(p.market, p.selection) === 5));
+      const aRank = getMarketPriorityRank(a.market, a.selection);
+      const bRank = getMarketPriorityRank(b.market, b.selection);
+      if (aRank !== bRank) return aRank - bRank;
 
-    const targetOverCorners = Math.max(1, Math.round(totalTarget * 0.38));
-    const targetBtts = Math.max(1, Math.round(totalTarget * 0.32));
-    const targetOverGoals = Math.max(1, Math.round(totalTarget * 0.20));
-    const targetLocal = Math.max(0, Math.round(totalTarget * 0.06));
-    const targetAway = Math.max(0, Math.round(totalTarget * 0.04));
+      if (b.probability !== a.probability) return b.probability - a.probability;
+      return (b.smartScore || 0) - (a.smartScore || 0);
+    });
 
     let tier4TakenCount = 0;
 
-    const takeFromList = (list: MarketOpportunity[], maxCount: number) => {
-      let taken = 0;
-      for (const p of list) {
-        if (taken >= maxCount || selected.length >= totalTarget) break;
-        const pTier = p.leagueTier || 3;
-        if (pTier >= 4 && tier4TakenCount >= 2) {
-          continue;
-        }
-        const isBtts = p.market === "Ambos Equipos Anotan" || (p.market || '').toLowerCase().includes("btts");
-        if (isBtts && typeof p.odds === 'number' && p.odds < 1.48) {
-          continue;
-        }
+    for (const p of sortedPool) {
+      const rank = getMarketPriorityRank(p.market, p.selection);
+      if (rank > 5) continue; // Solo los 5 mercados autorizados
 
-        const hNorm = getCanonicalTeamKey(p.homeTeam);
-        const aNorm = getCanonicalTeamKey(p.awayTeam);
-        const matchKey = `${hNorm}-${aNorm}`;
-        const fixId = Number(p.fixtureId) || 0;
-
-        if (
-          chosenMatchKeys.has(matchKey) ||
-          (fixId && existingFixIds.has(fixId)) ||
-          chosenTeams.has(hNorm) ||
-          chosenTeams.has(aNorm) ||
-          existingMatchKeys.has(matchKey)
-        ) {
-          continue;
-        }
-
-        chosenMatchKeys.add(matchKey);
-        chosenTeams.add(hNorm);
-        chosenTeams.add(aNorm);
-        selected.push(p);
-        taken++;
-        if (pTier >= 4) {
-          tier4TakenCount++;
-        }
+      const pTier = p.leagueTier || 3;
+      if (pTier >= 4 && tier4TakenCount >= 2) {
+        continue;
       }
-    };
+      const isBtts = p.market === "Ambos Equipos Anotan" || (p.market || "").toLowerCase().includes("btts");
+      if (isBtts && typeof p.odds === "number" && p.odds < 1.48) {
+        continue;
+      }
 
-    takeFromList(overCorners, targetOverCorners);
-    takeFromList(btts, targetBtts);
-    takeFromList(overGoals, targetOverGoals);
-    takeFromList(local, targetLocal);
-    takeFromList(away, targetAway);
+      const hNorm = getCanonicalTeamKey(p.homeTeam);
+      const aNorm = getCanonicalTeamKey(p.awayTeam);
+      const matchKey = `${hNorm}-${aNorm}`;
+      const fixId = Number(p.fixtureId) || 0;
 
-    // Fallback: If still under totalTarget, fill remaining slots from pool in strict 5-tier priority order
-    if (selected.length < totalTarget) {
-      takeFromList(overCorners, totalTarget - selected.length);
-      takeFromList(btts, totalTarget - selected.length);
-      takeFromList(overGoals, totalTarget - selected.length);
-      takeFromList(local, totalTarget - selected.length);
-      takeFromList(away, totalTarget - selected.length);
+      if (
+        chosenMatchKeys.has(matchKey) ||
+        (fixId && existingFixIds.has(fixId)) ||
+        chosenTeams.has(hNorm) ||
+        chosenTeams.has(aNorm) ||
+        existingMatchKeys.has(matchKey)
+      ) {
+        continue;
+      }
+
+      chosenMatchKeys.add(matchKey);
+      chosenTeams.add(hNorm);
+      chosenTeams.add(aNorm);
+      selected.push(p);
+      if (pTier >= 4) {
+        tier4TakenCount++;
+      }
     }
 
     return selected;
@@ -3287,29 +3264,20 @@ export async function searchAndAddNewAlerts(targetLeagueIds?: number[], dateStr?
   let merged: MarketOpportunity[] = [];
   let retainedExisting: MarketOpportunity[] = [];
 
-  if (existingSnapshot.length === 0) {
-    const selSeguras = pickPrioritizedAlerts(poolSeguras, 7);
-    const selValor = pickPrioritizedAlerts(poolValor, 5);
+  // Unificar candidatos calificados de Seguras y Valor y priorizar estrictamente por Tier de Liga y Jerarquía de Mercado (sin forzar cantidad N)
+  const combinedQualifiedPool = [...poolSeguras, ...poolValor];
+  const prioritizedCandidates = pickPrioritizedAlerts(combinedQualifiedPool);
 
-    newlyAdded = [...selSeguras, ...selValor].map((p) => ({
-      ...p,
-      isNew: true,
-      isNewlyDiscovered: true,
-      addedAt: new Date().toISOString(),
-    }));
+  newlyAdded = prioritizedCandidates.map((p) => ({
+    ...p,
+    isNew: true,
+    isNewlyDiscovered: true,
+    addedAt: new Date().toISOString(),
+  }));
+
+  if (existingSnapshot.length === 0) {
     merged = newlyAdded.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
   } else {
-    // Priority search: take prioritized new candidates that do not exist in current snapshot
-    const selSeguras = pickPrioritizedAlerts(poolSeguras, 8);
-    const selValor = pickPrioritizedAlerts(poolValor, 4);
-
-    newlyAdded = [...selSeguras, ...selValor].map((p) => ({
-      ...p,
-      isNew: true,
-      isNewlyDiscovered: true,
-      addedAt: new Date().toISOString(),
-    }));
-
     // Keep existing finished/settled/live picks and any non-replaced pending picks
     const newlyAddedKeys = new Set(newlyAdded.map((p) => `${getCanonicalTeamKey(p.homeTeam)}-${getCanonicalTeamKey(p.awayTeam)}`));
     retainedExisting = existingSnapshot.filter((p) => {
@@ -4357,8 +4325,19 @@ export async function searchLiveMarketDynamic(params: {
     // Target market detection
     const mParam = (params.market || "").toLowerCase().trim();
     let targetMarket = mParam;
-    if (!targetMarket && qLower) {
-      if (qLower.includes("over 2.5") || qLower.includes("más de 2.5") || qLower.includes("mas de 2.5") || qLower.includes("goles")) targetMarket = "Over 2.5 Goles";
+    if (mParam === "corners" || mParam.includes("córner") || mParam.includes("corner")) {
+      targetMarket = "Córners";
+    } else if (mParam === "ambos" || mParam === "btts") {
+      targetMarket = "Ambos Equipos Anotan";
+    } else if (mParam === "over" || mParam === "over25") {
+      targetMarket = "Over 2.5 Goles";
+    } else if (mParam === "local") {
+      targetMarket = "Ganador Local";
+    } else if (mParam === "visitante") {
+      targetMarket = "Ganador Visitante";
+    } else if (!targetMarket && qLower) {
+      if (qLower.includes("córner") || qLower.includes("corner") || qLower.includes("corners")) targetMarket = "Córners";
+      else if (qLower.includes("over 2.5") || qLower.includes("más de 2.5") || qLower.includes("mas de 2.5") || qLower.includes("goles")) targetMarket = "Over 2.5 Goles";
       else if (qLower.includes("ambos") || qLower.includes("btts") || qLower.includes("anotan")) targetMarket = "Ambos Equipos Anotan";
       else if (qLower.includes("gana visitante") || qLower.includes("victoria visitante") || qLower.includes("ganador visitante")) targetMarket = "Ganador Visitante";
       else if (qLower.includes("gana local") || qLower.includes("victoria local") || qLower.includes("ganador local")) targetMarket = "Ganador Local";
@@ -4404,14 +4383,59 @@ export async function searchLiveMarketDynamic(params: {
       );
     }
 
+    let enrichedCount = 0;
+
     for (const f of targetFixtures) {
       try {
         const oddsItem = oddsByFixtureId[f.fixture.id];
         const realMarketOdds = extractMarketOddsFromBookmaker(oddsItem);
 
         // Only evaluate if real authentic odds exist from bookmaker
-        const hasRealOdds = realMarketOdds && (realMarketOdds.homeWin || realMarketOdds.awayWin || realMarketOdds.over25 || realMarketOdds.bttsYes);
+        const hasRealOdds = Boolean(
+          realMarketOdds && (
+            realMarketOdds.homeWin ||
+            realMarketOdds.awayWin ||
+            realMarketOdds.over25 ||
+            realMarketOdds.bttsYes ||
+            realMarketOdds.cornersOver75 ||
+            realMarketOdds.cornersOver85 ||
+            realMarketOdds.cornersOver95
+          )
+        );
         if (!hasRealOdds) continue;
+
+        // Enriquecer con estadísticas reales (Regla 4/5 y córners reales por equipo)
+        let historicalCornerData: {
+          homeCornersFor: number;
+          awayCornersFor: number;
+          homeCornersAgainst?: number;
+          awayCornersAgainst?: number;
+          sampleSize?: number;
+        } | undefined = undefined;
+        let realStatsPair: Awaited<ReturnType<typeof enrichMatchRealStats>> | null = null;
+
+        if (enrichedCount < 10 && f.teams?.home?.id && f.teams?.away?.id) {
+          enrichedCount++;
+          realStatsPair = await enrichMatchRealStats(
+            f.teams.home.id,
+            f.teams.away.id,
+            targetMarket === "Córners",
+            2800
+          ).catch(() => null);
+
+          if (
+            realStatsPair?.home?.cornersForAvg !== undefined &&
+            realStatsPair?.away?.cornersForAvg !== undefined
+          ) {
+            historicalCornerData = {
+              homeCornersFor: realStatsPair.home.cornersForAvg,
+              awayCornersFor: realStatsPair.away.cornersForAvg,
+              homeCornersAgainst: realStatsPair.home.cornersAgainstAvg,
+              awayCornersAgainst: realStatsPair.away.cornersAgainstAvg,
+              sampleSize: Math.min(realStatsPair.home.matchesAnalyzed, realStatsPair.away.matchesAnalyzed),
+            };
+          }
+        }
 
         const opps = evaluateFixturePrediction({
           fixtureId: f.fixture.id,
@@ -4428,19 +4452,69 @@ export async function searchLiveMarketDynamic(params: {
           kickoff: f.fixture.date,
           marketOdds: realMarketOdds,
           targetMarket,
+          historicalCornerData,
         });
 
         if (Array.isArray(opps) && opps.length > 0) {
+          const validFixtureOpps: MarketOpportunity[] = [];
           for (const op of opps) {
             // UPSTREAM PRE-MATCH QUALIFICATION GUARANTEE
             if (!isPreMatchQualified(op)) continue;
 
+            // Regla del Triángulo de Oro: Cuota rentable (1.40 - 1.98) y bloqueo de sub-líneas Over 6.5 Córners no comerciales
+            if (op.odds < 1.40 || op.odds > 1.98) continue;
+            const selLower = (op.selection || "").toLowerCase();
+            const mktLower = (op.market || "").toLowerCase();
+            if ((mktLower.includes("córner") || mktLower.includes("corner")) && selLower.includes("6.5") && (op.odds < 1.48 || op.probability < 68.0)) {
+              continue;
+            }
+
+            // Validación de Racha Real 4/5 si está disponible
+            let consistencyRate = 0.72;
+            if (realStatsPair?.home && realStatsPair?.away && realStatsPair.home.matchesAnalyzed >= 3 && realStatsPair.away.matchesAnalyzed >= 3) {
+              const totalZeroZeros = realStatsPair.home.recentZeroZeroCount + realStatsPair.away.recentZeroZeroCount;
+              if ((mktLower.includes("ambos") || mktLower.includes("btts") || mktLower.includes("over 2.5")) && totalZeroZeros >= 2) {
+                continue;
+              }
+              if (mktLower.includes("ambos") || mktLower.includes("btts")) {
+                if (realStatsPair.home.scoredRate < 0.60 || realStatsPair.away.scoredRate < 0.60) continue;
+                consistencyRate = (realStatsPair.home.scoredRate + realStatsPair.away.scoredRate) / 2;
+              } else if (mktLower.includes("over 2.5")) {
+                consistencyRate = (realStatsPair.home.over25Rate + realStatsPair.away.over25Rate) / 2;
+              } else if (mktLower.includes("local")) {
+                if (realStatsPair.home.winRate < 0.40 || realStatsPair.home.drawRate >= 0.60) continue;
+                consistencyRate = (realStatsPair.home.winRate + realStatsPair.home.unbeatenRate) / 2;
+              } else if (mktLower.includes("visitante")) {
+                if (realStatsPair.away.winRate < 0.40 || realStatsPair.away.drawRate >= 0.60) continue;
+                consistencyRate = (realStatsPair.away.winRate + realStatsPair.away.unbeatenRate) / 2;
+              }
+            }
+
+            op.smartScore = calculateUnifiedQualityScore({
+              probability: op.probability,
+              odds: op.odds,
+              edge: op.edge || 0,
+              consistencyRate,
+              leagueTier: op.leagueTier || 3,
+            });
             op.bookmaker = realMarketOdds.bookmakerName || "Bet365";
             op.bookmakerOdds = op.odds;
             op.source = "mcp";
             op.isMcpPick = true;
+            op.isMcp = true;
             op.pickBadge = "mcp";
-            discoveredOpps.push(op);
+            validFixtureOpps.push(op);
+          }
+
+          // Priorizar el mejor mercado de cada partido según la Jerarquía Oficial (1: Córners > 2: BTTS > 3: Over Goles > 4: Local > 5: Visitante)
+          if (validFixtureOpps.length > 0) {
+            validFixtureOpps.sort((a, b) => {
+              const rankA = getMarketPriorityRank(a.market, a.selection);
+              const rankB = getMarketPriorityRank(b.market, b.selection);
+              if (rankA !== rankB) return rankA - rankB;
+              return (b.smartScore || 0) - (a.smartScore || 0) || b.probability - a.probability;
+            });
+            discoveredOpps.push(validFixtureOpps[0]);
           }
         }
       } catch (err) {
