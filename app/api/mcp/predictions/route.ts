@@ -49,6 +49,7 @@ import { NextResponse } from "next/server";
 import {
   searchLiveMarketDynamic,
   getStoredPredictions,
+  loadDailySnapshotAsync,
   generatePredictionsForUpcoming,
   addPredictionsToDailySnapshot,
   addPredictionsToDailySnapshotAsync,
@@ -59,7 +60,6 @@ import {
   isClaudeConfigured,
   auditPredictionsWithGeminiVeto,
 } from "@/lib/ai/claude-analyst";
-import { SportProviderRouter } from "@/lib/sports/provider-router";
 import { multiSportSignalToOpportunity } from "@/lib/sports/signal-adapters";
 
 interface AiAgentAnalysis {
@@ -228,14 +228,26 @@ export async function POST(req: Request) {
 
     // SPORT SPECIFIC ROUTING: NBA / NFL / NCAAF
     if (sport === "nba" || sport === "nfl" || sport === "ncaaf") {
-      const sportSignals = await SportProviderRouter.getSignalsForSport(sport as any).catch(() => []);
       const sportDisplay = sport.toUpperCase();
-      let msPicks: MarketOpportunity[] = sportSignals.map((s) => ({
-        ...multiSportSignalToOpportunity(s),
-        isMcpPick: true,
-        isMcp: true,
-        source: "mcp" as const,
-      }));
+      let msPicks: MarketOpportunity[] = [];
+      if (sport === "nba") {
+        const { NBASyncEngine } = await import("@/lib/sports/nba/nba-sync");
+        const nbaData = await NBASyncEngine.getTodayNBASignals().catch(() => ({ signals: [] }));
+        msPicks = (nbaData.signals || []).map((s) => ({
+          ...multiSportSignalToOpportunity(s),
+          isMcpPick: true,
+          isMcp: true,
+          source: "mcp" as const,
+        }));
+      } else {
+        const storedOrSnap = (await loadDailySnapshotAsync(todayStr, sport).catch(() => null)) || getStoredPredictions(sport);
+        msPicks = (Array.isArray(storedOrSnap) ? storedOrSnap : []).map((p: MarketOpportunity) => ({
+          ...p,
+          isMcpPick: true,
+          isMcp: true,
+          source: "mcp" as const,
+        }));
+      }
 
       const qLowerMs = (query || "").toLowerCase().trim();
       if (qLowerMs && !qLowerMs.includes("jornada") && qLowerMs !== "todos") {

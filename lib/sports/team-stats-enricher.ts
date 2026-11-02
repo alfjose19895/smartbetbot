@@ -11,6 +11,7 @@ import { apiFootball, extractMatchDetails } from "./api-football";
 export interface RealTeamFormMetrics {
   teamId: number;
   sampleSize: number;
+  matchesAnalyzed: number;
   goalsForAvg: number;
   goalsAgainstAvg: number;
   totalGoalsAvg: number;
@@ -20,6 +21,7 @@ export interface RealTeamFormMetrics {
   over25Rate: number; // 0.0 to 1.0 (total goals >= 3)
   over15Rate: number; // 0.0 to 1.0 (total goals >= 2)
   winRate: number; // 0.0 to 1.0
+  drawRate: number; // 0.0 to 1.0
   unbeatenRate: number; // 0.0 to 1.0 (W or D)
   lossRate: number; // 0.0 to 1.0
   recentZeroZeroCount: number;
@@ -101,6 +103,7 @@ export async function getRealTeamFormMetrics(
     let over25Count = 0;
     let over15Count = 0;
     let winCount = 0;
+    let drawCount = 0;
     let unbeatenCount = 0;
     let lossCount = 0;
     let zeroZeroCount = 0;
@@ -128,6 +131,7 @@ export async function getRealTeamFormMetrics(
         winCount++;
         unbeatenCount++;
       } else if (gf === ga) {
+        drawCount++;
         unbeatenCount++;
       } else {
         lossCount++;
@@ -137,6 +141,7 @@ export async function getRealTeamFormMetrics(
     const metrics: RealTeamFormMetrics = {
       teamId: id,
       sampleSize,
+      matchesAnalyzed: sampleSize,
       goalsForAvg: Math.round((goalsForSum / sampleSize) * 100) / 100,
       goalsAgainstAvg: Math.round((goalsAgainstSum / sampleSize) * 100) / 100,
       totalGoalsAvg: Math.round(((goalsForSum + goalsAgainstSum) / sampleSize) * 100) / 100,
@@ -146,6 +151,7 @@ export async function getRealTeamFormMetrics(
       over25Rate: Math.round((over25Count / sampleSize) * 100) / 100,
       over15Rate: Math.round((over15Count / sampleSize) * 100) / 100,
       winRate: Math.round((winCount / sampleSize) * 100) / 100,
+      drawRate: Math.round((drawCount / sampleSize) * 100) / 100,
       unbeatenRate: Math.round((unbeatenCount / sampleSize) * 100) / 100,
       lossRate: Math.round((lossCount / sampleSize) * 100) / 100,
       recentZeroZeroCount: zeroZeroCount,
